@@ -495,6 +495,42 @@
     // Auto-scroll every 7 seconds
     setInterval(nextReview, 7000);
   });
+<script>
+let currentIndex = 0;
+const reviews = document.querySelectorAll('.review-card');
+const dotsContainer = document.querySelector('.dots');
+
+// Generate dots
+reviews.forEach((_, i) => {
+  const dot = document.createElement('span');
+  dot.onclick = () => showReview(i);
+  dotsContainer.appendChild(dot);
+});
+
+function showReview(index) {
+  reviews.forEach((card, i) => {
+    card.classList.toggle('active', i === index);
+    dotsContainer.children[i].classList.toggle('active', i === index);
+  });
+  currentIndex = index;
+}
+
+function nextReview() {
+  const nextIndex = (currentIndex + 1) % reviews.length;
+  showReview(nextIndex);
+}
+
+function prevReview() {
+  const prevIndex = (currentIndex - 1 + reviews.length) % reviews.length;
+  showReview(prevIndex);
+}
+
+setInterval(() => {
+  nextReview();
+}, 7000); // Change review every 7 seconds
+
+// Initialize first review
+showReview(0);
 </script>
 
 
