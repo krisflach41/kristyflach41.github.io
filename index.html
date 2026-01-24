@@ -583,42 +583,39 @@
     setInterval(nextReview, 7000);
   });
 <script>
-let currentIndex = 0;
-const reviews = document.querySelectorAll('.review-card');
-const dotsContainer = document.querySelector('.dots');
+  const cards = document.querySelectorAll('.review-card');
+  const dots = document.querySelectorAll('.dots span');
+  let current = 0;
 
-// Generate dots
-reviews.forEach((_, i) => {
-  const dot = document.createElement('span');
-  dot.onclick = () => showReview(i);
-  dotsContainer.appendChild(dot);
-});
+  function showCard(index) {
+    cards.forEach((card, i) => {
+      card.classList.remove('active');
+      dots[i].classList.remove('active');
+    });
+    cards[index].classList.add('active');
+    dots[index].classList.add('active');
+  }
 
-function showReview(index) {
-  reviews.forEach((card, i) => {
-    card.classList.toggle('active', i === index);
-    dotsContainer.children[i].classList.toggle('active', i === index);
+  document.querySelector('.arrow.left').addEventListener('click', () => {
+    current = (current - 1 + cards.length) % cards.length;
+    showCard(current);
   });
-  currentIndex = index;
-}
 
-function nextReview() {
-  const nextIndex = (currentIndex + 1) % reviews.length;
-  showReview(nextIndex);
-}
+  document.querySelector('.arrow.right').addEventListener('click', () => {
+    current = (current + 1) % cards.length;
+    showCard(current);
+  });
 
-function prevReview() {
-  const prevIndex = (currentIndex - 1 + reviews.length) % reviews.length;
-  showReview(prevIndex);
-}
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      current = i;
+      showCard(current);
+    });
+  });
 
-setInterval(() => {
-  nextReview();
-}, 7000); // Change review every 7 seconds
-
-// Initialize first review
-showReview(0);
+  showCard(current);
 </script>
+
 
 
 
