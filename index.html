@@ -468,40 +468,40 @@
   <footer>
     <p><img src="equal-housing-logo.png" alt="Equal Housing Logo" class="equal-housing-logo" />Equal Housing Opportunity</p>
   </footer>
-  <script>
-  document.querySelectorAll('.accordion-header').forEach(button => {
-    button.addEventListener('click', () => {
-      const body = button.nextElementSibling;
-      const isOpen = body.style.display === 'block';
+ <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let currentReview = 0;
+    const cards = document.querySelectorAll('.review-card');
+    const totalCards = cards.length;
 
-      document.querySelectorAll('.accordion-body').forEach(b => b.style.display = 'none');
-      if (!isOpen) body.style.display = 'block';
-    });
+    function showReview(index) {
+      cards.forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+      });
+    }
+
+    function nextReview() {
+      currentReview = (currentReview + 1) % totalCards;
+      showReview(currentReview);
+    }
+
+    function prevReview() {
+      currentReview = (currentReview - 1 + totalCards) % totalCards;
+      showReview(currentReview);
+    }
+
+    // Add click handlers for arrows
+    document.querySelector('.arrow.left').addEventListener('click', prevReview);
+    document.querySelector('.arrow.right').addEventListener('click', nextReview);
+
+    // Show first review on load
+    showReview(currentReview);
+
+    // Auto-scroll every 7 seconds
+    setInterval(nextReview, 7000);
   });
-<script>
-  let currentReview = 0;
-  const cards = document.querySelectorAll('.review-card');
-  const totalCards = cards.length;
-
-  function showReview(index) {
-    cards.forEach((card, i) => {
-      card.classList.toggle('active', i === index);
-    });
-  }
-
-  function nextReview() {
-    currentReview = (currentReview + 1) % totalCards;
-    showReview(currentReview);
-  }
-
-  function prevReview() {
-    currentReview = (currentReview - 1 + totalCards) % totalCards;
-    showReview(currentReview);
-  }
-
-  // Auto-scroll every 20 seconds
-  setInterval(nextReview, 20000);
 </script>
+
 
 
 </body>
