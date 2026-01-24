@@ -478,7 +478,31 @@
       if (!isOpen) body.style.display = 'block';
     });
   });
+<script>
+  let currentReview = 0;
+  const cards = document.querySelectorAll('.review-card');
+  const totalCards = cards.length;
+
+  function showReview(index) {
+    cards.forEach((card, i) => {
+      card.classList.toggle('active', i === index);
+    });
+  }
+
+  function nextReview() {
+    currentReview = (currentReview + 1) % totalCards;
+    showReview(currentReview);
+  }
+
+  function prevReview() {
+    currentReview = (currentReview - 1 + totalCards) % totalCards;
+    showReview(currentReview);
+  }
+
+  // Auto-scroll every 20 seconds
+  setInterval(nextReview, 20000);
 </script>
+
 
 </body>
 </html>
