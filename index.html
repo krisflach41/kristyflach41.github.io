@@ -289,6 +289,80 @@
     background: rgba(255, 255, 255, 0.1);
   }
 }
+  footer p {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  /* 🔽 Paste below this line 🔽 */
+  .review-carousel {
+    position: relative;
+    max-width: 700px;
+    margin: 2rem auto;
+    background: var(--accent-color);
+    padding: 1rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .review-card {
+    display: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+    color: #000;
+    font-size: 1rem;
+  }
+
+  .review-card.active {
+    display: block;
+    opacity: 1;
+  }
+
+  .arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ffffffaa;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 2rem;
+    cursor: pointer;
+    border-radius: 50%;
+    z-index: 1;
+    color: var(--primary-color);
+  }
+  .arrow.left { left: 10px; }
+  .arrow.right { right: 10px; }
+
+  .dots {
+    display: flex;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+  .dots span {
+    width: 10px;
+    height: 10px;
+    background: #ffffffaa;
+    border-radius: 50%;
+    margin: 0 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .dots span.active {
+    background: white;
+  }
+
+  @media (max-width: 600px) {
+    .review-carousel {
+      padding: 1rem;
+      font-size: 0.95rem;
+    }
+    .arrow {
+      font-size: 1.5rem;
+    }
+  }
+</style>
 
   </style>
   <script>
