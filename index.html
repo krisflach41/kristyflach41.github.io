@@ -353,5 +353,17 @@
   <footer>
     <p><img src="equal-housing-logo.png" alt="Equal Housing Logo" class="equal-housing-logo" />Equal Housing Opportunity</p>
   </footer>
+  <script>
+  document.querySelectorAll('.accordion-header').forEach(button => {
+    button.addEventListener('click', () => {
+      const body = button.nextElementSibling;
+      const isOpen = body.style.display === 'block';
+
+      document.querySelectorAll('.accordion-body').forEach(b => b.style.display = 'none');
+      if (!isOpen) body.style.display = 'block';
+    });
+  });
+</script>
+
 </body>
 </html>
