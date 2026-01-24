@@ -1,219 +1,101 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kristy Flach | Certified Mortgage Advisor</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kristy Flach Mortgage Advisory</title>
   <style>
     :root {
       --primary-color: #002F6C;
       --accent-color: #9CB5A0;
-      --secondary-bg: #F8F9FA;
-      --secondary-text: #333333;
     }
+
     body {
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      background: var(--secondary-bg);
-      color: var(--secondary-text);
+      font-family: Arial, sans-serif;
     }
-    header, nav, footer {
-      background: var(--primary-color);
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      margin: 0 1rem;
-      text-decoration: none;
-      font-weight: bold;
-    }
+
     .hero {
-      background: #E8EEF3;
-      text-align: center;
-      padding: 2rem;
+      background: white;
+      padding: 3rem 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    .hero button {
+
+    .hero-container {
+      max-width: 1200px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .hero-text {
+      flex: 1 1 50%;
+      max-width: 600px;
+    }
+
+    .hero-text h1 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-text .tagline {
+      color: var(--accent-color);
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .hero-text .support-line {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .apply-button {
       background: var(--primary-color);
       color: white;
       padding: 0.75rem 1.5rem;
-      margin-top: 1rem;
       border: none;
       border-radius: 4px;
-      cursor: pointer;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
     }
-    section {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
+
+    .apply-button:hover {
+      background: #004080;
     }
-    .about-img {
-      max-width: 100%;
+
+    .hero-image {
+      flex: 1 1 40%;
+      max-width: 400px;
+    }
+
+    .hero-image img {
+      width: 100%;
       height: auto;
       border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-    .services-grid .service-card {
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      cursor: pointer;
-    }
-    .service-content {
-      display: none;
-    }
-    .service-card.active .service-content {
-      display: block;
-    }
-    .carousel {
-      display: flex;
-      overflow: hidden;
-      position: relative;
-    }
-    .testimonial {
-      min-width: 100%;
-      transition: transform 0.5s ease-in-out;
-      box-sizing: border-box;
-      padding: 1rem;
-      background: white;
-      border-left: 4px solid var(--accent-color);
-    }
-    .carousel-buttons {
-      text-align: center;
-      margin-top: 1rem;
-    }
-    .carousel-buttons button {
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      margin: 0 0.25rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      max-width: 500px;
-      margin: auto;
-    }
-    input, textarea {
-      padding: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button.submit-btn {
-      background: var(--primary-color);
-      color: white;
-      padding: 0.75rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
     }
   </style>
-  <script>
-    function toggleServiceContent(card) {
-      card.classList.toggle('active');
-    }
-
-    let currentIndex = 0;
-    function showTestimonial(index) {
-      const testimonials = document.querySelectorAll('.testimonial');
-      testimonials.forEach((el, i) => {
-        el.style.transform = `translateX(-${100 * index}%)`;
-      });
-    }
-    function nextTestimonial() {
-      const testimonials = document.querySelectorAll('.testimonial');
-      currentIndex = (currentIndex + 1) % testimonials.length;
-      showTestimonial(currentIndex);
-    }
-    function prevTestimonial() {
-      const testimonials = document.querySelectorAll('.testimonial');
-      currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-      showTestimonial(currentIndex);
-    }
-    window.addEventListener('DOMContentLoaded', () => showTestimonial(0));
-  </script>
 </head>
 <body>
-  <header>
-    <h1>Kristy Flach</h1>
-    <p>Certified Mortgage Advisor & Loan Originator (PRMG) • NMLS #2632259</p>
-    <nav>
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#services">Loan Products</a>
-      <a href="#media">Media</a>
-      <a href="#reviews">Reviews</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
-
-  <section class="hero" id="home">
-    <h2>Helping You Make Smart Mortgage Decisions</h2>
-    <p>At House Money, I'm all about keeping the odds stacked in your favor.</p>
-    <a href="https://apply.prmgapp.com/?referrerId=KFlach@prmg.net&loanType=MORTGAGE"><button>Apply Now</button></a>
-  </section>
-
-  <section id="about">
-    <h2>About Me</h2>
-    <img src="images/kayak-2.jpg" alt="Kristy kayaking" class="about-img" />
-    <p>I’m Kristy Flach—a Certified Mortgage Advisor, mortgage strategist, and educator who believes your mortgage should be a financial tool, not just a transaction.</p>
-    <p>With 17 years of underwriting experience and a background as a licensed Realtor, I structure loans for smooth approvals and smart long-term outcomes. I focus on education, strategy, and clarity—so you know what you're doing, and why.</p>
-    <p>When I'm not helping clients, you’ll find me outdoors with my Westie, Gus, or enjoying time with family back in my home state of Ohio.</p>
-  </section>
-
-  <section id="services">
-    <h2>Loan Products</h2>
-    <div class="services-grid">
-      <div class="service-card" onclick="toggleServiceContent(this)">
-        <h3>Conventional Loans</h3>
-        <div class="service-content"><p>Great for buyers with good credit and solid financials. Often lower cost over time.</p></div>
+  <section class="hero">
+    <div class="hero-container">
+      <div class="hero-text">
+        <h1>Welcome to Kristy Flach Mortgage Advisory</h1>
+        <h3 class="tagline">Mortgage clarity, built on transparency.</h3>
+        <p class="support-line">
+          Education, transparency, and strategy—designed to help you make mortgage decisions that support long-term financial security.
+        </p>
+        <a href="https://prmg.net/KFlach" class="apply-button">Apply Now</a>
       </div>
-      <div class="service-card" onclick="toggleServiceContent(this)">
-        <h3>FHA Loans</h3>
-        <div class="service-content"><p>Designed for low-to-moderate income borrowers with lower credit scores or down payments.</p></div>
-      </div>
-      <div class="service-card" onclick="toggleServiceContent(this)">
-        <h3>VA Loans</h3>
-        <div class="service-content"><p>Exclusive to veterans and active-duty service members—$0 down and great terms.</p></div>
+      <div class="hero-image">
+        <img src="images/kristy-hero-headshot.jpg" alt="Kristy Flach Headshot" />
       </div>
     </div>
-    <a href="https://apply.prmgapp.com/?referrerId=KFlach@prmg.net&loanType=MORTGAGE"><button class="apply-button">Apply Now</button></a>
   </section>
-
-  <section id="reviews">
-    <h2>Client Reviews</h2>
-    <div class="carousel">
-      <div class="testimonial"><p><strong>Mary Ann</strong></p><p>“Top notch! And I feel like I've also made a friend in the process. Thanks, Kristy—I would not be at my dream farm without you!”</p></div>
-      <div class="testimonial"><p><strong>Sandy</strong></p><p>“Kristy took all the stress out of buying my first home. She broke it down so I always felt in control and confident.”</p></div>
-      <div class="testimonial"><p><strong>Mike and Alicia</strong></p><p>“Kristy was different—she explained things we didn’t even know to ask. Her insight saved us thousands!”</p></div>
-    </div>
-    <div class="carousel-buttons">
-      <button onclick="prevTestimonial()">Previous</button>
-      <button onclick="nextTestimonial()">Next</button>
-    </div>
-  </section>
-
-  <section id="contact">
-    <h2>Contact Me</h2>
-    <form name="contact" method="POST" data-netlify="true">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-      <button type="submit" class="submit-btn">Send Message</button>
-    </form>
-  </section>
-
-  <footer>
-    <p>&copy; 2026 Kristy Flach. All rights reserved.</p>
-  </footer>
 </body>
 </html>
