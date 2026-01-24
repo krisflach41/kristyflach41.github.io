@@ -11,6 +11,7 @@
       --secondary-text: #333333;
       --accent-color: #9CB5A0;
     }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -19,48 +20,66 @@
       background: var(--secondary-bg);
       color: var(--secondary-text);
     }
+
     header, nav, footer {
       background: var(--primary-color);
       color: white;
       padding: 1rem;
       text-align: center;
     }
+
     nav a {
       color: white;
       margin: 0 1rem;
       text-decoration: none;
       font-weight: bold;
     }
+
     .hero {
       background: #E8EEF3;
       padding: 2rem;
       text-align: center;
     }
+
     .hero h1 {
       margin-bottom: 0.5rem;
     }
+
     .hero p.tagline {
       font-style: italic;
       color: var(--accent-color);
       font-weight: bold;
     }
+
     section {
       padding: 2rem 1rem;
       max-width: 1000px;
       margin: auto;
     }
+
     .services-grid {
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
       gap: 1rem;
     }
+
     .service-card {
       background: white;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 1rem;
-      flex: 1 1 calc(50% - 1rem);
+      cursor: pointer;
     }
+
+    .service-content {
+      display: none;
+      padding: 0.5rem 0;
+    }
+
+    .service-card.active .service-content {
+      display: block;
+    }
+
     form {
       display: flex;
       flex-direction: column;
@@ -68,23 +87,34 @@
       max-width: 500px;
       margin: auto;
     }
+
     input, textarea {
       padding: 0.5rem;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
-    button {
+
+    button, .apply-button {
       background: var(--primary-color);
       color: white;
       border: none;
       padding: 0.75rem;
       border-radius: 4px;
       cursor: pointer;
+      text-align: center;
+      display: inline-block;
+      margin: 1rem auto 0;
     }
+
+    .apply-button:hover {
+      background-color: #004080;
+    }
+
     footer p {
       margin: 0.5rem 0;
       font-size: 0.9rem;
     }
+
     .testimonial {
       background: #fff;
       border-left: 4px solid var(--accent-color);
@@ -92,6 +122,11 @@
       margin: 1rem 0;
     }
   </style>
+  <script>
+    function toggleServiceContent(card) {
+      card.classList.toggle('active');
+    }
+  </script>
 </head>
 <body>
   <header>
@@ -109,56 +144,10 @@
 
   <section class="hero" id="home">
     <img src="Grey Background Headshot.jpg" alt="Kristy Flach Headshot" style="max-width: 180px; border-radius: 50%; margin: 1rem auto; display: block; box-shadow: 0 0 10px rgba(0,0,0,0.2);" />
-    <h1>Welcome to House Money with Kristy</h1>
-    <p class="tagline">At House Money, I'm all about keeping the odds stacked in your favor.</p>
-    <p>Helping you navigate the mortgage process with confidence, clarity, and personal service.</p>
+    <h1>Welcome to The Kristy Flach Mortgage Advisory</h1>
+    <p class="tagline">Mortgage clarity, built on transparency.</p>
+    <p>Education, transparency, and strategy—designed to help you make mortgage decisions that support long-term financial security.</p>
+    <a class="apply-button" href="https://apply.prmgapp.com/?_gl=1*jcdqfu*_ga*MTYwMTYzODc1OS4xNzY4NzYwODk5*_ga_T0DMVW6TCQ*czE3NjkyMTIyNjAkbzIkZzAkdDE3NjkyMTIyNjEkajU5JGwwJGgw*_ga_DZBJLC2PNV*czE3NjkyMTIyNjEkbzIkZzAkdDE3NjkyMTIyNjEkajYwJGwwJGgw#/milestones?referrerId=KFlach@prmg.net&loanType=MORTGAGE" target="_blank">Apply Now</a>
   </section>
-
-  <section id="about">
-    <h2>About Kristy</h2>
-    <img src="Grey Background Headshot.jpg" alt="Kristy Flach Headshot" style="max-width: 160px; border-radius: 50%; float: right; margin-left: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.1);" />
-    <p>With 17 years of mortgage underwriting experience and a background as a licensed Realtor, I know how to structure loans that close smoothly. Whether you're buying your first home, refinancing, or exploring loan options, I'm here to provide white-glove support every step of the way.</p>
-  </section>
-
-  <section id="services">
-    <h2>Loan Products</h2>
-    <div class="services-grid">
-      <div class="service-card"><strong>Conventional Loans</strong><br />Flexible options for well-qualified buyers.</div>
-      <div class="service-card"><strong>FHA Loans</strong><br />Low down payments and flexible credit options.</div>
-      <div class="service-card"><strong>VA Loans</strong><br />Exclusive benefits for veterans and active duty service members.</div>
-      <div class="service-card"><strong>USDA Loans</strong><br />Zero-down financing for eligible rural buyers.</div>
-      <div class="service-card"><strong>Jumbo Loans</strong><br />Financing for higher-priced homes and luxury properties.</div>
-      <div class="service-card"><strong>Refinancing</strong><br />Lower your payment, tap equity, or change terms.</div>
-    </div>
-  </section>
-
-  <section id="media">
-    <h2>Watch & Learn</h2>
-    <p>Explore videos, explainers, and fun mortgage content on my YouTube channel:</p>
-    <p><a href="https://www.youtube.com/@HouseMoneywithKristy" target="_blank">House Money with Kristy on YouTube</a></p>
-  </section>
-
-  <section id="testimonials">
-    <h2>What Clients Say</h2>
-    <div class="testimonial">"Kristy made the loan process stress-free and even enjoyable! Highly recommend working with her."</div>
-    <div class="testimonial">"Clear, knowledgeable, and always available. We couldn’t have asked for a better experience."</div>
-  </section>
-
-  <section id="contact">
-    <h2>Contact Kristy</h2>
-    <img src="Grey Background Headshot.jpg" alt="Kristy Flach Headshot" style="max-width: 140px; border-radius: 50%; display: block; margin: 0 auto 1rem auto; box-shadow: 0 0 10px rgba(0,0,0,0.1);" />
-    <form>
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-    <p style="text-align:center; margin-top: 1rem;">Or reach out directly:<br />📧 <a href="mailto:kflach@prmg.net">kflach@prmg.net</a> | 📱 206-313-5883</p>
-  </section>
-
-  <footer>
-    <p>© 2026 Kristy Flach | PRMG</p>
-    <p>NMLS #2632259</p>
-  </footer>
 </body>
 </html>
