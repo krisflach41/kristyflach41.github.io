@@ -1,11 +1,178 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kristy Flach | Certified Mortgage Advisor</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <style>
+    :root {
+      --primary-color: #002F6C;
+      --secondary-bg: #F8F9FA;
+      --secondary-text: #333333;
+      --accent-color: #9CB5A0;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      background: var(--secondary-bg);
+      color: var(--secondary-text);
+    }
+    header, nav, footer {
+      background: var(--primary-color);
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 1rem;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .hero {
+      background: #E8EEF3;
+      padding: 2rem;
+      text-align: center;
+    }
+    .hero .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+    .hero-img-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .hero img.hero-headshot {
+      max-width: 150px;
+      height: auto;
+      border-radius: 8px;
+    }
+    .hero img.cma-logo {
+      max-height: 60px;
+      height: auto;
+    }
+    .hero h1 {
+      margin-bottom: 0.5rem;
+    }
+    .hero p.subtitle {
+      margin: 0.25rem 0;
+    }
+    .hero p.tagline {
+      font-style: italic;
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+    .hero .apply-button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-top: 1rem;
+      display: inline-block;
+      text-decoration: none;
+    }
+    section {
+      padding: 2rem 1rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .about-img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .video-grid iframe {
+      width: 100%;
+      height: 200px;
+      border: none;
+      border-radius: 8px;
+    }
+    form input, form textarea {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    form button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .equal-housing-logo {
+      max-height: 20px;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .tabs button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+    .tabs button.active {
+      background: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .carousel-item {
+      min-width: 100%;
+      scroll-snap-align: start;
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+  </style>
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector('[data-tab="' + tabId + '"]').classList.add('active');
+    }
+  </script>
 </head>
 <body>
   <header>
@@ -33,20 +200,57 @@
     </div>
   </section>
 
-  <section id="about">[...unchanged content remains here...]</section>
-  <section id="media">[...unchanged content remains here...]</section>
-  <section id="products">[...unchanged content remains here...]</section>
+  <section id="about">
+    <h2>About Me</h2>
+    <p>With 17 years of underwriting experience and a background as a licensed Realtor, I know how to structure loans for smooth approvals and confident closings. My mission is to simplify the mortgage process and help you feel informed and supported every step of the way.</p>
+  </section>
+
+  <section id="media">
+    <h2>Media & YouTube</h2>
+    <div class="video-grid">
+      <iframe src="https://www.youtube.com/embed/N1zv7AzeX9E" title="YouTube Video"></iframe>
+      <iframe src="https://www.youtube.com/embed/VIDEO_ID_2" title="YouTube Video 2"></iframe>
+    </div>
+  </section>
+
+  <section id="products">
+    <h2>Loan Products</h2>
+    <div class="tabs">
+      <button class="active" data-tab="tab1" onclick="showTab('tab1')">Conventional</button>
+      <button data-tab="tab2" onclick="showTab('tab2')">FHA</button>
+      <button data-tab="tab3" onclick="showTab('tab3')">VA</button>
+      <button data-tab="tab4" onclick="showTab('tab4')">USDA</button>
+    </div>
+    <div id="tab1" class="tab-content active"><p>Conventional loans offer flexible terms and competitive rates for borrowers with good credit.</p></div>
+    <div id="tab2" class="tab-content"><p>FHA loans are backed by the government and offer low down payment options for first-time buyers.</p></div>
+    <div id="tab3" class="tab-content"><p>VA loans provide no-down-payment options for eligible veterans, active-duty service members, and their families.</p></div>
+    <div id="tab4" class="tab-content"><p>USDA loans support rural buyers with low to moderate income by offering 100% financing.</p></div>
+  </section>
+
   <section id="reviews">
     <h2>Client Reviews</h2>
     <div class="carousel">
       <div class="carousel-item">
-        <p><strong>Mary Ann:</strong></p>
-        <p>I am posting this on a beautiful morning from my patio looking out at the green pastures of my new farm. This farm is a lifelong dream and Kristy Flach at PRMG played a very significant role in making that happen! My search for a farm presented several challenges and Kristy stuck with me through the whole crazy process. Crazy being from the sellers, the loan process was nothing but smooth sailing. I honestly felt like I was her only client. She was always there if I needed questions answered or to talk me off the ledge, so to speak, when I was anxious. Several times she talked with me after hours and got moving on things early in the morning. She handheld me through the entire process from the first property I put in an offer to the 3rd which I closed on last week, and is exactly what I wanted. I would absolutely refer anyone to Kristy. I've been singing her praises all over town. She is top notch! And I feel like I've also made a friend in the process. Thanks, Kristy, for all your help, I would not be at my dream farm without you!</p>
+        <p><strong>Mary Ann:</strong> I am posting this on a beautiful morning from my patio looking out at the green pastures of my new farm. Kristy Flach at PRMG played a very significant role in making that happen!</p>
       </div>
     </div>
   </section>
-  <section id="blog">[...unchanged content remains here...]</section>
-  <section id="contact">[...unchanged content remains here...]</section>
+
+  <section id="blog">
+    <h2>Blog</h2>
+    <p>Coming soon: mortgage tips, market updates, and real estate insights tailored for today's buyers and homeowners.</p>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain">
+      <input type="text" name="name" placeholder="Your Name" required />
+      <input type="email" name="email" placeholder="Your Email" required />
+      <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
   <footer>
     <p><img src="equal-housing-logo.png" alt="Equal Housing Logo" class="equal-housing-logo" />Equal Housing Opportunity</p>
   </footer>
