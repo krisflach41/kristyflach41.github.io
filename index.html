@@ -407,30 +407,28 @@
 </section>
 
 
-<section id="reviews">
-  <h2>Client Reviews</h2>
-  <div class="carousel-container">
-    <button class="carousel-arrow left" onclick="scrollCarousel(-1)">&#8249;</button>
-    <div class="carousel-track">
-      <div class="review-card">
-        <p>This mortgage experience was like no other! I felt supported and educated every step of the way.</p>
-      </div>
-      <div class="review-card">
-        <p>I’ve bought 3 homes—and this was hands-down the smoothest closing I've ever had.</p>
-      </div>
-      <div class="review-card">
-        <p>Kristy’s knowledge blew me away. She doesn’t just close loans—she helps you build wealth.</p>
-      </div>
-      <div class="review-card">
-        <p>I never felt confused or pressured. I trusted the process because Kristy explained everything.</p>
-      </div>
-      <div class="review-card">
-        <p>From application to closing, the communication was incredible. Highly recommend!</p>
-      </div>
+<section class="review-carousel">
+  <button class="arrow left" onclick="scrollReviews(-1)">&#8249;</button>
+  
+  <div class="review-track" id="reviewTrack">
+    <div class="review-card">
+      <p class="review-text">Kristy made the mortgage process so easy, even my dog understood it!</p>
+      <button class="read-more" onclick="toggleExpand(this)">Read more</button>
     </div>
-    <button class="carousel-arrow right" onclick="scrollCarousel(1)">&#8250;</button>
+    <div class="review-card">
+      <p class="review-text">The House Money system was a game changer. Clear, fast, and stress-free.</p>
+      <button class="read-more" onclick="toggleExpand(this)">Read more</button>
+    </div>
+    <div class="review-card">
+      <p class="review-text">I’d work with Kristy again in a heartbeat. She gets it done and explains everything.</p>
+      <button class="read-more" onclick="toggleExpand(this)">Read more</button>
+    </div>
+    <!-- Add more .review-card blocks as needed -->
   </div>
+  
+  <button class="arrow right" onclick="scrollReviews(1)">&#8250;</button>
 </section>
+
 
 
 
