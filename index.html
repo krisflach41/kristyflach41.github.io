@@ -594,10 +594,60 @@
   });
 </script>
 
+<script>
+  // ✅ NEW: Review Carousel JS
+  const cards = document.querySelectorAll('.review-card');
+  const dotsContainer = document.getElementById('dotsContainer');
+  let currentIndex = 0;
+  let interval;
 
+  function updateCarousel() {
+    cards.forEach((card, index) => {
+      card.classList.toggle('active', index === currentIndex);
+    });
+    document.querySelectorAll('.dots span').forEach((dot, index) => {
+      dot.classList.toggle('active', index === currentIndex);
+    });
+  }
 
+  function moveReview(step) {
+    currentIndex = (currentIndex + step + cards.length) % cards.length;
+    updateCarousel();
+    restartInterval();
+  }
 
+  function createDots() {
+    cards.forEach((_, index) => {
+      const dot = document.createElement('span');
+      dot.addEventListener('click', () => {
+        currentIndex = index;
+        updateCarousel();
+        restartInterval();
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
 
+  function startAutoRotate() {
+    interval = setInterval(() => {
+      moveReview(1);
+    }, 5000);
+  }
+
+  function restartInterval() {
+    clearInterval(interval);
+    startAutoRotate();
+  }
+
+  createDots();
+  updateCarousel();
+  startAutoRotate();
+</script>
 
 </body>
 </html>
+
+
+
+
+
