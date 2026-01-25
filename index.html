@@ -207,21 +207,20 @@
   border-top: 1px solid #ddd;
 }
 
-.carousel-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.review-carousel {
   position: relative;
   max-width: 900px;
   margin: 2rem auto;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.carousel-track {
+.review-card-container {
   display: flex;
   gap: 1rem;
-  transition: transform 0.5s ease-in-out;
-  will-change: transform;
+  overflow: hidden;
+  width: 100%;
 }
 
 .review-card {
@@ -269,19 +268,49 @@
   z-index: 2;
 }
 
-.carousel-arrow.left { left: -30px; }
-.carousel-arrow.right { right: -30px; }
+.carousel-arrow.left {
+  left: -45px;
+}
+
+.carousel-arrow.right {
+  right: -45px;
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.dots span {
+  width: 10px;
+  height: 10px;
+  background: #cccccc;
+  border-radius: 50%;
+  margin: 0 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dots span.active {
+  background: var(--primary-color);
+}
 
 @media (max-width: 768px) {
   .review-card {
     flex: 0 0 100%;
-    max-width: 90%;
+    max-width: 100%;
   }
-  .carousel-arrow.left, .carousel-arrow.right {
+
+  .carousel-arrow.left {
     left: 10px;
+  }
+
+  .carousel-arrow.right {
     right: 10px;
   }
 }
+
 
 </style>
 
