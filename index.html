@@ -701,7 +701,8 @@ If you’d like to learn more about my background, credentials, and why I approa
 <script>
   const backToTopButton = document.getElementById("backToTop");
 
-  window.onscroll = () => {
+window.onscroll = () => {
+  console.log("Scroll event fired");
     if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
       backToTopButton.style.display = "block";
     } else {
