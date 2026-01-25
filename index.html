@@ -539,28 +539,36 @@ If you’d like to learn more about my background, credentials, and why I approa
     setInterval(nextReview, 7000);
   });
 
-  const cards = document.querySelectorAll('.review-card');
-  const dots = document.querySelectorAll('.dots span');
-  let current = 0;
 
-  function showCard(index) {
-    cards.forEach((card, i) => {
-      card.classList.remove('active');
-      dots[i].classList.remove('active');
-    });
-    cards[index].classList.add('active');
-    dots[index].classList.add('active');
-  }
+const dots = document.querySelectorAll('.dots span');
+let current = 0;
 
-  document.querySelector('.arrow.left').addEventListener('click', () => {
-    current = (current - 1 + cards.length) % cards.length;
+function showCard(index) {
+  cards.forEach((card, i) => {
+    card.classList.remove('active');
+    dots[i].classList.remove('active');
+  });
+  cards[index].classList.add('active');
+  dots[index].classList.add('active');
+}
+
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    current = i;
     showCard(current);
   });
+});
 
-  document.querySelector('.arrow.right').addEventListener('click', () => {
-    current = (current + 1) % cards.length;
-    showCard(current);
-  });
+document.querySelector('.arrow.left')?.addEventListener('click', () => {
+  current = (current - 1 + cards.length) % cards.length;
+  showCard(current);
+});
+
+document.querySelector('.arrow.right')?.addEventListener('click', () => {
+  current = (current + 1) % cards.length;
+  showCard(current);
+});
+
 
   dots.forEach((dot, i) => {
     dot.addEventListener('click', () => {
