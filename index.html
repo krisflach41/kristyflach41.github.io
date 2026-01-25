@@ -295,6 +295,26 @@ h2 {
   font-size: 2rem;
 }
 
+/* Back to Top Button */
+#backToTop {
+  display: none;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+  font-size: 1.5rem;
+  background-color: #002244;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.3s ease;
+}
+#backToTop:hover {
+  background-color: #334e68;
+}
 
 
 </style>
@@ -649,6 +669,25 @@ h2 {
   createDots();
   updateCarousel();
   startAutoRotate();
+
+  // Back to Top Button
+const backToTopButton = document.getElementById("backToTop");
+
+window.onscroll = () => {
+  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+    backToTopButton.style.display = "block";
+  } else {
+    backToTopButton.style.display = "none";
+  }
+};
+
+backToTopButton.addEventListener("click", () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth"
+  });
+});
+
 </script>
 <!-- Back to Top Button -->
 <button id="backToTop" title="Back to Top">↑</button>
