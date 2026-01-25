@@ -209,70 +209,52 @@
 
 .review-carousel {
   position: relative;
-  max-width: 900px;
+  max-width: 800px;
   margin: 2rem auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.review-card-container {
-  display: flex;
-  gap: 1rem;
+  background: var(--accent-color);
+  padding: 2rem;
+  border-radius: 12px;
   overflow: hidden;
-  width: 100%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .review-card {
-  flex: 0 0 calc(33.333% - 1rem);
-  max-width: 3in;
-  max-height: 5in;
-  background: var(--accent-color);
+  display: none;
+  opacity: 0;
+  transition: opacity 1s ease;
+  background: #fff;
   color: #000;
+  font-size: 1rem;
   padding: 1rem;
-  border-radius: 12px;
-  overflow: hidden;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: max-height 0.3s ease;
+  border-radius: 8px;
+  min-height: 140px;
 }
 
-.review-card.expanded {
-  max-height: none;
+.review-card.active {
+  display: block;
+  opacity: 1;
 }
 
-.review-card::after {
-  content: "Read More";
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  font-size: 0.8rem;
-  color: #000;
-  cursor: pointer;
-}
-
-.review-card.expanded::after {
-  content: "Show Less";
-}
-
-.carousel-arrow {
+.arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 2rem;
-  background: #ffffffaa;
+  background: #ffffffee;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 0.8rem;
+  font-size: 1.5rem;
   cursor: pointer;
   border-radius: 50%;
   z-index: 2;
+  color: var(--primary-color);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.carousel-arrow.left {
+.arrow.left {
   left: -45px;
 }
 
-.carousel-arrow.right {
+.arrow.right {
   right: -45px;
 }
 
@@ -281,35 +263,33 @@
   justify-content: center;
   margin-top: 1rem;
 }
-
 .dots span {
   width: 10px;
   height: 10px;
-  background: #cccccc;
+  background: #ffffffaa;
   border-radius: 50%;
   margin: 0 5px;
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .dots span.active {
-  background: var(--primary-color);
+  background: white;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .review-carousel {
+    padding: 1.5rem;
+  }
+  .arrow {
+    font-size: 1.25rem;
+    left: -30px;
+    right: -30px;
+  }
   .review-card {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .carousel-arrow.left {
-    left: 10px;
-  }
-
-  .carousel-arrow.right {
-    right: 10px;
+    font-size: 0.95rem;
   }
 }
+
 
 
 </style>
