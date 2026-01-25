@@ -546,9 +546,10 @@ let current = 0;
 
 function showCard(index) {
   cards.forEach((card, i) => {
-    card.classList.remove('active');
-    dots[i].classList.remove('active');
-  });
+  card.classList.remove('active');
+  if (dots[i]) dots[i].classList.remove('active'); // ✅ Safely check if dot exists
+});
+
   cards[index].classList.add('active');
   dots[index].classList.add('active');
 }
@@ -639,7 +640,6 @@ document.querySelector('.arrow.right')?.addEventListener('click', () => {
 
 <script>
   // ✅ NEW: Review Carousel JS
-  const cards = document.querySelectorAll('.review-card');
   const dotsContainer = document.getElementById('dotsContainer');
   let currentIndex = 0;
   let interval;
