@@ -317,6 +317,7 @@ h2 {
 }
 
 
+
 </style>
 
 
@@ -670,25 +671,28 @@ h2 {
   updateCarousel();
   startAutoRotate();
 
-  // Back to Top Button
-const backToTopButton = document.getElementById("backToTop");
+<!-- Back to Top Button -->
+<button id="backToTop" title="Back to Top">↑</button>
 
-window.onscroll = () => {
-  if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-    backToTopButton.style.display = "block";
-  } else {
-    backToTopButton.style.display = "none";
-  }
-};
+<script>
+  const backToTopButton = document.getElementById("backToTop");
 
-backToTopButton.addEventListener("click", () => {
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
+  window.onscroll = () => {
+    if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+      backToTopButton.style.display = "block";
+    } else {
+      backToTopButton.style.display = "none";
+    }
+  };
+
+  backToTopButton.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
   });
-});
-
 </script>
+
 
 <!-- Back to Top Button -->
 <button id="backToTop" title="Back to Top">↑</button>
