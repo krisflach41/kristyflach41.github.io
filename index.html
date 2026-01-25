@@ -611,7 +611,44 @@
   });
 
   showCard(current);
+<script>
+  const track = document.querySelector('.carousel-track');
+  const cards = document.querySelectorAll('.review-card');
+  let currentIndex = 0;
+  let interval;
+
+  function scrollCarousel(direction) {
+    const visibleCards = 3;
+    const maxIndex = cards.length - visibleCards;
+    currentIndex += direction;
+    if (currentIndex < 0) currentIndex = 0;
+    if (currentIndex > maxIndex) currentIndex = maxIndex;
+    const offset = cards[0].offsetWidth + 16;
+    track.style.transform = `translateX(-${offset * currentIndex}px)`;
+  }
+
+  // Add expand/collapse functionality
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('expanded');
+    });
+  });
+
+  // Auto-scroll every 5 seconds
+  function startAutoScroll() {
+    interval = setInterval(() => {
+      if (currentIndex < cards.length - 3) {
+        scrollCarousel(1);
+      } else {
+        currentIndex = -1;
+        scrollCarousel(1);
+      }
+    }, 5000);
+  }
+
+  startAutoScroll();
 </script>
+
 
 
 
