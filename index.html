@@ -596,8 +596,6 @@ document.querySelector('.arrow.right')?.addEventListener('click', () => {
     dotsContainer.appendChild(dot);
   }
 
-  const dots = document.querySelectorAll('.dots span');
-
   function updateCarousel(index) {
     const offset = -(index * 100);
     track.style.transform = `translateX(${offset}%)`;
