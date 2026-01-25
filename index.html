@@ -417,32 +417,29 @@
 
 
 <section class="review-carousel">
-  <button class="carousel-arrow left">&#10094;</button>
+  <button class="arrow left" onclick="moveReview(-1)">&#10094;</button>
 
-  <div class="carousel-container">
-    <div class="carousel-track">
-      <div class="review-card">
-        <p>"Kristy was absolutely incredible. She guided us every step of the way and made the mortgage process smooth and stress-free!"</p>
-      </div>
-      <div class="review-card">
-        <p>"I’ve worked with a few lenders before, but Kristy’s attention to detail and care for our situation stood out. Highly recommend!"</p>
-      </div>
-      <div class="review-card">
-        <p>"She explained everything in plain English. I never felt lost, and now I feel confident I made the right move."</p>
-      </div>
-      <div class="review-card">
-        <p>"As a first-time buyer, I was nervous. Kristy answered every question with patience and warmth. So grateful!"</p>
-      </div>
-      <div class="review-card">
-        <p>"We closed faster than expected, and she stayed in touch throughout. I’ll be sending friends her way for sure."</p>
-      </div>
-      <!-- More cards if needed -->
+  <div id="reviewCards" class="review-card-container">
+    <div class="review-card active">
+      “Kristy was absolutely incredible. She guided us every step of the way and made the mortgage process smooth and stress-free!”
+    </div>
+    <div class="review-card">
+      “I’ve worked with a few lenders before, but Kristy’s attention to detail and care for our situation stood out. Highly recommend!”
+    </div>
+    <div class="review-card">
+      “She explained everything in plain English. I never felt lost, and now I feel confident I made the right move.”
+    </div>
+    <div class="review-card">
+      “As a first-time buyer, I was nervous. Kristy answered every question with patience and warmth. So grateful!”
+    </div>
+    <div class="review-card">
+      “We closed faster than expected, and she stayed in touch throughout. I’ll be sending friends her way for sure.”
     </div>
   </div>
 
-  <button class="carousel-arrow right">&#10095;</button>
+  <button class="arrow right" onclick="moveReview(1)">&#10095;</button>
 
-  <div class="dots"></div>
+  <div class="dots" id="dotsContainer"></div>
 </section>
 
 
