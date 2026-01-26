@@ -881,37 +881,45 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
- 
-<script>
-function calculateMortgage() {
-  let homePrice = parseFloat(document.getElementById("homePrice").value);
-  let down = parseFloat(document.getElementById("downPayment").value);
-  let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
-  let term = parseFloat(document.getElementById("loanTerm").value) * 12;
-  let tax = parseFloat(document.getElementById("propertyTax").value) / 12;
-  let ins = parseFloat(document.getElementById("insurance").value) / 12;
+ <script>
+function runMortgageCalc() {
+  let price = parseFloat(document.getElementById("homePrice").value) || 0;
+  let down = parseFloat(document.getElementById("downPayment").value) || 0;
+  let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12 || 0;
+  let term = (parseFloat(document.getElementById("loanTerm").value) * 12) || 0;
+  let tax = (parseFloat(document.getElementById("propertyTax").value) / 12) || 0;
+  let ins = (parseFloat(document.getElementById("insurance").value) / 12) || 0;
+  let pmiRate = parseFloat(document.getElementById("pmiRate").value) / 100 / 12 || 0;
+  let hoa = parseFloat(document.getElementById("hoa").value) || 0;
 
-  if (!homePrice || !rate || !term) return;
+  if (price === 0 || term === 0) return;
 
-  let loan = homePrice - down;
+  let loan = price - down;
+
   let pi = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
-  let total = pi + tax + ins;
+  let pmi = loan * pmiRate;
 
-  document.getElementById("monthlyPayment").innerText = "$" + total.toFixed(2);
+  let total = pi + tax + ins + pmi + hoa;
+
+  document.getElementById("totalPayment").innerText = "$" + total.toFixed(2);
+  document.getElementById("loanAmount").innerText = "$" + loan.toFixed(2);
   document.getElementById("piPayment").innerText = "$" + pi.toFixed(2);
   document.getElementById("taxPayment").innerText = "$" + tax.toFixed(2);
   document.getElementById("insPayment").innerText = "$" + ins.toFixed(2);
+  document.getElementById("pmiPayment").innerText = "$" + pmi.toFixed(2);
+  document.getElementById("hoaPayment").innerText = "$" + hoa.toFixed(2);
 }
 
-function resetMortgage() {
-  document.querySelectorAll(".mortgage-calculator input").forEach(i => i.value = "");
-  document.getElementById("monthlyPayment").innerText = "$0";
+function resetMortgageCalc() {
+  document.querySelectorAll(".calc-inputs input").forEach(i => i.value = "");
+  document.getElementById("totalPayment").innerText = "$0";
+  document.getElementById("loanAmount").innerText = "$0";
   document.getElementById("piPayment").innerText = "$0";
   document.getElementById("taxPayment").innerText = "$0";
   document.getElementById("insPayment").innerText = "$0";
+  document.getElementById("pmiPayment").innerText = "$0";
+  document.getElementById("hoaPayment").innerText = "$0";
 }
-</script>
-
 </script>
 
 
