@@ -613,9 +613,6 @@ document.querySelector('.arrow.right')?.addEventListener('click', () => {
     updateCarousel(currentIndex);
   }
 
-  leftArrow.addEventListener('click', moveLeft);
-  rightArrow.addEventListener('click', moveRight);
-
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => {
       currentIndex = index;
