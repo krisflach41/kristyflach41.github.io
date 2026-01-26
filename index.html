@@ -1017,7 +1017,33 @@ document.getElementById("piPayment").innerText = formatCurrency(pi);
 document.getElementById("taxPayment").innerText = formatCurrency(tax);
 document.getElementById("insPayment").innerText = formatCurrency(ins);
 document.getElementById("pmiPayment").innerText = formatCurrency(pmi);
-document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
+1020 document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
+
+1021 // ==== PMI End & Payment After PMI ====
+1022 let ltv = loan / price;
+1023 let balanceForPMI = loan;
+1024 let monthPMIEnds = 0;
+1025
+1026 if (ltv > 0.8) {
+1027   for (let i = 1; i <= term; i++) {
+1028     let interestPortion = balanceForPMI * rate;
+1029     let principalPortion = pi - interestPortion;
+1030     balanceForPMI -= principalPortion;
+1031
+1032     if ((balanceForPMI / price) <= 0.8) {
+1033       monthPMIEnds = i;
+1034       break;
+1035     }
+1036   }
+1037 }
+1038
+1039 let paymentAfterPMI = total - pmi;
+1040
+1041 document.getElementById("pmiEndMonth").innerText =
+1042   monthPMIEnds > 0 ? monthPMIEnds : "N/A";
+1043
+1044 document.getElementById("paymentAfterPMI").innerText =
+1045   monthPMIEnds > 0 ? formatCurrency(paymentAfterPMI) : "N/A";
 
 }
 
