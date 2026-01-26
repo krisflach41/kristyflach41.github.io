@@ -531,9 +531,8 @@ If you’d like to learn more about my background, credentials, and why I approa
 <button id="backToTop" title="Back to Top">↑</button>
 
 <script>
-  // Back to Top Button Logic
+document.addEventListener("DOMContentLoaded", function () {
   const backToTopButton = document.getElementById("backToTop");
-
 
   window.addEventListener("scroll", () => {
     if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
@@ -549,8 +548,9 @@ If you’d like to learn more about my background, credentials, and why I approa
       behavior: "smooth"
     });
   });
-
+});
 </script>
+
 
     <script>
 document.addEventListener("DOMContentLoaded", function () {
