@@ -919,8 +919,13 @@ function calculateMortgage() {
   if (price === 0 || term === 0) return;
 
   let loan = price - down;
+  if (loan <= 0) return;
 
-  let pi = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+
+  let pi = rate === 0 
+  ? loan / term 
+  : loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+
   let pmi = loan * pmiRate;
 
   let total = pi + tax + ins + pmi + hoa;
