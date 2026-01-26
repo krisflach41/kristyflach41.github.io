@@ -598,6 +598,26 @@ If you’d like to learn more about my background, credentials, and why I approa
 
 <!-- Back to Top Button -->
 <button id="backToTop" title="Back to Top">↑</button>
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll('.review-card');
+  let currentIndex = 0;
+
+  function showReview(index) {
+    cards.forEach((card, i) => {
+      card.classList.toggle('active', i === index);
+    });
+  }
+
+  showReview(currentIndex);
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    showReview(currentIndex);
+  }, 7000);
+});
+</script>
+
 </body>
 </html>
 
