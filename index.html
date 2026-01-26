@@ -533,7 +533,7 @@ If you’d like to learn more about my background, credentials, and why I approa
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const backToTopButton = document.getElementById("backToTop");
-
+backToTopButton.style.display = "none";
   window.addEventListener("scroll", () => {
     if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
       backToTopButton.style.display = "block";
