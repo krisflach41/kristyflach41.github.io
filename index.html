@@ -595,11 +595,11 @@ h2 {
     <div class="calculator-grid">
       <div class="calculator-card">
         <h4>Refinance Calculator</h4>
-        <button>Open Calculator</button>
+       <button onclick="openCalculator()">Open Calculator</button>
       </div>
       <div class="calculator-card">
         <h4>Purchase Calculator</h4>
-        <button>Open Calculator</button>
+        <button onclick="openCalculator()">Open Calculator</button>
       </div>
     </div>
     <p class="calculator-disclaimer">
@@ -743,6 +743,30 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+  <script>
+function openCalculator() {
+  document.getElementById("calcModal").style.display = "flex";
+}
+
+function closeCalculator() {
+  document.getElementById("calcModal").style.display = "none";
+}
+
+function calculatePayment() {
+  let loan = parseFloat(document.getElementById("loanAmount").value);
+  let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+  let term = parseFloat(document.getElementById("loanTerm").value) * 12;
+
+  if (!loan || !rate || !term) {
+    document.getElementById("calcResult").innerText = "Please fill in all fields.";
+    return;
+  }
+
+  let payment = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+  document.getElementById("calcResult").innerText = "Estimated Monthly Payment: $" + payment.toFixed(2);
+}
+</script>
+
 <!-- CALCULATOR MODAL -->
 <div id="calcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
   <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:420px; position:relative;">
