@@ -775,6 +775,37 @@ h2 {
 </div>
   <div class="calc-grid">
 <label>Show Amortization Table?</label>
+    <style>
+  #showAmort {
+    margin-left: 0.5em;
+    transform: scale(1.2);
+    cursor: pointer;
+  }
+
+  #amortizationSection {
+    margin-top: 2rem;
+    transition: all 0.3s ease;
+  }
+
+  #amortizationTable th,
+  #amortizationTable td {
+    padding: 0.5rem;
+    text-align: center;
+    border: 1px solid #ccc;
+  }
+
+  #amortizationTable th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+  }
+
+  #amortizationTable {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+</style>
+
 <input type="checkbox" id="showAmort" onchange="toggleAmort()" />
 
     <div class="calc-inputs">
