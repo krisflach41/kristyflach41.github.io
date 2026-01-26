@@ -1027,8 +1027,36 @@ function resetMortgage() {
   document.getElementById("taxPayment").innerText = "$0";
   document.getElementById("insPayment").innerText = "$0";
   document.getElementById("pmiPayment").innerText = "$0";
-  document.getElementById("hoaPayment").innerText = "$0";
+ document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
+
+// === Build Amortization Table ===
+let balance = loan;
+let tbody = document.querySelector("#amortTable tbody");
+tbody.innerHTML = "";
+
+for (let i = 1; i <= term; i++) {
+  let interest = balance * rate;
+  let principal = pi - interest;
+  balance -= principal;
+
+  if (balance < 0) balance = 0;
+
+  let row = `
+    <tr>
+      <td>${i}</td>
+      <td>${formatCurrency(pi)}</td>
+      <td>${formatCurrency(principal)}</td>
+      <td>${formatCurrency(interest)}</td>
+      <td>${formatCurrency(balance)}</td>
+    </tr>
+  `;
+  tbody.innerHTML += row;
+
+  if (balance === 0) break;
 }
+
+}
+
 </script>
 
 <script>
