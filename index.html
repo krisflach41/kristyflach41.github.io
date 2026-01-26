@@ -572,13 +572,16 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <script>
-document.querySelectorAll(".accordion-header").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const body = btn.nextElementSibling;
-    body.style.display = body.style.display === "block" ? "none" : "block";
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".accordion-header").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const body = btn.nextElementSibling;
+      body.style.display = body.style.display === "block" ? "none" : "block";
+    });
   });
 });
 </script>
+
 
 </body>
 </html>
