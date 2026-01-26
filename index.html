@@ -756,11 +756,42 @@ h2 {
     <h2>Financial Calculators</h2>
 
 <div class="mortgage-calculator" id="mainCalculator">
-
-
+<!-- Amortization Table Section -->
+<div id="amortizationSection" style="display: none; margin-top: 2rem;">
+  <h3>Amortization Schedule</h3>
+  <table id="amortizationTable" border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th>Payment #</th>
+        <th>Principal</th>
+        <th>Interest</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be inserted here -->
+    </tbody>
+  </table>
+</div>
   <div class="calc-grid">
+<label>Show Amortization Table?</label>
+<input type="checkbox" id="showAmort" onchange="toggleAmort()" />
 
     <div class="calc-inputs">
+      <input type="number" id="propertyTax" placeholder="3600">
+
+<label>Annual Homeowners Insurance</label>
+<input type="number" id="homeInsurance" placeholder="1200">
+
+<label>Monthly HOA Dues</label>
+<input type="number" id="hoaDues" placeholder="0">
+
+<label>Include PMI?</label>
+<select id="includePMI">
+  <option value="yes" selected>Yes</option>
+  <option value="no">No</option>
+</select>
+
       <label>Home Price</label>
       <input type="number" id="homePrice" placeholder="300000">
 
