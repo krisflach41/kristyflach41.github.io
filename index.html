@@ -773,108 +773,41 @@ h2 {
     </tbody>
   </table>
 </div>
-  <div class="calc-grid">
-<label>Show Amortization Table?</label>
-    <style>
-  #showAmort {
-    margin-left: 0.5em;
-    transform: scale(1.2);
-    cursor: pointer;
-  }
+<div class="calc-grid">
+  <div class="calc-inputs">
+    <label>Home Price</label>
+    <input type="number" id="homePrice" placeholder="300000" />
 
-  #amortizationSection {
-    margin-top: 2rem;
-    transition: all 0.3s ease;
-  }
+    <label>Down Payment ($)</label>
+    <input type="number" id="downPayment" placeholder="50000" />
 
-  #amortizationTable th,
-  #amortizationTable td {
-    padding: 0.5rem;
-    text-align: center;
-    border: 1px solid #ccc;
-  }
+    <label>Interest Rate (%)</label>
+    <input type="number" id="interestRate" placeholder="6.5" />
 
-  #amortizationTable th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-  }
+    <label>Loan Term (years)</label>
+    <input type="number" id="loanTerm" placeholder="30" />
 
-  #amortizationTable {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    border-radius: 8px;
-    overflow: hidden;
-  }
-</style>
+    <label>Annual Property Tax</label>
+    <input type="number" id="propertyTax" placeholder="2400" />
 
-<input type="checkbox" id="showAmort" onchange="toggleAmort()" />
+    <label>Annual Insurance</label>
+    <input type="number" id="insurance" placeholder="1200" />
 
-    <div class="calc-inputs">
-      <input type="number" id="propertyTax" placeholder="3600">
+    <label>PMI (%)</label>
+    <input type="number" id="pmiRate" placeholder="0.5" />
 
-<label>Annual Homeowners Insurance</label>
-<input type="number" id="homeInsurance" placeholder="1200">
+    <label>Monthly HOA</label>
+    <input type="number" id="hoa" placeholder="0" />
 
-<label>Monthly HOA Dues</label>
-<input type="number" id="hoaDues" placeholder="0">
-
-<label>Include PMI?</label><div style="margin-top: 1rem;">
-  <label>Include PMI?</label>
-  <span 
-    onclick="togglePMIHelp()" 
-    style="margin-left: 1em; font-size: 0.9em; color: var(--primary-color); cursor: pointer; text-decoration: underline;"
-  >
-    What’s this?
-  </span>
-</div>
-
-<div id="pmiHelpText" style="display: none; margin: 0.5rem 0; font-size: 0.9em; color: #555;">
-  PMI (Private Mortgage Insurance) protects the lender when your down payment is less than 20%. It’s added to your monthly mortgage until you build enough equity.
-</div>
-<div style="margin-top: 1rem;">
-  <label>Include PMI?</label>
-  <span 
-    onclick="togglePMIHelp()" 
-    style="margin-left: 1em; font-size: 0.9em; color: var(--primary-color); cursor: pointer; text-decoration: underline;"
-  >
-    What’s this?
-  </span>
-</div>
-
-<div id="pmiHelpText" style="display: none; margin: 0.5rem 0; font-size: 0.9em; color: #555;">
-  PMI (Private Mortgage Insurance) protects the lender when your down payment is less than 20%. It’s added to your monthly mortgage until you build enough equity.
-</div>
-<select id="includePMI">
-  <option value="yes" selected>Yes</option>
-  <option value="no">No</option>
-</select>
-
-      <label>Home Price</label>
-      <input type="number" id="homePrice" placeholder="300000">
-
-      <label>Down Payment ($)</label>
-      <input type="number" id="downPayment" placeholder="50000">
-
-      <label>Interest Rate (%)</label>
-      <input type="number" id="interestRate" placeholder="6.5">
-
-      <label>Loan Term (years)</label>
-      <input type="number" id="loanTerm" placeholder="30">
-
-      <label>Annual Property Tax</label>
-      <input type="number" id="propertyTax" placeholder="2400">
-
-      <label>Annual Insurance</label>
-      <input type="number" id="insurance" placeholder="1200">
-
-      <label>PMI (%)</label>
-      <input type="number" id="pmiRate" placeholder="0.5">
-
-      <label>Monthly HOA</label>
-      <input type="number" id="hoa" placeholder="0">
-
- <button onclick="calculateMortgage()">Calculate Payment</button>
-      <button onclick="resetMortgage()">Clear</button>
+    <div class="checkbox-wrapper">
+      <label for="showAmort">Show Amortization Table?</label>
+      <input type="checkbox" id="showAmort" onchange="toggleAmort()" />
     </div>
+
+    <button onclick="calculateMortgage()">Calculate Payment</button>
+    <button onclick="resetMortgage()">Clear</button>
+  </div>
+</div>
 
     <div class="calc-results">
       <h3>Estimated Monthly Payment</h3>
