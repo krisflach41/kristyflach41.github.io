@@ -846,7 +846,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
  <script>
-function runMortgageCalc() {
+function calculateMortgage() {
   let price = parseFloat(document.getElementById("homePrice").value) || 0;
   let down = parseFloat(document.getElementById("downPayment").value) || 0;
   let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12 || 0;
@@ -874,7 +874,7 @@ function runMortgageCalc() {
   document.getElementById("hoaPayment").innerText = "$" + hoa.toFixed(2);
 }
 
-function resetMortgageCalc() {
+function resetMortgage() {
   document.querySelectorAll(".calc-inputs input").forEach(i => i.value = "");
   document.getElementById("totalPayment").innerText = "$0";
   document.getElementById("loanAmount").innerText = "$0";
