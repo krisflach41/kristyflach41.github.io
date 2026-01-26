@@ -906,6 +906,12 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
  <script>
+   function formatCurrency(num) {
+  return "$" + Number(num).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
 function calculateMortgage() {
   let price = parseFloat(document.getElementById("homePrice").value) || 0;
   let down = parseFloat(document.getElementById("downPayment").value) || 0;
