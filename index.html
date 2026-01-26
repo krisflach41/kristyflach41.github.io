@@ -936,13 +936,14 @@ function calculateMortgage() {
 
   let total = pi + tax + ins + pmi + hoa;
 
-  document.getElementById("totalPayment").innerText = "$" + total.toFixed(2);
-  document.getElementById("loanAmount").innerText = "$" + loan.toFixed(2);
-  document.getElementById("piPayment").innerText = "$" + pi.toFixed(2);
-  document.getElementById("taxPayment").innerText = "$" + tax.toFixed(2);
-  document.getElementById("insPayment").innerText = "$" + ins.toFixed(2);
-  document.getElementById("pmiPayment").innerText = "$" + pmi.toFixed(2);
-  document.getElementById("hoaPayment").innerText = "$" + hoa.toFixed(2);
+document.getElementById("totalPayment").innerText = formatCurrency(total);
+document.getElementById("loanAmount").innerText = formatCurrency(loan);
+document.getElementById("piPayment").innerText = formatCurrency(pi);
+document.getElementById("taxPayment").innerText = formatCurrency(tax);
+document.getElementById("insPayment").innerText = formatCurrency(ins);
+document.getElementById("pmiPayment").innerText = formatCurrency(pmi);
+document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
+
 }
 
 function resetMortgage() {
