@@ -751,8 +751,10 @@ function openCalculator() {
 }
 
 function closeCalculator() {
+  clearCalculator();
   document.getElementById("calcModal").style.display = "none";
 }
+
 
 function calculatePayment() {
   let loan = parseFloat(document.getElementById("loanAmount").value);
@@ -767,6 +769,13 @@ function calculatePayment() {
   let payment = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
   document.getElementById("calcResult").innerText = "Estimated Monthly Payment: $" + payment.toFixed(2);
 }
+    function clearCalculator() {
+  document.getElementById("loanAmount").value = "";
+  document.getElementById("interestRate").value = "";
+  document.getElementById("loanTerm").value = "";
+  document.getElementById("calcResult").innerText = "";
+}
+
 </script>
 
 <!-- CALCULATOR MODAL -->
