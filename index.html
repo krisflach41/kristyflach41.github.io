@@ -1016,7 +1016,8 @@ document.getElementById("loanAmount").innerText = formatCurrency(loan);
 document.getElementById("piPayment").innerText = formatCurrency(pi);
 document.getElementById("taxPayment").innerText = formatCurrency(tax);
 document.getElementById("insPayment").innerText = formatCurrency(ins);
-document.getElementById("pmiPayment").innerText = formatCurrency(pmi);
+document.getElementById("pmiMonthly").innerText = formatCurrency(pmi);
+
 1020 document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
 
 1021 // ==== PMI End & Payment After PMI ====
@@ -1054,7 +1055,7 @@ function resetMortgage() {
   document.getElementById("piPayment").innerText = "$0";
   document.getElementById("taxPayment").innerText = "$0";
   document.getElementById("insPayment").innerText = "$0";
-  document.getElementById("pmiPayment").innerText = "$0";
+document.getElementById("pmiMonthly").innerText = "$0";
  document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
 
 // === Build Amortization Table ===
