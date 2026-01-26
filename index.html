@@ -987,6 +987,11 @@ document.addEventListener("DOMContentLoaded", function () {
     maximumFractionDigits: 2
   });
 }
+   function toggleAmort() {
+  const wrap = document.getElementById("amortTableWrap");
+  wrap.style.display = wrap.style.display === "none" ? "block" : "none";
+}
+
 function calculateMortgage() {
   let price = parseFloat(document.getElementById("homePrice").value) || 0;
   let down = parseFloat(document.getElementById("downPayment").value) || 0;
