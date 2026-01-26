@@ -724,7 +724,25 @@ h2 {
     </div>
   </div>
 </section>
-<section id="calculators">
+  726  <!-- CALCULATOR LAUNCH BUTTON -->
+727  <div style="text-align:center; margin: 2rem 0;">
+728    <button onclick="openCalculatorApp()" style="
+729      background: var(--primary-color);
+730      color: white;
+731      padding: 1rem 2rem;
+732      font-size: 1.1rem;
+733      border: none;
+734      border-radius: 8px;
+735      cursor: pointer;
+736      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+737    ">
+738      Open Home Buying Calculator
+739    </button>
+740  </div>
+
+741  <section id="calculators" style="display:none;">
+
+<section id="calculators" style="display:none;">
   <div class="calculator-section">
     <h2>Financial Calculators</h2>
  
@@ -969,7 +987,16 @@ function resetMortgage() {
   document.getElementById("pmiPayment").innerText = "$0";
   document.getElementById("hoaPayment").innerText = "$0";
 }
+<script>
+function openCalculatorApp() {
+  document.getElementById("calculators").style.display = "block";
+  window.scrollTo({
+    top: document.getElementById("calculators").offsetTop - 40,
+    behavior: "smooth"
+  });
+}
 </script>
+
 
 
 </body>
