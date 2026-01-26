@@ -594,7 +594,65 @@ h2 {
   justify-content: space-between;
   margin: 0.5rem 0;
 }
+.calc-grid {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
 
+.calc-inputs {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  gap: 1rem;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.calc-inputs label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.25rem;
+}
+
+.calc-inputs input[type="number"],
+.calc-inputs select {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.calc-inputs button {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background-color: var(--primary-color, #004080);
+  color: white;
+  transition: background 0.3s ease;
+}
+
+.calc-inputs button:hover {
+  background-color: #003366;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
 
 </style>
 
