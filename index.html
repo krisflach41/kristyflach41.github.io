@@ -634,18 +634,23 @@ document.querySelector('.arrow.right')?.addEventListener('click', () => {
 </script>
 
 <script>
+ <script>
   // ✅ NEW: Review Carousel JS
+  const cards = document.querySelectorAll('.review-card');
   let currentIndex = 0;
-  let interval;
 
   function updateCarousel() {
     cards.forEach((card, index) => {
       card.classList.toggle('active', index === currentIndex);
     });
-    document.querySelectorAll('.dots span').forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentIndex);
-    });
   }
+
+  updateCarousel();
+
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    updateCarousel();
+  }, 7000);
 
   function moveReview(step) {
     currentIndex = (currentIndex + step + cards.length) % cards.length;
