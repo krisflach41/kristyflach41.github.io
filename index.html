@@ -723,7 +723,16 @@ h2 {
       </div>
     </div>
   </div>
-</section>
+</section><script>
+  function toggleAmortization() {
+    var section = document.getElementById("amortizationSection");
+    if (section.style.display === "none" || section.style.display === "") {
+      section.style.display = "block";
+    } else {
+      section.style.display = "none";
+    }
+  }
+</script>
 <!-- CALCULATOR LAUNCH BUTTON -->
 <div style="text-align:center; margin: 2rem 0;">
   <button onclick="openCalculatorApp()" style="
