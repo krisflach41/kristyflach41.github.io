@@ -459,6 +459,69 @@ h2 {
 .read-more-btn:hover {
   opacity: 0.85;
 }
+.mortgage-calculator {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  margin-top: 2rem;
+}
+
+.calc-left label {
+  font-weight: 600;
+  display: block;
+  margin-top: 1rem;
+}
+
+.calc-left input {
+  width: 100%;
+  padding: 0.7rem;
+  margin-top: 0.3rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.calc-left button {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.calc-left button:first-of-type {
+  background: var(--primary-color);
+  color: white;
+}
+
+.calc-left button:last-of-type {
+  background: #ccc;
+}
+
+.calc-right {
+  background: var(--secondary-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.payment-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin: 1rem 0;
+}
+
+.payment-breakdown p {
+  display: flex;
+  justify-content: space-between;
+  margin: 0.5rem 0;
+}
 
 </style>
 
@@ -591,6 +654,44 @@ h2 {
 <section id="calculators">
   <div class="calculator-section">
     <h2>Financial Calculators</h2>
+    <div class="mortgage-calculator">
+
+  <div class="calc-left">
+    <label>Home Value</label>
+    <input type="number" id="homePrice" placeholder="300000">
+
+    <label>Down Payment</label>
+    <input type="number" id="downPayment" placeholder="50000">
+
+    <label>Interest Rate (%)</label>
+    <input type="number" id="interestRate" placeholder="4">
+
+    <label>Loan Term (Years)</label>
+    <input type="number" id="loanTerm" placeholder="30">
+
+    <label>Property Tax (Yearly)</label>
+    <input type="number" id="propertyTax" placeholder="2400">
+
+    <label>Home Insurance (Yearly)</label>
+    <input type="number" id="insurance" placeholder="1000">
+
+    <button onclick="calculateMortgage()">Calculate Payment</button>
+    <button onclick="resetMortgage()">Clear</button>
+  </div>
+
+  <div class="calc-right">
+    <h3>Estimated Monthly Payment</h3>
+    <div id="monthlyPayment" class="payment-number">$0</div>
+
+    <div class="payment-breakdown">
+      <p>Principal & Interest: <span id="piPayment">$0</span></p>
+      <p>Taxes: <span id="taxPayment">$0</span></p>
+      <p>Insurance: <span id="insPayment">$0</span></p>
+    </div>
+  </div>
+
+</div>
+
     <div class="mortgage-calculator">
 
   <div class="calc-grid">
@@ -810,6 +911,35 @@ function calculatePayment() {
   document.getElementById("loanTerm").value = "";
   document.getElementById("calcResult").innerText = "";
 }
+<script>
+function calculateMortgage() {
+  let homePrice = parseFloat(document.getElementById("homePrice").value);
+  let down = parseFloat(document.getElementById("downPayment").value);
+  let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
+  let term = parseFloat(document.getElementById("loanTerm").value) * 12;
+  let tax = parseFloat(document.getElementById("propertyTax").value) / 12;
+  let ins = parseFloat(document.getElementById("insurance").value) / 12;
+
+  if (!homePrice || !rate || !term) return;
+
+  let loan = homePrice - down;
+  let pi = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+  let total = pi + tax + ins;
+
+  document.getElementById("monthlyPayment").innerText = "$" + total.toFixed(2);
+  document.getElementById("piPayment").innerText = "$" + pi.toFixed(2);
+  document.getElementById("taxPayment").innerText = "$" + tax.toFixed(2);
+  document.getElementById("insPayment").innerText = "$" + ins.toFixed(2);
+}
+
+function resetMortgage() {
+  document.querySelectorAll(".mortgage-calculator input").forEach(i => i.value = "");
+  document.getElementById("monthlyPayment").innerText = "$0";
+  document.getElementById("piPayment").innerText = "$0";
+  document.getElementById("taxPayment").innerText = "$0";
+  document.getElementById("insPayment").innerText = "$0";
+}
+</script>
 
 </script>
 
