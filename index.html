@@ -589,21 +589,11 @@ document.querySelector('.arrow.right')?.addEventListener('click', () => {
 
   showCard(current);
   const track = document.querySelector('.review-card-container');
-  const leftArrow = document.querySelector('.carousel-arrow.left');
-  const rightArrow = document.querySelector('.carousel-arrow.right');
-  const dotsContainer = document.querySelector('.dots');
+    const dotsContainer = document.querySelector('.dots');
 
   let currentIndex = 0;
   const visibleCards = 3;
   const totalGroups = Math.ceil(cards.length / visibleCards);
-
-  // Create dots
-  for (let i = 0; i < totalGroups; i++) {
-    const dot = document.createElement('span');
-    dot.classList.add('dot');
-    if (i === 0) dot.classList.add('active');
-    dotsContainer.appendChild(dot);
-  }
 
   function updateCarousel(index) {
     const offset = -(index * 100);
