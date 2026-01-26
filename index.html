@@ -740,7 +740,7 @@ h2 {
   </button>
 </div>
 
-741  <section id="calculators" style="display:none;">
+<section id="calculators" style="display:none;">
 
 <section id="calculators" style="display:none;">
   <div class="calculator-section">
@@ -991,15 +991,17 @@ function resetMortgage() {
   document.getElementById("pmiPayment").innerText = "$0";
   document.getElementById("hoaPayment").innerText = "$0";
 }
-<script>
+
 function openCalculatorApp() {
   document.getElementById("calculators").style.display = "block";
+  document.getElementById("mainCalculator").style.display = "block";
   window.scrollTo({
     top: document.getElementById("calculators").offsetTop - 40,
     behavior: "smooth"
   });
 }
 </script>
+
 
 
 
