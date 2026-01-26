@@ -802,11 +802,40 @@ h2 {
 <div class="result-line">PMI: <span id="pmiOnly">$0</span></div>
 <div class="result-line">Monthly Tax Paid: <span id="taxOnly">$0</span></div>
 <div class="result-line">Monthly Home Insurance: <span id="insOnly">$0</span></div>
+<h3 style="margin-top:2rem;">Loan Breakdown</h3>
+
+<canvas id="loanChart" height="220"></canvas>
+
+<button onclick="toggleAmortization()" style="
+  margin-top:1rem;
+  background: white;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+">
+  Show Amortization Table
+</button>
+
+<div id="amortizationSection" style="display:none; margin-top:2rem;">
+  <table id="amortTable" style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background: var(--secondary-bg);">
+        <th>Month</th>
+        <th>Payment</th>
+        <th>Principal</th>
+        <th>Interest</th>
+        <th>Balance</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
     </div>
 
-  </div>
-</div>
 
     <p class="calculator-disclaimer">
       These calculators provide estimates only. Real mortgage options vary based on program, goals, and strategy.
