@@ -884,30 +884,8 @@ document.addEventListener("DOMContentLoaded", function () {
   <script>
 
 
-function closeCalculator() {
-  clearCalculator();
-  document.getElementById("calcModal").style.display = "none";
-}
 
 
-function calculatePayment() {
-  let loan = parseFloat(document.getElementById("loanAmount").value);
-  let rate = parseFloat(document.getElementById("interestRate").value) / 100 / 12;
-  let term = parseFloat(document.getElementById("loanTerm").value) * 12;
-
-  if (!loan || !rate || !term) {
-    document.getElementById("calcResult").innerText = "Please fill in all fields.";
-    return;
-  }
-
-  let payment = loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
-  document.getElementById("calcResult").innerText = "Estimated Monthly Payment: $" + payment.toFixed(2);
-}
-    function clearCalculator() {
-  document.getElementById("loanAmount").value = "";
-  document.getElementById("interestRate").value = "";
-  document.getElementById("loanTerm").value = "";
-  document.getElementById("calcResult").innerText = "";
 }
 <script>
 function calculateMortgage() {
@@ -940,26 +918,6 @@ function resetMortgage() {
 </script>
 
 </script>
-
-<!-- CALCULATOR MODAL -->
-<div id="calcModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
-  <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:420px; position:relative;">
-    
-    <span onclick="closeCalculator()" style="position:absolute; top:10px; right:15px; font-size:22px; cursor:pointer;">✖</span>
-    
-    <h3 style="text-align:center; margin-bottom:1rem;">Mortgage Calculator</h3>
-
-    <input type="number" id="loanAmount" placeholder="Loan Amount" style="width:100%; padding:0.75rem; margin-bottom:0.75rem;">
-    <input type="number" id="interestRate" placeholder="Interest Rate (%)" style="width:100%; padding:0.75rem; margin-bottom:0.75rem;">
-    <input type="number" id="loanTerm" placeholder="Loan Term (years)" style="width:100%; padding:0.75rem; margin-bottom:0.75rem;">
-
-    <button onclick="calculatePayment()" style="width:100%; margin-top:0.5rem; padding:0.75rem; background:#002F6C; color:white; border:none; border-radius:6px;">Calculate</button>
-
-<button onclick="clearCalculator()" style="width:100%; margin-top:0.5rem; padding:0.75rem; background:#ccc; color:#000; border:none; border-radius:6px;">Clear</button>
-
-    <h4 id="calcResult" style="text-align:center; margin-top:1rem;"></h4>
-  </div>
-</div>
 
 
 </body>
