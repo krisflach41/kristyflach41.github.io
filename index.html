@@ -696,6 +696,110 @@ h2 {
   margin: 0 auto;
 }
 
+    /* ===== CONTACT SECTION ===== */
+.contact-section {
+  padding: 80px 20px;
+  background: linear-gradient(to bottom, #EEF3F0, #F8F9FA); /* Soft brand sage → light */
+  display: flex;
+  justify-content: center;
+}
+
+.contact-card {
+  background: white;
+  width: 100%;
+  max-width: 1000px;
+  border-radius: 14px;
+  padding: 40px 50px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.15); /* stronger shadow */
+}
+
+/* Header */
+.contact-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.contact-headshot {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 3px solid #9CB5A0;
+}
+
+.contact-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: #002F6C;
+}
+
+/* Form */
+.contact-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+.contact-form textarea {
+  grid-column: span 2;
+  resize: vertical;
+}
+
+.contact-form input,
+.contact-form textarea {
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+/* Button */
+.contact-form button {
+  grid-column: span 2;
+  margin-top: 10px;
+  padding: 14px;
+  background: #002F6C; /* primary blue */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.contact-form button:hover {
+  background: #9CB5A0;
+  transform: translateY(-2px);
+}
+
+/* Response note */
+.response-note {
+  grid-column: span 2;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  color: #555;
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .contact-form {
+    grid-template-columns: 1fr;
+  }
+
+  .contact-form textarea,
+  .contact-form button,
+  .response-note {
+    grid-column: span 1;
+  }
+
+  .contact-card {
+    padding: 30px 25px;
+  }
+}
+
 </style>
 
   <script>
@@ -853,24 +957,26 @@ h2 {
 
 </div>
 
-<section id="contact" style="background-color: #9CB5A0; padding: 20px 10vw; margin-top: 40px; max-width: 100%; min-height: 300px;">
-<section id="contact" style="background-color: yellow; padding: 20px 10vw; max-width: 100%; min-height: 300px;">
+<section id="contact" class="contact-section">
+  <div class="contact-card">
 
+    <div class="contact-header">
+      <img src="hero-headshot.jpg" alt="Kristy Flach" class="contact-headshot">
+      <h2>Contact Me</h2>
+    </div>
 
+    <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain" class="contact-form">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="email" name="email" placeholder="Your Email" required>
+      <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
 
-       <h2 style="text-align: center; margin-bottom: 1.5rem; color: #002F6C;">Contact</h2>
-    <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain" style="display: flex; flex-direction: column; gap: 0.75rem;">
-      <input type="text" name="name" placeholder="Your Name" required style="padding: 0.65rem; border-radius: 6px; border: 1px solid #ccc;" />
-      <input type="email" name="email" placeholder="Your Email" required style="padding: 0.65rem; border-radius: 6px; border: 1px solid #ccc;" />
-      <textarea name="message" rows="3" placeholder="Your Message" required style="padding: 0.65rem; border-radius: 6px; border: 1px solid #ccc;"></textarea>
-      <div style="text-align: center; margin-top: 1rem;">
-        <button type="submit" style="padding: 0.5rem 1.5rem; background: #002F6C; color: white; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">
-          Send Message
-        </button>
-      </div>
+      <button type="submit">Send Message</button>
+      <p class="response-note">Typically responds within 1 business day.</p>
     </form>
+
   </div>
 </section>
+
 
 
 
