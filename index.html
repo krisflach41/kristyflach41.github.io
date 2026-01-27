@@ -1030,14 +1030,16 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
- <script>
-   function formatCurrency(num) {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+function formatCurrency(num) {
   return "$" + Number(num).toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   });
 }
-   function toggleAmort() {
+
+function toggleAmort() {
   const wrap = document.getElementById("amortTableWrap");
   wrap.style.display = wrap.style.display === "none" ? "block" : "none";
 }
@@ -1057,50 +1059,68 @@ function calculateMortgage() {
   let loan = price - down;
   if (loan <= 0) return;
 
-
   let pi = rate === 0 
-  ? loan / term 
-  : loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
+    ? loan / term 
+    : loan * rate * Math.pow(1 + rate, term) / (Math.pow(1 + rate, term) - 1);
 
   let pmi = loan * pmiRate;
-
   let total = pi + tax + ins + pmi + hoa;
 
-document.getElementById("totalPayment").innerText = formatCurrency(total);
-document.getElementById("loanAmount").innerText = formatCurrency(loan);
-document.getElementById("piPayment").innerText = formatCurrency(pi);
-document.getElementById("taxPayment").innerText = formatCurrency(tax);
-document.getElementById("insPayment").innerText = formatCurrency(ins);
-document.getElementById("pmiMonthly").innerText = formatCurrency(pmi);
+  document.getElementById("totalPayment").innerText = formatCurrency(total);
+  document.getElementById("loanAmount").innerText = formatCurrency(loan);
+  document.getElementById("piPayment").innerText = formatCurrency(pi);
+  document.getElementById("taxPayment").innerText = formatCurrency(tax);
+  document.getElementById("insPayment").innerText = formatCurrency(ins);
+  document.getElementById("pmiMonthly").innerText = formatCurrency(pmi);
+  document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
 
- document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
+  // PMI End Month
+  let ltv = loan / price;
+  let balance = loan;
+  let monthPMIEnds = 0;
 
- // ==== PMI End & Payment After PMI ====
- let ltv = loan / price;
- let balanceForPMI = loan;
- let monthPMIEnds = 0;
+  if (ltv > 0.8) {
+    for (let i = 1; i <= term; i++) {
+      let interest = balance * rate;
+      let principal = pi - interest;
+      balance -= principal;
+      if ((balance / price) <= 0.8) {
+        monthPMIEnds = i;
+        break;
+      }
+    }
+  }
 
- if (ltv > 0.8) {
-   for (let i = 1; i <= term; i++) {
-     let interestPortion = balanceForPMI * rate;
-     let principalPortion = pi - interestPortion;
-     balanceForPMI -= principalPortion;
+  let paymentAfterPMI = total - pmi;
+  document.getElementById("pmiEndMonth").innerText =
+    monthPMIEnds > 0 ? monthPMIEnds : "N/A";
+  document.getElementById("paymentAfterPMI").innerText =
+    monthPMIEnds > 0 ? formatCurrency(paymentAfterPMI) : "N/A";
 
-     if ((balanceForPMI / price) <= 0.8) {
-       monthPMIEnds = i;
-       break;
-     }
-   }
- }
+  // Chart
+  drawChart(pi, tax, ins, pmi, hoa);
 
- let paymentAfterPMI = total - pmi;
-
- document.getElementById("pmiEndMonth").innerText =
-   monthPMIEnds > 0 ? monthPMIEnds : "N/A";
-
- document.getElementById("paymentAfterPMI").innerText =
-   monthPMIEnds > 0 ? formatCurrency(paymentAfterPMI) : "N/A";
-
+  // Amortization Table
+  let tbody = document.querySelector("#amortTable tbody");
+  tbody.innerHTML = "";
+  balance = loan;
+  for (let i = 1; i <= term; i++) {
+    let interest = balance * rate;
+    let principal = pi - interest;
+    balance -= principal;
+    if (balance < 0) balance = 0;
+    let row = `
+      <tr>
+        <td>${i}</td>
+        <td>${formatCurrency(pi)}</td>
+        <td>${formatCurrency(principal)}</td>
+        <td>${formatCurrency(interest)}</td>
+        <td>${formatCurrency(balance)}</td>
+      </tr>
+    `;
+    tbody.innerHTML += row;
+    if (balance === 0) break;
+  }
 }
 
 function resetMortgage() {
@@ -1110,67 +1130,52 @@ function resetMortgage() {
   document.getElementById("piPayment").innerText = "$0";
   document.getElementById("taxPayment").innerText = "$0";
   document.getElementById("insPayment").innerText = "$0";
-document.getElementById("pmiMonthly").innerText = "$0";
- document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
-
-// === Build Amortization Table ===
-let balance = loan;
-let tbody = document.querySelector("#amortTable tbody");
-tbody.innerHTML = "";
-
-for (let i = 1; i <= term; i++) {
-  let interest = balance * rate;
-  let principal = pi - interest;
-  balance -= principal;
-
-  if (balance < 0) balance = 0;
-
-  let row = `
-    <tr>
-      <td>${i}</td>
-      <td>${formatCurrency(pi)}</td>
-      <td>${formatCurrency(principal)}</td>
-      <td>${formatCurrency(interest)}</td>
-      <td>${formatCurrency(balance)}</td>
-    </tr>
-  `;
-  tbody.innerHTML += row;
-
-  if (balance === 0) break;
+  document.getElementById("pmiMonthly").innerText = "$0";
+  document.getElementById("hoaPayment").innerText = "$0";
+  document.getElementById("pmiEndMonth").innerText = "N/A";
+  document.getElementById("paymentAfterPMI").innerText = "N/A";
+  if (window.loanChart) {
+    window.loanChart.destroy();
+  }
+  document.querySelector("#amortTable tbody").innerHTML = "";
 }
 
+function drawChart(pi, tax, ins, pmi, hoa) {
+  const ctx = document.getElementById("loanChart").getContext("2d");
+  if (window.loanChart) {
+    window.loanChart.destroy();
+  }
+  window.loanChart = new Chart(ctx, {
+    type: "doughnut",
+    data: {
+      labels: ["Principal & Interest", "Tax", "Insurance", "PMI", "HOA"],
+      datasets: [{
+        data: [pi, tax, ins, pmi, hoa],
+        backgroundColor: [
+          "#002F6C",
+          "#9CB5A0",
+          "#D3E0DC",
+          "#CCC",
+          "#AAA"
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: 'bottom' }
+      }
+    }
+  });
 }
 
-
-<script>
-  function openCalculatorApp() {
-    document.getElementById("calculators").style.display = "block";
-    document.getElementById("mainCalculator").style.display = "grid";
-
-    window.scrollTo({
-      top: document.getElementById("calculators").offsetTop - 40,
-      behavior: "smooth"
-    });
-  }
-</script>
-
-
-  function togglePMIHelp() {
-    const help = document.getElementById("pmiHelpText");
-    help.style.display = help.style.display === "none" ? "block" : "none";
-  }
- </script>
-  function calculateMortgage() {
-    alert("✅ Calculator is working!");
-  }
-
-  function resetMortgage() {
-    alert("🧹 Inputs cleared!");
-  }
-
-  function toggleAmort() {
-    alert("📊 Toggled amortization!");
-  }
+function openCalculatorApp() {
+  document.getElementById("calculators").style.display = "block";
+  window.scrollTo({
+    top: document.getElementById("calculators").offsetTop - 40,
+    behavior: "smooth"
+  });
+}
 </script>
 
 
