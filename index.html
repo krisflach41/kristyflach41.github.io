@@ -1204,15 +1204,17 @@ for (let i = 1; i <= term; i++) {
 
 
 <script>
-function openCalculatorApp() {
-  document.getElementById("calculators").style.display = "block";
-  document.getElementById("mainCalculator").style.display = "grid";
+  function openCalculatorApp() {
+    document.getElementById("calculators").style.display = "block";
+    document.getElementById("mainCalculator").style.display = "grid";
 
-  window.scrollTo({
-    top: document.getElementById("calculators").offsetTop - 40,
-    behavior: "smooth"
-  });
-}
+    window.scrollTo({
+      top: document.getElementById("calculators").offsetTop - 40,
+      behavior: "smooth"
+    });
+  }
+</script>
+
 
   function togglePMIHelp() {
     const help = document.getElementById("pmiHelpText");
