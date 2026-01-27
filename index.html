@@ -810,7 +810,7 @@ h2 {
 </script>
 <!-- CALCULATOR LAUNCH BUTTON -->
 <div style="text-align:center; margin: 2rem 0;">
-  <button onclick="OpenCalculatorApp()" style="
+  <button onclick="openCalculatorApp()" style="
     background: var(--primary-color);
     color: white;
     padding: 1rem 2rem;
@@ -824,152 +824,91 @@ h2 {
   </button>
 </div>
 
+<section id="calculators" style="display: none;">
+  <div class="calculator-wrapper">
+    <h2>Home Buying Calculator</h2>
+    <div class="calc-grid">
+      <div class="calc-inputs">
+        <label>Home Price</label>
+        <input type="number" id="homePrice" placeholder="300000" />
 
+        <label>Down Payment ($)</label>
+        <input type="number" id="downPayment" placeholder="50000" />
 
-<section id="calculators" style="display:none;">
-  <div class="calculator-section">
-    <h2>Financial Calculators</h2>
+        <label>Interest Rate (%)</label>
+        <input type="number" id="interestRate" placeholder="6.5" />
 
-<div class="mortgage-calculator" id="mainCalculator">
-<!-- Amortization Table Section -->
-<div id="amortizationSection" style="display: none; margin-top: 2rem;">
-  <h3>Amortization Schedule</h3>
-  <table id="amortizationTable" border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th>Payment #</th>
-        <th>Principal</th>
-        <th>Interest</th>
-        <th>Balance</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Rows will be inserted here -->
-    </tbody>
-  </table>
-</div>
-<div class="calculator-wrapper">
-  <div class="calc-grid">
-  <div class="calc-inputs">
-    <label>Home Price</label>
-    <input type="number" id="homePrice" placeholder="300000" />
+        <label>Loan Term (years)</label>
+        <input type="number" id="loanTerm" placeholder="30" />
 
-    <label>Down Payment ($)</label>
-    <input type="number" id="downPayment" placeholder="50000" />
+        <label>Annual Property Tax</label>
+        <input type="number" id="propertyTax" placeholder="2400" />
 
-    <label>Interest Rate (%)</label>
-    <input type="number" id="interestRate" placeholder="6.5" />
+        <label>Annual Insurance</label>
+        <input type="number" id="insurance" placeholder="1200" />
 
-    <label>Loan Term (years)</label>
-    <input type="number" id="loanTerm" placeholder="30" />
+        <label>PMI (%)</label>
+        <input type="number" id="pmiRate" placeholder="0.5" />
 
-    <label>Annual Property Tax</label>
-    <input type="number" id="propertyTax" placeholder="2400" />
+        <label>Monthly HOA</label>
+        <input type="number" id="hoa" placeholder="0" />
 
-    <label>Annual Insurance</label>
-    <input type="number" id="insurance" placeholder="1200" />
+        <div class="checkbox-wrapper">
+          <label for="showAmort">Show Amortization Table?</label>
+          <input type="checkbox" id="showAmort" onchange="toggleAmort()" />
+        </div>
 
-    <label>PMI (%)</label>
-    <input type="number" id="pmiRate" placeholder="0.5" />
+        <button onclick="calculateMortgage()">Calculate Payment</button>
+        <button onclick="resetMortgage()">Clear</button>
+      </div>
 
-    <label>Monthly HOA</label>
-    <input type="number" id="hoa" placeholder="0" />
+      <div class="calc-results">
+        <h3>Estimated Monthly Payment</h3>
+        <div class="big-payment" id="totalPayment">$0</div>
 
-    <div class="checkbox-wrapper">
-      <label for="showAmort">Show Amortization Table?</label>
-      <input type="checkbox" id="showAmort" onchange="toggleAmort()" />
+        <div class="result-line">Loan Amount: <span id="loanAmount">$0</span></div>
+        <div class="result-line">Principal & Interest: <span id="piPayment">$0</span></div>
+        <div class="result-line">Taxes: <span id="taxPayment">$0</span></div>
+        <div class="result-line">Insurance: <span id="insPayment">$0</span></div>
+        <div class="result-line">PMI: <span id="pmiMonthly">$0</span></div>
+        <div class="result-line">HOA: <span id="hoaPayment">$0</span></div>
+
+        <hr style="margin:1rem 0;">
+
+        <div class="result-line">PMI Ends (Est. Month): <span id="pmiEndMonth">N/A</span></div>
+        <div class="result-line">Monthly Payment After PMI: <span id="paymentAfterPMI">N/A</span></div>
+
+        <h3 style="margin-top:2rem;">Loan Breakdown</h3>
+        <canvas id="loanChart" height="220"></canvas>
+
+        <button onclick="toggleAmort()" class="apply-button" style="margin-top:1rem;">
+          Show Amortization Table
+        </button>
+      </div>
     </div>
 
-    <button onclick="calculateMortgage()">Calculate Payment</button>
-    <button onclick="resetMortgage()">Clear</button>
-  </div>
-</div>
-</div>  
-
-    <div class="calc-results">
-      <h3>Estimated Monthly Payment</h3>
-      <p style="margin-top:-0.5rem; color:#666;">Your estimated monthly payment with PMI.</p>
-      <div class="big-payment" id="totalPayment">$0</div>
-<hr style="margin:1rem 0; opacity:0.2;">
-
-<div class="result-line">PMI: <span id="pmiMonthly">$0</span></div>
-<div class="result-line">Monthly Tax Paid: <span id="taxPayment">$0</span></div>
-<div class="result-line">Monthly Home Insurance: <span id="insPayment">$0</span></div>
-
-<hr style="margin:1rem 0; opacity:0.2;">
-
-      <div class="result-line">Loan Amount: <span id="loanAmount">$0</span></div>
-      <div class="result-line">Principal & Interest: <span id="piPayment">$0</span></div>
-      <div class="result-line">Taxes: <span id="taxPayment">$0</span></div>
-      <div class="result-line">Insurance: <span id="insPayment">$0</span></div>
-      <div class="result-line">PMI: <span id="pmiMonthly">$0</span></div>
-      <div class="result-line">HOA: <span id="hoaPayment">$0</span></div>
-      <hr style="margin:1.5rem 0;">
-<div class="result-line">PMI: <span id="pmiOnly">$0</span></div>
-<div class="result-line">Monthly Tax Paid: <span id="taxOnly">$0</span></div>
-<div class="result-line">Monthly Home Insurance: <span id="insOnly">$0</span></div>
-      <button onclick="toggleAmort()" class="apply-button" style="margin-top:1rem;">Show Amortization Table</button>
-      <button onclick="toggleAmort()" class="toggle-btn">
-  Show / Hide Amortization Table
-</button>
-
-<h3 style="margin-top:2rem;">Loan Breakdown</h3>
-
-<canvas id="loanChart" height="220"></canvas>
-
-<button onclick="toggleAmortization()" style="
-  margin-top:1rem;
-  background: white;
-  border: 2px solid var(--primary-color);
-  color: var(--primary-color);
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-
-<button onclick="toggleAmort()" class="apply-button" style="margin-top:1rem;">
-  Show Amortization Table
-</button>
-
-<div id="amortTableWrap" style="display:none;">
-<div id="amortizationSection" style="display:none; margin-top:2rem;">
-  <table id="amortTable" style="width:100%; border-collapse: collapse;">
-    <thead>
-      <tr style="background: var(--secondary-bg);">
-        <th>Month</th>
-        <th>Payment</th>
-        <th>Principal</th>
-        <th>Interest</th>
-        <th>Balance</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
+    <div id="amortTableWrap" style="display:none; margin-top:2rem;">
+      <h3>Amortization Schedule</h3>
+      <table id="amortTable" style="width:100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: var(--secondary-bg);">
+            <th>Month</th>
+            <th>Payment</th>
+            <th>Principal</th>
+            <th>Interest</th>
+            <th>Balance</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
     </div>
-
 
     <p class="calculator-disclaimer">
       These calculators provide estimates only. Real mortgage options vary based on program, goals, and strategy.
     </p>
   </div>
 </section>
-<section id="blog-preview">
-  <div class="blog-section">
-    <h2>From the Blog</h2>
-    <div class="blog-card">
-      <h4>Holiday Debt Hangover</h4>
-      <p>How to reset financially after overspending during the holidays.</p>
-     <a href="blog/holiday-debt-hangover.html" class="read-more-btn">Read More</a>
-    </div>
-    <div class="blog-card">
-      <h4>Refinance vs Debt Consolidation</h4>
-      <p>Understanding which strategy truly lowers financial pressure.</p>
-     <a href="blog/refinance-vs-debt-consolidation.html" class="read-more-btn">Read More</a>
-    </div>
-  </div>
-</section>
+
 
 <h2 style="text-align: center; margin-top: 3rem; font-size: 2rem;">Reviews</h2>
 
