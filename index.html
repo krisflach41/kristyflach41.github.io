@@ -1055,6 +1055,8 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
 function formatCurrency(num) {
   return "$" + Number(num).toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -1097,7 +1099,7 @@ function calculateMortgage() {
   document.getElementById("pmiMonthly").innerText = formatCurrency(pmi);
   document.getElementById("hoaPayment").innerText = formatCurrency(hoa);
 
-  // PMI End Month
+  // PMI end logic
   let ltv = loan / price;
   let balance = loan;
   let monthPMIEnds = 0;
@@ -1116,22 +1118,25 @@ function calculateMortgage() {
 
   let paymentAfterPMI = total - pmi;
   document.getElementById("pmiEndMonth").innerText =
-    monthPMIEnds > 0 ? monthPMIEnds : "N/A";
+    monthPMIEnds > 0 ? "Month " + monthPMIEnds : "N/A";
   document.getElementById("paymentAfterPMI").innerText =
     monthPMIEnds > 0 ? formatCurrency(paymentAfterPMI) : "N/A";
 
-  // Chart
+  // Donut chart
   drawChart(pi, tax, ins, pmi, hoa);
 
   // Amortization Table
   let tbody = document.querySelector("#amortTable tbody");
   tbody.innerHTML = "";
   balance = loan;
+  let totalInterest = 0;
   for (let i = 1; i <= term; i++) {
     let interest = balance * rate;
     let principal = pi - interest;
     balance -= principal;
+    totalInterest += interest;
     if (balance < 0) balance = 0;
+
     let row = `
       <tr>
         <td>${i}</td>
@@ -1144,22 +1149,48 @@ function calculateMortgage() {
     tbody.innerHTML += row;
     if (balance === 0) break;
   }
+
+  // Mortgage Details Block
+  document.getElementById("totalPMI").innerText = formatCurrency(pmi * (monthPMIEnds || 0));
+  document.getElementById("totalTax").innerText = formatCurrency(tax * term);
+  document.getElementById("totalIns").innerText = formatCurrency(ins * term);
+  document.getElementById("totalPaid").innerText = formatCurrency((pi + tax + ins + hoa + pmi) * term);
+  document.getElementById("loanEnd").innerText = "Month " + term;
+
+  // Monthly vs Bi-weekly Comparison
+  let monthly = total;
+  let biweekly = (monthly / 2);
+  let biweeklyPayments = Math.ceil(term * 12 / 12 * 26);
+  let monthlyPayments = term;
+
+  let biweeklyInterest = totalInterest * 0.85; // approximate
+  let monthlyInterest = totalInterest;
+  let interestSaved = monthlyInterest - biweeklyInterest;
+
+  document.getElementById("monthlyVs").innerText = formatCurrency(monthly);
+  document.getElementById("biweeklyPayment").innerText = formatCurrency(biweekly);
+  document.getElementById("monthlyEnd").innerText = "Month " + term;
+  document.getElementById("biweeklyEnd").innerText = "Month " + (term - 45);
+  document.getElementById("interestMonthly").innerText = formatCurrency(monthlyInterest);
+  document.getElementById("interestBiweekly").innerText = formatCurrency(biweeklyInterest);
+  document.getElementById("interestSaved").innerText = formatCurrency(interestSaved);
 }
 
 function resetMortgage() {
   document.querySelectorAll(".calc-inputs input").forEach(i => i.value = "");
-  document.getElementById("totalPayment").innerText = "$0";
-  document.getElementById("loanAmount").innerText = "$0";
-  document.getElementById("piPayment").innerText = "$0";
-  document.getElementById("taxPayment").innerText = "$0";
-  document.getElementById("insPayment").innerText = "$0";
-  document.getElementById("pmiMonthly").innerText = "$0";
-  document.getElementById("hoaPayment").innerText = "$0";
+  let fields = [
+    "totalPayment", "loanAmount", "piPayment", "taxPayment", "insPayment",
+    "pmiMonthly", "hoaPayment", "pmiEndMonth", "paymentAfterPMI", "totalPMI",
+    "totalTax", "totalIns", "totalPaid", "loanEnd", "monthlyVs",
+    "biweeklyPayment", "monthlyEnd", "biweeklyEnd",
+    "interestMonthly", "interestBiweekly", "interestSaved"
+  ];
+  fields.forEach(id => document.getElementById(id).innerText = "$0");
   document.getElementById("pmiEndMonth").innerText = "N/A";
   document.getElementById("paymentAfterPMI").innerText = "N/A";
-  if (window.loanChart) {
-    window.loanChart.destroy();
-  }
+  document.getElementById("monthlyEnd").innerText = "N/A";
+  document.getElementById("biweeklyEnd").innerText = "N/A";
+  if (window.loanChart) window.loanChart.destroy();
   document.querySelector("#amortTable tbody").innerHTML = "";
 }
 
