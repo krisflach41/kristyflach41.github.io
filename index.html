@@ -873,15 +873,16 @@ h2 {
 </section>
 
 
-  <section id="contact">
-    <h2>Contact</h2>
-    <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </section>
+ <section id="contact" style="margin-top: 60px;">
+  <h2>Contact</h2>
+  <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain" style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+    <input type="text" name="name" placeholder="Your Name" required style="width: 80%; max-width: 600px; padding: 10px; border-radius: 6px; border: none;" />
+    <input type="email" name="email" placeholder="Your Email" required style="width: 80%; max-width: 600px; padding: 10px; border-radius: 6px; border: none;" />
+    <textarea name="message" rows="4" placeholder="Your Message" required style="width: 80%; max-width: 600px; padding: 10px; border-radius: 6px; border: none;"></textarea>
+    <button type="submit" style="background-color: white; color: #002F6C; padding: 10px 20px; border-radius: 6px; border: none; cursor: pointer;">Send Message</button>
+  </form>
+</section>
+
 
   <!-- ✅ Updated Footer with Social Links and Disclaimer -->
 <footer>
