@@ -826,7 +826,7 @@ h2 {
 
 <section id="calculators" style="display: none;">
   <div class="calculator-wrapper">
-    <h2>Home Buying Calculator</h2>
+    <h2 style="text-align:center;">Home Buying Calculator</h2>
     <div class="calc-grid">
       <div class="calc-inputs">
         <label>Home Price</label>
@@ -887,6 +887,28 @@ h2 {
       </div>
     </div>
 
+    <div class="calc-grid" style="margin-top:2rem;">
+      <div class="calc-inputs" style="width:100%; max-width:500px;">
+        <h3 style="margin-bottom:0.5rem;">📋 Mortgage Details</h3>
+        <div class="result-line">Total PMI to End: <span id="totalPMI">$0</span></div>
+        <div class="result-line">Total Tax Paid: <span id="totalTax">$0</span></div>
+        <div class="result-line">Total Home Insurance: <span id="totalIns">$0</span></div>
+        <div class="result-line">Total of 360 Payments: <span id="totalPaid">$0</span></div>
+        <div class="result-line">Loan Payoff Month: <span id="loanEnd">N/A</span></div>
+      </div>
+
+      <div class="calc-inputs" style="width:100%; max-width:500px;">
+        <h3 style="margin-bottom:0.5rem;">⚖️ Monthly vs Bi-Weekly</h3>
+        <div class="result-line">Monthly Payment: <span id="monthlyVs">$0</span></div>
+        <div class="result-line">Bi-weekly Payment: <span id="biweeklyPayment">$0</span></div>
+        <div class="result-line">Payoff Date (Monthly): <span id="monthlyEnd">N/A</span></div>
+        <div class="result-line">Payoff Date (Bi-weekly): <span id="biweeklyEnd">N/A</span></div>
+        <div class="result-line">Total Interest Paid (Monthly): <span id="interestMonthly">$0</span></div>
+        <div class="result-line">Total Interest Paid (Bi-weekly): <span id="interestBiweekly">$0</span></div>
+        <div class="result-line"><strong>Total Interest Savings:</strong> <span id="interestSaved">$0</span></div>
+      </div>
+    </div>
+
     <div id="amortTableWrap" style="display:none; margin-top:2rem;">
       <h3>Amortization Schedule</h3>
       <table id="amortTable" style="width:100%; border-collapse: collapse;">
@@ -908,6 +930,7 @@ h2 {
     </p>
   </div>
 </section>
+
 
 
 <h2 style="text-align: center; margin-top: 3rem; font-size: 2rem;">Reviews</h2>
