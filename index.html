@@ -804,6 +804,82 @@ background: #9CB5A1;
   }
 }
 
+    /* ===== BLOG SECTION ===== */
+.blog-section {
+  padding: 80px 20px;
+  background: #f9fafb;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #0b1f3a;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: #555;
+  margin-bottom: 50px;
+}
+
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.blog-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-6px);
+}
+
+.blog-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.blog-content {
+  padding: 20px;
+}
+
+.blog-category {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6a8d73;
+  font-weight: bold;
+}
+
+.blog-content h3 {
+  margin: 10px 0;
+  font-size: 20px;
+  color: #0b1f3a;
+}
+
+.blog-content p {
+  color: #555;
+  font-size: 15px;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 15px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #0b1f3a;
+}
+
 </style>
 
   <script>
@@ -945,6 +1021,59 @@ background: #9CB5A1;
 
 
 
+<!-- ================= BLOG SECTION START ================= -->
+<section id="blog" class="blog-section">
+  <div class="container">
+    <h2 class="section-title">Mortgage & Homeownership Blog</h2>
+    <p class="section-subtitle">
+      Education. Strategy. Clarity for smart homeownership decisions.
+    </p>
+
+    <div class="blog-grid">
+
+      <!-- Blog Card 1 -->
+      <article class="blog-card">
+        <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa" alt="Buying a home" />
+        <div class="blog-content">
+          <span class="blog-category">Home Buying</span>
+          <h3>How Much House Can You Really Afford?</h3>
+          <p>
+            Understanding payment comfort, not just qualification, is the key to long-term financial stability.
+          </p>
+          <a href="#" class="read-more">Read More →</a>
+        </div>
+      </article>
+
+      <!-- Blog Card 2 -->
+      <article class="blog-card">
+        <img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c" alt="Mortgage strategy" />
+        <div class="blog-content">
+          <span class="blog-category">Mortgage Strategy</span>
+          <h3>Why Interest Rate Isn't the Whole Story</h3>
+          <p>
+            Loan structure, timeline, and future plans matter just as much as rate when choosing a mortgage.
+          </p>
+          <a href="#" class="read-more">Read More →</a>
+        </div>
+      </article>
+
+      <!-- Blog Card 3 -->
+      <article class="blog-card">
+        <img src="https://images.unsplash.com/photo-1501183638710-841dd1904471" alt="Refinance" />
+        <div class="blog-content">
+          <span class="blog-category">Refinance</span>
+          <h3>When Refinancing Makes Sense (And When It Doesn’t)</h3>
+          <p>
+            It’s not always about lowering the rate. Sometimes it’s about improving cash flow or flexibility.
+          </p>
+          <a href="#" class="read-more">Read More →</a>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+<!-- ================= BLOG SECTION END ================= -->
 
 <div style="width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; background-color: none;">
 <section id="reviews" class="review-carousel"
