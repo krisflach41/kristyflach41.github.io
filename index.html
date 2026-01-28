@@ -1312,26 +1312,6 @@ backToTopButton.style.display = "none";
 });
 </script>
 
-
-    <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const cards = document.querySelectorAll('.review-card');
-  let currentIndex = 0;
-
-  function showReview(index) {
-    cards.forEach((card, i) => {
-      card.classList.toggle('active', i === index);
-    });
-  }
-
-  showReview(currentIndex);
-
-  setInterval(() => {
-    currentIndex = (currentIndex + 1) % cards.length;
-    showReview(currentIndex);
-  }, 7000);
-});
-</script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".accordion-header").forEach(btn => {
@@ -1537,6 +1517,25 @@ function calculateRefi() {
   document.getElementById("differenceInInterest").textContent = (savings * termMonths).toFixed(2);
 }
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const track = document.querySelector(".review-track");
+  const cards = document.querySelectorAll(".review-card");
+
+  if (!track || cards.length === 0) return;
+
+  let index = 0;
+
+  function moveCarousel() {
+    index++;
+    if (index > cards.length - 3) index = 0;
+
+    const cardWidth = cards[0].offsetWidth + 30;
+    track.style.transform = `translateX(-${index * cardWidth}px)`;
+  }
+
+  setInterval(moveCarousel, 5000);
+});
 </script>
 
 
