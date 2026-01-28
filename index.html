@@ -287,7 +287,9 @@ footer {
   display: flex;
   gap: 25px;
   transition: transform 0.8s ease;
+  width: max-content;
 }
+
 
 .review-card {
   min-width: calc(33.333% - 17px);
@@ -331,11 +333,14 @@ footer {
 
  
 
-nav a {
-  display: block;
-  padding: 0.75rem;
-  font-size: 1rem;
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
+
   #backToTop {
   bottom: 20px;
   right: 20px;
