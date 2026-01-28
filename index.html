@@ -1426,44 +1426,7 @@ function calculateRefi() {
   <script>
 
 document.addEventListener("DOMContentLoaded", function () {
-  const track = document.querySelector(".review-track");
-  const cards = document.querySelectorAll(".review-card");
-
-  if (!track || cards.length === 0) return;
-
-  let index = 0;
-
-  function moveCarousel() {
-    index++;
-    if (index > cards.length - 3) index = 0;
-
-    const cardWidth = cards[0].offsetWidth + 30;
-    track.style.transform = `translateX(-${index * cardWidth}px)`;
-  }
-
-  setInterval(moveCarousel, 5000);
-  document.querySelectorAll(".read-more-btn").forEach(btn => {
-  btn.addEventListener("click", function() {
-    const parent = this.parentElement;
-    const shortText = parent.querySelector(".short-text");
-    const fullText = parent.querySelector(".full-text");
-
-    if (!shortText || !fullText) return;
-
-    if (fullText.style.display === "inline") {
-      fullText.style.display = "none";
-      shortText.style.display = "inline";
-      this.textContent = "Read More";
-    } else {
-      fullText.style.display = "inline";
-      shortText.style.display = "none";
-      this.textContent = "Show Less";
-    }
-  });
-});
-
-});
-</script>
+ 
 
 
 </body>
