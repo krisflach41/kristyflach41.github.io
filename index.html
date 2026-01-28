@@ -889,6 +889,81 @@ background: #9CB5A1;
   .refi-grid { grid-template-columns: 1fr; }
 }
 
+/* ===== REVIEWS SECTION ===== */
+#reviews {
+  background: #0b1f3a;
+  padding: 80px 0;
+}
+
+.review-title {
+  text-align: center;
+  color: white;
+  font-size: 36px;
+  margin-bottom: 50px;
+}
+
+.review-carousel-wrapper {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  overflow: hidden;
+}
+
+.review-track {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  width: max-content;
+  transition: transform 0.7s ease;
+}
+
+.review-card {
+  width: 360px;
+  flex-shrink: 0;
+  background: #f2f4f7;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.stars {
+  color: #6a8d73;
+  margin-bottom: 12px;
+}
+
+.review-name {
+  display: block;
+  margin-top: 15px;
+  font-weight: bold;
+  color: #0b1f3a;
+}
+
+.review-text {
+  max-height: 70px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+
+.review-card.expanded .review-text {
+  max-height: 1000px;
+}
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #6a8d73;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .review-card {
+    width: 100%;
+  }
+}
 
 
     
@@ -1496,6 +1571,37 @@ function calculateRefi() {
 }
 </script>
 
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const track = document.querySelector(".review-track");
+  const cards = document.querySelectorAll(".review-card");
+  let index = 0;
+
+  function moveCarousel() {
+    index++;
+    if (index > cards.length - 3) index = 0;
+    const cardWidth = cards[0].offsetWidth + 30;
+    track.style.transform = `translateX(-${index * cardWidth}px)`;
+  }
+
+  setInterval(moveCarousel, 5000);
+
+  document.querySelectorAll(".read-more-btn").forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const card = this.closest(".review-card");
+      card.classList.toggle("expanded");
+      this.textContent = card.classList.contains("expanded")
+        ? "Show Less"
+        : "Read More";
+    });
+  });
+
+});
+</script>
+
+  
 </body>
 </html>
 
