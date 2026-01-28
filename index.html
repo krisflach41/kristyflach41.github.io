@@ -268,42 +268,67 @@ footer {
   border-top: 1px solid #ddd;
 }
 
-.review-carousel {
-  position: relative;
-  max-width: 800px;
-  margin: 2rem auto;
-  background: var(--accent-color);
-  padding: 2rem;
-  border-radius: 12px;
+.reviews-section {
+  background: #f7f9fb;
+  padding: 70px 0;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.reviews-title {
+  text-align: center;
+  font-size: 36px;
+  color: #0c2d48;
+  margin-bottom: 40px;
+}
+
+.reviews-carousel { width: 100%; overflow: hidden; }
+
+.reviews-track {
+  display: flex;
+  gap: 25px;
+  transition: transform 0.8s ease;
 }
 
 .review-card {
-  display: none;
-  opacity: 0;
-  transition: opacity 1s ease;
-  background: #fff;
-  color: #000;
-  font-size: 1rem;
-  padding: 1rem;
-  border-radius: 8px;
-  min-height: 140px;
+  min-width: calc(33.333% - 17px);
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  text-align: center;
 }
 
-.review-card.active {
-  display: block;
-  opacity: 1;
+.review-stars {
+  color: #f4b400;
+  font-size: 20px;
+  margin-bottom: 12px;
 }
 
-@media (max-width: 600px) {
-  .review-carousel {
-    padding: 1.5rem;
-  }
+.review-text { color: #333; font-size: 16px; }
 
-  .review-card {
-    font-size: 0.95rem;
-  }
+.review-name {
+  margin-top: 15px;
+  font-weight: 600;
+  color: #6a8d73;
+}
+
+.full-text { display: none; }
+
+.read-more-btn {
+  background: none;
+  border: none;
+  color: #6a8d73;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .review-card { min-width: 100%; }
+}
+
+
+
   nav {
   display: flex;
   flex-direction: column;
@@ -1503,6 +1528,36 @@ function calculateRefi() {
 }
 
 
+const track = document.querySelector('.reviews-track');
+const cards = document.querySelectorAll('.review-card');
+let index = 0;
+
+function moveCarousel() {
+  index++;
+  if (index > cards.length - 3) index = 0;
+  const cardWidth = cards[0].offsetWidth + 25;
+  track.style.transform = `translateX(-${index * cardWidth}px)`;
+}
+
+setInterval(moveCarousel, 5000);
+
+document.querySelectorAll(".read-more-btn").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const parent = this.parentElement;
+    const shortText = parent.querySelector(".short-text");
+    const fullText = parent.querySelector(".full-text");
+
+    if (fullText.style.display === "inline") {
+      fullText.style.display = "none";
+      shortText.style.display = "inline";
+      this.textContent = "Read More";
+    } else {
+      fullText.style.display = "inline";
+      shortText.style.display = "none";
+      this.textContent = "Show Less";
+    }
+  });
+});
 
 
 
