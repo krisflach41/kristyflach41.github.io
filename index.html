@@ -1548,6 +1548,26 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setInterval(moveCarousel, 5000);
+  document.querySelectorAll(".read-more-btn").forEach(btn => {
+  btn.addEventListener("click", function() {
+    const parent = this.parentElement;
+    const shortText = parent.querySelector(".short-text");
+    const fullText = parent.querySelector(".full-text");
+
+    if (!shortText || !fullText) return;
+
+    if (fullText.style.display === "inline") {
+      fullText.style.display = "none";
+      shortText.style.display = "inline";
+      this.textContent = "Read More";
+    } else {
+      fullText.style.display = "inline";
+      shortText.style.display = "none";
+      this.textContent = "Show Less";
+    }
+  });
+});
+
 });
 </script>
 
