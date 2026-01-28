@@ -880,6 +880,48 @@ background: #9CB5A1;
   color: #0b1f3a;
 }
 
+
+    .refi-section {
+  padding: 80px 20px;
+  background: #f9fafb;
+}
+
+.refi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.refi-form input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.refi-form button {
+  background: #0b1f3a;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.refi-results {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+@media(max-width: 768px){
+  .refi-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 
   <script>
@@ -1024,6 +1066,43 @@ background: #9CB5A1;
       src="https://www.mortgagecalculator.org/webmasters/?downpayment=50000&homevalue=300000&loanamount=250000&interestrate=4&loanterm=30&propertytax=2400&pmi=1&homeinsurance=1000&monthlyhoa=0"
       style="width:100%; height:1100px; border:0;">
     </iframe>
+  </div>
+</section>
+<section id="refi-calculator" class="refi-section">
+  <div class="container">
+    <h2 class="section-title">Refinance Calculator</h2>
+
+    <div class="refi-grid">
+      <div class="refi-form">
+
+        <label>Current Monthly Payment ($)</label>
+        <input type="number" id="current_monthly_payment" value="1500">
+
+        <label>Current Interest Rate (%)</label>
+        <input type="number" id="current_loan_interest_rate" value="4.5">
+
+        <label>Balance Left ($)</label>
+        <input type="number" id="balance" value="150000">
+
+        <label>New Interest Rate (%)</label>
+        <input type="number" id="new_interest_rate" value="3.5">
+
+        <label>Remaining Term (Years)</label>
+        <input type="number" id="remaining_loan_term" value="20">
+
+        <label>New Loan Term (Years)</label>
+        <input type="number" id="new_loan_term" value="15">
+
+        <button onclick="calculateRefi()">Calculate</button>
+      </div>
+
+      <div class="refi-results">
+        <h3>Results</h3>
+        <p><strong>New Monthly Payment:</strong> $<span id="newMonthlyPayment">0.00</span></p>
+        <p><strong>Monthly Savings:</strong> $<span id="monthlySavings">0.00</span></p>
+        <p><strong>Interest Difference:</strong> $<span id="differenceInInterest">0.00</span></p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1387,6 +1466,21 @@ function openCalculatorApp() {
 }
 </script>
 
+function calculateRefi() {
+  const currentPayment = parseFloat(document.getElementById("current_monthly_payment").value);
+  const balance = parseFloat(document.getElementById("balance").value);
+  const newRate = parseFloat(document.getElementById("new_interest_rate").value)/100;
+  const termMonths = parseFloat(document.getElementById("remaining_loan_term").value)*12;
+
+  const monthlyRate = newRate / 12;
+  const newPayment = (balance * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
+
+  const savings = currentPayment - newPayment;
+
+  document.getElementById("newMonthlyPayment").textContent = newPayment.toFixed(2);
+  document.getElementById("monthlySavings").textContent = savings.toFixed(2);
+  document.getElementById("differenceInInterest").textContent = (savings * termMonths).toFixed(2);
+}
 
 
 
