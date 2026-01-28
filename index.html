@@ -1524,36 +1524,43 @@ function calculateRefi() {
 }
 
 
-const track = document.querySelector('.reviews-track');
-const cards = document.querySelectorAll('.review-card');
-let index = 0;
+document.addEventListener("DOMContentLoaded", function () {
+  const track = document.querySelector('.reviews-track');
+  const cards = document.querySelectorAll('.review-card');
+  if (!track || cards.length === 0) return;
 
-function moveCarousel() {
-  index++;
-  if (index > cards.length - 3) index = 0;
-  const cardWidth = cards[0].offsetWidth + 25;
-  track.style.transform = `translateX(-${index * cardWidth}px)`;
-}
+  let index = 0;
 
-setInterval(moveCarousel, 5000);
+  function moveCarousel() {
+    index++;
+    if (index > cards.length - 3) index = 0;
+    const cardWidth = cards[0].offsetWidth + 25;
+    track.style.transform = `translateX(-${index * cardWidth}px)`;
+  }
 
-document.querySelectorAll(".read-more-btn").forEach(btn => {
-  btn.addEventListener("click", function() {
-    const parent = this.parentElement;
-    const shortText = parent.querySelector(".short-text");
-    const fullText = parent.querySelector(".full-text");
+  setInterval(moveCarousel, 5000);
 
-    if (fullText.style.display === "inline") {
-      fullText.style.display = "none";
-      shortText.style.display = "inline";
-      this.textContent = "Read More";
-    } else {
-      fullText.style.display = "inline";
-      shortText.style.display = "none";
-      this.textContent = "Show Less";
-    }
+  document.querySelectorAll(".read-more-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const parent = this.parentElement;
+      const shortText = parent.querySelector(".short-text");
+      const fullText = parent.querySelector(".full-text");
+
+      if (fullText && shortText) {
+        if (fullText.style.display === "inline") {
+          fullText.style.display = "none";
+          shortText.style.display = "inline";
+          this.textContent = "Read More";
+        } else {
+          fullText.style.display = "inline";
+          shortText.style.display = "none";
+          this.textContent = "Show Less";
+        }
+      }
+    });
   });
 });
+
 
 
 
