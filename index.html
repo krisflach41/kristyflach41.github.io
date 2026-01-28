@@ -1501,7 +1501,7 @@ function openCalculatorApp() {
   });
 }
 
-
+<script>
 function calculateRefi() {
   const currentPayment = parseFloat(document.getElementById("current_monthly_payment").value);
   const balance = parseFloat(document.getElementById("balance").value);
@@ -1516,8 +1516,9 @@ function calculateRefi() {
   document.getElementById("monthlySavings").textContent = savings.toFixed(2);
   document.getElementById("differenceInInterest").textContent = (savings * termMonths).toFixed(2);
 }
+</script>
+  <script>
 
-<script>
 document.addEventListener("DOMContentLoaded", function () {
   const track = document.querySelector(".review-track");
   const cards = document.querySelectorAll(".review-card");
