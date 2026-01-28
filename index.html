@@ -1517,7 +1517,6 @@ function openCalculatorApp() {
 }
 
 <script>
-
 function calculateRefi() {
   const currentPayment = parseFloat(document.getElementById("current_monthly_payment").value);
   const balance = parseFloat(document.getElementById("balance").value);
@@ -1526,7 +1525,6 @@ function calculateRefi() {
 
   const monthlyRate = newRate / 12;
   const newPayment = (balance * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -termMonths));
-
   const savings = currentPayment - newPayment;
 
   document.getElementById("newMonthlyPayment").textContent = newPayment.toFixed(2);
@@ -1534,10 +1532,9 @@ function calculateRefi() {
   document.getElementById("differenceInInterest").textContent = (savings * termMonths).toFixed(2);
 }
 
-
 document.addEventListener("DOMContentLoaded", function () {
-const track = document.querySelector(".review-track");
-  const cards = document.querySelectorAll('.review-card');
+  const track = document.querySelector(".review-track");
+  const cards = document.querySelectorAll(".review-card");
   if (!track || cards.length === 0) return;
 
   let index = 0;
@@ -1545,7 +1542,8 @@ const track = document.querySelector(".review-track");
   function moveCarousel() {
     index++;
     if (index > cards.length - 3) index = 0;
-    const cardWidth = cards[0].offsetWidth + 25;
+
+    const cardWidth = cards[0].offsetWidth + 30; // matches your CSS gap
     track.style.transform = `translateX(-${index * cardWidth}px)`;
   }
 
@@ -1553,28 +1551,26 @@ const track = document.querySelector(".review-track");
 
   document.querySelectorAll(".read-more-btn").forEach(btn => {
     btn.addEventListener("click", function() {
-      const parent = this.parentElement;
+      const parent = this.closest(".review-card") || this.parentElement;
       const shortText = parent.querySelector(".short-text");
       const fullText = parent.querySelector(".full-text");
 
-      if (fullText && shortText) {
-        if (fullText.style.display === "inline") {
-          fullText.style.display = "none";
-          shortText.style.display = "inline";
-          this.textContent = "Read More";
-        } else {
-          fullText.style.display = "inline";
-          shortText.style.display = "none";
-          this.textContent = "Show Less";
-        }
+      if (!shortText || !fullText) return;
+
+      if (fullText.style.display === "inline") {
+        fullText.style.display = "none";
+        shortText.style.display = "inline";
+        this.textContent = "Read More";
+      } else {
+        fullText.style.display = "inline";
+        shortText.style.display = "none";
+        this.textContent = "Show Less";
       }
     });
   });
 });
-
-
-
 </script>
+
 
 </body>
 </html>
