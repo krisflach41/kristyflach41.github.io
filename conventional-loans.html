@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Conventional Loan Guide</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f7fb;
+  color: #333;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 1000px;
+  margin: auto;
+  padding: 60px 20px;
+}
+
+.intro {
+  background: #0b4ea2;
+  color: white;
+  padding: 25px;
+  border-radius: 10px;
+  margin-bottom: 40px;
+  font-size: 18px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 38px;
+  color: #0b4ea2;
+  margin-bottom: 50px;
+}
+
+.loan-card {
+  background: white;
+  border-radius: 12px;
+  padding: 35px 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  border-left: 6px solid #0b4ea2;
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 0.6s ease;
+}
+
+.loan-card h2 {
+  margin-top: 0;
+  color: #0b4ea2;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.loan-types {
+  padding-left: 20px;
+}
+
+.loan-types li {
+  margin-bottom: 18px;
+}
+
+.loan-types strong {
+  display: block;
+  color: #0b4ea2;
+  margin-bottom: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+
+  <p class="intro">
+    Choosing the right loan starts with understanding how it fits into your full financial picture. My role is to help you evaluate options, explain trade-offs, and make informed decisions with clarity and confidence—so your mortgage supports both today’s needs and your long-term financial goals.
+  </p>
+
+  <h1>Conventional Loan Guide</h1>
+
+  <div class="loan-card">
+    <h2>What Is a Conventional Loan?</h2>
+    <p>Conventional home loans are the most common type of mortgage in the country. These loans are not insured or guaranteed by the government, unlike FHA and VA loans. Lenders offer conventional loans with varying terms and interest rates, and borrowers typically need to have good credit and a stable income to qualify.</p>
+    <p>Conventional loans can be used to purchase primary residences, second homes, or investment properties. They also offer the flexibility of choosing between fixed or adjustable interest rates.</p>
+    <p>While conventional loans may require a higher down payment than government-backed loans, they often have lower interest rates and fewer fees. Additionally, borrowers can avoid mortgage insurance if they put down at least 20% of the home’s purchase price.</p>
+    <p>Overall, conventional home loans are a popular choice for those who meet the qualifications and want to own a home without government involvement.</p>
+  </div>
+
+  <div class="loan-card">
+    <h2>Conventional Loan Overview</h2>
+    <p>Conventional home loans are the most popular type of mortgage in the US. Unlike FHA and VA loans, conventional loans are not insured or guaranteed by the government. Lenders offer conventional loans with varying terms and interest rates, and borrowers usually need good credit and stable income to qualify.</p>
+    <p>Conventional loans can be used to purchase primary residences, second homes, or investment properties. They offer the flexibility of fixed or adjustable interest rates.</p>
+    <p>Although conventional loans may require a higher down payment than government-backed loans, they often have lower interest rates and fewer fees. Borrowers can avoid mortgage insurance if they put down at least 20% of the home’s purchase price.</p>
+    <p>These loans offer advantages including lower interest rates, greater flexibility, and long-term equity growth.</p>
+  </div>
+
+  <div class="loan-card">
+    <h2>How to Qualify for a Conventional Loan</h2>
+    <p>Preapproval is the first and most important step toward acquiring your Conventional Loan. Whether you’re a first-time home buyer or seeking to refinance your current home, getting preapproved helps narrow your focus to properties that fit your budget, establish credibility with sellers, and expedites both the loan funding and closing process.</p>
+  </div>
+
+  <div class="loan-card">
+    <h2>Requirements for Refinancing into a Conventional Loan</h2>
+    <p>Refinancing into a conventional home loan can help reduce monthly payments, secure a lower rate, switch from adjustable to fixed, shorten the mortgage term, or access home equity for other financial goals.</p>
+  </div>
+
+  <div class="loan-card">
+    <h2>Types of Conventional Loans</h2>
+    <ul class="loan-types">
+      <li><strong>Fixed Rate Loans</strong>
+        <p>Offer borrowers a steady and predictable interest rate throughout the loan's duration, allowing consistent budgeting and long-term payment stability.</p>
+      </li>
+      <li><strong>Hybrid Adjustable-Rate Mortgage (Hybrid ARM)</strong>
+        <p>Starts with a lower fixed interest rate for a set period before adjusting annually, offering early payment predictability with future rate flexibility.</p>
+      </li>
+      <li><strong>Home Possible Loan</strong>
+        <p>A Freddie Mac program providing low down payment options and flexible funding sources for low to moderate-income borrowers.</p>
+      </li>
+      <li><strong>HomeReady Loan</strong>
+        <p>A Fannie Mae program with flexible underwriting requirements and low down payment options for qualified borrowers.</p>
+      </li>
+      <li><strong>Manufactured Home Loans</strong>
+        <p>Financing designed for factory-built homes placed on permanent foundations, available for both purchase and refinance.</p>
+      </li>
+      <li><strong>Renovation Loans</strong>
+        <p>Allows borrowers to finance a home purchase or refinance along with renovation costs in one loan.</p>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+const cards = document.querySelectorAll(".loan-card");
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.style.opacity = 1;
+      entry.target.style.transform = "translateY(0)";
+    }
+  });
+}, { threshold: 0.1 });
+
+cards.forEach(card => observer.observe(card));
+</script>
+
+</body>
+</html>
