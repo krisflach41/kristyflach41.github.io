@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thank You | Kristy Flach</title>
+
+  <style>
+    :root {
+      --primary-color: #002F6C;
+      --secondary-bg: #F8F9FA;
+      --secondary-text: #333333;
+      --accent-color: #9CB5A0;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--secondary-bg);
+      color: var(--secondary-text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+    .thank-you-card {
+      background: #E8EEF3;
+      padding: 60px 40px;
+      border-radius: 12px;
+      width: calc(100% - 40px);
+      max-width: 700px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      color: var(--primary-color);
+      margin-bottom: 15px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 25px;
+    }
+
+    .home-button {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--primary-color);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      transition: 0.3s ease;
+    }
+
+    .home-button:hover {
+      background: var(--accent-color);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="thank-you-card">
+    <h1>Thank You!</h1>
+    <p>Your message has been sent successfully.<br>
+    Kristy will respond shortly.</p>
+
+    <a href="https://kristyflach.com" class="home-button">Return to Homepage</a>
+  </div>
+
+</body>
+</html>
