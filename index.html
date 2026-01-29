@@ -1136,6 +1136,27 @@ section > h2 {
   }
 }
 
+/* ===== FORCE MEDIA VIDEO WIDTH + CENTERING (OVERRIDE) ===== */
+#media .video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
+  justify-content: center;     /* centers the whole grid */
+  justify-items: center;       /* centers items inside columns */
+  gap: 24px;
+  max-width: 1100px;           /* keeps it from stretching too wide */
+  margin: 16px auto 0;         /* centers within the section */
+  padding: 0;                  /* prevents side push */
+}
+
+#media .video-grid iframe {
+  width: 100%;
+  max-width: 520px;            /* caps each video width */
+  aspect-ratio: 16 / 9;        /* keeps video shape correct */
+  height: auto;                /* pairs with aspect-ratio */
+  border: none;
+  border-radius: 8px;
+  display: block;
+}
 
     
 </style>
