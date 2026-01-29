@@ -1007,6 +1007,119 @@ section > h2 {
   width: 100%;
 }
 
+/* ===== NEW ABOUT SECTION ===== */
+
+.about-section {
+  background: var(--secondary-bg);
+  font-family: Arial, sans-serif;
+  padding: 80px 20px;
+}
+
+.about-wrapper {
+  max-width: 1200px;
+  margin: auto;
+}
+
+.about-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 500;
+}
+
+.about-top {
+  display: grid;
+  grid-template-columns: 280px 1fr 260px;
+  gap: 40px;
+  align-items: start;
+}
+
+.about-headshot img,
+.about-side-img img,
+.about-mid-img img,
+.about-family-img img {
+  width: 100%;
+  border-radius: 14px;
+}
+
+.about-heading {
+  font-size: 36px;
+  margin-bottom: 20px;
+  line-height: 1.2;
+  color: var(--secondary-text);
+}
+
+.about-text p {
+  margin-bottom: 18px;
+}
+
+.about-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.about-columns ul {
+  padding-left: 20px;
+}
+
+.about-divider {
+  margin: 60px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+.about-mid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-mid-text h2 {
+  margin-bottom: 15px;
+}
+
+.about-bold {
+  font-weight: bold;
+}
+
+.about-bottom {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+.about-button {
+  display: inline-block;
+  background: var(--accent-color);
+  color: white;
+  padding: 14px 28px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.about-button:hover {
+  opacity: 0.85;
+}
+
+.about-personal {
+  margin-top: 40px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .about-top,
+  .about-mid,
+  .about-bottom {
+    grid-template-columns: 1fr;
+  }
+}
 
 
     
@@ -1056,41 +1169,100 @@ section > h2 {
     </div>
   </section>
 
-<section id="about">
-  <h2>About Me</h2>
+<section id="about" class="about-section">
 
-  <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset" class="about-img" />
+  <div class="about-wrapper">
 
-  <p>I’m Kristy Flach—a Certified Mortgage Advisor, strategist, and educator who believes your mortgage should be a financial tool, not just a transaction.</p>
+    <!-- TOP SECTION -->
+    <div class="about-top">
+      <div class="about-headshot">
+        <img src="hero-headshot.jpg" alt="Kristy Flach Headshot">
+      </div>
 
-  <p>The Certified Mortgage Advisor designation represents the highest standard of excellence for mortgage professionals in the United States. It goes far beyond traditional loan-officer training and focuses on understanding how mortgage decisions fit into a broader financial picture.</p>
+      <div class="about-text">
+        <h2 class="about-title">About Me</h2>
 
-  <p>As a CMA, my work is grounded in advanced education around:</p>
-  <ul>
-    <li>Personal wealth creation</li>
-    <li>Stock and bond markets</li>
-    <li>Technical market analysis</li>
-    <li>Economic reports and how to interpret them</li>
-    <li>Central banking and Federal Reserve policy</li>
-    <li>What truly drives interest rates and market movement</li>
-  </ul>
+        <h1 class="about-heading">
+          I’m Kristy Flach — A Certified Mortgage Advisor who makes mortgages a strategic tool.
+        </h1>
 
-  <p>This training allows me to look at mortgages through a wider lens—connecting market conditions, economic trends, and long-term strategy so clients can make informed decisions with confidence, not guesswork.</p>
+        <p>
+          I’m Kristy Flach — a Certified Mortgage Advisor, strategist, and educator who believes your mortgage should be a financial tool, not just a transaction.
+        </p>
 
-  <p>What truly sets me apart, however, is experience. With 17 years of mortgage underwriting experience and a background as a licensed Realtor, I understand both how loans are approved behind the scenes and how real-world transactions unfold. I know how to structure loans that anticipate underwriting scrutiny, align with contract realities, and move smoothly from application to closing.</p>
+        <p>
+          The Certified Mortgage Advisor designation represents the highest standard of excellence for mortgage professionals in the United States. It goes far beyond traditional loan-officer training and focuses on understanding how mortgage decisions fit into a broader financial picture.
+        </p>
 
-  <p>That means fewer surprises, clearer expectations, and a process built on preparation—not reaction.</p>
+        <div class="about-columns">
+          <ul>
+            <li>Personal wealth creation</li>
+            <li>Stock and bond markets</li>
+            <li>Technical market analysis</li>
+          </ul>
+          <ul>
+            <li>Economic reports and how to interpret them</li>
+            <li>Central banking and Federal Reserve policy</li>
+            <li>What truly drives interest rates and market movement</li>
+          </ul>
+        </div>
+      </div>
 
-  <p>Whether you’re buying your first home, refinancing, or evaluating loan options, my role is to present clear strategic choices and guide you toward decisions that work best for your life. I focus on education, transparency, and strategy—so you understand not just what you’re doing, but why it supports your long-term financial security.</p>
+      <div class="about-side-img">
+        <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset">
+      </div>
+    </div>
 
-  <p>Outside of work, I’m deeply grounded in family and time well spent. After living on the West Coast for 50 years, I made the intentional decision to return to my birth state of Ohio to be closer to my siblings and their families. Of all the titles I hold, the one I treasure most is Aunt.</p>
+    <hr class="about-divider">
 
-  <p>I love being outdoors—softball, kayaking, camping—and I protect that time, because balance matters. I also share my life with Gus, my wonderfully neurotic Westie, who keeps me humble and insists that I serve as his emotional support animal.</p>
+    <!-- EXPERIENCE SECTION -->
+    <div class="about-mid">
+      <div class="about-mid-text">
+        <h2>What truly sets me apart, however, is experience.</h2>
+        <p>
+          With 17 years of mortgage underwriting experience and a background as a licensed Realtor, I understand both how loans are approved behind the scenes and how real-world transactions unfold. I know how to structure loans that anticipate underwriting scrutiny, align with contract realities, and move smoothly from application to closing.
+        </p>
+        <p class="about-bold">
+          That means fewer surprises, clearer expectations, and a process built on preparation — not reaction.
+        </p>
+      </div>
 
-  <p>At the heart of everything I do is a simple philosophy: informed decisions build stronger outcomes. My goal is to pull back the curtain on the mortgage process, reduce fear and confusion, and help clients build financial independence starting with their mortgage.</p>
+      <div class="about-mid-img">
+        <img src="gus-kayaking.jpg" alt="Outdoor lifestyle">
+      </div>
+    </div>
 
-  <p>If you’re looking for clarity, strategy, and a mortgage advisor who leads with integrity—I’d be honored to work with you.</p>
+    <hr class="about-divider">
+
+    <!-- PERSONAL + CTA SECTION -->
+    <div class="about-bottom">
+
+      <div class="about-family-img">
+        <img src="gus.JPG" alt="Gus the Westie outdoors">
+      </div>
+
+      <div class="about-bottom-text">
+        <p>
+          Whether you’re buying your first home, refinancing, or evaluating loan options, my role is to present clear strategic choices and guide you toward decisions that work best for your life. I focus on education, transparency, and strategy — so you understand not just what you’re doing, but why it supports your long-term financial security.
+        </p>
+
+        <p>
+          If you’re looking for clarity, strategy, and a mortgage advisor who leads with integrity — I’d be honored to work with you.
+        </p>
+
+        <a href="#contact" class="about-button">Start the Conversation</a>
+      </div>
+    </div>
+
+    <div class="about-personal">
+      <p>
+        I love being outdoors — softball, kayaking, golf and camping — and I protect that time because balance matters. I also share my life with Gus, my wonderfully neurotic Westie, who keeps me humble and insists that I serve as his emotional support animal.
+      </p>
+    </div>
+
+  </div>
 </section>
+
 
 
   <section id="media">
