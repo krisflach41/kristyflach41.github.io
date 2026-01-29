@@ -2120,15 +2120,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  const form = document.getElementById("contactForm");
+document.addEventListener("DOMContentLoaded", function () {
+  // If user returned from Formspree success
+  if (window.location.search.includes("success=true")) {
+    const form = document.querySelector(".contact-form form");
+    if (form) form.reset();
 
-  if (window.location.search.includes("success")) {
-    form.reset();
-    window.history.replaceState({}, document.title, window.location.pathname);
+    // Optional: remove success=true from URL so it doesn't trigger again
+    const cleanURL = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanURL);
   }
 });
 </script>
+
 
   
 </body>
