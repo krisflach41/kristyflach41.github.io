@@ -1775,7 +1775,7 @@ section > h2 {
     <div class="contact-form">
       <h2 class="contact-title">Contact Me</h2>
 
- <form id="contactForm" class="contact-form" action="https://formspree.io/f/mgoyyney" method="POST">
+      <form id="contactForm" action="https://formspree.io/f/mgoyyney" method="POST">
         <input type="text" name="name" placeholder="Name" required>
         <input type="email" name="email" placeholder="Email" required>
         <input type="tel" name="phone" placeholder="Phone">
@@ -1791,16 +1791,18 @@ section > h2 {
 
         <textarea name="message" rows="4" placeholder="Message" required></textarea>
 
-<input type="hidden" name="_subject" value="New Website Contact Submission">
-<input type="hidden" name="_captcha" value="false">
+        <!-- Hidden Formspree Settings -->
+        <input type="hidden" name="_subject" value="New Website Contact Submission">
+        <input type="hidden" name="_captcha" value="false">
 
-       
         <button type="submit">Send Message</button>
       </form>
- <div id="formMessage" style="display:none; margin-top:15px; color:#0b3a82; font-weight:600;">
-  ✅ Message sent successfully! I’ll be in touch soon.
-</div>
 
+      <!-- Success Message -->
+      <div id="formMessage" style="display:none; margin-top:15px; color:#0b3a82; font-weight:600;">
+        ✅ Message sent successfully! I’ll be in touch soon.
+      </div>
+    </div> <!-- ✅ LEFT COLUMN CLOSED PROPERLY -->
 
     <!-- RIGHT SIDE: DETAILS -->
     <div class="contact-details">
@@ -1825,6 +1827,7 @@ section > h2 {
 
   </div>
 </section>
+
 
 
 
