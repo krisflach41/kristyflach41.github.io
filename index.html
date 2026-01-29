@@ -103,17 +103,24 @@ footer {
 
 
 
-  .hero {
+ .hero {
   background: #E8EEF3;
-  padding: 2rem;
+  padding: 2rem 0;  /* remove side padding */
   text-align: center;
 
-  /* MATCH REVIEWS SECTION MARGINS */
   max-width: none;
   width: calc(100% - 40px);
   margin: 40px auto;
   border-radius: 12px;
 }
+
+/* Override global section content constraint */
+.hero .hero-content {
+  max-width: none;
+  width: 100%;
+  padding: 0 20px;
+}
+
 
     .hero .hero-content {
       display: flex;
