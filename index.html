@@ -1305,7 +1305,90 @@ section > h2 {
     padding: 40px 25px;
   }
 }
-   
+
+/* ===== NEW CONTACT SECTION ===== */
+.contact-section {
+  width: calc(100% - 40px);
+  margin: 60px auto;
+  background: #E8EEF3;
+  border-radius: 12px;
+  padding: 60px 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.contact-card {
+  max-width: 1100px;
+  margin: auto;
+}
+
+.contact-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.contact-subtitle {
+  margin-top: 5px;
+  color: #555;
+}
+
+.contact-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 50px;
+  align-items: start;
+}
+
+.contact-info h3 {
+  margin-bottom: 5px;
+}
+
+.contact-info p {
+  margin: 5px 0 15px;
+}
+
+.contact-info a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.contact-form button {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.contact-form button:hover {
+  background: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+    
 </style>
 
   <script>
@@ -1737,59 +1820,46 @@ section > h2 {
 
 
 <section id="contact" class="contact-section">
-  <div class="contact-container">
+  <div class="contact-card">
 
-    <!-- LEFT SIDE — FORM -->
-    <div class="contact-form">
-      <h2 class="contact-title">Contact Me</h2>
+    <div class="contact-header">
+      <h2>Contact Me</h2>
+      <p class="contact-subtitle">Licensed in 49 States</p>
+    </div>
 
-      <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain">
-        <input type="text" name="name" placeholder="Name" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="tel" name="phone" placeholder="Phone">
+    <div class="contact-layout">
 
-        <select name="interest">
-          <option>Select An Interest</option>
-          <option>Buying a Home</option>
-          <option>Refinancing</option>
-          <option>Pre-Approval</option>
-          <option>General Question</option>
-        </select>
+      <!-- LEFT SIDE: CONTACT INFO -->
+      <div class="contact-info">
+        <h3>Email</h3>
+        <p><a href="mailto:kflach@prmg.net">kflach@prmg.net</a></p>
 
-        <textarea name="message" rows="5" placeholder="Message"></textarea>
+        <h3>Phone</h3>
+        <p><a href="tel:2063135883">206-313-5883</a></p>
+
+        <h3>Socials</h3>
+        <p><a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank">YouTube — House Money with Kristy</a></p>
+        <p><a href="https://www.facebook.com/KristyPRMG" target="_blank">Facebook — KristyPRMG</a></p>
+        <p><a href="https://www.instagram.com/kristy_prmg" target="_blank">Instagram — kristy_prmg</a></p>
+      </div>
+
+      <!-- RIGHT SIDE: FORM -->
+      <form action="https://formspree.io/f/mgoyyney" method="POST" class="contact-form">
+        <input type="text" name="name" placeholder="Your Name" required>
+        <input type="email" name="email" placeholder="Your Email" required>
+        <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+
+        <!-- Formspree Redirect After Submit -->
+        <input type="hidden" name="_subject" value="New Contact Form Submission">
+        <input type="hidden" name="_redirect" value="https://kristyflach.com/thank-you.html">
 
         <button type="submit">Send Message</button>
       </form>
+
     </div>
-
-    <!-- RIGHT SIDE — DETAILS -->
-    <div class="contact-details">
-      <h3>Contact Details</h3>
-
-      <div class="detail-label">Email</div>
-      <div>kflach@prmg.net</div>
-
-      <div class="detail-label">Phone</div>
-      <div>(206) 313-5883</div>
-
-      <div class="detail-label">Licensed in 49 States</div>
-
-      <div class="detail-label">Socials</div>
-      <div class="social-links">
-        <a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank">
-          YouTube — House Money with Kristy
-        </a>
-        <a href="https://www.facebook.com/KristyPRMG" target="_blank">
-          Facebook — KristyPRMG
-        </a>
-        <a href="https://www.instagram.com/kristy_prmg" target="_blank">
-          Instagram — kristy_prmg
-        </a>
-      </div>
-    </div>
-
   </div>
 </section>
+
 
 
 
