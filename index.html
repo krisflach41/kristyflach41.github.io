@@ -1544,21 +1544,51 @@ section > h2 {
 
 
 <section id="contact" class="contact-section">
-  <div class="contact-card">
+  <div class="contact-container">
 
-    <div class="contact-header">
-      <img src="hero-headshot.jpg" alt="Kristy Flach" class="contact-headshot">
-      <h2>Contact Me</h2>
+    <!-- LEFT SIDE: FORM -->
+    <div class="contact-form">
+      <h2 class="contact-title">Contact Me</h2>
+
+      <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain">
+        <input type="text" name="name" placeholder="Name" required>
+        <input type="email" name="email" placeholder="Email" required>
+        <input type="tel" name="phone" placeholder="Phone">
+
+        <select name="interest">
+          <option value="">Select An Interest</option>
+          <option>Buying a Home</option>
+          <option>Refinancing</option>
+          <option>Down Payment Assistance</option>
+          <option>Investment Property</option>
+          <option>General Question</option>
+        </select>
+
+        <textarea name="message" rows="4" placeholder="Message" required></textarea>
+
+        <button type="submit">Send Message</button>
+      </form>
     </div>
 
-    <form action="mailto:kflach@prmg.net" method="post" enctype="text/plain" class="contact-form">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="email" name="email" placeholder="Your Email" required>
-      <textarea name="message" rows="4" placeholder="Your Message" required></textarea>
+    <!-- RIGHT SIDE: DETAILS -->
+    <div class="contact-details">
+      <h3>Contact Details</h3>
 
-      <button type="submit">Send Message</button>
-      <p class="response-note">Typically responds within 1 business day.</p>
-    </form>
+      <div class="detail-label">Email</div>
+      <div>kflach@prmg.net</div>
+
+      <div class="detail-label">Phone</div>
+      <div>(206) 313-5883</div>
+
+      <div class="detail-label">Licensed in 49 States</div>
+
+      <div class="detail-label">Socials</div>
+      <div class="social-links">
+        <a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank">YouTube — House Money with Kristy</a>
+        <a href="https://www.facebook.com/KristyPRMG" target="_blank">Facebook — KristyPRMG</a>
+        <a href="https://www.instagram.com/kristy_prmg" target="_blank">Instagram — kristy_prmg</a>
+      </div>
+    </div>
 
   </div>
 </section>
