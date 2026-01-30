@@ -1637,19 +1637,22 @@ body {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0.42);
+  background: rgba(255,255,255,0.72);  /* restore soft background fade */
   z-index: 1;
 }
 
 
+
 .hero-content {
   position: relative;
+  z-index: 2;   /* ← THIS IS THE FIX */
   max-width: 1200px;
   margin: auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 
 .hero-text h1 { font-size: 56px; color: var(--primary); margin: 0; }
 .hero-text h2 { font-size: 22px; font-family: Arial; font-weight: 700; }
