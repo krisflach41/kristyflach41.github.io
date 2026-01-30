@@ -1585,8 +1585,21 @@ body {
 
 .hero-image img {
   width: 320px;
-  border-radius: 8px;
+  border-radius: 14px;
+
+  /* Soft blending */
+  filter: contrast(0.95) brightness(1.02) saturate(0.92);
+
+  /* Gentle shadow */
+  box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+
+  /* Edge fade effect */
+  mask-image: radial-gradient(circle at center, black 75%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 75%, transparent 100%);
+
+  transition: all 0.4s ease;
 }
+
 
 /* ===== FEATURE STRIP ===== */
 .feature-strip {
