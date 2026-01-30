@@ -2245,13 +2245,16 @@ document.addEventListener("DOMContentLoaded", function () {
 const cardWidth = document.querySelector('.loan-card').offsetWidth + 30;
 
 
-  nextBtn.addEventListener('click', () => {
-    scrollAmount += cardWidth;
-    track.scrollTo({
-      left: scrollAmount,
-      behavior: 'smooth'
-    });
+nextBtn.addEventListener('click', () => {
+  const maxScroll = track.scrollWidth - track.clientWidth;
+  scrollAmount += cardWidth;
+  if (scrollAmount > maxScroll) scrollAmount = maxScroll;
+
+  track.scrollTo({
+    left: scrollAmount,
+    behavior: 'smooth'
   });
+});
 
   prevBtn.addEventListener('click', () => {
     scrollAmount -= cardWidth;
