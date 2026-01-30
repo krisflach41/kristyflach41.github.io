@@ -1584,18 +1584,21 @@ body {
 }
 
 .hero-image img {
-  width: 320px;
-  border-radius: 14px;
+  width: 310px;
+  border-radius: 18px;
 
-  /* Soft blending */
-  filter: contrast(0.95) brightness(1.02) saturate(0.92);
+  /* Soften image presence */
+  filter: contrast(0.93) brightness(1.04) saturate(0.88);
 
-  /* Gentle shadow */
-  box-shadow: 0 20px 45px rgba(0,0,0,0.15);
+  /* Lighter, diffused shadow */
+  box-shadow: 0 25px 60px rgba(0,0,0,0.12);
 
-  /* Edge fade effect */
-  mask-image: radial-gradient(circle at center, black 75%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 75%, transparent 100%);
+  /* Fade edges into background */
+  mask-image: radial-gradient(circle at center, black 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(circle at center, black 70%, transparent 100%);
+
+  /* Subtle blend with hero light tones */
+  mix-blend-mode: multiply;
 
   transition: all 0.4s ease;
 }
@@ -1628,6 +1631,20 @@ body {
 
 .feature-card h3 { font-size: 22px; margin: 0 0 8px; }
 .feature-card p
+
+.hero-image {
+  position: relative;
+}
+
+.hero-image::before {
+  content: "";
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.2) 50%, transparent 75%);
+  z-index: -1;
+  filter: blur(35px);
+}
+
     
 </style>
 
