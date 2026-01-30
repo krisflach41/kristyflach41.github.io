@@ -1585,23 +1585,20 @@ body {
 
 .hero-image img {
   width: 310px;
-  border-radius: 18px;
+  border-radius: 20px;
 
-  /* Soften image presence */
-  filter: contrast(0.93) brightness(1.04) saturate(0.88);
+  /* Natural photo tone */
+  filter: contrast(0.96) brightness(1.03) saturate(0.92);
 
-  /* Lighter, diffused shadow */
-  box-shadow: 0 25px 60px rgba(0,0,0,0.12);
+  /* Soft professional shadow */
+  box-shadow: 0 30px 60px rgba(0,0,0,0.18);
 
-  /* Fade edges into background */
-  mask-image: radial-gradient(circle at center, black 70%, transparent 100%);
-  -webkit-mask-image: radial-gradient(circle at center, black 70%, transparent 100%);
-
-  /* Subtle blend with hero light tones */
-  mix-blend-mode: multiply;
+  position: relative;
+  z-index: 2;
 
   transition: all 0.4s ease;
 }
+
 
 
 /* ===== FEATURE STRIP ===== */
