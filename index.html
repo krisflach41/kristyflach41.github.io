@@ -2241,9 +2241,11 @@ document.addEventListener("DOMContentLoaded", function () {
   if (!track || !nextBtn || !prevBtn) return; // prevents errors if elements not found
 
   let scrollAmount = 0;
+const cardWidth = document.querySelector('.loan-card').offsetWidth + 30;
+
 
   nextBtn.addEventListener('click', () => {
-    scrollAmount += 330;
+    scrollAmount += cardWidth;
     track.scrollTo({
       left: scrollAmount,
       behavior: 'smooth'
@@ -2251,14 +2253,17 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   prevBtn.addEventListener('click', () => {
-    scrollAmount -= 330;
+    scrollAmount -= cardWidth;
     if (scrollAmount < 0) scrollAmount = 0;
     track.scrollTo({
       left: scrollAmount,
       behavior: 'smooth'
     });
+  });
+
 });
 </script>
+
 
   
 </body>
