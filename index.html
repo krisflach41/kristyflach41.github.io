@@ -2254,24 +2254,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const track = document.querySelector('.slider-track');
+  const nextBtn = document.querySelector('.next');
+  const prevBtn = document.querySelector('.prev');
+
+  if (!track || !nextBtn || !prevBtn) return; // prevents errors if elements not found
+
+  let scrollAmount = 0;
+
+  nextBtn.addEventListener('click', () => {
+    scrollAmount += 330;
+    track.scrollTo({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+
+  prevBtn.addEventListener('click', () => {
+    scrollAmount -= 330;
+    if (scrollAmount < 0) scrollAmount = 0;
+    track.scrollTo({
+      left: scrollAmount,
+      behavior: 'smooth'
+    });
+  });
+
+});
 </script>
-
-const track = document.querySelector('.slider-track');
-const nextBtn = document.querySelector('.next');
-const prevBtn = document.querySelector('.prev');
-
-let scrollAmount = 0;
-
-nextBtn.addEventListener('click', () => {
-  scrollAmount += 330;
-  track.scrollTo({ left: scrollAmount, behavior: 'smooth' });
-});
-
-prevBtn.addEventListener('click', () => {
-  scrollAmount -= 330;
-  if (scrollAmount < 0) scrollAmount = 0;
-  track.scrollTo({ left: scrollAmount, behavior: 'smooth' });
-});
 
   
 </body>
