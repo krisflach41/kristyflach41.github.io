@@ -1670,25 +1670,33 @@ body {
 }
 
 /* Image container */
+.hero-image img {
+  width: 310px;
+  border-radius: 0;
+  opacity: 1;
+  filter: contrast(1) brightness(1) saturate(1);
+  box-shadow: 0 35px 65px rgba(0,0,0,0.28);
+  position: relative;
+  z-index: 2;
+  transition: all 0.4s ease;
+}
 .hero-image {
   position: relative;
 }
 
-.hero-image::after {
+.hero-image::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -10px;
-  height: 120px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,0.85) 70%, white 100%);
-  border-radius: 0 0 20px 20px;
-  z-index: 3;
-  pointer-events: none;
+  bottom: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 65%;
+  height: 35px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.08) 60%, transparent 100%);
+  filter: blur(8px);
+  z-index: 1;
 }
-
-
-
+    
 /* Headshot styling */
 .hero-image img {
   width: 310px;
