@@ -1587,17 +1587,21 @@ body {
   width: 310px;
   border-radius: 20px;
 
-  /* Natural photo tone */
-  filter: contrast(0.96) brightness(1.03) saturate(0.92);
+  /* Gentle softening */
+  filter: contrast(0.97) brightness(1.02) saturate(0.95);
 
-  /* Soft professional shadow */
-  box-shadow: 0 30px 60px rgba(0,0,0,0.18);
+  /* Slightly less than fully solid */
+  opacity: 0.94;
+
+  /* Natural depth */
+  box-shadow: 0 28px 55px rgba(0,0,0,0.16);
 
   position: relative;
   z-index: 2;
 
   transition: all 0.4s ease;
 }
+
 
 
 
