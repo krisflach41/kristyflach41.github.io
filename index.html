@@ -1477,7 +1477,7 @@ body {
 
 /* ===== HEADER ===== */
 .site-header {
-  background: white;
+ background: var(--primary);
   border-bottom: 1px solid #ddd;
   padding: 18px 40px;
 }
@@ -1504,11 +1504,17 @@ body {
 .main-nav a {
   margin: 0 16px;
   text-decoration: none;
-  color: #1f2a30;
+  color: white;
   font-family: Arial, sans-serif;
   font-size: 17px;
   font-weight: 700;
+  transition: opacity 0.2s ease;
 }
+
+.main-nav a:hover {
+  opacity: 0.75;
+}
+
 
 .phone-btn {
   background: #6e7f77;
