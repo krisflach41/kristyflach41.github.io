@@ -1582,6 +1582,104 @@ body {
   line-height: 1.4;
 }
 
+/* ============================= */
+/* 📱 MOBILE RESPONSIVE FIXES   */
+/* ============================= */
+@media (max-width: 768px) {
+
+  /* HEADER */
+  .nav-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .main-nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .phone-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 70px 20px;
+    text-align: center;
+  }
+
+  .hero-content {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .hero-text h1 {
+    font-size: 36px;
+  }
+
+  .hero-text h2 {
+    font-size: 18px;
+  }
+
+  .tagline {
+    font-size: 20px;
+  }
+
+  .hero-image img {
+    width: 220px;
+  }
+
+  /* FEATURE STRIP */
+  .feature-inner {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  /* ABOUT SECTION */
+  .about-top,
+  .about-mid,
+  .about-bottom {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  /* MORTGAGE OPTIONS CARDS */
+  .slider-track {
+    gap: 16px;
+  }
+
+  .loan-card {
+    min-width: 90%;
+  }
+
+  /* CONTACT */
+  .contact-container,
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* CALCULATORS */
+  .calc-grid {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .calc-inputs,
+  .calc-results {
+    width: 100%;
+  }
+
+  /* REVIEWS */
+  .review-track {
+    gap: 16px;
+  }
+
+}
+
+
+    
     
 </style>
 
