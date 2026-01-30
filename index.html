@@ -1205,6 +1205,105 @@ section > h2 {
   margin-bottom: 80px;  /* space below the section */
 }
 
+:root {
+  --primary: #002F6C;
+  --accent: #9CB5A0;
+  --bg-soft: #E8EEF3;
+}
+
+.mortgage-section {
+  width: calc(100% - 40px);
+  margin: 60px auto;
+  padding: 60px 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #E8EEF3, #dfe8f0);
+}
+
+.mortgage-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.mortgage-header h2 {
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.slider-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.slider-track {
+  display: flex;
+  gap: 30px;
+  overflow: hidden;
+  scroll-behavior: smooth;
+}
+
+.loan-card {
+  min-width: 300px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.loan-card:hover {
+  transform: translateY(-5px);
+}
+
+.icon-circle {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 15px;
+}
+
+.loan-card h4 {
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+.loan-card a {
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: bold;
+}
+
+.arrow {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 14px 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.arrow:hover {
+  background: var(--accent);
+}
+
+.prev { margin-right: 15px; }
+.next { margin-left: 15px; }
+
+@media (max-width: 768px) {
+  .loan-card { min-width: 85%; }
+}
+
+
+    
  /* ===== NEW CONTACT SECTION ===== */
 
 .contact-section {
@@ -1539,54 +1638,60 @@ section > h2 {
     </div>
   </section>
 
- <section id="products">
-  <h2>Mortgage Options</h2>
-  <div class="accordion">
-    <div class="accordion-item">
-      <button class="accordion-header">Conventional Loans</button>
-      <div class="accordion-body">
-        <p>[Placeholder: Add details about Conventional Loan features, requirements, and common uses.]</p>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <button class="accordion-header">FHA / VA / USDA Loans</button>
-      <div class="accordion-body">
-        <p>[Placeholder: Explain key benefits, eligibility rules, and who these government-backed loans are best suited for.]</p>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <button class="accordion-header">First-Time Buyer Programs</button>
-      <div class="accordion-body">
-        <p>[Placeholder: Summarize first-time homebuyer assistance programs, benefits, and what qualifies someone as a first-time buyer.]</p>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <button class="accordion-header">Refinance & Cash-Out Options</button>
-      <div class="accordion-body">
-        <p>[Placeholder: Highlight reasons for refinancing, what cash-out means, and how it can be used to consolidate debt or access equity.]</p>
-      </div>
-    </div>
-
-    <div class="accordion-item">
-      <button class="accordion-header">Down Payment Assistance</button>
-      <div class="accordion-body">
-        <p>[Placeholder: Describe how DPA programs work, who qualifies, and what to expect in terms of repayment or grants.]</p>
-      </div>
-    </div>
+<section class="mortgage-section">
+  <div class="mortgage-header">
+    <h2>Mortgage Options</h2>
+    <p>Strategic loan structures designed for different financial goals</p>
   </div>
-</section><script>
-  function toggleAmortization() {
-    var section = document.getElementById("amortizationSection");
-    if (section.style.display === "none" || section.style.display === "") {
-      section.style.display = "block";
-    } else {
-      section.style.display = "none";
-    }
-  }
-</script>
+
+  <div class="slider-wrapper">
+    <button class="arrow prev">&#10094;</button>
+
+    <div class="slider-track">
+
+      <div class="loan-card">
+        <div class="icon-circle">🏠</div>
+        <h4>Conventional Loans</h4>
+        <p>Flexible structures for buyers with strong credit and long-term goals.</p>
+        <a href="conventional-loans.html">Learn More →</a>
+      </div>
+
+      <div class="loan-card">
+        <div class="icon-circle">🎖</div>
+        <h4>FHA / VA / USDA</h4>
+        <p>Government-backed options designed for accessibility and lower upfront costs.</p>
+        <a href="fha-va-usda-loans.html">Learn More →</a>
+      </div>
+
+      <div class="loan-card">
+        <div class="icon-circle">🌾</div>
+        <h4>First-Time Buyer</h4>
+        <p>Programs that help new buyers enter the market with confidence.</p>
+        <a href="first-time-buyer-programs.html">Learn More →</a>
+      </div>
+
+      <div class="loan-card">
+        <div class="icon-circle">💰</div>
+        <h4>Refinance Options</h4>
+        <p>Strategies to improve cash flow or restructure long-term debt.</p>
+        <a href="refinance-options.html">Learn More →</a>
+      </div>
+
+      <div class="loan-card">
+        <div class="icon-circle">📈</div>
+        <h4>Investment Loans</h4>
+        <p>Financing designed for property growth and portfolio expansion.</p>
+        <a href="investment-property-loans.html">Learn More →</a>
+      </div>
+
+    </div>
+
+    <button class="arrow next">&#10095;</button>
+  </div>
+</section>
+
+
+  
 <section id="purchase-calculator" class="calculator-section">
   <div class="container">
     <h2 class="section-title">Home Buying Calculator</h2>
@@ -2151,6 +2256,22 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+const track = document.querySelector('.slider-track');
+const nextBtn = document.querySelector('.next');
+const prevBtn = document.querySelector('.prev');
+
+let scrollAmount = 0;
+
+nextBtn.addEventListener('click', () => {
+  scrollAmount += 330;
+  track.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+});
+
+prevBtn.addEventListener('click', () => {
+  scrollAmount -= 330;
+  if (scrollAmount < 0) scrollAmount = 0;
+  track.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+});
 
   
 </body>
