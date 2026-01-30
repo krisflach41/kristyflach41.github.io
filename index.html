@@ -1675,6 +1675,31 @@ body {
   .review-track {
     gap: 16px;
   }
+/* Fix uneven side spacing */
+body {
+  overflow-x: hidden;
+}
+
+section,
+.hero,
+.feature-strip,
+.mortgage-section,
+.contact-section {
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+/* Ensure inner containers center correctly */
+.hero-content,
+.feature-inner,
+.mortgage-header,
+.review-carousel-wrapper,
+.contact-container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
 
 }
 
