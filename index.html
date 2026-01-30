@@ -1452,15 +1452,22 @@ body {
 }
 
 .feature-card {
+  background: white;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  flex: 1;
   display: flex;
   gap: 18px;
-  flex: 1;
+  align-items: flex-start;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.feature-icon {
-  font-size: 28px;
-  color: var(--accent);
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(0,0,0,0.12);
 }
+
 
 .feature-card h3 { font-size: 22px; margin: 0 0 8px; }
 /* ===== HERO ===== */
