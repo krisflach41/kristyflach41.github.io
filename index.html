@@ -1807,29 +1807,31 @@ html, body {
 @media (max-width: 768px) {
 
  /* ===== MOBILE IMAGE SIZE FIX (TARGET BY LOCATION) ===== */
+/* ===== MOBILE IMAGE FIX ROUND 3 ===== */
 @media (max-width: 768px) {
 
-  /* Hero Section Headshot */
+  /* Hero Headshot (slightly bigger) */
   .hero img {
-    width: 55% !important;
-    max-width: 200px !important;
+    width: 65% !important;
+    max-width: 240px !important;
+  }
+
+  /* CMA Logo (target ALL logos near credentials) */
+  img[src*="CMA"],
+  img[src*="cma"] {
+    width: 80px !important;
     height: auto !important;
   }
 
-  /* CMA Logo (About or Credentials area) */
-  .about img {
-    width: 70px !important;
-    height: auto !important;
-  }
-
-  /* Equal Housing Logo (Footer) */
-  footer img {
-    width: 70px !important;
+  /* Equal Housing Logo */
+  footer img[src*="equal"],
+  footer img[src*="housing"] {
+    width: 65px !important;
     height: auto !important;
   }
 
 }
-/* ===== END MOBILE IMAGE FIX ===== */
+/* ===== END ROUND 3 ===== */
 
     
 </style>
