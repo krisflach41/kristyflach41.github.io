@@ -2667,22 +2667,36 @@ document.addEventListener("DOMContentLoaded", function () {
 
   if (!track || !nextBtn || !prevBtn) return;
 
+  let scrollAmount = 0;
+
+  function getCardWidth() {
+    return document.querySelector('.loan-card').offsetWidth + 30;
+  }
+
   nextBtn.addEventListener('click', () => {
-    track.scrollBy({
-      left: track.offsetWidth * 0.9,
+    const maxScroll = track.scrollWidth - track.clientWidth;
+    scrollAmount += getCardWidth();
+    if (scrollAmount > maxScroll) scrollAmount = maxScroll;
+
+    track.scrollTo({
+      left: scrollAmount,
       behavior: 'smooth'
     });
   });
 
   prevBtn.addEventListener('click', () => {
-    track.scrollBy({
-      left: -track.offsetWidth * 0.9,
+    scrollAmount -= getCardWidth();
+    if (scrollAmount < 0) scrollAmount = 0;
+
+    track.scrollTo({
+      left: scrollAmount,
       behavior: 'smooth'
     });
   });
 
 });
 </script>
+
 
   
 </body>
