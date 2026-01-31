@@ -1833,6 +1833,32 @@ html, body {
 }
 /* ===== END ROUND 3 ===== */
 
+/* ===== ABOUT EXTRA PHOTOS ===== */
+.about-extra-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: flex-end;
+  margin-top: 30px;
+}
+
+.about-extra-photos img {
+  width: 240px;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .about-extra-photos {
+    align-items: center;
+  }
+  .about-extra-photos img {
+    width: 80%;
+    max-width: 260px;
+  }
+}
+/* ===== END ABOUT EXTRA PHOTOS ===== */
     
 </style>
 
@@ -1980,6 +2006,10 @@ html, body {
           </ul>
         </div>
       </div>
+<div class="about-extra-photos">
+  <img src="images/chopter-one.JPG" alt="Kristy lifestyle photo">
+  <img src="images/chopter-two.jpg" alt="Kristy lifestyle photo">
+</div>
 
       <div class="about-side-img">
         <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset">
