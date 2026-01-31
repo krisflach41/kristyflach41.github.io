@@ -1520,6 +1520,38 @@ section,
   box-shadow: 0 20px 50px rgba(0,0,0,0.10);
 }
     
+/* ===== FORCE ALL SECTIONS TO USE HERO CONTAINER SYSTEM ===== */
+
+.feature-strip,
+.about-section,
+.mortgage-section,
+#calculators,
+#blog-preview,
+#reviews {
+  max-width: 1200px;
+  margin: 80px auto 0 auto;
+  padding: 60px 40px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+}
+
+/* REMOVE INNER BACKGROUNDS THAT ARE BLOCKING THE LOOK */
+.feature-inner,
+.blog-grid,
+.review-carousel-wrapper,
+.refi-grid {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+/* FIX REVIEWS SIDE MARGIN MISMATCH */
+#reviews {
+  width: calc(100% - 40px);
+}
     
 </style>
 
