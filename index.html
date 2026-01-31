@@ -2653,47 +2653,25 @@ document.addEventListener("DOMContentLoaded", function () {
   const nextBtn = document.querySelector('.next');
   const prevBtn = document.querySelector('.prev');
 
-  if (!track || !nextBtn || !prevBtn) return; // prevents errors if elements not found
+  if (!track || !nextBtn || !prevBtn) return;
 
- let scrollAmount = 0;
-
-function getCardWidth() {
-  return document.querySelector('.loan-card').offsetWidth + 30;
-}
-
-nextBtn.addEventListener('click', () => {
-  const maxScroll = track.scrollWidth - track.clientWidth;
-  scrollAmount += getCardWidth();
-  if (scrollAmount > maxScroll) scrollAmount = maxScroll;
-
-  track.scrollTo({
-    left: scrollAmount,
-    behavior: 'smooth'
+  nextBtn.addEventListener('click', () => {
+    track.scrollBy({
+      left: 300,
+      behavior: 'smooth'
+    });
   });
-});
-
-prevBtn.addEventListener('click', () => {
-  scrollAmount -= getCardWidth();
-  if (scrollAmount < 0) scrollAmount = 0;
-
-  track.scrollTo({
-    left: scrollAmount,
-    behavior: 'smooth'
-  });
-});
-
 
   prevBtn.addEventListener('click', () => {
-    scrollAmount -= cardWidth;
-    if (scrollAmount < 0) scrollAmount = 0;
-    track.scrollTo({
-      left: scrollAmount,
+    track.scrollBy({
+      left: -300,
       behavior: 'smooth'
     });
   });
 
 });
 </script>
+
 
 
   
