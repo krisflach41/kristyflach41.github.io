@@ -1859,7 +1859,35 @@ html, body {
   }
 }
 /* ===== END ABOUT EXTRA PHOTOS ===== */
-    
+
+/* ===== LOWER ABOUT PHOTO STACK ===== */
+.about-lower-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-end;
+  margin: 40px 0;
+}
+
+.about-lower-photos img {
+  width: 240px;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .about-lower-photos {
+    align-items: center;
+  }
+  .about-lower-photos img {
+    width: 80%;
+  }
+}
+
+
+
+  
 </style>
 
     
@@ -2016,6 +2044,10 @@ html, body {
   </div>
 </div>
 
+<div class="about-lower-photos">
+  <img src="chopter-one.JPG" alt="Kristy lifestyle photo">
+  <img src="chopter-two.jpg" alt="Kristy lifestyle photo">
+</div>
 
     <hr class="about-divider">
 
@@ -2036,7 +2068,6 @@ html, body {
       </div>
     </div>
 
-    <hr class="about-divider">
 
     <!-- PERSONAL + CTA SECTION -->
     <div class="about-bottom">
