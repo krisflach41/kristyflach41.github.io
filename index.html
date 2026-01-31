@@ -1806,24 +1806,31 @@ html, body {
 /* ===== MOBILE IMAGE SIZE REDUCTION (ROUND 2) ===== */
 @media (max-width: 768px) {
 
-  /* CMA Logo */
-  .cma-logo {
-    width: 90px !important;
-  }
+ /* ===== MOBILE IMAGE SIZE FIX (TARGET BY LOCATION) ===== */
+@media (max-width: 768px) {
 
-  /* Hero Headshot */
-  .hero-headshot {
+  /* Hero Section Headshot */
+  .hero img {
     width: 55% !important;
     max-width: 200px !important;
+    height: auto !important;
   }
 
-  /* Equal Housing Logo */
-  .equal-housing-logo {
+  /* CMA Logo (About or Credentials area) */
+  .about img {
+    width: 90px !important;
+    height: auto !important;
+  }
+
+  /* Equal Housing Logo (Footer) */
+  footer img {
     width: 70px !important;
+    height: auto !important;
   }
 
 }
-/* ===== END MOBILE IMAGE SIZE REDUCTION ===== */
+/* ===== END MOBILE IMAGE FIX ===== */
+
     
 </style>
 
