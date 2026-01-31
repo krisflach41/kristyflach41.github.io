@@ -1767,6 +1767,42 @@ html, body {
 }
 /* ================= END MOBILE FIXES ================= */
 
+    /* ===== MOBILE WIDTH & OVERFLOW FIX ===== */
+@media (max-width: 768px) {
+
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden !important;
+  }
+
+  * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .container,
+  section,
+  div {
+    max-width: 100% !important;
+  }
+
+  img, video {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .hero,
+  .about,
+  .services,
+  .reviews,
+  .contact {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+/* ===== END MOBILE FIX ===== */
+
     
 </style>
 
