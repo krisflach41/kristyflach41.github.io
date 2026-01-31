@@ -2660,11 +2660,9 @@ function getCardWidth() {
   return document.querySelector('.loan-card').offsetWidth + 30;
 }
 
-
-
 nextBtn.addEventListener('click', () => {
   const maxScroll = track.scrollWidth - track.clientWidth;
-  scrollAmount += cardWidth;
+  scrollAmount += getCardWidth();
   if (scrollAmount > maxScroll) scrollAmount = maxScroll;
 
   track.scrollTo({
@@ -2672,6 +2670,17 @@ nextBtn.addEventListener('click', () => {
     behavior: 'smooth'
   });
 });
+
+prevBtn.addEventListener('click', () => {
+  scrollAmount -= getCardWidth();
+  if (scrollAmount < 0) scrollAmount = 0;
+
+  track.scrollTo({
+    left: scrollAmount,
+    behavior: 'smooth'
+  });
+});
+
 
   prevBtn.addEventListener('click', () => {
     scrollAmount -= cardWidth;
