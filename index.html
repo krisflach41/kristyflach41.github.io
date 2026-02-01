@@ -1731,16 +1731,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const prevBtn = prevBtnSelector ? document.querySelector(prevBtnSelector) : null;
     const nextBtn = nextBtnSelector ? document.querySelector(nextBtnSelector) : null;
 
-    function jump(direction) {
+   let logicalIndex = 0;
+
+function jump(direction) {
   isPaused = true;
 
-  // Move exactly one card
-  position += direction * cardWidth * -1;
+  logicalIndex += direction;
 
-  // Resume motion after a moment
+  // Keep index in range
+  if (logicalIndex < 0) logicalIndex = cards.length - 1;
+  if (logicalIndex >= cards.length) logicalIndex = 0;
+
+  position = -logicalIndex * cardWidth;
+
   setTimeout(() => {
     isPaused = false;
-  }, 1500);
+  }, 1200);
 }
 
 prevBtn && prevBtn.addEventListener("click", () => jump(-1));
