@@ -61,19 +61,24 @@ h1 {
 }
 
 .loan-card {
-  background: white;
   border-radius: 12px;
   padding: 35px 30px;
-  margin-bottom: 40px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+  margin-bottom: 60px;
+
+  /* Frosted Sun-Washed Glass */
+  background: rgba(248, 242, 232, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  box-shadow:
+    0 10px 30px rgba(160, 140, 110, 0.18),
+    0 2px 8px rgba(160, 140, 110, 0.12);
+
   border-left: 6px solid #0b4ea2;
 }
 
-/* 🔒 LOCKED RULE */
-.loan-card h2,
-.loan-card h3 {
-  color: #0b4ea2;
-}
 
   /* ===== SOFT ATMOSPHERIC BACKGROUND ===== */
 body::before {
