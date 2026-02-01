@@ -1617,9 +1617,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const gap = 30;
   const cardWidth = cards[0].offsetWidth + gap;
 
-  let position = 0;
-  let speed = 0.35; // smooth elegant motion
-  let isPaused = false;
+ let autoScroll;
+let isPaused = false;
 
   // Clone for infinite loop
   cards.forEach(card => {
@@ -1627,25 +1626,7 @@ document.addEventListener("DOMContentLoaded", function () {
     track.appendChild(clone);
   });
 
-  function animate() {
-    if (!isPaused) {
-      position -= speed;
-
-      if (Math.abs(position) >= cardWidth * cards.length) {
-        position = 0;
-      }
-
-      track.style.transform = `translateX(${position}px)`;
-    }
-
-    requestAnimationFrame(animate);
-  }
-
-  // Pause on hover
-  track.addEventListener("mouseenter", () => isPaused = true);
-  track.addEventListener("mouseleave", () => isPaused = false);
-
-  animate();
+ 
 
   // Read More buttons still work
   document.querySelectorAll(".read-more-btn").forEach(btn => {
