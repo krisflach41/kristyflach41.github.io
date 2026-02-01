@@ -1630,10 +1630,16 @@
 
 
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
-  function initLoop(trackSelector, speed = 0.5) {
+  function initLoop(trackSelector, options = {}) {
+    const {
+      speed = 0.5,
+      prevBtnSelector = null,
+      nextBtnSelector = null,
+      dotsSelector = null
+    } = options;
+
     const track = document.querySelector(trackSelector);
     if (!track) return;
 
@@ -1641,7 +1647,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const gap = 30;
     const cardWidth = cards[0].offsetWidth + gap;
 
-    // Clone cards for infinite loop
+    // Clone for infinite loop
     cards.forEach(card => {
       const clone = card.cloneNode(true);
       track.appendChild(clone);
@@ -1649,6 +1655,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let position = 0;
     let isPaused = false;
+    let currentIndex = 0;
 
     function animate() {
       if (!isPaused) {
@@ -1661,19 +1668,56 @@ document.addEventListener("DOMContentLoaded", function () {
       requestAnimationFrame(animate);
     }
 
-    // Pause on hover
+    // Hover pause
     track.parentElement.addEventListener("mouseenter", () => isPaused = true);
     track.parentElement.addEventListener("mouseleave", () => isPaused = false);
+
+    // Arrow controls
+    const prevBtn = prevBtnSelector ? document.querySelector(prevBtnSelector) : null;
+    const nextBtn = nextBtnSelector ? document.querySelector(nextBtnSelector) : null;
+
+    function jump(direction) {
+      isPaused = true;
+      position += direction * cardWidth * -1;
+    }
+
+    prevBtn && prevBtn.addEventListener("click", () => jump(-1));
+    nextBtn && nextBtn.addEventListener("click", () => jump(1));
+
+    // Dots
+    if (dotsSelector) {
+      const dotsWrap = document.querySelector(dotsSelector);
+      dotsWrap.innerHTML = "";
+
+      cards.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.addEventListener("click", () => {
+          isPaused = true;
+          position = -i * cardWidth;
+        });
+        dotsWrap.appendChild(dot);
+      });
+    }
 
     animate();
   }
 
-  // INIT BOTH CAROUSELS
-  initLoop("#loanTrack", 0.5);        // Mortgage Options
-  initLoop(".review-track", 0.5);     // Reviews
+  // Mortgage Options
+  initLoop("#loanTrack", {
+    speed: 0.5
+  });
+
+  // Reviews
+  initLoop(".review-track", {
+    speed: 0.5,
+    prevBtnSelector: ".prev-review",
+    nextBtnSelector: ".next-review",
+    dotsSelector: "#reviewDots"
+  });
 
 });
 </script>
+
 
 
   
