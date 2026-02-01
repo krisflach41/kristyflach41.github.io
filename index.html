@@ -1051,6 +1051,31 @@
         height: auto !important;
       }
     }
+
+    .review-dots {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.review-dots button {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(11,31,58,0.25);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.review-dots button.active {
+  background: #0b1f3a;
+  transform: scale(1.25);
+}
+
   </style>
 
   <script>
@@ -1704,8 +1729,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Mortgage Options
   initLoop("#loanTrack", {
-    speed: 0.5
-  });
+  speed: 0.5,
+  prevBtnSelector: "#prevBtn",
+  nextBtnSelector: "#nextBtn",
+  dotsSelector: "#carouselDots"
+});
+
 
   // Reviews
   initLoop(".review-track", {
