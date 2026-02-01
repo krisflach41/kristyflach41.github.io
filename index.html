@@ -1673,56 +1673,51 @@ let isPaused = false;
 
 
 <script>
+<script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  const track = document.getElementById("loanTrack");
-  const cards = Array.from(track.children);
-  const prevBtn = document.querySelector(".prev");
-  const nextBtn = document.querySelector(".next");
+  function initLoop(trackSelector, speed = 0.5) {
+    const track = document.querySelector(trackSelector);
+    if (!track) return;
 
-  let position = 0;
-  let speed = 0.5; // lower = slower, smoother
-  let animationFrame;
-  let isPaused = false;
+    const cards = Array.from(track.children);
+    const gap = 30;
+    const cardWidth = cards[0].offsetWidth + gap;
 
-  const gap = 30;
-  const cardWidth = cards[0].offsetWidth + gap;
+    // Clone cards for infinite loop
+    cards.forEach(card => {
+      const clone = card.cloneNode(true);
+      track.appendChild(clone);
+    });
 
-  // Clone cards for seamless loop
-  cards.forEach(card => {
-    const clone = card.cloneNode(true);
-    track.appendChild(clone);
-  });
+    let position = 0;
+    let isPaused = false;
 
-  function animate() {
-    if (!isPaused) {
-      position -= speed;
-      if (Math.abs(position) >= cardWidth * cards.length) {
-        position = 0;
+    function animate() {
+      if (!isPaused) {
+        position -= speed;
+        if (Math.abs(position) >= cardWidth * cards.length) {
+          position = 0;
+        }
+        track.style.transform = `translateX(${position}px)`;
       }
-      track.style.transform = `translateX(${position}px)`;
+      requestAnimationFrame(animate);
     }
-    animationFrame = requestAnimationFrame(animate);
+
+    // Pause on hover
+    track.parentElement.addEventListener("mouseenter", () => isPaused = true);
+    track.parentElement.addEventListener("mouseleave", () => isPaused = false);
+
+    animate();
   }
 
-  // Hover pause
-  track.addEventListener("mouseenter", () => isPaused = true);
-  track.addEventListener("mouseleave", () => isPaused = false);
+  // INIT BOTH CAROUSELS
+  initLoop("#loanTrack", 0.5);        // Mortgage Options
+  initLoop(".review-track", 0.5);     // Reviews
 
-  // Arrow controls
-  nextBtn.addEventListener("click", () => {
-    position -= cardWidth;
-  });
-
-  prevBtn.addEventListener("click", () => {
-    position += cardWidth;
-  });
-
-  animate();
 });
-
-
 </script>
+
 
   
 </body>
