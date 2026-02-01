@@ -68,6 +68,23 @@ h1 {
 .loan-card h3 {
   color: #0b4ea2;
 }
+  /* ===== SOFT ATMOSPHERIC BACKGROUND ===== */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("header-background.jpeg") center/cover no-repeat;
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.55);
+  z-index: -1;
+}
+
 </style>
 </head>
 
