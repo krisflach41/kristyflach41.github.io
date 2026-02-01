@@ -1104,6 +1104,39 @@
   background: #083a7a;
 }
 
+.view-toggle-btn {
+  display: block;
+  margin: 20px auto 30px auto;
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  background: #0b1f3a;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.view-toggle-btn:hover {
+  background: #083a7a;
+}
+
+/* GRID MODE */
+.slider-wrapper.grid-mode .slider-track {
+  transform: none !important;
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  width: 100% !important;
+}
+
+.slider-wrapper.grid-mode .loan-card {
+  max-width: 100%;
+}
+
+.slider-wrapper.grid-mode {
+  overflow: visible !important;
+}
 
     
   </style>
@@ -1308,6 +1341,8 @@
       <h2>Mortgage Options</h2>
       <p>Strategic loan structures designed for different financial goals</p>
     </div>
+<button id="toggleView" class="view-toggle-btn">View All Options</button>
+
 
     <div class="slider-wrapper">
 
@@ -1789,6 +1824,24 @@ nextBtn && nextBtn.addEventListener("click", () => jump(1));
   });
 
 });
+  // VIEW TOGGLE
+const toggleBtn = document.getElementById("toggleView");
+const sliderWrapper = document.querySelector(".slider-wrapper");
+
+let gridMode = false;
+
+toggleBtn.addEventListener("click", () => {
+  gridMode = !gridMode;
+
+  if (gridMode) {
+    sliderWrapper.classList.add("grid-mode");
+    toggleBtn.textContent = "Back to Carousel View";
+  } else {
+    sliderWrapper.classList.remove("grid-mode");
+    toggleBtn.textContent = "View All Options";
+  }
+});
+
 </script>
 
 
