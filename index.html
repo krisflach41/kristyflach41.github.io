@@ -575,20 +575,23 @@
     .mortgage-header h2 { margin: 0 0 10px 0; }
     .mortgage-header p { margin: 0; color: #555; }
 
-    .slider-wrapper {
+   .slider-wrapper {
       position: relative;
       width: 100%;
-    }
+      overflow: hidden;        /* 🚨 THIS is what stops cards leaving the frame */
+}
 
-    .slider-track {
+
+  .slider-track {
       display: flex;
       gap: 30px;
-      overflow-x: auto;
-      scroll-behavior: smooth;
       padding: 10px 4px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
+      will-change: transform;
+      transform: translateX(0);
+      overflow: visible; /* must stay visible inside, wrapper handles clipping */
+      width: max-content; /* 🚨 prevents flex wrapping + width collapse */
+}
+
 
     .slider-track::-webkit-scrollbar { height: 0px; }
     .slider-track { scrollbar-width: none; }
