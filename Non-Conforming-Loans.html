@@ -139,6 +139,53 @@ body::after {
   margin-bottom: 10px;
   line-height: 1.8;
 }
+.cta-panel {
+  margin: 80px 0 60px 0;
+  padding: 40px 35px;
+  text-align: center;
+
+  background: rgba(248, 242, 232, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.5);
+
+  box-shadow:
+    0 15px 40px rgba(160,140,110,0.18),
+    0 3px 10px rgba(160,140,110,0.12);
+}
+
+.cta-panel h2 {
+  font-size: 24px;
+  color: #1f2f45;
+  margin-bottom: 15px;
+}
+
+.cta-panel p {
+  font-size: 17px;
+  line-height: 1.9;
+  color: #2f3e55;
+  max-width: 750px;
+  margin: 0 auto 25px auto;
+}
+
+.cta-button {
+  display: inline-block;
+  background: #0b4ea2;
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+}
+
+.cta-button:hover {
+  background: #083a7a;
+  transform: translateY(-2px);
+}
 
 </style>
 </head>
@@ -146,6 +193,12 @@ body::after {
 <body>
 
 <div class="page-wrap">
+<div class="cta-panel">
+  <h2>Deciding Which Loan Structure Fits Your Financial Strategy</h2>
+  <p>Every borrower’s situation is different. The right loan structure depends on income patterns, long-term plans, property goals, and overall financial strategy. My role is to help you understand how each option works and determine which approach best supports both today’s needs and your future objectives.</p>
+
+  <a href="index.html#contact" class="cta-button">Schedule a Strategy Conversation</a>
+</div>
 
 <a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
 
