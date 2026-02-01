@@ -38,14 +38,22 @@ body {
   transform: translateY(-2px);
 }
 
-.intro {
-  background: #0b4ea2;
+..intro {
+  background: rgba(11, 78, 162, 0.85);  /* softened brand blue */
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   color: white;
-  padding: 25px;
-  border-radius: 10px;
+
+  padding: 25px 30px;
+  border-radius: 12px;
   margin-bottom: 40px;
-  font-size: 18px;
+
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.12);
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
+
 
 h1 {
   text-align: center;
