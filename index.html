@@ -1669,67 +1669,7 @@ let isPaused = false;
       document.getElementById("differenceInInterest").textContent = (savings * termMonths).toFixed(2);
     }
   </script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
 
-  const track = document.querySelector(".slider-track");
-  const cards = document.querySelectorAll(".loan-card");
-  const prevBtn = document.querySelector(".prev");
-  const nextBtn = document.querySelector(".next");
-
-  if (!track || cards.length === 0) return;
-
-  let index = 0;
-  let autoSlide;
-  const step = cards[0].offsetWidth + 30;
-
-  function goToSlide(i) {
-    index = i;
-    track.scrollTo({ left: step * index, behavior: "smooth" });
-  }
-
-  function startAuto() {
-    autoSlide = setInterval(() => {
-      index = (index + 1) % cards.length;
-      goToSlide(index);
-    }, 3000);
-  }
-
-  function stopAuto() {
-    clearInterval(autoSlide);
-  }
-
-  nextBtn.addEventListener("click", () => {
-    index = (index + 1) % cards.length;
-    goToSlide(index);
-  });
-
-  prevBtn.addEventListener("click", () => {
-    index = (index - 1 + cards.length) % cards.length;
-    goToSlide(index);
-  });
-
- function startAutoScroll() {
-  autoScroll = setInterval(() => {
-    if (!isPaused) {
-      track.scrollLeft += 1;
-
-      if (track.scrollLeft >= track.scrollWidth / 2) {
-        track.scrollLeft = 0;
-      }
-    }
-  }, 16);
-}
-
-function stopAutoScroll() {
-  clearInterval(autoScroll);
-}
-
-wrapper.addEventListener("mouseenter", () => isPaused = true);
-wrapper.addEventListener("mouseleave", () => isPaused = false);
-
-});
-</script>
 
 
 <script>
