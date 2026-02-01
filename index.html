@@ -1783,10 +1783,24 @@ document.addEventListener("DOMContentLoaded", function () {
     goToSlide(index);
   });
 
-  track.addEventListener("mouseenter", stopAuto);
-  track.addEventListener("mouseleave", startAuto);
+ function startAutoScroll() {
+  autoScroll = setInterval(() => {
+    if (!isPaused) {
+      track.scrollLeft += 1;
 
-  startAuto();
+      if (track.scrollLeft >= track.scrollWidth / 2) {
+        track.scrollLeft = 0;
+      }
+    }
+  }, 16);
+}
+
+function stopAutoScroll() {
+  clearInterval(autoScroll);
+}
+
+wrapper.addEventListener("mouseenter", () => isPaused = true);
+wrapper.addEventListener("mouseleave", () => isPaused = false);
 
 });
 </script>
