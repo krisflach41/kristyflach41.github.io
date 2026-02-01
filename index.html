@@ -1611,6 +1611,14 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   const track = document.querySelector(".review-track");
+  const wrapper = document.querySelector(".review-carousel-wrapper");
+const cards = Array.from(track.children);
+const gap = 30;
+const step = cards[0].offsetWidth + gap;
+
+let autoScroll;
+let isPaused = false;
+
   if (!track) return;
 
   const cards = Array.from(track.children);
