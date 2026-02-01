@@ -829,13 +829,17 @@
       overflow: hidden;
     }
 
-    .review-track {
-      display: flex;
-      gap: 30px;
-      align-items: flex-start;
-      width: max-content;
-      transition: transform 0.7s ease;
-    }
+  .review-track {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+  width: max-content;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.review-track::-webkit-scrollbar { display: none; }
+
 
     .review-card {
       width: 360px;
