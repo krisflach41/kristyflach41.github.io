@@ -257,6 +257,25 @@ body::after {
   color: #1e2f44;   /* deeper navy-gray */
   font-weight: 700;
 }
+.floating-return {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #0b4ea2;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-return:hover {
+  transform: translateY(-3px);
+  background: #083a7a;
+}
 
 </style>
 </head>
@@ -264,7 +283,7 @@ body::after {
 <body>
 
 <div class="page-wrap">
-  <a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
+
 <div class="cta-panel">
  <h2>Choosing the Right Loan Structure for Your Financial Strategy</h2>
 <p>Choosing the right loan starts with understanding how it fits into your full financial picture. Every borrower’s situation is different, and the right structure depends on income patterns, long-term plans, property goals, and overall financial strategy.</p>
@@ -378,7 +397,7 @@ body::after {
 <p>Depending on the borrower’s situation, other specialized non-conforming structures may also be available, each designed to align the loan with unique financial circumstances.</p>
 </div>
 
-<a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
+
 
 </div>
 
