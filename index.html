@@ -1597,32 +1597,59 @@
     });
   </script>
 
-  <script>
-    // Reviews carousel + Read More toggle
-    document.addEventListener("DOMContentLoaded", function () {
-      const track = document.querySelector(".review-track");
-      const cards = document.querySelectorAll(".review-card");
-      let index = 0;
+ <script>
+document.addEventListener("DOMContentLoaded", function () {
 
-      function moveCarousel() {
-        index++;
-        if (index > cards.length - 3) index = 0;
-        const cardWidth = cards[0].offsetWidth + 30;
-        track.style.transform = `translateX(-${index * cardWidth}px)`;
+  const track = document.querySelector(".review-track");
+  if (!track) return;
+
+  const cards = Array.from(track.children);
+  const gap = 30;
+  const cardWidth = cards[0].offsetWidth + gap;
+
+  let position = 0;
+  let speed = 0.35; // smooth elegant motion
+  let isPaused = false;
+
+  // Clone for infinite loop
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    track.appendChild(clone);
+  });
+
+  function animate() {
+    if (!isPaused) {
+      position -= speed;
+
+      if (Math.abs(position) >= cardWidth * cards.length) {
+        position = 0;
       }
 
-      setInterval(moveCarousel, 3000);
+      track.style.transform = `translateX(${position}px)`;
+    }
 
-      document.querySelectorAll(".read-more-btn").forEach(btn => {
-        btn.addEventListener("click", function(e) {
-          e.stopPropagation();
-          const card = this.closest(".review-card");
-          card.classList.toggle("expanded");
-          this.textContent = card.classList.contains("expanded") ? "Show Less" : "Read More";
-        });
-      });
+    requestAnimationFrame(animate);
+  }
+
+  // Pause on hover
+  track.addEventListener("mouseenter", () => isPaused = true);
+  track.addEventListener("mouseleave", () => isPaused = false);
+
+  animate();
+
+  // Read More buttons still work
+  document.querySelectorAll(".read-more-btn").forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      const card = this.closest(".review-card");
+      card.classList.toggle("expanded");
+      this.textContent = card.classList.contains("expanded") ? "Show Less" : "Read More";
     });
-  </script>
+  });
+
+});
+</script>
+
 
   <script>
     // Mortgage Options carousel (NEW: arrows + dots synced to scroll)
