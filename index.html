@@ -1762,5 +1762,57 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const track = document.getElementById("loanTrack");
+  const cards = Array.from(track.children);
+  const prevBtn = document.querySelector(".prev");
+  const nextBtn = document.querySelector(".next");
+
+  let position = 0;
+  let speed = 0.5; // lower = slower, smoother
+  let animationFrame;
+  let isPaused = false;
+
+  const gap = 30;
+  const cardWidth = cards[0].offsetWidth + gap;
+
+  // Clone cards for seamless loop
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    track.appendChild(clone);
+  });
+
+  function animate() {
+    if (!isPaused) {
+      position -= speed;
+      if (Math.abs(position) >= cardWidth * cards.length) {
+        position = 0;
+      }
+      track.style.transform = `translateX(${position}px)`;
+    }
+    animationFrame = requestAnimationFrame(animate);
+  }
+
+  // Hover pause
+  track.addEventListener("mouseenter", () => isPaused = true);
+  track.addEventListener("mouseleave", () => isPaused = false);
+
+  // Arrow controls
+  nextBtn.addEventListener("click", () => {
+    position -= cardWidth;
+  });
+
+  prevBtn.addEventListener("click", () => {
+    position += cardWidth;
+  });
+
+  animate();
+});
+</script>
+
+  
 </body>
 </html>
