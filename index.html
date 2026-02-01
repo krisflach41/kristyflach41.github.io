@@ -1607,49 +1607,6 @@
     });
   </script>
 
- <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const track = document.querySelector(".review-track");
-  const wrapper = document.querySelector(".review-carousel-wrapper");
-const cards = Array.from(track.children);
-const gap = 30;
-const step = cards[0].offsetWidth + gap;
-
-let autoScroll;
-let isPaused = false;
-
-  if (!track) return;
-
-  const cards = Array.from(track.children);
-  const gap = 30;
-  const cardWidth = cards[0].offsetWidth + gap;
-
- let autoScroll;
-let isPaused = false;
-
-  // Clone for infinite loop
-  cards.forEach(card => {
-    const clone = card.cloneNode(true);
-    track.appendChild(clone);
-  });
-
- 
-
-  // Read More buttons still work
-  document.querySelectorAll(".read-more-btn").forEach(btn => {
-    btn.addEventListener("click", function(e) {
-      e.stopPropagation();
-      const card = this.closest(".review-card");
-      card.classList.toggle("expanded");
-      this.textContent = card.classList.contains("expanded") ? "Show Less" : "Read More";
-    });
-  });
-
-});
-</script>
-
-
  
 
   <script>
