@@ -1723,12 +1723,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
   function initLoop(trackSelector, options = {}) {
-    const {
-      speed = 0.5,
-      prevBtnSelector = null,
-      nextBtnSelector = null,
-      dotsSelector = null
-    } = options;
+  const {
+  speed = 0.5,
+  dotsSelector = null
+} = options;
+
 
     const track = document.querySelector(trackSelector);
     if (!track) return;
@@ -1762,30 +1761,6 @@ document.addEventListener("DOMContentLoaded", function () {
     track.parentElement.addEventListener("mouseenter", () => isPaused = true);
     track.parentElement.addEventListener("mouseleave", () => isPaused = false);
 
-    // Arrow controls
-    const prevBtn = prevBtnSelector ? document.querySelector(prevBtnSelector) : null;
-    const nextBtn = nextBtnSelector ? document.querySelector(nextBtnSelector) : null;
-
-   let logicalIndex = 0;
-
-function jump(direction) {
-  isPaused = true;
-
-  logicalIndex += direction;
-
-  // Keep index in range
-  if (logicalIndex < 0) logicalIndex = cards.length - 1;
-  if (logicalIndex >= cards.length) logicalIndex = 0;
-
-  position = -logicalIndex * cardWidth;
-
-  setTimeout(() => {
-    isPaused = false;
-  }, 1200);
-}
-
-prevBtn && prevBtn.addEventListener("click", () => jump(-1));
-nextBtn && nextBtn.addEventListener("click", () => jump(1));
 
 
     // Dots
@@ -1807,21 +1782,16 @@ nextBtn && nextBtn.addEventListener("click", () => jump(1));
   }
 
   // Mortgage Options
-  initLoop("#loanTrack", {
+initLoop("#loanTrack", {
   speed: 0.5,
-  prevBtnSelector: "#prevBtn",
-  nextBtnSelector: "#nextBtn",
   dotsSelector: "#carouselDots"
 });
 
+initLoop(".review-track", {
+  speed: 0.5,
+  dotsSelector: "#reviewDots"
+});
 
-  // Reviews
-  initLoop(".review-track", {
-    speed: 0.5,
-    prevBtnSelector: ".prev-review",
-    nextBtnSelector: ".next-review",
-    dotsSelector: "#reviewDots"
-  });
 
 });
   // VIEW TOGGLE
