@@ -1732,12 +1732,20 @@ document.addEventListener("DOMContentLoaded", function () {
     const nextBtn = nextBtnSelector ? document.querySelector(nextBtnSelector) : null;
 
     function jump(direction) {
-      isPaused = true;
-      position += direction * cardWidth * -1;
-    }
+  isPaused = true;
 
-    prevBtn && prevBtn.addEventListener("click", () => jump(-1));
-    nextBtn && nextBtn.addEventListener("click", () => jump(1));
+  // Move exactly one card
+  position += direction * cardWidth * -1;
+
+  // Resume motion after a moment
+  setTimeout(() => {
+    isPaused = false;
+  }, 1500);
+}
+
+prevBtn && prevBtn.addEventListener("click", () => jump(-1));
+nextBtn && nextBtn.addEventListener("click", () => jump(1));
+
 
     // Dots
     if (dotsSelector) {
