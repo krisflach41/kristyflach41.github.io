@@ -180,20 +180,31 @@ body::after {
 
 .cta-button {
   display: inline-block;
-  background: #0b4ea2;
-  color: #fff;
-  padding: 14px 28px;
-  border-radius: 8px;
+  padding: 16px 28px;
+  border-radius: 50px;
   text-decoration: none;
   font-weight: 600;
-  transition: all 0.25s ease;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.18);
+  font-size: 17px;
+
+  /* Soft advisory tone */
+  background: rgba(11, 78, 162, 0.12);
+  color: #0b4ea2;
+
+  border: 1px solid rgba(11, 78, 162, 0.25);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
 }
 
 .cta-button:hover {
-  background: #083a7a;
+  background: rgba(11, 78, 162, 0.22);
   transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
+
 .advisory-row {
   display: flex;
   gap: 30px;
