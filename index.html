@@ -1152,6 +1152,35 @@
     0 2px 8px rgba(160, 140, 110, 0.12);
 }
 
+<style>
+
+/* all your existing styles above */
+
+
+/* ============================= */
+/* 📱 MOBILE: SHOW ALL LOAN OPTIONS */
+/* ============================= */
+@media (max-width: 768px) {
+
+  #loanTrack {
+    transform: none !important;
+    animation: none !important;
+    display: grid !important;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .carousel-arrow,
+  .carousel-dots {
+    display: none !important;
+  }
+
+  .loan-card {
+    width: 100% !important;
+  }
+}
+
+</style>
 
   </style>
 
