@@ -5,10 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Partner Portal</title>
 <style>
-body { font-family: Arial; margin:0; padding:40px; background:#f4f7fb; }
-h1 { color:#0b4ea2; }
-.section { background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }
-button { padding:10px 16px; border:none; border-radius:6px; background:#0b4ea2; color:white; cursor:pointer; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 60px 0;
+  color: #0b1f3a;
+
+  background:
+    linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.92)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+}
+
+h1 {
+  text-align: center;
+  font-size: 34px;
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+  color: #0b1f3a;
+}
+
+.section {
+  max-width: 1100px;
+  margin: 0 auto 40px auto;
+  padding: 35px 40px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 30px 60px rgba(11, 31, 58, 0.08);
+}
+
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #0b4ea2, #083a7a);
+  color: white;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(11, 78, 162, 0.25);
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(11, 78, 162, 0.35);
+}
 
   .brief-block {
   background: #f9fbff;
