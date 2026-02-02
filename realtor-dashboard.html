@@ -4,278 +4,164 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Partner Portal</title>
+
 <style>
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 60px 0;
-  color: #0b1f3a;
-
+  padding: 50px 0 80px 0;
   background:
-    linear-gradient(rgba(255,255,255,0.88), rgba(255,255,255,0.92)),
+    linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.94)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
 }
 
 h1 {
   text-align: center;
   font-size: 34px;
+  margin-bottom: 25px;
   letter-spacing: 1px;
-  margin-bottom: 40px;
-  color: #0b1f3a;
 }
 
-.section {
+/* TOP NAV */
+.portal-nav {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.portal-nav a {
+  margin: 0 18px;
+  text-decoration: none;
+  font-weight: 600;
+  color: #0b4ea2;
+}
+
+/* DATE */
+.date-bar {
   max-width: 1100px;
-  margin: 0 auto 40px auto;
-  padding: 35px 40px;
+  margin: 0 auto 12px auto;
+  text-align: right;
+  font-size: 14px;
+  color: #555;
+}
+
+/* RATE TICKER */
+.rate-ticker {
+  background: #0b1f3a;
+  color: white;
+  padding: 10px 0;
+  overflow: hidden;
+}
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker 20s linear infinite;
+}
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* CONTENT AREA */
+.content-wrap {
+  max-width: 1100px;
+  margin: 30px auto;
+}
+.content-card {
+  background: rgba(255,255,255,0.95);
+  padding: 32px;
   border-radius: 18px;
-  background: rgba(255,255,255,0.92);
-  backdrop-filter: blur(6px);
+  margin-bottom: 28px;
   box-shadow: 0 30px 60px rgba(11, 31, 58, 0.08);
 }
-
-button {
-  padding: 12px 20px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(90deg, #0b4ea2, #083a7a);
-  color: white;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  box-shadow: 0 8px 18px rgba(11, 78, 162, 0.25);
-  transition: 0.2s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(11, 78, 162, 0.35);
-}
-
-  .brief-block {
-  background: #f9fbff;
-  border-left: 4px solid #0b4ea2;
-  padding: 15px 18px;
-  margin-top: 18px;
-  border-radius: 8px;
-}
-
-.brief-block h3 {
-  margin-top: 0;
-  color: #0b1f3a;
-}
-
-.highlight {
+.highlight-card {
   background: #eef4ff;
-  border-left: 4px solid #2e7d32;
 }
 
+/* TABLE */
 .econ-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 8px;
+  margin-top: 15px;
 }
-
-.econ-table th,
-.econ-table td {
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
-}
-
 .econ-table th {
   background: #0b4ea2;
   color: white;
+  padding: 12px;
 }
-.econ-table.clean th {
-  background: #0b4ea2;
+.econ-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e3ecf7;
+}
+
+/* WEEK REVIEW */
+.week-review {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 32px;
+  border-radius: 18px;
+  background: #0b1f3a;
   color: white;
-  font-weight: bold;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
 }
-
-.econ-table.clean td {
-  background: white;
-  font-size: 14px;
-}
-
-.econ-table.clean tr:nth-child(even) td {
-  background: #f6f9ff;
-}
-
 </style>
 </head>
+
 <body>
 
 <h1>Agent Edge Partner Portal</h1>
 
-<div class="section">
-  <h2>📊 Agent Edge Market Command Center</h2>
+<div class="portal-nav">
+  <a href="#">Order Marketing Materials</a>
+  <a href="#">Realtor Support Materials</a>
+  <a href="#">Educational Videos</a>
+  <a href="#">Single-Property Website Request</a>
+</div>
 
-  <!-- 1 DAILY RATES -->
- <div class="brief-block rates-strip">
-  <h3>Today’s Estimated Fixed Market Rates</h3>
+<div class="date-bar" id="currentDate"></div>
 
-  <div class="rates-grid">
-    <div class="rate-card">
-      <span>30-Year</span>
-      <strong>6.22%</strong>
-    </div>
-
-    <div class="rate-card">
-      <span>30-Year FHA</span>
-      <strong>6.076%</strong>
-    </div>
-
-    <div class="rate-card">
-      <span>30-Year VA</span>
-      <strong>5.825%</strong>
-    </div>
-
-    <div class="rate-card">
-      <span>30-Year Jumbo</span>
-      <strong>6.308%</strong>
-    </div>
-
-    <div class="rate-card">
-      <span>15-Year</span>
-      <strong>5.8%</strong>
-    </div>
+<div class="rate-ticker">
+  <div class="ticker-track">
+    30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8% •
+    30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8%
   </div>
 </div>
 
+<div class="content-wrap">
 
- <div class="brief-block">
-  <h3>This Week’s Market-Moving Events</h3>
-  <p style="margin-bottom:12px; font-size:14px; color:#555;">
-    Key reports that could influence mortgage rates this week.
-  </p>
-
-  <table class="econ-table clean">
-    <tr>
-      <th>Day</th>
-      <th>Event</th>
-      <th>Why It Matters for Rates</th>
-    </tr>
-
-    <tr>
-      <td>Mon</td>
-      <td>ISM Manufacturing</td>
-      <td>Signals business activity strength, which can impact bond markets.</td>
-    </tr>
-
-    <tr>
-      <td>Tue</td>
-      <td>JOLTS Job Openings</td>
-      <td>Shows labor demand trends that influence rate expectations.</td>
-    </tr>
-
-    <tr>
-      <td>Wed</td>
-      <td>ADP Payroll Report</td>
-      <td>Early read on job growth ahead of the official report.</td>
-    </tr>
-
-    <tr>
-      <td>Wed</td>
-      <td>ISM Services</td>
-      <td>Measures economic momentum in the services sector.</td>
-    </tr>
-
-    <tr>
-      <td>Thu</td>
-      <td>Weekly Jobless Claims</td>
-      <td>Indicates labor market health and economic cooling or strength.</td>
-    </tr>
-
-    <tr>
-      <td>Fri</td>
-      <td>Unemployment Rate</td>
-      <td>Major driver of mortgage rate movement.</td>
-    </tr>
-
-    <tr>
-      <td>Fri</td>
-      <td>Nonfarm Payrolls</td>
-      <td>One of the most important reports for rate direction.</td>
-    </tr>
-
-    <tr>
-      <td>Fri</td>
-      <td>Average Hourly Earnings</td>
-      <td>Wage growth influences inflation expectations.</td>
-    </tr>
-
-    <tr>
-      <td>Fri</td>
-      <td>Consumer Sentiment</td>
-      <td>Impacts spending outlook and economic confidence.</td>
-    </tr>
-
-  </table>
-</div>
-
-
-  <!-- 3 MARKET SUMMARY -->
-  <div class="brief-block">
-  <h3>Today’s Market Summary</h3>
-
-  <p><strong>Market Tone:</strong> Cautious, with attention turning toward signs of labor market softening.</p>
-
-  <p>Stocks and Mortgage Bonds are both lower to start the week as markets head into a critical stretch of labor data. While the public narrative still describes the labor market as “strong,” several underlying indicators suggest conditions may be weaker than headline numbers imply.</p>
-
-  <p>Initial jobless claims, often used as proof of labor strength, are becoming less reliable. They do not fully capture displaced self-employed workers, gig workers, individuals unable to survive on unemployment benefits, and some immigrant workers hesitant to file. As a result, job losses may be underreported and the unemployment rate may not reflect true labor conditions.</p>
-
-  <p>Continuing claims present a similar distortion. Although the headline figure sits near 1.89 million, it excludes individuals whose benefits have expired. When including those unemployed for more than 27 weeks, the total rises to roughly 3.84 million — indicating meaningful deterioration beneath the surface.</p>
-
-  <p>This perspective aligns with recent comments from Fed Governor Christopher Waller, who dissented at the last Fed meeting and supported a 25 basis point rate cut. Waller argues policy remains restrictive, the labor market is weaker than commonly believed, and job growth in 2025 is tracking far below long-term averages, with revisions potentially pushing net job creation close to zero.</p>
-
-  <p>On inflation, Waller believes tariffs are contributing significantly to recent price pressures. Removing those effects brings inflation trends closer to the Fed’s 2% target. Combined with softening labor conditions, this supports the case for earlier policy easing.</p>
-
-  <p>Markets now turn to this week’s labor reports — beginning with JOLTS — to determine whether evidence of labor softening continues to build, which could be supportive for mortgage rates if confirmed.</p>
-</div>
-
-
-  <!-- 4 CLIENT FRIENDLY -->
-  <div class="brief-block highlight">
-  <h3>Client-Friendly Market Summary</h3>
-
-  <p>The market is a little uneasy to start the week because a lot of attention is on upcoming jobs data.</p>
-
-  <p>Even though headlines often say the job market is strong, the reality is more mixed. Many people who lose work today don’t show up in the usual reports — especially freelancers, gig workers, and people whose unemployment benefits have run out. That means job numbers can look better on paper than they feel in real life.</p>
-
-  <p>When economists look deeper, they’re seeing signs that more people are staying unemployed longer, even if that doesn’t show up in the main headlines yet.</p>
-
-  <p>Some Fed officials are openly acknowledging this. One Fed governor recently noted that the job market may be weaker than it appears and that interest rates could still be too high for where the economy is right now.</p>
-
-  <p>That’s why this week’s job reports matter so much. If they confirm a slowdown, it could help calm markets and support housing conditions as the year moves forward.</p>
-</div>
-
-
-  <!-- 5 WEEK IN REVIEW -->
-  <div class="brief-block">
-    <h3>Week in Review</h3>
-    <p>Major reports, trend direction, and recent rate behavior.</p>
+  <div class="content-card">
+    <h2>This Week’s Market-Moving Events</h2>
+    <table class="econ-table">
+      <tr><th>Day</th><th>Event</th><th>Why It Matters</th></tr>
+      <tr><td>Mon</td><td>ISM Manufacturing</td><td>Business activity signal for bond markets.</td></tr>
+      <tr><td>Tue</td><td>JOLTS Job Openings</td><td>Labor demand trends affect rate outlook.</td></tr>
+      <tr><td>Wed</td><td>ADP Payrolls</td><td>Early read on employment trends.</td></tr>
+      <tr><td>Thu</td><td>Jobless Claims</td><td>Weekly labor market health.</td></tr>
+      <tr><td>Fri</td><td>Nonfarm Payrolls</td><td>Major driver of mortgage rate movement.</td></tr>
+    </table>
   </div>
+
+  <div class="content-card">
+    <h2>Today’s Market Summary</h2>
+    <p>Markets are focused on labor data as underlying employment trends suggest conditions may be weaker than headline reports imply.</p>
+  </div>
+
+  <div class="content-card highlight-card">
+    <h2>Client-Friendly Market Summary</h2>
+    <p>The market feels cautious this week as attention turns to jobs data. If reports confirm slowing employment, housing conditions could stabilize moving forward.</p>
+  </div>
+
 </div>
 
-
-<div class="section">
-  <h2>🏡 Order Listing Support Materials</h2>
-  <p>Flyers, income sheets, equity reports, buyer consult tools.</p>
-  <button>Request Materials</button>
+<div class="week-review">
+  <h2>Week in Review — Week Ending February 7, 2026</h2>
+  <p>Major reports, trend direction, and recent rate behavior will appear here on Fridays.</p>
 </div>
 
-<div class="section">
-  <h2>🎥 Educational Videos</h2>
-  <p>Client explanation videos you can share.</p>
-  <button>Watch Videos</button>
-</div>
-
-<div class="section">
-  <h2>🌐 Single-Property Website Requests</h2>
-  <p>Have us build a custom listing site.</p>
-  <button>Submit Property Info</button>
-</div>
+<script>
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById("currentDate").innerText =
+    new Date().toLocaleDateString('en-US', options);
+</script>
 
 </body>
 </html>
