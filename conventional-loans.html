@@ -15,78 +15,19 @@ body {
 }
 
 .page-wrap {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: auto;
-  padding: 60px 20px;
+  padding: 70px 60px;
 }
 
-.intro {
-  background: #0b4ea2;
-  color: white;
-  padding: 25px;
-  border-radius: 10px;
-  margin-bottom: 40px;
-  font-size: 18px;
+.loan-card:not(.advisory-card) {
+  max-width: 1250px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-h1 {
-  text-align: center;
-  font-size: 38px;
-  color: #0b4ea2;
-  margin-bottom: 50px;
-}
-
-.loan-card {
-  background: white;
-  border-radius: 12px;
-  padding: 35px 30px;
-  margin-bottom: 40px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-  border-left: 6px solid #0b4ea2;
-  opacity: 0;
-  transform: translateY(40px);
-  transition: all 0.6s ease;
-}
-
-.loan-card h2 {
-  margin-top: 0;
-  color: #0b4ea2;
-  font-size: 24px;
-  margin-bottom: 18px;
-}
-
-.loan-types {
-  padding-left: 20px;
-}
-
-.loan-types li {
-  margin-bottom: 18px;
-}
-
-.loan-types strong {
-  display: block;
-  color: #0b4ea2;
-  margin-bottom: 5px;
-}
-
-.return-home-btn {
-  display: inline-block;
-  background: #0b4ea2;
-  color: #ffffff;
-  padding: 12px 22px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  transition: all 0.25s ease;
-}
-
-.return-home-btn:hover {
-  background: #083a7a;
-  transform: translateY(-2px);
-}
-
-/* ===== SOFT ATMOSPHERIC BACKGROUND ===== */
+/* Background */
 body::before {
   content: "";
   position: fixed;
@@ -94,119 +35,181 @@ body::before {
   background: url("header-background.jpeg") center/cover no-repeat;
   z-index: -2;
 }
-
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255,255,255,0.55);
   z-index: -1;
 }
-/* Glass Content Cards */
+
+/* Glass Cards */
 .loan-card {
   border-radius: 12px;
-  padding: 35px 30px;
+  padding: 45px;
   margin-bottom: 40px;
-
-  /* Frosted Sun-Washed Glass */
-  background: rgba(248, 242, 232, 0.55);
+  background: rgba(248,242,232,0.55);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  border: 1px solid rgba(255, 255, 255, 0.5);
-
-  /* Warm atmospheric shadow */
-  box-shadow:
-    0 10px 30px rgba(160, 140, 110, 0.18),
-    0 2px 8px rgba(160, 140, 110, 0.12);
-
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 10px 30px rgba(160,140,110,0.18);
   border-left: 6px solid #0b4ea2;
 }
 
-  
+.loan-card h2, .loan-card h3 { color: #0b4ea2; }
+
+.loan-card p, .loan-card li {
+  font-size: 20px;
+  line-height: 2;
+  font-weight: 500;
+  color: #2f3e55;
+}
+
+/* Hero Title */
+h1 {
+  text-align: center;
+  margin: 90px auto 50px;
+  font-size: 54px;
+  font-weight: 600;
+  max-width: 1000px;
+  color: #1f2f45;
+  line-height: 1.2;
+}
+h1 span {
+  display: block;
+  font-size: 26px;
+  font-weight: 500;
+  margin-top: 14px;
+  color: #2f4f73;
+}
+
+/* Advisory */
+.advisory-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 70px;
+  flex-wrap: wrap;
+}
+.advisory-row .loan-card {
+  flex: 1 1 480px;
+  margin-bottom: 0;
+}
+.advisory-card { border-left: 6px solid #8aa6c8; }
+.advisory-card.soft-warning { border-left: 6px solid #c8b38a; }
+
+/* CTA Panel */
+.cta-panel {
+  margin: 80px 0 60px;
+  padding: 40px 35px;
+  text-align: center;
+  background: rgba(248,242,232,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  box-shadow: 0 15px 40px rgba(160,140,110,0.18);
+}
+.cta-panel p {
+  font-size: 20px;
+  line-height: 2;
+  font-weight: 500;
+  color: #2f3e55;
+  max-width: 750px;
+  margin: 0 auto 25px;
+}
+.cta-button {
+  display: inline-block;
+  padding: 16px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 17px;
+  background: rgba(11,78,162,0.12);
+  color: #0b4ea2;
+  border: 1px solid rgba(11,78,162,0.25);
+}
+
+/* Floating Return */
+.floating-return {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #0b4ea2;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 1000;
+}
 </style>
 </head>
 
 <body>
-
 <div class="page-wrap">
-  <a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
 
+<h1>
+  Conventional Loans:
+  <span>Flexible Financing for Long-Term Homeownership</span>
+</h1>
 
-  <p class="intro">
-    Choosing the right loan starts with understanding how it fits into your full financial picture. My role is to help you evaluate options, explain trade-offs, and make informed decisions with clarity and confidence—so your mortgage supports both today’s needs and your long-term financial goals.
-  </p>
-
-  <h1>Conventional Loan Guide</h1>
-
-  <div class="loan-card">
-    <h2>What Is a Conventional Loan?</h2>
-    <p>Conventional home loans are the most common type of mortgage in the country. These loans are not insured or guaranteed by the government, unlike FHA and VA loans. Lenders offer conventional loans with varying terms and interest rates, and borrowers typically need to have good credit and a stable income to qualify.</p>
-    <p>Conventional loans can be used to purchase primary residences, second homes, or investment properties. They also offer the flexibility of choosing between fixed or adjustable interest rates.</p>
-    <p>While conventional loans may require a higher down payment than government-backed loans, they often have lower interest rates and fewer fees. Additionally, borrowers can avoid mortgage insurance if they put down at least 20% of the home’s purchase price.</p>
-    <p>Overall, conventional home loans are a popular choice for those who meet the qualifications and want to own a home without government involvement.</p>
-  </div>
-
-  <div class="loan-card">
-    <h2>Conventional Loan Overview</h2>
-    <p>Conventional home loans are the most popular type of mortgage in the US. Unlike FHA and VA loans, conventional loans are not insured or guaranteed by the government. Lenders offer conventional loans with varying terms and interest rates, and borrowers usually need good credit and stable income to qualify.</p>
-    <p>Conventional loans can be used to purchase primary residences, second homes, or investment properties. They offer the flexibility of fixed or adjustable interest rates.</p>
-    <p>Although conventional loans may require a higher down payment than government-backed loans, they often have lower interest rates and fewer fees. Borrowers can avoid mortgage insurance if they put down at least 20% of the home’s purchase price.</p>
-    <p>These loans offer advantages including lower interest rates, greater flexibility, and long-term equity growth.</p>
-  </div>
-
-  <div class="loan-card">
-    <h2>How to Qualify for a Conventional Loan</h2>
-    <p>Preapproval is the first and most important step toward acquiring your Conventional Loan. Whether you’re a first-time home buyer or seeking to refinance your current home, getting preapproved helps narrow your focus to properties that fit your budget, establish credibility with sellers, and expedites both the loan funding and closing process.</p>
-  </div>
-
-  <div class="loan-card">
-    <h2>Requirements for Refinancing into a Conventional Loan</h2>
-    <p>Refinancing into a conventional home loan can help reduce monthly payments, secure a lower rate, switch from adjustable to fixed, shorten the mortgage term, or access home equity for other financial goals.</p>
-  </div>
-
-  <div class="loan-card">
-    <h2>Types of Conventional Loans</h2>
-    <ul class="loan-types">
-      <li><strong>Fixed Rate Loans</strong>
-        <p>Offer borrowers a steady and predictable interest rate throughout the loan's duration, allowing consistent budgeting and long-term payment stability.</p>
-      </li>
-      <li><strong>Hybrid Adjustable-Rate Mortgage (Hybrid ARM)</strong>
-        <p>Starts with a lower fixed interest rate for a set period before adjusting annually, offering early payment predictability with future rate flexibility.</p>
-      </li>
-      <li><strong>Home Possible Loan</strong>
-        <p>A Freddie Mac program providing low down payment options and flexible funding sources for low to moderate-income borrowers.</p>
-      </li>
-      <li><strong>HomeReady Loan</strong>
-        <p>A Fannie Mae program with flexible underwriting requirements and low down payment options for qualified borrowers.</p>
-      </li>
-      <li><strong>Manufactured Home Loans</strong>
-        <p>Financing designed for factory-built homes placed on permanent foundations, available for both purchase and refinance.</p>
-      </li>
-      <li><strong>Renovation Loans</strong>
-        <p>Allows borrowers to finance a home purchase or refinance along with renovation costs in one loan.</p>
-      </li>
+<div class="advisory-row">
+  <div class="loan-card advisory-card">
+    <h2>Who This Loan Type Is Typically Best For</h2>
+    <ul>
+      <li>Borrowers with strong credit and stable income</li>
+      <li>Homebuyers seeking competitive rates and flexible terms</li>
+      <li>Clients purchasing primary, second, or investment homes</li>
+      <li>Borrowers planning for long-term equity growth</li>
     </ul>
-    <a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
-
   </div>
+
+  <div class="loan-card advisory-card soft-warning">
+    <h2>When This Loan May Not Be the Best Fit</h2>
+    <ul>
+      <li>Borrowers needing very low down payment options</li>
+      <li>Clients with recent credit challenges</li>
+      <li>Situations better served by government-backed programs</li>
+    </ul>
+  </div>
+</div>
+
+<div class="cta-panel">
+  <p>Choosing the right loan starts with understanding how it fits into your full financial picture. My role is to help you evaluate options, explain trade-offs, and make informed decisions with clarity and confidence — so your mortgage supports both today’s needs and your long-term financial goals.</p>
+  <a href="index.html#contact" class="cta-button">Schedule a Strategy Conversation</a>
+</div>
+
+<div class="loan-card">
+  <h2>How Conventional Loans Fit Into the Mortgage Landscape</h2>
+  <p>Conventional loans are the most widely used mortgage structure and serve as the foundation of modern home financing. These loans are not government-insured, allowing for flexible terms, competitive pricing, and broader property options.</p>
+</div>
+
+<div class="loan-card">
+  <h2>What Makes Conventional Financing Different</h2>
+  <p>Conventional loans offer both fixed and adjustable rate options and may be used for primary residences, second homes, and investment properties. With sufficient equity, borrowers can also avoid long-term mortgage insurance.</p>
+</div>
+
+<div class="loan-card">
+  <h2>How Qualification Is Evaluated</h2>
+  <ul>
+    <li>Strong credit profile</li>
+    <li>Stable income history</li>
+    <li>Debt-to-income balance</li>
+    <li>Down payment and reserves</li>
+  </ul>
+</div>
+
+<div class="loan-card">
+  <h2>Common Types of Conventional Loan Structures</h2>
+  <ul>
+    <li>Fixed-Rate Mortgages</li>
+    <li>Hybrid Adjustable-Rate Mortgages</li>
+    <li>HomeReady & Home Possible Programs</li>
+    <li>Manufactured Home Financing</li>
+    <li>Renovation Loan Options</li>
+  </ul>
+</div>
 
 </div>
 
-<script>
-const cards = document.querySelectorAll(".loan-card");
-
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.style.opacity = 1;
-      entry.target.style.transform = "translateY(0)";
-    }
-  });
-}, { threshold: 0.1 });
-
-cards.forEach(card => observer.observe(card));
-</script>
-
+<a href="index.html#products" class="floating-return">← Mortgage Options</a>
 </body>
 </html>
