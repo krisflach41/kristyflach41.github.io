@@ -1825,10 +1825,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Mortgage Options
-initLoop("#loanTrack", {
-  speed: 0.5,
-  dotsSelector: "#carouselDots"
-});
+if (window.innerWidth > 768) {
+  initLoop("#loanTrack", {
+    speed: 0.5,
+    dotsSelector: "#carouselDots"
+  });
+}
+
 
 initLoop(".review-track", {
   speed: 0.5,
