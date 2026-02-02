@@ -9,7 +9,7 @@
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 50px 0 80px 0;
+ padding: 0 0 80px 0;
   background:
     linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.94)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
@@ -46,12 +46,14 @@ h1 {
 
 /* RATE TICKER */
 .rate-ticker {
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
   overflow: hidden;
   background: #0b1f3a;
   color: white;
   padding: 12px 0;
 }
+
 
 .ticker-track {
   display: inline-block;
