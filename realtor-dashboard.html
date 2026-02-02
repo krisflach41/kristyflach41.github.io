@@ -9,6 +9,43 @@ body { font-family: Arial; margin:0; padding:40px; background:#f4f7fb; }
 h1 { color:#0b4ea2; }
 .section { background:white; padding:25px; border-radius:12px; margin-bottom:25px; box-shadow:0 8px 20px rgba(0,0,0,0.08); }
 button { padding:10px 16px; border:none; border-radius:6px; background:#0b4ea2; color:white; cursor:pointer; }
+
+  .brief-block {
+  background: #f9fbff;
+  border-left: 4px solid #0b4ea2;
+  padding: 15px 18px;
+  margin-top: 18px;
+  border-radius: 8px;
+}
+
+.brief-block h3 {
+  margin-top: 0;
+  color: #0b1f3a;
+}
+
+.highlight {
+  background: #eef4ff;
+  border-left: 4px solid #2e7d32;
+}
+
+.econ-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+.econ-table th,
+.econ-table td {
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.econ-table th {
+  background: #0b4ea2;
+  color: white;
+}
+
 </style>
 </head>
 <body>
@@ -16,10 +53,50 @@ button { padding:10px 16px; border:none; border-radius:6px; background:#0b4ea2; 
 <h1>Agent Edge Partner Portal</h1>
 
 <div class="section">
-  <h2>📊 Daily Agent Edge Market Brief</h2>
-  <p>Latest market update for your client conversations.</p>
-  <button>View Today’s Brief</button>
+  <h2>📊 Agent Edge Market Command Center</h2>
+
+  <!-- 1 DAILY RATES -->
+  <div class="brief-block">
+    <h3>Daily Estimated Fixed Rates</h3>
+    <p><strong>30-Year:</strong> ---% &nbsp; | &nbsp;
+       <strong>FHA:</strong> ---% &nbsp; | &nbsp;
+       <strong>VA:</strong> ---% &nbsp; | &nbsp;
+       <strong>Jumbo:</strong> ---% &nbsp; | &nbsp;
+       <strong>15-Year:</strong> ---%</p>
+  </div>
+
+  <!-- 2 ECON CALENDAR -->
+  <div class="brief-block">
+    <h3>This Week’s Economic Calendar</h3>
+    <table class="econ-table">
+      <tr><th>Day</th><th>Report</th><th>Why It Matters</th></tr>
+      <tr><td>Mon</td><td>—</td><td>—</td></tr>
+      <tr><td>Tue</td><td>—</td><td>—</td></tr>
+      <tr><td>Wed</td><td>—</td><td>—</td></tr>
+      <tr><td>Thu</td><td>—</td><td>—</td></tr>
+      <tr><td>Fri</td><td>—</td><td>—</td></tr>
+    </table>
+  </div>
+
+  <!-- 3 MARKET SUMMARY -->
+  <div class="brief-block">
+    <h3>Today’s Market Summary</h3>
+    <p>Market tone, what’s moving bonds, and what it means for mortgage rates.</p>
+  </div>
+
+  <!-- 4 CLIENT FRIENDLY -->
+  <div class="brief-block highlight">
+    <h3>Client-Friendly Summary</h3>
+    <p><em>“Here’s how to explain today’s market to clients…”</em></p>
+  </div>
+
+  <!-- 5 WEEK IN REVIEW -->
+  <div class="brief-block">
+    <h3>Week in Review</h3>
+    <p>Major reports, trend direction, and recent rate behavior.</p>
+  </div>
 </div>
+
 
 <div class="section">
   <h2>🏡 Order Listing Support Materials</h2>
