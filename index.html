@@ -1792,13 +1792,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const gap = 30;
     const cardWidth = cards[0].offsetWidth + gap;
 
-   // Clone only when carousel mode is active
-if (window.innerWidth > 768) {
+  // Clone only for carousel mode
+if (window.innerWidth > 768 && !track.dataset.cloned) {
   cards.forEach(card => {
     const clone = card.cloneNode(true);
+    clone.classList.add("clone");
     track.appendChild(clone);
   });
+  track.dataset.cloned = "true";
 }
+
 
 
     let position = 0;
