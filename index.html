@@ -1875,6 +1875,14 @@ toggleBtn.addEventListener("click", () => {
     sliderWrapper.classList.remove("grid-mode");
     toggleBtn.textContent = "View All Options";
   }
+  const clones = document.querySelectorAll("#loanTrack .clone");
+
+if (gridMode) {
+  clones.forEach(c => c.remove());   // remove duplicates
+} else {
+  track.dataset.cloned = "false";    // allow re-clone if returning to carousel
+}
+
 });
 
 </script>
