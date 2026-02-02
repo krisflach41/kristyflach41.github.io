@@ -1794,11 +1794,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const gap = 30;
     const cardWidth = cards[0].offsetWidth + gap;
 
-    // Clone for infinite loop
-    cards.forEach(card => {
-      const clone = card.cloneNode(true);
-      track.appendChild(clone);
-    });
+   // Clone only when carousel mode is active
+if (window.innerWidth > 768) {
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    track.appendChild(clone);
+  });
+}
+
 
     let position = 0;
     let isPaused = false;
