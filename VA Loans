@@ -1,1 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VA Loan Guide</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f7fb;
+  color: #333;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 1400px;
+  margin: auto;
+  padding: 70px 60px;
+}
+
+.return-home-btn {
+  display: inline-block;
+  background: #0b4ea2;
+  color: #ffffff;
+  padding: 12px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+  transition: all 0.25s ease;
+  margin-bottom: 40px;
+}
+
+.return-home-btn:hover {
+  background: #083a7a;
+  transform: translateY(-2px);
+}
+
+/* Background */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: url("header-background.jpeg") center/cover no-repeat;
+  z-index: -2;
+}
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.55);
+  z-index: -1;
+}
+
+/* Title */
+.main-title {
+  text-align: center;
+  margin: 80px auto 60px;
+  line-height: 1.2;
+}
+.title-line-1 {
+  display: block;
+  font-size: 52px;
+  font-weight: 700;
+  color: #0b4ea2;
+}
+.title-line-2 {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: #3a5575;
+  margin-top: 12px;
+}
+
+/* Cards */
+.loan-card {
+  border-radius: 12px;
+  padding: 45px;
+  margin-bottom: 60px;
+  background: rgba(248,242,232,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow:
+    0 10px 30px rgba(160,140,110,0.18),
+    0 2px 8px rgba(160,140,110,0.12);
+  border-left: 6px solid #0b4ea2;
+}
+.loan-card h2, .loan-card h3 { color: #0b4ea2; }
+
+.advisory-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 70px;
+  flex-wrap: wrap;
+}
+.advisory-card { border-left: 6px solid #8aa6c8; }
+.soft-warning { border-left: 6px solid #c8b38a; }
+.advisory-row .loan-card { flex: 1 1 480px; }
+
+/* CTA */
+.cta-panel {
+  margin: 70px 0;
+  padding: 45px;
+  text-align: center;
+  background: rgba(248,242,232,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  box-shadow:
+    0 15px 40px rgba(160,140,110,0.18),
+    0 3px 10px rgba(160,140,110,0.12);
+}
+.cta-button {
+  display: inline-block;
+  padding: 16px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  background: rgba(11,78,162,0.12);
+  color: #0b4ea2;
+  border: 1px solid rgba(11,78,162,0.25);
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+
+<a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
+
+<h1 class="main-title">
+  <span class="title-line-1">Understanding VA Loans</span>
+  <span class="title-line-2">Earned Benefits Designed for Long-Term Stability</span>
+</h1>
+
+<div class="advisory-row">
+  <div class="loan-card advisory-card">
+    <h2>Who VA Financing Is Typically Best For</h2>
+    <ul>
+      <li>Eligible veterans, active-duty service members, and certain spouses</li>
+      <li>Buyers wanting little to no down payment</li>
+      <li>Households prioritizing affordable monthly payments</li>
+      <li>Borrowers seeking flexible credit guidelines</li>
+    </ul>
+  </div>
+
+  <div class="loan-card advisory-card soft-warning">
+    <h2>When VA May Not Be the Ideal Fit</h2>
+    <ul>
+      <li>Borrowers purchasing non-owner-occupied properties</li>
+      <li>Situations exceeding VA loan limits without entitlement coverage</li>
+      <li>Buyers who may prefer to avoid funding fees</li>
+    </ul>
+  </div>
+</div>
+
+<div class="cta-panel">
+  <h2>Strategic Use of Your VA Benefit Matters</h2>
+  <p>Your VA eligibility is more than a loan option — it’s a long-term financial tool. Structuring it correctly can preserve future flexibility, reduce costs, and strengthen your housing strategy.</p>
+  <a href="index.html#contact" class="cta-button">Schedule a Strategy Conversation</a>
+</div>
+
+<div class="loan-card">
+  <h2>How VA Loans Fit into the Mortgage Landscape</h2>
+  <p>VA loans are backed by the <strong>U.S. Department of Veterans Affairs</strong> and are designed to honor military service by expanding access to affordable homeownership. These loans reduce lender risk through a federal guarantee, which often allows more favorable terms.</p>
+</div>
+
+<div class="loan-card">
+  <h2>What Makes VA Financing Different</h2>
+  <p>Key benefits include no required down payment, competitive interest rates, and no monthly mortgage insurance. VA guidelines emphasize sustainable housing for those who have served.</p>
+</div>
+
+<div class="loan-card">
+  <h2>How Qualification Is Evaluated</h2>
+  <p>Qualification centers on Certificate of Eligibility (COE), income stability, credit profile, and property eligibility. Lenders also assess residual income to ensure long-term affordability.</p>
+</div>
+
+<div class="loan-card">
+  <h2>Strategic Considerations for VA Refinancing</h2>
+  <p>VA refinance options, including Interest Rate Reduction Refinance Loans (IRRRL) and cash-out refinancing, can help improve payment structure or access equity — but should align with broader financial planning.</p>
+</div>
+
+<div class="loan-card">
+  <h2>Common VA Loan Structures</h2>
+  <p>VA Purchase • VA IRRRL (Streamline) • VA Cash-Out Refinance</p>
+</div>
+
+</div>
+</body>
+</html>
 
