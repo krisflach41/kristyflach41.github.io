@@ -121,6 +121,27 @@ body::after {
   color: #0b4ea2;
   border: 1px solid rgba(11,78,162,0.25);
 }
+
+.floating-return {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #0b4ea2;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-return:hover {
+  transform: translateY(-3px);
+  background: #083a7a;
+}
+
 </style>
 </head>
 
@@ -128,7 +149,6 @@ body::after {
 
 <div class="page-wrap">
 
-<a href="index.html#products" class="return-home-btn">← Return to Mortgage Options</a>
 
 <h1 class="main-title">
   <span class="title-line-1">Understanding VA Loans</span>
@@ -190,4 +210,3 @@ body::after {
 </div>
 </body>
 </html>
-
