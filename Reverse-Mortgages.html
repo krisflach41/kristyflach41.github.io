@@ -15,60 +15,19 @@ body {
 }
 
 .page-wrap {
-  max-width: 1000px;
+  max-width: 1400px;
   margin: auto;
-  padding: 60px 20px;
+  padding: 70px 60px;
 }
 
-.return-home-btn {
-  display: inline-block;
-  background: #0b4ea2;
-  color: #ffffff;
-  padding: 12px 22px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 600;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-  transition: all 0.25s ease;
-  margin-bottom: 40px;
+.loan-card:not(.advisory-card) {
+  max-width: 1250px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.return-home-btn:hover {
-  background: #083a7a;
-  transform: translateY(-2px);
-}
-
-.intro {
-  background: #0b4ea2;
-  color: white;
-  padding: 25px;
-  border-radius: 10px;
-  margin-bottom: 40px;
-  font-size: 18px;
-}
-
-h1 {
-  text-align: center;
-  font-size: 38px;
-  color: #0b4ea2;
-  margin-bottom: 50px;
-}
-
-.loan-card {
-  background: white;
-  border-radius: 12px;
-  padding: 35px 30px;
-  margin-bottom: 40px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
-  border-left: 6px solid #0b4ea2;
-}
-
-/* 🔒 LOCKED RULE */
-.loan-card h2,
-.loan-card h3 {
-  color: #0b4ea2;
-}
-  /* ===== SOFT ATMOSPHERIC BACKGROUND ===== */
+/* Background */
 body::before {
   content: "";
   position: fixed;
@@ -76,79 +35,166 @@ body::before {
   background: url("header-background.jpeg") center/cover no-repeat;
   z-index: -2;
 }
-
 body::after {
   content: "";
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255,255,255,0.55);
   z-index: -1;
 }
-/* Glass Content Cards */
+
+/* Glass Cards */
 .loan-card {
   border-radius: 12px;
-  padding: 35px 30px;
+  padding: 45px;
   margin-bottom: 40px;
-
-  /* Frosted Sun-Washed Glass */
-  background: rgba(248, 242, 232, 0.55);
+  background: rgba(248,242,232,0.55);
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  border: 1px solid rgba(255, 255, 255, 0.5);
-
-  /* Warm atmospheric shadow */
-  box-shadow:
-    0 10px 30px rgba(160, 140, 110, 0.18),
-    0 2px 8px rgba(160, 140, 110, 0.12);
-
+  border: 1px solid rgba(255,255,255,0.5);
+  box-shadow: 0 10px 30px rgba(160,140,110,0.18);
   border-left: 6px solid #0b4ea2;
 }
 
+.loan-card h2, .loan-card h3 { color: #0b4ea2; }
 
+.loan-card p, .loan-card li {
+  font-size: 20px;
+  line-height: 2;
+  font-weight: 500;
+  color: #2f3e55;
+}
+
+/* Hero Title */
+h1 {
+  text-align: center;
+  margin: 90px auto 50px;
+  font-size: 54px;
+  font-weight: 600;
+  max-width: 1000px;
+  color: #1f2f45;
+  line-height: 1.2;
+}
+h1 span {
+  display: block;
+  font-size: 26px;
+  font-weight: 500;
+  margin-top: 14px;
+  color: #2f4f73;
+}
+
+/* Advisory Cards */
+.advisory-row {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 70px;
+  flex-wrap: wrap;
+}
+.advisory-row .loan-card {
+  flex: 1 1 480px;
+  margin-bottom: 0;
+}
+.advisory-card { border-left: 6px solid #8aa6c8; }
+.advisory-card.soft-warning { border-left: 6px solid #c8b38a; }
+
+/* CTA Panel */
+.cta-panel {
+  margin: 80px 0 60px;
+  padding: 40px 35px;
+  text-align: center;
+  background: rgba(248,242,232,0.6);
+  backdrop-filter: blur(10px);
+  border-radius: 14px;
+  box-shadow: 0 15px 40px rgba(160,140,110,0.18);
+}
+.cta-panel p {
+  font-size: 20px;
+  line-height: 2;
+  font-weight: 500;
+  color: #2f3e55;
+  max-width: 750px;
+  margin: 0 auto 25px;
+}
+.cta-button {
+  display: inline-block;
+  padding: 16px 28px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 17px;
+  background: rgba(11,78,162,0.12);
+  color: #0b4ea2;
+  border: 1px solid rgba(11,78,162,0.25);
+}
+
+/* Floating Return */
+.floating-return {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: #0b4ea2;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  z-index: 1000;
+}
 </style>
 </head>
 
 <body>
-
 <div class="page-wrap">
 
-<a href="index.html#products" class="return-home-btn">Return to Mortgage Options</a>
+<h1>
+  Reverse Mortgages:
+  <span>Home Equity Strategies for Retirement Stability</span>
+</h1>
 
-<p class="intro">
-Choosing the right loan starts with understanding how it fits into your full financial picture. My role is to help you evaluate options, explain trade-offs, and make informed decisions with clarity and confidence—so your mortgage supports both today’s needs and your long-term financial goals.
-</p>
+<div class="advisory-row">
+  <div class="loan-card advisory-card">
+    <h2>Who This Loan Type Is Typically Best For</h2>
+    <ul>
+      <li>Homeowners age 62+ with significant home equity</li>
+      <li>Retirees seeking to improve monthly cash flow</li>
+      <li>Individuals wanting to reduce or eliminate mortgage payments</li>
+      <li>Homeowners looking to preserve retirement savings</li>
+    </ul>
+  </div>
 
-<h1>Reverse Mortgage Guide</h1>
+  <div class="loan-card advisory-card soft-warning">
+    <h2>When This Loan May Not Be the Best Fit</h2>
+    <ul>
+      <li>Borrowers planning to move in the near future</li>
+      <li>Heirs relying heavily on full home equity inheritance</li>
+      <li>Homeowners unable to maintain property, taxes, and insurance</li>
+    </ul>
+  </div>
+</div>
 
-<div class="loan-card">
-  <h2>What Is a Reverse Mortgage?</h2>
-  <p>Reverse mortgage loans offer a unique opportunity for eligible homeowners to tap into the equity in their homes without the need to make monthly payments. With a reverse mortgage, individuals aged 62 or older can leverage the equity in their homes to pay off or refinance their current mortgage, or purchase a new home.</p>
-  <p>The amount that can be borrowed is based on several factors, including the value of the home, the borrower’s age, and the interest rate at the time of borrowing.</p>
-  <p>Unlike traditional loans, repayment of the loan is only required when the borrower no longer occupies the property as their primary residence or if they pass away.</p>
-  <p>Eligible non-borrowing spouses can even continue living in the home and accessing benefits as long as they meet their specific loan’s obligations, such as property maintenance, taxes, or related expenses.</p>
-  <p>If you’re interested in learning more about how a reverse mortgage could benefit you, PRMG’s Home Mortgage Professionals can provide you with the information and resources you need to make an informed decision about your financial future.</p>
+<div class="cta-panel">
+  <p>Choosing the right loan structure starts with understanding how it fits into your retirement plan. My role is to help you evaluate trade-offs, long-term implications, and equity strategies — so your mortgage supports financial stability, flexibility, and peace of mind.</p>
+  <a href="index.html#contact" class="cta-button">Schedule a Strategy Conversation</a>
 </div>
 
 <div class="loan-card">
-  <h2>What Is HECM for Purchase?</h2>
-  <p>HECM for Purchase, also referred to as a Home Equity Conversion Mortgage for Purchase, is a government-insured loan that enables eligible borrowers to purchase a new home by utilizing reverse mortgage loan proceeds.</p>
-  <p>This solution allows homeowners to leverage equity from their current home to acquire a new property in a single transaction, simplifying loan costs and eliminating the need for monthly mortgage payments.</p>
-  <p>Borrowers must be at least 62 years old (one non-borrowing spouse may be younger), own the property, live in the home as their primary residence, complete HUD-approved counseling, and have sufficient funds for the required down payment.</p>
-  <p>HECM for Purchase empowers eligible borrowers to increase buying power, move closer to family, transition to senior communities, right-size, and preserve retirement assets while potentially eliminating monthly mortgage payments.</p>
+  <h2>How Reverse Mortgages Work</h2>
+  <p>A reverse mortgage allows eligible homeowners to access a portion of their home’s equity without making monthly mortgage payments. Loan proceeds may be received as a lump sum, line of credit, or scheduled payments.</p>
+  <p>Repayment typically occurs when the home is sold, the borrower moves out permanently, or passes away.</p>
 </div>
 
 <div class="loan-card">
-  <h2>What Is a Jumbo Reverse Mortgage?</h2>
-  <p>Jumbo reverse mortgage loans offer borrowers greater access to home equity than the federally insured HECM lending limit allows. Also known as proprietary reverse mortgages, these privately funded loans provide an alternative to standard HECM programs.</p>
-  <p>Jumbo reverse mortgages pay off your existing mortgage and allow access to remaining home equity, with proceeds available as a lump sum, line of credit, or regular payments.</p>
-  <p>Some proprietary products allow borrowers as young as 55, owning high-value property with substantial equity, to qualify after financial assessment and HUD counseling.</p>
-  <p>Loan proceeds can reach up to $4 million depending on property value, borrower age, and interest rates.</p>
-  <p>At PRMG, our Home Mortgage Professionals guide homeowners through the Jumbo Reverse Mortgage process to develop customized solutions aligned with financial goals.</p>
+  <h2>HECM for Purchase</h2>
+  <p>The Home Equity Conversion Mortgage (HECM) for Purchase program allows qualified borrowers to buy a new primary residence using reverse mortgage funds. This can support right-sizing, relocating, or moving closer to family while avoiding monthly mortgage payments.</p>
 </div>
 
-<a href="index.html#products" class="return-home-btn">Return to Mortgage Options</a>
+<div class="loan-card">
+  <h2>Jumbo Reverse Mortgages</h2>
+  <p>Proprietary jumbo reverse programs allow access to equity beyond HECM limits and may be available for higher-value homes. These solutions can offer greater borrowing capacity and flexible payout options.</p>
+</div>
 
 </div>
+
+<a href="index.html#products" class="floating-return">← Mortgage Options</a>
 </body>
 </html>
