@@ -51,27 +51,29 @@ h1 {
   background: #0b1f3a;
   color: white;
   padding: 14px 0;
+  position: relative;
 }
 
 .ticker-track {
   display: flex;
-  animation: ticker 20s linear infinite;
+  width: 200%;
+  animation: ticker 18s linear infinite;
 }
 
-.ticker-content {
+.ticker-line {
   display: flex;
-  flex-shrink: 0;
+  width: 50%;
 }
 
-.ticker-content span {
+.ticker-line span {
   margin-right: 120px;
   white-space: nowrap;
   font-weight: 500;
 }
 
 @keyframes ticker {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 
@@ -150,14 +152,14 @@ h1 {
 
 <div class="rate-ticker">
   <div class="ticker-track">
-    <div class="ticker-content">
+    <div class="ticker-line">
       <span>30-Year 6.22%</span>
       <span>FHA 6.076%</span>
       <span>VA 5.825%</span>
       <span>Jumbo 6.308%</span>
       <span>15-Year 5.8%</span>
     </div>
-    <div class="ticker-content">
+    <div class="ticker-line">
       <span>30-Year 6.22%</span>
       <span>FHA 6.076%</span>
       <span>VA 5.825%</span>
@@ -166,7 +168,6 @@ h1 {
     </div>
   </div>
 </div>
-
 
 
 
