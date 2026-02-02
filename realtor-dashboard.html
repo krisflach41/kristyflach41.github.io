@@ -46,24 +46,24 @@ h1 {
 
 /* RATE TICKER */
 .rate-ticker {
-  width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  width: 100%;
   overflow: hidden;
   background: #0b1f3a;
   color: white;
   padding: 12px 0;
 }
 
-
-.ticker-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: ticker 18s linear infinite;
+.ticker-window {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
 }
 
-.ticker-track span {
+.ticker-content {
   display: inline-block;
-  padding-right: 100px;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: ticker 18s linear infinite;
   font-weight: 500;
 }
 
@@ -144,11 +144,14 @@ h1 {
 <div class="date-bar" id="currentDate"></div>
 
 <div class="rate-ticker">
-  <div class="ticker-track">
-    <span>30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8% •</span>
-    <span>30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8% •</span>
+  <div class="ticker-window">
+    <div class="ticker-content">
+      30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8% •
+      30-Year 6.22% • FHA 6.076% • VA 5.825% • Jumbo 6.308% • 15-Year 5.8% •
+    </div>
   </div>
 </div>
+
 
 
 
