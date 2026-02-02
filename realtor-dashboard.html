@@ -53,19 +53,14 @@ h1 {
   padding: 14px 0;
 }
 
-.ticker-window {
-  width: 100%;
-  overflow: hidden;
-}
-
 .ticker-track {
   display: flex;
-  width: max-content;
   animation: ticker 20s linear infinite;
 }
 
 .ticker-content {
   display: flex;
+  flex-shrink: 0;
 }
 
 .ticker-content span {
@@ -75,9 +70,10 @@ h1 {
 }
 
 @keyframes ticker {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
+
 
 
 
@@ -153,26 +149,24 @@ h1 {
 <div class="date-bar" id="currentDate"></div>
 
 <div class="rate-ticker">
-  <div class="ticker-window">
-    <div class="ticker-track">
-      <div class="ticker-content">
-        <span>30-Year 6.22%</span>
-        <span>FHA 6.076%</span>
-        <span>VA 5.825%</span>
-        <span>Jumbo 6.308%</span>
-        <span>15-Year 5.8%</span>
-      </div>
-
-      <div class="ticker-content">
-        <span>30-Year 6.22%</span>
-        <span>FHA 6.076%</span>
-        <span>VA 5.825%</span>
-        <span>Jumbo 6.308%</span>
-        <span>15-Year 5.8%</span>
-      </div>
+  <div class="ticker-track">
+    <div class="ticker-content">
+      <span>30-Year 6.22%</span>
+      <span>FHA 6.076%</span>
+      <span>VA 5.825%</span>
+      <span>Jumbo 6.308%</span>
+      <span>15-Year 5.8%</span>
+    </div>
+    <div class="ticker-content">
+      <span>30-Year 6.22%</span>
+      <span>FHA 6.076%</span>
+      <span>VA 5.825%</span>
+      <span>Jumbo 6.308%</span>
+      <span>15-Year 5.8%</span>
     </div>
   </div>
 </div>
+
 
 
 
