@@ -218,14 +218,16 @@
 }
 
 
-  .nav-container {
+.nav-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;            /* full width */
+  max-width: none;        /* remove centering constraint */
+  padding: 0 25px;        /* small edge border */
+  box-sizing: border-box;
 }
+
 
 
     .logo img {
@@ -356,13 +358,15 @@
       transform: translateY(-2px);
     }
 
-    .apply-disclaimer {
-      font-size: 12px;
-      opacity: 0.7;
-      margin-top: 14px;
-      max-width: 420px;
-      line-height: 1.4;
-    }
+   .apply-disclaimer {
+  font-size: 12px;
+  font-weight: 600; /* semi-bold */
+  opacity: 0.75;
+  margin-top: 14px;
+  max-width: 420px;
+  line-height: 1.4;
+}
+
 
     .hero-image {
       position: relative;
@@ -1249,9 +1253,11 @@
           Apply Here
         </a>
 
-        <p class="apply-disclaimer">
-          By clicking <strong>Apply Here</strong>, you will be redirected to PRMG’s secure mortgage application portal.
-        </p>
+       <p class="apply-disclaimer">
+  You will be redirected to Paramount Residential Mortgage<br>
+  secure application portal.
+</p>
+
       </div>
 
       <div class="hero-image">
