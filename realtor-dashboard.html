@@ -56,22 +56,23 @@ h1 {
   background: #0b1f3a;
   color: white;
   padding: 12px 0;
+  white-space: nowrap;
 }
 
 .ticker-track {
-  display: flex;
-  width: max-content;
-  animation: ticker 18s linear infinite;
+  display: inline-flex;
+  animation: ticker 22s linear infinite;
 }
 
 .ticker-track span {
-  white-space: nowrap;
-  padding-right: 60px;
+  display: inline-block;
+  padding-right: 80px;
+  font-weight: 500;
 }
 
 @keyframes ticker {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 
