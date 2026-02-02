@@ -81,20 +81,24 @@ h1 {
   max-width: 1100px;
   margin: 30px auto;
 }
-.content-card {
+.content-card,
+.highlight-card {
   max-width: 1200px;
   margin: 0 auto 40px auto;
   padding: 60px 40px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.60);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+
+  background: rgba(248, 242, 232, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border: 1px solid rgba(255, 255, 255, 0.5);
+
+  box-shadow:
+    0 10px 30px rgba(160, 140, 110, 0.18),
+    0 2px 8px rgba(160, 140, 110, 0.12);
 }
 
-.highlight-card {
-  background: rgba(230,240,255,0.60);
-}
 
 
 /* TABLE */
