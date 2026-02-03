@@ -358,27 +358,20 @@ h1 {
 }
 /* ===== AUTO READ MORE SYSTEM ===== */
 .summary-text {
-  max-height: 110px;     /* visible preview height */
+  max-height: 110px;
   overflow: hidden;
   position: relative;
-  transition: max-height 0.35s ease;
+}
+.summary-text::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(248,242,232,0), rgba(248,242,232,1));
 }
 
-.summary-text.expanded {
-  max-height: 500px;     /* enough to show full text */
-}
-
-.read-more-btn {
-  margin-top: 8px;
-  font-size: 12px;
-  background: #0b4ea2;
-  color: white;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 20px;
-  cursor: pointer;
-  display: none; /* hidden until needed */
-}
 
 </style>
 </head>
@@ -509,7 +502,8 @@ h1 {
     Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
   </p>
 </div>
-<button class="read-more-btn">Read More</button>
+<a href="briefs/2026-02-03-summary.html" class="read-more-btn">Read Full Brief →</a>
+
 
 
   </div>
@@ -537,7 +531,8 @@ Some Fed officials are openly acknowledging this. One Fed governor recently said
 
 That’s why this week’s job reports matter so much. If they confirm the slowdown, it could help calm markets and support housing conditions as the year moves forward.</p>
 </div>
-<button class="read-more-btn">Read More</button>
+<a href="briefs/2026-02-03-client.html" class="read-more-btn">Read Full Version →</a>
+
 
 
   </div>
