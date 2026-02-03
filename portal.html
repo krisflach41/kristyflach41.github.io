@@ -201,8 +201,9 @@ h1 {
 }
 /* ===== MARKET-MOVING EVENTS HEADER ALIGNMENT ===== */
 .events-header {
-  text-align: center;
-  margin-bottom: 18px;
+  text-align: center;          /* centers title + week label */
+  padding: 26px 30px 12px 30px; /* controls space INSIDE top of card */
+  margin: 0 0 12px 0;           /* controls space BEFORE first event row */
 }
 
 .events-header .events-week {
@@ -211,15 +212,16 @@ h1 {
   letter-spacing: 1.5px;
   color: #0b4ea2;
   font-weight: 700;
-  display: block;
-  margin-bottom: 6px;
+  margin-bottom: 10px;          /* distance between WEEK OF and title */
 }
 
 .events-header .events-title {
   font-size: 22px;
   font-weight: 700;
   color: #0b1f3a;
+  margin: 0;                    /* removes weird default spacing */
 }
+
 
 /* ===== OTHER CARD TYPOGRAPHY (UNCHANGED) ===== */
 .blog-category {
