@@ -303,7 +303,11 @@ h1 {
 
  <article class="blog-card event-card">
 
-  <div class="event-header">Market-Moving Events</div>
+  <div class="card-header">
+  <div class="card-sub" id="weekLabel">WEEK OF</div>
+  <h3 class="card-title">Market-Moving Events</h3>
+</div>
+
 
 <!-- MONDAY -->
 <div class="event-row" onclick="toggleDetails(this)">
@@ -444,6 +448,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 });
+</script>
+<script>
+function getMonday(d) {
+  d = new Date(d);
+  const day = d.getDay(),
+        diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  return new Date(d.setDate(diff));
+}
+
+function formatWeekOfDate(date) {
+  const options = { month: 'short', day: 'numeric' };
+  const formatted = date.toLocaleDateString('en-US', options);
+
+  const day = date.getDate();
+  const suffix =
+    day % 10 === 1 && day !== 11 ? "st" :
+    day % 10 === 2 && day !== 12 ? "nd" :
+    day % 10 === 3 && day !== 13 ? "rd" : "th";
+
+  return `WEEK OF ${formatted}${suffix}`;
+}
+
+const monday = getMonday(new Date());
+document.getElementById("weekLabel").innerText = formatWeekOfDate(monday);
 </script>
 
 
