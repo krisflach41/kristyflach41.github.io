@@ -536,17 +536,7 @@ const monday = getMonday(new Date());
 document.getElementById("weekLabel").innerText = formatWeekOfDate(monday);
 </script>
 
-<script>
-const options = {
-  weekday: 'long',
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric'
-};
 
-document.getElementById("currentDate").innerText =
-  new Date().toLocaleDateString('en-US', options);
-</script>
 
 </body>
 </html>
