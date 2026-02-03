@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Partner Portal</title>
 
-
 <style>
+
+/* ===== BASE ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -24,7 +25,7 @@ h1 {
   letter-spacing: 1px;
 }
 
-/* NAV */
+/* ===== NAV ===== */
 .portal-nav {
   text-align: center;
   margin-bottom: 10px;
@@ -36,24 +37,18 @@ h1 {
   color: #0b4ea2;
 }
 
-/* DATE */
+/* ===== DATE ===== */
 .date-bar {
   width: 100%;
   padding: 0 50px;
   margin: 16px 0;
   text-align: left;
-
-  font-size: 22px !important;
-  font-weight: 800 !important;
-  color: #0b1f3a !important;
-
-  letter-spacing: 0.5px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0b1f3a;
 }
 
-
-
-
-/* TICKER */
+/* ===== RATE TICKER ===== */
 .rate-ticker {
   width: 100%;
   overflow: hidden;
@@ -80,39 +75,76 @@ h1 {
   100% { transform: translateX(-50%); }
 }
 
-/* ===== AGENT EDGE TOOL CARDS ===== */
-.blog-card {
+/* ===== MORNING BRIEF PANEL ===== */
+.blog-section {
+  max-width: 1200px;
+  margin: 80px auto 0 auto;
+  padding: 70px 50px;
   border-radius: 22px;
-  padding: 0;
-  overflow: hidden;
 
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.88),
-    rgba(255,255,255,0.72)
-  );
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  border: 1px solid rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+    0 25px 70px rgba(0,0,0,0.10),
+    0 8px 25px rgba(0,0,0,0.06);
 
-  transition: all .25s ease;
+  text-align: center;
+}
+
+/* ===== HEADINGS ===== */
+.section-title {
+  font-size: 36px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+  color: #0b1f3a;
+}
+
+.section-subtitle {
+  font-size: 16px;
+  max-width: 700px;
+  margin: 0 auto 55px auto;
+  line-height: 1.6;
+  color: #555;
+}
+
+/* ===== CARD GRID ===== */
+.blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 34px;
+  max-width: 1200px;
+  margin: auto;
+  text-align: left;
+}
+
+/* ===== CARDS ===== */
+.blog-card {
+  border-radius: 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.90),
+    rgba(255,255,255,0.75)
+  );
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.07),
+    0 4px 12px rgba(0,0,0,0.05);
+
+  border: 1px solid rgba(255,255,255,0.6);
+  transition: transform .25s ease, box-shadow .25s ease;
 }
 
 .blog-card:hover {
-  transform: translateY(-6px);
+  transform: translateY(-5px);
   box-shadow:
-    0 28px 70px rgba(0,0,0,0.14),
+    0 22px 55px rgba(0,0,0,0.12),
     0 8px 22px rgba(0,0,0,0.08);
 }
 
 .blog-content {
-  padding: 28px 30px 30px 30px;
+  padding: 28px 30px 32px 30px;
 }
 
 .blog-category {
@@ -123,20 +155,19 @@ h1 {
   font-weight: 700;
 }
 
-.blog-card h3 {
+.blog-content h3 {
   margin: 12px 0 14px 0;
   font-size: 22px;
   color: #0b1f3a;
 }
 
-.blog-card p {
+.blog-content p {
   font-size: 15px;
   line-height: 1.6;
   color: #4a5a6a;
 }
 
-
-/* ECON TABLE */
+/* ===== TABLE ===== */
 .econ-table {
   width: 100%;
   border-collapse: collapse;
@@ -152,62 +183,15 @@ h1 {
   border-bottom: 1px solid #e3ecf7;
 }
 
-/* WEEK REVIEW */
+/* ===== WEEK REVIEW ===== */
 .week-review {
   max-width: 1100px;
-  margin: 40px auto;
-  padding: 32px;
-  border-radius: 18px;
+  margin: 50px auto;
+  padding: 36px;
+  border-radius: 22px;
   background: #0b1f3a;
   color: white;
   box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-}
-
-  /* ===== MORNING BRIEF PANEL ENHANCEMENT ===== */
-.blog-section {
-  background: rgba(255,255,255,0.75);
-  border-radius: 24px;
-  box-shadow:
-    0 25px 70px rgba(0,0,0,0.10),
-    0 8px 25px rgba(0,0,0,0.06);
-}
-
-.section-title {
-  font-size: 36px;
-  letter-spacing: 0.5px;
-}
-
-.section-subtitle {
-  font-size: 16px;
-  max-width: 700px;
-  margin: 0 auto 55px auto;
-  line-height: 1.6;
-}
-
-/* Make cards feel more like tools */
-.blog-card {
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.70));
-  box-shadow:
-    0 15px 40px rgba(0,0,0,0.07),
-    0 4px 12px rgba(0,0,0,0.05);
-}
-
-.blog-card h3 {
-  font-size: 22px;
-}
-
-.blog-category {
-  letter-spacing: 1.5px;
-  color: #0b4ea2;
-}
-/* FORCE DATE STYLE */
-.date-bar {
-  text-align: left !important;
-  font-size: 20px !important;
-  font-weight: 800 !important;
-  color: #0b1f3a !important;
-  margin-left: 0 !important;
 }
 
 </style>
@@ -245,7 +229,6 @@ h1 {
   </div>
 </div>
 
-<!-- ===== AGENT EDGE MORNING BRIEF ===== -->
 <section class="blog-section">
 
   <h2 class="section-title">Agent Edge Morning Briefing</h2>
