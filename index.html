@@ -439,72 +439,76 @@
     .feature-card a { text-decoration: none; font-weight: 700; color: #0b1f3a; }
 
     /* ===== ABOUT SECTION ===== */
-    .about-section {
-      max-width: 1200px;
-      margin: 140px auto 0 auto;
-      padding: 60px 40px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.60);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.10);
-    }
+.about-section {
+  max-width: 1200px;
+  margin: 140px auto 0 auto;
+  padding: 60px 40px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.60);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.10);
+}
 
-    .about-wrapper { max-width: 1200px; margin: auto; }
+.about-wrapper { max-width: 1200px; margin: auto; }
 
-    .about-title {
-      text-align: center;
-      margin-bottom: 40px;
-      font-weight: 700;
-      font-size: 32px;
-      color: #0b1f3a;
-    }
+.about-title {
+  text-align: center;
+  margin-bottom: 40px;
+  font-weight: 700;
+  font-size: 32px;
+  color: #0b1f3a;
+}
 
-    .about-top {
-      display: grid;
-      grid-template-columns: 280px 1fr 260px;
-      gap: 40px;
-      align-items: start;
-    }
+.about-top {
+  display: grid;
+  grid-template-columns: 280px 1fr 260px;
+  gap: 40px;
+  align-items: start;
+}
 
-    .about-headshot img,
-    .about-side-img img,
-    .about-mid-img img,
-    .about-family-img img {
-      width: 100%;
-      border-radius: 14px;
-      display: block;
-    }
+.about-headshot img,
+.about-side-img img,
+.about-mid-img img,
+.about-family-img img {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+}
 
-    .about-heading {
-      font-size: 36px;
-      margin-bottom: 20px;
-      line-height: 1.2;
-      color: var(--secondary-text);
-    }
+.about-heading {
+  font-size: 36px;
+  margin-bottom: 20px;
+  line-height: 1.2;
+  color: var(--secondary-text);
+}
 
-  /* ===== ABOUT TEXT SPACING ===== */
+/* ===== ABOUT TEXT SPACING + FONT ===== */
 .about-text {
-  margin-top: 60px;   /* moves entire text column down */
+  margin-top: 60px;
+  font-size: 18px;     /* bigger */
+  font-weight: 500;    /* semi-bold */
+  line-height: 1.7;    /* readable */
 }
 
 .about-text p {
-  margin-bottom: 18px;   /* spacing between paragraphs */
+  margin-bottom: 18px;
 }
 
-/* ===== BULLET COLUMN POSITION ===== */
+/* ===== BULLET COLUMN POSITION + FONT ===== */
 .about-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
 
-  margin-top: 80px;     /* pushes bullets down */
-  margin-left: -180px;  /* pulls bullets left */
+  margin-top: 80px;
+  margin-left: -180px;
+
+  font-size: 18px;     /* match text */
+  font-weight: 500;    /* semi-bold */
 }
 
-
-
-    .about-columns ul { padding-left: 20px; }
+.about-columns ul { padding-left: 20px; }
 
     .about-divider {
       margin: 60px 0;
