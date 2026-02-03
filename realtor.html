@@ -8,25 +8,45 @@
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(rgba(255,255,255,0.75), rgba(255,255,255,0.75)),
-              url("header-background.jpeg") center/cover no-repeat fixed;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+              url("portal-bg.jpg") center/cover no-repeat fixed;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
 }
 
+/* Frosted Glass Card */
 .login-box {
-  background: rgba(255,255,255,0.92);
-  padding: 45px;
-  border-radius: 14px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.58);
+  padding: 55px;
+  border-radius: 22px;
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
   text-align: center;
-  width: 360px;
-  backdrop-filter: blur(6px);
+  width: 400px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
 }
 
+/* Header */
+.login-box h2 {
+  margin-bottom: 10px;
+  color: #0b1f3a;
+  font-size: 26px;
+}
+
+.subtext {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+/* Tabs */
 .tabs {
   display: flex;
   margin-bottom: 25px;
@@ -36,8 +56,9 @@ body {
   flex: 1;
   padding: 10px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 600;
   border-bottom: 2px solid transparent;
+  color: #555;
 }
 
 .tab.active {
@@ -45,6 +66,7 @@ body {
   color: #0b4ea2;
 }
 
+/* Inputs */
 input {
   width: 100%;
   padding: 12px;
@@ -54,6 +76,7 @@ input {
   font-size: 15px;
 }
 
+/* Buttons */
 button {
   width: 100%;
   padding: 12px;
@@ -68,6 +91,7 @@ button {
 
 button:hover {
   background: #083a7a;
+  transform: translateY(-1px);
 }
 
 #error {
@@ -97,9 +121,15 @@ button:hover {
 
 <div class="login-box">
 
+  <h2>Agent Edge Partner Portal</h2>
+  <div class="subtext">
+    A private platform for approved Realtor partners.<br>
+    Market briefs, tools, and support resources.
+  </div>
+
   <div class="tabs">
     <div class="tab active" onclick="showTab('login')">Sign In</div>
-    <div class="tab" onclick="showTab('request')">Request Access</div>
+    <div class="tab" onclick="showTab('request')">Become a Realtor Partner</div>
   </div>
 
   <!-- SIGN IN -->
@@ -109,18 +139,17 @@ button:hover {
     <div id="error">Incorrect password</div>
   </div>
 
- <!-- REQUEST ACCESS -->
-<div id="request" class="form-section">
-  <form action="https://formspree.io/f/mojlojor" method="POST">
-    <input type="hidden" name="_redirect" value="thank-you.html">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="text" name="brokerage" placeholder="Brokerage" required>
-    <input type="email" name="email" placeholder="Email Address" required>
-    <button type="submit">Request Access</button>
-  </form>
-</div>
+  <!-- PARTNER APPLICATION -->
+  <div id="request" class="form-section">
+    <form action="https://formspree.io/f/mojlojor" method="POST">
+      <input type="hidden" name="_redirect" value="thank-you.html">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="text" name="brokerage" placeholder="Brokerage" required>
+      <input type="email" name="email" placeholder="Email Address" required>
+      <button type="submit">Apply for Partner Access</button>
+    </form>
+  </div>
 
- 
   <div class="footer-note">
     Exclusive tools, briefs, and support materials for Realtor partners.
   </div>
