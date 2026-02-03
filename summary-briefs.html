@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
-<title>Market Summary – February 3, 2026</title>
+<h1>Market Summary – <span id="briefDate"></span></h1>
+
 
 
 <style>
@@ -109,6 +110,11 @@ p {
 
   </div>
 </div>
+<script>
+const options = { year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById("briefDate").innerText =
+  new Date().toLocaleDateString('en-US', options);
+</script>
 
 </body>
 </html>
