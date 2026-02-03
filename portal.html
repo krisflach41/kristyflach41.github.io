@@ -135,7 +135,14 @@ h1 {
   box-shadow:
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
+
+  /* 🔧 THIS FIXES THE HEIGHT ISSUE */
+  padding: 24px 28px 26px 28px;   /* was too large elsewhere */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
+
 /* === EVENT CARD SYSTEM === */
 .event-card {
   padding: 0;
