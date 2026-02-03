@@ -483,15 +483,25 @@
       color: var(--secondary-text);
     }
 
-    .about-text p { margin-bottom: 18px; }
+  /* ===== ABOUT TEXT SPACING ===== */
+.about-text {
+  margin-top: 40px;   /* moves entire text column down */
+}
+
+.about-text p {
+  margin-bottom: 18px;   /* spacing between paragraphs */
+}
+
+/* ===== BULLET COLUMN POSITION ===== */
 .about-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
 
-  margin-top: 60px;   /* still pushes down */
-  margin-left: -120px; /* pulls left */
+  margin-top: 60px;     /* pushes bullets down */
+  margin-left: -120px;  /* pulls bullets left */
 }
+
 
 
     .about-columns ul { padding-left: 20px; }
