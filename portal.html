@@ -7,20 +7,20 @@
 
 <style>
 
-/* ===== BASE ===== */
-body {
-  /* ===== GLOBAL PAGE WIDTH CONTROL ===== */
+/* ===== GLOBAL PAGE WIDTH ===== */
 .page-wrap {
   max-width: 1150px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
+/* ===== BASE ===== */
+body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 0 0 80px 0;
   background:
-    linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.94)),
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
 }
@@ -48,7 +48,6 @@ h1 {
 .date-bar {
   width: 100%;
   padding: 0 50px;
-
   text-align: left;
   font-size: 22px;
   font-weight: 800;
@@ -78,7 +77,7 @@ h1 {
   font-weight: 500;
 }
 @keyframes ticker {
-  0%   { transform: translateX(0); }
+  0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
@@ -88,30 +87,22 @@ h1 {
   margin: 80px auto 0 auto;
   padding: 60px 50px;
   border-radius: 22px;
-
-  /* Frosted glass effect */
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
   border: 1px solid rgba(255,255,255,0.65);
-
   box-shadow:
     0 20px 55px rgba(0,0,0,0.10),
     0 6px 18px rgba(0,0,0,0.05);
-
   text-align: center;
 }
-
 
 /* ===== HEADINGS ===== */
 .section-title {
   font-size: 36px;
   margin-bottom: 12px;
   letter-spacing: 0.5px;
-  color: #0b1f3a;
 }
-
 .section-subtitle {
   font-size: 16px;
   max-width: 700px;
@@ -123,43 +114,32 @@ h1 {
 /* ===== CARD GRID ===== */
 .blog-grid {
   display: grid;
-  max-width: 1000px;
-
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 34px;
-  max-width: 1200px;
-  margin: auto;
+  max-width: 1000px;
+  margin: 0 auto;
   text-align: left;
 }
 
 /* ===== CARDS ===== */
 .blog-card {
   border-radius: 20px;
-
-  /* Warm sun-washed tone */
   background: linear-gradient(
     180deg,
     rgba(248,242,232,0.88),
     rgba(248,242,232,0.72)
   );
-
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-
   border: 1px solid rgba(255,255,255,0.6);
-
   box-shadow:
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
-
-  transition: transform .25s ease, box-shadow .25s ease;
 }
-
 
 .blog-content {
   padding: 28px 30px 32px 30px;
 }
-
 .blog-category {
   font-size: 12px;
   text-transform: uppercase;
@@ -167,13 +147,10 @@ h1 {
   color: #0b4ea2;
   font-weight: 700;
 }
-
 .blog-content h3 {
   margin: 12px 0 14px 0;
   font-size: 22px;
-  color: #0b1f3a;
 }
-
 .blog-content p {
   font-size: 15px;
   line-height: 1.6;
@@ -196,36 +173,21 @@ h1 {
   border-bottom: 1px solid #e3ecf7;
 }
 
-/* ===== WEEK REVIEW ===== */
-.week-review {
-  max-width: 1100px;
-  margin: 50px auto;
-  padding: 36px;
-  border-radius: 22px;
-  background: #0b1f3a;
-  color: white;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-}
+/* ===== WEEK REVIEW CARD ===== */
 .week-review-card {
   margin-top: 40px;
   padding: 30px 36px;
   border-radius: 20px;
-
   background: linear-gradient(
     180deg,
     rgba(248,242,232,0.88),
     rgba(248,242,232,0.72)
   );
-
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
   border: 1px solid rgba(255,255,255,0.6);
-
   box-shadow:
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
-
   text-align: left;
 }
 
@@ -233,6 +195,7 @@ h1 {
 </head>
 
 <body>
+<div class="page-wrap">
 
 <h1>Agent Edge Partner Portal</h1>
 
@@ -305,17 +268,16 @@ h1 {
     </article>
 
   </div>
+
   <div class="week-review-card">
-  <span class="blog-category">Week In Review</span>
-  <h3>Week Ending February 7, 2026</h3>
-  <p>
-    Major reports, trend direction, and recent rate behavior will appear here on Fridays.
-  </p>
-</div>
+    <span class="blog-category">Week In Review</span>
+    <h3>Week Ending February 7, 2026</h3>
+    <p>Major reports, trend direction, and recent rate behavior will appear here on Fridays.</p>
+  </div>
 
 </section>
 
-
+</div>
 
 <script>
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
