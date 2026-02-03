@@ -23,20 +23,26 @@ body {
   border-radius: 14px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.15);
   text-align: center;
-  width: 340px;
+  width: 360px;
   backdrop-filter: blur(6px);
 }
 
-.login-box h2 {
-  margin-bottom: 10px;
-  color: #0b1f3a;
-  font-size: 26px;
+.tabs {
+  display: flex;
+  margin-bottom: 25px;
 }
 
-.subtext {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 25px;
+.tab {
+  flex: 1;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  border-bottom: 2px solid #0b4ea2;
+  color: #0b4ea2;
 }
 
 input {
@@ -62,7 +68,6 @@ button {
 
 button:hover {
   background: #083a7a;
-  transform: translateY(-1px);
 }
 
 #error {
@@ -77,33 +82,61 @@ button:hover {
   margin-top: 20px;
   color: #777;
 }
+
+.form-section {
+  display: none;
+}
+
+.form-section.active {
+  display: block;
+}
 </style>
 </head>
 
 <body>
 
 <div class="login-box">
-  <h2>Agent Edge Portal</h2>
-  <div class="subtext">Realtor Partner Access</div>
 
-  <input type="password" id="pw" placeholder="Enter Access Password">
-  <button onclick="checkPassword()">Enter Portal</button>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('login')">Sign In</div>
+    <div class="tab" onclick="showTab('request')">Request Access</div>
+  </div>
 
-  <div id="error">Incorrect password</div>
+  <!-- SIGN IN -->
+  <div id="login" class="form-section active">
+    <input type="password" id="pw" placeholder="Enter Access Password">
+    <button onclick="checkPassword()">Enter Portal</button>
+    <div id="error">Incorrect password</div>
+  </div>
+
+  <!-- REQUEST ACCESS -->
+  <div id="request" class="form-section">
+    <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+      <input type="text" name="name" placeholder="Your Name" required>
+      <input type="text" name="brokerage" placeholder="Brokerage" required>
+      <input type="email" name="email" placeholder="Email Address" required>
+      <button type="submit">Request Access</button>
+    </form>
+  </div>
 
   <div class="footer-note">
     Exclusive tools, briefs, and support materials for Realtor partners.
   </div>
+
 </div>
 
 <script>
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
+  document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add('active');
+  document.getElementById(tab).classList.add('active');
+}
+
 function checkPassword() {
   const password = document.getElementById("pw").value;
-
-  if (password === "AgentEdge") {  
-  window.location.href = "portal.html";
-
-
+  if (password === "AgentEdge") {
+    window.location.href = "portal.html";
   } else {
     document.getElementById("error").style.display = "block";
   }
