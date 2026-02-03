@@ -79,19 +79,23 @@ h1 {
 .blog-section {
   max-width: 1200px;
   margin: 80px auto 0 auto;
-  padding: 70px 50px;
-  border-radius: 22px;
+  padding: 70px 55px;
+  border-radius: 26px;
 
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  /* Frosted glass container */
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  border: 1px solid rgba(255,255,255,0.7);
 
   box-shadow:
-    0 25px 70px rgba(0,0,0,0.10),
-    0 8px 25px rgba(0,0,0,0.06);
+    0 30px 80px rgba(0,0,0,0.12),
+    0 10px 30px rgba(0,0,0,0.06);
 
   text-align: center;
 }
+
 
 /* ===== HEADINGS ===== */
 .section-title {
@@ -121,27 +125,27 @@ h1 {
 
 /* ===== CARDS ===== */
 .blog-card {
-  border-radius: 18px;
+  border-radius: 20px;
+
+  /* Warm sun-washed tone */
   background: linear-gradient(
     180deg,
-    rgba(255,255,255,0.90),
-    rgba(255,255,255,0.75)
+    rgba(248,242,232,0.88),
+    rgba(248,242,232,0.72)
   );
 
-  box-shadow:
-    0 15px 40px rgba(0,0,0,0.07),
-    0 4px 12px rgba(0,0,0,0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 
   border: 1px solid rgba(255,255,255,0.6);
+
+  box-shadow:
+    0 15px 40px rgba(160,140,110,0.15),
+    0 5px 14px rgba(160,140,110,0.08);
+
   transition: transform .25s ease, box-shadow .25s ease;
 }
 
-.blog-card:hover {
-  transform: translateY(-5px);
-  box-shadow:
-    0 22px 55px rgba(0,0,0,0.12),
-    0 8px 22px rgba(0,0,0,0.08);
-}
 
 .blog-content {
   padding: 28px 30px 32px 30px;
@@ -192,6 +196,28 @@ h1 {
   background: #0b1f3a;
   color: white;
   box-shadow: 0 30px 60px rgba(0,0,0,0.2);
+}
+.week-review-card {
+  margin-top: 40px;
+  padding: 30px 36px;
+  border-radius: 20px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(248,242,232,0.88),
+    rgba(248,242,232,0.72)
+  );
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  border: 1px solid rgba(255,255,255,0.6);
+
+  box-shadow:
+    0 15px 40px rgba(160,140,110,0.15),
+    0 5px 14px rgba(160,140,110,0.08);
+
+  text-align: left;
 }
 
 </style>
@@ -270,12 +296,17 @@ h1 {
     </article>
 
   </div>
+  <div class="week-review-card">
+  <span class="blog-category">Week In Review</span>
+  <h3>Week Ending February 7, 2026</h3>
+  <p>
+    Major reports, trend direction, and recent rate behavior will appear here on Fridays.
+  </p>
+</div>
+
 </section>
 
-<div class="week-review">
-  <h2>Week in Review — Week Ending February 7, 2026</h2>
-  <p>Major reports, trend direction, and recent rate behavior will appear here on Fridays.</p>
-</div>
+
 
 <script>
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
