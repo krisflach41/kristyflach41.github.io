@@ -484,14 +484,13 @@
     }
 
     .about-text p { margin-bottom: 18px; }
-
-  .about-columns {
+.about-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30px;
 
-  margin-top: 40px;     /* ↓ pushes it down */
-  margin-left: 80px;    /* → pushes it right */
+  margin-top: 50px;   /* still pushes down */
+  margin-left: -80px; /* pulls left */
 }
 
 
