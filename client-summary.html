@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
-<title>Market Summary – February 3, 2026</title>
+<title>Client-Friendly Market Summary</title>
+
+
 
 
 <style>
@@ -77,7 +79,8 @@ p {
 <div class="page-wrap">
   <div class="brief-card">
 
-    <h1>Client-Friendly Market Summary – February 3, 2026</h1>
+   <h1>Market Summary – <span id="briefDate"></span></h1>
+
 
     <p>The market is a little uneasy to start the week because a lot of attention is on jobs data.
 
@@ -93,6 +96,11 @@ That’s why this week’s job reports matter so much. If they confirm the slowd
 
   </div>
 </div>
+<script>
+const options = { year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById("briefDate").innerText =
+  new Date().toLocaleDateString('en-US', options);
+</script>
 
 </body>
 </html>
