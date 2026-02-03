@@ -413,10 +413,47 @@ function toggleDetails(row) {
 </div>
 
 <script>
+/* ===== DATE ===== */
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 document.getElementById("currentDate").innerText =
   new Date().toLocaleDateString('en-US', options);
+
+
+/* ===== EVENT CARD AUTO MODE ===== */
+function toggleDetails(row) {
+  row.classList.toggle("active");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const rows = document.querySelectorAll(".event-row");
+
+  rows.forEach(row => {
+    const details = row.querySelector(".event-details");
+    const headlineEl = row.querySelector(".headline");
+    const moreEl = row.querySelector(".more");
+
+    if (!details) return;
+
+    const items = details.querySelectorAll("div");
+
+    if (items.length > 0) {
+      // First item becomes headline
+      headlineEl.textContent = items[0].textContent;
+
+      // Remaining count
+      const remaining = items.length - 1;
+
+      if (remaining > 0) {
+        moreEl.textContent = `+${remaining}`;
+        moreEl.style.display = "inline-block";
+      } else {
+        moreEl.style.display = "none";
+      }
+    }
+  });
+});
 </script>
+
 
 </body>
 </html>
