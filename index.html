@@ -485,12 +485,15 @@
 
     .about-text p { margin-bottom: 18px; }
 
-    .about-columns {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 30px;
-      margin-top: 20px;
-    }
+  .about-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+
+  margin-top: 40px;     /* ↓ pushes it down */
+  margin-left: 80px;    /* → pushes it right */
+}
+
 
     .about-columns ul { padding-left: 20px; }
 
