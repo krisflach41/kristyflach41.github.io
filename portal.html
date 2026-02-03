@@ -136,6 +136,70 @@ h1 {
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
 }
+/* === EVENT CARD SYSTEM === */
+.event-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.event-header {
+  padding: 18px 20px;
+  font-weight: 700;
+  font-size: 16px;
+  background: #0b4ea2;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.event-row {
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.event-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+}
+
+.day {
+  font-weight: 700;
+  color: #0b4ea2;
+  width: 40px;
+}
+
+.headline {
+  flex: 1;
+  font-weight: 600;
+  color: #0b1f3a;
+}
+
+.more {
+  font-size: 12px;
+  background: #0b4ea2;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+
+.event-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+  padding: 0 20px;
+  font-size: 14px;
+  color: #4a5a6a;
+}
+
+.event-details div {
+  padding: 6px 0;
+}
+
+.event-row.active .event-details {
+  max-height: 200px;
+  padding-bottom: 12px;
+}
 
 .blog-content {
   padding: 28px 30px 32px 30px;
@@ -237,20 +301,66 @@ h1 {
 
   <div class="blog-grid">
 
-    <article class="blog-card">
-      <div class="blog-content">
-        <span class="blog-category">This Week</span>
-        <h3>Market-Moving Events</h3>
-        <table class="econ-table">
-          <tr><th>Day</th><th>Event</th></tr>
-          <tr><td>Mon</td><td>ISM Manufacturing</td></tr>
-          <tr><td>Tue</td><td>JOLTS Job Openings</td></tr>
-          <tr><td>Wed</td><td>ADP Payrolls</td></tr>
-          <tr><td>Thu</td><td>Jobless Claims</td></tr>
-          <tr><td>Fri</td><td>Nonfarm Payrolls</td></tr>
-        </table>
-      </div>
-    </article>
+ <article class="blog-card event-card">
+
+  <div class="event-header">Market-Moving Events</div>
+
+  <div class="event-row" onclick="toggleDetails(this)">
+    <div class="event-main">
+      <span class="day">Mon</span>
+      <span class="headline">ISM Manufacturing</span>
+    </div>
+  </div>
+
+  <div class="event-row" onclick="toggleDetails(this)">
+    <div class="event-main">
+      <span class="day">Tue</span>
+      <span class="headline">JOLTS Job Openings</span>
+    </div>
+  </div>
+
+  <div class="event-row" onclick="toggleDetails(this)">
+    <div class="event-main">
+      <span class="day">Wed</span>
+      <span class="headline">ADP Payrolls</span>
+      <span class="more">+1</span>
+    </div>
+    <div class="event-details">
+      <div>ISM Non-Manufacturing</div>
+    </div>
+  </div>
+
+  <div class="event-row" onclick="toggleDetails(this)">
+    <div class="event-main">
+      <span class="day">Thu</span>
+      <span class="headline">Challenger Job Cuts</span>
+      <span class="more">+4</span>
+    </div>
+    <div class="event-details">
+      <div>Bank of England Decision</div>
+      <div>ECB Rate Decision</div>
+      <div>Continuing Jobless Claims</div>
+      <div>Initial Jobless Claims</div>
+    </div>
+  </div>
+
+  <div class="event-row" onclick="toggleDetails(this)">
+    <div class="event-main">
+      <span class="day">Fri</span>
+      <span class="headline">Nonfarm Payrolls</span>
+      <span class="more">+5</span>
+    </div>
+    <div class="event-details">
+      <div>Unemployment Rate</div>
+      <div>Avg Hourly Earnings (MoM)</div>
+      <div>Avg Hourly Earnings (YoY)</div>
+      <div>Avg Weekly Hours</div>
+      <div>Michigan Consumer Sentiment</div>
+    </div>
+  </div>
+
+</article>
+
 
     <article class="blog-card">
       <div class="blog-content">
@@ -285,6 +395,9 @@ h1 {
 
 </section>
 
+function toggleDetails(row) {
+  row.classList.toggle("active");
+}
 
 </div>
 
