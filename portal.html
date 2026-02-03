@@ -356,6 +356,29 @@ h1 {
   border-radius: 20px;
   font-weight: 700;
 }
+/* ===== AUTO READ MORE SYSTEM ===== */
+.summary-text {
+  max-height: 110px;     /* visible preview height */
+  overflow: hidden;
+  position: relative;
+  transition: max-height 0.35s ease;
+}
+
+.summary-text.expanded {
+  max-height: 500px;     /* enough to show full text */
+}
+
+.read-more-btn {
+  margin-top: 8px;
+  font-size: 12px;
+  background: #0b4ea2;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: none; /* hidden until needed */
+}
 
 </style>
 </head>
@@ -481,9 +504,13 @@ h1 {
 </div>
 
 
-    <p>
-      Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
-    </p>
+ <div class="summary-text">
+  <p>
+    Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
+  </p>
+</div>
+<button class="read-more-btn">Read More</button>
+
 
   </div>
 
@@ -498,9 +525,13 @@ h1 {
   <span class="blog-category">Client Version</span>
   <h3>Client-Friendly Summary</h3>
 </div>
-    <p>
-      The market feels cautious this week. If reports confirm slowing employment, housing conditions could stabilize moving forward. This can support more predictable planning for buyers and sellers.
-    </p>
+   <div class="summary-text">
+  <p>
+    The market feels cautious this week. If reports confirm slowing employment, housing conditions could stabilize moving forward. This can support more predictable planning for buyers and sellers.
+  </p>
+</div>
+<button class="read-more-btn">Read More</button>
+
 
   </div>
 
@@ -587,6 +618,27 @@ const monday = getMonday(new Date());
 document.getElementById("weekLabel").innerText = formatWeekOfDate(monday);
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const blocks = document.querySelectorAll(".summary-text");
+
+  blocks.forEach(block => {
+    const btn = block.nextElementSibling;
+
+    // If content taller than preview height
+    if (block.scrollHeight > block.clientHeight) {
+      btn.style.display = "inline-block";
+
+      btn.addEventListener("click", function () {
+        block.classList.toggle("expanded");
+        btn.textContent = block.classList.contains("expanded")
+          ? "Show Less"
+          : "Read More";
+      });
+    }
+  });
+});
+</script>
 
 
 </body>
