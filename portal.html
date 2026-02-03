@@ -262,6 +262,43 @@ h1 {
 
 
 /* ===== OTHER CARD TYPOGRAPHY (UNCHANGED) ===== */
+  /* === MATCH HEADER STYLE TO EVENTS CARD === */
+.card-header {
+  text-align: center;
+  padding: 26px 30px 12px 30px;
+  margin: 0 0 12px 0;
+}
+
+.card-header .blog-category {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin: 0;
+}
+
+ .card-header {
+  text-align: center;
+  padding: 26px 30px 12px 30px;
+  margin: 0 0 12px 0;
+}
+
+.card-header .blog-category {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.card-header h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin: 0;
+}
+
 .blog-category {
   font-size: 12px;
   text-transform: uppercase;
@@ -458,9 +495,10 @@ h1 {
 
   <article class="blog-card">
 
-  <div class="blog-content">
-    <span class="blog-category">Today</span>
-    <h3>Market Summary</h3>
+ <div class="card-header">
+  <span class="blog-category">Today</span>
+  <h3>Market Summary</h3>
+</div>
 
     <p>
       Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
@@ -474,9 +512,11 @@ h1 {
 
   <article class="blog-card">
 
-  <div class="blog-content">
-    <span class="blog-category">Client Version</span>
-    <h3>Client-Friendly Summary</h3>
+  <div class="card-header">
+  <span class="blog-category">Client Version</span>
+  <h3>Client-Friendly Summary</h3>
+</div>
+
 
     <p>
       The market feels cautious this week. If reports confirm slowing employment, housing conditions could stabilize moving forward. This can support more predictable planning for buyers and sellers.
