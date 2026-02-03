@@ -132,11 +132,14 @@ h1 {
     rgba(248,242,232,0.72)
   );
   backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.6);
   box-shadow:
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
 
   /* 🔧 THIS FIXES THE HEIGHT ISSUE */
   padding: 24px 28px 26px 28px;   /* was too large elsewhere */
@@ -205,6 +208,35 @@ h1 {
 .event-row.active .event-details {
   max-height: 200px;
   padding-bottom: 12px;
+}
+/* ===== EXPAND CARDS (MATCH EVENT SYSTEM) ===== */
+.expand-card .expand-main {
+  cursor: pointer;
+  padding: 8px 0;
+  font-weight: 500;
+  color: #0b1f3a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expand-card .expand-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease;
+}
+
+.expand-card.active .expand-details {
+  max-height: 200px;
+}
+
+.expand-card .more {
+  font-size: 12px;
+  background: #0b4ea2;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
 }
 
 
@@ -427,25 +459,49 @@ h1 {
 </article>
 
 
-    <article class="blog-card">
-      <div class="blog-content">
-        <span class="blog-category">Today</span>
-        <h3>Market Summary</h3>
-        <p>
-          Markets are focused on labor data as underlying employment trends suggest conditions may be weaker than headline reports imply.
-        </p>
-      </div>
-    </article>
+   <article class="blog-card expand-card">
 
-    <article class="blog-card">
-      <div class="blog-content">
-        <span class="blog-category">Client Version</span>
-        <h3>Client-Friendly Summary</h3>
-        <p>
-          The market feels cautious this week as attention turns to jobs data. If reports confirm slowing employment, housing conditions could stabilize moving forward.
-        </p>
-      </div>
-    </article>
+  <div class="blog-content">
+    <span class="blog-category">Today</span>
+    <h3>Market Summary</h3>
+
+    <div class="expand-main" onclick="toggleDetails(this.parentElement.parentElement)">
+      Markets are focused on labor data...
+      <span class="more">Read More</span>
+    </div>
+
+    <div class="expand-details">
+      <p>
+        Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
+      </p>
+    </div>
+
+  </div>
+
+</article>
+
+
+   <article class="blog-card expand-card">
+
+  <div class="blog-content">
+    <span class="blog-category">Client Version</span>
+    <h3>Client-Friendly Summary</h3>
+
+    <div class="expand-main" onclick="toggleDetails(this.parentElement.parentElement)">
+      The market feels cautious this week...
+      <span class="more">Read More</span>
+    </div>
+
+    <div class="expand-details">
+      <p>
+        If reports confirm slowing employment, housing conditions could stabilize moving forward. This can support more predictable planning for buyers and sellers.
+      </p>
+    </div>
+
+  </div>
+
+</article>
+
 
   </div>
 
