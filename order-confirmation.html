@@ -151,15 +151,20 @@ h2 {
 </div>
 
 <script>
-// Pull form data from URL parameters
-const params = new URLSearchParams(window.location.search);
+const data = JSON.parse(sessionStorage.getItem("marketingReceipt"));
 
-document.getElementById("r-name").textContent = params.get("name") || "";
-document.getElementById("r-brokerage").textContent = params.get("brokerage") || "";
-document.getElementById("r-branding").textContent = params.get("branding") || "";
-document.getElementById("r-materials").textContent = params.get("Selected Materials") || "";
-document.getElementById("r-notes").textContent = params.get("notes") || "";
+if (data) {
+  document.getElementById("r-name").textContent = data.name;
+  document.getElementById("r-brokerage").textContent = data.brokerage;
+  document.getElementById("r-branding").textContent = data.branding;
+  document.getElementById("r-materials").textContent = data.materials;
+  document.getElementById("r-notes").textContent = data.notes || "None";
+} else {
+  document.querySelector(".confirmation-card").innerHTML =
+    "<h2>No order data found.</h2><p>Please submit the form again.</p>";
+}
 </script>
+
 
 </body>
 </html>
