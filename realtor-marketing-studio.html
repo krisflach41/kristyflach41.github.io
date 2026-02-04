@@ -83,7 +83,14 @@ body {
   height: 80px;
   background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
   border-radius: 6px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+
+.thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
 
 .panel-btn {
   display: inline-block;
