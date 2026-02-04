@@ -390,19 +390,25 @@ form.addEventListener("submit", async function(e) {
 
   const formData = new FormData(form);
 
-  try {
-    await fetch("https://formspree.io/f/mojlojor", {
-      method: "POST",
-      body: formData,
-      headers: { 'Accept': 'application/json' }
-    });
+try {
+  // 1️⃣ Save receipt FIRST
+  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
 
-    form.reset(); // clears form
-    window.location.href = "order-confirmation.html"; // go to receipt
+  // 2️⃣ Send form in background (no await)
+  fetch("https://formspree.io/f/mojlojor", {
+    method: "POST",
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  });
 
-  } catch (error) {
-    alert("There was an issue sending your request. Please try again.");
-  }
+  // 3️⃣ Clear form + go to receipt page
+  form.reset();
+  window.location.href = "order-confirmation.html";
+
+} catch (error) {
+  alert("There was an issue sending your request. Please try again.");
+}
+
 });
 </script>
 
