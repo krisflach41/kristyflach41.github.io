@@ -262,7 +262,8 @@ body {
 </p>
 
 
-<form action="https://formspree.io/f/mojlojor" method="POST">
+<form id="marketingForm" method="POST">
+
 <input type="hidden" name="_redirect" value="order-confirmation.html">
 
 
@@ -364,6 +365,37 @@ kit.forEach(item => {
 }
 </script>
 
+<script>
+const form = document.getElementById("marketingForm");
+const hiddenField = document.getElementById("selected_materials");
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault(); // stop normal form submission
+
+  // Collect selected materials from the kit
+  const kitItems = Array.from(document.querySelectorAll("#kit-list li"))
+    .filter(li => !li.classList.contains("empty"))
+    .map(li => li.textContent.trim());
+
+  hiddenField.value = kitItems.join(", ");
+
+  const formData = new FormData(form);
+
+  try {
+    await fetch("https://formspree.io/f/mojlojor", {
+      method: "POST",
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+
+    form.reset(); // clears the form
+    window.location.href = "order-confirmation.html"; // go to receipt page
+
+  } catch (error) {
+    alert("There was an issue sending your request. Please try again.");
+  }
+});
+</script>
 
 
 </body>
