@@ -153,6 +153,11 @@ body {
 .empty {
   color: #777;
 }
+.add-btn.added {
+  background: #0b4ea2;
+  color: white;
+  border-color: #0b4ea2;
+}
 
 </style>
 </head>
@@ -174,6 +179,7 @@ body {
   <div class="flyer-info">
     <h3>Seller Net Sheet Guide</h3>
     <button type="button" class="add-btn">Add to My Kit</button>
+
   </div>
 </div>
 
@@ -270,8 +276,16 @@ document.querySelectorAll('.add-btn').forEach(button => {
 
     if (!kit.includes(name)) {
       kit.push(name);
-      updateKitDisplay();
+      this.textContent = "Added ✓";
+      this.classList.add("added");
+    } else {
+      const index = kit.indexOf(name);
+      kit.splice(index, 1);
+      this.textContent = "Add to My Kit";
+      this.classList.remove("added");
     }
+
+    updateKitDisplay();
   });
 });
 
@@ -294,6 +308,7 @@ function updateKitDisplay() {
   hiddenField.value = kit.join(', ');
 }
 </script>
+
 
 </body>
 </html>
