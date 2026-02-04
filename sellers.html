@@ -388,8 +388,22 @@ form.addEventListener("submit", async function(e) {
       headers: { 'Accept': 'application/json' }
     });
 
-    form.reset(); // clears the form
-    window.location.href = "order-confirmation.html"; // go to receipt page
+    // Build receipt object
+const receipt = {
+  name: formData.get("name"),
+  email: formData.get("email"),
+  brokerage: formData.get("brokerage"),
+  branding: formData.get("branding"),
+  notes: formData.get("notes"),
+  materials: kitItems
+};
+
+// Store temporarily in browser
+localStorage.setItem("marketingReceipt", JSON.stringify(receipt));
+
+form.reset();
+window.location.href = "order-confirmation.html";
+
 
   } catch (error) {
     alert("There was an issue sending your request. Please try again.");
