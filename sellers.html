@@ -262,8 +262,9 @@ body {
 </p>
 
 
-<form action="https://formspree.io/f/mojlojor" method="POST" style="max-width:600px; margin:0 auto;">
-<input type="hidden" name="Selected Materials" id="selected_materials">
+<form action="https://formspree.io/f/mojlojor" method="POST" target="hidden_iframe">
+<input type="hidden" name="_redirect" value="order-confirmation.html">
+
 
 
   <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
@@ -362,6 +363,7 @@ kit.forEach(item => {
   hiddenField.value = kit.join(', ');
 }
 </script>
+<iframe name="hidden_iframe" style="display:none;"></iframe>
 
 
 </body>
