@@ -312,6 +312,9 @@ body {
 
 <a href="index.html" class="return-main">Return to Main Website</a>
 <script>
+/* ===========================
+   MATERIAL SELECTION SYSTEM
+=========================== */
 const kit = [];
 
 document.querySelectorAll('.add-btn').forEach(button => {
@@ -343,41 +346,47 @@ function updateKitDisplay() {
   if (kit.length === 0) {
     list.innerHTML = '<li class="empty">No materials selected yet</li>';
   } else {
-kit.forEach(item => {
-  const li = document.createElement('li');
+    kit.forEach(item => {
+      const li = document.createElement('li');
 
-  // Find the matching flyer card on the page
-  const card = document.querySelector(`[data-name="${item}"]`);
-  const imgSrc = card.querySelector("img").src;
+      const card = document.querySelector(`[data-name="${item}"]`);
+      const imgSrc = card.querySelector("img").src;
 
-  li.innerHTML = `
-  <img src="${imgSrc}" style="width:100%; border-radius:8px; margin-bottom:6px;">
-  ${item}
-`;
+      li.innerHTML = `
+        <img src="${imgSrc}" style="width:100%; border-radius:8px; margin-bottom:6px;">
+        <div>${item}</div>
+      `;
 
-
-  list.appendChild(li);
-});
-
+      list.appendChild(li);
+    });
   }
 
   hiddenField.value = kit.join(', ');
 }
-</script>
 
-<script>
+
+/* ===========================
+   FORM SUBMISSION SYSTEM
+=========================== */
 const form = document.getElementById("marketingForm");
-const hiddenField = document.getElementById("selected_materials");
 
 form.addEventListener("submit", async function(e) {
-  e.preventDefault(); // stop normal form submission
+  e.preventDefault(); // stop normal submit
 
-  // Collect selected materials from the kit
-  const kitItems = Array.from(document.querySelectorAll("#kit-list li"))
-    .filter(li => !li.classList.contains("empty"))
-    .map(li => li.textContent.trim());
+  const hiddenField = document.getElementById("selected_materials");
 
-  hiddenField.value = kitItems.join(", ");
+  // Build receipt data
+  const receipt = {
+    name: form.name.value,
+    email: form.email.value,
+    brokerage: form.brokerage.value,
+    branding: form.branding.value,
+    notes: form.notes.value,
+    materials: hiddenField.value
+  };
+
+  // Store for confirmation page
+  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
 
   const formData = new FormData(form);
 
@@ -388,22 +397,8 @@ form.addEventListener("submit", async function(e) {
       headers: { 'Accept': 'application/json' }
     });
 
-    // Build receipt object
-const receipt = {
-  name: formData.get("name"),
-  email: formData.get("email"),
-  brokerage: formData.get("brokerage"),
-  branding: formData.get("branding"),
-  notes: formData.get("notes"),
-  materials: kitItems
-};
-
-// Store temporarily in browser
-localStorage.setItem("marketingReceipt", JSON.stringify(receipt));
-
-form.reset();
-window.location.href = "order-confirmation.html";
-
+    form.reset(); // clears form
+    window.location.href = "order-confirmation.html"; // go to receipt
 
   } catch (error) {
     alert("There was an issue sending your request. Please try again.");
