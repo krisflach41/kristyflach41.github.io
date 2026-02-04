@@ -400,6 +400,24 @@ h1 {
   background: rgba(255,255,255,0.75);
   transform: translateY(-2px);
 }
+/* ===== BRIEF LAST UPDATED LABEL ===== */
+.blog-section {
+  position: relative;
+}
+
+.brief-update-time {
+  position: absolute;
+  top: 24px;
+  right: 36px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0b1f3a;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(6px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.7);
+}
 
 </style>
 </head>
@@ -442,6 +460,10 @@ h1 {
 
 <div class="page-wrap">
 <section class="blog-section">
+  <div class="brief-update-time">
+  Last Updated – <span id="briefDate"></span>
+</div>
+
 
   <h2 class="section-title">Agent Edge Morning Briefing</h2>
   <p class="section-subtitle">
@@ -680,5 +702,12 @@ document.addEventListener("DOMContentLoaded", function () {
 <div class="return-home">
   <a href="https://kristyflach.com">← Return to Main Website</a>
 </div>
+  <script>
+  const now = new Date();
+  const options = { month: 'long', day: 'numeric', year: 'numeric' };
+  document.getElementById("briefDate").textContent =
+    now.toLocaleDateString('en-US', options);
+</script>
+
 </body>
 </html>
