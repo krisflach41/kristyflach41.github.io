@@ -265,16 +265,6 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Ensure containers never exceed viewport */
-.page-wrap,
-.gallery-wrap,
-.content-wrap,
-.container,
-.flyer-grid {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
 
 /* Grid children must be allowed to shrink */
 .flyer-card {
@@ -327,24 +317,7 @@ html, body {
 
 }
 
-  .flyer-card {
-    width: 100% !important;
-  }
-
-  input,
-  textarea,
-  select,
-  button {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .button-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
-}
+ 
 
 /* Branding option row must wrap on small screens */
 .branding-option {
@@ -355,10 +328,7 @@ html, body {
   max-width: 100%;
 }
 
-.branding-option span {
-  flex: 1 1 auto;
-  min-width: 0;
-}
+
 /* Fix branding radio row on mobile */
 .branding-option {
   display: flex !important;
