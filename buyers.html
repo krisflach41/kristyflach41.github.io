@@ -9,7 +9,7 @@
 
 /* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
   padding: 80px 0;
   background:
@@ -21,9 +21,10 @@ body {
 /* ===== PAGE WIDTH ===== */
 .page-wrap {
   max-width: 1150px;
-  margin: 0 auto;
-  padding: 0 24px;
+  margin: 0 auto;      /* ← THIS centers the glass container */
+  padding: 0 24px;     /* keeps breathing room */
 }
+
 
 /* ===== GLASS CONTAINER ===== */
 .gallery-card {
@@ -59,22 +60,58 @@ body {
   gap: 35px;
 }
 
-/* ===== FLYER CARD ===== */
-.flyer-card { text-align: center; }
-.flyer-card img {
+/* ===== FLYER THUMBNAIL CARD ===== */
+.flyer-card {
+  text-align: center;
+}
+
+.flyer-thumb {
   width: 100%;
   height: 220px;
-  object-fit: cover;
+  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
   border-radius: 10px;
   margin-bottom: 12px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-.flyer-card img:hover {
+
+.flyer-thumb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+.flyer-thumb:hover {
   transform: scale(1.03);
   box-shadow: 0 10px 28px rgba(0,0,0,0.18);
 }
 
-/* ===== BUTTONS & KIT SYSTEM ===== */
+/* ===== NAV BUTTON ===== */
+.back-btn {
+  display: inline-block;
+  margin-top: 50px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+/* ===== FLOATING EXIT LINK ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
 .add-btn {
   margin-top: 10px;
   padding: 6px 12px;
@@ -86,10 +123,12 @@ body {
   cursor: pointer;
   transition: 0.25s ease;
 }
-.add-btn:hover { background: #0b4ea2; color: white; }
-.add-btn.added { background: #0b4ea2; color: white; border-color:#0b4ea2; }
 
-/* ===== KIT PANEL ===== */
+.add-btn:hover {
+  background: #0b4ea2;
+  color: white;
+}
+
 .kit-panel {
   margin: 50px 0 30px;
   padding: 30px;
@@ -98,39 +137,230 @@ body {
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.6);
 }
-#kit-list {
-  list-style:none;
-  padding:0;
-  margin:0;
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:16px;
-}
-#kit-list li {
-  background: rgba(255,255,255,0.65);
-  border-radius: 12px;
-  padding: 10px;
-  text-align:center;
-  font-size:13px;
+
+.kit-panel h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
 }
 
-/* ===== NAV BUTTON ===== */
-.back-btn, .return-main {
-  display:inline-block;
-  margin-top:50px;
-  padding:10px 20px;
-  border-radius:25px;
-  background:rgba(255,255,255,0.35);
-  backdrop-filter:blur(6px);
-  border:1px solid rgba(255,255,255,0.6);
-  text-decoration:none;
-  color:#0b1f3a;
-  font-weight:600;
+#kit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
-.return-main {
-  position:fixed;
-  bottom:20px;
-  right:20px;
+
+
+#kit-list li {
+  background: rgba(255,255,255,0.65);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* Center the kit header text only */
+.kit-panel h3,
+.empty {
+  text-align: center;
+}
+
+/* Keep actual selected material rows left-aligned */
+#kit-list {
+  text-align: left;
+}
+
+
+.empty {
+  color: #777;
+}
+.add-btn.added {
+  background: #0b4ea2;
+  color: white;
+  border-color: #0b4ea2;
+}
+.form-note {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(11,31,58,0.75);
+  margin: 14px 0;
+}
+/* ===== Branding Option Row (Desktop) ===== */
+.branding-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #0b1f3a;
+  position: relative;
+  justify-content: flex-start;
+}
+
+.branding-text {
+  font-weight: 600;
+}
+
+
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 20px;
+  height: 20px;
+
+  border-radius: 50%;
+  background: #0b4ea2;
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  margin-left: 8px;
+  cursor: pointer;
+
+  flex: 0 0 20px;     /* ← prevents stretching */
+  aspect-ratio: 1/1;  /* ← keeps perfect circle */
+}
+
+
+.info-icon:hover {
+  transform: scale(1.08);
+}
+
+/* Tooltip panel */
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 270px;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
+  color: #0b1f3a;
+  text-align: left;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  font-size: 12px;
+  line-height: 1.5;
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 9999;
+}
+
+/* Show tooltip */
+.info-icon:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+/* =========================================================
+   MOBILE + TABLET RESPONSIVE RULES (SELLERS TEMPLATE)
+   ========================================================= */
+
+/* Prevent ANY horizontal overflow */
+html, body {
+  overflow-x: hidden;
+}
+
+
+/* Grid children must be allowed to shrink */
+.flyer-card {
+  min-width: 0;
+}
+
+/* Tablet */
+@media (max-width: 980px) {
+
+  body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .flyer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  .two-col,
+  .split,
+  .order-grid,
+  .order-layout,
+  .main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
+
+  .flyer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  .tooltip-box {
+    left: 0 !important;
+    right: auto !important;
+    width: 220px;
+  }
+
+  .info-icon {
+    flex-shrink: 0;
+  }
+/* Mobile ONLY: allow branding row to wrap inside card */
+.branding-option{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  flex-wrap:wrap;
+  max-width:100%;
+}
+
+.branding-option span{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+}
+
+ 
+
+/* ===== HARD LOCK: keep info icon circular on desktop + mobile ===== */
+.info-icon{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+
+  width:20px !important;
+  height:20px !important;
+  aspect-ratio:1/1 !important;
+
+  border-radius:50% !important;
+
+  background:#0b4ea2 !important;
+  color:#fff !important;
+
+  font-size:12px !important;
+  font-weight:700 !important;
+
+  margin-left:8px !important;
+  cursor:pointer !important;
+
+  flex:0 0 20px !important;
+  max-width:20px !important;
+  min-width:20px !important;
 }
 
 </style>
@@ -139,110 +369,239 @@ body {
 <body>
 
 <div class="page-wrap">
-<section class="gallery-card">
+  <section class="gallery-card">
 
-<h2 class="section-title">Buyer Marketing Materials</h2>
-<p class="section-subtitle">
-  Tools to help buyers understand financing, preparation, and the homebuying process.
+    <h2 class="section-title">Buyer Marketing Materials</h2>
+    <p class="section-subtitle">
+      Tools to help buyers understand financing, preparation, and the homebuying process.
+    </p>
+
+    <div class="flyer-grid">
+
+      <div class="flyer-card" data-name="Buyer Flyer 1">
+        <img src="images/buyers/flyer1.jpg" alt="Buyer Flyer 1">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 1</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Buyer Flyer 2">
+        <img src="images/buyers/flyer2.jpg" alt="Buyer Flyer 2">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 2</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Buyer Flyer 3">
+        <img src="images/buyers/flyer3.jpg" alt="Buyer Flyer 3">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 3</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Buyer Flyer 4">
+        <img src="images/buyers/flyer4.jpg" alt="Buyer Flyer 4">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 4</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Buyer Flyer 5">
+        <img src="images/buyers/flyer5.jpg" alt="Buyer Flyer 5">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 5</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Buyer Flyer 6">
+        <img src="images/buyers/flyer6.jpg" alt="Buyer Flyer 6">
+        <div class="flyer-info">
+          <h3>Buyer Flyer 6</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+    </div>
+
+<hr style="margin: 60px 0; border: none; border-top: 1px solid rgba(0,0,0,0.08);">
+
+<h3 style="text-align:center; font-size: 24px; margin-bottom: 10px;">
+  Ready to Order Buyer Materials?
+</h3>
+
+<p style="text-align:center; max-width: 600px; margin: 0 auto 35px auto; color:#555;">
+  Tell us which materials you need and we’ll prepare everything for you.
 </p>
 
-<div class="flyer-grid">
-
-<div class="flyer-card" data-name="Buyer Flyer 1">
-<img src="images/buyers/flyer1.jpg" alt="Buyer Flyer 1">
-<h3>Buyer Flyer 1</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-<div class="flyer-card" data-name="Buyer Flyer 2">
-<img src="images/buyers/flyer2.jpg" alt="Buyer Flyer 2">
-<h3>Buyer Flyer 2</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-<div class="flyer-card" data-name="Buyer Flyer 3">
-<img src="images/buyers/flyer3.jpg" alt="Buyer Flyer 3">
-<h3>Buyer Flyer 3</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-<div class="flyer-card" data-name="Buyer Flyer 4">
-<img src="images/buyers/flyer4.jpg" alt="Buyer Flyer 4">
-<h3>Buyer Flyer 4</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-<div class="flyer-card" data-name="Buyer Flyer 5">
-<img src="images/buyers/flyer5.jpg" alt="Buyer Flyer 5">
-<h3>Buyer Flyer 5</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-<div class="flyer-card" data-name="Buyer Flyer 6">
-<img src="images/buyers/flyer6.jpg" alt="Buyer Flyer 6">
-<h3>Buyer Flyer 6</h3>
-<button type="button" class="add-btn">Add to My Kit</button>
-</div>
-
-</div>
-
-<hr style="margin:60px 0;border:none;border-top:1px solid rgba(0,0,0,0.08);">
-
-<h3 style="text-align:center;font-size:24px;margin-bottom:10px;">
-Ready to Order Buyer Materials?
-</h3>
 
 <form id="marketingForm" method="POST">
 <input type="hidden" name="selected_materials" id="selected_materials">
+<input type="hidden" name="_redirect" value="order-confirmation.html">
 
-<div class="kit-panel">
-<h3>Your Selected Materials</h3>
-<ul id="kit-list"><li class="empty">No materials selected yet</li></ul>
+
+
+  <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
+
+  <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
+
+  <input type="text" name="brokerage" placeholder="Brokerage" required style="width:100%; padding:12px; margin-bottom:20px; border-radius:6px; border:1px solid #ccc;">
+
+ <div class="kit-panel">
+  <h3>Your Selected Materials</h3>
+  <ul id="kit-list">
+    <li class="empty">No materials selected yet</li>
+  </ul>
 </div>
 
-<button type="submit" style="width:100%;padding:14px;border:none;border-radius:8px;background:#0b4ea2;color:white;font-weight:600;cursor:pointer;">
-Prepare My Marketing Kit
+
+<label class="branding-option">
+  <input type="radio" name="branding" value="Co-branded" required>
+  <span class="branding-text">Co-branded (requires Total Expert setup)</span>
+
+  <span class="info-icon" aria-label="Total Expert Info" role="button" tabindex="0">i
+    <span class="tooltip-box">
+      Co-branded materials require a free Total Expert partner account.
+      If you don’t already have one, you’ll receive an invitation email to upload your professional headshot and contact info.
+      This access is covered for you as my co-branded partner (normally $100/month).
+    </span>
+  </span>
+</label>
+
+
+  <label style="display:block; margin-bottom:20px;">
+    <input type="radio" name="branding" value="Kristy-branded only"> Kristy-branded only
+  </label>
+
+  <textarea name="notes" placeholder="Additional notes or customization requests" style="width:100%; padding:12px; height:100px; margin-bottom:25px; border-radius:6px; border:1px solid #ccc;"></textarea>
+<div class="form-note">
+  <strong>Production Time:</strong> Most materials are prepared within 2 business days. Need a rush? Add “Rush” in notes or contact Kristy directly.
+</div>
+
+ <button type="submit" style="width:100%; padding:14px; border:none; border-radius:8px; background:#0b4ea2; color:white; font-weight:600; cursor:pointer;">
+  Prepare My Marketing Kit
 </button>
+
+
 </form>
 
-<div style="text-align:center;">
-<a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
-</div>
+<p style="text-align:center; font-size:13px; margin-top:25px; color:#666;">
+  Most materials available in Spanish upon request. Co-branded materials require Total Expert profile setup.
+</p>
 
-</section>
+    <div style="text-align:center;">
+      <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
+    </div>
+
+  </section>
 </div>
 
 <a href="index.html" class="return-main">Return to Main Website</a>
-
 <script>
-const kit=[];
-document.querySelectorAll('.add-btn').forEach(btn=>{
-btn.addEventListener('click',function(){
-const card=this.closest('.flyer-card');
-const name=card.dataset.name;
-if(!kit.includes(name)){kit.push(name);this.textContent="Added ✓";this.classList.add("added");}
-else{kit.splice(kit.indexOf(name),1);this.textContent="Add to My Kit";this.classList.remove("added");}
-updateKitDisplay();
+/* ===========================
+   MATERIAL SELECTION SYSTEM
+=========================== */
+const kit = [];
+
+document.querySelectorAll('.add-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const card = this.closest('.flyer-card');
+    const name = card.dataset.name;
+
+    if (!kit.includes(name)) {
+      kit.push(name);
+      this.textContent = "Added ✓";
+      this.classList.add("added");
+    } else {
+      const index = kit.indexOf(name);
+      kit.splice(index, 1);
+      this.textContent = "Add to My Kit";
+      this.classList.remove("added");
+    }
+
+    updateKitDisplay();
+  });
 });
-});
-function updateKitDisplay(){
-const list=document.getElementById('kit-list');
-const hidden=document.getElementById('selected_materials');
-list.innerHTML='';
-if(kit.length===0){list.innerHTML='<li class="empty">No materials selected yet</li>';}
-else{
-kit.forEach(item=>{
-const li=document.createElement('li');
-const card=document.querySelector(`[data-name="${item}"]`);
-const imgSrc=card.querySelector("img").src;
-li.innerHTML=`<img src="${imgSrc}" style="width:100%;border-radius:8px;margin-bottom:6px;"><div>${item}</div>`;
-list.appendChild(li);
-});
+
+function updateKitDisplay() {
+  const list = document.getElementById('kit-list');
+  const hiddenField = document.getElementById('selected_materials');
+
+  list.innerHTML = '';
+
+  if (kit.length === 0) {
+    list.innerHTML = '<li class="empty">No materials selected yet</li>';
+  } else {
+    kit.forEach(item => {
+      const li = document.createElement('li');
+
+      const card = document.querySelector(`[data-name="${item}"]`);
+      const imgSrc = card.querySelector("img").src;
+
+      li.innerHTML = `
+        <img src="${imgSrc}" style="width:100%; border-radius:8px; margin-bottom:6px;">
+        <div>${item}</div>
+      `;
+
+      list.appendChild(li);
+    });
+  }
+
+  hiddenField.value = kit.join(', ');
 }
-hidden.value=kit.join(', ');
+
+
+/* ===========================
+   FORM SUBMISSION SYSTEM
+=========================== */
+const form = document.getElementById("marketingForm");
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault(); // stop normal submit
+
+  const hiddenField = document.getElementById("selected_materials");
+
+  // Build receipt data
+  const receipt = {
+    name: form.name.value,
+    email: form.email.value,
+    brokerage: form.brokerage.value,
+    branding: form.branding.value,
+    notes: form.notes.value,
+    materials: hiddenField.value
+  };
+
+  // Store for confirmation page
+  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
+
+  const formData = new FormData(form);
+
+try {
+  // 1️⃣ Save receipt FIRST
+  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
+
+  // 2️⃣ Send form in background (no await)
+  fetch("https://formspree.io/f/mojlojor", {
+    method: "POST",
+    body: formData,
+    headers: { 'Accept': 'application/json' }
+  });
+
+  // 3️⃣ Clear form + go to receipt page
+  form.reset();
+  window.location.href = "order-confirmation.html";
+
+} catch (error) {
+  alert("There was an issue sending your request. Please try again.");
 }
+
+});
 </script>
+
 
 </body>
 </html>
-
