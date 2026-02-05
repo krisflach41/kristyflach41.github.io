@@ -257,39 +257,45 @@ body {
   transform: translateX(-50%) translateY(4px);
 }
 /* =========================================================
-   MOBILE + TABLET RESPONSIVE RULES (SELLERS TEMPLATE)
-   Paste ABOVE </style>
+   RESPONSIVE SYSTEM — SELLERS PAGE (MASTER FIX)
+   Put ABOVE </style>
    ========================================================= */
 
-/* Tablet */
+/* ===== DESKTOP BASELINE (nothing changes here) ===== */
+.flyer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 35px;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
 @media (max-width: 980px) {
 
-  /* Keep page breathing room */
   body {
     padding-left: 18px;
     padding-right: 18px;
   }
 
-  /* Main containers (safe even if not all exist) */
   .page-wrap,
   .gallery-wrap,
   .content-wrap,
   .container {
+    width: 100% !important;
     max-width: 100% !important;
     padding-left: 18px !important;
     padding-right: 18px !important;
+    box-sizing: border-box;
   }
 
-  /* Gallery grid -> 2 columns if you’re using a grid */
-  .flyer-grid,
-  .gallery-grid,
-  .thumb-grid,
-  .wall-grid {
+  /* 🔥 FORCE GRID RESET */
+  .flyer-grid {
+    display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 16px !important;
+    gap: 18px !important;
   }
 
-  /* Any “2 column layout” blocks -> stack */
   .two-col,
   .split,
   .order-grid,
@@ -298,48 +304,41 @@ body {
     grid-template-columns: 1fr !important;
     gap: 18px !important;
   }
-
-  /* Cards + panels */
-  .flyer-card,
-  .kit-panel,
-  .order-card,
-  .form-card {
-    border-radius: 18px !important;
-  }
 }
 
-/* Mobile */
+/* =========================================================
+   MOBILE
+   ========================================================= */
 @media (max-width: 640px) {
 
-  /* Headings scale */
+  body {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
   h1 { font-size: 28px !important; }
   h2 { font-size: 18px !important; }
 
-  /* Tighten card padding */
-  .flyer-card,
-  .kit-panel,
-  .order-card,
-  .form-card {
-    padding: 16px !important;
-  }
-
-  /* Gallery grid -> 1 column */
-  .flyer-grid,
-  .gallery-grid,
-  .thumb-grid,
-  .wall-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-  }
- .page-wrap,
+  .page-wrap,
   .gallery-wrap,
   .content-wrap,
   .container {
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
+    box-sizing: border-box;
   }
-  /* Make form inputs full width */
+
+  /* 🔥 HARD MOBILE STACK FIX */
+  .flyer-grid {
+    display: block !important;
+  }
+
+  .flyer-card {
+    width: 100% !important;
+    margin-bottom: 18px !important;
+  }
+
   input,
   textarea,
   select,
@@ -348,13 +347,13 @@ body {
     box-sizing: border-box !important;
   }
 
-  /* Make button rows stack nicely */
   .button-row {
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
   }
 }
+
 
 
 </style>
