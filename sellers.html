@@ -253,6 +253,98 @@ body {
   opacity: 1;
   transform: translateX(-50%) translateY(4px);
 }
+/* =========================================================
+   MOBILE + TABLET RESPONSIVE RULES (SELLERS TEMPLATE)
+   Paste ABOVE </style>
+   ========================================================= */
+
+/* Tablet */
+@media (max-width: 980px) {
+
+  /* Keep page breathing room */
+  body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  /* Main containers (safe even if not all exist) */
+  .page-wrap,
+  .gallery-wrap,
+  .content-wrap,
+  .container {
+    max-width: 100% !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  /* Gallery grid -> 2 columns if you’re using a grid */
+  .flyer-grid,
+  .gallery-grid,
+  .thumb-grid,
+  .wall-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+
+  /* Any “2 column layout” blocks -> stack */
+  .two-col,
+  .split,
+  .order-grid,
+  .order-layout,
+  .main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+  }
+
+  /* Cards + panels */
+  .flyer-card,
+  .kit-panel,
+  .order-card,
+  .form-card {
+    border-radius: 18px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+
+  /* Headings scale */
+  h1 { font-size: 28px !important; }
+  h2 { font-size: 18px !important; }
+
+  /* Tighten card padding */
+  .flyer-card,
+  .kit-panel,
+  .order-card,
+  .form-card {
+    padding: 16px !important;
+  }
+
+  /* Gallery grid -> 1 column */
+  .flyer-grid,
+  .gallery-grid,
+  .thumb-grid,
+  .wall-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+
+  /* Make form inputs full width */
+  input,
+  textarea,
+  select,
+  button {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Make button rows stack nicely */
+  .button-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+}
 
 </style>
 </head>
