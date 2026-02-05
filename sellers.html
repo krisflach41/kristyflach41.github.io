@@ -194,6 +194,13 @@ body {
   color: #0b1f3a;
   position: relative;
 }
+  .branding-text{
+  display:inline;
+  color:#0b1f3a;
+  font-size:14px;
+  font-weight:600;
+}
+
 
 /* Info icon */
 .info-icon {
@@ -351,12 +358,13 @@ body {
 
 <label class="branding-option">
   <input type="radio" name="branding" value="Co-branded" required>
-  Co-branded
-  <span class="info-icon">ⓘ
+  <span class="branding-text">Co-branded (requires Total Expert setup)</span>
+
+  <span class="info-icon" aria-label="Total Expert Info" role="button" tabindex="0">i
     <span class="tooltip-box">
-      Co-branded materials require a Total Expert account.<br><br>
-      If you don’t already have one, you’ll receive an invitation email to set up your profile with your professional headshot and contact details.<br><br>
-      As my Realtor partner, your account is provided at no cost. Retail pricing is typically $100/month.
+      Co-branded materials require a free Total Expert partner account.
+      If you don’t already have one, you’ll receive an invitation email to upload your professional headshot and contact info.
+      This access is covered for you as my co-branded partner (normally $100/month).
     </span>
   </span>
 </label>
