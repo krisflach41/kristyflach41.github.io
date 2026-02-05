@@ -319,38 +319,23 @@ html, body {
   .info-icon {
     flex-shrink: 0;
   }
+/* Mobile ONLY: allow branding row to wrap inside card */
+.branding-option{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  flex-wrap:wrap;
+  max-width:100%;
+}
+
+.branding-option span{
+  flex:1 1 auto;
+  min-width:0;
+}
 
 }
 
  
-
-/* Branding option row must wrap on small screens */
-.branding-option {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: 100%;
-}
-
-
-/* Fix branding radio row on mobile */
-.branding-option {
-  display: flex !important;
-  align-items: flex-start;
-  gap: 8px;
-  flex-wrap: wrap;
-  max-width: 100%;
-}
-
-.branding-option span {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.info-icon {
-  flex-shrink: 0;
-}
 
 /* ===== HARD LOCK: keep info icon circular on desktop + mobile ===== */
 .info-icon{
