@@ -1,1 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advisory Collection</title>
+
+<style>
+
+/* ===== BACKGROUND (LOCKED PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== MAIN GLASS CONTAINER ===== */
+.blog-section {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 36px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== GALLERY GRID ===== */
+.studio-gallery {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 40px;
+  justify-content: center;
+}
+
+/* ===== CATEGORY PANELS ===== */
+.studio-panel {
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px;
+  padding: 28px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* ===== THUMB PREVIEWS ===== */
+.panel-thumbs {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.thumb {
+  width: 60px;
+  height: 80px;
+  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
+  border-radius: 6px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* ===== BUTTON ===== */
+.panel-btn {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 8px 18px;
+  background: #0b4ea2;
+  color: white;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ===== FLOATING RETURN LINK ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+  <section class="blog-section">
+
+    <h2 class="section-title">Advisory Collection</h2>
+    <p class="section-subtitle">
+      Curated advisory resources designed to help Realtors guide confident, informed client decisions.
+    </p>
+
+    <div class="studio-gallery">
+
+      <!-- REPORTS -->
+      <div class="studio-panel">
+        <div class="panel-thumbs">
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+        </div>
+        <h3>Reports</h3>
+        <p>Market insights and visual reports to support client conversations.</p>
+        <a href="reports.html" class="panel-btn">Enter Collection →</a>
+      </div>
+
+      <!-- LOAN PRODUCT PROFILES -->
+      <div class="studio-panel">
+        <div class="panel-thumbs">
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+        </div>
+        <h3>Loan Product Profiles</h3>
+        <p>Clear overviews to help explain financing strategies with confidence.</p>
+        <a href="loan-product-profiles.html" class="panel-btn">Enter Collection →</a>
+      </div>
+
+      <!-- TOOLS -->
+      <div class="studio-panel">
+        <div class="panel-thumbs">
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+          <div class="thumb"></div>
+        </div>
+        <h3>Tools</h3>
+        <p>Interactive tools designed to support planning and decision-making.</p>
+        <a href="tools.html" class="panel-btn">Enter Collection →</a>
+      </div>
+
+    </div>
+
+  </section>
+</div>
+
+<a href="portal.html" class="return-main">← Return to Agent Edge Partner Portal</a>
+
+</body>
+</html>
 
