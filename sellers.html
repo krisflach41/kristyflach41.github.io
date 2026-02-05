@@ -187,20 +187,22 @@ body {
 }
 /* ===== Branding Option Tooltip ===== */
 .branding-option {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   margin-bottom: 10px;
   font-size: 14px;
   color: #0b1f3a;
   position: relative;
 }
 
+/* Info icon */
 .info-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 18px;
   height: 18px;
-  margin-left: 8px;
   font-size: 12px;
   font-weight: 700;
   color: white;
@@ -215,29 +217,34 @@ body {
 .info-icon:hover {
   transform: scale(1.08);
 }
+
+/* Tooltip panel */
 .tooltip-box {
   visibility: hidden;
   opacity: 0;
-  width: 260px;
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(6px);
+  width: 270px;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(8px);
   color: #0b1f3a;
   text-align: left;
-  padding: 12px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
   font-size: 12px;
   line-height: 1.5;
   position: absolute;
-  top: 20px;
-  left: 0;
-  transition: all 0.25s ease;
-  z-index: 1000;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 9999;
 }
 
+/* Show tooltip */
 .info-icon:hover .tooltip-box {
   visibility: visible;
   opacity: 1;
+  transform: translateX(-50%) translateY(4px);
 }
 
 
