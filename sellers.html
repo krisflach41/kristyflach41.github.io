@@ -315,6 +315,18 @@ html, body {
     gap: 14px !important;
   }
 
+  .tooltip-box {
+    left: 0 !important;
+    right: auto !important;
+    width: 220px;
+  }
+
+  .info-icon {
+    flex-shrink: 0;
+  }
+
+}
+
   .flyer-card {
     width: 100% !important;
   }
@@ -334,6 +346,19 @@ html, body {
   }
 }
 
+/* Branding option row must wrap on small screens */
+.branding-option {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+
+.branding-option span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 
 
 </style>
