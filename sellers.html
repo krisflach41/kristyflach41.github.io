@@ -257,20 +257,31 @@ body {
   transform: translateX(-50%) translateY(4px);
 }
 /* =========================================================
-   RESPONSIVE SYSTEM — SELLERS PAGE (MASTER FIX)
-   Put ABOVE </style>
+   MOBILE + TABLET RESPONSIVE RULES (SELLERS TEMPLATE)
    ========================================================= */
 
-/* ===== DESKTOP BASELINE (nothing changes here) ===== */
-.flyer-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 35px;
+/* Prevent ANY horizontal overflow */
+html, body {
+  overflow-x: hidden;
 }
 
-/* =========================================================
-   TABLET
-   ========================================================= */
+/* Ensure containers never exceed viewport */
+.page-wrap,
+.gallery-wrap,
+.content-wrap,
+.container,
+.flyer-grid {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Grid children must be allowed to shrink */
+.flyer-card {
+  min-width: 0;
+}
+
+/* Tablet */
 @media (max-width: 980px) {
 
   body {
@@ -278,22 +289,9 @@ body {
     padding-right: 18px;
   }
 
-  .page-wrap,
-  .gallery-wrap,
-  .content-wrap,
-  .container {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding-left: 18px !important;
-    padding-right: 18px !important;
-    box-sizing: border-box;
-  }
-
-  /* 🔥 FORCE GRID RESET */
   .flyer-grid {
-    display: grid !important;
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 18px !important;
+    gap: 16px !important;
   }
 
   .two-col,
@@ -306,51 +304,33 @@ body {
   }
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+/* Mobile */
 @media (max-width: 640px) {
 
-  body {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
 
-  h1 { font-size: 28px !important; }
-  h2 { font-size: 18px !important; }
-
-  .page-wrap,
-  .gallery-wrap,
-  .content-wrap,
-  .container {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow-x: hidden !important;
-    box-sizing: border-box;
-  }
-
-  /* 🔥 HARD MOBILE STACK FIX */
   .flyer-grid {
-    display: block !important;
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
   }
 
   .flyer-card {
     width: 100% !important;
-    margin-bottom: 18px !important;
   }
 
   input,
   textarea,
   select,
   button {
-    width: 100% !important;
-    box-sizing: border-box !important;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .button-row {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px !important;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 }
 
