@@ -1,1 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Intelligence</title>
+
+<style>
+
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== GRID ===== */
+.flyer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+}
+
+/* ===== CARD ===== */
+.flyer-card {
+  text-align: center;
+}
+
+.flyer-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.flyer-card img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+/* ===== ADD BUTTON ===== */
+.add-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #0b4ea2;
+  background: transparent;
+  color: #0b4ea2;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.add-btn.added {
+  background: #0b4ea2;
+  color: #fff;
+}
+
+/* ===== KIT PANEL ===== */
+.kit-panel {
+  margin: 50px 0 30px;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+#kit-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+#kit-list li {
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+}
+
+/* ===== INFO ICON ===== */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0b4ea2;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 280px;
+  background: rgba(255,255,255,0.97);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  font-size: 12px;
+  line-height: 1.5;
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: 0.25s ease;
+  z-index: 9999;
+}
+
+.info-icon:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* ===== FLOATING NAV ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="gallery-card">
+
+<h2 class="section-title">Market Intelligence</h2>
+<p class="section-subtitle">
+Advisor-grade market visuals designed to help Realtors explain trends, pricing dynamics, and timing with clarity and confidence.
+</p>
+
+<div class="flyer-grid">
+
+<div class="flyer-card" data-name="Bid Over Ask">
+<img src="Bid Over Ask.png" alt="Bid Over Ask">
+<h3>Bid Over Ask</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buy vs Rent">
+<img src="Buy vs Rent.png" alt="Buy vs Rent">
+<h3>Buy vs Rent</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Cost of Waiting">
+<img src="Cost of Waiting.png" alt="Cost of Waiting">
+<h3>Cost of Waiting</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Investment Property">
+<img src="Investment-Property.png" alt="Investment Property">
+<h3>Investment Property</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Mortgage Amortization">
+<img src="Mortgage Amortization.png" alt="Mortgage Amortization">
+<h3>Mortgage Amortization</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Real Estate Report Card">
+<img src="Real Estate Report Card.png" alt="Real Estate Report Card">
+<h3>Real Estate Report Card</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Appreciation">
+<img src="Appreciation.png" alt="Appreciation">
+<h3>Appreciation</h3>
+<button class="add-btn">Add to My Kit</button>
+</div>
+
+</div>
+
+<hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
+
+<h3 style="text-align:center;">Prepare Your Market Intelligence Kit</h3>
+
+<form id="advisoryForm">
+
+<input type="hidden" id="selected_materials">
+
+<input type="text" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:14px;">
+<input type="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:14px;">
+<input type="text" placeholder="Brokerage" required style="width:100%; padding:12px; margin-bottom:20px;">
+
+<div class="kit-panel">
+<h3>Your Selected Materials</h3>
+<ul id="kit-list">
+<li class="empty">No materials selected yet</li>
+</ul>
+</div>
+
+<label>
+<input type="radio" name="branding" required> Co-branded (MBS HYW member)
+<span class="info-icon">i
+<span class="tooltip-box">
+Co-branded advisory materials are available to MBS HYW members.
+Membership is $20 and complies with RESPA Section 8.
+</span>
+</span>
+</label><br><br>
+
+<label>
+<input type="radio" name="branding"> Kristy-branded only
+</label><br><br>
+
+<textarea placeholder="Additional notes or customization requests"
+style="width:100%; height:100px; padding:12px;"></textarea>
+
+<p style="text-align:center; font-size:13px; margin:14px 0;">
+<strong>Production Time:</strong> Most materials are prepared within 2 business days.
+Need a rush? Add “Rush” in notes or contact Kristy directly.
+</p>
+
+<button type="submit"
+style="width:100%; padding:14px; background:#0b4ea2; color:#fff; border:none; border-radius:8px; font-weight:600;">
+Prepare My Advisory Kit
+</button>
+
+</form>
+
+<div style="text-align:center; margin-top:30px;">
+<a href="advisory-collection.html">← Back to Advisory Collection</a>
+</div>
+
+</section>
+</div>
+
+<a href="index.html" class="return-main">Return to Main Website</a>
+
+<script>
+const kit = [];
+
+document.querySelectorAll('.add-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+const card = btn.closest('.flyer-card');
+const name = card.dataset.name;
+
+if(!kit.includes(name)){
+kit.push(name);
+btn.textContent="Added ✓";
+btn.classList.add("added");
+}else{
+kit.splice(kit.indexOf(name),1);
+btn.textContent="Add to My Kit";
+btn.classList.remove("added");
+}
+updateKit();
+});
+});
+
+function updateKit(){
+const list=document.getElementById("kit-list");
+const hidden=document.getElementById("selected_materials");
+list.innerHTML="";
+if(!kit.length){
+list.innerHTML='<li class="empty">No materials selected yet</li>';
+}else{
+kit.forEach(item=>{
+const card=document.querySelector(`[data-name="${item}"]`);
+const img=card.querySelector("img").src;
+list.innerHTML+=`<li><img src="${img}" style="width:100%;border-radius:8px;margin-bottom:6px;">${item}</li>`;
+});
+}
+hidden.value=kit.join(", ");
+}
+</script>
+
+</body>
+</html>
 
