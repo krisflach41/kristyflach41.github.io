@@ -1,1 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buyers Marketing Materials</title>
+
+<style>
+
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== FLYER GRID ===== */
+.flyer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+}
+
+/* ===== FLYER CARD ===== */
+.flyer-card { text-align: center; }
+.flyer-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.flyer-card img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+/* ===== BUTTONS & KIT SYSTEM ===== */
+.add-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #0b4ea2;
+  background: transparent;
+  color: #0b4ea2;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+.add-btn:hover { background: #0b4ea2; color: white; }
+.add-btn.added { background: #0b4ea2; color: white; border-color:#0b4ea2; }
+
+/* ===== KIT PANEL ===== */
+.kit-panel {
+  margin: 50px 0 30px;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+#kit-list {
+  list-style:none;
+  padding:0;
+  margin:0;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+#kit-list li {
+  background: rgba(255,255,255,0.65);
+  border-radius: 12px;
+  padding: 10px;
+  text-align:center;
+  font-size:13px;
+}
+
+/* ===== NAV BUTTON ===== */
+.back-btn, .return-main {
+  display:inline-block;
+  margin-top:50px;
+  padding:10px 20px;
+  border-radius:25px;
+  background:rgba(255,255,255,0.35);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,0.6);
+  text-decoration:none;
+  color:#0b1f3a;
+  font-weight:600;
+}
+.return-main {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="gallery-card">
+
+<h2 class="section-title">Buyer Marketing Materials</h2>
+<p class="section-subtitle">
+  Tools to help buyers understand financing, preparation, and the homebuying process.
+</p>
+
+<div class="flyer-grid">
+
+<div class="flyer-card" data-name="Buyer Flyer 1">
+<img src="images/buyers/flyer1.jpg" alt="Buyer Flyer 1">
+<h3>Buyer Flyer 1</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buyer Flyer 2">
+<img src="images/buyers/flyer2.jpg" alt="Buyer Flyer 2">
+<h3>Buyer Flyer 2</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buyer Flyer 3">
+<img src="images/buyers/flyer3.jpg" alt="Buyer Flyer 3">
+<h3>Buyer Flyer 3</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buyer Flyer 4">
+<img src="images/buyers/flyer4.jpg" alt="Buyer Flyer 4">
+<h3>Buyer Flyer 4</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buyer Flyer 5">
+<img src="images/buyers/flyer5.jpg" alt="Buyer Flyer 5">
+<h3>Buyer Flyer 5</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+<div class="flyer-card" data-name="Buyer Flyer 6">
+<img src="images/buyers/flyer6.jpg" alt="Buyer Flyer 6">
+<h3>Buyer Flyer 6</h3>
+<button type="button" class="add-btn">Add to My Kit</button>
+</div>
+
+</div>
+
+<hr style="margin:60px 0;border:none;border-top:1px solid rgba(0,0,0,0.08);">
+
+<h3 style="text-align:center;font-size:24px;margin-bottom:10px;">
+Ready to Order Buyer Materials?
+</h3>
+
+<form id="marketingForm" method="POST">
+<input type="hidden" name="selected_materials" id="selected_materials">
+
+<div class="kit-panel">
+<h3>Your Selected Materials</h3>
+<ul id="kit-list"><li class="empty">No materials selected yet</li></ul>
+</div>
+
+<button type="submit" style="width:100%;padding:14px;border:none;border-radius:8px;background:#0b4ea2;color:white;font-weight:600;cursor:pointer;">
+Prepare My Marketing Kit
+</button>
+</form>
+
+<div style="text-align:center;">
+<a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
+</div>
+
+</section>
+</div>
+
+<a href="index.html" class="return-main">Return to Main Website</a>
+
+<script>
+const kit=[];
+document.querySelectorAll('.add-btn').forEach(btn=>{
+btn.addEventListener('click',function(){
+const card=this.closest('.flyer-card');
+const name=card.dataset.name;
+if(!kit.includes(name)){kit.push(name);this.textContent="Added ✓";this.classList.add("added");}
+else{kit.splice(kit.indexOf(name),1);this.textContent="Add to My Kit";this.classList.remove("added");}
+updateKitDisplay();
+});
+});
+function updateKitDisplay(){
+const list=document.getElementById('kit-list');
+const hidden=document.getElementById('selected_materials');
+list.innerHTML='';
+if(kit.length===0){list.innerHTML='<li class="empty">No materials selected yet</li>';}
+else{
+kit.forEach(item=>{
+const li=document.createElement('li');
+const card=document.querySelector(`[data-name="${item}"]`);
+const imgSrc=card.querySelector("img").src;
+li.innerHTML=`<img src="${imgSrc}" style="width:100%;border-radius:8px;margin-bottom:6px;"><div>${item}</div>`;
+list.appendChild(li);
+});
+}
+hidden.value=kit.join(', ');
+}
+</script>
+
+</body>
+</html>
 
