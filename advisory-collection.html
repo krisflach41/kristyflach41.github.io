@@ -87,6 +87,37 @@ body {
   border-radius: 6px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
+  /* ===== THUMB HOVER TITLE OVERLAY ===== */
+.thumb-wrap {
+  position: relative;
+  width: 60px;
+  height: 80px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.thumb-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  padding: 6px;
+}
+
+.thumb-wrap:hover .thumb-overlay {
+  opacity: 1;
+}
+
 
 .thumb:hover {
   transform: scale(1.08);
@@ -138,11 +169,25 @@ body {
 
       <!-- REPORTS -->
       <div class="studio-panel">
-       <div class="panel-thumbs">
-  <img src="Real-Estate-Report-Card.png" class="thumb" alt="Real Estate Report Card">
-  <img src="Bid-Over-Ask.png" class="thumb" alt="Bid Over Ask">
-  <img src="Appreciation.png" class="thumb" alt="Appreciation">
+      <div class="panel-thumbs">
+
+  <div class="thumb-wrap">
+    <img src="Real-Estate-Report-Card.png" class="thumb" alt="Real Estate Report Card">
+    <div class="thumb-overlay">Report Card</div>
+  </div>
+
+  <div class="thumb-wrap">
+    <img src="Bid-Over-Ask.png" class="thumb" alt="Bid Over Ask">
+    <div class="thumb-overlay">Bid Over Ask</div>
+  </div>
+
+  <div class="thumb-wrap">
+    <img src="Appreciation.png" class="thumb" alt="Appreciation">
+    <div class="thumb-overlay">Appreciation</div>
+  </div>
+
 </div>
+
 
         <h3>Market Intelligence</h3>
 
