@@ -533,23 +533,6 @@ Prepare My Advisory Kit
 <script>
 const kit = [];
 
-document.querySelectorAll('.add-btn').forEach(btn=>{
-btn.addEventListener('click',()=>{
-const card = btn.closest('.flyer-card');
-const name = card.dataset.name;
-
-if(!kit.includes(name)){
-kit.push(name);
-btn.textContent="Added ✓";
-btn.classList.add("added");
-}else{
-kit.splice(kit.indexOf(name),1);
-btn.textContent="Add to My Kit";
-btn.classList.remove("added");
-}
-updateKit();
-});
-});
 
 function updateKit(){
 const list=document.getElementById("kit-list");
@@ -595,6 +578,14 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     lightbox.classList.remove("active");
   }
+});
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const report = btn.getAttribute('data-report');
+    if (report && typeof openPanel === "function") {
+      openPanel(report);
+    }
+  });
 });
 
 </script>
