@@ -257,6 +257,40 @@ body {
   margin-left: auto;
   margin-right: auto;
 }
+/* ===== CODEPEN PANEL STYLES ===== */
+
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+  z-index: 9998;
+}
+
+.panel-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.side-panel {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 420px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -20px 0 40px rgba(0,0,0,0.15);
+  padding: 30px;
+  transition: 0.35s;
+  overflow-y: auto;
+  z-index: 9999;
+}
+
+.side-panel.active {
+  right: 0;
+}
 
 </style>
 </head>
