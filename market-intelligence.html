@@ -631,35 +631,76 @@ document.addEventListener("keydown", e => {
   }
 });
 
-/* ===========================
-   CODEPEN PANEL LOGIC (FORM)
-=========================== */
-
 let propertyPool = [];
 let reportConfigs = {};
 let activeReport = "";
 let workingSet = [];
+let pendingDeleteIndex = null;
 let isEditMode = false;
 
+/* ============================
+   UNIVERSAL MONEY FORMATTER
+============================ */
+function formatMoney(inputEl) {
+  let raw = (inputEl.value || "").replace(/[^0-9.]/g, "");
+  if (!raw) {
+    inputEl.value = "";
+    return;
+  }
+  const num = parseFloat(raw);
+  if (isNaN(num)) {
+    inputEl.value = "";
+    return;
+  }
+  inputEl.value = num.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  });
+}
+
+/* ============================
+   PANEL OPEN / CLOSE
+============================ */
 function openPanel(type, mode = "new") {
   activeReport = type;
   isEditMode = (mode === "edit");
 
-  const panel = document.getElementById("panel");
-  const overlay = document.getElementById("overlay");
+  const btn = document.getElementById("kitActionBtn");
+  if (btn) {
+    btn.textContent = isEditMode ? "Update My Kit" : "Add to My Kit";
+  }
 
-  document.getElementById("panelTitle").innerText = type;
+  if (mode === "new") {
+    workingSet = [];
+  }
 
-  workingSet = [];
-  renderInputs();
+  pendingDeleteIndex = null;
+
+  panelTitle.innerText =
+    type === "bid" ? "Bid Over Ask" :
+    type === "buyrent" ? "Buy vs Rent" :
+    type === "costwaiting" ? "Cost of Waiting" :
+    type === "amortization" ? "Amortization" :
+    type === "appreciation" ? "Appreciation" :
+    type === "investment" ? "Investment Property" :
+    "Real Estate Report Card";
+
+  renderPool();
+
+  if (mode === "new") {
+    addNewProperty();
+  } else {
+    renderInputs();
+  }
 
   panel.classList.add("active");
   overlay.classList.add("active");
 }
 
 function closePanel() {
-  document.getElementById("panel").classList.remove("active");
-  document.getElementById("overlay").classList.remove("active");
+  panel.classList.remove("active");
+  overlay.classList.remove("active");
 }
 
 function addNewProperty() {
