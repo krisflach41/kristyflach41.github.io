@@ -761,6 +761,36 @@ document.querySelectorAll('.add-btn').forEach(btn => {
     Add to My Kit
   </button>
 </div>
+<!-- CODEPEN PANEL SYSTEM (INACTIVE – DO NOT TOUCH) -->
+<!-- CODEPEN PANEL SYSTEM (HTML – INACTIVE) -->
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+
+<div class="side-panel" id="panel">
+  <h3 id="panelTitle"></h3>
+  <p id="panelDesc"></p>
+
+  <div id="pool"></div>
+  <div id="properties"></div>
+
+  <div class="add-row" onclick="addNewProperty()">+ Add a new property</div>
+
+  <div id="updatePrompt">
+    <strong>Apply this update to:</strong><br>
+    <label><input type="radio" name="updateScope" value="all" checked> All reports</label><br>
+    <label><input type="radio" name="updateScope" value="single"> This report only</label>
+  </div>
+
+  <div id="deletePrompt">
+    <strong>Remove this property from:</strong><br>
+    <label><input type="radio" name="deleteScope" value="single" checked> This report only</label><br>
+    <label><input type="radio" name="deleteScope" value="all"> All reports</label>
+  </div>
+
+  <button class="add-btn" id="kitActionBtn" onclick="addToKit()">
+    Add to My Kit
+  </button>
+</div>
 
 </body>
 </html>
