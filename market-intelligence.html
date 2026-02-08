@@ -590,6 +590,39 @@ document.querySelectorAll('.add-btn').forEach(btn => {
 
 </script>
 
+<script>
+/* ===== CODEPEN PANEL LOGIC (DO NOT EDIT) ===== */
+
+let propertyPool = [];
+let reportConfigs = {};
+let activeReport = "";
+let workingSet = [];
+let isEditMode = false;
+
+function openPanel(type, mode = "new") {
+  activeReport = type;
+  isEditMode = (mode === "edit");
+
+  const panel = document.getElementById("panel");
+  const overlay = document.getElementById("overlay");
+
+  if (!panel || !overlay) {
+    alert("Panel elements not found.");
+    return;
+  }
+
+  panel.querySelector("#panelTitle").innerText = type;
+  panel.classList.add("active");
+  overlay.classList.add("active");
+
+  workingSet = [];
+}
+
+function closePanel() {
+  document.getElementById("panel").classList.remove("active");
+  document.getElementById("overlay").classList.remove("active");
+}
+</script>
 
 </body>
 </html>
