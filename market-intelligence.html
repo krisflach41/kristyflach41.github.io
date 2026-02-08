@@ -303,6 +303,139 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 </div>
 
 </div>
+<!-- =========================
+SUPPORT STUDIO (CodePen System)
+DO NOT EDIT INSIDE THIS BLOCK
+========================= -->
+
+<style>
+#support-studio-root body { all: unset; }
+
+#support-studio-root .gallery {
+  max-width: 900px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+#support-studio-root .card {
+  padding: 35px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 45px rgba(0,0,0,0.1);
+}
+
+#support-studio-root .add-btn {
+  padding: 10px 18px;
+  border-radius: 25px;
+  border: 1px solid #0b4ea2;
+  background: transparent;
+  color: #0b4ea2;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#support-studio-root .kit {
+  max-width: 900px;
+  margin: 50px auto 0;
+}
+
+#support-studio-root .kit-item {
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(11,78,162,0.1);
+  margin-bottom: 10px;
+}
+
+#support-studio-root .panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s;
+}
+#support-studio-root .panel-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#support-studio-root .side-panel {
+  position: fixed;
+  top: 0;
+  right: -420px;
+  width: 420px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -20px 0 40px rgba(0,0,0,0.15);
+  padding: 30px;
+  transition: 0.35s;
+  overflow-y: auto;
+  z-index: 10001;
+}
+#support-studio-root .side-panel.active {
+  right: 0;
+}
+</style>
+
+<div id="support-studio-root">
+
+  <div class="gallery">
+    <div class="card"><h3>Bid Over Ask</h3><button class="add-btn" onclick="SupportStudio.open('bid')">Add to My Kit</button></div>
+    <div class="card"><h3>Buy vs Rent</h3><button class="add-btn" onclick="SupportStudio.open('buyrent')">Add to My Kit</button></div>
+    <div class="card"><h3>Cost of Waiting</h3><button class="add-btn" onclick="SupportStudio.open('costwaiting')">Add to My Kit</button></div>
+    <div class="card"><h3>Investment Property</h3><button class="add-btn" onclick="SupportStudio.open('investment')">Add to My Kit</button></div>
+    <div class="card"><h3>Amortization</h3><button class="add-btn" onclick="SupportStudio.open('amortization')">Add to My Kit</button></div>
+    <div class="card"><h3>Appreciation</h3><button class="add-btn" onclick="SupportStudio.open('appreciation')">Add to My Kit</button></div>
+    <div class="card"><h3>Real Estate Report Card</h3><button class="add-btn" onclick="SupportStudio.open('reportcard')">Add to My Kit</button></div>
+  </div>
+
+  <div class="kit" id="studio-kit"></div>
+
+  <div class="panel-overlay" id="studio-overlay" onclick="SupportStudio.close()"></div>
+  <div class="side-panel" id="studio-panel">
+    <h3 id="studio-title"></h3>
+    <div id="studio-body"></div>
+    <button class="add-btn" onclick="SupportStudio.save()">Add to My Kit</button>
+  </div>
+
+</div>
+
+<script>
+const SupportStudio = (() => {
+  let active = "";
+  let kit = {};
+
+  function open(type) {
+    active = type;
+    document.getElementById("studio-title").innerText = type;
+    document.getElementById("studio-panel").classList.add("active");
+    document.getElementById("studio-overlay").classList.add("active");
+  }
+
+  function close() {
+    document.getElementById("studio-panel").classList.remove("active");
+    document.getElementById("studio-overlay").classList.remove("active");
+  }
+
+  function save() {
+    kit[active] = true;
+    render();
+    close();
+  }
+
+  function render() {
+    const el = document.getElementById("studio-kit");
+    el.innerHTML = "";
+    Object.keys(kit).forEach(k => {
+      el.innerHTML += `<div class="kit-item">✔ ${k}</div>`;
+    });
+  }
+
+  return { open, close, save };
+})();
+</script>
 
 <hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
 
