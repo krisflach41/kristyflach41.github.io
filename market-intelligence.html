@@ -632,7 +632,7 @@ document.addEventListener("keydown", e => {
 });
 
 /* ===========================
-   CODEPEN PANEL LOGIC
+   CODEPEN PANEL LOGIC (FORM)
 =========================== */
 
 let propertyPool = [];
@@ -648,21 +648,43 @@ function openPanel(type, mode = "new") {
   const panel = document.getElementById("panel");
   const overlay = document.getElementById("overlay");
 
-  if (!panel || !overlay) {
-    alert("Panel elements not found.");
-    return;
-  }
-
-  panel.querySelector("#panelTitle").innerText = type;
-  panel.classList.add("active");
-  overlay.classList.add("active");
+  document.getElementById("panelTitle").innerText = type;
 
   workingSet = [];
+  renderInputs();
+
+  panel.classList.add("active");
+  overlay.classList.add("active");
 }
 
 function closePanel() {
   document.getElementById("panel").classList.remove("active");
   document.getElementById("overlay").classList.remove("active");
+}
+
+function addNewProperty() {
+  workingSet.push({ address: "" });
+  renderInputs();
+}
+
+function renderInputs() {
+  const container = document.getElementById("properties");
+  container.innerHTML = "";
+
+  workingSet.forEach((p, i) => {
+    container.innerHTML += `
+      <div style="margin-bottom:12px;">
+        <label style="font-size:13px;font-weight:600;">Property Address or MLS #</label>
+        <input
+          type="text"
+          style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;"
+          placeholder="123 Main St or MLS #"
+          value="${p.address || ""}"
+          oninput="workingSet[${i}].address=this.value"
+        >
+      </div>
+    `;
+  });
 }
 
 /* ===========================
