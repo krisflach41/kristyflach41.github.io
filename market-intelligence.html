@@ -623,6 +623,23 @@ function closePanel() {
   document.getElementById("overlay").classList.remove("active");
 }
 </script>
+<!-- ===== CODEPEN PANEL HTML ===== -->
+
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+
+<div class="side-panel" id="panel">
+  <h3 id="panelTitle"></h3>
+  <p id="panelDesc"></p>
+
+  <div id="pool"></div>
+  <div id="properties"></div>
+
+  <div class="add-row" onclick="addNewProperty()">+ Add a new property</div>
+
+  <button class="add-btn" onclick="addToKit()">
+    Add to My Kit
+  </button>
+</div>
 
 </body>
 </html>
