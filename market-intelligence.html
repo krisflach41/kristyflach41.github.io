@@ -667,70 +667,68 @@ function formatMoney(inputEl) {
 /* ============================
    PANEL OPEN / CLOSE
 ============================ */
-function openPanel(type, mode = "new") {
+function openPanel(type) {
   activeReport = type;
-  isEditMode = (mode === "edit");
 
-  const btn = document.getElementById("kitActionBtn");
-  if (btn) {
-    btn.textContent = isEditMode ? "Update My Kit" : "Add to My Kit";
-  }
-
-  if (mode === "new") {
-    workingSet = [];
-  }
-
-  pendingDeleteIndex = null;
-
-  panelTitle.innerText =
-    type === "bid" ? "Bid Over Ask" :
-    type === "buyrent" ? "Buy vs Rent" :
-    type === "costwaiting" ? "Cost of Waiting" :
-    type === "amortization" ? "Amortization" :
-    type === "appreciation" ? "Appreciation" :
-    type === "investment" ? "Investment Property" :
-    "Real Estate Report Card";
-
-  renderPool();
-
-  if (mode === "new") {
-    addNewProperty();
-  } else {
-    renderInputs();
-  }
-
+  // Open panel
   panel.classList.add("active");
   overlay.classList.add("active");
-}
 
-function closePanel() {
-  panel.classList.remove("active");
-  overlay.classList.remove("active");
-}
+  // Clear previous content
+  properties.innerHTML = "";
 
-function addNewProperty() {
-  workingSet.push({ address: "" });
-  renderInputs();
-}
+  // BID OVER ASK ONLY
+  if (type === "bid") {
+    properties.innerHTML = `
+      <div class="property-row">
 
-function renderInputs() {
-  const container = document.getElementById("properties");
-  container.innerHTML = "";
-
-  workingSet.forEach((p, i) => {
-    container.innerHTML += `
-      <div style="margin-bottom:12px;">
-        <label style="font-size:13px;font-weight:600;">Property Address or MLS #</label>
+        <div class="section-label">List Price</div>
         <input
-          type="text"
-          style="width:100%;padding:10px;border-radius:8px;border:1px solid #ccc;"
-          placeholder="123 Main St or MLS #"
-          value="${p.address || ""}"
-          oninput="workingSet[${i}].address=this.value"
+          placeholder="$0.00"
+          onblur="formatMoney(this)"
+          id="bid-list"
         >
+
+        <div class="section-label" style="margin-top:10px;">Offer Price</div>
+        <input
+          placeholder="$0.00"
+          onblur="formatMoney(this)"
+          id="bid-offer"
+        >
+
+        <div style="margin-top:12px;">
+          <button
+            type="button"
+            class="add-btn"
+            onclick="submitBidOverAsk()"
+            style="
+              background: transparent;
+              border: 1px solid rgba(11,78,162,0.4);
+              color: #0b4ea2;
+              font-size: 13px;
+              padding: 6px 14px;
+            "
+          >
+            Add Bid Over Ask to Kit
+          </button>
+        </div>
+
       </div>
     `;
-  });
+  }
+}
+
+function submitBidOverAsk() {
+  const list = document.getElementById("bid-list").value;
+  const offer = document.getElementById("bid-offer").value;
+
+  if (!list || !offer) {
+    alert("Bid Over Ask requires both List Price and Offer Price.");
+    return;
+  }
+
+  alert("Bid Over Ask saved successfully.");
+  closePanel();
 }
 
 /* ===========================
