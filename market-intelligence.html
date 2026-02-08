@@ -558,6 +558,8 @@ hidden.value=kit.join(", ");
 }
 
   /* ===========================
+  <script>
+/* ===========================
    IMAGE PREVIEW LIGHTBOX
 =========================== */
 const lightbox = document.getElementById("lightbox");
@@ -586,19 +588,10 @@ document.addEventListener("keydown", e => {
     lightbox.classList.remove("active");
   }
 });
-document.querySelectorAll('.add-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const report = btn.getAttribute('data-report');
-    if (report && typeof openPanel === "function") {
-      openPanel(report);
-    }
-  });
-});
 
-</script>
-
-<script>
-/* ===== CODEPEN PANEL LOGIC (DO NOT EDIT) ===== */
+/* ===========================
+   CODEPEN PANEL LOGIC
+=========================== */
 
 let propertyPool = [];
 let reportConfigs = {};
@@ -630,7 +623,23 @@ function closePanel() {
   document.getElementById("overlay").classList.remove("active");
 }
 
-<!-- ===== CODEPEN PANEL HTML ===== -->
+/* ===========================
+   CONNECT BUTTONS TO PANEL
+=========================== */
+
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const report = btn.getAttribute('data-report');
+    if (report) {
+      openPanel(report);
+    }
+  });
+});
+</script>
+
+<!-- ===========================
+     CODEPEN PANEL HTML
+=========================== -->
 
 <div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
 
@@ -641,9 +650,9 @@ function closePanel() {
   <div id="pool"></div>
   <div id="properties"></div>
 
-  <div class="add-row" onclick="addNewProperty()">+ Add a new property</div>
+  <div class="add-row">+ Add a new property</div>
 
-  <button class="add-btn" onclick="addToKit()">
+  <button type="button" class="add-btn">
     Add to My Kit
   </button>
 </div>
