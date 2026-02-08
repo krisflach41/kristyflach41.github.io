@@ -680,57 +680,24 @@ function formatMoney(inputEl) {
 /* ============================
    PANEL OPEN / CLOSE
 ============================ */
-function openPanel(type) {
+function openPanel(type, mode = "new") {
   activeReport = type;
+  isEditMode = false;
 
-  // Open panel
-  panel.classList.add("active");
-  overlay.classList.add("active");
+  // reset working data
+  workingSet = [];
 
-  // Clear previous content
+  // clear existing UI
+  pool.innerHTML = "";
   properties.innerHTML = "";
 
-  // BID OVER ASK ONLY
-  if (type === "bid") {
-    properties.innerHTML = `
-<div class="property-row" style="padding:0;">
+  // let CodePen render the form
+  addNewProperty();
+  renderInputs();
 
-
-
-        <div class="section-label">List Price</div>
-        <input
-          placeholder="$0.00"
-          onblur="formatMoney(this)"
-          id="bid-list"
-        >
-
-        <div class="section-label" style="margin-top:10px;">Offer Price</div>
-        <input
-          placeholder="$0.00"
-          onblur="formatMoney(this)"
-          id="bid-offer"
-        >
-
-        <div style="margin-top:12px;">
-          <button
-            type="button"
-            class="add-btn"
-            onclick="submitBidOverAsk()"
-            style="
-              background: transparent;
-              border: 1px solid rgba(11,78,162,0.4);
-              color: #0b4ea2;
-              font-size: 13px;
-              padding: 6px 14px;
-            "
-          >
-            Add Bid Over Ask to Kit
-          </button>
-        </div>
-
-      </div>
-    `;
-  }
+  // open panel
+  panel.classList.add("active");
+  overlay.classList.add("active");
 }
 
 function submitBidOverAsk() {
