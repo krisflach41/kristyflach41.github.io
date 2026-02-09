@@ -288,8 +288,24 @@ body {
   z-index: 9999;
 }
 
-.side-panel.active {
+/* === LIVE PANEL VISIBILITY (SOURCE OF TRUTH) === */
+#panel {
+  right: -420px;
+  transition: right 0.35s ease;
+}
+
+#panel.active {
   right: 0;
+}
+
+#overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#overlay.active {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 
