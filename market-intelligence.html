@@ -713,14 +713,17 @@ function submitBidOverAsk() {
    CONNECT BUTTONS TO PANEL
 =========================== */
 
-document.querySelectorAll('.flyer-card .add-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const report = btn.getAttribute('data-report');
-    if (report) {
-      openPanel(report);
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('.flyer-card .add-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const report = btn.getAttribute('data-report');
+      if (report) {
+        openPanel(report);
+      }
+    });
   });
 });
+
 </script>
 
 
