@@ -703,7 +703,7 @@ function submitBidOverAsk() {
    CONNECT BUTTONS TO PANEL
 =========================== */
 
-document.querySelectorAll('.add-btn').forEach(btn => {
+document.querySelectorAll('.flyer-card .add-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const report = btn.getAttribute('data-report');
     if (report) {
