@@ -628,18 +628,17 @@ function formatMoney(inputEl) {
 }
 
 /* ============================
-   PANEL OPEN / CLOSE
+   PANEL OPEN / CLOSE (LIVE)
 ============================ */
 function openPanel(type) {
   activeReport = type;
 
-  // Open panel
+  // Open panel + overlay
   panel.classList.add("active");
   overlay.classList.add("active");
 
-  // Clear previous content
+  // Reset panel body
   properties.innerHTML = "";
-
   // BID OVER ASK ONLY
   if (type === "bid") {
     properties.innerHTML = `
