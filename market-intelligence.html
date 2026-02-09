@@ -608,6 +608,16 @@ let activeReport = "";
 let workingSet = [];
 let pendingDeleteIndex = null;
 let isEditMode = false;
+// === DOM REFERENCES (required for live site) ===
+const panel = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
+const pool = document.getElementById("pool");
+const properties = document.getElementById("properties");
+const panelTitle = document.getElementById("panelTitle");
+const panelDesc = document.getElementById("panelDesc");
+const kit = document.getElementById("kit");
+const updatePrompt = document.getElementById("updatePrompt");
+const deletePrompt = document.getElementById("deletePrompt");
 
 /* ============================
    UNIVERSAL MONEY FORMATTER
