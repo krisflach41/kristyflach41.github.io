@@ -495,39 +495,9 @@ DO NOT EDIT INSIDE THIS BLOCK
 </div>
 
 <script>
-const SupportStudio = (() => {
-  let active = "";
-  let kit = {};
 
-  function open(type) {
-    active = type;
-    document.getElementById("studio-title").innerText = type;
-    document.getElementById("studio-panel").classList.add("active");
-    document.getElementById("studio-overlay").classList.add("active");
-  }
+<!-- SupportStudio script disabled (conflicts with live kit system) -->
 
-  function close() {
-    document.getElementById("studio-panel").classList.remove("active");
-    document.getElementById("studio-overlay").classList.remove("active");
-  }
-
-  function save() {
-    kit[active] = true;
-    render();
-    close();
-  }
-
-  function render() {
-    const el = document.getElementById("studio-kit");
-    el.innerHTML = "";
-    Object.keys(kit).forEach(k => {
-      el.innerHTML += `<div class="kit-item">✔ ${k}</div>`;
-    });
-  }
-
-  return { open, close, save };
-})();
-</script>
 
 <hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
 <div class="gallery-card">
