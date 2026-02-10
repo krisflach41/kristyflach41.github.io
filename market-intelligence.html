@@ -370,7 +370,14 @@ Prepare My Advisory Kit
   </div>
 </div>
 <script>
-const kit = [];
+const kit = document.getElementById("kit");
+const panel = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
+const pool = document.getElementById("pool");
+const properties = document.getElementById("properties");
+const panelTitle = document.getElementById("panelTitle");
+const panelDesc = document.getElementById("panelDesc");
+
 
 document.querySelectorAll('.add-btn').forEach(btn=>{
 btn.addEventListener('click',()=>{
