@@ -1,205 +1,194 @@
-/* ===========================
-   CART ICON & MODAL STYLES
-   Add to your existing <style> section
-=========================== */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout - Agent Edge Partner Portal</title>
 
-/* Cart Icon (floating, top-right) */
-.cart-icon {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  z-index: 10000;
-}
+<style>
 
-.cart-icon:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.95);
-}
-
-.cart-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #0b4ea2;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #c0392b;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-}
-
-/* Cart Modal Overlay */
-.cart-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  z-index: 9998;
-}
-
-.cart-overlay.active {
-  display: block;
-}
-
-/* Cart Modal */
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  right: -500px;
-  transform: translateY(-50%);
-  width: 90%;
-  max-width: 480px;
-  max-height: 85vh;
-  background: white;
-  border-radius: 18px 0 0 18px;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 9999;
-}
-
-.cart-modal.active {
-  right: 0;
-}
-
-/* Cart Header */
-.cart-header {
-  padding: 24px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-header h2 {
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  font-size: 22px;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
 }
 
-.cart-close {
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
 }
 
-/* Cart Body */
-.cart-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
+/* ===== GLASS CONTAINER ===== */
+.checkout-card {
+  padding: 50px 45px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
 }
 
-.cart-empty {
+/* ===== TITLES ===== */
+.page-title {
+  font-size: 32px;
   text-align: center;
-  padding: 60px 20px;
-  color: #999;
+  margin-bottom: 10px;
 }
 
-.cart-empty svg {
-  width: 64px;
-  height: 64px;
-  fill: #ddd;
-  margin-bottom: 16px;
+.page-subtitle {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 40px auto;
+  color: #555;
 }
 
-.cart-section {
-  margin-bottom: 32px;
+/* ===== ORDER SUMMARY ===== */
+.order-summary {
+  background: rgba(11,78,162,0.04);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 40px;
 }
 
-.cart-section-title {
-  font-size: 14px;
+.order-summary h3 {
+  margin: 0 0 20px 0;
+  font-size: 20px;
+  color: #0b1f3a;
+}
+
+.summary-section {
+  margin-bottom: 24px;
+}
+
+.summary-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #0b4ea2;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
-.cart-item {
-  background: rgba(11,78,162,0.04);
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.summary-item {
+  background: white;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  font-size: 14px;
 }
 
-.cart-item-info {
-  flex: 1;
-}
-
-.cart-item-name {
-  font-weight: 600;
+.summary-item strong {
   color: #0b1f3a;
-  margin-bottom: 2px;
 }
 
-.cart-item-meta {
-  font-size: 13px;
+.summary-item .meta {
   color: #666;
+  font-size: 13px;
+  margin-top: 2px;
 }
 
-.cart-item-remove {
-  background: none;
-  border: none;
-  color: #c0392b;
-  cursor: pointer;
-  font-size: 20px;
-  padding: 4px 8px;
-}
-
-/* Cart Footer */
-.cart-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
+.total-items {
+  text-align: center;
   font-size: 16px;
   font-weight: 700;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid rgba(11,78,162,0.15);
+  color: #0b1f3a;
+}
+
+/* ===== FORM STYLES ===== */
+.form-section {
+  margin-bottom: 30px;
+}
+
+.form-section h3 {
+  font-size: 18px;
   margin-bottom: 16px;
   color: #0b1f3a;
 }
 
-.cart-checkout-btn {
+input[type="text"],
+input[type="email"],
+textarea {
   width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+label {
+  display: block;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+/* ===== INFO ICON ===== */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0b4ea2;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 280px;
+  background: rgba(255,255,255,0.97);
   padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  font-size: 12px;
+  line-height: 1.5;
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: 0.25s ease;
+  z-index: 9999;
+}
+
+.info-icon:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* ===== BUTTONS ===== */
+.submit-btn {
+  width: 100%;
+  padding: 16px;
   background: #0b4ea2;
   color: white;
   border: none;
@@ -210,32 +199,368 @@
   transition: 0.25s ease;
 }
 
-.cart-checkout-btn:hover {
+.submit-btn:hover {
   background: #0a3d7f;
 }
 
-.cart-clear-btn {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  color: #c0392b;
-  border: 1px solid #c0392b;
+.back-btn {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+/* ===== FLOATING RETURN LINK ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+.form-note {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(11,31,58,0.75);
+  margin: 14px 0;
+}
+
+/* ===== EMPTY CART ===== */
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-cart svg {
+  width: 80px;
+  height: 80px;
+  fill: #ddd;
+  margin-bottom: 20px;
+}
+
+.empty-cart h2 {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.empty-cart p {
+  color: #999;
+  margin-bottom: 30px;
+}
+
+.empty-cart a {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #0b4ea2;
+  color: white;
+  text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.25s ease;
 }
 
-.cart-clear-btn:hover {
-  background: rgba(192,57,43,0.05);
-}
-
-/* Mobile Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
-  .cart-modal {
-    max-width: 100%;
-    border-radius: 18px 0 0 18px;
+  .checkout-card {
+    padding: 40px 25px;
+  }
+  
+  .page-title {
+    font-size: 26px;
   }
 }
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="checkout-card">
+
+<h1 class="page-title">Checkout</h1>
+<p class="page-subtitle">
+  Review your order and complete your request.
+</p>
+
+<!-- Empty Cart State -->
+<div id="emptyCart" style="display: none;">
+  <div class="empty-cart">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+    </svg>
+    <h2>Your cart is empty</h2>
+    <p>Add materials from any collection to get started.</p>
+    <a href="portal.html">Browse Collections</a>
+  </div>
+</div>
+
+<!-- Checkout Form -->
+<div id="checkoutForm" style="display: none;">
+
+  <!-- Order Summary -->
+  <div class="order-summary">
+    <h3>Order Summary</h3>
+    <div id="orderSummary"></div>
+    <div class="total-items" id="totalItems"></div>
+  </div>
+
+  <!-- Customer Info Form -->
+  <form id="orderForm" method="POST">
+    
+    <input type="hidden" name="order_data" id="order_data">
+    <input type="hidden" name="_redirect" value="order-confirmation.html">
+    
+    <div class="form-section">
+      <h3>Your Information</h3>
+      
+      <input 
+        type="text" 
+        name="name" 
+        placeholder="Your Name" 
+        required
+      >
+      
+      <input 
+        type="email" 
+        name="email" 
+        placeholder="Email Address" 
+        required
+      >
+      
+      <input 
+        type="text" 
+        name="brokerage" 
+        placeholder="Brokerage" 
+        required
+      >
+    </div>
+    
+    <div class="form-section">
+      <h3>Branding Preference</h3>
+      
+      <label>
+        <input type="radio" name="branding" value="Co-branded" required>
+        Co-branded (requires Total Expert setup)
+        <span class="info-icon">i
+          <span class="tooltip-box">
+            Co-branded materials require a free Total Expert partner account.
+            If you don't already have one, you'll receive an invitation email to upload your professional headshot and contact info.
+            This access is covered for you as my co-branded partner (normally $100/month).
+          </span>
+        </span>
+      </label>
+      
+      <label>
+        <input type="radio" name="branding" value="Kristy-branded only">
+        Kristy-branded only
+      </label>
+    </div>
+    
+    <div class="form-section">
+      <h3>Additional Notes</h3>
+      <textarea 
+        name="notes" 
+        placeholder="Any special requests, rush orders, or customization notes..."
+      ></textarea>
+    </div>
+    
+    <div class="form-note">
+      <strong>Production Time:</strong> Most materials are prepared within 2-5 business days.
+      Need a rush? Mention it in the notes above or contact Kristy directly.
+    </div>
+    
+    <button type="submit" class="submit-btn">
+      Complete Order
+    </button>
+    
+  </form>
+  
+  <div style="text-align: center;">
+    <a href="portal.html" class="back-btn">← Continue Shopping</a>
+  </div>
+
+</div>
+
+</section>
+</div>
+
+<a href="portal.html" class="return-main">Return to Portal</a>
+
+<script>
+/* ===========================
+   CHECKOUT PAGE LOGIC
+=========================== */
+
+// Load cart data from sessionStorage
+const cartData = JSON.parse(sessionStorage.getItem('checkoutCart') || '{}');
+
+// Check if cart is empty
+if (!cartData || 
+    ((!cartData.marketing || cartData.marketing.length === 0) &&
+     (!cartData.advisory || Object.keys(cartData.advisory).length === 0) &&
+     (!cartData.websites || cartData.websites.length === 0))) {
+  
+  // Show empty cart state
+  document.getElementById('emptyCart').style.display = 'block';
+  document.getElementById('checkoutForm').style.display = 'none';
+  
+} else {
+  
+  // Show checkout form
+  document.getElementById('emptyCart').style.display = 'none';
+  document.getElementById('checkoutForm').style.display = 'block';
+  
+  // Render order summary
+  renderOrderSummary();
+}
+
+function renderOrderSummary() {
+  const summaryContainer = document.getElementById('orderSummary');
+  const totalContainer = document.getElementById('totalItems');
+  
+  let html = '';
+  let totalCount = 0;
+  
+  // Marketing Materials
+  if (cartData.marketing && cartData.marketing.length > 0) {
+    html += `<div class="summary-section">`;
+    html += `<div class="section-title">Marketing Materials</div>`;
+    
+    cartData.marketing.forEach(item => {
+      html += `
+        <div class="summary-item">
+          <strong>${item}</strong>
+        </div>
+      `;
+      totalCount++;
+    });
+    
+    html += `</div>`;
+  }
+  
+  // Advisory Reports
+  if (cartData.advisory && Object.keys(cartData.advisory).length > 0) {
+    html += `<div class="summary-section">`;
+    html += `<div class="section-title">Advisory Reports</div>`;
+    
+    Object.keys(cartData.advisory).forEach(reportType => {
+      const properties = cartData.advisory[reportType];
+      const displayName = getReportDisplayName(reportType);
+      
+      html += `
+        <div class="summary-item">
+          <strong>${displayName}</strong>
+          <div class="meta">${properties.length} ${properties.length === 1 ? 'property' : 'properties'}</div>
+        </div>
+      `;
+      totalCount++;
+    });
+    
+    html += `</div>`;
+  }
+  
+  // Property Websites
+  if (cartData.websites && cartData.websites.length > 0) {
+    html += `<div class="summary-section">`;
+    html += `<div class="section-title">Property Websites</div>`;
+    
+    cartData.websites.forEach(prop => {
+      html += `
+        <div class="summary-item">
+          <strong>${prop.address}</strong>
+          ${prop.mls ? `<div class="meta">MLS: ${prop.mls}</div>` : ''}
+        </div>
+      `;
+      totalCount++;
+    });
+    
+    html += `</div>`;
+  }
+  
+  summaryContainer.innerHTML = html;
+  totalContainer.innerHTML = `Total Items: <strong>${totalCount}</strong>`;
+}
+
+function getReportDisplayName(reportType) {
+  const names = {
+    bid: 'Bid Over Ask',
+    buyrent: 'Buy vs Rent',
+    costwaiting: 'Cost of Waiting',
+    appreciation: 'Appreciation',
+    investment: 'Investment Property',
+    amortization: 'Mortgage Amortization',
+    reportcard: 'Real Estate Report Card'
+  };
+  return names[reportType] || reportType;
+}
+
+/* ===========================
+   FORM SUBMISSION
+=========================== */
+
+const form = document.getElementById('orderForm');
+
+if (form) {
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Build complete order data
+    const orderData = {
+      name: form.name.value,
+      email: form.email.value,
+      brokerage: form.brokerage.value,
+      branding: form.branding.value,
+      notes: form.notes.value,
+      cart: cartData
+    };
+    
+    // Save receipt for confirmation page
+    sessionStorage.setItem('orderReceipt', JSON.stringify(orderData));
+    
+    // Prepare FormData for Formspree
+    const formData = new FormData(form);
+    
+    // Add formatted cart data to form
+    formData.set('order_data', JSON.stringify(cartData, null, 2));
+    
+    try {
+      // Send to Formspree (replace with your actual Formspree ID)
+      fetch('https://formspree.io/f/YOUR_FORMSPREE_ID', {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+      
+      // Clear cart from localStorage
+      localStorage.removeItem('agentEdgeCart');
+      
+      // Clear sessionStorage checkout data
+      sessionStorage.removeItem('checkoutCart');
+      
+      // Redirect to confirmation
+      window.location.href = 'order-confirmation.html';
+      
+    } catch (error) {
+      alert('There was an issue submitting your order. Please try again or contact Kristy directly.');
+      console.error('Submission error:', error);
+    }
+  });
+}
+
+</script>
+
+</body>
+</html>
