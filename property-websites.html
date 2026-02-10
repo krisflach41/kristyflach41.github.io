@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Websites</title>
+
+<style>
+
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== PROPERTY INPUT ROWS ===== */
+.property-row {
+  background: rgba(11,78,162,0.04);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.remove-prop {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.section-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.property-row input,
+.property-row textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.property-row textarea {
+  height: 80px;
+  resize: vertical;
+}
+
+/* ===== ADD ANOTHER PROPERTY BUTTON ===== */
+.add-property-btn {
+  display: block;
+  margin: 20px auto;
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px dashed #0b4ea2;
+  color: #0b4ea2;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.add-property-btn:hover {
+  background: rgba(11,78,162,0.05);
+}
+
+/* ===== KIT PANEL ===== */
+.kit-panel {
+  margin: 50px 0 30px;
+  padding: 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+.kit-item {
+  background: rgba(11,78,162,0.08);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+}
+
+/* ===== INFO ICON ===== */
+.info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #0b4ea2;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
+  cursor: pointer;
+  position: relative;
+}
+
+.tooltip-box {
+  visibility: hidden;
+  opacity: 0;
+  width: 280px;
+  background: rgba(255,255,255,0.97);
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+  font-size: 12px;
+  line-height: 1.5;
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: 0.25s ease;
+  z-index: 9999;
+}
+
+.info-icon:hover .tooltip-box {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(-50%) translateY(4px);
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn {
+  display: inline-block;
+  margin-top: 50px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+/* ===== FLOATING RETURN LINK ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+.form-note {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(11,31,58,0.75);
+  margin: 14px 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .gallery-card {
+    padding: 40px 25px;
+  }
+  
+  .section-title {
+    font-size: 28px;
+  }
+  
+  .property-row {
+    padding: 15px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="gallery-card">
+
+<h2 class="section-title">Property Websites</h2>
+<p class="section-subtitle">
+  Custom single-property websites to showcase your listings with professional design and essential details.
+</p>
+
+<div id="properties"></div>
+
+<button type="button" class="add-property-btn" onclick="addNewProperty()">+ Add Another Property</button>
+
+<hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
+
+<h3 style="text-align:center; font-size: 24px; margin-bottom: 10px;">
+  Ready to Order Property Websites?
+</h3>
+
+<p style="text-align:center; max-width: 600px; margin: 0 auto 35px auto; color:#555;">
+  Tell us which properties need websites and we'll build them for you.
+</p>
+
+<form id="websiteForm" method="POST">
+
+<input type="hidden" name="property_data" id="property_data">
+<input type="hidden" name="_redirect" value="order-confirmation.html">
+
+<input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
+
+<input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
+
+<input type="text" name="brokerage" placeholder="Brokerage" required style="width:100%; padding:12px; margin-bottom:20px; border-radius:6px; border:1px solid #ccc;">
+
+<div class="kit-panel">
+  <h3>Your Property Websites</h3>
+  <div id="kit">
+    <p class="empty">No properties added yet</p>
+  </div>
+</div>
+
+<label style="display:block; margin-bottom:15px;">
+  <input type="radio" name="branding" value="Co-branded" required>
+  Co-branded (requires Total Expert setup)
+  <span class="info-icon">i
+    <span class="tooltip-box">
+      Co-branded materials require a free Total Expert partner account.
+      If you don't already have one, you'll receive an invitation email to upload your professional headshot and contact info.
+      This access is covered for you as my co-branded partner (normally $100/month).
+    </span>
+  </span>
+</label>
+
+<label style="display:block; margin-bottom:20px;">
+  <input type="radio" name="branding" value="Kristy-branded only"> Kristy-branded only
+</label>
+
+<textarea name="notes" placeholder="Additional notes or customization requests" style="width:100%; padding:12px; height:100px; margin-bottom:25px; border-radius:6px; border:1px solid #ccc;"></textarea>
+
+<div class="form-note">
+  <strong>Production Time:</strong> Most websites are prepared within 3-5 business days. Need a rush? Add "Rush" in notes or contact Kristy directly.
+</div>
+
+<button type="submit" style="width:100%; padding:14px; border:none; border-radius:8px; background:#0b4ea2; color:white; font-weight:600; cursor:pointer;">
+  Order My Property Websites
+</button>
+
+</form>
+
+<p style="text-align:center; font-size:13px; margin-top:25px; color:#666;">
+  Custom domains and advanced features available upon request.
+</p>
+
+<div style="text-align:center;">
+  <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
+</div>
+
+</section>
+</div>
+
+<a href="portal.html" class="return-main">Return to Agent Edge Partner Portal</a>
+
+<script>
+/* ===========================
+   PROPERTY WEBSITE SYSTEM
+=========================== */
+
+let properties = [];
+
+function addNewProperty() {
+  properties.push({ address: "", mls: "", comments: "" });
+  renderProperties();
+}
+
+function removeProperty(index) {
+  properties.splice(index, 1);
+  renderProperties();
+}
+
+function renderProperties() {
+  const container = document.getElementById("properties");
+  container.innerHTML = "";
+  
+  if (properties.length === 0) {
+    addNewProperty();
+    return;
+  }
+  
+  properties.forEach((prop, i) => {
+    container.innerHTML += `
+      <div class="property-row">
+        <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
+        
+        <div class="section-label">Property Address</div>
+        <input 
+          type="text"
+          placeholder="123 Main St, City, State ZIP"
+          value="${prop.address || ""}"
+          oninput="properties[${i}].address = this.value; updateKit()"
+          required
+        >
+        
+        <div class="section-label">MLS #</div>
+        <input 
+          type="text"
+          placeholder="MLS12345"
+          value="${prop.mls || ""}"
+          oninput="properties[${i}].mls = this.value; updateKit()"
+        >
+        
+        <div class="section-label">Special Comments or Text</div>
+        <textarea 
+          placeholder="e.g., Open House Sunday 2/15 from 10-2pm, Just Listed, Price Reduced, etc."
+          oninput="properties[${i}].comments = this.value; updateKit()"
+        >${prop.comments || ""}</textarea>
+      </div>
+    `;
+  });
+  
+  updateKit();
+}
+
+function updateKit() {
+  const kit = document.getElementById("kit");
+  const hiddenField = document.getElementById("property_data");
+  
+  const validProperties = properties.filter(p => p.address.trim() !== "");
+  
+  if (validProperties.length === 0) {
+    kit.innerHTML = '<p class="empty">No properties added yet</p>';
+    hiddenField.value = "";
+    return;
+  }
+  
+  kit.innerHTML = "";
+  validProperties.forEach((prop, i) => {
+    kit.innerHTML += `
+      <div class="kit-item">
+        <strong>${prop.address}</strong>
+        ${prop.mls ? `<br>MLS: ${prop.mls}` : ""}
+        ${prop.comments ? `<br><em>${prop.comments}</em>` : ""}
+      </div>
+    `;
+  });
+  
+  // Store as JSON for form submission
+  hiddenField.value = JSON.stringify(validProperties);
+}
+
+/* ===========================
+   FORM SUBMISSION SYSTEM
+=========================== */
+const form = document.getElementById("websiteForm");
+
+form.addEventListener("submit", async function(e) {
+  e.preventDefault();
+  
+  const validProperties = properties.filter(p => p.address.trim() !== "");
+  
+  if (validProperties.length === 0) {
+    alert("Please add at least one property address.");
+    return;
+  }
+  
+  // Build receipt data
+  const receipt = {
+    name: form.name.value,
+    email: form.email.value,
+    brokerage: form.brokerage.value,
+    branding: form.branding.value,
+    notes: form.notes.value,
+    properties: validProperties
+  };
+  
+  // Store for confirmation page
+  sessionStorage.setItem("websiteReceipt", JSON.stringify(receipt));
+  
+  const formData = new FormData(form);
+  
+  try {
+    // Send form in background
+    fetch("https://formspree.io/f/YOUR_FORMSPREE_ID", {
+      method: "POST",
+      body: formData,
+      headers: { 'Accept': 'application/json' }
+    });
+    
+    // Clear and redirect
+    form.reset();
+    properties = [];
+    window.location.href = "order-confirmation.html";
+    
+  } catch (error) {
+    alert("There was an issue sending your request. Please try again.");
+  }
+});
+
+// Initialize with one property row
+addNewProperty();
+
+</script>
+
+</body>
+</html>
