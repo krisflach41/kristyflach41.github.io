@@ -436,7 +436,180 @@ document.addEventListener("keydown", e => {
   }
 });
 
+<script>
+/* ===== CodePen Logic – Integrated ===== */
+
+let propertyPool = [];
+let reportConfigs = {};
+let activeReport = "";
+let workingSet = [];
+let pendingDeleteIndex = null;
+let isEditMode = false;
+
+/* ============================
+   UNIVERSAL MONEY FORMATTER
+============================ */
+function formatMoney(inputEl) {
+  let raw = (inputEl.value || "").replace(/[^0-9.]/g, "");
+  if (!raw) {
+    inputEl.value = "";
+    return;
+  }
+  const num = parseFloat(raw);
+  if (isNaN(num)) {
+    inputEl.value = "";
+    return;
+  }
+  inputEl.value = num.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  });
+}
+
+/* ============================
+   Error helpers
+============================ */
+function clearRentError() {
+  const el = document.getElementById("rentError");
+  if (el) el.style.display = "none";
+}
+function showRentError() {
+  const el = document.getElementById("rentError");
+  if (el) el.style.display = "block";
+}
+function clearPurchaseError(i) {
+  const el = document.getElementById(`purchaseError-${i}`);
+  if (el) el.style.display = "none";
+}
+function showPurchaseError(i) {
+  const el = document.getElementById(`purchaseError-${i}`);
+  if (el) el.style.display = "block";
+}
+
+/* ============================
+   PANEL OPEN / CLOSE
+============================ */
+function openPanel(type, mode = "new") {
+  activeReport = type;
+  isEditMode = (mode === "edit");
+
+  const btn = document.getElementById("kitActionBtn");
+  if (btn) btn.textContent = isEditMode ? "Update My Kit" : "Add to My Kit";
+
+  if (mode === "new") workingSet = [];
+
+  pendingDeleteIndex = null;
+
+  panelTitle.innerText =
+    type === "bid" ? "Bid Over Ask" :
+    type === "buyrent" ? "Buy vs Rent" :
+    type === "costwaiting" ? "Cost of Waiting" :
+    type === "amortization" ? "Amortization" :
+    type === "appreciation" ? "Appreciation" :
+    type === "investment" ? "Investment Property" :
+    "Real Estate Report Card";
+
+  renderPool();
+  if (mode === "new") addNewProperty();
+  else renderInputs();
+
+  panel.classList.add("active");
+  overlay.classList.add("active");
+}
+
+function closePanel() {
+  panel.classList.remove("active");
+  overlay.classList.remove("active");
+  pendingDeleteIndex = null;
+}
+
+/* ============================
+   POOL + INPUT RENDERING
+============================ */
+function renderPool() {
+  if (!propertyPool.length) return;
+  pool.innerHTML = `<div class="section-label">Use existing properties?</div>`;
+  propertyPool.forEach((p, i) => {
+    pool.innerHTML += `
+      <label>
+        <input type="checkbox" onchange="togglePool(${i}, this.checked)">
+        ${p.address}
+      </label><br>`;
+  });
+}
+
+function togglePool(i, checked) {
+  if (checked) workingSet.push({ ...propertyPool[i] });
+  else workingSet = workingSet.filter(p => p.address !== propertyPool[i].address);
+  renderInputs();
+}
+
+function addNewProperty() {
+  workingSet.push({ address: "", list: "", offer: "", purchase: "" });
+  renderInputs();
+}
+
+function removeProperty(i) {
+  workingSet.splice(i, 1);
+  pendingDeleteIndex = null;
+  renderInputs();
+}
+
+function renderInputs() {
+  properties.innerHTML = "";
+  workingSet.forEach((p, i) => {
+    properties.innerHTML += `
+      <div class="property-row">
+        <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
+        <div class="section-label">Property Address or MLS #</div>
+        <input placeholder="123 Main St or MLS #" value="${p.address || ""}"
+          oninput="workingSet[${i}].address=this.value">
+      </div>`;
+  });
+}
+
+/* ============================
+   KIT SAVE / EDIT
+============================ */
+function addToKit() {
+  const valid = workingSet.filter(p => (p.address || "").trim() !== "");
+  if (!isEditMode && valid.length === 0) {
+    closePanel();
+    return;
+  }
+
+  valid.forEach(p => {
+    if (!propertyPool.some(x => x.address === p.address)) {
+      propertyPool.push({ address: p.address });
+    }
+  });
+
+  reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
+  isEditMode = false;
+  renderKit();
+  closePanel();
+}
+
+function renderKit() {
+  kit.innerHTML = "";
+  Object.keys(reportConfigs).forEach(r => {
+    kit.innerHTML += `
+      <div class="kit-item">
+        ✔ ${r} (${reportConfigs[r].length})
+        <span style="float:right; cursor:pointer"
+          onclick="editReport('${r}')">Edit</span>
+      </div>`;
+  });
+}
+
+function editReport(r) {
+  activeReport = r;
+  workingSet = JSON.parse(JSON.stringify(reportConfigs[r] || []));
+  openPanel(r, "edit");
+}
 </script>
+
 
 
 </body>
