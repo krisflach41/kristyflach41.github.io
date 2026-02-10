@@ -244,85 +244,6 @@ body {
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
-/* FORCE GLASS CARD WIDTH FOR BOTTOM SECTION */
-#advisoryForm,
-.kit-panel {
-  max-width: 1150px;
-  margin-left: auto;
-  margin-right: auto;
-}
-/* FORCE CENTERED WIDTH FOR MAIN CARD */
-.gallery-card {
-  max-width: 1150px;
-  margin-left: auto;
-  margin-right: auto;
-}
-/* ===== CODEPEN PANEL STYLES ===== */
-
-.panel-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-  z-index: 9998;
-}
-
-.panel-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.side-panel {
-  position: fixed;
-  top: 0;
-  right: -420px;
-  width: 420px;
-  height: 100%;
-  background: #fff;
-  box-shadow: -20px 0 40px rgba(0,0,0,0.15);
-  padding: 30px;
-  transition: 0.35s;
-  overflow-y: auto;
-  z-index: 9999;
-}
-
-/* === LIVE PANEL VISIBILITY (SOURCE OF TRUTH) === */
-#panel {
-  right: -420px;
-  transition: right 0.35s ease;
-}
-
-#panel.active {
-  right: 0;
-}
-
-#overlay {
-  opacity: 0;
-  pointer-events: none;
-}
-
-#overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-/* === PANEL FORM FIX === */
-.side-panel input {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.side-panel .section-label {
-  margin-top: 16px;
-}
-
-.side-panel .property-row {
-  padding-bottom: 20px;
-}
-
 
 </style>
 </head>
@@ -342,136 +263,48 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 <div class="flyer-card" data-name="Bid Over Ask">
 <img src="Bid-Over-Ask.png" alt="Bid Over Ask">
 <h3>Bid Over Ask</h3>
-<button type="button" class="add-btn" data-report="bid">Add to My Kit</button>
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Buy vs Rent">
 <img src="Buy-vs-Rent.png" alt="Buy vs Rent">
 <h3>Buy vs Rent</h3>
-<button type="button" class="add-btn" data-report="buyrent">Add to My Kit</button>
-
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Cost of Waiting">
 <img src="Cost-of-Waiting.png" alt="Cost of Waiting">
 <h3>Cost of Waiting</h3>
-<button type="button" class="add-btn" data-report="costwaiting">Add to My Kit</button>
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Investment Property">
 <img src="Investment-Property.png" alt="Investment Property">
 <h3>Investment Property</h3>
-<button type="button" class="add-btn" data-report="investment">Add to My Kit</button>
-
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Mortgage Amortization">
 <img src="Mortgage-Amortization.png" alt="Mortgage Amortization">
 <h3>Mortgage Amortization</h3>
-<button type="button" class="add-btn" data-report="amortization">Add to My Kit</button>
-
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Real Estate Report Card">
 <img src="Real-Estate-Report-Card.png" alt="Real Estate Report Card">
 <h3>Real Estate Report Card</h3>
-<button type="button" class="add-btn" data-report="reportcard">Add to My Kit</button>
-
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 <div class="flyer-card" data-name="Appreciation">
 <img src="Appreciation.png" alt="Appreciation">
 <h3>Appreciation</h3>
-<button type="button" class="add-btn" data-report="appreciation">Add to My Kit</button>
-
-
+<button class="add-btn">Add to My Kit</button>
 </div>
 
 </div>
-<!-- =========================
-SUPPORT STUDIO (CodePen System)
-DO NOT EDIT INSIDE THIS BLOCK
-========================= -->
 
-<style>
-#support-studio-root body { all: unset; }
-
-#support-studio-root .gallery {
-  max-width: 900px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 30px;
-}
-
-#support-studio-root .card {
-  padding: 35px;
-  border-radius: 20px;
-  background: #fff;
-  box-shadow: 0 20px 45px rgba(0,0,0,0.1);
-}
-
-#support-studio-root .add-btn {
-  padding: 10px 18px;
-  border-radius: 25px;
-  border: 1px solid #0b4ea2;
-  background: transparent;
-  color: #0b4ea2;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-#support-studio-root .kit {
-  max-width: 900px;
-  margin: 50px auto 0;
-}
-
-#support-studio-root .kit-item {
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: rgba(11,78,162,0.1);
-  margin-bottom: 10px;
-}
-
-#support-studio-root .panel-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-}
-#support-studio-root .panel-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-
-/* FORCE MARGINS FOR BOTTOM KIT SECTION */
-#advisoryForm,
-#advisoryForm * {
-  box-sizing: border-box;
-}
-
-#advisoryForm {
-  max-width: 1150px;
-  margin: 0 auto;
-  padding-left: 24px;
-  padding-right: 24px;
-}
-
-</style>
-
-
-</div>
 <hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
-<div class="gallery-card">
 
 <h3 style="text-align:center;">Prepare Your Market Intelligence Kit</h3>
 
@@ -518,7 +351,6 @@ Prepare My Advisory Kit
 </button>
 
 </form>
-</div>
 
 <div style="text-align:center; margin-top:30px;">
   <a href="advisory-collection.html" class="back-btn">
@@ -529,7 +361,6 @@ Prepare My Advisory Kit
 </section>
 </div>
 
-
 <a href="index.html" class="return-main">Return to Main Website</a>
 <!-- IMAGE LIGHTBOX -->
 <div class="lightbox" id="lightbox">
@@ -539,8 +370,25 @@ Prepare My Advisory Kit
   </div>
 </div>
 <script>
+const kit = [];
 
-console.log("LIVE SCRIPT RUNNING");
+document.querySelectorAll('.add-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+const card = btn.closest('.flyer-card');
+const name = card.dataset.name;
+
+if(!kit.includes(name)){
+kit.push(name);
+btn.textContent="Added ✓";
+btn.classList.add("added");
+}else{
+kit.splice(kit.indexOf(name),1);
+btn.textContent="Add to My Kit";
+btn.classList.remove("added");
+}
+updateKit();
+});
+});
 
 function updateKit(){
 const list=document.getElementById("kit-list");
@@ -558,10 +406,9 @@ list.innerHTML+=`<li><img src="${img}" style="width:100%;border-radius:8px;margi
 hidden.value=kit.join(", ");
 }
 
-/* ===========================
+  /* ===========================
    IMAGE PREVIEW LIGHTBOX
 =========================== */
-
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxClose = document.getElementById("lightboxClose");
@@ -589,172 +436,8 @@ document.addEventListener("keydown", e => {
   }
 });
 
-let propertyPool = [];
-let reportConfigs = {};
-let activeReport = "";
-let workingSet = [];
-let pendingDeleteIndex = null;
-let isEditMode = false;
-// === DOM REFERENCES (required for live site) ===
-const panel = document.getElementById("panel");
-const overlay = document.getElementById("overlay");
-const pool = document.getElementById("pool");
-const properties = document.getElementById("properties");
-const panelTitle = document.getElementById("panelTitle");
-const panelDesc = document.getElementById("panelDesc");
-const kit = document.getElementById("kit");
-const updatePrompt = document.getElementById("updatePrompt");
-const deletePrompt = document.getElementById("deletePrompt");
-
-/* ============================
-   UNIVERSAL MONEY FORMATTER
-============================ */
-function formatMoney(inputEl) {
-  let raw = (inputEl.value || "").replace(/[^0-9.]/g, "");
-  if (!raw) {
-    inputEl.value = "";
-    return;
-  }
-  const num = parseFloat(raw);
-  if (isNaN(num)) {
-    inputEl.value = "";
-    return;
-  }
-  inputEl.value = num.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  });
-}
-
-/* ============================
-   PANEL OPEN / CLOSE (LIVE)
-============================ */
-function openPanel(type) {
-  activeReport = type;
-
-  // Open panel + overlay
-  panel.classList.add("active");
-  overlay.classList.add("active");
-
-  // Reset panel body
-  properties.innerHTML = "";
-  // BID OVER ASK ONLY
-  if (type === "bid") {
-    properties.innerHTML = `
-<div class="property-row" style="padding:0;">
-
-
-
-        <div class="section-label">List Price</div>
-        <input
-          placeholder="$0.00"
-          onblur="formatMoney(this)"
-          id="bid-list"
-        >
-
-        <div class="section-label" style="margin-top:10px;">Offer Price</div>
-        <input
-          placeholder="$0.00"
-          onblur="formatMoney(this)"
-          id="bid-offer"
-        >
-
-        <div style="margin-top:12px;">
-         <button
-  type="button"
-  class="add-btn"
-  onclick="submitBidOverAsk()"
-  style="
-    background: transparent;
-    border: 1px solid rgba(11,78,162,0.4);
-    color: #0b4ea2;
-    font-size: 13px;
-    padding: 6px 14px;
-  "
->
-  Save Bid Over Ask
-</button>
-
-        </div>
-
-      </div>
-    `;
-  }
-}
-
-function submitBidOverAsk() {
-  const list = document.getElementById("bid-list").value;
-  const offer = document.getElementById("bid-offer").value;
-
-  if (!list || !offer) {
-    alert("Bid Over Ask requires both List Price and Offer Price.");
-    return;
-  }
-
-  alert("Bid Over Ask saved successfully.");
-  closePanel();
-}
-
-/* ===========================
-   CONNECT BUTTONS TO PANEL
-=========================== */
-
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll('.flyer-card .add-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      console.log("CARD BUTTON CLICKED", btn.getAttribute("data-report"));
-      const report = btn.getAttribute('data-report');
-      if (report) {
-        openPanel(report);
-      }
-    });
-  });
-});
-
-
 </script>
 
 
-<!-- CODEPEN PANEL SYSTEM (HTML – INACTIVE) -->
-
-<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
-
-<div class="side-panel" id="panel">
-  <h3 id="panelTitle"></h3>
-  <p id="panelDesc"></p>
-
-  <div id="pool"></div>
-  <div id="properties"></div>
-
-  <div class="add-row" onclick="addNewProperty()">+ Add a new property</div>
-
-  <div id="updatePrompt">
-    <strong>Apply this update to:</strong><br>
-    <label><input type="radio" name="updateScope" value="all" checked> All reports</label><br>
-    <label><input type="radio" name="updateScope" value="single"> This report only</label>
-  </div>
-
-  <div id="deletePrompt">
-    <strong>Remove this property from:</strong><br>
-    <label><input type="radio" name="deleteScope" value="single" checked> This report only</label><br>
-    <label><input type="radio" name="deleteScope" value="all"> All reports</label>
-  </div>
-
- <button id="kitActionBtn" onclick="addToKit()" style="
-  padding: 10px 18px;
-  border-radius: 25px;
-  border: 1px solid #0b4ea2;
-  background: transparent;
-  color: #0b4ea2;
-  font-weight: 600;
-  cursor: pointer;
-">
-  Add to My Kit
-</button>
-
-</div>
-
 </body>
 </html>
-
