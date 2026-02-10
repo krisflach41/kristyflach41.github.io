@@ -166,8 +166,6 @@ body {
   transform: translateX(-50%) translateY(4px);
 }
 
-/* ===== FLOATING NAV ===== */
-
 /* ===== BACK TO ADVISORY BUTTON ===== */
 .back-btn {
   display: inline-block;
@@ -245,6 +243,128 @@ body {
   box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
 
+/* ===== CODEPEN PANEL STYLES ===== */
+.panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 9998;
+}
+
+.panel-overlay.active {
+  display: block;
+}
+
+.property-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  display: none;
+  z-index: 9999;
+}
+
+.property-panel.active {
+  display: block;
+}
+
+.panel-header {
+  margin-bottom: 20px;
+}
+
+.panel-title {
+  font-size: 24px;
+  margin: 0 0 8px 0;
+}
+
+.panel-desc {
+  color: #666;
+  font-size: 14px;
+}
+
+.section-label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.property-row {
+  background: rgba(11,78,162,0.04);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.remove-prop {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.property-row input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.field-error {
+  display: none;
+  color: #c0392b;
+  font-size: 13px;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.panel-actions button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #0b4ea2;
+  color: white;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #333;
+}
+
+.kit-item {
+  background: rgba(11,78,162,0.08);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
 </style>
 </head>
 
@@ -260,43 +380,43 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 
 <div class="flyer-grid">
 
-<div class="flyer-card" data-name="Bid Over Ask">
+<div class="flyer-card" data-report="bid">
 <img src="Bid-Over-Ask.png" alt="Bid Over Ask">
 <h3>Bid Over Ask</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Buy vs Rent">
+<div class="flyer-card" data-report="buyrent">
 <img src="Buy-vs-Rent.png" alt="Buy vs Rent">
 <h3>Buy vs Rent</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Cost of Waiting">
+<div class="flyer-card" data-report="costwaiting">
 <img src="Cost-of-Waiting.png" alt="Cost of Waiting">
 <h3>Cost of Waiting</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Investment Property">
+<div class="flyer-card" data-report="investment">
 <img src="Investment-Property.png" alt="Investment Property">
 <h3>Investment Property</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Mortgage Amortization">
+<div class="flyer-card" data-report="amortization">
 <img src="Mortgage-Amortization.png" alt="Mortgage Amortization">
 <h3>Mortgage Amortization</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Real Estate Report Card">
+<div class="flyer-card" data-report="reportcard">
 <img src="Real-Estate-Report-Card.png" alt="Real Estate Report Card">
 <h3>Real Estate Report Card</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
-<div class="flyer-card" data-name="Appreciation">
+<div class="flyer-card" data-report="appreciation">
 <img src="Appreciation.png" alt="Appreciation">
 <h3>Appreciation</h3>
 <button class="add-btn">Add to My Kit</button>
@@ -318,9 +438,9 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 
 <div class="kit-panel">
 <h3>Your Selected Materials</h3>
-<ul id="kit-list">
-<li class="empty">No materials selected yet</li>
-</ul>
+<div id="kit" style="min-height: 40px;">
+<p class="empty">No materials selected yet</p>
+</div>
 </div>
 
 <label>
@@ -342,7 +462,7 @@ style="width:100%; height:100px; padding:12px;"></textarea>
 
 <p style="text-align:center; font-size:13px; margin:14px 0;">
 <strong>Production Time:</strong> Most materials are prepared within 2 business days.
-Need a rush? Add “Rush” in notes or contact Kristy directly.
+Need a rush? Add "Rush" in notes or contact Kristy directly.
 </p>
 
 <button type="submit"
@@ -362,6 +482,7 @@ Prepare My Advisory Kit
 </div>
 
 <a href="index.html" class="return-main">Return to Main Website</a>
+
 <!-- IMAGE LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <div class="lightbox-content">
@@ -369,53 +490,26 @@ Prepare My Advisory Kit
     <img id="lightboxImg" src="" alt="">
   </div>
 </div>
+
+<!-- PROPERTY DETAILS PANEL (from CodePen) -->
+<div class="panel-overlay" id="overlay" onclick="closePanel()"></div>
+<div class="property-panel" id="panel">
+  <div class="panel-header">
+    <h2 class="panel-title" id="panelTitle">Report Details</h2>
+    <p class="panel-desc" id="panelDesc"></p>
+  </div>
+  
+  <div id="pool"></div>
+  <div id="properties"></div>
+  
+  <div class="panel-actions">
+    <button type="button" class="btn-secondary" onclick="closePanel()">Cancel</button>
+    <button type="button" class="btn-primary" id="kitActionBtn" onclick="addToKit()">Add to My Kit</button>
+  </div>
+</div>
+
 <script>
-const kit = document.getElementById("kit");
-const panel = document.getElementById("panel");
-const overlay = document.getElementById("overlay");
-const pool = document.getElementById("pool");
-const properties = document.getElementById("properties");
-const panelTitle = document.getElementById("panelTitle");
-const panelDesc = document.getElementById("panelDesc");
-
-
-document.querySelectorAll('.add-btn').forEach(btn=>{
-btn.addEventListener('click',()=>{
-const card = btn.closest('.flyer-card');
-const name = card.dataset.name;
-
-if(!kit.includes(name)){
-kit.push(name);
-btn.textContent="Added ✓";
-btn.classList.add("added");
-}else{
-kit.splice(kit.indexOf(name),1);
-btn.textContent="Add to My Kit";
-btn.classList.remove("added");
-}
-updateKit();
-});
-});
-
-function updateKit(){
-const list=document.getElementById("kit-list");
-const hidden=document.getElementById("selected_materials");
-list.innerHTML="";
-if(!kit.length){
-list.innerHTML='<li class="empty">No materials selected yet</li>';
-}else{
-kit.forEach(item=>{
-const card=document.querySelector(`[data-name="${item}"]`);
-const img=card.querySelector("img").src;
-list.innerHTML+=`<li><img src="${img}" style="width:100%;border-radius:8px;margin-bottom:6px;">${item}</li>`;
-});
-}
-hidden.value=kit.join(", ");
-}
-
-  /* ===========================
-   IMAGE PREVIEW LIGHTBOX
-=========================== */
+/* ===== IMAGE PREVIEW LIGHTBOX ===== */
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxClose = document.getElementById("lightboxClose");
@@ -443,8 +537,7 @@ document.addEventListener("keydown", e => {
   }
 });
 
-<script>
-/* ===== CodePen Logic – Integrated ===== */
+/* ===== CODEPEN FORM LOGIC - INTEGRATED ===== */
 
 let propertyPool = [];
 let reportConfigs = {};
@@ -452,6 +545,15 @@ let activeReport = "";
 let workingSet = [];
 let pendingDeleteIndex = null;
 let isEditMode = false;
+
+// Get DOM elements
+const kit = document.getElementById("kit");
+const panel = document.getElementById("panel");
+const overlay = document.getElementById("overlay");
+const pool = document.getElementById("pool");
+const properties = document.getElementById("properties");
+const panelTitle = document.getElementById("panelTitle");
+const panelDesc = document.getElementById("panelDesc");
 
 /* ============================
    UNIVERSAL MONEY FORMATTER
@@ -481,59 +583,67 @@ function clearRentError() {
   const el = document.getElementById("rentError");
   if (el) el.style.display = "none";
 }
+
 function showRentError() {
   const el = document.getElementById("rentError");
   if (el) el.style.display = "block";
 }
+
 function clearPurchaseError(i) {
   const el = document.getElementById(`purchaseError-${i}`);
   if (el) el.style.display = "none";
 }
+
 function showPurchaseError(i) {
   const el = document.getElementById(`purchaseError-${i}`);
   if (el) el.style.display = "block";
 }
 
 /* ============================
-   PANEL OPEN / CLOSE
+   Panel open
 ============================ */
 function openPanel(type, mode = "new") {
   activeReport = type;
   isEditMode = (mode === "edit");
 
   const btn = document.getElementById("kitActionBtn");
-  if (btn) btn.textContent = isEditMode ? "Update My Kit" : "Add to My Kit";
+  if (btn) {
+    btn.textContent = isEditMode ? "Update My Kit" : "Add to My Kit";
+  }
 
-  if (mode === "new") workingSet = [];
+  if (mode === "new") {
+    workingSet = [];
+  }
+
+  if (pool) pool.innerHTML = "";
+  if (properties) properties.innerHTML = "";
 
   pendingDeleteIndex = null;
 
+  // Set panel title
   panelTitle.innerText =
     type === "bid" ? "Bid Over Ask" :
     type === "buyrent" ? "Buy vs Rent" :
     type === "costwaiting" ? "Cost of Waiting" :
-    type === "amortization" ? "Amortization" :
+    type === "amortization" ? "Mortgage Amortization" :
     type === "appreciation" ? "Appreciation" :
     type === "investment" ? "Investment Property" :
     "Real Estate Report Card";
 
+  panelDesc.innerText = "";
+
   renderPool();
-  if (mode === "new") addNewProperty();
-  else renderInputs();
+
+  if (mode === "new") {
+    addNewProperty();
+  } else {
+    renderInputs();
+  }
 
   panel.classList.add("active");
   overlay.classList.add("active");
 }
 
-function closePanel() {
-  panel.classList.remove("active");
-  overlay.classList.remove("active");
-  pendingDeleteIndex = null;
-}
-
-/* ============================
-   POOL + INPUT RENDERING
-============================ */
 function renderPool() {
   if (!propertyPool.length) return;
   pool.innerHTML = `<div class="section-label">Use existing properties?</div>`;
@@ -553,7 +663,7 @@ function togglePool(i, checked) {
 }
 
 function addNewProperty() {
-  workingSet.push({ address: "", list: "", offer: "", purchase: "" });
+  workingSet.push({ address: "", list: "", offer: "", purchase: "", rent: "", loan: "", rate: "" });
   renderInputs();
 }
 
@@ -565,55 +675,271 @@ function removeProperty(i) {
 
 function renderInputs() {
   properties.innerHTML = "";
+
   workingSet.forEach((p, i) => {
     properties.innerHTML += `
       <div class="property-row">
-        <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
-        <div class="section-label">Property Address or MLS #</div>
-        <input placeholder="123 Main St or MLS #" value="${p.address || ""}"
-          oninput="workingSet[${i}].address=this.value">
+       <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
+
+<div class="section-label">Property Address or MLS #</div>
+
+<input
+  placeholder="123 Main St or MLS #"
+  value="${p.address || ""}"
+  oninput="workingSet[${i}].address=this.value"
+>
+
+${activeReport === "bid" ? `
+  <div class="section-label">List Price</div>
+  <input
+    placeholder="$0.00"
+    value="${p.list || ""}"
+    oninput="workingSet[${i}].list=this.value"
+    onblur="formatMoney(this)"
+  >
+
+  <div class="section-label" style="margin-top:10px;">Offer Price</div>
+  <input
+    placeholder="$0.00"
+    value="${p.offer || ""}"
+    oninput="workingSet[${i}].offer=this.value"
+    onblur="formatMoney(this)"
+  >
+` : ""}
+
+${activeReport === "buyrent" ? `
+  <div class="section-label">Current Monthly Rent <span style="color:#c0392b;">*</span></div>
+  <input
+    placeholder="$0.00"
+    value="${p.rent || ""}"
+    oninput="workingSet[${i}].rent=this.value; clearPurchaseError(${i});"
+    onblur="formatMoney(this)"
+  >
+
+  <div class="section-label" style="margin-top:10px;">Purchase Price</div>
+  <input
+    placeholder="$0.00"
+    value="${p.purchase || ""}"
+    oninput="workingSet[${i}].purchase=this.value; clearPurchaseError(${i});"
+    onblur="formatMoney(this)"
+  >
+
+  <div id="purchaseError-${i}" class="field-error">
+    Current Rent and Purchase Price are required.
+  </div>
+` : ""}
+
+${activeReport === "costwaiting" ? `
+  <div class="section-label">Purchase Price</div>
+  <input
+    placeholder="$0.00"
+    value="${p.purchase || ""}"
+    oninput="workingSet[${i}].purchase=this.value; clearPurchaseError(${i});"
+    onblur="formatMoney(this)"
+  >
+
+  <div id="purchaseError-${i}" class="field-error">
+    Purchase Price is required for Cost of Waiting.
+  </div>
+` : ""}
+
+${activeReport === "amortization" ? `
+  <div class="section-label">Loan Amount</div>
+  <input
+    placeholder="$0.00"
+    value="${p.loan || ""}"
+    oninput="workingSet[${i}].loan=this.value"
+    onblur="formatMoney(this)"
+  >
+
+  <div class="section-label">Interest Rate (%)</div>
+  <input
+    placeholder="e.g. 6.50"
+    value="${p.rate || ""}"
+    oninput="workingSet[${i}].rate=this.value"
+  >
+` : ""}
+
+${activeReport === "appreciation" ? `
+  <div class="section-label">Purchase Price</div>
+  <input
+    placeholder="$0.00"
+    value="${p.purchase || ""}"
+    oninput="workingSet[${i}].purchase=this.value"
+    onblur="formatMoney(this)"
+  >
+
+  <div class="section-label">Projected Loan Amount</div>
+  <input
+    placeholder="$0.00"
+    value="${p.loan || ""}"
+    oninput="workingSet[${i}].loan=this.value"
+    onblur="formatMoney(this)"
+  >
+` : ""}
+
+${activeReport === "investment" ? `
+  <div style="
+    margin-top: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(11,78,162,0.06);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #0b1f3a;
+  ">
+    <strong>Investment Property Analysis</strong><br><br>
+    Investment property analysis involves multiple variables that materially affect results,
+    including financing structure, rent assumptions, and holding strategy.
+    <br><br>
+    To ensure accuracy, this report requires a brief consultation.
+  </div>
+` : ""}
+
       </div>`;
   });
 }
 
-/* ============================
-   KIT SAVE / EDIT
-============================ */
 function addToKit() {
   const valid = workingSet.filter(p => (p.address || "").trim() !== "");
+
   if (!isEditMode && valid.length === 0) {
     closePanel();
     return;
   }
 
+  // Validation per report type
+  if (activeReport === "bid") {
+    const missing = valid.some(p => !(p.list || "").trim() || !(p.offer || "").trim());
+    if (missing) {
+      alert("Bid Over Ask requires List Price and Offer Price for each property.");
+      return;
+    }
+  }
+
+  if (activeReport === "buyrent") {
+    const missing = valid.some(p => !(p.purchase || "").trim());
+    if (missing) {
+      alert("Buy vs Rent requires Purchase Price for each property.");
+      return;
+    }
+  }
+
+  if (activeReport === "costwaiting") {
+    const missing = valid.some(p => !(p.purchase || "").trim());
+    if (missing) {
+      alert("Cost of Waiting requires Purchase Price for each property.");
+      return;
+    }
+  }
+
+  if (activeReport === "appreciation") {
+    const missing = valid.some(p => !(p.purchase || "").trim() || !(p.loan || "").trim());
+    if (missing) {
+      alert("Appreciation requires Purchase Price and Projected Loan Amount for each property.");
+      return;
+    }
+  }
+
+  if (activeReport === "amortization") {
+    const missing = valid.some(p => !(p.loan || "").trim() || !(p.rate || "").trim());
+    if (missing) {
+      alert("Amortization requires Loan Amount and Interest Rate for each entry.");
+      return;
+    }
+  }
+
+  // Update property pool
   valid.forEach(p => {
     if (!propertyPool.some(x => x.address === p.address)) {
       propertyPool.push({ address: p.address });
     }
   });
 
-  reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
+  // Save or update
+  if (isEditMode) {
+    if (valid.length === 0) {
+      delete reportConfigs[activeReport];
+    } else {
+      reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
+    }
+  } else {
+    reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
+  }
+
   isEditMode = false;
   renderKit();
   closePanel();
+  updateCardButtons();
 }
 
 function renderKit() {
   kit.innerHTML = "";
+  
+  if (Object.keys(reportConfigs).length === 0) {
+    kit.innerHTML = '<p class="empty">No materials selected yet</p>';
+    return;
+  }
+  
   Object.keys(reportConfigs).forEach(r => {
+    if (!Array.isArray(reportConfigs[r])) return;
+    
+    const displayName =
+      r === "bid" ? "Bid Over Ask" :
+      r === "buyrent" ? "Buy vs Rent" :
+      r === "costwaiting" ? "Cost of Waiting" :
+      r === "appreciation" ? "Appreciation" :
+      r === "investment" ? "Investment Property Analysis" :
+      r === "amortization" ? "Mortgage Amortization" :
+      "Real Estate Report Card";
+    
     kit.innerHTML += `
       <div class="kit-item">
-        ✔ ${r} (${reportConfigs[r].length})
-        <span style="float:right; cursor:pointer"
+        ✔ ${displayName} (${reportConfigs[r].length} ${reportConfigs[r].length === 1 ? 'property' : 'properties'})
+        <span style="float:right; cursor:pointer; color:#0b4ea2"
           onclick="editReport('${r}')">Edit</span>
       </div>`;
   });
 }
 
+function editReport(r) {
+  activeReport = r;
+  workingSet = JSON.parse(JSON.stringify(reportConfigs[r] || []));
+  openPanel(r, "edit");
+}
+
+function closePanel() {
+  panel.classList.remove("active");
+  overlay.classList.remove("active");
+  pendingDeleteIndex = null;
+}
+
+function updateCardButtons() {
+  document.querySelectorAll('.flyer-card').forEach(card => {
+    const report = card.dataset.report;
+    const btn = card.querySelector('.add-btn');
+    
+    if (reportConfigs[report] && reportConfigs[report].length > 0) {
+      btn.textContent = "Added ✓";
+      btn.classList.add("added");
+    } else {
+      btn.textContent = "Add to My Kit";
+      btn.classList.remove("added");
+    }
+  });
+}
+
+/* ===== WIRE UP CARD BUTTONS TO OPEN PANEL ===== */
+document.querySelectorAll('.add-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.flyer-card');
+    const report = card.dataset.report;
+    
+    openPanel(report, "new");
+  });
+});
 
 </script>
-
-
 
 </body>
 </html>
