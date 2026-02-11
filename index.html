@@ -438,8 +438,6 @@
     .feature-card h3 { font-size: 22px; margin: 0 0 8px; }
     .feature-card a { text-decoration: none; font-weight: 700; color: #0b1f3a; }
 
-    /* ===== ABOUT SECTION ===== */
-/* ===== ABOUT SECTION ===== */
 /* ===== NEW ABOUT SECTION - FLOWING LAYOUT ===== */
 .about-section {
   max-width: 1200px;
@@ -479,16 +477,16 @@
 
 /* ===== TEXT STYLES ===== */
 .about-container p {
-  font-size: 16px;
-  line-height: 1.7;
-  margin-bottom: 20px;
+  font-size: 18px;      /* ← BIGGER from 16px */
+  line-height: 1.8;     /* ← MORE spacing */
+  margin-bottom: 24px;  /* ← MORE space between paragraphs */
   color: var(--secondary-text);
 }
 
 .about-intro {
-  font-size: 18px;
+  font-size: 20px;      /* ← BIGGER from 18px */
   font-weight: 500;
-  margin-bottom: 25px;
+  margin-bottom: 28px;
 }
 
 .about-subheading {
@@ -516,18 +514,23 @@
 /* ===== FLOATING IMAGES ===== */
 .about-img-float-left {
   float: left;
-  width: 280px;
-  margin: 0 30px 20px 0;
+  width: 320px;         /* ← BIGGER from 280px */
+  margin: 0 35px 25px 0;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
 }
 
 .about-img-float-right {
   float: right;
-  width: 280px;
-  margin: 0 0 20px 30px;
+  width: 320px;         /* ← BIGGER from 280px */
+  margin: 0 0 25px 35px;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== JONES ISLAND - BIGGER! ===== */
+img[src*="Jones"] {
+  width: 380px !important;  /* ← SPECIAL bigger size for your special place! */
 }
 
 /* ===== SHOWCASE IMAGE (BIG HORIZONTAL) ===== */
@@ -612,7 +615,6 @@
     margin: 30px 0;
   }
 }
-
     /* ===== MEDIA ===== */
     #media {
       max-width: 1200px;
@@ -1379,7 +1381,7 @@
     </div>
   </section>
 
- <!-- ===== NEW ABOUT SECTION - FLOWING LAYOUT ===== -->
+<!-- ===== NEW ABOUT SECTION - FLOWING LAYOUT ===== -->
 <section id="about" class="about-section">
   <div class="about-container">
     
@@ -1419,7 +1421,9 @@
     <!-- BIG SHOWCASE IMAGE -->
     <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset" class="about-img-showcase">
 
+    <!-- BOTH GUS PHOTOS TOGETHER -->
     <img src="gus.JPG" alt="Gus the Westie" class="about-img-float-right">
+    <img src="gus-kayaking.jpg" alt="Gus kayaking" class="about-img-float-right" style="clear: right;">
 
     <h3 class="about-subheading">What truly sets me apart, however, is experience.</h3>
 
@@ -1430,8 +1434,6 @@
     <p class="about-emphasis">
       That means fewer surprises, clearer expectations, and a process built on preparation — not reaction.
     </p>
-
-    <img src="gus-kayaking.jpg" alt="Gus kayaking" class="about-img-float-left">
 
     <p class="about-personal">
       I love being outdoors — softball, kayaking, golf and camping — and I protect that time because balance matters. I also share my life with Gus, my wonderfully neurotic Westie, who keeps me humble and insists that I serve as his emotional support animal.
