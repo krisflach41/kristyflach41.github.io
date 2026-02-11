@@ -740,18 +740,28 @@ document.querySelectorAll('.add-btn').forEach(button => {
     const card = this.closest('.flyer-card');
     const name = card.dataset.name;
 
-    if (!kit.includes(name)) {
-      kit.push(name);
+    if (!universalCart.hasMarketingItem(name)) {
+      universalCart.addMarketingItem(name);
       this.textContent = "Added ✓";
       this.classList.add("added");
     } else {
-      const index = kit.indexOf(name);
-      kit.splice(index, 1);
+      universalCart.removeMarketingItem(name);
       this.textContent = "Add to My Kit";
       this.classList.remove("added");
     }
+  });
+});
 
-    updateKitDisplay();
+// On page load, update buttons based on cart state
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.flyer-card').forEach(card => {
+    const name = card.dataset.name;
+    const btn = card.querySelector('.add-btn');
+    
+    if (universalCart.hasMarketingItem(name)) {
+      btn.textContent = "Added ✓";
+      btn.classList.add("added");
+    }
   });
 });
 
