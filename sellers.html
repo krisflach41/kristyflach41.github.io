@@ -758,33 +758,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-function updateKitDisplay() {
-  const list = document.getElementById('kit-list');
-  const hiddenField = document.getElementById('selected_materials');
-
-  list.innerHTML = '';
-
-  if (kit.length === 0) {
-    list.innerHTML = '<li class="empty">No materials selected yet</li>';
-  } else {
-    kit.forEach(item => {
-      const li = document.createElement('li');
-
-      const card = document.querySelector(`[data-name="${item}"]`);
-      const imgSrc = card.querySelector("img").src;
-
-      li.innerHTML = `
-        <img src="${imgSrc}" style="width:100%; border-radius:8px; margin-bottom:6px;">
-        <div>${item}</div>
-      `;
-
-      list.appendChild(li);
-    });
-  }
-
-  hiddenField.value = kit.join(', ');
-}
-
 
 /* ===========================
    FORM SUBMISSION SYSTEM
