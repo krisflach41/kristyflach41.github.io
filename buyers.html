@@ -915,51 +915,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
-```
+
 </script>
 
 
 <a href="index.html" class="return-main">Return to Main Website</a>
-<script>
 
-
-
-  // Build receipt data
-  const receipt = {
-    name: form.name.value,
-    email: form.email.value,
-    brokerage: form.brokerage.value,
-    branding: form.branding.value,
-    notes: form.notes.value,
-    materials: hiddenField.value
-  };
-
-  // Store for confirmation page
-  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
-
-  const formData = new FormData(form);
-
-try {
-  // 1️⃣ Save receipt FIRST
-  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
-
-  // 2️⃣ Send form in background (no await)
-  fetch("https://formspree.io/f/mojlojor", {
-    method: "POST",
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  });
-
-  // 3️⃣ Clear form + go to receipt page
-  form.reset();
-  window.location.href = "order-confirmation.html";
-
-} catch (error) {
-  alert("There was an issue sending your request. Please try again.");
-}
-
-
-</script>
 
 
 </body>
