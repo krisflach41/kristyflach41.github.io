@@ -696,80 +696,249 @@ html, body {
         </div>
       </div>
 
-    </div>
-
-<hr style="margin: 60px 0; border: none; border-top: 1px solid rgba(0,0,0,0.08);">
-
-<h3 style="text-align:center; font-size: 24px; margin-bottom: 10px;">
-  Ready to Order Buyer Materials?
-</h3>
-
-<p style="text-align:center; max-width: 600px; margin: 0 auto 35px auto; color:#555;">
-  Tell us which materials you need and we’ll prepare everything for you.
-</p>
-
-
-<form id="marketingForm" method="POST">
-<input type="hidden" name="selected_materials" id="selected_materials">
-<input type="hidden" name="_redirect" value="order-confirmation.html">
-
-
-
-  <input type="text" name="name" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
-
-  <input type="email" name="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:15px; border-radius:6px; border:1px solid #ccc;">
-
-  <input type="text" name="brokerage" placeholder="Brokerage" required style="width:100%; padding:12px; margin-bottom:20px; border-radius:6px; border:1px solid #ccc;">
-
- <div class="kit-panel">
-  <h3>Your Selected Materials</h3>
-  <ul id="kit-list">
-    <li class="empty">No materials selected yet</li>
-  </ul>
-</div>
-
-
-<label class="branding-option">
-  <input type="radio" name="branding" value="Co-branded" required>
-  <span class="branding-text">Co-branded (requires Total Expert setup)</span>
-
-  <span class="info-icon" aria-label="Total Expert Info" role="button" tabindex="0">i
-    <span class="tooltip-box">
-      Co-branded materials require a free Total Expert partner account.
-      If you don’t already have one, you’ll receive an invitation email to upload your professional headshot and contact info.
-      This access is covered for you as my co-branded partner (normally $100/month).
-    </span>
-  </span>
-</label>
-
-
-  <label style="display:block; margin-bottom:20px;">
-    <input type="radio" name="branding" value="Kristy-branded only"> Kristy-branded only
-  </label>
-
-  <textarea name="notes" placeholder="Additional notes or customization requests" style="width:100%; padding:12px; height:100px; margin-bottom:25px; border-radius:6px; border:1px solid #ccc;"></textarea>
-<div class="form-note">
-  <strong>Production Time:</strong> Most materials are prepared within 2 business days. Need a rush? Add “Rush” in notes or contact Kristy directly.
-</div>
-
- <button type="submit" style="width:100%; padding:14px; border:none; border-radius:8px; background:#0b4ea2; color:white; font-weight:600; cursor:pointer;">
-  Prepare My Marketing Kit
-</button>
-
-
-</form>
-
-<p style="text-align:center; font-size:13px; margin-top:25px; color:#666;">
-  Most materials available in Spanish upon request. Co-branded materials require Total Expert profile setup.
-</p>
-
-    <div style="text-align:center;">
-      <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
-    </div>
+ 
 
   </section>
 </div>
+<!-- CART & LIGHTBOX -->
+<div class="cart-icon" onclick="openCart()">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+  </svg>
+  <span class="cart-badge" id="cartBadge">0</span>
+</div>
 
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<div class="cart-modal" id="cartModal">
+  <div class="cart-header">
+    <h2>My Kit</h2>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+      </svg>
+      <p>Your kit is empty</p>
+      <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
+    </div>
+  </div>
+  
+  <div class="cart-footer" id="cartFooter" style="display: none;">
+    <div class="cart-total">
+      <span>Total Items:</span>
+      <span id="cartTotalCount">0</span>
+    </div>
+    <button class="cart-checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    <button class="cart-clear-btn" onclick="clearCart()">Clear Cart</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content">
+    <span class="lightbox-close" id="lightboxClose">×</span>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+</div>
+
+<script>
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('active');
+  document.getElementById('cartModal').classList.add('active');
+  renderCart();
+}
+
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('active');
+  document.getElementById('cartModal').classList.remove('active');
+}
+
+function renderCart() {
+  const body = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+  const totalCount = document.getElementById('cartTotalCount');
+  
+  const summary = universalCart.getSummary();
+  const count = universalCart.getTotalCount();
+  
+  if (count === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <p>Your kit is empty</p>
+        <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
+      </div>
+    `;
+    footer.style.display = 'none';
+    return;
+  }
+  
+  let html = '';
+  
+  summary.forEach(section => {
+    html += `<div class="cart-section">`;
+    html += `<div class="cart-section-title">${section.collection}</div>`;
+    
+    section.items.forEach(item => {
+      if (item.type === 'flyer') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+            </div>
+            <button class="cart-item-remove" onclick="removeMarketingItem('${item.name}')">×</button>
+          </div>
+        `;
+      } else if (item.type === 'report') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-meta">${item.count} ${item.count === 1 ? 'property' : 'properties'}</div>
+            </div>
+          </div>
+        `;
+      } else if (item.type === 'website') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              ${item.mls ? `<div class="cart-item-meta">MLS: ${item.mls}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+    });
+    
+    html += `</div>`;
+  });
+  
+  body.innerHTML = html;
+  footer.style.display = 'block';
+  totalCount.textContent = count;
+}
+
+function removeMarketingItem(name) {
+  universalCart.removeMarketingItem(name);
+  renderCart();
+  
+  const card = document.querySelector(`[data-name="${name}"]`);
+  if (card) {
+    const btn = card.querySelector('.add-btn');
+    if (btn) {
+      btn.textContent = 'Add to My Kit';
+      btn.classList.remove('added');
+    }
+  }
+}
+
+function clearCart() {
+  if (confirm('Are you sure you want to clear your entire cart?')) {
+    universalCart.clear();
+    renderCart();
+    
+    document.querySelectorAll('.add-btn.added').forEach(btn => {
+      btn.textContent = 'Add to My Kit';
+      btn.classList.remove('added');
+    });
+  }
+}
+
+function proceedToCheckout() {
+  sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
+  window.location.href = 'checkout.html';
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCart();
+  }
+});
+
+/* IMAGE LIGHTBOX */
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
+
+document.querySelectorAll(".flyer-card img").forEach(img => {
+  img.addEventListener("click", () => {
+    lightboxImg.src = img.src;
+    lightbox.classList.add("active");
+  });
+});
+
+lightboxClose.addEventListener("click", () => {
+  lightbox.classList.remove("active");
+});
+
+lightbox.addEventListener("click", e => {
+  if (e.target === lightbox) {
+    lightbox.classList.remove("active");
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    lightbox.classList.remove("active");
+  }
+});
+</script>
+```
+
+---
+
+## ✅ STEP 5: Update Button Logic
+
+Find this section:
+```javascript
+document.querySelectorAll('.add-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const card = this.closest('.flyer-card');
+    const name = card.dataset.name;
+
+    if (!kit.includes(name)) {
+      kit.push(name);
+      // ... old code
+    }
+  });
+});
+```
+
+REPLACE with:
+```javascript
+document.querySelectorAll('.add-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const card = this.closest('.flyer-card');
+    const name = card.dataset.name;
+
+    if (!universalCart.hasMarketingItem(name)) {
+      universalCart.addMarketingItem(name);
+      this.textContent = "Added ✓";
+      this.classList.add("added");
+    } else {
+      universalCart.removeMarketingItem(name);
+      this.textContent = "Add to My Kit";
+      this.classList.remove("added");
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.flyer-card').forEach(card => {
+    const name = card.dataset.name;
+    const btn = card.querySelector('.add-btn');
+    
+    if (universalCart.hasMarketingItem(name)) {
+      btn.textContent = "Added ✓";
+      btn.classList.add("added");
+    }
+  });
+});
+```
 <a href="index.html" class="return-main">Return to Main Website</a>
 <script>
 /* ===========================
