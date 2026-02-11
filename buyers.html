@@ -887,28 +887,7 @@ document.addEventListener("keydown", e => {
   }
 });
 </script>
-```
 
----
-
-## ✅ STEP 5: Update Button Logic
-
-Find this section:
-```javascript
-document.querySelectorAll('.add-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const card = this.closest('.flyer-card');
-    const name = card.dataset.name;
-
-    if (!kit.includes(name)) {
-      kit.push(name);
-      // ... old code
-    }
-  });
-});
-```
-
-REPLACE with:
 ```javascript
 document.querySelectorAll('.add-btn').forEach(button => {
   button.addEventListener('click', function() {
