@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account - Agent Edge Partner Portal</title>
+<style>
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== SIGNUP CONTAINER ===== */
+.signup-card {
+  width: 90%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== HEADER ===== */
+.signup-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.signup-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0b1f3a;
+}
+
+.signup-subtitle {
+  font-size: 14px;
+  color: #555;
+  font-weight: 400;
+}
+
+/* ===== FORM INPUTS ===== */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #0b1f3a;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+.form-helper {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ===== TERMS & CONDITIONS BOX ===== */
+.terms-box {
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 8px;
+  padding: 20px;
+  margin: 25px 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.terms-box h3 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #0b1f3a;
+}
+
+.terms-box p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.terms-box ul {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #333;
+  padding-left: 20px;
+}
+
+/* ===== CHECKBOX ===== */
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.checkbox-group label {
+  font-size: 14px;
+  color: #0b1f3a;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+/* ===== BUTTONS ===== */
+.signup-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #0b4ea2;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 10px;
+}
+
+.signup-btn:hover:not(:disabled) {
+  background: #0a3d7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.signup-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ===== SUCCESS MESSAGE ===== */
+.success-message {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: #27ae60;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+  text-align: center;
+}
+
+.success-message.show {
+  display: block;
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+.error-message.show {
+  display: block;
+}
+
+/* ===== LINKS ===== */
+.back-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.back-link a:hover {
+  color: #0a3d7f;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .signup-card {
+    padding: 40px 25px;
+  }
+  
+  .signup-title {
+    font-size: 24px;
+  }
+  
+  .terms-box {
+    padding: 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="signup-card">
+  <div class="signup-header">
+    <h1 class="signup-title">Create Your Account</h1>
+    <p class="signup-subtitle">Join the Agent Edge Partner Portal</p>
+  </div>
+
+  <div class="success-message" id="successMessage">
+    ✓ Account created! Redirecting to portal...
+  </div>
+
+  <div class="error-message" id="errorMessage">
+    <!-- Error text inserted by JavaScript -->
+  </div>
+
+  <form id="signupForm">
+    <div class="form-group">
+      <label class="form-label" for="fullName">Full Name *</label>
+      <input 
+        type="text" 
+        id="fullName" 
+        class="form-input" 
+        placeholder="Your full name"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="email">Email Address *</label>
+      <input 
+        type="email" 
+        id="email" 
+        class="form-input" 
+        placeholder="your@email.com"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="brokerage">Brokerage *</label>
+      <input 
+        type="text" 
+        id="brokerage" 
+        class="form-input" 
+        placeholder="Your brokerage name"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="newUsername">Create Username *</label>
+      <input 
+        type="text" 
+        id="newUsername" 
+        class="form-input" 
+        placeholder="Choose a username"
+        autocomplete="off"
+        required
+      >
+      <div class="form-helper">Letters, numbers, dots, and underscores only. No spaces.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="newPassword">Create Password *</label>
+      <input 
+        type="password" 
+        id="newPassword" 
+        class="form-input" 
+        placeholder="Choose a strong password"
+        autocomplete="new-password"
+        required
+      >
+      <div class="form-helper">At least 8 characters recommended.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="confirmPassword">Confirm Password *</label>
+      <input 
+        type="password" 
+        id="confirmPassword" 
+        class="form-input" 
+        placeholder="Re-enter your password"
+        autocomplete="new-password"
+        required
+      >
+    </div>
+
+    <!-- TERMS & CONDITIONS -->
+    <div class="terms-box">
+      <h3>Terms & Conditions</h3>
+      <p><strong>Welcome to the Agent Edge Partner Portal!</strong></p>
+      <p>By creating an account, you agree to the following:</p>
+      <ul>
+        <li><strong>Authorized Use:</strong> This portal is exclusively for real estate professionals partnering with Kristy Flach / Agent Edge.</li>
+        <li><strong>Professional Purpose:</strong> All materials and resources are provided for legitimate business purposes in serving your clients.</li>
+        <li><strong>Confidentiality:</strong> Portal access credentials are personal and should not be shared with unauthorized individuals.</li>
+        <li><strong>Content Usage:</strong> Marketing materials may be customized with your branding as indicated. Co-branded materials require Total Expert setup.</li>
+        <li><strong>Accuracy:</strong> You are responsible for verifying all information provided to clients, including rates, terms, and property details.</li>
+        <li><strong>Compliance:</strong> All use must comply with applicable real estate and mortgage lending regulations.</li>
+        <li><strong>Account Responsibility:</strong> You are responsible for all activity under your account.</li>
+        <li><strong>Termination:</strong> Access may be revoked at any time for misuse or violation of these terms.</li>
+      </ul>
+      <p>Questions? Contact Kristy directly.</p>
+    </div>
+
+    <div class="checkbox-group">
+      <input type="checkbox" id="agreeTerms" required>
+      <label for="agreeTerms">
+        I have read and agree to the Terms & Conditions above. I confirm that I am a licensed real estate professional. *
+      </label>
+    </div>
+
+    <button type="submit" class="signup-btn" id="submitBtn">Create Account</button>
+  </form>
+
+  <div class="back-link">
+    <a href="login.html">← Back to Login</a>
+  </div>
+</div>
+
+<script src="credentials.js"></script>
+<script src="auth.js"></script>
+<script>
+/* ===========================
+   SIGNUP FORM HANDLER
+=========================== */
+
+const signupForm = document.getElementById('signupForm');
+const errorMessage = document.getElementById('errorMessage');
+const successMessage = document.getElementById('successMessage');
+const submitBtn = document.getElementById('submitBtn');
+
+signupForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  // Get form values
+  const fullName = document.getElementById('fullName').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const brokerage = document.getElementById('brokerage').value.trim();
+  const username = document.getElementById('newUsername').value.trim().toLowerCase();
+  const password = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+  const agreeTerms = document.getElementById('agreeTerms').checked;
+  
+  // Clear previous messages
+  errorMessage.classList.remove('show');
+  successMessage.classList.remove('show');
+  
+  // Validate username format
+  if (!/^[a-z0-9._]+$/.test(username)) {
+    errorMessage.textContent = 'Username can only contain lowercase letters, numbers, dots, and underscores.';
+    errorMessage.classList.add('show');
+    return;
+  }
+  
+  // Check if username exists
+  if (credentials[username]) {
+    errorMessage.textContent = 'Username already taken. Please choose another.';
+    errorMessage.classList.add('show');
+    return;
+  }
+  
+  // Validate password length
+  if (password.length < 6) {
+    errorMessage.textContent = 'Password must be at least 6 characters long.';
+    errorMessage.classList.add('show');
+    return;
+  }
+  
+  // Check passwords match
+  if (password !== confirmPassword) {
+    errorMessage.textContent = 'Passwords do not match. Please try again.';
+    errorMessage.classList.add('show');
+    document.getElementById('confirmPassword').value = '';
+    return;
+  }
+  
+  // Must agree to terms
+  if (!agreeTerms) {
+    errorMessage.textContent = 'You must agree to the Terms & Conditions to continue.';
+    errorMessage.classList.add('show');
+    return;
+  }
+  
+  // Hash the password
+  const hashedPassword = simpleHash(password);
+  
+  // Add to credentials (stored in localStorage)
+  const storedCredentials = JSON.parse(localStorage.getItem('agentEdgeCredentials') || '{}');
+  storedCredentials[username] = hashedPassword;
+  localStorage.setItem('agentEdgeCredentials', JSON.stringify(storedCredentials));
+  
+  // Store user profile info
+  const userProfile = {
+    fullName: fullName,
+    email: email,
+    brokerage: brokerage,
+    joinedDate: new Date().toISOString()
+  };
+  localStorage.setItem(`agentEdgeProfile_${username}`, JSON.stringify(userProfile));
+  
+  // Success! Log them in automatically
+  sessionStorage.setItem('agentEdgeAuth', 'authenticated');
+  sessionStorage.setItem('agentEdgeUser', username);
+  
+  // Show success message
+  successMessage.classList.add('show');
+  submitBtn.disabled = true;
+  
+  // Redirect to portal after 2 seconds
+  setTimeout(() => {
+    window.location.href = 'portal.html';
+  }, 2000);
+});
+
+// Real-time username validation
+document.getElementById('newUsername').addEventListener('input', function(e) {
+  this.value = this.value.toLowerCase().replace(/[^a-z0-9._]/g, '');
+});
+
+// Password match indicator
+document.getElementById('confirmPassword').addEventListener('input', function() {
+  const password = document.getElementById('newPassword').value;
+  const confirmPassword = this.value;
+  
+  if (confirmPassword && password !== confirmPassword) {
+    this.style.borderColor = '#c0392b';
+  } else {
+    this.style.borderColor = 'rgba(11,78,162,0.2)';
+  }
+});
+</script>
+
+</body>
+</html>
