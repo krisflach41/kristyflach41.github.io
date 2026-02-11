@@ -941,57 +941,6 @@ document.addEventListener('DOMContentLoaded', () => {
 ```
 <a href="index.html" class="return-main">Return to Main Website</a>
 <script>
-/* ===========================
-   MATERIAL SELECTION SYSTEM
-=========================== */
-const kit = [];
-
-document.querySelectorAll('.add-btn').forEach(button => {
-  button.addEventListener('click', function() {
-    const card = this.closest('.flyer-card');
-    const name = card.dataset.name;
-
-    if (!kit.includes(name)) {
-      kit.push(name);
-      this.textContent = "Added ✓";
-      this.classList.add("added");
-    } else {
-      const index = kit.indexOf(name);
-      kit.splice(index, 1);
-      this.textContent = "Add to My Kit";
-      this.classList.remove("added");
-    }
-
-    updateKitDisplay();
-  });
-});
-
-function updateKitDisplay() {
-  const list = document.getElementById('kit-list');
-  const hiddenField = document.getElementById('selected_materials');
-
-  list.innerHTML = '';
-
-  if (kit.length === 0) {
-    list.innerHTML = '<li class="empty">No materials selected yet</li>';
-  } else {
-    kit.forEach(item => {
-      const li = document.createElement('li');
-
-      const card = document.querySelector(`[data-name="${item}"]`);
-      const imgSrc = card.querySelector("img").src;
-
-      li.innerHTML = `
-        <img src="${imgSrc}" style="width:100%; border-radius:8px; margin-bottom:6px;">
-        <div>${item}</div>
-      `;
-
-      list.appendChild(li);
-    });
-  }
-
-  hiddenField.value = kit.join(', ');
-}
 
 
 /* ===========================
