@@ -440,6 +440,7 @@
 
     /* ===== ABOUT SECTION ===== */
 /* ===== ABOUT SECTION ===== */
+/* ===== NEW ABOUT SECTION - FLOWING LAYOUT ===== */
 .about-section {
   max-width: 1200px;
   margin: 140px auto 0 auto;
@@ -451,11 +452,12 @@
   box-shadow: 0 20px 50px rgba(0,0,0,0.10);
 }
 
-.about-wrapper { 
-  max-width: 1200px; 
-  margin: auto; 
+.about-container {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
+/* ===== TITLE ===== */
 .about-title {
   text-align: center;
   margin-bottom: 40px;
@@ -464,119 +466,151 @@
   color: #0b1f3a;
 }
 
-.about-top {
-  display: grid;
-  grid-template-columns: 280px 1fr 260px;
-  gap: 40px;
-  align-items: start;
-}
-
-.about-headshot img,
-.about-side-img img,
-.about-mid-img img,
-.about-family-img img {
-  width: 100%;
-  border-radius: 14px;
-  display: block;
-}
-
 /* ===== HERO STATEMENT ===== */
-.about-heading {
-  font-size: 28px;
-  margin-bottom: 30px !important;
+.about-hero-statement {
+  font-size: 36px;
+  font-weight: 700;
   line-height: 1.3;
-  color: var(--secondary-text);
-  text-align: left;
+  color: #0b1f3a;
+  text-align: center;
+  margin: 0 auto 50px auto;
+  max-width: 800px;
 }
 
-/* ===== ABOUT TEXT ===== */
-.about-text {
-  margin-top: 0;       /* ← FIXED */
+/* ===== TEXT STYLES ===== */
+.about-container p {
   font-size: 16px;
-  font-weight: 400;
   line-height: 1.7;
+  margin-bottom: 20px;
+  color: var(--secondary-text);
 }
 
-.about-text p {
-  margin-bottom: 16px;
-}
-
-/* ===== FIRST PARAGRAPH: PUSH DOWN + SPREAD WIDER ===== */
-.about-text p:first-of-type {
-  margin-top: 50px;
+.about-intro {
+  font-size: 18px;
+  font-weight: 500;
   margin-bottom: 25px;
-  margin-left: -40px;
-  margin-right: -40px;
-  padding: 0 40px;
 }
 
-/* ===== BULLET COLUMNS: SPREAD WIDER ===== */
-.about-columns {
+.about-subheading {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin: 40px 0 20px 0;
+  clear: both;
+}
+
+.about-emphasis {
+  font-weight: 700;
+  font-style: italic;
+  margin: 30px 0;
+  padding-left: 20px;
+  border-left: 4px solid var(--accent-color);
+}
+
+.about-personal {
+  font-style: italic;
+  color: #555;
+  margin: 30px 0;
+}
+
+/* ===== FLOATING IMAGES ===== */
+.about-img-float-left {
+  float: left;
+  width: 280px;
+  margin: 0 30px 20px 0;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.about-img-float-right {
+  float: right;
+  width: 280px;
+  margin: 0 0 20px 30px;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* ===== SHOWCASE IMAGE (BIG HORIZONTAL) ===== */
+.about-img-showcase {
+  width: 100%;
+  max-width: 900px;
+  margin: 40px auto;
+  display: block;
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.20);
+  clear: both;
+}
+
+/* ===== EXPERTISE BULLETS ===== */
+.about-expertise-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 50px;
-  margin-top: 30px;
-  margin-left: -60px;   /* ← FIXED */
-  margin-right: -60px;  /* ← FIXED */
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 120%;
-  font-size: 15px;
-  font-weight: 400;
-}
-
-.about-columns ul { 
-  padding-left: 20px; 
-}
-
-.about-divider {
-  margin: 60px 0;
-  border: none;
-  border-top: 1px solid #ddd;
-}
-
-.about-mid {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 10px;
-  align-items: center;
-}
-
-.about-mid-text h2 { 
-  margin-bottom: 15px; 
-}
-
-.about-bold { 
-  font-weight: bold; 
-}
-
-.about-bottom {
-  display: grid;
-  grid-template-columns: 360px 1fr;
   gap: 40px;
-  align-items: center;
+  margin: 30px 0 40px 0;
+  clear: both;
+}
+
+.expertise-col ul {
+  list-style: disc;
+  padding-left: 20px;
+  margin: 0;
+}
+
+.expertise-col li {
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 10px;
+  color: var(--secondary-text);
+}
+
+/* ===== CTA BUTTON ===== */
+.about-cta {
+  text-align: center;
+  margin-top: 50px;
+  padding-top: 30px;
+  border-top: 1px solid #ddd;
 }
 
 .about-button {
   display: inline-block;
   background: var(--accent-color);
   color: white;
-  padding: 14px 28px;
-  border-radius: 6px;
+  padding: 14px 32px;
+  border-radius: 8px;
   text-decoration: none;
-  font-weight: bold;
-  margin-top: 20px;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.about-button:hover { 
-  opacity: 0.85; 
+.about-button:hover {
+  background: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.20);
 }
 
-.about-personal {
-  margin-top: 40px;
-  text-align: center;
-  font-style: italic;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .about-hero-statement {
+    font-size: 28px;
+  }
+
+  .about-img-float-left,
+  .about-img-float-right {
+    float: none;
+    width: 100%;
+    margin: 20px 0;
+  }
+
+  .about-expertise-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .about-img-showcase {
+    margin: 30px 0;
+  }
 }
 
     /* ===== MEDIA ===== */
@@ -1345,93 +1379,84 @@
     </div>
   </section>
 
-  <section id="about" class="about-section">
-    <div class="about-wrapper">
-
-      <div class="about-top">
-        <div class="about-headshot">
-          <img src="golf.PNG" alt="Kristy golfing">
-        </div>
-
-        <div class="about-text">
-          <h2 class="about-title">About Me</h2>
-
-          <h1 class="about-heading">
-            “A mortgage can be a bill — or a tool for financial independence.”
-          </h1>
-
-          <p>
-            I’m Kristy Flach — a Certified Mortgage Advisor, strategist, and educator who believes your mortgage should be a financial tool, not just a transaction.
-          </p>
-
-          <p>
-            The Certified Mortgage Advisor designation represents the highest standard of excellence for mortgage professionals in the United States. It goes far beyond traditional loan-officer training and focuses on understanding how mortgage decisions fit into a broader financial picture.
-          </p>
-
-          <div class="about-columns">
-            <ul>
-              <li>Personal wealth creation</li>
-              <li>Stock and bond markets</li>
-              <li>Technical market analysis</li>
-            </ul>
-            <ul>
-              <li>Economic reports and how to interpret them</li>
-              <li>Central banking and Federal Reserve policy</li>
-              <li>What truly drives interest rates and market movement</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="about-side-img">
-          <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset">
-        </div>
-      </div>
-
-      <hr class="about-divider">
-
-      <div class="about-mid">
-        <div class="about-mid-text">
-          <h2>What truly sets me apart, however, is experience.</h2>
-          <p>
-            With 17 years of mortgage underwriting experience and a background as a licensed Realtor, I understand both how loans are approved behind the scenes and how real-world transactions unfold. I know how to structure loans that anticipate underwriting scrutiny, align with contract realities, and move smoothly from application to closing.
-          </p>
-          <p class="about-bold">
-            That means fewer surprises, clearer expectations, and a process built on preparation — not reaction.
-          </p>
-        </div>
-
-        <div class="about-mid-img">
-          <img src="gus.JPG" alt="Gus kayaking">
-        </div>
-      </div>
-<div class="about-personal">
-        <p>
-          I love being outdoors — softball, kayaking, golf and camping — and I protect that time because balance matters. I also share my life with Gus, my wonderfully neurotic Westie, who keeps me humble and insists that I serve as his emotional support animal.
-        </p>
-      </div>
-      <hr class="about-divider">
-
-      <div class="about-bottom">
-        <div class="about-family-img">
-          <img src="Jones Island+State+Park.jpg" alt="Jones Island camping">
-        </div>
-
-        <div class="about-bottom-text">
-          <p>
-            Whether you’re buying your first home, refinancing, or evaluating loan options, my role is to present clear strategic choices and guide you toward decisions that work best for your life. I focus on education, transparency, and strategy — so you understand not just what you’re doing, but why it supports your long-term financial security.
-          </p>
-
-          <p>
-            If you’re looking for clarity, strategy, and a mortgage advisor who leads with integrity — I’d be honored to work with you.
-          </p>
-
-          <a href="#contact" class="about-button">Start the Conversation</a>
-        </div>
-      </div>
-
+ <!-- ===== NEW ABOUT SECTION - FLOWING LAYOUT ===== -->
+<section id="about" class="about-section">
+  <div class="about-container">
     
+    <h2 class="about-title">About Me</h2>
+    
+    <h1 class="about-hero-statement">
+      "A mortgage can be a bill — or a tool for financial independence."
+    </h1>
+
+    <img src="golf.PNG" alt="Kristy golfing" class="about-img-float-left">
+    
+    <p class="about-intro">
+      I'm Kristy Flach — a Certified Mortgage Advisor, strategist, and educator who believes your mortgage should be a financial tool, not just a transaction.
+    </p>
+
+    <p>
+      The Certified Mortgage Advisor designation represents the highest standard of excellence for mortgage professionals in the United States. It goes far beyond traditional loan-officer training and focuses on understanding how mortgage decisions fit into a broader financial picture:
+    </p>
+
+    <div class="about-expertise-grid">
+      <div class="expertise-col">
+        <ul>
+          <li>Personal wealth creation</li>
+          <li>Stock and bond markets</li>
+          <li>Technical market analysis</li>
+        </ul>
+      </div>
+      <div class="expertise-col">
+        <ul>
+          <li>Economic reports and how to interpret them</li>
+          <li>Central banking and Federal Reserve policy</li>
+          <li>What truly drives interest rates and market movement</li>
+        </ul>
+      </div>
     </div>
-  </section>
+
+    <!-- BIG SHOWCASE IMAGE -->
+    <img src="Kristy Kayak.jpg" alt="Kristy kayaking at sunset" class="about-img-showcase">
+
+    <img src="gus.JPG" alt="Gus the Westie" class="about-img-float-right">
+
+    <h3 class="about-subheading">What truly sets me apart, however, is experience.</h3>
+
+    <p>
+      With 17 years of mortgage underwriting experience and a background as a licensed Realtor, I understand both how loans are approved behind the scenes and how real-world transactions unfold. I know how to structure loans that anticipate underwriting scrutiny, align with contract realities, and move smoothly from application to closing.
+    </p>
+
+    <p class="about-emphasis">
+      That means fewer surprises, clearer expectations, and a process built on preparation — not reaction.
+    </p>
+
+    <img src="gus-kayaking.jpg" alt="Gus kayaking" class="about-img-float-left">
+
+    <p class="about-personal">
+      I love being outdoors — softball, kayaking, golf and camping — and I protect that time because balance matters. I also share my life with Gus, my wonderfully neurotic Westie, who keeps me humble and insists that I serve as his emotional support animal.
+    </p>
+
+    <div style="clear: both;"></div>
+
+    <img src="Jones Island+State+Park.jpg" alt="Jones Island camping" class="about-img-float-right">
+
+    <p>
+      Whether you're buying your first home, refinancing, or evaluating loan options, my role is to present clear strategic choices and guide you toward decisions that work best for your life. I focus on education, transparency, and strategy — so you understand not just what you're doing, but why it supports your long-term financial security.
+    </p>
+
+    <p>
+      If you're looking for clarity, strategy, and a mortgage advisor who leads with integrity — I'd be honored to work with you.
+    </p>
+
+    <div style="clear: both;"></div>
+
+    <div class="about-cta">
+      <a href="#contact" class="about-button">Start the Conversation</a>
+    </div>
+
+  </div>
+</section>
 
   <section id="media">
     <h2>Media & YouTube</h2>
