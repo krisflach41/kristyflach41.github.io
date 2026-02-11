@@ -21,10 +21,9 @@ body {
 /* ===== PAGE WIDTH ===== */
 .page-wrap {
   max-width: 1150px;
-  margin: 0 auto;      /* ← THIS centers the glass container */
-  padding: 0 24px;     /* keeps breathing room */
+  margin: 0 auto;
+  padding: 0 24px;
 }
-
 
 /* ===== GLASS CONTAINER ===== */
 .gallery-card {
@@ -63,24 +62,50 @@ body {
 /* ===== FLYER THUMBNAIL CARD ===== */
 .flyer-card {
   text-align: center;
+  min-width: 0;
 }
 
-.flyer-thumb {
+.flyer-card img {
   width: 100%;
   height: 220px;
-  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
+  object-fit: cover;
   border-radius: 10px;
   margin-bottom: 12px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
 }
 
-.flyer-thumb:hover {
-  transform: scale(1.05);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
-.flyer-thumb:hover {
+.flyer-card img:hover {
   transform: scale(1.03);
   box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.flyer-info h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.add-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #0b4ea2;
+  background: transparent;
+  color: #0b4ea2;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.add-btn:hover {
+  background: #0b4ea2;
+  color: white;
+}
+
+.add-btn.added {
+  background: #0b4ea2;
+  color: white;
+  border-color: #0b4ea2;
 }
 
 /* ===== NAV BUTTON ===== */
@@ -112,256 +137,7 @@ body {
   color: #0b1f3a;
   font-weight: 600;
 }
-.add-btn {
-  margin-top: 10px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #0b4ea2;
-  background: transparent;
-  color: #0b4ea2;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
 
-.add-btn:hover {
-  background: #0b4ea2;
-  color: white;
-}
-
-.kit-panel {
-  margin: 50px 0 30px;
-  padding: 30px;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.6);
-}
-
-.kit-panel h3 {
-  margin-bottom: 15px;
-  font-size: 18px;
-}
-
-#kit-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
-
-#kit-list li {
-  background: rgba(255,255,255,0.65);
-  backdrop-filter: blur(4px);
-  border-radius: 12px;
-  padding: 10px;
-  text-align: center;
-  font-size: 13px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
-}
-
-/* Center the kit header text only */
-.kit-panel h3,
-.empty {
-  text-align: center;
-}
-
-/* Keep actual selected material rows left-aligned */
-#kit-list {
-  text-align: left;
-}
-
-
-.empty {
-  color: #777;
-}
-.add-btn.added {
-  background: #0b4ea2;
-  color: white;
-  border-color: #0b4ea2;
-}
-.form-note {
-  text-align: center;
-  font-size: 13px;
-  color: rgba(11,31,58,0.75);
-  margin: 14px 0;
-}
-/* ===== Branding Option Row (Desktop) ===== */
-.branding-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #0b1f3a;
-  position: relative;
-  justify-content: flex-start;
-}
-
-.branding-text {
-  font-weight: 600;
-}
-
-
-.info-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  width: 20px;
-  height: 20px;
-
-  border-radius: 50%;
-  background: #0b4ea2;
-  color: #fff;
-
-  font-size: 12px;
-  font-weight: 700;
-
-  margin-left: 8px;
-  cursor: pointer;
-
-  flex: 0 0 20px;     /* ← prevents stretching */
-  aspect-ratio: 1/1;  /* ← keeps perfect circle */
-}
-
-
-.info-icon:hover {
-  transform: scale(1.08);
-}
-
-/* Tooltip panel */
-.tooltip-box {
-  visibility: hidden;
-  opacity: 0;
-  width: 270px;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(8px);
-  color: #0b1f3a;
-  text-align: left;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 14px 30px rgba(0,0,0,0.12);
-  font-size: 12px;
-  line-height: 1.5;
-  position: absolute;
-  top: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: opacity 0.25s ease, transform 0.25s ease;
-  z-index: 9999;
-}
-
-/* Show tooltip */
-.info-icon:hover .tooltip-box {
-  visibility: visible;
-  opacity: 1;
-  transform: translateX(-50%) translateY(4px);
-}
-/* =========================================================
-   MOBILE + TABLET RESPONSIVE RULES (SELLERS TEMPLATE)
-   ========================================================= */
-
-/* Prevent ANY horizontal overflow */
-html, body {
-  overflow-x: hidden;
-}
-
-
-/* Grid children must be allowed to shrink */
-.flyer-card {
-  min-width: 0;
-}
-
-/* Tablet */
-@media (max-width: 980px) {
-
-  body {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-
-  .flyer-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-
-  .two-col,
-  .split,
-  .order-grid,
-  .order-layout,
-  .main-grid {
-    grid-template-columns: 1fr !important;
-    gap: 18px !important;
-  }
-}
-
-/* Mobile */
-@media (max-width: 640px) {
-
-  h1 { font-size: 28px; }
-  h2 { font-size: 18px; }
-
-  .flyer-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-  }
-
-  .tooltip-box {
-    left: 0 !important;
-    right: auto !important;
-    width: 220px;
-  }
-
-  .info-icon {
-    flex-shrink: 0;
-  }
-/* Mobile ONLY: allow branding row to wrap inside card */
-.branding-option{
-  display:flex;
-  align-items:flex-start;
-  gap:8px;
-  flex-wrap:wrap;
-  max-width:100%;
-}
-
-.branding-option span{
-  flex:1 1 auto;
-  min-width:0;
-}
-
-}
-
- 
-
-/* ===== HARD LOCK: keep info icon circular on desktop + mobile ===== */
-.info-icon{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-
-  width:20px !important;
-  height:20px !important;
-  aspect-ratio:1/1 !important;
-
-  border-radius:50% !important;
-
-  background:#0b4ea2 !important;
-  color:#fff !important;
-
-  font-size:12px !important;
-  font-weight:700 !important;
-
-  margin-left:8px !important;
-  cursor:pointer !important;
-
-  flex:0 0 20px !important;
-  max-width:20px !important;
-  min-width:20px !important;
-}
 /* ===== CART SYSTEM ===== */
 .cart-icon {
   position: fixed;
@@ -633,6 +409,38 @@ html, body {
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
+
+/* =========================================================
+   RESPONSIVE RULES
+   ========================================================= */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Tablet */
+@media (max-width: 980px) {
+  body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .flyer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
+
+  .flyer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -648,58 +456,61 @@ html, body {
 
     <div class="flyer-grid">
 
-    <div class="flyer-card" data-name="Construction Flyer 1">
-  <img src="images/construction/flyer1.jpg" alt="Construction Flyer 1">
-  <div class="flyer-info">
-    <h3>Construction Flyer 1</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
+      <div class="flyer-card" data-name="Construction Flyer 1">
+        <img src="images/construction/flyer1.jpg" alt="Construction Flyer 1">
+        <div class="flyer-info">
+          <h3>Construction Flyer 1</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
 
-  </div>
-</div>
-
-
-     <div class="flyer-card" data-name="Construction Flyer 2">
-  <img src="images/construction/flyer2.jpg" alt="Construction Flyer 2">
-  <div class="flyer-info">
-    <h3>Construction Flyer 2</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
-  </div>
-</div>
-
+      <div class="flyer-card" data-name="Construction Flyer 2">
+        <img src="images/construction/flyer2.jpg" alt="Construction Flyer 2">
+        <div class="flyer-info">
+          <h3>Construction Flyer 2</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
 
       <div class="flyer-card" data-name="Construction Flyer 3">
-  <img src="images/construction/flyer3.jpg" alt="Construction Flyer 3">
-  <div class="flyer-info">
-    <h3>Construction Flyer 3</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
-  </div>
-</div>
+        <img src="images/construction/flyer3.jpg" alt="Construction Flyer 3">
+        <div class="flyer-info">
+          <h3>Construction Flyer 3</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
 
-
-     <div class="flyer-card" data-name="Construction Flyer 4">
-  <img src="images/construction/flyer4.jpg" alt="Construction Flyer 4">
-  <div class="flyer-info">
-    <h3>Construction Flyer 4</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
-  </div>
-</div>
-
+      <div class="flyer-card" data-name="Construction Flyer 4">
+        <img src="images/construction/flyer4.jpg" alt="Construction Flyer 4">
+        <div class="flyer-info">
+          <h3>Construction Flyer 4</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
 
       <div class="flyer-card" data-name="Construction Flyer 5">
-  <img src="images/construction/flyer5.jpg" alt="Construction Flyer 5">
-  <div class="flyer-info">
-    <h3>Construction Flyer 5</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
-  </div>
-</div>
-
+        <img src="images/construction/flyer5.jpg" alt="Construction Flyer 5">
+        <div class="flyer-info">
+          <h3>Construction Flyer 5</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
 
       <div class="flyer-card" data-name="Construction Flyer 6">
-  <img src="images/construction/flyer6.jpg" alt="Construction Flyer 6">
-  <div class="flyer-info">
-    <h3>Construction Flyer 6</h3>
-    <button type="button" class="add-btn">Add to My Kit</button>
-  </div>
+        <img src="images/construction/flyer6.jpg" alt="Construction Flyer 6">
+        <div class="flyer-info">
+          <h3>Construction Flyer 6</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;">
+      <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Studio</a>
+    </div>
+
+  </section>
 </div>
 
 <!-- CART & LIGHTBOX -->
@@ -745,7 +556,12 @@ html, body {
   </div>
 </div>
 
+<a href="index.html" class="return-main">Return to Main Website</a>
+
 <script>
+/* ===========================
+   CART FUNCTIONS
+=========================== */
 function openCart() {
   document.getElementById('cartOverlay').classList.add('active');
   document.getElementById('cartModal').classList.add('active');
@@ -855,13 +671,42 @@ function proceedToCheckout() {
   window.location.href = 'checkout.html';
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeCart();
-  }
+/* ===========================
+   ADD TO KIT BUTTONS
+=========================== */
+document.querySelectorAll('.add-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const card = this.closest('.flyer-card');
+    const name = card.dataset.name;
+
+    if (!universalCart.hasMarketingItem(name)) {
+      universalCart.addMarketingItem(name);
+      this.textContent = "Added ✓";
+      this.classList.add("added");
+    } else {
+      universalCart.removeMarketingItem(name);
+      this.textContent = "Add to My Kit";
+      this.classList.remove("added");
+    }
+  });
 });
 
-/* IMAGE LIGHTBOX */
+// On page load, update buttons based on cart state
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.flyer-card').forEach(card => {
+    const name = card.dataset.name;
+    const btn = card.querySelector('.add-btn');
+    
+    if (universalCart.hasMarketingItem(name)) {
+      btn.textContent = "Added ✓";
+      btn.classList.add("added");
+    }
+  });
+});
+
+/* ===========================
+   IMAGE LIGHTBOX
+=========================== */
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxClose = document.getElementById("lightboxClose");
@@ -886,43 +731,10 @@ lightbox.addEventListener("click", e => {
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") {
     lightbox.classList.remove("active");
+    closeCart();
   }
 });
 </script>
-  </section>
-</div>
-
-<a href="index.html" class="return-main">Return to Main Website</a>
-<script>
-
-
-  // Store for confirmation page
-  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
-
-  const formData = new FormData(form);
-
-try {
-  // 1️⃣ Save receipt FIRST
-  sessionStorage.setItem("marketingReceipt", JSON.stringify(receipt));
-
-  // 2️⃣ Send form in background (no await)
-  fetch("https://formspree.io/f/mojlojor", {
-    method: "POST",
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  });
-
-  // 3️⃣ Clear form + go to receipt page
-  form.reset();
-  window.location.href = "order-confirmation.html";
-
-} catch (error) {
-  alert("There was an issue sending your request. Please try again.");
-}
-
-});
-</script>
-
 
 </body>
 </html>
