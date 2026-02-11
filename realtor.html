@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Realtor Portal</title>
-
 <style>
 body {
   margin: 0;
@@ -14,7 +13,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
 }
 
 /* Frosted Glass Card */
@@ -26,7 +26,8 @@ body {
     0 20px 55px rgba(0,0,0,0.10),
     0 6px 18px rgba(0,0,0,0.05);
   text-align: center;
-  width: 400px;
+  width: 100%;
+  max-width: 450px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
@@ -59,11 +60,53 @@ body {
   font-weight: 600;
   border-bottom: 2px solid transparent;
   color: #555;
+  transition: 0.25s ease;
 }
 
 .tab.active {
   border-bottom: 2px solid #0b4ea2;
   color: #0b4ea2;
+}
+
+.tab:hover {
+  color: #0b4ea2;
+}
+
+/* Buttons */
+.btn {
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #0b4ea2;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  text-decoration: none;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.btn:hover {
+  background: #083a7a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.btn-secondary {
+  background: rgba(11,78,162,0.1);
+  color: #0b4ea2;
+  border: 2px solid #0b4ea2;
+  padding: 12px;
+}
+
+.btn-secondary:hover {
+  background: rgba(11,78,162,0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(11,78,162,0.2);
 }
 
 /* Inputs */
@@ -74,31 +117,13 @@ input {
   border-radius: 6px;
   border: 1px solid #ccc;
   font-size: 15px;
+  box-sizing: border-box;
 }
 
-/* Buttons */
-button {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: none;
-  background: #0b4ea2;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-button:hover {
-  background: #083a7a;
-  transform: translateY(-1px);
-}
-
-#error {
-  color: red;
-  display: none;
-  margin-top: 12px;
-  font-size: 14px;
+input:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
 }
 
 .footer-note {
@@ -114,13 +139,45 @@ button:hover {
 .form-section.active {
   display: block;
 }
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #999;
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(0,0,0,0.1);
+}
+
+.divider::before {
+  margin-right: 10px;
+}
+
+.divider::after {
+  margin-left: 10px;
+}
+
+@media (max-width: 500px) {
+  .login-box {
+    padding: 40px 30px;
+  }
+  
+  .login-box h2 {
+    font-size: 22px;
+  }
+}
 </style>
 </head>
-
 <body>
 
 <div class="login-box">
-
   <h2>Agent Edge Partner Portal</h2>
   <div class="subtext">
     A private platform for approved Realtor partners.<br>
@@ -128,15 +185,21 @@ button:hover {
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('login')">Sign In</div>
-    <div class="tab" onclick="showTab('request')">Become a Realtor Partner</div>
+    <div class="tab active" onclick="showTab('access')">Partner Access</div>
+    <div class="tab" onclick="showTab('request')">Become a Partner</div>
   </div>
 
-  <!-- SIGN IN -->
-  <div id="login" class="form-section active">
-    <input type="password" id="pw" placeholder="Enter Access Password">
-    <button onclick="checkPassword()">Enter Portal</button>
-    <div id="error">Incorrect password</div>
+  <!-- PARTNER ACCESS -->
+  <div id="access" class="form-section active">
+    <a href="login.html" class="btn">Sign In to Portal</a>
+    
+    <div class="divider">OR</div>
+    
+    <a href="signup.html" class="btn btn-secondary">Create New Account</a>
+    
+    <p style="font-size: 13px; color: #666; margin-top: 20px;">
+      New partners can create an account instantly and start accessing resources right away.
+    </p>
   </div>
 
   <!-- PARTNER APPLICATION -->
@@ -146,31 +209,30 @@ button:hover {
       <input type="text" name="name" placeholder="Your Name" required>
       <input type="text" name="brokerage" placeholder="Brokerage" required>
       <input type="email" name="email" placeholder="Email Address" required>
-      <button type="submit">Apply for Partner Access</button>
+      <button type="submit" class="btn">Apply for Partner Access</button>
     </form>
+    <p style="font-size: 13px; color: #666; margin-top: 15px;">
+      Prefer to apply first? Submit your info and Kristy will reach out directly.
+    </p>
   </div>
 
   <div class="footer-note">
     Exclusive tools, briefs, and support materials for Realtor partners.
   </div>
-
 </div>
 
 <script>
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-  document.querySelector(`.tab[onclick="showTab('${tab}')"]`).classList.add('active');
-  document.getElementById(tab).classList.add('active');
-}
-
-function checkPassword() {
-  const password = document.getElementById("pw").value;
-  if (password === "AgentEdge") {
-    window.location.href = "portal.html";
+  
+  if (tab === 'access') {
+    document.querySelectorAll('.tab')[0].classList.add('active');
   } else {
-    document.getElementById("error").style.display = "block";
+    document.querySelectorAll('.tab')[1].classList.add('active');
   }
+  
+  document.getElementById(tab).classList.add('active');
 }
 </script>
 
