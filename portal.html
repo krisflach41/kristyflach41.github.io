@@ -5,9 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
 <title>Agent Edge Partner Portal</title>
+<script src="credentials.js"></script>
+<script src="auth.js"></script>
 <script src="universal-cart.js"></script>
 
 <style>
+
+/* ===== LOGOUT BUTTON ===== */
+.logout-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  z-index: 9999;
+  cursor: pointer;
+  transition: 0.25s ease;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background: rgba(255,255,255,0.5);
+  transform: translateY(-1px);
+}
 
 /* ===== GLOBAL PAGE WIDTH ===== */
 .page-wrap {
@@ -121,7 +149,7 @@ h1 {
   max-width: 1000px;
   margin: 0 auto;
   text-align: left;
-  align-items: stretch;   /* forces equal height */
+  align-items: stretch;
 }
 
 /* ===== CARDS ===== */
@@ -138,38 +166,29 @@ h1 {
   box-shadow:
     0 15px 40px rgba(160,140,110,0.15),
     0 5px 14px rgba(160,140,110,0.08);
-
-  /* 🔒 LOCK HEIGHT + STRUCTURE */
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 420px;   /* ← matches Market-Moving Events */
+  min-height: 420px;
 }
 
-
-/* === EVENT CARD SYSTEM === */
 .event-card {
   padding: 0;
   overflow: hidden;
 }
 
-
-
 .event-row {
   border-bottom: 1px solid rgba(0,0,0,0.05);
   cursor: pointer;
-  padding: 8px 30px;   /* ↓ reduced vertical space between days */
+  padding: 8px 30px;
 }
-
-
 
 .event-main {
   display: flex;
   align-items: center;
-  gap: 10px;           /* slightly tighter */
-  padding: 4px 0;      /* controls height of each day row */
+  gap: 10px;
+  padding: 4px 0;
 }
-
 
 .day {
   font-weight: 700;
@@ -208,7 +227,7 @@ h1 {
   max-height: 200px;
   padding-bottom: 12px;
 }
-/* ===== EXPAND CARDS (MATCH EVENT SYSTEM) ===== */
+
 .expand-card .expand-main {
   cursor: pointer;
   padding: 8px 0;
@@ -238,12 +257,10 @@ h1 {
   font-weight: 700;
 }
 
-
-/* ===== MARKET-MOVING EVENTS HEADER ALIGNMENT ===== */
 .events-header {
-  text-align: center;          /* centers title + week label */
-  padding: 26px 30px 12px 30px; /* controls space INSIDE top of card */
-  margin: 0 0 12px 0;           /* controls space BEFORE first event row */
+  text-align: center;
+  padding: 26px 30px 12px 30px;
+  margin: 0 0 12px 0;
 }
 
 .events-header .events-week {
@@ -252,19 +269,17 @@ h1 {
   letter-spacing: 1.5px;
   color: #0b4ea2;
   font-weight: 700;
-  margin-bottom: 10px;          /* distance between WEEK OF and title */
+  margin-bottom: 10px;
 }
 
 .events-header .events-title {
   font-size: 22px;
   font-weight: 700;
   color: #0b1f3a;
-  margin: 0;                    /* removes weird default spacing */
+  margin: 0;
 }
 
-
-/* ===== OTHER CARD TYPOGRAPHY (UNCHANGED) ===== */
-  .brief-header {
+.brief-header {
   text-align: center;
   padding: 26px 30px 12px 30px;
   margin: 0 0 12px 0;
@@ -288,8 +303,6 @@ h1 {
   font-weight: 700;
 }
 
-
-/* ===== TABLE ===== */
 .econ-table {
   width: 100%;
   border-collapse: collapse;
@@ -305,7 +318,6 @@ h1 {
   border-bottom: 1px solid #e3ecf7;
 }
 
-/* ===== WEEK REVIEW CARD ===== */
 .week-review-card {
   margin-top: 40px;
   padding: 30px 36px;
@@ -322,43 +334,14 @@ h1 {
     0 5px 14px rgba(160,140,110,0.08);
   text-align: left;
 }
-/* === MATCH TYPOGRAPHY WITH OTHER CARDS === */
-
 
 .events-title {
   font-size: 22px;
   font-weight: 700;
   color: #0b1f3a;
-  margin: 0 0 18px 0;  /* match title spacing of other cards */
-}
-/* === ALIGN EVENT TEXT WITH OTHER CARD CONTENT === */
-.event-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  margin: 0 0 18px 0;
 }
 
-.day {
-  font-weight: 700;
-  color: #0b4ea2;
-  min-width: 40px;
-}
-
-.headline {
-  flex: 1;
-  color: #0b1f3a;
-  font-weight: 600;
-}
-
-.more {
-  background: #0b4ea2;
-  color: white;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 700;
-}
-/* ===== AUTO READ MORE SYSTEM ===== */
 .summary-text {
   max-height: 110px;
   overflow: hidden;
@@ -374,7 +357,6 @@ h1 {
   background: linear-gradient(to bottom, rgba(248,242,232,0), rgba(248,242,232,1));
 }
 
-/* ===== RETURN TO MAIN SITE LINK ===== */
 .return-home {
   position: fixed;
   bottom: 22px;
@@ -400,7 +382,7 @@ h1 {
   background: rgba(255,255,255,0.75);
   transform: translateY(-2px);
 }
-/* ===== BRIEF LAST UPDATED LABEL ===== */
+
 .blog-section {
   position: relative;
 }
@@ -418,12 +400,8 @@ h1 {
   border-radius: 999px;
   border: 1px solid rgba(255,255,255,0.7);
 }
-/* ===========================
-   CART ICON & MODAL STYLES
-   Add to your existing <style> section
-=========================== */
 
-/* Cart Icon (floating, top-right) */
+/* ===== CART STYLES ===== */
 .cart-icon {
   position: fixed;
   top: 20px;
@@ -471,7 +449,6 @@ h1 {
   border: 2px solid white;
 }
 
-/* Cart Modal Overlay */
 .cart-overlay {
   position: fixed;
   inset: 0;
@@ -484,7 +461,6 @@ h1 {
   display: block;
 }
 
-/* Cart Modal */
 .cart-modal {
   position: fixed;
   top: 50%;
@@ -506,7 +482,6 @@ h1 {
   right: 0;
 }
 
-/* Cart Header */
 .cart-header {
   padding: 24px;
   border-bottom: 1px solid #e0e0e0;
@@ -535,7 +510,6 @@ h1 {
   justify-content: center;
 }
 
-/* Cart Body */
 .cart-body {
   flex: 1;
   overflow-y: auto;
@@ -602,7 +576,6 @@ h1 {
   padding: 4px 8px;
 }
 
-/* Cart Footer */
 .cart-footer {
   padding: 20px 24px;
   border-top: 1px solid #e0e0e0;
@@ -652,7 +625,6 @@ h1 {
   background: rgba(192,57,43,0.05);
 }
 
-/* Mobile Responsive */
 @media (max-width: 640px) {
   .cart-modal {
     max-width: 100%;
@@ -664,15 +636,14 @@ h1 {
 
 <body>
 
+<!-- LOGOUT BUTTON -->
+<button class="logout-btn" onclick="logout()">Logout →</button>
 
 <h1>Agent Edge Partner Portal</h1>
 
-
-
-
 <div class="portal-nav">
   <a href="realtor-marketing-studio.html">Marketing Collection</a>
-<a href="advisory-collection.html">Advisory Collection</a>
+  <a href="advisory-collection.html">Advisory Collection</a>
   <a href="#">Education Collection</a>
   <a href="#">Messaging Collection</a>
 </div>
@@ -701,9 +672,8 @@ h1 {
 <div class="page-wrap">
 <section class="blog-section">
   <div class="brief-update-time">
-  Last Updated – <span id="briefDate"></span>
-</div>
-
+    Last Updated – <span id="briefDate"></span>
+  </div>
 
   <h2 class="section-title">Agent Edge Morning Briefing</h2>
   <p class="section-subtitle">
@@ -712,135 +682,98 @@ h1 {
 
   <div class="blog-grid">
 
- <article class="blog-card event-card">
+    <article class="blog-card event-card">
+      <div class="events-header">
+        <div class="events-week">WEEK OF FEB 2</div>
+        <div class="events-title">Market-Moving Events</div>
+      </div>
 
-  <div class="events-header">
-  <div class="events-week">WEEK OF FEB 2</div>
-  <div class="events-title">Market-Moving Events</div>
-</div>
+      <div class="event-row" onclick="toggleDetails(this)">
+        <div class="event-main">
+          <span class="day">Mon</span>
+          <span class="headline">ISM Manufacturing</span>
+        </div>
+      </div>
 
+      <div class="event-row" onclick="toggleDetails(this)">
+        <div class="event-main">
+          <span class="day">Tue</span>
+          <span class="headline">JOLTS Job Openings</span>
+        </div>
+      </div>
 
+      <div class="event-row" onclick="toggleDetails(this)">
+        <div class="event-main">
+          <span class="day">Wed</span>
+          <span class="headline">ADP Payrolls</span>
+        </div>
+      </div>
 
-<!-- MONDAY -->
-<div class="event-row" onclick="toggleDetails(this)">
-  <div class="event-main">
-    <span class="day">Mon</span>
-    <span class="headline">ISM Manufacturing</span>
-  </div>
-</div>
+      <div class="event-row" onclick="toggleDetails(this)">
+        <div class="event-main">
+          <span class="day">Thu</span>
+          <span class="headline">Bank of England Decision</span>
+          <span class="more">+3</span>
+        </div>
+        <div class="event-details">
+          <div>Challenger Job Cuts</div>
+          <div>ECB Rate Decision</div>
+          <div>Jobless Claims</div>
+        </div>
+      </div>
 
-<!-- TUESDAY -->
-<div class="event-row" onclick="toggleDetails(this)">
-  <div class="event-main">
-    <span class="day">Tue</span>
-    <span class="headline">JOLTS Job Openings</span>
-  </div>
-</div>
+      <div class="event-row" onclick="toggleDetails(this)">
+        <div class="event-main">
+          <span class="day">Fri</span>
+          <span class="headline">Nonfarm Payrolls</span>
+          <span class="more">+5</span>
+        </div>
+        <div class="event-details">
+          <div>Unemployment Rate</div>
+          <div>Average Hourly Earnings (MoM)</div>
+          <div>Average Hourly Earnings (YoY)</div>
+          <div>Average Weekly Hours</div>
+          <div>Michigan Consumer Sentiment</div>
+        </div>
+      </div>
+    </article>
 
-<!-- WEDNESDAY -->
-<div class="event-row" onclick="toggleDetails(this)">
-  <div class="event-main">
-    <span class="day">Wed</span>
-    <span class="headline">ADP Payrolls</span>
-  </div>
-</div>
+    <article class="blog-card">
+      <div class="blog-content">
+        <div class="brief-header">
+          <span class="blog-category">Today</span>
+          <h3>Market Summary</h3>
+        </div>
+        <div class="summary-text">
+          <p>
+            Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
+          </p>
+        </div>
+        <a href="summary-briefs.html" class="read-more-btn">Read Full Brief →</a>
+      </div>
+    </article>
 
-<!-- THURSDAY -->
-<div class="event-row" onclick="toggleDetails(this)">
-  <div class="event-main">
-    <span class="day">Thu</span>
-    <span class="headline">Bank of England Decision</span>
-    <span class="more">+3</span>
-  </div>
-
-  <div class="event-details">
-    <div>Challenger Job Cuts</div>
-    <div>ECB Rate Decision</div>
-    <div>Jobless Claims</div>
-  </div>
-</div>
-
-<!-- FRIDAY -->
-<div class="event-row" onclick="toggleDetails(this)">
-  <div class="event-main">
-    <span class="day">Fri</span>
-    <span class="headline">Nonfarm Payrolls</span>
-    <span class="more">+5</span>
-  </div>
-
-  <div class="event-details">
-    <div>Unemployment Rate</div>
-    <div>Average Hourly Earnings (MoM)</div>
-    <div>Average Hourly Earnings (YoY)</div>
-    <div>Average Weekly Hours</div>
-    <div>Michigan Consumer Sentiment</div>
-  </div>
-</div>
-
-
-</article>
-
-
-  <article class="blog-card">
-
-  <div class="blog-content">
-   <div class="brief-header">
-  <span class="blog-category">Today</span>
-  <h3>Market Summary</h3>
-</div>
-
-
- <div class="summary-text">
-  <p>
-    Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
-  </p>
-</div>
-<a href="summary-briefs.html" class="read-more-btn">Read Full Brief →</a>
-
-
-
-
-
-  </div>
-
-</article>
-
-
-
-  <article class="blog-card">
-
-  <div class="blog-content">
-   <div class="brief-header">
-  <span class="blog-category">Client Version</span>
-  <h3>Client-Friendly Summary</h3>
-</div>
-   <div class="summary-text">
-  <p>
-    The market is a little uneasy to start the week because a lot of attention is on jobs data.
-
-Even though headlines say the job market is strong, the reality is more mixed. Many people who lose work today don’t show up in the usual reports — especially freelancers, gig workers, and people whose unemployment benefits have run out. That means job numbers can look better on paper than they feel in real life.
-
-When economists look deeper, they’re seeing signs that more people are staying unemployed longer, even if that doesn’t show up in the main headlines yet.
-
-Some Fed officials are openly acknowledging this. One Fed governor recently said the job market is weaker than it appears and that interest rates may still be too high for where the economy is right now.
-
-That’s why this week’s job reports matter so much. If they confirm the slowdown, it could help calm markets and support housing conditions as the year moves forward.</p>
-</div>
-<a href="client-summary.html" class="read-more-btn">Read Full Version →</a>
-
-
-
-
+    <article class="blog-card">
+      <div class="blog-content">
+        <div class="brief-header">
+          <span class="blog-category">Client Version</span>
+          <h3>Client-Friendly Summary</h3>
+        </div>
+        <div class="summary-text">
+          <p>
+            The market is a little uneasy to start the week because a lot of attention is on jobs data.
+            Even though headlines say the job market is strong, the reality is more mixed. Many people who lose work today don't show up in the usual reports — especially freelancers, gig workers, and people whose unemployment benefits have run out. That means job numbers can look better on paper than they feel in real life.
+            When economists look deeper, they're seeing signs that more people are staying unemployed longer, even if that doesn't show up in the main headlines yet.
+            Some Fed officials are openly acknowledging this. One Fed governor recently said the job market is weaker than it appears and that interest rates may still be too high for where the economy is right now.
+            That's why this week's job reports matter so much. If they confirm the slowdown, it could help calm markets and support housing conditions as the year moves forward.
+          </p>
+        </div>
+        <a href="client-summary.html" class="read-more-btn">Read Full Version →</a>
+      </div>
+    </article>
 
   </div>
 
-</article>
-
-
-
-  </div>
-
-  <!-- Week in Review now lives INSIDE the main panel -->
   <div class="week-review-card">
     <span class="blog-category">Week In Review</span>
     <h3>Week Ending February 7, 2026</h3>
@@ -850,108 +783,9 @@ That’s why this week’s job reports matter so much. If they confirm the slowd
   </div>
 
 </section>
-
-<script>
-/* ===== DATE ===== */
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById("currentDate").innerText =
-  new Date().toLocaleDateString('en-US', options);
-
-
-/* ===== EVENT CARD AUTO MODE ===== */
-function toggleDetails(row) {
-  row.classList.toggle("active");
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const rows = document.querySelectorAll(".event-row");
-
-  rows.forEach(row => {
-    const details = row.querySelector(".event-details");
-    const headlineEl = row.querySelector(".headline");
-    const moreEl = row.querySelector(".more");
-
-    if (!details) return;
-
-    const items = details.querySelectorAll("div");
-
-    if (items.length > 0) {
-      // First item becomes headline
-      headlineEl.textContent = items[0].textContent;
-
-      // Remaining count
-      const remaining = items.length - 1;
-
-      if (remaining > 0) {
-        moreEl.textContent = `+${remaining}`;
-        moreEl.style.display = "inline-block";
-      } else {
-        moreEl.style.display = "none";
-      }
-    }
-  });
-});
-</script>
-<script>
-function getMonday(d) {
-  d = new Date(d);
-  const day = d.getDay(),
-        diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  return new Date(d.setDate(diff));
-}
-
-function formatWeekOfDate(date) {
-  const options = { month: 'short', day: 'numeric' };
-  const formatted = date.toLocaleDateString('en-US', options);
-
-  const day = date.getDate();
-  const suffix =
-    day % 10 === 1 && day !== 11 ? "st" :
-    day % 10 === 2 && day !== 12 ? "nd" :
-    day % 10 === 3 && day !== 13 ? "rd" : "th";
-
-  return `WEEK OF ${formatted}${suffix}`;
-}
-
-const monday = getMonday(new Date());
-document.getElementById("weekLabel").innerText = formatWeekOfDate(monday);
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-  const blocks = document.querySelectorAll(".summary-text");
-
-  blocks.forEach(block => {
-    const btn = block.nextElementSibling;
-
-    // If content taller than preview height
-    if (block.scrollHeight > block.clientHeight) {
-      btn.style.display = "inline-block";
-
-      btn.addEventListener("click", function () {
-        block.classList.toggle("expanded");
-        btn.textContent = block.classList.contains("expanded")
-          ? "Show Less"
-          : "Read More";
-      });
-    }
-  });
-});
-</script>
-
-<div class="return-home">
-  <a href="https://kristyflach.com">← Return to Main Website</a>
 </div>
-  <script>
-  const now = new Date();
-  const options = { month: 'long', day: 'numeric', year: 'numeric' };
-  document.getElementById("briefDate").textContent =
-    now.toLocaleDateString('en-US', options);
-</script>
-<!-- UNIVERSAL CART SYSTEM -->
-<!-- Add this before </body> tag on portal.html and all collection pages -->
 
-<!-- Cart Icon -->
+<!-- CART SYSTEM -->
 <div class="cart-icon" onclick="openCart()">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
@@ -959,10 +793,8 @@ document.addEventListener("DOMContentLoaded", function () {
   <span class="cart-badge" id="cartBadge">0</span>
 </div>
 
-<!-- Cart Modal Overlay -->
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
 
-<!-- Cart Modal -->
 <div class="cart-modal" id="cartModal">
   <div class="cart-header">
     <h2>My Kit</h2>
@@ -989,11 +821,55 @@ document.addEventListener("DOMContentLoaded", function () {
   </div>
 </div>
 
-<script>
-/* ===========================
-   CART UI FUNCTIONS
-=========================== */
+<div class="return-home">
+  <a href="https://kristyflach.com">← Return to Main Website</a>
+</div>
 
+<script>
+// PROTECT THIS PAGE - Must be logged in
+protectPage();
+
+// DATE
+const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+document.getElementById("currentDate").innerText = new Date().toLocaleDateString('en-US', options);
+
+// EVENT CARD AUTO MODE
+function toggleDetails(row) {
+  row.classList.toggle("active");
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const rows = document.querySelectorAll(".event-row");
+
+  rows.forEach(row => {
+    const details = row.querySelector(".event-details");
+    const headlineEl = row.querySelector(".headline");
+    const moreEl = row.querySelector(".more");
+
+    if (!details) return;
+
+    const items = details.querySelectorAll("div");
+
+    if (items.length > 0) {
+      headlineEl.textContent = items[0].textContent;
+      const remaining = items.length - 1;
+
+      if (remaining > 0) {
+        moreEl.textContent = `+${remaining}`;
+        moreEl.style.display = "inline-block";
+      } else {
+        moreEl.style.display = "none";
+      }
+    }
+  });
+});
+
+// BRIEF DATE
+const now = new Date();
+const briefOptions = { month: 'long', day: 'numeric', year: 'numeric' };
+document.getElementById("briefDate").textContent = now.toLocaleDateString('en-US', briefOptions);
+
+// CART FUNCTIONS
 function openCart() {
   document.getElementById('cartOverlay').classList.add('active');
   document.getElementById('cartModal').classList.add('active');
@@ -1076,7 +952,6 @@ function removeMarketingItem(name) {
   universalCart.removeMarketingItem(name);
   renderCart();
   
-  // Update button if we're on a marketing page
   const card = document.querySelector(`[data-name="${name}"]`);
   if (card) {
     const btn = card.querySelector('.add-btn');
@@ -1092,7 +967,6 @@ function clearCart() {
     universalCart.clear();
     renderCart();
     
-    // Reset all "Add to Kit" buttons on current page
     document.querySelectorAll('.add-btn.added').forEach(btn => {
       btn.textContent = 'Add to My Kit';
       btn.classList.remove('added');
@@ -1101,19 +975,16 @@ function clearCart() {
 }
 
 function proceedToCheckout() {
-  // Store cart data for checkout page
   sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
-  
-  // Redirect to unified checkout page
   window.location.href = 'checkout.html';
 }
 
-// Close cart on Escape key
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     closeCart();
   }
 });
 </script>
+
 </body>
 </html>
