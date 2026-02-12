@@ -282,6 +282,25 @@ select:focus {
     font-size: 36px;
   }
 }
+
+  .back-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
 </style>
 </head>
 
@@ -549,9 +568,8 @@ select:focus {
     </p>
   </div>
 
-  <div class="back-link">
-    <a href="portal.html">← Back to Agent Edge Portal</a>
-  </div>
+<div style="text-align:center; margin-top: 40px;">
+  <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
 </div>
 
 <script>
