@@ -5,12 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
 <title>Market Summary</title>
-
-
-
-
 <style>
-
 /* ===== BACKGROUND MATCHES PORTAL ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -21,14 +16,12 @@ body {
     url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
 }
-
 /* ===== CENTERED CONTENT WIDTH ===== */
 .page-wrap {
   max-width: 1000px;
   margin: 0 auto;
   padding: 0 24px;
 }
-
 /* ===== FROSTED GLASS CONTAINER ===== */
 .brief-card {
   border-radius: 22px;
@@ -41,24 +34,20 @@ body {
     0 20px 55px rgba(0,0,0,0.10),
     0 6px 18px rgba(0,0,0,0.05);
 }
-
 /* ===== TYPOGRAPHY ===== */
 h1 {
   font-size: 36px;
   margin-bottom: 25px;
 }
-
 h2 {
   margin-top: 35px;
   font-size: 20px;
 }
-
 p {
   line-height: 1.7;
   margin-bottom: 18px;
   font-size: 15px;
 }
-
 /* ===== BACK LINK BUTTON ===== */
 .back-link {
   display: inline-block;
@@ -70,46 +59,76 @@ p {
   padding: 8px 16px;
   border-radius: 20px;
 }
-
 </style>
 </head>
-
 <body>
-
 <div class="page-wrap">
   <div class="brief-card">
-
-    <h1>Market Summary – February 3, 2026</h1>
-
-<h2>Market Open</h2>
-<p>Stocks are lower this morning, while mortgage bonds are modestly higher, keeping rates relatively stable to start the day.</p>
-
-<h2>Inflation & Housing Data</h2>
-<p>CoStar released its single-family rent index showing new single-family rents rose just 1.1% year-over-year in November — the weakest pace in roughly 15 years.</p>
-
-<p>Multi-family rent growth remains negative. When combined with renewal rents running closer to 3%, overall rent inflation is effectively rising at only about 1% on an annual basis.</p>
-
-<p>This confirms what we’ve been watching: shelter inflation is cooling, but it still has further room to decelerate. Both CPI and PCE remain above 3%, meaning inflation is still overstated, but the trend continues to move in the right direction. As inflation moderates further, mortgage bonds stand to benefit.</p>
-
-<h2>Labor Market – Jobless Claims</h2>
-<p>Initial Jobless Claims fell by 9,000 to 198,000, remaining near historically low levels and reinforcing ongoing labor-market resilience.</p>
-
-<p>Continuing Claims declined by 91,000 to 1.854 million. Keep in mind this report looks back two weeks and includes the New Year holiday period, which typically suppresses claims data. We expect continuing claims to drift back above 1.9 million in upcoming reports.</p>
-
-<h2>Technical View</h2>
-<p>Mortgage bonds had a strong session yesterday, decisively reclaiming the 100.12 level and now trading in the middle of a range defined by support near 100.12 and resistance around 100.60.</p>
-
-<p>The 10-year Treasury also rallied and briefly tested a key support zone formed by the 4.126% Fibonacci level, the 50-day, and 100-day moving averages. Yields are nudging slightly higher this morning but remain capped below the 25-day moving average, keeping the broader trend constructive.</p>
-
-<h2>Agent Edge Takeaway</h2>
-<p>Rates remain range-bound, but the underlying data continues to quietly favor stability. Cooling rent inflation and steady labor conditions support the idea that inflation pressure is easing — even if the official numbers haven’t fully caught up yet. This environment rewards preparation, not timing.</p>
-
-
-    <a href="/portal.html" class="back-link">← Back to Agent Edge Portal</a>
-
+    <h1>Market Summary – <span id="briefDate"></span></h1>
+    
+    <!-- DYNAMIC CONTENT LOADED FROM JSON -->
+    <div id="marketContent">
+      <p>Loading market summary...</p>
+    </div>
+    
+    <a href="portal.html" class="back-link">← Back to Agent Edge Portal</a>
   </div>
 </div>
 
+<script>
+// Load briefing data
+window.addEventListener('load', function() {
+  const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
+  
+  // Update date
+  if (briefingData.lastUpdated) {
+    const date = new Date(briefingData.lastUpdated);
+    document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  } else {
+    document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }
+  
+  // Load market summary content
+  const contentDiv = document.getElementById('marketContent');
+  
+  if (briefingData.marketSummary) {
+    // Convert plain text to HTML with paragraphs
+    const formatted = formatTextToHTML(briefingData.marketSummary);
+    contentDiv.innerHTML = formatted;
+  } else {
+    contentDiv.innerHTML = '<p>No market summary available. Please update from the admin page.</p>';
+  }
+});
 
+// Helper function to format text into HTML
+function formatTextToHTML(text) {
+  // Split by double line breaks for paragraphs
+  let sections = text.split(/\n\n+/);
+  let html = '';
+  
+  sections.forEach(section => {
+    section = section.trim();
+    if (!section) return;
+    
+    // Check if it's a heading (all caps or starts with capital words followed by colon)
+    if (section.match(/^[A-Z\s&–—]+$/) || section.match(/^[A-Z][a-zA-Z\s&]+:/)) {
+      html += `<h2>${section.replace(/:$/, '')}</h2>`;
+    } else {
+      // Regular paragraph
+      html += `<p>${section.replace(/\n/g, '<br>')}</p>`;
+    }
+  });
+  
+  return html;
+}
+</script>
 </body>
 </html>
