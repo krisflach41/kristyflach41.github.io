@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Down Payment Assistance Programs - Agent Edge</title>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.guide-card {
+  padding: 50px 45px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.page-title {
+  font-size: 34px;
+  margin-bottom: 8px;
+  color: #0b4ea2;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(76,175,80,0.12), rgba(76,175,80,0.06));
+  border-left: 4px solid #4caf50;
+  padding: 25px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.hero-box strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 12px;
+  color: #2e7d32;
+}
+
+.section-heading {
+  font-size: 24px;
+  color: #0b4ea2;
+  margin: 35px 0 18px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(11,78,162,0.2);
+}
+
+.section-heading:first-of-type {
+  margin-top: 10px;
+}
+
+.benefits-list, .requirements-list {
+  margin: 15px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.benefits-list li, .requirements-list li {
+  padding: 10px 0 10px 30px;
+  position: relative;
+  font-size: 15px;
+}
+
+.benefits-list li:before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #4caf50;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.requirements-list li:before {
+  content: "•";
+  position: absolute;
+  left: 8px;
+  color: #0b4ea2;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.highlight-box {
+  background: linear-gradient(135deg, rgba(11,78,162,0.08), rgba(11,78,162,0.04));
+  padding: 25px;
+  border-radius: 12px;
+  margin: 25px 0;
+  border-left: 4px solid #0b4ea2;
+}
+
+.resource-card {
+  background: rgba(255,255,255,0.75);
+  border: 2px solid rgba(11,78,162,0.15);
+  border-radius: 14px;
+  padding: 25px;
+  margin: 20px 0;
+  transition: all 0.3s ease;
+}
+
+.resource-card:hover {
+  border-color: rgba(11,78,162,0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.resource-card h3 {
+  margin-top: 0;
+  color: #0b4ea2;
+  font-size: 20px;
+}
+
+.cta-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 14px 32px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, #0b4ea2, #1565c0);
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.cta-button:hover {
+  background: linear-gradient(135deg, #1565c0, #0b4ea2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(11,78,162,0.4);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.info-box {
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.info-box h4 {
+  margin-top: 0;
+  color: #0b4ea2;
+  font-size: 16px;
+}
+
+.disclaimer-box {
+  background: linear-gradient(135deg, rgba(255,152,0,0.12), rgba(255,152,0,0.06));
+  border-left: 4px solid #ff9800;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 30px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.disclaimer-box strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #e65100;
+}
+
+.back-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .guide-card {
+    padding: 35px 25px;
+  }
+  
+  .page-title {
+    font-size: 28px;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="page-wrap">
+  <article class="guide-card">
+    
+    <h1 class="page-title">Down Payment Assistance Programs</h1>
+    <p class="page-subtitle">Explore Grants, Loans & Programs to Help You Buy a Home</p>
+    
+    <div class="hero-box">
+      <strong>💰 Good News: Thousands of Down Payment Assistance Programs Exist!</strong>
+      Down payment assistance (DPA) programs can provide grants or low-interest loans to help cover your down payment and closing costs. Many programs are available through state housing finance agencies, local governments, and nonprofit organizations.
+    </div>
+
+    <h2 class="section-heading">What is Down Payment Assistance?</h2>
+    <p>Down Payment Assistance (DPA) programs help homebuyers who struggle to save enough for a down payment and closing costs. These programs can provide:</p>
+    
+    <ul class="benefits-list">
+      <li><strong>Grants:</strong> Free money you don't have to repay</li>
+      <li><strong>Forgivable Loans:</strong> Loans forgiven after you live in the home for a certain period</li>
+      <li><strong>Deferred-Payment Loans:</strong> Loans with no monthly payment until you sell or refinance</li>
+      <li><strong>Low-Interest Loans:</strong> Affordable second mortgages with low rates</li>
+      <li><strong>Matched Savings Programs:</strong> Programs that match money you save</li>
+    </ul>
+
+    <h2 class="section-heading">Who Qualifies for DPA Programs?</h2>
+    <p>Eligibility varies by program, but common requirements include:</p>
+    
+    <div class="info-grid">
+      <div class="info-box">
+        <h4>🏠 First-Time Homebuyers</h4>
+        <p>Many programs prioritize buyers who haven't owned a home in the last 3 years.</p>
+      </div>
+      
+      <div class="info-box">
+        <h4>💵 Income Limits</h4>
+        <p>Most programs have maximum income thresholds (often 80-120% of area median income).</p>
+      </div>
+      
+      <div class="info-box">
+        <h4>📍 Location Requirements</h4>
+        <p>Property must be in eligible areas (city, county, or state programs).</p>
+      </div>
+      
+      <div class="info-box">
+        <h4>✅ Credit & Employment</h4>
+        <p>Minimum credit scores (often 620-640) and stable employment history.</p>
+      </div>
+    </div>
+
+    <h2 class="section-heading">Types of Down Payment Assistance</h2>
+    
+    <div class="highlight-box">
+      <p><strong>State Housing Finance Agency (HFA) Programs:</strong></p>
+      <ul class="requirements-list">
+        <li>Every state has an HFA offering DPA programs</li>
+        <li>Often combined with low-interest mortgages</li>
+        <li>Grants typically range from $2,500 to $15,000+</li>
+        <li>May require homebuyer education courses</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Local City & County Programs:</strong></p>
+      <ul class="requirements-list">
+        <li>Target specific neighborhoods or income levels</li>
+        <li>May offer more generous assistance amounts</li>
+        <li>Often have lower income limits than state programs</li>
+        <li>Can be combined with state and federal programs</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Employer-Assisted Housing Programs:</strong></p>
+      <ul class="requirements-list">
+        <li>Some employers offer DPA to attract/retain employees</li>
+        <li>Common for teachers, nurses, police, firefighters</li>
+        <li>May require working in specific areas or industries</li>
+      </ul>
+    </div>
+
+    <div class="highlight-box">
+      <p><strong>Nonprofit & Community Programs:</strong></p>
+      <ul class="requirements-list">
+        <li>Organizations like NACA, Habitat for Humanity, NeighborWorks</li>
+        <li>Often serve underserved communities</li>
+        <li>May include sweat equity or volunteer requirements</li>
+      </ul>
+    </div>
+
+    <h2 class="section-heading">How Much Assistance Can You Get?</h2>
+    <p>DPA amounts vary widely by program and location:</p>
+    <ul class="benefits-list">
+      <li><strong>Flat Grants:</strong> $2,500 - $25,000+ (common range: $5,000 - $10,000)</li>
+      <li><strong>Percentage of Purchase Price:</strong> 3% - 6% of home price</li>
+      <li><strong>Percentage of Down Payment:</strong> 50% - 100% of required down payment</li>
+      <li><strong>Closing Cost Assistance:</strong> $1,000 - $5,000+ for closing costs</li>
+    </ul>
+
+    <h2 class="section-heading">Official Down Payment Assistance Resources</h2>
+    
+    <div class="resource-card">
+      <h3>🏛️ HUD's Official DPA Search Tool</h3>
+      <p>The U.S. Department of Housing and Urban Development (HUD) maintains the most comprehensive, up-to-date database of down payment assistance programs across all 50 states.</p>
+      <p><strong>What you'll find:</strong></p>
+      <ul class="requirements-list">
+        <li>Search by state, county, or ZIP code</li>
+        <li>State Housing Finance Agency programs</li>
+        <li>Local city and county programs</li>
+        <li>Nonprofit and community organization programs</li>
+        <li>Program eligibility requirements and contact information</li>
+      </ul>
+      <a href="https://www.hud.gov/topics/buying_a_home" class="cta-button" target="_blank" rel="noopener">
+        Search HUD's DPA Database →
+      </a>
+    </div>
+
+    <div class="resource-card">
+      <h3>🏦 Down Payment Resource (Industry Database)</h3>
+      <p>A comprehensive database of 2,500+ homeownership programs nationwide, searchable by location and eligibility criteria.</p>
+      <a href="https://downpaymentresource.com/" class="cta-button" target="_blank" rel="noopener">
+        Visit Down Payment Resource →
+      </a>
+    </div>
+
+    <h2 class="section-heading">Why Use Official Resources?</h2>
+    <ul class="benefits-list">
+      <li><strong>Always Current:</strong> Programs change frequently—HUD updates their database regularly</li>
+      <li><strong>Comprehensive:</strong> Includes programs I might miss if I listed them manually</li>
+      <li><strong>State-Specific:</strong> Every state has unique programs with different requirements</li>
+      <li><strong>Direct Contact:</strong> Links you directly to program administrators</li>
+      <li><strong>No Middleman:</strong> Apply directly without third-party fees</li>
+    </ul>
+
+    <h2 class="section-heading">How to Get Started</h2>
+    <p><strong>Step 1:</strong> Search the HUD database using your location</p>
+    <p><strong>Step 2:</strong> Review programs you may qualify for</p>
+    <p><strong>Step 3:</strong> Contact Kristy Flach to discuss which programs work with your mortgage type</p>
+    <p><strong>Step 4:</strong> Complete any required homebuyer education courses</p>
+    <p><strong>Step 5:</strong> Apply for programs (many have limited funding—apply early!)</p>
+
+    <div class="disclaimer-box">
+      <strong>⚠️ Important Notes</strong>
+      Down payment assistance programs have specific eligibility requirements, funding limits, and application deadlines. Many programs operate on a first-come, first-served basis and can run out of funding. Not all DPA programs work with all loan types or lenders. Always consult with Kristy Flach before applying to ensure the program is compatible with your mortgage plan and to maximize your benefits.
+    </div>
+
+    <div style="text-align:center; margin-top: 40px;">
+      <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
+    </div>
+
+  </article>
+</div>
+</body>
+</html>
