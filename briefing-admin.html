@@ -332,10 +332,51 @@ function parseBriefing() {
     
     // ===== PARSE ECONOMIC CALENDAR =====
     if (updateEcon) {
-      // Look for date range and calendar content
-      const econMatch = input.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+\s*-\s*\d+,\s*\d{4}([\s\S]*?)(?=REALTOR|Market\s+Open|$)/i);
+      // Look for the economic calendar section
+      const econMatch = input.match(/ECONOMIC CALENDAR[^\n]*\n([\s\S]*?)(?=REALTOR|$)/i);
       if (econMatch) {
-        parsedData.economicCalendar = econMatch[0].trim();
+        const calendarText = econMatch[1].trim();
+        
+        // Parse each day's events
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+        const events = [];
+        
+        days.forEach(day => {
+          const dayRegex = new RegExp(`${day}:\\s*(.+?)(?=\\n(?:Monday|Tuesday|Wednesday|Thursday|Friday):|$)`, 'i');
+          const dayMatch = calendarText.match(dayRegex);
+          
+          if (dayMatch) {
+            const eventText = dayMatch[1].trim();
+            
+            // Check for "+X" pattern
+            const plusMatch = eventText.match(/(.+?)\s+\+(\d+)/);
+            
+            if (plusMatch) {
+              // Has additional events
+              const mainEvent = plusMatch[1].trim();
+              const additionalCount = parseInt(plusMatch[2]);
+              const isFeatured = eventText.includes('FEATURED');
+              
+              events.push({
+                day: day,
+                mainEvent: mainEvent.replace(/\(FEATURED\)/gi, '').trim(),
+                additionalCount: additionalCount,
+                featured: isFeatured
+              });
+            } else if (eventText !== '[No major events]') {
+              // Single event
+              const isFeatured = eventText.includes('FEATURED');
+              events.push({
+                day: day,
+                mainEvent: eventText.replace(/\(FEATURED\)/gi, '').trim(),
+                additionalCount: 0,
+                featured: isFeatured
+              });
+            }
+          }
+        });
+        
+        parsedData.economicCalendar = events;
       }
     }
     
