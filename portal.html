@@ -987,7 +987,12 @@ document.addEventListener('keydown', (e) => {
 
 
 </script>
-  <script>
+/* =====================================================
+   BRIEFING AUTO-UPDATE SCRIPT - WITH CALENDAR FIX
+   REPLACE THE EXISTING BRIEFING LOAD SCRIPT WITH THIS
+   ===================================================== */
+
+<script>
 // Load briefing data on page load
 window.addEventListener('load', function() {
   const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
@@ -1006,6 +1011,36 @@ window.addEventListener('load', function() {
     document.querySelectorAll('.ticker-line').forEach(line => {
       line.innerHTML = tickerHTML;
     });
+  }
+  
+  // ===== UPDATE ECONOMIC CALENDAR =====
+  if (briefingData.economicCalendar) {
+    const eventCard = document.querySelector('.event-card');
+    if (eventCard && Array.isArray(briefingData.economicCalendar)) {
+      let calendarHTML = `
+        <div class="events-header">
+          <div class="events-week">THIS WEEK</div>
+          <div class="events-title">Market-Moving Events</div>
+        </div>
+      `;
+      
+      briefingData.economicCalendar.forEach(event => {
+        const dayAbbrev = event.day.substring(0, 3); // Mon, Tue, Wed, etc.
+        const moreText = event.additionalCount > 0 ? `<span class="more">+${event.additionalCount}</span>` : '';
+        
+        calendarHTML += `
+          <div class="event-row" onclick="toggleDetails(this)">
+            <div class="event-main">
+              <span class="day">${dayAbbrev}</span>
+              <span class="headline">${event.mainEvent}</span>
+              ${moreText}
+            </div>
+          </div>
+        `;
+      });
+      
+      eventCard.innerHTML = calendarHTML;
+    }
   }
   
   // ===== UPDATE MARKET SUMMARY PREVIEW =====
@@ -1063,7 +1098,6 @@ window.addEventListener('load', function() {
   console.log('Briefing data loaded:', briefingData); // DEBUG
 });
 </script>
-
 <!-- Add before closing </body> tag -->
 <div style="text-align: center; padding: 20px;">
   <a href="briefing-admin.html" 
