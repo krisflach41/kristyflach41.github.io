@@ -140,6 +140,30 @@ body {
   gap: 20px;
 }
 
+/* ===== VIDEO GRID ===== */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
+  justify-content: center;
+  gap: 24px;
+  margin: 30px 0 50px 0;
+}
+
+.video-grid iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transition: all 0.3s ease;
+}
+
+.video-grid iframe:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+}
+
 /* ===== GUIDE CARD ===== */
 .guide-card {
   background: linear-gradient(
@@ -278,6 +302,19 @@ body {
         <p>Analyze business income from tax returns including depreciation add-backs, one-time adjustments, and 2-year averaging. Complete with Schedule C and 1120S line references.</p>
       </a>
 
+    </div>
+
+    <!-- VIDEO LIBRARY -->
+    <div class="category-header" style="margin-top: 60px;">
+      <span class="category-icon">📺</span>
+      <h2 class="category-title">Video Library</h2>
+    </div>
+
+    <div class="video-grid">
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Mortgage Basics for Realtors" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Understanding Pre-Approval" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Credit Scores Explained" allowfullscreen></iframe>
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="First-Time Buyer Tips" allowfullscreen></iframe>
     </div>
 
     <!-- LOAN PROGRAM GUIDES -->
