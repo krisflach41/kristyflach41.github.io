@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Education Collection - Agent Edge</title>
 <style>
-
-/* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -15,202 +13,184 @@ body {
     linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
+  line-height: 1.7;
 }
 
-/* ===== PAGE WIDTH ===== */
 .page-wrap {
-  max-width: 1150px;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ===== GLASS CONTAINER ===== */
-.education-card {
-  padding: 60px 50px;
-  border-radius: 22px;
+.page-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.page-title {
+  font-size: 42px;
+  margin-bottom: 12px;
+  color: #0b4ea2;
+}
+
+.page-subtitle {
+  font-size: 18px;
+  color: #666;
+}
+
+.section-title {
+  font-size: 28px;
+  margin: 50px 0 25px 0;
+  color: #0b4ea2;
+  text-align: center;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.section-title:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #0b4ea2, transparent);
+}
+
+/* Financial Calculators Section */
+.calculators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 25px;
+  margin-bottom: 60px;
+}
+
+.calculator-card {
+  padding: 35px 30px;
+  border-radius: 18px;
   background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
-}
-
-/* ===== TITLES ===== */
-.section-title {
-  font-size: 36px;
-  text-align: center;
-  margin-bottom: 10px;
-  letter-spacing: 0.5px;
-}
-
-.section-subtitle {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 50px auto;
-  color: #555;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-/* ===== SECTION HEADERS ===== */
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 50px 0 25px 0;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #0b4ea2;
-}
-
-.category-header:first-of-type {
-  margin-top: 0;
-}
-
-.category-icon {
-  font-size: 28px;
-}
-
-.category-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #0b1f3a;
-  margin: 0;
-}
-
-/* ===== TOOL GRID ===== */
-.tool-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 25px;
-  margin-bottom: 30px;
-}
-
-/* ===== TOOL CARD ===== */
-.tool-card {
-  background: linear-gradient(
-    135deg,
-    rgba(248,242,232,0.88),
-    rgba(248,242,232,0.72)
-  );
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 16px;
-  padding: 30px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
-  cursor: pointer;
   text-decoration: none;
-  color: inherit;
   display: block;
-  box-shadow:
-    0 10px 30px rgba(160,140,110,0.12),
-    0 4px 12px rgba(160,140,110,0.08);
+  color: inherit;
 }
 
-.tool-card:hover {
-  transform: translateY(-4px);
-  box-shadow:
-    0 15px 45px rgba(160,140,110,0.18),
-    0 6px 18px rgba(160,140,110,0.12);
+.calculator-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.14);
+  border-color: rgba(11,78,162,0.3);
 }
 
-.tool-icon {
+.calculator-icon {
   font-size: 42px;
   margin-bottom: 15px;
 }
 
-.tool-card h3 {
-  font-size: 20px;
-  margin: 0 0 10px 0;
-  color: #0b1f3a;
+.calculator-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  color: #0b4ea2;
 }
 
-.tool-card p {
-  font-size: 14px;
-  line-height: 1.6;
-  color: #555;
+.calculator-card p {
   margin: 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
 }
 
-/* ===== GUIDE GRID ===== */
-.guide-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-/* ===== VIDEO GRID ===== */
+/* Video Library Section */
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 520px));
-  justify-content: center;
-  gap: 24px;
-  margin: 30px 0 50px 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  margin-bottom: 60px;
 }
 
-.video-grid iframe {
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  height: auto;
-  border: none;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
   transition: all 0.3s ease;
 }
 
-.video-grid iframe:hover {
+.video-container:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.18);
 }
 
-/* ===== GUIDE CARD ===== */
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+}
+
+/* Loan Guides Section */
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
 .guide-card {
-  background: linear-gradient(
-    135deg,
-    rgba(11,78,162,0.08),
-    rgba(11,78,162,0.04)
-  );
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(11,78,162,0.15);
-  border-radius: 12px;
-  padding: 25px;
+  padding: 30px 28px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
   transition: all 0.3s ease;
-  cursor: pointer;
   text-decoration: none;
-  color: inherit;
   display: block;
+  color: inherit;
 }
 
 .guide-card:hover {
-  transform: translateY(-3px);
-  background: linear-gradient(
-    135deg,
-    rgba(11,78,162,0.12),
-    rgba(11,78,162,0.06)
-  );
-  box-shadow: 0 8px 24px rgba(11,78,162,0.15);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.14);
+  border-color: rgba(11,78,162,0.3);
+}
+
+.guide-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
 }
 
 .guide-card h3 {
-  font-size: 18px;
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
+  font-size: 20px;
   color: #0b4ea2;
-  font-weight: 700;
 }
 
 .guide-card p {
-  font-size: 13px;
-  line-height: 1.5;
-  color: #666;
   margin: 0;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
 }
 
-/* ===== NAV BUTTON ===== */
-.back-btn {
-  display: inline-block;
+.back-link {
+  text-align: center;
   margin-top: 50px;
-  padding: 12px 24px;
+}
+
+.back-link a {
+  display: inline-block;
+  padding: 12px 28px;
   border-radius: 25px;
   background: rgba(255,255,255,0.35);
   backdrop-filter: blur(6px);
@@ -221,157 +201,137 @@ body {
   transition: all 0.25s ease;
 }
 
-.back-btn:hover {
+.back-link a:hover {
   background: rgba(255,255,255,0.55);
   transform: translateY(-2px);
 }
 
-/* ===== FLOATING EXIT LINK ===== */
-.return-main {
-  position: fixed;
-  bottom: 22px;
-  right: 28px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.7);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  z-index: 999;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-}
-
-.return-main:hover {
-  background: rgba(255,255,255,0.75);
-  transform: translateY(-2px);
-}
-
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .education-card {
-    padding: 40px 30px;
+  .page-title {
+    font-size: 32px;
   }
   
   .section-title {
-    font-size: 28px;
+    font-size: 24px;
   }
   
-  .category-title {
-    font-size: 20px;
+  .calculators-grid,
+  .guides-grid {
+    grid-template-columns: 1fr;
   }
   
-  .tool-grid,
-  .guide-grid {
+  .video-grid {
     grid-template-columns: 1fr;
   }
 }
-
 </style>
 </head>
 
 <body>
-
 <div class="page-wrap">
-  <section class="education-card">
+  
+  <header class="page-header">
+    <h1 class="page-title">Education Collection</h1>
+    <p class="page-subtitle">Essential Tools, Guides & Resources for Your Clients</p>
+  </header>
 
-    <h1 class="section-title">Education Collection</h1>
-    <p class="section-subtitle">
-      Financial tools and comprehensive loan program guides to help your clients understand their options and make informed decisions.
-    </p>
+  <!-- Financial Calculators Section -->
+  <h2 class="section-title">Financial Calculators</h2>
+  <div class="calculators-grid">
+    
+    <a href="income-calculator.html" class="calculator-card">
+      <div class="calculator-icon">🧮</div>
+      <h3>Income Calculator</h3>
+      <p>Calculate qualifying income for W-2 wage earners with accurate tax line references and detailed breakdowns.</p>
+    </a>
 
-    <!-- FINANCIAL CALCULATORS -->
-    <div class="category-header">
-      <span class="category-icon">🧮</span>
-      <h2 class="category-title">Financial Calculators</h2>
+    <a href="self-employed-calculator.html" class="calculator-card">
+      <div class="calculator-icon">💼</div>
+      <h3>Self-Employed Income Calculator</h3>
+      <p>Determine qualifying income for self-employed borrowers using Schedule C analysis and business income calculations.</p>
+    </a>
+
+  </div>
+
+  <!-- Video Library Section -->
+  <h2 class="section-title">Video Library</h2>
+  <div class="video-grid">
+    
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
     </div>
 
-    <div class="tool-grid">
-      
-      <a href="income-calculator.html" class="tool-card">
-        <div class="tool-icon">📊</div>
-        <h3>Income Calculator</h3>
-        <p>Calculate qualifying income for W-2 wage earners including salary, hourly, overtime, bonus, commission, and other income sources. Includes tax form line references.</p>
-      </a>
-
-      <a href="self-employed-calculator.html" class="tool-card">
-        <div class="tool-icon">💼</div>
-        <h3>Self-Employed Income Calculator</h3>
-        <p>Analyze business income from tax returns including depreciation add-backs, one-time adjustments, and 2-year averaging. Complete with Schedule C and 1120S line references.</p>
-      </a>
-
+    <div class="video-container">
+      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
     </div>
 
-    <!-- VIDEO LIBRARY -->
-    <div class="category-header" style="margin-top: 60px;">
-      <span class="category-icon">📺</span>
-      <h2 class="category-title">Video Library</h2>
-    </div>
+  </div>
 
-    <div class="video-grid">
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Mortgage Basics for Realtors" allowfullscreen></iframe>
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Understanding Pre-Approval" allowfullscreen></iframe>
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Credit Scores Explained" allowfullscreen></iframe>
-      <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="First-Time Buyer Tips" allowfullscreen></iframe>
-    </div>
+  <!-- Loan Program Guides Section -->
+  <h2 class="section-title">Loan Program Guides</h2>
+  <div class="guides-grid">
+    
+    <a href="conventional-loans-education.html" class="guide-card">
+      <div class="guide-icon">🏛️</div>
+      <h3>Conventional Loans</h3>
+      <p>Fixed and adjustable-rate mortgages backed by Fannie Mae and Freddie Mac. 3% down options available.</p>
+    </a>
 
-    <!-- LOAN PROGRAM GUIDES -->
-    <div class="category-header">
-      <span class="category-icon">📚</span>
-      <h2 class="category-title">Loan Program Guides</h2>
-    </div>
+    <a href="fha-loans-education.html" class="guide-card">
+      <div class="guide-icon">🏠</div>
+      <h3>FHA Loans</h3>
+      <p>Government-insured loans with 3.5% down payment and flexible credit requirements for first-time buyers.</p>
+    </a>
 
-    <div class="guide-grid">
-      
-      <a href="conventional-loans-education.html" class="guide-card">
-        <h3>Conventional Loans</h3>
-        <p>Fannie Mae & Freddie Mac • Down payment options • Credit requirements • Property types</p>
-      </a>
+    <a href="va-loans-education.html" class="guide-card">
+      <div class="guide-icon">🎖️</div>
+      <h3>VA Loans</h3>
+      <p>Zero down payment loans for eligible veterans, active duty service members, and surviving spouses.</p>
+    </a>
 
-      <a href="fha-loans-education.html" class="guide-card">
-        <h3>FHA Loans</h3>
-        <p>Low down payment • Flexible credit • First-time buyer friendly • Mortgage insurance details</p>
-      </a>
+    <a href="usda-loans-education.html" class="guide-card">
+      <div class="guide-icon">🌾</div>
+      <h3>USDA Loans</h3>
+      <p>Zero down payment loans for rural and suburban properties with income limits and location requirements.</p>
+    </a>
 
-      <a href="va-loans-education.html" class="guide-card">
-        <h3>VA Loans</h3>
-        <p>Military & veteran benefits • Zero down payment • No PMI • Funding fee structure</p>
-      </a>
+    <a href="jumbo-loans-education.html" class="guide-card">
+      <div class="guide-icon">💎</div>
+      <h3>Jumbo Loans</h3>
+      <p>Non-conforming loans for high-value properties exceeding conventional loan limits ($832,750+).</p>
+    </a>
 
-      <a href="usda-loans-education.html" class="guide-card">
-        <h3>USDA Loans</h3>
-        <p>Rural property financing • Zero down payment • Income limits • Eligible areas</p>
-      </a>
+    <a href="reverse-mortgage-education.html" class="guide-card">
+      <div class="guide-icon">🔄</div>
+      <h3>Reverse Mortgages</h3>
+      <p>Home Equity Conversion Mortgages (HECM) for homeowners 62+ to access equity without monthly payments.</p>
+    </a>
 
-      <a href="jumbo-loans-education.html" class="guide-card">
-        <h3>Jumbo Loans</h3>
-        <p>High-balance financing • Loan limits • Credit requirements • Reserve requirements</p>
-      </a>
+    <a href="dscr-loans-education.html" class="guide-card">
+      <div class="guide-icon">📊</div>
+      <h3>DSCR Loans</h3>
+      <p>Investment property loans that qualify borrowers based on rental income instead of personal income.</p>
+    </a>
 
-      <a href="reverse-mortgage-education.html" class="guide-card">
-        <h3>Reverse Mortgages (HECM)</h3>
-        <p>Seniors 62+ • Convert equity to cash • No monthly payments • Primary residence required</p>
-      </a>
+    <a href="credit-score-education.html" class="guide-card">
+      <div class="guide-icon">📈</div>
+      <h3>Credit Score Education</h3>
+      <p>Understand how credit scores impact mortgage rates and learn strategies to improve your score.</p>
+    </a>
 
-      <a href="dscr-loans-education.html" class="guide-card">
-        <h3>DSCR Loans</h3>
-        <p>Investment property financing • Qualify by rental income • No income verification • Portfolio growth</p>
-      </a>
+    <a href="down-payment-assistance-education.html" class="guide-card">
+      <div class="guide-icon">💰</div>
+      <h3>Down Payment Assistance</h3>
+      <p>Explore grants, loans, and programs to help with down payments and closing costs.</p>
+    </a>
 
-    </div>
+  </div>
 
-    <div style="text-align:center;">
-      <a href="portal.html" class="back-btn">← Back to Agent Edge Portal</a>
-    </div>
+  <div class="back-link">
+    <a href="portal.html">← Back to Agent Edge Portal</a>
+  </div>
 
-  </section>
 </div>
-
-<a href="https://kristyflach.com" class="return-main">← Return to Main Website</a>
-
 </body>
 </html>
-
 
