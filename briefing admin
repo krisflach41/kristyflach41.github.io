@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Briefing Upload - Admin</title>
+<style>
+/* ===== ADMIN STYLING ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+.admin-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10);
+}
+
+h1 {
+  text-align: center;
+  color: #0b1f3a;
+  margin-bottom: 10px;
+  font-size: 32px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 40px;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0b1f3a;
+  font-size: 15px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 400px;
+  padding: 16px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+textarea:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+/* ===== CHECKBOXES ===== */
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+  background: rgba(11,78,162,0.04);
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+.checkbox-item label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #0b4ea2;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 10px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #0a3d7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.btn-primary:disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ===== SUCCESS/ERROR MESSAGES ===== */
+.message {
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  text-align: center;
+  display: none;
+}
+
+.message.show {
+  display: block;
+}
+
+.message.success {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: #27ae60;
+}
+
+.message.error {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b;
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.back-link a:hover {
+  color: #0a3d7f;
+  text-decoration: underline;
+}
+
+/* ===== PREVIEW BOX ===== */
+.preview-box {
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  display: none;
+}
+
+.preview-box.show {
+  display: block;
+}
+
+.preview-box h3 {
+  margin-top: 0;
+  color: #0b1f3a;
+  font-size: 16px;
+}
+
+.preview-box pre {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  overflow-x: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-container">
+  <h1>📊 Briefing Upload Admin</h1>
+  <p class="subtitle">Paste ChatGPT output below and select sections to update</p>
+
+  <div class="message" id="successMessage"></div>
+  <div class="message error" id="errorMessage"></div>
+
+  <div class="form-group">
+    <label for="briefingInput">Paste Full ChatGPT Briefing Output:</label>
+    <textarea 
+      id="briefingInput" 
+      placeholder="Paste the entire briefing text here...
+
+Example format:
+Today's Estimated Fixed Market Rates
+30-Year: 6.148% | 30-Year FHA: 6.091% | ...
+
+REALTOR PARTNER SUMMARY
+Market Open
+Stocks and mortgage bonds are...
+"
+    ></textarea>
+  </div>
+
+  <div class="checkbox-grid">
+    <div class="checkbox-item">
+      <input type="checkbox" id="updateRates" checked>
+      <label for="updateRates">📈 Interest Rates</label>
+    </div>
+    
+    <div class="checkbox-item">
+      <input type="checkbox" id="updateEcon">
+      <label for="updateEcon">📅 Economic Calendar (Mon)</label>
+    </div>
+    
+    <div class="checkbox-item">
+      <input type="checkbox" id="updateMarket" checked>
+      <label for="updateMarket">📊 Market Summary</label>
+    </div>
+    
+    <div class="checkbox-item">
+      <input type="checkbox" id="updateClient" checked>
+      <label for="updateClient">👥 Client-Friendly</label>
+    </div>
+    
+    <div class="checkbox-item">
+      <input type="checkbox" id="updateWeek">
+      <label for="updateWeek">📝 Week in Review (Fri)</label>
+    </div>
+  </div>
+
+  <button class="btn-primary" id="parseBtn" onclick="parseBriefing()">
+    🚀 Parse & Update Portal
+  </button>
+
+  <div class="preview-box" id="previewBox">
+    <h3>Parsed Data Preview:</h3>
+    <pre id="previewContent"></pre>
+  </div>
+
+  <div class="back-link">
+    <a href="portal.html">← Back to Portal</a>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   SMART BRIEFING PARSER
+=========================== */
+
+function parseBriefing() {
+  const input = document.getElementById('briefingInput').value;
+  const successMsg = document.getElementById('successMessage');
+  const errorMsg = document.getElementById('errorMessage');
+  const previewBox = document.getElementById('previewBox');
+  const previewContent = document.getElementById('previewContent');
+  const parseBtn = document.getElementById('parseBtn');
+  
+  // Clear previous messages
+  successMsg.classList.remove('show');
+  errorMsg.classList.remove('show');
+  previewBox.classList.remove('show');
+  
+  if (!input.trim()) {
+    errorMsg.textContent = 'Please paste briefing content first!';
+    errorMsg.classList.add('show');
+    return;
+  }
+  
+  // Get checkboxes
+  const updateRates = document.getElementById('updateRates').checked;
+  const updateEcon = document.getElementById('updateEcon').checked;
+  const updateMarket = document.getElementById('updateMarket').checked;
+  const updateClient = document.getElementById('updateClient').checked;
+  const updateWeek = document.getElementById('updateWeek').checked;
+  
+  parseBtn.disabled = true;
+  parseBtn.textContent = '⏳ Parsing...';
+  
+  try {
+    const parsedData = {};
+    
+    // ===== PARSE RATES =====
+    if (updateRates) {
+      const ratesMatch = input.match(/Today'?s?\s+Estimated\s+Fixed\s+Market\s+Rates[^\n]*\n([^\n]+)/i);
+      if (ratesMatch) {
+        const ratesLine = ratesMatch[1];
+        
+        parsedData.rates = {
+          '30year': extractRate(ratesLine, /30-Year:\s*([\d.]+%)/),
+          '30yearFHA': extractRate(ratesLine, /30-Year\s+FHA:\s*([\d.]+%)/),
+          '30yearVA': extractRate(ratesLine, /30-Year\s+VA:\s*([\d.]+%)/),
+          '30yearJumbo': extractRate(ratesLine, /30-Year\s+Jumbo:\s*([\d.]+%)/),
+          '15year': extractRate(ratesLine, /15-Year:\s*([\d.]+%)/)
+        };
+      }
+    }
+    
+    // ===== PARSE ECONOMIC CALENDAR =====
+    if (updateEcon) {
+      // Look for date range and calendar content
+      const econMatch = input.match(/(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d+\s*-\s*\d+,\s*\d{4}([\s\S]*?)(?=REALTOR|Market\s+Open|$)/i);
+      if (econMatch) {
+        parsedData.economicCalendar = econMatch[0].trim();
+      }
+    }
+    
+    // ===== PARSE MARKET SUMMARY =====
+    if (updateMarket) {
+      const marketMatch = input.match(/REALTOR\s+PARTNER\s+SUMMARY([\s\S]*?)(?=CLIENT-FRIENDLY|Client\s+Friendly|What'?s\s+Still|$)/i);
+      if (marketMatch) {
+        parsedData.marketSummary = marketMatch[1].trim();
+      }
+    }
+    
+    // ===== PARSE CLIENT-FRIENDLY =====
+    if (updateClient) {
+      const clientMatch = input.match(/CLIENT-FRIENDLY\s+VERSION([\s\S]*?)(?=WEEK\s+IN\s+REVIEW|What'?s\s+Still|Social\s+Media|$)/i);
+      if (clientMatch) {
+        parsedData.clientFriendly = clientMatch[1].trim();
+      }
+    }
+    
+    // ===== PARSE WEEK IN REVIEW =====
+    if (updateWeek) {
+      const weekMatch = input.match(/WEEK\s+IN\s+REVIEW([\s\S]*?)$/i);
+      if (weekMatch) {
+        parsedData.weekInReview = weekMatch[1].trim();
+      }
+    }
+    
+    parsedData.lastUpdated = new Date().toISOString();
+    
+    // Show preview
+    previewContent.textContent = JSON.stringify(parsedData, null, 2);
+    previewBox.classList.add('show');
+    
+    // Save to localStorage (simulating JSON file update)
+    localStorage.setItem('agentEdgeBriefing', JSON.stringify(parsedData));
+    
+    // Success!
+    successMsg.textContent = '✅ Briefing parsed and saved successfully! Portal will update automatically.';
+    successMsg.classList.add('show');
+    successMsg.classList.remove('error');
+    successMsg.classList.add('success');
+    
+    parseBtn.disabled = false;
+    parseBtn.textContent = '🚀 Parse & Update Portal';
+    
+    // Scroll to success message
+    successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+  } catch (error) {
+    errorMsg.textContent = '❌ Error parsing briefing. Please check format and try again.';
+    errorMsg.classList.add('show');
+    parseBtn.disabled = false;
+    parseBtn.textContent = '🚀 Parse & Update Portal';
+  }
+}
+
+// Helper function to extract rate
+function extractRate(text, regex) {
+  const match = text.match(regex);
+  return match ? match[1] : '';
+}
+
+// Auto-save draft
+document.getElementById('briefingInput').addEventListener('input', function() {
+  localStorage.setItem('briefingDraft', this.value);
+});
+
+// Restore draft on load
+window.addEventListener('load', function() {
+  const draft = localStorage.getItem('briefingDraft');
+  if (draft) {
+    document.getElementById('briefingInput').value = draft;
+  }
+});
+</script>
+
+</body>
+</html>
