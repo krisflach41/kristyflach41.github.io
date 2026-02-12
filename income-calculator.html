@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Income Calculator - Agent Edge</title>
+<style>
+/* ===== MATCHES PORTAL STYLING ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px 80px 20px;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+.calculator-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10);
+}
+
+h1 {
+  text-align: center;
+  color: #0b1f3a;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 15px;
+}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe5a3 100%);
+  border: 2px solid #ff9800;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 35px;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+}
+
+.disclaimer h3 {
+  margin: 0 0 12px 0;
+  color: #e65100;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #5d4037;
+}
+
+/* ===== INCOME SECTIONS ===== */
+.income-section {
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.income-section h2 {
+  margin: 0 0 20px 0;
+  font-size: 22px;
+  color: #0b4ea2;
+  border-bottom: 2px solid #0b4ea2;
+  padding-bottom: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #0b1f3a;
+}
+
+.label-helper {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+  padding: 10px 14px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.7);
+  transition: all 0.25s ease;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+/* ===== RADIO BUTTONS ===== */
+.radio-group {
+  display: flex;
+  gap: 20px;
+  margin-top: 10px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radio-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.radio-option label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* ===== CALCULATED RESULT ===== */
+.calculated-income {
+  background: rgba(46,204,113,0.08);
+  border: 2px solid #27ae60;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.calculated-income .label {
+  font-weight: 600;
+  color: #27ae60;
+  font-size: 15px;
+}
+
+.calculated-income .value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+/* ===== TOTAL INCOME BOX ===== */
+.total-income {
+  background: linear-gradient(135deg, #0b4ea2 0%, #0a3d7f 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 30px;
+  margin-top: 40px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(11,78,162,0.25);
+}
+
+.total-income h2 {
+  margin: 0 0 15px 0;
+  font-size: 24px;
+  color: white;
+  border: none;
+  padding: 0;
+}
+
+.total-income .amount {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.total-income .helper {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+/* ===== BUTTONS ===== */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn-primary {
+  background: #0b4ea2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0a3d7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #0b4ea2;
+  border: 2px solid #0b4ea2;
+}
+
+.btn-secondary:hover {
+  background: rgba(11,78,162,0.05);
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.back-link a:hover {
+  color: #0a3d7f;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculator-container {
+    padding: 30px 20px;
+  }
+  
+  .total-income .amount {
+    font-size: 36px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="calculator-container">
+  <h1>Income Calculator</h1>
+  <p class="subtitle">Estimate qualifying income for mortgage underwriting purposes</p>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    <h3>⚠️ Important Disclaimer</h3>
+    <p>
+      <strong>This calculator is for informational and educational purposes only.</strong> 
+      It is NOT a substitute for a professional underwriter's final income calculation or loan approval determination. 
+      Actual qualifying income may vary based on documentation, lender guidelines, loan type, and underwriting review. 
+      Always consult with a licensed mortgage professional and underwriter for accurate qualification assessment.
+    </p>
+  </div>
+
+  <!-- HOURLY INCOME -->
+  <div class="income-section">
+    <h2>Hourly Income</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hourly Rate <span class="label-helper">($/hour)</span></label>
+        <input type="number" id="hourlyRate" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Hours Per Week</label>
+        <input type="number" id="hoursPerWeek" step="1" min="0" placeholder="40">
+      </div>
+    </div>
+
+    <div class="calculated-income" id="hourlyResult">
+      <span class="label">Monthly Qualifying Income:</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- SALARY INCOME -->
+  <div class="income-section">
+    <h2>Salary Income</h2>
+    
+    <div class="form-group">
+      <label>Salary Type</label>
+      <div class="radio-group">
+        <div class="radio-option">
+          <input type="radio" id="salaryMonthly" name="salaryType" value="monthly" checked>
+          <label for="salaryMonthly">Monthly</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="salaryBiWeekly" name="salaryType" value="biweekly">
+          <label for="salaryBiWeekly">Bi-Weekly</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="salarySemiMonthly" name="salaryType" value="semimonthly">
+          <label for="salarySemiMonthly">Semi-Monthly</label>
+        </div>
+        <div class="radio-option">
+          <input type="radio" id="salaryWeekly" name="salaryType" value="weekly">
+          <label for="salaryWeekly">Weekly</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Salary Amount <span class="label-helper">(based on type selected)</span></label>
+        <input type="number" id="salaryAmount" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="calculated-income" id="salaryResult">
+      <span class="label">Monthly Qualifying Income:</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- OVERTIME/BONUS -->
+  <div class="income-section">
+    <h2>Overtime / Bonus Income</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>YTD Overtime/Bonus <span class="label-helper">($)</span></label>
+        <input type="number" id="otYTD" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>YTD Months Worked</label>
+        <input type="number" id="otYTDMonths" step="1" min="0" max="12" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prior Year Total <span class="label-helper">($)</span></label>
+        <input type="number" id="otYear1" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Year Before Total <span class="label-helper">(optional, $)</span></label>
+        <input type="number" id="otYear2" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: #666; margin-top: 10px;">
+      💡 <em>Typically requires 2-year history. Calculator averages available years.</em>
+    </p>
+
+    <div class="calculated-income" id="otResult">
+      <span class="label">Monthly Qualifying Income:</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- COMMISSION INCOME -->
+  <div class="income-section">
+    <h2>Commission Income</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>YTD Commission <span class="label-helper">($)</span></label>
+        <input type="number" id="commYTD" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>YTD Months Worked</label>
+        <input type="number" id="commYTDMonths" step="1" min="0" max="12" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>YTD Unreimbursed Expenses <span class="label-helper">(Form 2106, $)</span></label>
+        <input type="number" id="commYTDExpenses" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prior Year Commission <span class="label-helper">($)</span></label>
+        <input type="number" id="commYear1" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Prior Year Expenses <span class="label-helper">(Form 2106, $)</span></label>
+        <input type="number" id="commYear1Expenses" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Year Before Commission <span class="label-helper">(optional, $)</span></label>
+        <input type="number" id="commYear2" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Year Before Expenses <span class="label-helper">(optional, $)</span></label>
+        <input type="number" id="commYear2Expenses" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: #666; margin-top: 10px;">
+      💡 <em>Commission income is calculated NET of unreimbursed business expenses.</em>
+    </p>
+
+    <div class="calculated-income" id="commResult">
+      <span class="label">Monthly Qualifying Income:</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- OTHER INCOME -->
+  <div class="income-section">
+    <h2>Other Taxable Income</h2>
+    <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+      Examples: Rental income, dividends, interest, alimony, etc.
+    </p>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>YTD Other Income <span class="label-helper">($)</span></label>
+        <input type="number" id="otherYTD" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>YTD Months</label>
+        <input type="number" id="otherYTDMonths" step="1" min="0" max="12" placeholder="0">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Prior Year Total <span class="label-helper">($)</span></label>
+        <input type="number" id="otherYear1" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="form-group">
+        <label>Year Before Total <span class="label-helper">(optional, $)</span></label>
+        <input type="number" id="otherYear2" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <div class="calculated-income" id="otherResult">
+      <span class="label">Monthly Qualifying Income:</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- NON-TAXABLE INCOME -->
+  <div class="income-section">
+    <h2>Non-Taxable Income</h2>
+    <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+      Examples: Social Security, pension, disability, child support (grossed up by 125%)
+    </p>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Monthly Non-Taxable Amount <span class="label-helper">($)</span></label>
+        <input type="number" id="nonTaxable" step="0.01" min="0" placeholder="0.00">
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: #666; margin-top: 10px;">
+      💡 <em>Non-taxable income is grossed up by 125% for qualifying purposes (per standard guidelines).</em>
+    </p>
+
+    <div class="calculated-income" id="nonTaxableResult">
+      <span class="label">Monthly Qualifying Income (Grossed Up):</span>
+      <span class="value">$0.00</span>
+    </div>
+  </div>
+
+  <!-- TOTAL INCOME -->
+  <div class="total-income">
+    <h2>Total Monthly Qualifying Income</h2>
+    <div class="amount" id="totalIncome">$0.00</div>
+    <div class="helper">This is an estimate based on the inputs provided above</div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="button-group">
+    <button class="btn btn-secondary" onclick="resetCalculator()">Clear All</button>
+    <button class="btn btn-primary" onclick="printCalculator()">Print / Save PDF</button>
+  </div>
+
+  <!-- BOTTOM DISCLAIMER -->
+  <div class="disclaimer" style="margin-top: 30px;">
+    <p style="font-size: 13px;">
+      <strong>Additional Notes:</strong> Income calculations must be supported by proper documentation including paystubs, W-2s, tax returns, and verification of continuance. 
+      Lender overlays, loan program requirements, and compensating factors may affect final qualification. 
+      This calculator uses standard formulas but cannot account for all underwriting scenarios. 
+      For accurate pre-qualification, please contact a licensed mortgage professional.
+    </p>
+  </div>
+
+  <div class="back-link">
+    <a href="portal.html">← Back to Agent Edge Portal</a>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   INCOME CALCULATOR LOGIC
+=========================== */
+
+// Format currency
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+// Calculate hourly income
+function calculateHourly() {
+  const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+  const hours = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
+  
+  // Monthly: (rate * hours * 52 weeks) / 12 months
+  const monthly = (rate * hours * 52) / 12;
+  
+  document.querySelector('#hourlyResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
+// Calculate salary income
+function calculateSalary() {
+  const amount = parseFloat(document.getElementById('salaryAmount').value) || 0;
+  const type = document.querySelector('input[name="salaryType"]:checked').value;
+  
+  let monthly = 0;
+  
+  switch(type) {
+    case 'monthly':
+      monthly = amount * 1;
+      break;
+    case 'biweekly':
+      monthly = amount * 26 / 12;
+      break;
+    case 'semimonthly':
+      monthly = amount * 24 / 12;
+      break;
+    case 'weekly':
+      monthly = amount * 52 / 12;
+      break;
+  }
+  
+  document.querySelector('#salaryResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
+// Calculate overtime/bonus (average lowest available)
+function calculateOT() {
+  const ytd = parseFloat(document.getElementById('otYTD').value) || 0;
+  const ytdMonths = parseFloat(document.getElementById('otYTDMonths').value) || 0;
+  const year1 = parseFloat(document.getElementById('otYear1').value) || 0;
+  const year2 = parseFloat(document.getElementById('otYear2').value) || 0;
+  
+  let monthly = 0;
+  
+  // YTD average
+  const ytdAvg = ytdMonths > 0 ? ytd / ytdMonths : 0;
+  
+  // YTD + 1 year average
+  const oneYearAvg = (ytdMonths > 0 && year1 > 0) ? (ytd + year1) / (ytdMonths + 12) : 0;
+  
+  // YTD + 2 year average
+  const twoYearAvg = (ytdMonths > 0 && year1 > 0 && year2 > 0) ? (ytd + year1 + year2) / (ytdMonths + 24) : 0;
+  
+  // Use lowest available (most conservative)
+  const averages = [ytdAvg, oneYearAvg, twoYearAvg].filter(val => val > 0);
+  monthly = averages.length > 0 ? Math.min(...averages) : 0;
+  
+  document.querySelector('#otResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
+// Calculate commission (NET of expenses, average lowest)
+function calculateCommission() {
+  const ytd = parseFloat(document.getElementById('commYTD').value) || 0;
+  const ytdMonths = parseFloat(document.getElementById('commYTDMonths').value) || 0;
+  const ytdExpenses = parseFloat(document.getElementById('commYTDExpenses').value) || 0;
+  
+  const year1 = parseFloat(document.getElementById('commYear1').value) || 0;
+  const year1Expenses = parseFloat(document.getElementById('commYear1Expenses').value) || 0;
+  
+  const year2 = parseFloat(document.getElementById('commYear2').value) || 0;
+  const year2Expenses = parseFloat(document.getElementById('commYear2Expenses').value) || 0;
+  
+  // Net income
+  const ytdNet = ytd - ytdExpenses;
+  const year1Net = year1 - year1Expenses;
+  const year2Net = year2 - year2Expenses;
+  
+  // Averages
+  const ytdAvg = ytdMonths > 0 ? ytdNet / ytdMonths : 0;
+  const oneYearAvg = (ytdMonths > 0 && year1 > 0) ? (ytdNet + year1Net) / (ytdMonths + 12) : 0;
+  const twoYearAvg = (ytdMonths > 0 && year1 > 0 && year2 > 0) ? (ytdNet + year1Net + year2Net) / (ytdMonths + 24) : 0;
+  
+  // Use lowest available
+  const averages = [ytdAvg, oneYearAvg, twoYearAvg].filter(val => val > 0);
+  const monthly = averages.length > 0 ? Math.min(...averages) : 0;
+  
+  document.querySelector('#commResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
+// Calculate other income
+function calculateOther() {
+  const ytd = parseFloat(document.getElementById('otherYTD').value) || 0;
+  const ytdMonths = parseFloat(document.getElementById('otherYTDMonths').value) || 0;
+  const year1 = parseFloat(document.getElementById('otherYear1').value) || 0;
+  const year2 = parseFloat(document.getElementById('otherYear2').value) || 0;
+  
+  const ytdAvg = ytdMonths > 0 ? ytd / ytdMonths : 0;
+  const oneYearAvg = (ytdMonths > 0 && year1 > 0) ? (ytd + year1) / (ytdMonths + 12) : 0;
+  const twoYearAvg = (ytdMonths > 0 && year1 > 0 && year2 > 0) ? (ytd + year1 + year2) / (ytdMonths + 24) : 0;
+  
+  const averages = [ytdAvg, oneYearAvg, twoYearAvg].filter(val => val > 0);
+  const monthly = averages.length > 0 ? Math.min(...averages) : 0;
+  
+  document.querySelector('#otherResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
+// Calculate non-taxable income (grossed up by 125%)
+function calculateNonTaxable() {
+  const amount = parseFloat(document.getElementById('nonTaxable').value) || 0;
+  const grossedUp = amount * 1.25; // 125% gross-up
+  
+  document.querySelector('#nonTaxableResult .value').textContent = formatCurrency(grossedUp);
+  return grossedUp;
+}
+
+// Calculate total
+function calculateTotal() {
+  const hourly = calculateHourly();
+  const salary = calculateSalary();
+  const ot = calculateOT();
+  const commission = calculateCommission();
+  const other = calculateOther();
+  const nonTaxable = calculateNonTaxable();
+  
+  const total = hourly + salary + ot + commission + other + nonTaxable;
+  
+  document.getElementById('totalIncome').textContent = formatCurrency(total);
+}
+
+// Reset calculator
+function resetCalculator() {
+  if (confirm('Clear all inputs and start over?')) {
+    document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+    document.getElementById('salaryMonthly').checked = true;
+    calculateTotal();
+  }
+}
+
+// Print calculator
+function printCalculator() {
+  window.print();
+}
+
+// Add event listeners to all inputs
+document.addEventListener('DOMContentLoaded', function() {
+  // Number inputs
+  document.querySelectorAll('input[type="number"]').forEach(input => {
+    input.addEventListener('input', calculateTotal);
+  });
+  
+  // Radio buttons
+  document.querySelectorAll('input[name="salaryType"]').forEach(radio => {
+    radio.addEventListener('change', calculateTotal);
+  });
+  
+  // Initial calculation
+  calculateTotal();
+});
+</script>
+
+</body>
+</html>
