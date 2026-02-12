@@ -990,6 +990,11 @@ document.addEventListener('keydown', (e) => {
    REPLACE THE EXISTING BRIEFING LOAD SCRIPT WITH THIS
    ===================================================== */
 
+/* =====================================================
+   BRIEFING AUTO-UPDATE SCRIPT - CORRECTED VERSION
+   REPLACE THE EXISTING BRIEFING LOAD SCRIPT WITH THIS
+   ===================================================== */
+
 <script>
 // Load briefing data on page load
 window.addEventListener('load', function() {
@@ -1011,39 +1016,42 @@ window.addEventListener('load', function() {
     });
   }
   
-  // ===== UPDATE ECONOMIC CALENDAR =====
-  if (briefingData.economicCalendar) {
-    // Find the event card and replace its content
-    const eventCard = document.querySelector('.event-card');
-    if (eventCard) {
-      // Parse the calendar data and rebuild the event rows
-      eventCard.innerHTML = parseEconomicCalendar(briefingData.economicCalendar);
-    }
-  }
-  
-  // ===== UPDATE MARKET SUMMARY (with 4-line fade) =====
+  // ===== UPDATE MARKET SUMMARY PREVIEW =====
   if (briefingData.marketSummary) {
-    const marketCard = document.querySelectorAll('.blog-card')[1]; // Second card
-    const summaryDiv = marketCard.querySelector('.summary-text');
-    if (summaryDiv) {
-      summaryDiv.innerHTML = `<p>${briefingData.marketSummary.substring(0, 300)}...</p>`;
+    // Find the Market Summary card (second blog-card)
+    const marketCard = document.querySelectorAll('.blog-card')[1];
+    if (marketCard) {
+      const summaryDiv = marketCard.querySelector('.summary-text');
+      if (summaryDiv) {
+        // Get first 300 characters
+        const preview = briefingData.marketSummary.substring(0, 300) + '...';
+        summaryDiv.innerHTML = `<p>${preview}</p>`;
+      }
     }
   }
   
-  // ===== UPDATE CLIENT-FRIENDLY SUMMARY (with 4-line fade) =====
+  // ===== UPDATE CLIENT-FRIENDLY PREVIEW =====
   if (briefingData.clientFriendly) {
-    const clientCard = document.querySelectorAll('.blog-card')[2]; // Third card
-    const summaryDiv = clientCard.querySelector('.summary-text');
-    if (summaryDiv) {
-      summaryDiv.innerHTML = `<p>${briefingData.clientFriendly.substring(0, 400)}...</p>`;
+    // Find the Client-Friendly card (third blog-card)
+    const clientCard = document.querySelectorAll('.blog-card')[2];
+    if (clientCard) {
+      const summaryDiv = clientCard.querySelector('.summary-text');
+      if (summaryDiv) {
+        // Get first 400 characters
+        const preview = briefingData.clientFriendly.substring(0, 400) + '...';
+        summaryDiv.innerHTML = `<p>${preview}</p>`;
+      }
     }
   }
   
   // ===== UPDATE WEEK IN REVIEW =====
   if (briefingData.weekInReview) {
-    const weekCard = document.querySelector('.week-review-card p');
+    const weekCard = document.querySelector('.week-review-card');
     if (weekCard) {
-      weekCard.textContent = briefingData.weekInReview;
+      const weekP = weekCard.querySelector('p');
+      if (weekP) {
+        weekP.textContent = briefingData.weekInReview;
+      }
     }
   }
   
@@ -1059,28 +1067,9 @@ window.addEventListener('load', function() {
       });
     }
   }
+  
+  console.log('Briefing data loaded:', briefingData); // DEBUG
 });
-
-// Helper function to parse economic calendar into event rows
-function parseEconomicCalendar(calendarText) {
-  // Keep the header
-  let html = `
-    <div class="events-header">
-      <div class="events-week">THIS WEEK</div>
-      <div class="events-title">Market-Moving Events</div>
-    </div>
-  `;
-  
-  // For now, return placeholder structure
-  // You can customize this parser if you want specific formatting
-  html += `
-    <div style="padding: 20px; font-size: 14px; line-height: 1.6;">
-      ${calendarText.replace(/\n/g, '<br>')}
-    </div>
-  `;
-  
-  return html;
-}
 </script>
 
 <!-- Add before closing </body> tag -->
