@@ -5,12 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
 <title>Client-Friendly Market Summary</title>
-
-
-
-
 <style>
-
 /* ===== BACKGROUND MATCHES PORTAL ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -21,14 +16,12 @@ body {
     url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
 }
-
 /* ===== CENTERED CONTENT WIDTH ===== */
 .page-wrap {
   max-width: 1000px;
   margin: 0 auto;
   padding: 0 24px;
 }
-
 /* ===== FROSTED GLASS CONTAINER ===== */
 .brief-card {
   border-radius: 22px;
@@ -41,24 +34,20 @@ body {
     0 20px 55px rgba(0,0,0,0.10),
     0 6px 18px rgba(0,0,0,0.05);
 }
-
 /* ===== TYPOGRAPHY ===== */
 h1 {
   font-size: 36px;
   margin-bottom: 25px;
 }
-
 h2 {
   margin-top: 35px;
   font-size: 20px;
 }
-
 p {
   line-height: 1.7;
   margin-bottom: 18px;
   font-size: 15px;
 }
-
 /* ===== BACK LINK BUTTON ===== */
 .back-link {
   display: inline-block;
@@ -70,38 +59,77 @@ p {
   padding: 8px 16px;
   border-radius: 20px;
 }
-
 </style>
 </head>
-
 <body>
-
 <div class="page-wrap">
   <div class="brief-card">
-
-   <h1>Market Summary – <span id="briefDate"></span></h1>
-
-
-    <p>The market is a little uneasy to start the week because a lot of attention is on jobs data.
-
-Even though headlines say the job market is strong, the reality is more mixed. Many people who lose work today don’t show up in the usual reports — especially freelancers, gig workers, and people whose unemployment benefits have run out. That means job numbers can look better on paper than they feel in real life.
-
-When economists look deeper, they’re seeing signs that more people are staying unemployed longer, even if that doesn’t show up in the main headlines yet.
-
-Some Fed officials are openly acknowledging this. One Fed governor recently said the job market is weaker than it appears and that interest rates may still be too high for where the economy is right now.
-
-That’s why this week’s job reports matter so much. If they confirm the slowdown, it could help calm markets and support housing conditions as the year moves forward.</p>
-
-    <a href="/portal.html" class="back-link">← Back to Agent Edge Portal</a>
-
+    <h1>Client-Friendly Summary – <span id="briefDate"></span></h1>
+    
+    <!-- DYNAMIC CONTENT LOADED FROM JSON -->
+    <div id="clientContent">
+      <p>Loading client-friendly summary...</p>
+    </div>
+    
+    <a href="portal.html" class="back-link">← Back to Agent Edge Portal</a>
   </div>
 </div>
-<script>
-const options = { year: 'numeric', month: 'long', day: 'numeric' };
-document.getElementById("briefDate").innerText =
-  new Date().toLocaleDateString('en-US', options);
-</script>
 
+<script>
+// Load briefing data
+window.addEventListener('load', function() {
+  const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
+  
+  // Update date
+  if (briefingData.lastUpdated) {
+    const date = new Date(briefingData.lastUpdated);
+    document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  } else {
+    document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  }
+  
+  // Load client-friendly content
+  const contentDiv = document.getElementById('clientContent');
+  
+  if (briefingData.clientFriendly) {
+    // Convert plain text to HTML with paragraphs
+    const formatted = formatTextToHTML(briefingData.clientFriendly);
+    contentDiv.innerHTML = formatted;
+  } else {
+    contentDiv.innerHTML = '<p>No client-friendly summary available. Please update from the admin page.</p>';
+  }
+});
+
+// Helper function to format text into HTML
+function formatTextToHTML(text) {
+  // Split by double line breaks for paragraphs
+  let sections = text.split(/\n\n+/);
+  let html = '';
+  
+  sections.forEach(section => {
+    section = section.trim();
+    if (!section) return;
+    
+    // Check if it's a heading (all caps or starts with capital words followed by colon)
+    if (section.match(/^[A-Z\s&–—]+$/) || section.match(/^[A-Z][a-zA-Z\s&]+:/)) {
+      html += `<h2>${section.replace(/:$/, '')}</h2>`;
+    } else {
+      // Regular paragraph - preserve line breaks within paragraphs
+      html += `<p>${section.replace(/\n/g, '<br>')}</p>`;
+    }
+  });
+  
+  return html;
+}
+</script>
 </body>
 </html>
 
