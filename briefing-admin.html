@@ -341,36 +341,38 @@ function parseBriefing() {
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         const events = [];
         
-        days.forEach(day => {
-          const dayRegex = new RegExp(`${day}:\\s*(.+?)(?=\\n(?:Monday|Tuesday|Wednesday|Thursday|Friday):|$)`, 'i');
-          const dayMatch = calendarText.match(dayRegex);
+        days.forEach((day, index) => {
+          // Match day name followed by events until next day or end
+          const nextDay = days[index + 1];
+          const dayPattern = nextDay 
+            ? new RegExp(`${day}\\s*\\n([\\s\\S]*?)(?=${nextDay})`, 'i')
+            : new RegExp(`${day}\\s*\\n([\\s\\S]*)`, 'i');
+          
+          const dayMatch = calendarText.match(dayPattern);
           
           if (dayMatch) {
-            const eventText = dayMatch[1].trim();
+            const eventLines = dayMatch[1]
+              .split('\n')
+              .map(line => line.trim())
+              .filter(line => line && line !== '[No major events]');
             
-            // Check for "+X" pattern
-            const plusMatch = eventText.match(/(.+?)\s+\+(\d+)/);
-            
-            if (plusMatch) {
-              // Has additional events
-              const mainEvent = plusMatch[1].trim();
-              const additionalCount = parseInt(plusMatch[2]);
-              const isFeatured = eventText.includes('FEATURED');
+            if (eventLines.length > 0) {
+              // First event (or featured event if exists)
+              let mainEvent = eventLines[0];
+              let additionalEvents = eventLines.slice(1);
+              
+              // Check if any event is featured
+              const featuredIndex = eventLines.findIndex(e => e.includes('FEATURED'));
+              if (featuredIndex >= 0) {
+                mainEvent = eventLines[featuredIndex];
+                additionalEvents = eventLines.filter((e, i) => i !== featuredIndex);
+              }
               
               events.push({
                 day: day,
                 mainEvent: mainEvent.replace(/\(FEATURED\)/gi, '').trim(),
-                additionalCount: additionalCount,
-                featured: isFeatured
-              });
-            } else if (eventText !== '[No major events]') {
-              // Single event
-              const isFeatured = eventText.includes('FEATURED');
-              events.push({
-                day: day,
-                mainEvent: eventText.replace(/\(FEATURED\)/gi, '').trim(),
-                additionalCount: 0,
-                featured: isFeatured
+                additionalEvents: additionalEvents.map(e => e.replace(/\(FEATURED\)/gi, '').trim()),
+                featured: mainEvent.includes('FEATURED')
               });
             }
           }
