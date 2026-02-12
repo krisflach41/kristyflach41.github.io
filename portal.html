@@ -985,61 +985,103 @@ document.addEventListener('keydown', (e) => {
   }
 });
 <script>
+/* =====================================================
+   BRIEFING AUTO-UPDATE SCRIPT
+   REPLACE THE EXISTING BRIEFING LOAD SCRIPT WITH THIS
+   ===================================================== */
+
+<script>
 // Load briefing data on page load
 window.addEventListener('load', function() {
   const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
   
-  // Update rates ticker
-  if (briefingData.rates) {
-    // Update your ticker with briefingData.rates
-    // Example: document.getElementById('rate30year').textContent = briefingData.rates['30year'];
+  // ===== UPDATE RATES TICKER =====
+  if (briefingData.rates && briefingData.rates['30year']) {
+    const tickerHTML = `
+      <span>30-Year ${briefingData.rates['30year']}</span>
+      <span>FHA ${briefingData.rates['30yearFHA']}</span>
+      <span>VA ${briefingData.rates['30yearVA']}</span>
+      <span>Jumbo ${briefingData.rates['30yearJumbo']}</span>
+      <span>15-Year ${briefingData.rates['15year']}</span>
+    `;
+    
+    // Update both ticker lines (they duplicate for smooth scroll)
+    document.querySelectorAll('.ticker-line').forEach(line => {
+      line.innerHTML = tickerHTML;
+    });
   }
   
-  // Update market summary box
-  if (briefingData.marketSummary) {
-    document.getElementById('marketSummaryBox').innerHTML = 
-      formatWithFade(briefingData.marketSummary);
-  }
-  
-  // Update client-friendly box
-  if (briefingData.clientFriendly) {
-    document.getElementById('clientFriendlyBox').innerHTML = 
-      formatWithFade(briefingData.clientFriendly);
-  }
-  
-  // Update economic calendar
+  // ===== UPDATE ECONOMIC CALENDAR =====
   if (briefingData.economicCalendar) {
-    document.getElementById('econCalendarBox').innerHTML = briefingData.economicCalendar;
+    // Find the event card and replace its content
+    const eventCard = document.querySelector('.event-card');
+    if (eventCard) {
+      // Parse the calendar data and rebuild the event rows
+      eventCard.innerHTML = parseEconomicCalendar(briefingData.economicCalendar);
+    }
   }
   
-  // Update week in review
+  // ===== UPDATE MARKET SUMMARY (with 4-line fade) =====
+  if (briefingData.marketSummary) {
+    const marketCard = document.querySelectorAll('.blog-card')[1]; // Second card
+    const summaryDiv = marketCard.querySelector('.summary-text');
+    if (summaryDiv) {
+      summaryDiv.innerHTML = `<p>${briefingData.marketSummary.substring(0, 300)}...</p>`;
+    }
+  }
+  
+  // ===== UPDATE CLIENT-FRIENDLY SUMMARY (with 4-line fade) =====
+  if (briefingData.clientFriendly) {
+    const clientCard = document.querySelectorAll('.blog-card')[2]; // Third card
+    const summaryDiv = clientCard.querySelector('.summary-text');
+    if (summaryDiv) {
+      summaryDiv.innerHTML = `<p>${briefingData.clientFriendly.substring(0, 400)}...</p>`;
+    }
+  }
+  
+  // ===== UPDATE WEEK IN REVIEW =====
   if (briefingData.weekInReview) {
-    document.getElementById('weekReviewBox').innerHTML = briefingData.weekInReview;
+    const weekCard = document.querySelector('.week-review-card p');
+    if (weekCard) {
+      weekCard.textContent = briefingData.weekInReview;
+    }
+  }
+  
+  // ===== UPDATE LAST UPDATED TIME =====
+  if (briefingData.lastUpdated) {
+    const lastUpdated = new Date(briefingData.lastUpdated);
+    const briefDate = document.getElementById('briefDate');
+    if (briefDate) {
+      briefDate.textContent = lastUpdated.toLocaleDateString('en-US', { 
+        month: 'long', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    }
   }
 });
 
-// Helper function to create fade effect
-function formatWithFade(text) {
-  const lines = text.split('\n');
-  const preview = lines.slice(0, 4).join('\n');
-  
-  return `
-    <div style="position: relative;">
-      <div style="max-height: 100px; overflow: hidden; position: relative;">
-        ${preview}
-        <div style="position: absolute; bottom: 0; left: 0; right: 0; 
-                    height: 50px; 
-                    background: linear-gradient(transparent, rgba(255,255,255,0.95));"></div>
-      </div>
-      <a href="summary-briefs.html" style="display: block; margin-top: 10px; 
-         font-weight: 600; color: #0b4ea2;">
-        Click here for full brief →
-      </a>
+// Helper function to parse economic calendar into event rows
+function parseEconomicCalendar(calendarText) {
+  // Keep the header
+  let html = `
+    <div class="events-header">
+      <div class="events-week">THIS WEEK</div>
+      <div class="events-title">Market-Moving Events</div>
     </div>
   `;
+  
+  // For now, return placeholder structure
+  // You can customize this parser if you want specific formatting
+  html += `
+    <div style="padding: 20px; font-size: 14px; line-height: 1.6;">
+      ${calendarText.replace(/\n/g, '<br>')}
+    </div>
+  `;
+  
+  return html;
 }
 </script>
-  
 
 <!-- Add before closing </body> tag -->
 <div style="text-align: center; padding: 20px; opacity: 0.3;">
