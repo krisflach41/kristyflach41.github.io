@@ -986,7 +986,6 @@ document.addEventListener('keydown', (e) => {
 });
 
 
-</script>
 /* =====================================================
    BRIEFING AUTO-UPDATE SCRIPT - WITH CALENDAR FIX
    REPLACE THE EXISTING BRIEFING LOAD SCRIPT WITH THIS
@@ -1026,15 +1025,21 @@ window.addEventListener('load', function() {
       
       briefingData.economicCalendar.forEach(event => {
         const dayAbbrev = event.day.substring(0, 3); // Mon, Tue, Wed, etc.
-        const moreText = event.additionalCount > 0 ? `<span class="more">+${event.additionalCount}</span>` : '';
+        const hasMore = event.additionalEvents && event.additionalEvents.length > 0;
+        const moreText = hasMore ? `<span class="more">+${event.additionalEvents.length}</span>` : '';
         
         calendarHTML += `
-          <div class="event-row" onclick="toggleDetails(this)">
+          <div class="event-row" ${hasMore ? 'onclick="toggleDetails(this)"' : ''}>
             <div class="event-main">
               <span class="day">${dayAbbrev}</span>
               <span class="headline">${event.mainEvent}</span>
               ${moreText}
             </div>
+            ${hasMore ? `
+              <div class="event-details">
+                ${event.additionalEvents.map(e => `<div>${e}</div>`).join('')}
+              </div>
+            ` : ''}
           </div>
         `;
       });
