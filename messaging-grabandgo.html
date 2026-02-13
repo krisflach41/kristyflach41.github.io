@@ -544,10 +544,147 @@ body {
   .creator-modal { width: 98%; max-height: 95vh; }
 }
 
+/* ===== TUTORIAL WALKTHROUGH ===== */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  animation: tutFadeIn 0.4s ease forwards;
+}
+
+@keyframes tutFadeIn {
+  to { opacity: 1; }
+}
+
+.tutorial-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px 45px;
+  max-width: 560px;
+  width: 92%;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+  text-align: center;
+  position: relative;
+}
+
+.tutorial-step-indicator {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.step-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: all 0.3s ease;
+}
+
+.step-dot.active {
+  background: #002556;
+  transform: scale(1.3);
+}
+
+.step-dot.completed {
+  background: rgba(0,37,86,0.4);
+}
+
+.tutorial-icon {
+  font-size: 56px;
+  margin-bottom: 20px;
+  display: block;
+}
+
+.tutorial-card h2 {
+  color: #002556;
+  font-size: 24px;
+  margin: 0 0 12px 0;
+}
+
+.tutorial-card p {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 30px 0;
+}
+
+.tutorial-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.tut-btn {
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  border: none;
+}
+
+.tut-btn-primary {
+  background: linear-gradient(135deg, #002556, #003d82);
+  color: white;
+}
+
+.tut-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,37,86,0.35);
+}
+
+.tut-btn-skip {
+  background: transparent;
+  color: #888;
+  border: 1px solid #ddd;
+}
+
+.tut-btn-skip:hover {
+  background: #f5f5f5;
+  color: #555;
+}
+
+.tutorial-dismiss {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+.tutorial-dismiss:hover {
+  color: #666;
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- ===== TUTORIAL WALKTHROUGH ===== -->
+<div class="tutorial-overlay" id="tutorialOverlay" style="display:none;">
+  <div class="tutorial-card">
+    <div class="tutorial-step-indicator" id="tutStepDots"></div>
+    <span class="tutorial-icon" id="tutIcon"></span>
+    <h2 id="tutTitle"></h2>
+    <p id="tutText"></p>
+    <div class="tutorial-buttons">
+      <button class="tut-btn tut-btn-skip" id="tutSkip">Skip Tour</button>
+      <button class="tut-btn tut-btn-primary" id="tutNext">Next →</button>
+    </div>
+    <div class="tutorial-dismiss" id="tutDismiss">Don't show this again</div>
+  </div>
+</div>
+
 <div class="page-wrap">
   <div class="content-section">
 
@@ -639,16 +776,104 @@ body {
 </div>
 
 <script>
-// ===== POST DATABASE =====
+// ===== POST DATABASE - 40 POSTS =====
 const posts = [
-  {category:'market',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"🏡 MARKET UPDATE: What's happening in our local real estate market right now?\n\nInventory is up slightly from last month, giving buyers more options to choose from. At the same time, we're seeing steady demand from qualified buyers ready to make their move.\n\nWhat does this mean for YOU?\n✅ Buyers: More negotiating power and time to find the right home\n✅ Sellers: Still a great time to list with the right pricing strategy\n\nCurious about your home's value in today's market? Let's connect!",hashtags:'#RealEstate #MarketUpdate #LocalRealtor #HomeValues #RealEstateMarket #YourCity',searchHint:'real estate neighborhood'},
-  {category:'market',platforms:['Facebook','LinkedIn'],goal:'education',content:"📊 February Market Snapshot:\n\nHere's what I'm seeing in our local market this month:\n• Average days on market: Holding steady\n• Buyer activity: Strong and consistent\n• Interest rates: Creating opportunities for prepared buyers\n• Inventory: Seasonal patterns as expected\n\nThe key takeaway? This is still a great time to buy OR sell with the right strategy and professional guidance.\n\nHave questions about what these trends mean for your situation? Drop a comment or send me a message!",hashtags:'#RealEstateMarket #MarketTrends #LocalExpert #HousingMarket #RealEstateAdvice',searchHint:'housing market data'},
-  {category:'market',platforms:['Instagram','Facebook'],goal:'engagement',content:"Pop quiz! 🏠📈\n\nWhat do you think is the #1 factor buyers are looking for right now in our market?\n\nA) Location, location, location\nB) Move-in ready condition\nC) Affordable price point\nD) Outdoor space\n\nDrop your answer in the comments! I'll share the surprising results tomorrow. 👇",hashtags:'#RealEstatePoll #HomebuyerCommunity #LocalMarket #RealEstateAgent #YourCityHomes',searchHint:'modern house exterior'},
+
+  // ========================================
+  // MARKET UPDATES (8 posts)
+  // ========================================
+  {category:'market',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"🏡 MARKET UPDATE: What's happening in our local real estate market right now?\n\nInventory is up slightly from last month, giving buyers more options to choose from. At the same time, we're seeing steady demand from qualified buyers ready to make their move.\n\nWhat does this mean for YOU?\n✅ Buyers: More negotiating power and time to find the right home\n✅ Sellers: Still a great time to list with the right pricing strategy\n\nCurious about your home's value in today's market? Let's connect!",hashtags:'#RealEstate #MarketUpdate #LocalRealtor #HomeValues #RealEstateMarket',searchHint:'real estate neighborhood'},
+
+  {category:'market',platforms:['Facebook','LinkedIn'],goal:'education',content:"📊 Monthly Market Snapshot:\n\nHere's what I'm seeing in our local market this month:\n• Average days on market: Holding steady\n• Buyer activity: Strong and consistent\n• Interest rates: Creating opportunities for prepared buyers\n• Inventory: Seasonal patterns as expected\n\nThe key takeaway? This is still a great time to buy OR sell with the right strategy and professional guidance.\n\nHave questions about what these trends mean for your situation? Drop a comment or send me a message!",hashtags:'#RealEstateMarket #MarketTrends #LocalExpert #HousingMarket #RealEstateAdvice',searchHint:'housing market data'},
+
+  {category:'market',platforms:['Instagram','Facebook'],goal:'engagement',content:"Pop quiz! 🏠📈\n\nWhat do you think is the #1 factor buyers are looking for right now in our market?\n\nA) Location, location, location\nB) Move-in ready condition\nC) Affordable price point\nD) Outdoor space\n\nDrop your answer in the comments! I'll share the surprising results tomorrow. 👇",hashtags:'#RealEstatePoll #HomebuyerCommunity #LocalMarket #RealEstateAgent',searchHint:'modern house exterior'},
+
+  {category:'market',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"STOP waiting for the \"perfect\" market.\n\nHere's what experienced investors know: there is no perfect market. There are only perfect strategies for the market you're IN.\n\nRising rates? There's a strategy for that.\nLow inventory? There's a strategy for that.\nBidding wars? There's a strategy for that too.\n\nThe people who build wealth in real estate aren't the ones who time the market. They're the ones who make the market work for THEM.\n\nReady to talk strategy? That's literally what I do. Let's connect.",hashtags:'#RealEstateStrategy #SmartInvesting #HousingMarket #WealthBuilding #RealEstateTips',searchHint:'city skyline real estate'},
+
+  {category:'market',platforms:['Instagram','Facebook'],goal:'leadgen',content:"I just ran the numbers on what happened in our market last month. 👀\n\nHere's what stood out:\n→ Homes priced right are moving FAST\n→ Overpriced listings are sitting\n→ Buyers with strong pre-approvals are winning\n\nThe gap between \"listed\" and \"sold\" is telling a very clear story right now.\n\nWant to know exactly where your home falls? DM me your address and I'll pull the data. No strings, no pressure — just clarity.",hashtags:'#MarketData #HomeValue #RealEstateInsider #LocalMarket #FreeAnalysis',searchHint:'home for sale sign'},
+
+  {category:'market',platforms:['LinkedIn','Facebook'],goal:'education',content:"\"Should I wait for rates to drop?\"\n\nI get this question every single day. Here's what I tell my clients:\n\nWhen rates drop, two things happen simultaneously:\n1. More buyers flood the market\n2. Prices get pushed up from increased competition\n\nSo yes, your rate might be lower — but you could end up paying significantly more for the same home AND competing with 12 other offers.\n\nThe math often favors buying now and refinancing later. But every situation is different.\n\nLet's look at YOUR numbers. That's the only opinion that matters.",hashtags:'#InterestRates #MortgageAdvice #HomeBuying #RealEstateEducation #MarketTiming',searchHint:'financial planning calculator'},
+
+  {category:'market',platforms:['Facebook','Instagram'],goal:'engagement',content:"TRUE OR FALSE: Now is a bad time to sell your home. 🤔\n\nI'll give you a hint — the answer depends entirely on YOUR situation, not what the headlines say.\n\nI've helped clients sell for top dollar in markets that the news called \"terrible.\" How? Strategy. Preparation. Pricing it right from day one.\n\nDrop your guess below and I'll share the full breakdown tomorrow!",hashtags:'#RealEstateMyths #TrueOrFalse #HomeSelling #RealEstateAgent #MarketTruth',searchHint:'beautiful home exterior'},
+
+  {category:'market',platforms:['Instagram','Facebook','LinkedIn'],goal:'brand',content:"Every week I dive deep into the numbers so my clients don't have to.\n\nMarket reports. Rate trends. Inventory shifts. Neighborhood-level data that actually matters.\n\nThis isn't stuff I pull from a headline. It's analysis I do myself, for my clients, every single week.\n\nBecause informed decisions beat emotional decisions. Every time.\n\nWant this level of insight working for you? Follow along or reach out. I'm here for it.",hashtags:'#MarketAnalysis #RealEstateExpert #DataDriven #InformedDecisions #YourLocalRealtor',searchHint:'person analyzing data laptop'},
+
+  // ========================================
+  // HOMEBUYING TIPS (9 posts)
+  // ========================================
   {category:'homebuying',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"🏡 First-Time Homebuyer Tip: Start with Your \"Why\"\n\nBefore you start scrolling listings, get clear on WHY you want to buy.\n\nIs it:\n✓ Building equity instead of paying rent?\n✓ More space for a growing family?\n✓ Stability and putting down roots?\n✓ Freedom to customize your space?\n\nYour \"why\" will keep you focused when the process gets overwhelming. It'll help you make better decisions and avoid settling for the wrong property.\n\nWhat's YOUR why? Share below! 💭",hashtags:'#FirstTimeHomeBuyer #HomeBuyingTips #RealEstateGoals #DreamHome #YourWhy',searchHint:'front door welcome home'},
+
   {category:'homebuying',platforms:['Instagram','Facebook'],goal:'education',content:"💰 Down Payment Reality Check\n\nYou DON'T always need 20% down!\n\nCommon down payment options:\n• Conventional: 3-5% down\n• FHA: 3.5% down\n• VA: 0% down (for veterans)\n• USDA: 0% down (rural areas)\n\nPlus, many areas offer down payment assistance programs you might not know about!\n\nStop letting the \"20% myth\" hold you back from homeownership. Let's talk about what's actually possible for YOUR situation!",hashtags:'#DownPayment #HomeBuyingMyths #FirstTimeHomeBuyer #RealEstateTips #AffordableHousing',searchHint:'house keys savings'},
+
+  {category:'homebuying',platforms:['Instagram','Facebook'],goal:'leadgen',content:"🚨 The 3 most expensive words in real estate:\n\n\"I'll wait until...\"\n\nI'll wait until rates drop.\nI'll wait until prices come down.\nI'll wait until I have more saved.\n\nMeanwhile, renters paid their landlord's mortgage for another year. Home values went up. And the goal got further away, not closer.\n\nI'm not saying rush. I'm saying let's sit down, look at the REAL numbers, and see where you actually stand. You might be closer than you think.\n\nDM me \"READY\" and let's find out.",hashtags:'#StopWaiting #HomeOwnership #FirstTimeBuyer #RealEstateTruth #ReadyToBuy',searchHint:'couple looking at house'},
+
+  {category:'homebuying',platforms:['Facebook','LinkedIn'],goal:'education',content:"House hunting this weekend? Here's a checklist most buyers forget:\n\n✅ Water pressure — turn on every faucet\n✅ Cell signal — check every room\n✅ Storage — open ALL the closets\n✅ Natural light — visit at different times of day\n✅ Noise — stand quietly and listen for 2 minutes\n✅ Neighborhood — drive through at night too\n✅ Outlets — are there enough where you need them?\n\nThe pretty staging distracts from real livability. Be the buyer who looks deeper.\n\nSave this for your next showing! 📌",hashtags:'#HouseHunting #HomeBuyerTips #RealEstateChecklist #SmartBuyer #OpenHouse',searchHint:'home interior living room'},
+
+  {category:'homebuying',platforms:['Instagram','Facebook'],goal:'engagement',content:"Be honest — which one scares you most about buying a home? 😬\n\nA) The down payment\nB) The commitment\nC) The inspection findings\nD) The paperwork\n\nDrop your letter below! I'll address the top answer this week with a full breakdown.\n\nSpoiler: NONE of them are as scary as they seem when you have the right guide. 💪",hashtags:'#HomeBuyingFears #RealTalk #FirstTimeBuyer #HomeBuyingProcess #AskYourAgent',searchHint:'keys to new home'},
+
+  {category:'homebuying',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"Nobody tells first-time buyers this, so I will:\n\nYour first home does NOT have to be your forever home.\n\nIt needs to be:\n→ Something you can comfortably afford\n→ In a location that holds value\n→ A step toward building equity\n\nIt does NOT need to be:\n→ Your dream home with every upgrade\n→ The biggest house you qualify for\n→ Perfect\n\nYour first home is a financial launchpad, not a finish line. Buy smart now and your future self will thank you.\n\nQuestions? I'm always here. Let's talk.",hashtags:'#FirstHome #RealEstateWisdom #HomeBuyingAdvice #SmartMoves #FinancialFreedom',searchHint:'starter home neighborhood'},
+
+  {category:'homebuying',platforms:['Instagram','Facebook'],goal:'leadgen',content:"POV: You just got your keys and you're standing in YOUR living room for the first time. 🔑🏡\n\nThat feeling? It's real. And it's closer than you think.\n\nI've helped buyers go from \"I don't think I can\" to \"I can't believe this is mine\" — and I'd love to help you do the same.\n\nThe first step is always the easiest: just reach out.\n\nDM me or comment KEYS below and let's start the conversation.",hashtags:'#NewHomeowner #DreamHome #GotTheKeys #RealEstateGoals #HomeOwnership',searchHint:'handing over house keys'},
+
+  {category:'homebuying',platforms:['Facebook','Instagram'],goal:'education',content:"\"How much house can I afford?\" is the wrong first question.\n\nThe RIGHT first question is: \"What monthly payment am I comfortable with?\"\n\nHere's why — just because you QUALIFY for $500K doesn't mean a $500K home fits your life.\n\nI help my clients back into the right number:\n1. What payment lets you still live your life?\n2. What does that translate to in purchase price?\n3. What homes fit that range in your target areas?\n\nThis approach builds wealth AND keeps you sleeping well at night.\n\nLet's run your numbers. It takes 10 minutes.",hashtags:'#AffordableHome #BudgetSmart #MortgageTips #HomeBuyingEducation #FinancialWellness',searchHint:'family home suburban street'},
+
+  {category:'homebuying',platforms:['Instagram','Facebook'],goal:'engagement',content:"Your dream home checklist — rank these 1-5 in order of what matters MOST to you:\n\n🏡 Big backyard\n🍳 Updated kitchen\n🚗 Short commute\n📚 Great school district\n🛁 Spa-like master bathroom\n\nDrop your top 3 in the comments! I'm curious what matters most to YOU.\n\nBonus: Tag someone who would have a completely different list than yours. 😂",hashtags:'#DreamHome #HomeBuyerWishList #WhatMatters #RealEstateGoals #HomeSearch',searchHint:'beautiful kitchen interior'},
+
+  // ========================================
+  // MORTGAGE EDUCATION (8 posts)
+  // ========================================
   {category:'mortgage',platforms:['Facebook','LinkedIn'],goal:'education',content:"🎓 Mortgage 101: Pre-Qualification vs. Pre-Approval\n\nThese terms get confused ALL the time!\n\nPRE-QUALIFICATION:\n• Quick estimate based on basic info\n• No document verification\n• Takes minutes\n• Good for early planning\n\nPRE-APPROVAL:\n• Full financial review\n• Verifies income, assets, credit\n• Conditional commitment\n• Required for serious house hunting\n\nBottom line? Pre-qualification = ballpark. Pre-approval = bargaining power.\n\nReady to shop with confidence? Let's make it happen!",hashtags:'#MortgageEducation #PreApproval #HomeBuyingProcess #MortgageTips #SmartBuying',searchHint:'signing documents mortgage'},
+
+  {category:'mortgage',platforms:['Instagram','Facebook'],goal:'education',content:"Your credit score is NOT a fixed number. It's a living, breathing thing that changes constantly.\n\nThings that can BOOST it:\n→ Paying down credit card balances below 30%\n→ Keeping old accounts open (even if unused)\n→ Making every payment on time\n→ Diversifying your credit types\n\nThings that can TANK it:\n→ Opening new accounts right before buying\n→ Maxing out cards\n→ Co-signing for someone else\n→ Closing your oldest account\n\nPlanning to buy in the next 6-12 months? Let's look at your score NOW so we can strategize.\n\nDM me — this conversation is free and could save you thousands.",hashtags:'#CreditScore #MortgageTips #CreditRepair #HomeBuyingPrep #FinancialLiteracy',searchHint:'credit score financial planning'},
+
+  {category:'mortgage',platforms:['Facebook','LinkedIn','Instagram'],goal:'education',content:"Fixed rate vs. adjustable rate — let me break this down simply:\n\nFIXED RATE:\n→ Same payment for the life of the loan\n→ Predictable, stable, no surprises\n→ Best if you're staying 7+ years\n\nADJUSTABLE RATE (ARM):\n→ Lower rate for the first 5-10 years\n→ Then adjusts based on the market\n→ Best if you're selling or refinancing within 5-7 years\n\nNeither is \"better.\" The right choice depends entirely on YOUR plan.\n\nThat's why cookie-cutter advice is dangerous in mortgage. You need someone who asks about YOUR life before recommending a product.\n\nThat's what I do. Let's talk.",hashtags:'#MortgageEducation #FixedRate #ARM #HomeLoans #SmartFinancing',searchHint:'mortgage documents home loan'},
+
+  {category:'mortgage',platforms:['Instagram','Facebook'],goal:'leadgen',content:"I saved a client $347/month last week.\n\nSame house. Same loan amount. Different strategy.\n\nThe difference? I took the time to understand their full financial picture — not just their credit score — and found a loan structure their previous lender never even mentioned.\n\n$347/month = $4,164/year = $124,920 over the life of the loan.\n\nThat's not a small adjustment. That's life-changing money.\n\nWondering if there's a better strategy for YOUR situation? There's only one way to find out.\n\nDM me \"SAVE\" and let's look at your numbers.",hashtags:'#MortgageSavings #SmartLending #HomeFinancing #MortgageAdvisor #SaveMoney',searchHint:'saving money piggy bank'},
+
+  {category:'mortgage',platforms:['Facebook','Instagram'],goal:'education',content:"Things your lender should explain BEFORE you sign anything:\n\n1. Your actual monthly payment (including taxes and insurance)\n2. How much you're paying in interest over the full loan\n3. What happens if you make extra payments\n4. When it makes sense to refinance\n5. How your rate was determined and if you can do better\n\nIf your lender can't — or won't — walk you through all five? That's a red flag.\n\nTransparency isn't optional. It's the bare minimum.\n\nThis is how I operate with every single client. No surprises, no jargon, no confusion.",hashtags:'#MortgageTransparency #LenderRedFlags #HomeBuyingEducation #TrustYourLender #MortgageAdvice',searchHint:'professional meeting handshake'},
+
+  {category:'mortgage',platforms:['LinkedIn','Facebook'],goal:'brand',content:"Hot take: The best mortgage professionals aren't the ones who close the most loans.\n\nThey're the ones who occasionally tell a client: \"Not yet. Here's what we need to work on first.\"\n\nBecause getting someone into a home they can't sustain isn't a win. It's a ticking time bomb.\n\nI'd rather have a client who's ready in 6 months and thriving than one who closed last week and is already stressed.\n\nThat's not just good ethics. That's good business.\n\nIf you want honest guidance, not a sales pitch — let's talk.",hashtags:'#EthicalLending #MortgageProfessional #DoTheRightThing #TrustedAdvisor #IntegrityMatters',searchHint:'professional woman office'},
+
+  {category:'mortgage',platforms:['Instagram','Facebook'],goal:'engagement',content:"Quick! Without Googling — do you know what a \"good\" interest rate is right now? 🤔\n\nA) Under 5%\nB) 5-6%\nC) 6-7%\nD) Over 7%\n\nDrop your answer below! The correct answer might surprise you.\n\nHint: \"Good\" depends on more than just the number. I'll explain why in the comments tomorrow.",hashtags:'#InterestRates #MortgageQuiz #RealEstateEducation #HomeLoans #TestYourKnowledge',searchHint:'percentage rate finance'},
+
+  {category:'mortgage',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:"Closing costs. Let's demystify them.\n\nMost buyers budget for the down payment but forget about closing costs — and then panic at the finish line.\n\nTypical closing costs include:\n→ Appraisal fee\n→ Title insurance\n→ Attorney/escrow fees\n→ Prepaid taxes and insurance\n→ Lender origination fees\n\nGeneral rule: budget 2-5% of the purchase price.\n\nBut here's the thing — some of these are negotiable, and there are strategies to reduce them.\n\nLet's plan for this BEFORE you're at the closing table. Reach out anytime.",hashtags:'#ClosingCosts #HomeBuyingBudget #MortgageBasics #NoSurprises #BuyerEducation',searchHint:'signing closing documents'},
+
+  // ========================================
+  // CLIENT SUCCESS (7 posts)
+  // ========================================
   {category:'success',platforms:['Facebook','Instagram'],goal:'engagement',content:"🎉 CLIENT WIN ALERT! 🎉\n\nJust helped [CLIENT TYPE] close on their dream home in [NEIGHBORHOOD]!\n\nWhat made this special:\n✨ [UNIQUE CHALLENGE THEY OVERCAME]\n✨ [WHAT THEY LOVED ABOUT THE PROCESS]\n✨ [THEIR FAVORITE FEATURE]\n\nFrom our first conversation to handing over the keys, it's been an absolute joy!\n\nCongratulations! Welcome home! 🏡❤️",hashtags:'#ClientSuccess #NewHomeowners #DreamHome #RealEstateSuccess #ProudAgent',searchHint:'happy family new home'},
-  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"☕ Monday Motivation!\n\n\"The best time to plant a tree was 20 years ago. The second best time is now.\"\n\nSame goes for homeownership! 🏡\n\nWhether you're thinking about buying your first home, upgrading, or investing — there's no \"perfect\" time. There's only NOW.\n\nWhat's one goal you're working toward this week? Drop it below — let's cheer each other on! 👇",hashtags:'#MondayMotivation #Goals #Inspiration #RealEstateGoals #CommunitySupport',searchHint:'sunrise inspiration morning'}
+
+  {category:'success',platforms:['Instagram','Facebook'],goal:'engagement',content:"They told me they weren't ready. I told them let's find out together.\n\nAfter one conversation, we realized they were closer than they thought. After two months of smart preparation, they were pre-approved. After four months, they had the keys to their first home.\n\nThe hardest part wasn't the mortgage. It wasn't the house hunt. It was making that first phone call.\n\nIf you've been putting it off — this is your sign. Make the call. You might surprise yourself.\n\n🏡🔑",hashtags:'#FirstTimeHomebuyer #SuccessStory #MakeTheCall #HomeOwnership #BelieveInYourself',searchHint:'couple holding keys new home'},
+
+  {category:'success',platforms:['Facebook','Instagram','LinkedIn'],goal:'brand',content:"Another closing in the books — but this one hit different.\n\n[CLIENT NAME] came to me after being turned down by another lender. They were frustrated, discouraged, and almost gave up.\n\nWe sat down. Looked at everything. Found a path forward that the other lender missed entirely.\n\nYesterday? Keys in hand. Tears of joy. A home they love.\n\nThis is why I do what I do. Not every file is easy. But every client deserves someone who will fight for them.\n\n[EDIT: Replace names/details with your actual client story]",hashtags:'#NeverGiveUp #ClientFirst #RealEstateWin #MortgageSuccess #AboveAndBeyond',searchHint:'sold house celebration'},
+
+  {category:'success',platforms:['Instagram','Facebook'],goal:'leadgen',content:"🔑 From \"I can't afford it\" to \"I own it.\"\n\nThat's the journey for so many of my clients. And it starts with ONE conversation.\n\nHere's what I've learned: most people overestimate what they need and underestimate what they already have.\n\nI don't just run numbers. I find strategies. I find programs. I find ways.\n\nYour homeownership story could be my next post. Ready to write it?\n\nDM me and let's start chapter one. 📖",hashtags:'#HomeOwnershipJourney #YesYouCan #DreamHomeStory #ClientWin #LetsTalk',searchHint:'house keys front door'},
+
+  {category:'success',platforms:['Facebook','Instagram'],goal:'engagement',content:"My favorite text I got this week:\n\n\"I'm sitting on MY porch, drinking MY coffee, looking at MY yard. Thank you for making this happen.\"\n\nThis is the text I work for. Not the commission check. Not the closing numbers. THIS.\n\nEvery single client has a version of this moment waiting for them. Watching them get there? That never gets old.\n\n❤️🏡\n\nWho else needs a porch moment? Tag them below. 👇",hashtags:'#PorchMoment #HomeOwnerFeels #WhyIDoThis #RealEstateLife #GratefulAgent',searchHint:'porch coffee morning home'},
+
+  {category:'success',platforms:['Instagram','Facebook'],goal:'brand',content:"I don't celebrate closings by the number.\n\nI celebrate them by the story.\n\nThe single mom who thought homeownership wasn't for her.\nThe veteran who didn't know about VA benefits.\nThe couple who got outbid three times and finally won.\nThe family who drove past their future home every day for a year before buying it.\n\nEvery closing is someone's entire world changing.\n\nThat's not just real estate. That's legacy.\n\n🏡✨",hashtags:'#RealEstateStories #MoreThanATransaction #Legacy #HomeMeansEverything #PassionForPeople',searchHint:'family in front of house'},
+
+  {category:'success',platforms:['Facebook','LinkedIn'],goal:'engagement',content:"One year ago today, I handed the keys to a first-time buyer who literally cried in the driveway.\n\nI just got a message from them:\n\n\"Best decision we ever made. We can't believe we almost didn't do it.\"\n\nThe fear is real. The doubt is real. But so is the pride of ownership. So is the equity. So is the moment your house becomes your HOME.\n\nOne year from now, YOU could be sending this message.\n\nWhat's stopping you? Let's figure it out together.",hashtags:'#OneYearLater #HomeOwnershipPride #BestDecision #RealEstateJourney #TakeTheLeap',searchHint:'happy homeowner front door'},
+
+  // ========================================
+  // LIFESTYLE & COMMUNITY - FUN/VIRAL (8 posts)
+  // ========================================
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"☕ Monday Motivation!\n\n\"The best time to plant a tree was 20 years ago. The second best time is now.\"\n\nSame goes for homeownership! 🏡\n\nWhether you're thinking about buying your first home, upgrading, or investing — there's no \"perfect\" time. There's only NOW.\n\nWhat's one goal you're working toward this week? Drop it below — let's cheer each other on! 👇",hashtags:'#MondayMotivation #Goals #Inspiration #RealEstateGoals #CommunitySupport',searchHint:'sunrise inspiration morning'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"Tell me your home décor style using only emojis. I'll go first:\n\n🪵🕯️🌿🤎☁️\n\n(Cozy cabin vibes with ALL the candles)\n\nYour turn! Drop yours below and let's see who has the best taste. 👀\n\nBonus points if you can guess someone else's style. 😂",hashtags:'#HomeDecor #EmojiChallenge #InteriorDesign #HomeSweetHome #JustForFun',searchHint:'cozy home interior candles'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"UNPOPULAR OPINION: Adulting is actually kind of great when you own your home. 🏡\n\nYes, I have to fix things. But they're MY things.\nYes, I mow the lawn. But it's MY lawn.\nYes, the mortgage is real. But so is the equity.\n\nThere's something about walking through your own front door that just hits different.\n\nHomeowners — back me up in the comments. What's your favorite part of owning? 👇\n\nFuture homeowners — save this for motivation. Your day is coming. 💪",hashtags:'#HomeOwnerLife #AdultingWin #MyHouse #RealEstateLife #HomeOwnerProblems',searchHint:'person relaxing home happy'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'brand',content:"Things I take more seriously than most people:\n\n1. My clients' financial futures\n2. Returning texts within the hour\n3. My coffee order ☕\n4. Never letting my clients walk into a deal confused\n5. Taco Tuesday 🌮\n\nWhich one resonates with you the most? Drop your number below. 😂\n\n(If you said 5, we should definitely work together.)",hashtags:'#GetToKnowMe #RealtorLife #FunSide #RealEstateHumor #TacoTuesday',searchHint:'fun professional workspace'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"Finish this sentence: \"My dream home has to have ________.\"\n\nI'll start: A wrap-around porch with a ceiling fan and a view I never get tired of. 😌🏡\n\nNow you go! Drop yours in the comments — I want to see how creative we get.\n\nNo budget limits. Dream BIG. ✨",hashtags:'#DreamHome #WishList #HomeGoals #DreamBig #RealEstateGoals',searchHint:'luxury home porch view'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"🏠 WOULD YOU RATHER:\n\nA) Brand new construction, everything modern — but no yard\nB) 1920s charmer with character for days — but needs some updates\n\nThere is NO wrong answer. But I know this comment section is about to be divided. 😂\n\nDrop A or B and defend your choice! ⬇️",hashtags:'#WouldYouRather #NewVsOld #HomeBuyerDebate #RealEstateForFun #PickOne',searchHint:'modern vs vintage home'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook','LinkedIn'],goal:'brand',content:"People ask me why I'm so passionate about real estate.\n\nHonestly? It's because I've seen what homeownership does for people.\n\nIt's the single mom who finally has stability.\nIt's the young couple building wealth instead of paying rent.\nIt's the family who can paint the walls any color they want.\n\nReal estate isn't just property. It's possibility.\n\nAnd helping people unlock that possibility? That's not a job. That's a calling.\n\n🏡❤️",hashtags:'#WhyRealEstate #Passion #Purpose #HomeChangesEverything #RealEstateWithHeart',searchHint:'heartfelt home family'},
+
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:"Rate your current living situation on a scale of 1-10. 🏠\n\n1 = \"I'm sleeping on an air mattress at my cousin's\"\n10 = \"I wake up every morning and pinch myself\"\n\nNo judgment. Just vibes. Drop your number. 👇\n\nIf you're under a 7, let's talk about how to change that. Seriously. Life's too short for a living situation that doesn't make you happy.\n\n💬 DM me anytime.",hashtags:'#RateYourLife #HomeGoals #LevelUp #RealTalk #HomeMatters',searchHint:'happy home living room'}
+
 ];
 
 // ===== DISPLAY POSTS =====
@@ -938,6 +1163,109 @@ document.getElementById('downloadBtn').addEventListener('click', function() {
 // ===== INIT =====
 renderPosts();
 clearPreview();
+
+// ===== TUTORIAL WALKTHROUGH =====
+(function() {
+  // Check if user has already seen the tutorial
+  if (localStorage.getItem('grabandgo_tutorial_seen')) return;
+
+  var steps = [
+    {
+      icon: '👋',
+      title: 'Welcome to the Grab & Go Content Studio',
+      text: 'Create professional social media graphics in seconds — without ever leaving this page. Let me show you how it works.'
+    },
+    {
+      icon: '📝',
+      title: 'Step 1: Pick a Post',
+      text: 'Browse pre-written posts by category and goal. Each one is crafted for maximum engagement. Use the filters at the top to find exactly what you need.'
+    },
+    {
+      icon: '✏️',
+      title: 'Step 2: Edit Your Text',
+      text: 'Click "Create Graphic" on any post. The text loads into an editor where you can customize it — change wording, add your name, make it yours. Or leave it as-is.'
+    },
+    {
+      icon: '🔍',
+      title: 'Step 3: Search for an Image',
+      text: 'Search thousands of free, professional stock photos right here. Just type what you\'re looking for and click the image you want. No downloading, no other sites.'
+    },
+    {
+      icon: '👁️',
+      title: 'Step 4: Preview Your Graphic',
+      text: 'Your text and image combine into a live preview — a finished social media graphic, ready to go. See exactly what your followers will see.'
+    },
+    {
+      icon: '⬇️',
+      title: 'Step 5: Download & Post',
+      text: 'Hit download and your graphic saves as a high-quality image. Upload it straight to Facebook, Instagram, LinkedIn — anywhere. That\'s it. You\'re done.'
+    }
+  ];
+
+  var currentStep = 0;
+  var overlay = document.getElementById('tutorialOverlay');
+  var dotsContainer = document.getElementById('tutStepDots');
+  var icon = document.getElementById('tutIcon');
+  var title = document.getElementById('tutTitle');
+  var text = document.getElementById('tutText');
+  var nextBtn = document.getElementById('tutNext');
+  var skipBtn = document.getElementById('tutSkip');
+  var dismissBtn = document.getElementById('tutDismiss');
+
+  function renderStep() {
+    var step = steps[currentStep];
+    icon.textContent = step.icon;
+    title.textContent = step.title;
+    text.textContent = step.text;
+
+    // Update dots
+    dotsContainer.innerHTML = '';
+    steps.forEach(function(_, i) {
+      var dot = document.createElement('div');
+      dot.className = 'step-dot';
+      if (i === currentStep) dot.className += ' active';
+      else if (i < currentStep) dot.className += ' completed';
+      dotsContainer.appendChild(dot);
+    });
+
+    // Update button text
+    if (currentStep === steps.length - 1) {
+      nextBtn.textContent = 'Get Started! →';
+      skipBtn.style.display = 'none';
+    } else {
+      nextBtn.textContent = 'Next →';
+      skipBtn.style.display = '';
+    }
+  }
+
+  function closeTutorial(remember) {
+    overlay.style.display = 'none';
+    if (remember) {
+      localStorage.setItem('grabandgo_tutorial_seen', 'true');
+    }
+  }
+
+  nextBtn.addEventListener('click', function() {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      renderStep();
+    } else {
+      closeTutorial(true);
+    }
+  });
+
+  skipBtn.addEventListener('click', function() {
+    closeTutorial(true);
+  });
+
+  dismissBtn.addEventListener('click', function() {
+    closeTutorial(true);
+  });
+
+  // Show tutorial
+  overlay.style.display = 'flex';
+  renderStep();
+})();
 </script>
 
 </body>
