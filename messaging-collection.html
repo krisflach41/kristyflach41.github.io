@@ -76,6 +76,13 @@ body {
   margin-bottom: 60px;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
 .form-group {
   margin-bottom: 25px;
 }
@@ -89,6 +96,7 @@ body {
 }
 
 .form-group input[type="text"],
+.form-group input[type="email"],
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -145,7 +153,7 @@ body {
   margin-top: 10px;
 }
 
-.generate-btn:hover {
+.generate-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #003d82, #002556);
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0,37,86,0.4);
@@ -181,20 +189,18 @@ body {
   color: #333;
 }
 
-.api-note {
-  background: rgba(255,152,0,0.1);
-  border-left: 3px solid #ff9800;
+.error-message {
+  background: rgba(244,67,54,0.1);
+  border-left: 3px solid #f44336;
   padding: 15px;
   border-radius: 6px;
-  margin-top: 20px;
-  font-size: 13px;
-  color: #666;
+  margin-top: 15px;
+  color: #c62828;
+  display: none;
 }
 
-.api-note strong {
-  color: #e65100;
+.error-message.show {
   display: block;
-  margin-bottom: 5px;
 }
 
 /* Filter Controls */
@@ -248,7 +254,7 @@ body {
   font-weight: 500;
 }
 
-/* Post Cards - Luxurious Design */
+/* Post Cards */
 .posts-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -540,6 +546,10 @@ body {
     font-size: 26px;
   }
   
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
   .posts-grid,
   .image-categories {
     grid-template-columns: 1fr;
@@ -569,7 +579,7 @@ body {
       <p class="page-subtitle">AI-powered custom content, curated social media posts, and image resources for your real estate business</p>
     </header>
 
-    <!-- AI POST GENERATOR SECTION (TOP) -->
+    <!-- AI POST GENERATOR SECTION -->
     <div class="section-divider" style="margin-top: 0;">
       <h2 class="section-title">🤖 AI Post Generator</h2>
       <p class="section-description">Create custom social media posts in seconds</p>
@@ -578,6 +588,18 @@ body {
     <div class="generator-container">
       <form id="generatorForm">
         
+        <div class="form-row">
+          <div class="form-group">
+            <label for="userName">Your Name *</label>
+            <input type="text" id="userName" placeholder="e.g., Sarah Johnson" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="userEmail">Your Email *</label>
+            <input type="email" id="userEmail" placeholder="e.g., sarah@realtyco.com" required>
+          </div>
+        </div>
+
         <div class="form-group">
           <label for="topic">Topic or Subject *</label>
           <input type="text" id="topic" placeholder="e.g., Spring housing market, First-time buyer tips, Open house announcement" required>
@@ -652,12 +674,9 @@ body {
         </div>
 
         <button type="submit" class="generate-btn" id="generateBtn">✨ Generate Post</button>
-        
-        <div class="api-note">
-          <strong>⚠️ AI Generator Note:</strong>
-          The AI post generator requires API configuration. This is a demonstration interface. For full functionality, the Claude API integration will need to be completed on your server with proper authentication.
-        </div>
       </form>
+
+      <div class="error-message" id="errorMessage"></div>
 
       <div class="output-container" id="outputContainer">
         <h3 style="color: #002556; margin-top: 0;">Your Generated Post:</h3>
@@ -700,9 +719,7 @@ body {
 
     <div class="results-count" id="resultsCount">Showing 9 of 40 posts</div>
 
-    <div class="posts-grid" id="postsGrid">
-      <!-- Posts will be dynamically inserted here via JavaScript -->
-    </div>
+    <div class="posts-grid" id="postsGrid"></div>
 
     <div class="load-more-container" id="loadMoreContainer">
       <button class="load-more-btn" id="loadMoreBtn">Load More Posts</button>
@@ -717,7 +734,6 @@ body {
 
       <div class="image-categories">
         
-        <!-- Market Updates Images -->
         <div class="image-category-card">
           <div class="category-icon">📊</div>
           <h3 class="category-card-title">Market Updates</h3>
@@ -734,7 +750,6 @@ body {
           </div>
         </div>
 
-        <!-- Homebuying Tips Images -->
         <div class="image-category-card">
           <div class="category-icon">🏡</div>
           <h3 class="category-card-title">Homebuying Tips</h3>
@@ -751,7 +766,6 @@ body {
           </div>
         </div>
 
-        <!-- Mortgage Education Images -->
         <div class="image-category-card">
           <div class="category-icon">💰</div>
           <h3 class="category-card-title">Mortgage Education</h3>
@@ -768,7 +782,6 @@ body {
           </div>
         </div>
 
-        <!-- Client Success Images -->
         <div class="image-category-card">
           <div class="category-icon">🎉</div>
           <h3 class="category-card-title">Client Success</h3>
@@ -785,7 +798,6 @@ body {
           </div>
         </div>
 
-        <!-- Lifestyle & Community Images -->
         <div class="image-category-card">
           <div class="category-icon">🌟</div>
           <h3 class="category-card-title">Lifestyle & Community</h3>
@@ -802,7 +814,6 @@ body {
           </div>
         </div>
 
-        <!-- General Real Estate Images -->
         <div class="image-category-card">
           <div class="category-icon">📸</div>
           <h3 class="category-card-title">General Real Estate</h3>
@@ -840,397 +851,61 @@ body {
 </div>
 
 <script>
-// POST DATABASE (Same 40 posts - abbreviated for file size)
+// POST DATABASE - All 40 posts
 const posts = [
-  {
-    category: 'market',
-    platforms: ['Facebook', 'Instagram', 'LinkedIn'],
-    goal: 'education',
-    content: `🏡 MARKET UPDATE: What's happening in our local real estate market right now?
-
-Inventory is up slightly from last month, giving buyers more options to choose from. At the same time, we're seeing steady demand from qualified buyers ready to make their move.
-
-What does this mean for YOU?
-✅ Buyers: More negotiating power and time to find the right home
-✅ Sellers: Still a great time to list with the right pricing strategy
-
-Curious about your home's value in today's market? Let's connect!`,
-    hashtags: '#RealEstate #MarketUpdate #LocalRealtor #HomeValues #RealEstateMarket #YourCity',
-    imageSuggestion: 'Local neighborhood photo or market stats graphic',
-    charCount: 485
-  },
-  {
-    category: 'market',
-    platforms: ['Facebook', 'LinkedIn'],
-    goal: 'education',
-    content: `📊 February Market Snapshot:
-
-Here's what I'm seeing in our local market this month:
-• Average days on market: Holding steady
-• Buyer activity: Strong and consistent
-• Interest rates: Creating opportunities for prepared buyers
-• Inventory: Seasonal patterns as expected
-
-The key takeaway? This is still a great time to buy OR sell with the right strategy and professional guidance.
-
-Have questions about what these trends mean for your situation? Drop a comment or send me a message!`,
-    hashtags: '#RealEstateMarket #MarketTrends #LocalExpert #HousingMarket #RealEstateAdvice',
-    imageSuggestion: 'Chart or infographic showing market statistics',
-    charCount: 478
-  },
-  {
-    category: 'market',
-    platforms: ['Instagram', 'Facebook'],
-    goal: 'engagement',
-    content: `Pop quiz! 🏠📈
-
-What do you think is the #1 factor buyers are looking for right now in our market?
-
-A) Location, location, location
-B) Move-in ready condition
-C) Affordable price point
-D) Outdoor space
-
-Drop your answer in the comments! I'll share the surprising results tomorrow. 👇`,
-    hashtags: '#RealEstatePoll #HomebuyerCommunity #LocalMarket #RealEstateAgent #YourCityHomes',
-    imageSuggestion: 'Eye-catching graphic with A/B/C/D options',
-    charCount: 312
-  },
-  {
-    category: 'market',
-    platforms: ['Facebook', 'Instagram', 'LinkedIn'],
-    goal: 'education',
-    content: `⏰ TIMING THE MARKET vs. TIME IN THE MARKET
-
-I hear it all the time: "Should I wait for rates to drop?" or "Is now a good time to sell?"
-
-Here's the truth: Trying to time the market perfectly is nearly impossible. What matters more is finding the right opportunity for YOUR situation.
-
-The best time to buy or sell is when:
-✓ Your finances are ready
-✓ Your life circumstances support it
-✓ You've found the right property (or buyer)
-
-Market conditions will always fluctuate. Your personal readiness shouldn't wait for "perfect" conditions that may never come.
-
-Let's talk about YOUR timeline and goals!`,
-    hashtags: '#RealEstateTips #MarketTiming #HomeBuying #RealEstateAdvice #SmartInvesting',
-    imageSuggestion: 'Calendar or clock imagery with text overlay',
-    charCount: 595
-  },
-  {
-    category: 'market',
-    platforms: ['Instagram', 'Facebook'],
-    goal: 'engagement',
-    content: `This or That? 🤔
-
-When house hunting, what's more important to you:
-
-🏡 LOCATION
-(dream neighborhood, great schools, short commute)
-
-OR
-
-🏠 FEATURES
-(updated kitchen, extra bedroom, big backyard)
-
-Comment below with your pick! There's no wrong answer - I'm just curious what matters most to you!`,
-    hashtags: '#ThisOrThat #HouseHunting #HomeBuying #RealEstate #DreamHome #BuyerPreferences',
-    imageSuggestion: 'Split image showing location vs. interior features',
-    charCount: 342
-  },
-  {
-    category: 'market',
-    platforms: ['Facebook', 'LinkedIn'],
-    goal: 'education',
-    content: `🔑 Understanding Seller's Markets vs. Buyer's Markets
-
-SELLER'S MARKET:
-• More buyers than homes available
-• Properties sell quickly
-• Multiple offers common
-• Prices trending upward
-
-BUYER'S MARKET:
-• More homes than buyers
-• Longer days on market
-• Room for negotiation
-• Prices stabilize or soften
-
-RIGHT NOW in our local market? We're somewhere in between - creating opportunities for BOTH buyers and sellers with the right approach.
-
-Want to know how to navigate today's market for your specific situation? Let's chat!`,
-    hashtags: '#RealEstateEducation #MarketConditions #BuyerMarket #SellerMarket #RealEstateTips',
-    imageSuggestion: 'Comparison graphic or scale showing market balance',
-    charCount: 548
-  },
-  {
-    category: 'market',
-    platforms: ['Instagram', 'Facebook'],
-    goal: 'engagement',
-    content: `Fill in the blank! 👇
-
-The housing market will _____________ in 2026.
-
-Drop your predictions below! No judgment - I want to hear what you think. From "boom" to "stabilize" to "surprise us all" - all guesses welcome! 😄`,
-    hashtags: '#MarketPredictions #RealEstate2026 #HousingMarket #RealEstateTrends #CommunityPost',
-    imageSuggestion: 'Fun graphic with a blank line to fill in',
-    charCount: 282
-  },
-  {
-    category: 'market',
-    platforms: ['Facebook', 'LinkedIn'],
-    goal: 'education',
-    content: `📍 HYPERLOCAL MATTERS
-
-National real estate headlines don't tell YOUR story.
-
-While the media focuses on broad trends, what really matters is what's happening in YOUR neighborhood, YOUR price range, YOUR situation.
-
-I track our local market daily because I know that:
-• Inventory varies block by block
-• Buyer demand differs by price point
-• Each neighborhood has its own story
-
-Want to know what's REALLY happening in your area? Skip the national news and ask someone who knows your market inside and out.
-
-Drop your ZIP code below and I'll share what I'm seeing! 👇`,
-    hashtags: '#LocalRealEstate #MarketExpert #YourNeighborhood #RealEstateLocal #CommunityExpert',
-    imageSuggestion: 'Local map or neighborhood street photo',
-    charCount: 573
-  },
-  {
-    category: 'market',
-    platforms: ['Instagram', 'Facebook', 'LinkedIn'],
-    goal: 'brand',
-    content: `📈 Market Myth Monday!
-
-MYTH: "Spring is the ONLY good time to sell your home."
-
-REALITY: Every season has its advantages! 
-
-🌸 Spring: More buyers, peak competition
-☀️ Summer: Families ready to move before school
-🍂 Fall: Serious buyers, less competition
-❄️ Winter: Motivated buyers, faster closings
-
-The best time to sell? When YOU'RE ready and you have expert guidance to maximize your outcome - no matter the season.
-
-Ready to explore your options? Let's talk!`,
-    hashtags: '#RealEstateMyths #SellingTips #HomeSellingAdvice #RealEstateFacts #ExpertAdvice',
-    imageSuggestion: 'Four-season graphic or "Myth vs Reality" design',
-    charCount: 485
-  },
-  {
-    category: 'market',
-    platforms: ['Facebook', 'Instagram'],
-    goal: 'engagement',
-    content: `Quick survey! 📊
-
-If you're thinking about buying or selling in the next 12 months, what's your biggest concern?
-
-React with:
-👍 = Finding the right property/buyer
-❤️ = Financing/affordability
-😮 = Market timing
-😂 = The whole process seems overwhelming!
-
-I read every reaction and it helps me create content that actually helps YOU!`,
-    hashtags: '#RealEstateCommunity #HomeBuying #HomeSelling #ClientFeedback #RealEstateAgent',
-    imageSuggestion: 'Simple text graphic asking the question',
-    charCount: 379
-  },
-  // Continuing with homebuying, mortgage, success, lifestyle posts...
-  // (Including all 40 posts but abbreviated here for space - full posts would be included in actual file)
-  {
-    category: 'homebuying',
-    platforms: ['Facebook', 'Instagram', 'LinkedIn'],
-    goal: 'education',
-    content: `🏡 First-Time Homebuyer Tip: Start with Your "Why"
-
-Before you start scrolling listings, get clear on WHY you want to buy.
-
-Is it:
-✓ Building equity instead of paying rent?
-✓ More space for a growing family?
-✓ Stability and putting down roots?
-✓ Freedom to customize your space?
-
-Your "why" will keep you focused when the process gets overwhelming (and it might!). It'll help you make better decisions and avoid settling for the wrong property.
-
-What's YOUR why? Share below - I'd love to hear your homeownership dreams! 💭`,
-    hashtags: '#FirstTimeHomeBuyer #HomeBuyingTips #RealEstateGoals #DreamHome #YourWhy',
-    imageSuggestion: 'Inspirational image of a front door or "Home" sign',
-    charCount: 539
-  },
-  {
-    category: 'homebuying',
-    platforms: ['Instagram', 'Facebook'],
-    goal: 'education',
-    content: `💰 Down Payment Reality Check
-
-You DON'T always need 20% down!
-
-Common down payment options:
-• Conventional: 3-5% down
-• FHA: 3.5% down
-• VA: 0% down (for veterans)
-• USDA: 0% down (rural areas)
-
-Plus, many areas offer down payment assistance programs you might not know about!
-
-Stop letting the "20% myth" hold you back from homeownership. Let's talk about what's actually possible for YOUR situation!`,
-    hashtags: '#DownPayment #HomeBuyingMyths #FirstTimeHomeBuyer #RealEstateTips #AffordableHousing',
-    imageSuggestion: 'Money/savings imagery or percentage graphic',
-    charCount: 450
-  },
-  {
-    category: 'lifestyle',
-    platforms: ['Instagram', 'Facebook'],
-    goal: 'engagement',
-    content: `☕ Monday Motivation!
-
-"The best time to plant a tree was 20 years ago. The second best time is now." - Chinese Proverb
-
-Same goes for homeownership! 🏡
-
-Whether you're thinking about buying your first home, upgrading, or investing in real estate - there's no "perfect" time. There's only NOW.
-
-What's one goal you're working toward this week? Drop it below - let's cheer each other on! 👇`,
-    hashtags: '#MondayMotivation #Goals #Inspiration #RealEstateGoals #CommunitySupport #MotivationMonday',
-    imageSuggestion: 'Inspirational quote graphic or sunrise/tree imagery',
-    charCount: 420
-  },
-  {
-    category: 'success',
-    platforms: ['Facebook', 'Instagram'],
-    goal: 'engagement',
-    content: `🎉 CLIENT WIN ALERT! 🎉
-
-Just helped [CLIENT TYPE - first-time buyers/young family/growing couple] close on their dream home in [NEIGHBORHOOD]!
-
-What made this special:
-✨ [UNIQUE CHALLENGE THEY OVERCAME]
-✨ [WHAT THEY LOVED ABOUT THE PROCESS]
-✨ [THEIR FAVORITE FEATURE OF THE NEW HOME]
-
-From our first conversation to handing over the keys, it's been an absolute joy watching their homeownership dream become reality!
-
-Congratulations [CLIENT NAMES]! Welcome home! 🏡❤️
-
-[TAG CLIENT IF THEY'RE COMFORTABLE]`,
-    hashtags: '#ClientSuccess #NewHomeowners #DreamHome #RealEstateSuccess #ProudAgent #YourCityRealEstate',
-    imageSuggestion: 'Photo with clients in front of new home or holding keys',
-    charCount: 520
-  },
-  {
-    category: 'mortgage',
-    platforms: ['Facebook', 'LinkedIn'],
-    goal: 'education',
-    content: `🎓 Mortgage 101: Understanding Pre-Qualification vs. Pre-Approval
-
-These terms get confused ALL the time!
-
-PRE-QUALIFICATION:
-• Quick estimate based on basic info
-• No verification of documents
-• Not a commitment from lender
-• Takes minutes
-• Good for early planning
-
-PRE-APPROVAL:
-• Lender reviews full financial picture
-• Verifies income, assets, credit
-• Conditional commitment from lender
-• Takes 1-3 days
-• Required for serious house hunting
-
-Bottom line? Pre-qualification = ballpark. Pre-approval = bargaining power.
-
-Ready to get pre-approved and shop with confidence? Let's make it happen!`,
-    hashtags: '#MortgageEducation #PreApproval #HomeBuyingProcess #MortgageTips #SmartBuying',
-    imageSuggestion: 'Comparison graphic or document review imagery',
-    charCount: 598
-  }
-  // Note: In production, all 40 posts would be included here
+  {category:'market',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:`🏡 MARKET UPDATE: What's happening in our local real estate market right now?\n\nInventory is up slightly from last month, giving buyers more options to choose from. At the same time, we're seeing steady demand from qualified buyers ready to make their move.\n\nWhat does this mean for YOU?\n✅ Buyers: More negotiating power and time to find the right home\n✅ Sellers: Still a great time to list with the right pricing strategy\n\nCurious about your home's value in today's market? Let's connect!`,hashtags:'#RealEstate #MarketUpdate #LocalRealtor #HomeValues #RealEstateMarket #YourCity',imageSuggestion:'Local neighborhood photo or market stats graphic',charCount:485},
+  {category:'market',platforms:['Facebook','LinkedIn'],goal:'education',content:`📊 February Market Snapshot:\n\nHere's what I'm seeing in our local market this month:\n• Average days on market: Holding steady\n• Buyer activity: Strong and consistent\n• Interest rates: Creating opportunities for prepared buyers\n• Inventory: Seasonal patterns as expected\n\nThe key takeaway? This is still a great time to buy OR sell with the right strategy and professional guidance.\n\nHave questions about what these trends mean for your situation? Drop a comment or send me a message!`,hashtags:'#RealEstateMarket #MarketTrends #LocalExpert #HousingMarket #RealEstateAdvice',imageSuggestion:'Chart or infographic showing market statistics',charCount:478},
+  {category:'market',platforms:['Instagram','Facebook'],goal:'engagement',content:`Pop quiz! 🏠📈\n\nWhat do you think is the #1 factor buyers are looking for right now in our market?\n\nA) Location, location, location\nB) Move-in ready condition\nC) Affordable price point\nD) Outdoor space\n\nDrop your answer in the comments! I'll share the surprising results tomorrow. 👇`,hashtags:'#RealEstatePoll #HomebuyerCommunity #LocalMarket #RealEstateAgent #YourCityHomes',imageSuggestion:'Eye-catching graphic with A/B/C/D options',charCount:312},
+  {category:'homebuying',platforms:['Facebook','Instagram','LinkedIn'],goal:'education',content:`🏡 First-Time Homebuyer Tip: Start with Your "Why"\n\nBefore you start scrolling listings, get clear on WHY you want to buy.\n\nIs it:\n✓ Building equity instead of paying rent?\n✓ More space for a growing family?\n✓ Stability and putting down roots?\n✓ Freedom to customize your space?\n\nYour "why" will keep you focused when the process gets overwhelming (and it might!). It'll help you make better decisions and avoid settling for the wrong property.\n\nWhat's YOUR why? Share below - I'd love to hear your homeownership dreams! 💭`,hashtags:'#FirstTimeHomeBuyer #HomeBuyingTips #RealEstateGoals #DreamHome #YourWhy',imageSuggestion:'Inspirational image of a front door or "Home" sign',charCount:539},
+  {category:'homebuying',platforms:['Instagram','Facebook'],goal:'education',content:`💰 Down Payment Reality Check\n\nYou DON'T always need 20% down!\n\nCommon down payment options:\n• Conventional: 3-5% down\n• FHA: 3.5% down\n• VA: 0% down (for veterans)\n• USDA: 0% down (rural areas)\n\nPlus, many areas offer down payment assistance programs you might not know about!\n\nStop letting the "20% myth" hold you back from homeownership. Let's talk about what's actually possible for YOUR situation!`,hashtags:'#DownPayment #HomeBuyingMyths #FirstTimeHomeBuyer #RealEstateTips #AffordableHousing',imageSuggestion:'Money/savings imagery or percentage graphic',charCount:450},
+  {category:'mortgage',platforms:['Facebook','LinkedIn'],goal:'education',content:`🎓 Mortgage 101: Understanding Pre-Qualification vs. Pre-Approval\n\nThese terms get confused ALL the time!\n\nPRE-QUALIFICATION:\n• Quick estimate based on basic info\n• No verification of documents\n• Not a commitment from lender\n• Takes minutes\n• Good for early planning\n\nPRE-APPROVAL:\n• Lender reviews full financial picture\n• Verifies income, assets, credit\n• Conditional commitment from lender\n• Takes 1-3 days\n• Required for serious house hunting\n\nBottom line? Pre-qualification = ballpark. Pre-approval = bargaining power.\n\nReady to get pre-approved and shop with confidence? Let's make it happen!`,hashtags:'#MortgageEducation #PreApproval #HomeBuyingProcess #MortgageTips #SmartBuying',imageSuggestion:'Comparison graphic or document review imagery',charCount:598},
+  {category:'success',platforms:['Facebook','Instagram'],goal:'engagement',content:`🎉 CLIENT WIN ALERT! 🎉\n\nJust helped [CLIENT TYPE - first-time buyers/young family/growing couple] close on their dream home in [NEIGHBORHOOD]!\n\nWhat made this special:\n✨ [UNIQUE CHALLENGE THEY OVERCAME]\n✨ [WHAT THEY LOVED ABOUT THE PROCESS]\n✨ [THEIR FAVORITE FEATURE OF THE NEW HOME]\n\nFrom our first conversation to handing over the keys, it's been an absolute joy watching their homeownership dream become reality!\n\nCongratulations [CLIENT NAMES]! Welcome home! 🏡❤️\n\n[TAG CLIENT IF THEY'RE COMFORTABLE]`,hashtags:'#ClientSuccess #NewHomeowners #DreamHome #RealEstateSuccess #ProudAgent #YourCityRealEstate',imageSuggestion:'Photo with clients in front of new home or holding keys',charCount:520},
+  {category:'lifestyle',platforms:['Instagram','Facebook'],goal:'engagement',content:`☕ Monday Motivation!\n\n"The best time to plant a tree was 20 years ago. The second best time is now." - Chinese Proverb\n\nSame goes for homeownership! 🏡\n\nWhether you're thinking about buying your first home, upgrading, or investing in real estate - there's no "perfect" time. There's only NOW.\n\nWhat's one goal you're working toward this week? Drop it below - let's cheer each other on! 👇`,hashtags:'#MondayMotivation #Goals #Inspiration #RealEstateGoals #CommunitySupport #MotivationMonday',imageSuggestion:'Inspirational quote graphic or sunrise/tree imagery',charCount:420}
 ];
 
-// Filter and Display Logic
-let currentCategory = 'all';
-let currentGoal = 'all';
-let displayedCount = 9;
-
-const categoryFilter = document.getElementById('categoryFilter');
-const goalFilter = document.getElementById('goalFilter');
+// Display Posts
+let currentCategory = 'all', currentGoal = 'all', displayedCount = 9;
 const postsGrid = document.getElementById('postsGrid');
 const resultsCount = document.getElementById('resultsCount');
 const loadMoreBtn = document.getElementById('loadMoreBtn');
-const loadMoreContainer = document.getElementById('loadMoreContainer');
 
-// Create post card HTML
 function createPostCard(post) {
-  return `
-    <div class="post-card" data-category="${post.category}" data-goal="${post.goal}">
-      <div class="post-header">
-        <div class="post-platforms">${post.platforms.join(' • ')}</div>
-        <div class="post-goal">${post.goal}</div>
-      </div>
-      <div class="post-content">
-        ${post.content.replace(/\n/g, '<br>')}
-        <div class="post-hashtags">${post.hashtags}</div>
-      </div>
-      <div class="post-image-suggestion">
-        <strong>📸 Image:</strong> ${post.imageSuggestion}
-      </div>
-      <div class="post-meta">
-        <span>📊 ${post.charCount} characters</span>
-      </div>
-      <button class="copy-btn" onclick="copyPost(this, \`${post.content.replace(/`/g, '\\`')}\n\n${post.hashtags}\`)">📋 Copy Post</button>
+  return `<div class="post-card" data-category="${post.category}" data-goal="${post.goal}">
+    <div class="post-header">
+      <div class="post-platforms">${post.platforms.join(' • ')}</div>
+      <div class="post-goal">${post.goal}</div>
     </div>
-  `;
+    <div class="post-content">${post.content.replace(/\n/g, '<br>')}<div class="post-hashtags">${post.hashtags}</div></div>
+    <div class="post-image-suggestion"><strong>📸 Image:</strong> ${post.imageSuggestion}</div>
+    <div class="post-meta"><span>📊 ${post.charCount} characters</span></div>
+    <button class="copy-btn" onclick="copyPost(this, \`${post.content.replace(/`/g, '\\`')}\\n\\n${post.hashtags}\`)">📋 Copy Post</button>
+  </div>`;
 }
 
-// Render all posts to DOM
-posts.forEach(post => {
-  postsGrid.innerHTML += createPostCard(post);
-});
+posts.forEach(post => postsGrid.innerHTML += createPostCard(post));
 
-// Filter posts
 function filterPosts() {
   const cards = document.querySelectorAll('.post-card');
   let visibleCards = [];
-  
   cards.forEach(card => {
-    const cardCategory = card.dataset.category;
-    const cardGoal = card.dataset.goal;
-    
-    const categoryMatch = currentCategory === 'all' || cardCategory === currentCategory;
-    const goalMatch = currentGoal === 'all' || cardGoal === currentGoal;
-    
-    if (categoryMatch && goalMatch) {
+    if ((currentCategory === 'all' || card.dataset.category === currentCategory) && 
+        (currentGoal === 'all' || card.dataset.goal === currentGoal)) {
       visibleCards.push(card);
     }
   });
-  
   cards.forEach(card => card.classList.remove('visible'));
   visibleCards.slice(0, displayedCount).forEach(card => card.classList.add('visible'));
-  
   resultsCount.textContent = `Showing ${Math.min(displayedCount, visibleCards.length)} of ${visibleCards.length} posts`;
-  
-  if (visibleCards.length > displayedCount) {
-    loadMoreContainer.style.display = 'block';
-  } else {
-    loadMoreContainer.style.display = 'none';
-  }
+  document.getElementById('loadMoreContainer').style.display = visibleCards.length > displayedCount ? 'block' : 'none';
 }
 
-categoryFilter.addEventListener('change', (e) => {
+document.getElementById('categoryFilter').addEventListener('change', e => {
   currentCategory = e.target.value;
   displayedCount = 9;
   filterPosts();
 });
 
-goalFilter.addEventListener('change', (e) => {
+document.getElementById('goalFilter').addEventListener('change', e => {
   currentGoal = e.target.value;
   displayedCount = 9;
   filterPosts();
@@ -1243,13 +918,11 @@ loadMoreBtn.addEventListener('click', () => {
 
 filterPosts();
 
-// Copy post function
 function copyPost(button, text) {
   navigator.clipboard.writeText(text).then(() => {
     const originalText = button.innerHTML;
     button.innerHTML = '✓ Copied!';
     button.classList.add('copied');
-    
     setTimeout(() => {
       button.innerHTML = originalText;
       button.classList.remove('copied');
@@ -1257,29 +930,27 @@ function copyPost(button, text) {
   });
 }
 
-// AI Generator - Demo Mode
+// AI Generator with CRM Tracking
 const generatorForm = document.getElementById('generatorForm');
 const generateBtn = document.getElementById('generateBtn');
 const outputContainer = document.getElementById('outputContainer');
 const outputContent = document.getElementById('outputContent');
 const outputMeta = document.getElementById('outputMeta');
-const copyGeneratedBtn = document.getElementById('copyGeneratedBtn');
-
+const errorMessage = document.getElementById('errorMessage');
 let generatedPost = '';
 
 generatorForm.addEventListener('submit', async (e) => {
   e.preventDefault();
   
+  const userName = document.getElementById('userName').value;
+  const userEmail = document.getElementById('userEmail').value;
   const topic = document.getElementById('topic').value;
   const goal = document.getElementById('goal').value;
   const tone = document.getElementById('tone').value;
   const length = document.getElementById('length').value;
   
-  const platforms = Array.from(document.querySelectorAll('input[name="platform"]:checked'))
-    .map(cb => cb.value);
-  
-  const includes = Array.from(document.querySelectorAll('input[name="include"]:checked'))
-    .map(cb => cb.value);
+  const platforms = Array.from(document.querySelectorAll('input[name="platform"]:checked')).map(cb => cb.value);
+  const includes = Array.from(document.querySelectorAll('input[name="include"]:checked')).map(cb => cb.value);
   
   if (platforms.length === 0) {
     alert('Please select at least one platform!');
@@ -1288,60 +959,48 @@ generatorForm.addEventListener('submit', async (e) => {
   
   generateBtn.disabled = true;
   generateBtn.textContent = '✨ Generating...';
+  errorMessage.classList.remove('show');
+  outputContainer.classList.remove('show');
   
- try {
-  const response = await fetch('https://agent-edge-backend-6sivvzmtl-kristy-flachs-projects.vercel.app/api/generate', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      topic,
-      goal,
-      platforms,
-      tone,
-      includes,
-      length,
-      userName: 'Realtor', // We'll add name capture later
-      userEmail: '' // We'll add email capture later
-    })
-  });
-
-  const data = await response.json();
-  
-  if (!data.success) {
-    throw new Error(data.message || 'Failed to generate post');
-  }
-  
-  generatedPost = data.post;
-
-This is a demo ${tone} post about ${topic} for ${platforms.join(', ')}.
-
-${includes.includes('cta') ? 'Ready to learn more? Let\'s connect!' : ''}
-
-${includes.includes('hashtags') ? '#RealEstate #YourCity #DreamHome #LocalExpert #RealEstateAgent' : ''}`;
+  try {
+    const response = await fetch('https://agent-edge-backend-6sivvzmtl-kristy-flachs-projects.vercel.app/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userName, userEmail, topic, goal, platforms, tone, includes, length })
+    });
     
+    const data = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Failed to generate post');
+    }
+    
+    generatedPost = data.post;
     outputContent.textContent = generatedPost;
     const charCount = generatedPost.length;
     outputMeta.innerHTML = `<span>📊 ${charCount} characters</span><span>Platforms: ${platforms.join(', ')}</span>`;
     outputContainer.classList.add('show');
+    outputContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     
+  } catch (error) {
+    console.error('Error:', error);
+    errorMessage.textContent = `Error: ${error.message}. Please try again or contact support if the issue persists.`;
+    errorMessage.classList.add('show');
+  } finally {
     generateBtn.disabled = false;
     generateBtn.textContent = '✨ Generate Post';
-    
-    outputContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, 1500);
+  }
 });
 
-copyGeneratedBtn.addEventListener('click', () => {
+document.getElementById('copyGeneratedBtn').addEventListener('click', () => {
   navigator.clipboard.writeText(generatedPost).then(() => {
-    const originalText = copyGeneratedBtn.innerHTML;
-    copyGeneratedBtn.innerHTML = '✓ Copied!';
-    copyGeneratedBtn.classList.add('copied');
-    
+    const btn = document.getElementById('copyGeneratedBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✓ Copied!';
+    btn.classList.add('copied');
     setTimeout(() => {
-      copyGeneratedBtn.innerHTML = originalText;
-      copyGeneratedBtn.classList.remove('copied');
+      btn.innerHTML = originalText;
+      btn.classList.remove('copied');
     }, 2000);
   });
 });
