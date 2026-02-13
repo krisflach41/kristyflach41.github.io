@@ -352,7 +352,13 @@ body {
   </div>
 </div>
 
+<script src="tracking.js"></script>
 <script>
+// Auto-fill name and email from login session
+document.addEventListener('DOMContentLoaded', function() {
+  autoFillUserInfo('userName', 'userEmail');
+});
+
 // AI Generator with CRM Tracking
 var generatorForm = document.getElementById('generatorForm');
 var generateBtn = document.getElementById('generateBtn');
@@ -400,6 +406,9 @@ generatorForm.addEventListener('submit', async function(e) {
 
     generatedPost = data.post;
     outputContent.textContent = generatedPost;
+
+    // Track: Generated Post
+    trackActivity('Messaging', 'On-Demand', 'Generated Post', 'Topic: ' + topic + ' | Goal: ' + goal);
     var charCount = generatedPost.length;
     outputMeta.innerHTML = '<span>📊 ' + charCount + ' characters</span><span>Platforms: ' + platforms.join(', ') + '</span>';
     outputContainer.classList.add('show');
