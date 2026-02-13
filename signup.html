@@ -382,116 +382,103 @@ body {
   </div>
 </div>
 
-<script src="credentials.js"></script>
 <script src="auth.js"></script>
 <script>
 /* ===========================
    SIGNUP FORM HANDLER
+   Server-side registration
 =========================== */
 
-const signupForm = document.getElementById('signupForm');
-const errorMessage = document.getElementById('errorMessage');
-const successMessage = document.getElementById('successMessage');
-const submitBtn = document.getElementById('submitBtn');
+var signupForm = document.getElementById('signupForm');
+var errorMessage = document.getElementById('errorMessage');
+var successMessage = document.getElementById('successMessage');
+var submitBtn = document.getElementById('submitBtn');
 
-signupForm.addEventListener('submit', function(e) {
+signupForm.addEventListener('submit', async function(e) {
   e.preventDefault();
-  
+
   // Get form values
-  const fullName = document.getElementById('fullName').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const brokerage = document.getElementById('brokerage').value.trim();
-  const username = document.getElementById('newUsername').value.trim().toLowerCase();
-  const password = document.getElementById('newPassword').value;
-  const confirmPassword = document.getElementById('confirmPassword').value;
-  const agreeTerms = document.getElementById('agreeTerms').checked;
-  
+  var fullName = document.getElementById('fullName').value.trim();
+  var email = document.getElementById('email').value.trim();
+  var brokerage = document.getElementById('brokerage').value.trim();
+  var username = document.getElementById('newUsername').value.trim().toLowerCase();
+  var password = document.getElementById('newPassword').value;
+  var confirmPassword = document.getElementById('confirmPassword').value;
+  var agreeTerms = document.getElementById('agreeTerms').checked;
+
   // Clear previous messages
   errorMessage.classList.remove('show');
   successMessage.classList.remove('show');
-  
-  // Validate username format
+
+  // Client-side validation
   if (!/^[a-z0-9._]+$/.test(username)) {
     errorMessage.textContent = 'Username can only contain lowercase letters, numbers, dots, and underscores.';
     errorMessage.classList.add('show');
     return;
   }
-  
-  // Check if username exists
-  if (credentials[username]) {
-    errorMessage.textContent = 'Username already taken. Please choose another.';
-    errorMessage.classList.add('show');
-    return;
-  }
-  
-  // Validate password length
+
   if (password.length < 6) {
     errorMessage.textContent = 'Password must be at least 6 characters long.';
     errorMessage.classList.add('show');
     return;
   }
-  
-  // Check passwords match
+
   if (password !== confirmPassword) {
     errorMessage.textContent = 'Passwords do not match. Please try again.';
     errorMessage.classList.add('show');
     document.getElementById('confirmPassword').value = '';
     return;
   }
-  
-  // Must agree to terms
+
   if (!agreeTerms) {
     errorMessage.textContent = 'You must agree to the Terms & Conditions to continue.';
     errorMessage.classList.add('show');
     return;
   }
-  
-  // Hash the password
-  const hashedPassword = simpleHash(password);
-  
-  // Add to credentials (stored in localStorage)
-  const storedCredentials = JSON.parse(localStorage.getItem('agentEdgeCredentials') || '{}');
-  storedCredentials[username] = hashedPassword;
-  localStorage.setItem('agentEdgeCredentials', JSON.stringify(storedCredentials));
-  
-  // Store user profile info
-  const userProfile = {
-    fullName: fullName,
-    email: email,
-    brokerage: brokerage,
-    joinedDate: new Date().toISOString()
-  };
-  localStorage.setItem(`agentEdgeProfile_${username}`, JSON.stringify(userProfile));
-  
-  // Send notification email to Kristy (in background)
-  const formData = new FormData();
-  formData.append('_subject', 'New Agent Edge Partner Signup!');
-  formData.append('Full_Name', fullName);
-  formData.append('Email', email);
-  formData.append('Brokerage', brokerage);
-  formData.append('Username', username);
-  formData.append('Signup_Date', new Date().toLocaleString());
-  
-  fetch('https://formspree.io/f/mgoyyney', {
-    method: 'POST',
-    body: formData,
-    headers: { 'Accept': 'application/json' }
-  }).catch(() => {
-    // Fail silently - don't interrupt signup
-  });
-  
-  // Success! Log them in automatically
-  sessionStorage.setItem('agentEdgeAuth', 'authenticated');
-  sessionStorage.setItem('agentEdgeUser', username);
-  
-  // Show success message
-  successMessage.classList.add('show');
+
+  // Disable button while processing
   submitBtn.disabled = true;
-  
-  // Redirect to portal after 2 seconds
-  setTimeout(() => {
-    window.location.href = 'portal.html';
-  }, 2000);
+  submitBtn.textContent = 'Creating Account...';
+
+  try {
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: fullName,
+        email: email,
+        brokerage: brokerage,
+        username: username,
+        password: password
+      })
+    });
+
+    var data = await response.json();
+
+    if (data.success) {
+      // Auto-login
+      setUserSession(data.user);
+
+      // Show success
+      successMessage.classList.add('show');
+
+      // Redirect to portal
+      setTimeout(function() {
+        window.location.href = 'portal.html';
+      }, 2000);
+    } else {
+      errorMessage.textContent = data.message || 'Registration failed. Please try again.';
+      errorMessage.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+    }
+  } catch (error) {
+    console.error('Signup error:', error);
+    errorMessage.textContent = 'Connection error. Please try again.';
+    errorMessage.classList.add('show');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Create Account';
+  }
 });
 
 // Real-time username validation
@@ -501,10 +488,8 @@ document.getElementById('newUsername').addEventListener('input', function(e) {
 
 // Password match indicator
 document.getElementById('confirmPassword').addEventListener('input', function() {
-  const password = document.getElementById('newPassword').value;
-  const confirmPassword = this.value;
-  
-  if (confirmPassword && password !== confirmPassword) {
+  var password = document.getElementById('newPassword').value;
+  if (this.value && password !== this.value) {
     this.style.borderColor = '#c0392b';
   } else {
     this.style.borderColor = 'rgba(11,78,162,0.2)';
