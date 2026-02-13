@@ -775,6 +775,7 @@ body {
   </div>
 </div>
 
+<script src="tracking.js"></script>
 <script>
 // ===== POST DATABASE - 40 POSTS =====
 const posts = [
@@ -958,6 +959,9 @@ var currentPostIndex = -1;
 function openCreator(index) {
   currentPostIndex = index;
   var post = posts[index];
+
+  // Track: Created Graphic
+  trackActivity('Messaging', 'Grab & Go', 'Created Graphic', post.category + ' - ' + post.content.substring(0, 50));
 
   document.getElementById('postEditor').value = post.content + '\n\n' + post.hashtags;
   updateCharCount();
@@ -1150,6 +1154,10 @@ document.getElementById('postEditor').addEventListener('input', function() {
 document.getElementById('downloadBtn').addEventListener('click', function() {
   if (!selectedImageUrl) return;
   updatePreview();
+
+  // Track: Downloaded Graphic
+  var post = posts[currentPostIndex];
+  trackActivity('Messaging', 'Grab & Go', 'Downloaded Graphic', post ? post.category + ' - ' + post.content.substring(0, 50) : 'custom');
 
   setTimeout(function() {
     var canvas = document.getElementById('previewCanvas');
