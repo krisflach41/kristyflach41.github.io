@@ -1,1 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit & Financial Tools - Education Collection</title>
 
+<style>
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.content-section {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.page-title {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #002556;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== ITEM CARDS ===== */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  margin-bottom: 20px;
+}
+
+.item-card {
+  padding: 35px 30px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+
+.item-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.14);
+  border-color: rgba(0,37,86,0.3);
+}
+
+.item-icon {
+  font-size: 42px;
+  margin-bottom: 15px;
+}
+
+.item-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 22px;
+  color: #002556;
+}
+
+.item-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ===== LEGAL NOTE ===== */
+.legal-note {
+  background: rgba(0,37,86,0.06);
+  border-left: 3px solid #002556;
+  padding: 18px 22px;
+  border-radius: 8px;
+  margin-top: 30px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.legal-note strong {
+  color: #002556;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.back-link a {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.back-link a:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .content-section {
+    padding: 40px 25px;
+  }
+
+  .page-title {
+    font-size: 28px;
+  }
+
+  .items-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+</head>
+
+<body>
+<div class="page-wrap">
+  <div class="content-section">
+
+    <header class="page-header">
+      <h1 class="page-title">Credit & Financial Tools</h1>
+      <p class="page-subtitle">Credit score education, down payment assistance resources, and interactive simulation tools to empower informed decisions</p>
+    </header>
+
+    <div class="items-grid">
+
+      <a href="credit-score-education.html" class="item-card">
+        <div class="item-icon">📈</div>
+        <h3>Credit Score Education</h3>
+        <p>Understand how credit scores impact mortgage rates and learn strategies to improve your score. Covers score ranges from 620 minimum to 760+ for best rates.</p>
+      </a>
+
+      <a href="down-payment-assistance-education.html" class="item-card">
+        <div class="item-icon">💰</div>
+        <h3>Down Payment Assistance</h3>
+        <p>Explore grants, loans, and programs to help with down payments and closing costs. Gateway to official HUD resources by state.</p>
+      </a>
+
+      <a href="credit-score-simulator.html" class="item-card">
+        <div class="item-icon">🧮</div>
+        <h3>Credit Score Simulator</h3>
+        <p>Interactive tool to simulate credit actions and their potential impact on your score. Includes 5 simulation scenarios with projected outcomes.</p>
+      </a>
+
+    </div>
+
+    <div class="legal-note">
+      <strong>⚠️ Important Disclaimer</strong>
+      The Credit Score Simulator is for educational purposes only. All simulations are estimates and should not be used as the basis for financial decisions. Users must consult with a qualified professional before taking any credit-related actions. Paying collections can potentially lower your score — always seek guidance first.
+    </div>
+
+    <div class="back-link">
+      <a href="education-collection.html">← Back to Education Collection</a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
