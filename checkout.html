@@ -399,7 +399,17 @@ label {
 
 <a href="portal.html" class="return-main">Return to Portal</a>
 
+<script src="tracking.js"></script>
 <script>
+// Auto-fill user info from login session
+document.addEventListener('DOMContentLoaded', function() {
+  var user = getTrackedUser();
+  var nameField = document.querySelector('input[name="name"]');
+  var emailField = document.querySelector('input[name="email"]');
+  if (nameField && user.name && user.name !== 'Unknown') nameField.value = user.name;
+  if (emailField && user.email) emailField.value = user.email;
+});
+
 /* ===========================
    CHECKOUT PAGE LOGIC
 =========================== */
@@ -543,6 +553,13 @@ if (form) {
         body: formData,
         headers: { 'Accept': 'application/json' }
       });
+      
+      // Track the order submission
+      var collections = [];
+      if (cartData.marketing && cartData.marketing.length > 0) collections.push('Marketing: ' + cartData.marketing.join(', '));
+      if (cartData.advisory && Object.keys(cartData.advisory).length > 0) collections.push('Advisory: ' + Object.keys(cartData.advisory).join(', '));
+      if (cartData.websites && cartData.websites.length > 0) collections.push('Websites: ' + cartData.websites.length + ' properties');
+      trackActivity('Order', 'Checkout', 'Order Submitted', collections.join(' | '));
       
       // Clear cart from localStorage
       localStorage.removeItem('agentEdgeCart');
