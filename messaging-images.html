@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Library - Agent Edge</title>
+
+<style>
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.content-section {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #002556;
+}
+
+.page-subtitle {
+  font-size: 16px;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.category-card {
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,37,86,0.15);
+  border-radius: 16px;
+  padding: 25px;
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  border-color: rgba(0,37,86,0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+.category-icon {
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.category-card h3 {
+  font-size: 20px;
+  color: #002556;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.category-card p {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+  line-height: 1.6;
+}
+
+.keyword-list {
+  background: rgba(0,37,86,0.04);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.keyword-list strong {
+  display: block;
+  color: #002556;
+  font-size: 12px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.keywords {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.image-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.image-link {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #002556, #003d82);
+  color: white;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.image-link:hover {
+  background: linear-gradient(135deg, #003d82, #002556);
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(0,37,86,0.3);
+}
+
+.resource-note {
+  background: rgba(0,37,86,0.06);
+  border-left: 3px solid #002556;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 30px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #555;
+}
+
+.resource-note strong {
+  color: #002556;
+  display: block;
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
+.back-link {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.back-link a {
+  display: inline-block;
+  padding: 12px 28px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.back-link a:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .content-section { padding: 40px 25px; }
+  .page-title { font-size: 28px; }
+  .categories-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+
+<body>
+<div class="page-wrap">
+  <div class="content-section">
+
+    <header class="page-header">
+      <h1 class="page-title">Image Library</h1>
+      <p class="page-subtitle">Free, high-quality stock photos organized by category. All images are licensed for commercial use.</p>
+    </header>
+
+    <div class="categories-grid">
+
+      <div class="category-card">
+        <div class="category-icon">📊</div>
+        <h3>Market Updates</h3>
+        <p>Professional images for market analysis, trends, and data posts</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">real estate market, housing data, neighborhood aerial, sold sign, for sale sign, chart graph business, city skyline, residential street</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/real-estate-market" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/real%20estate/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-icon">🏡</div>
+        <h3>Homebuying Tips</h3>
+        <p>Images for buyer education, tips, and homeownership content</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">house keys, home inspection, moving boxes, family home, first home, house hunting, new homeowner, front door welcome</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/house-keys" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/home%20buying/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-icon">💰</div>
+        <h3>Mortgage Education</h3>
+        <p>Professional images for mortgage tips, finance, and lending posts</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">calculator money, signing documents, financial planning, credit score, home loan, mortgage calculator, paperwork contract, banking finance</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/mortgage" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/finance/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-icon">🎉</div>
+        <h3>Client Success</h3>
+        <p>Celebration and testimonial images for client wins</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">happy couple home, family celebration, holding keys excited, thumbs up success, handshake deal, new home happiness, sold house celebration</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/new-home-celebration" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/happy%20homeowner/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-icon">🌟</div>
+        <h3>Lifestyle & Community</h3>
+        <p>Inspirational and community-focused images</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">coffee morning, local business, community neighborhood, motivation inspiration, weekend relaxation, small business storefront, work life balance</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/community" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/lifestyle/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+      <div class="category-card">
+        <div class="category-icon">📸</div>
+        <h3>General Real Estate</h3>
+        <p>Versatile images for any real estate content</p>
+        <div class="keyword-list">
+          <strong>Search Keywords:</strong>
+          <div class="keywords">beautiful home exterior, modern kitchen, living room interior, backyard garden, home office, real estate agent, luxury property, cozy home</div>
+        </div>
+        <div class="image-links">
+          <a href="https://unsplash.com/s/photos/home-interior" target="_blank" class="image-link">Search Unsplash →</a>
+          <a href="https://www.pexels.com/search/real%20estate/" target="_blank" class="image-link">Search Pexels →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="resource-note">
+      <strong>📖 How to Use the Image Library:</strong>
+      1. Click the category that matches your post type<br>
+      2. Search using the provided keywords on Unsplash or Pexels<br>
+      3. Download free, high-resolution images (no attribution required for commercial use)<br>
+      4. Add your downloaded image to your social media post<br>
+      <br>
+      <strong>Pro Tip:</strong> Both Unsplash and Pexels offer completely free stock photos with no attribution required. All images are licensed for commercial use, perfect for your real estate business!
+    </div>
+
+    <div class="back-link">
+      <a href="messaging-collection.html">← Back to Messaging Collection</a>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>
