@@ -1289,9 +1289,31 @@ generatorForm.addEventListener('submit', async (e) => {
   generateBtn.disabled = true;
   generateBtn.textContent = '✨ Generating...';
   
-  // Demo mode - would need backend API integration for production
-  setTimeout(() => {
-    generatedPost = `🏡 ${topic}
+ try {
+  const response = await fetch('https://agent-edge-backend-6sivvzmtl-kristy-flachs-projects.vercel.app/api/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      topic,
+      goal,
+      platforms,
+      tone,
+      includes,
+      length,
+      userName: 'Realtor', // We'll add name capture later
+      userEmail: '' // We'll add email capture later
+    })
+  });
+
+  const data = await response.json();
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Failed to generate post');
+  }
+  
+  generatedPost = data.post;
 
 This is a demo ${tone} post about ${topic} for ${platforms.join(', ')}.
 
