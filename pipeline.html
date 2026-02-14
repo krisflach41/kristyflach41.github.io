@@ -450,62 +450,13 @@ body {
   </div>
   <div class="header-actions">
     <span class="pipe-stat"><strong id="totalContacts">0</strong> contacts</span>
-    <button class="header-btn primary" onclick="openAddModal()">+ Add Contact</button>
+    <button class="header-btn primary" onclick="window.location.href='contact-detail.html?new=1'">+ Add Contact</button>
     <button class="header-btn" onclick="exportPipeline()">Export</button>
   </div>
 </div>
 
 <!-- BOARD -->
 <div class="board" id="board"></div>
-
-<!-- ADD/EDIT MODAL -->
-<div class="modal-overlay" id="modalOverlay">
-  <div class="modal">
-    <h2 id="modalTitle">Add Contact</h2>
-    
-    <label>Full Name *</label>
-    <input type="text" id="contactName" placeholder="Jane Smith">
-    
-    <label>Phone</label>
-    <input type="tel" id="contactPhone" placeholder="(555) 123-4567">
-    
-    <label>Email</label>
-    <input type="email" id="contactEmail" placeholder="jane@email.com">
-    
-    <label>Lead Source</label>
-    <select id="contactSource">
-      <option value="organic">Organic</option>
-      <option value="webinar">Webinar</option>
-      <option value="social">Social Media Ad</option>
-      <option value="realtor">Realtor Partner</option>
-      <option value="referral">Referral</option>
-      <option value="other">Other</option>
-    </select>
-    
-    <label>Pipeline Stage</label>
-    <select id="contactStage">
-      <option value="cold">Cold Leads</option>
-      <option value="warm">Warm Leads</option>
-      <option value="active">Active Conversations</option>
-      <option value="credit">Credit Repair</option>
-      <option value="preapproval">Engaged in Pre-Approval</option>
-      <option value="preapproved">Pre Approved</option>
-      <option value="ratewatch">Rate Watch</option>
-      <option value="underwriting">In Underwriting</option>
-      <option value="closed">Closed - Funded</option>
-      <option value="dead">Dead Leads</option>
-    </select>
-    
-    <label>Notes</label>
-    <textarea id="contactNotes" placeholder="Any relevant details..."></textarea>
-    
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-delete" id="deleteBtn" style="display:none;" onclick="deleteContact()">Delete</button>
-      <button class="btn-save" onclick="saveContact()">Save</button>
-    </div>
-  </div>
-</div>
 
 <a href="admin.html" class="return-link">← Back to Mission Control</a>
 
@@ -541,7 +492,6 @@ var sourceLabels = {
 
 // Contact data - stored in localStorage
 var contacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
-var editingId = null;
 var draggedCard = null;
 
 // Build the board
@@ -576,7 +526,7 @@ function buildBoard() {
     var addBtn = document.createElement('button');
     addBtn.className = 'add-card-btn';
     addBtn.textContent = '+ Add';
-    addBtn.onclick = function() { openAddModal(col.id); };
+    addBtn.onclick = function() { window.location.href = 'contact-detail.html?new=1&stage=' + col.id; };
     body.appendChild(addBtn);
     
     // Drag events on column body
@@ -626,18 +576,31 @@ function createCardElement(contact) {
     dateStr = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
   }
   
+  var loanInfo = '';
+  if (contact.loanType) {
+    loanInfo = contact.loanType === 'purchase' ? 'Purchase' : 'Refi';
+    if (contact.interestRate) loanInfo += ' · ' + parseFloat(contact.interestRate).toFixed(3) + '%';
+    if (contact.lockStatus) loanInfo += ' · ' + (contact.lockStatus === 'locked' ? '🔒' : '🔓');
+  }
+
   card.innerHTML = 
     '<div class="card-actions">' +
-      '<button class="card-action-btn" onclick="openEditModal(\'' + contact.id + '\')" title="Edit">✎</button>' +
+      '<button class="card-action-btn" onclick="event.stopPropagation(); window.location.href=\'contact-detail.html?id=' + contact.id + '\'" title="Edit">✎</button>' +
     '</div>' +
     '<div class="card-name">' + (contact.name || 'Unknown') + '</div>' +
     (contact.phone ? '<div class="card-detail">' + contact.phone + '</div>' : '') +
-    (contact.email ? '<div class="card-detail">' + contact.email + '</div>' : '') +
-    (contact.notes ? '<div class="card-detail" style="margin-top:4px; font-style:italic; color:rgba(255,255,255,0.3);">' + truncate(contact.notes, 60) + '</div>' : '') +
+    (loanInfo ? '<div class="card-detail" style="color:rgba(255,255,255,0.5);">' + loanInfo + '</div>' : '') +
+    (contact.notes && contact.notes.length > 0 ? '<div class="card-detail" style="margin-top:4px; font-style:italic; color:rgba(255,255,255,0.3);">📝 ' + contact.notes.length + ' note' + (contact.notes.length > 1 ? 's' : '') + '</div>' : '') +
     '<span class="card-source ' + sourceClass + '">' + sourceLabel + '</span>' +
     (dateStr ? '<div class="card-date">Added ' + dateStr + '</div>' : '');
   
-  // Drag events
+  card.addEventListener('click', function(e) {
+    if (!e.defaultPrevented && !card.classList.contains('dragging')) {
+      window.location.href = 'contact-detail.html?id=' + contact.id;
+    }
+  });
+
+  // Drag start
   card.addEventListener('dragstart', function(e) {
     draggedCard = card;
     card.classList.add('dragging');
@@ -663,94 +626,6 @@ function updateStats() {
   document.getElementById('totalContacts').textContent = contacts.length;
 }
 
-// Modal functions
-function openAddModal(stage) {
-  editingId = null;
-  document.getElementById('modalTitle').textContent = 'Add Contact';
-  document.getElementById('contactName').value = '';
-  document.getElementById('contactPhone').value = '';
-  document.getElementById('contactEmail').value = '';
-  document.getElementById('contactSource').value = 'organic';
-  document.getElementById('contactStage').value = stage || 'cold';
-  document.getElementById('contactNotes').value = '';
-  document.getElementById('deleteBtn').style.display = 'none';
-  document.getElementById('modalOverlay').classList.add('active');
-}
-
-function openEditModal(id) {
-  var contact = contacts.find(function(c) { return c.id === id; });
-  if (!contact) return;
-  
-  editingId = id;
-  document.getElementById('modalTitle').textContent = 'Edit Contact';
-  document.getElementById('contactName').value = contact.name || '';
-  document.getElementById('contactPhone').value = contact.phone || '';
-  document.getElementById('contactEmail').value = contact.email || '';
-  document.getElementById('contactSource').value = contact.source || 'other';
-  document.getElementById('contactStage').value = contact.stage || 'cold';
-  document.getElementById('contactNotes').value = contact.notes || '';
-  document.getElementById('deleteBtn').style.display = 'block';
-  document.getElementById('modalOverlay').classList.add('active');
-}
-
-function closeModal() {
-  document.getElementById('modalOverlay').classList.remove('active');
-  editingId = null;
-}
-
-function saveContact() {
-  var name = document.getElementById('contactName').value.trim();
-  if (!name) {
-    document.getElementById('contactName').style.borderColor = '#c0392b';
-    return;
-  }
-  
-  if (editingId) {
-    // Update existing
-    var contact = contacts.find(function(c) { return c.id === editingId; });
-    if (contact) {
-      contact.name = name;
-      contact.phone = document.getElementById('contactPhone').value.trim();
-      contact.email = document.getElementById('contactEmail').value.trim();
-      contact.source = document.getElementById('contactSource').value;
-      contact.stage = document.getElementById('contactStage').value;
-      contact.notes = document.getElementById('contactNotes').value.trim();
-      contact.updatedAt = new Date().toISOString();
-    }
-  } else {
-    // New contact
-    contacts.push({
-      id: 'c-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
-      name: name,
-      phone: document.getElementById('contactPhone').value.trim(),
-      email: document.getElementById('contactEmail').value.trim(),
-      source: document.getElementById('contactSource').value,
-      stage: document.getElementById('contactStage').value,
-      notes: document.getElementById('contactNotes').value.trim(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    });
-  }
-  
-  saveData();
-  closeModal();
-  buildBoard();
-}
-
-function deleteContact() {
-  if (!editingId) return;
-  if (!confirm('Remove this contact from the pipeline?')) return;
-  
-  contacts = contacts.filter(function(c) { return c.id !== editingId; });
-  saveData();
-  closeModal();
-  buildBoard();
-}
-
-function saveData() {
-  localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
-}
-
 function exportPipeline() {
   var csv = 'Name,Phone,Email,Source,Stage,Notes,Created,Updated\n';
   contacts.forEach(function(c) {
@@ -768,16 +643,6 @@ function exportPipeline() {
   a.click();
   URL.revokeObjectURL(url);
 }
-
-// Close modal on overlay click
-document.getElementById('modalOverlay').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-
-// Close on Escape
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
 
 // Build it
 buildBoard();
