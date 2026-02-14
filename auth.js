@@ -88,10 +88,28 @@ if (document.getElementById('loginForm')) {
           sessionStorage.setItem('agentEdgeAdmin', 'true');
         }
         
+        // Store role and trial info
+        sessionStorage.setItem('agentEdgeRole', data.role || 'partner');
+        if (data.trialStart) {
+          sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
+        }
+        
         // Check if this is a temp password - force password change
         if (data.tempPassword) {
           sessionStorage.setItem('agentEdgeTempPassword', 'true');
           window.location.href = 'change-password.html';
+        } 
+        // Check if trial has expired (7 days)
+        else if (data.role === 'trial' && data.trialStart) {
+          var trialStart = new Date(data.trialStart);
+          var now = new Date();
+          var daysSinceStart = (now - trialStart) / (1000 * 60 * 60 * 24);
+          
+          if (daysSinceStart > 7) {
+            window.location.href = 'trial-expired.html';
+          } else {
+            window.location.href = 'portal.html';
+          }
         } else {
           window.location.href = 'portal.html';
         }
