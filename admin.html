@@ -415,9 +415,18 @@ function verifyPin(e) {
 }
 
 function enterCommandCenter() {
+  sessionStorage.setItem('agentEdgePinVerified', 'true');
   document.getElementById('pinGate').style.display = 'none';
   document.getElementById('commandCenter').classList.add('active');
   
+  var name = getCurrentUserName();
+  document.getElementById('ccGreeting').textContent = 'Welcome back, ' + name;
+}
+
+// Check if already authenticated this session
+if (sessionStorage.getItem('agentEdgePinVerified') === 'true') {
+  document.getElementById('pinGate').style.display = 'none';
+  document.getElementById('commandCenter').classList.add('active');
   var name = getCurrentUserName();
   document.getElementById('ccGreeting').textContent = 'Welcome back, ' + name;
 }
