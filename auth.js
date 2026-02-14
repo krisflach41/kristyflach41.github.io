@@ -1,105 +1,219 @@
-/* ===========================
-   AUTHENTICATION SYSTEM
-   Agent Edge Partner Portal
-   Server-side auth via Vercel
-=========================== */
-
-const AUTH_API = 'https://agent-edge-backend.vercel.app/api';
-
-// Check if user is authenticated
-function isAuthenticated() {
-  return sessionStorage.getItem('agentEdgeAuth') === 'authenticated';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Edge Partner Portal - Login</title>
+<style>
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
 }
 
-// Get current user info
-function getCurrentUser() {
-  return sessionStorage.getItem('agentEdgeUser') || 'User';
+/* ===== LOGIN CONTAINER ===== */
+.login-card {
+  width: 90%;
+  max-width: 420px;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
 }
 
-function getCurrentUserName() {
-  return sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeUser') || 'User';
+/* ===== LOGO/TITLE AREA ===== */
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-function getCurrentUserEmail() {
-  return sessionStorage.getItem('agentEdgeUserEmail') || '';
+.login-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #0b1f3a;
 }
 
-function getCurrentUserBrokerage() {
-  return sessionStorage.getItem('agentEdgeUserBrokerage') || '';
+.login-subtitle {
+  font-size: 14px;
+  color: #555;
+  font-weight: 400;
 }
 
-// Store user session after successful auth
-function setUserSession(user) {
-  sessionStorage.setItem('agentEdgeAuth', 'authenticated');
-  sessionStorage.setItem('agentEdgeUser', user.username);
-  sessionStorage.setItem('agentEdgeUserName', user.name);
-  sessionStorage.setItem('agentEdgeUserEmail', user.email);
-  sessionStorage.setItem('agentEdgeUserBrokerage', user.brokerage || '');
+/* ===== FORM INPUTS ===== */
+.form-group {
+  margin-bottom: 20px;
 }
 
-// Logout function
-function logout() {
-  sessionStorage.removeItem('agentEdgeAuth');
-  sessionStorage.removeItem('agentEdgeUser');
-  sessionStorage.removeItem('agentEdgeUserName');
-  sessionStorage.removeItem('agentEdgeUserEmail');
-  sessionStorage.removeItem('agentEdgeUserBrokerage');
-  window.location.href = 'login.html';
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #0b1f3a;
 }
 
-// Protect portal pages - redirect to login if not authenticated
-function protectPage() {
-  if (!isAuthenticated()) {
-    window.location.href = 'login.html';
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+/* ===== LOGIN BUTTON ===== */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #0b4ea2;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 10px;
+}
+
+.login-btn:hover {
+  background: #0a3d7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+/* ===== ERROR MESSAGE ===== */
+.error-message {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+.error-message.show {
+  display: block;
+}
+
+/* ===== BACK TO MAIN SITE LINK ===== */
+.back-link {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.back-link a:hover {
+  color: #0a3d7f;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 40px 30px;
+  }
+  
+  .login-title {
+    font-size: 24px;
   }
 }
+</style>
+</head>
 
-// ===== LOGIN HANDLER =====
-if (document.getElementById('loginForm')) {
-  var loginForm = document.getElementById('loginForm');
-  var errorMessage = document.getElementById('errorMessage');
+<body>
 
-  loginForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
+<div class="login-card">
+  <div class="login-header">
+    <h1 class="login-title">Agent Edge Partner Portal</h1>
+    <p class="login-subtitle">Sign in to access your resources</p>
+  </div>
 
-    var username = document.getElementById('username').value.trim();
-    var password = document.getElementById('password').value;
-    var loginBtn = loginForm.querySelector('button[type="submit"]');
+  <div class="error-message" id="errorMessage">
+    Invalid username or password. Please try again.
+  </div>
 
-    // Disable button while processing
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Signing In...';
-    errorMessage.classList.remove('show');
+  <form id="loginForm">
+    <div class="form-group">
+      <label class="form-label" for="username">Username</label>
+      <input 
+        type="text" 
+        id="username" 
+        class="form-input" 
+        placeholder="Enter your username"
+        autocomplete="username"
+        required
+      >
+    </div>
 
-    try {
-      var response = await fetch(AUTH_API + '/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password })
-      });
+    <div class="form-group">
+      <label class="form-label" for="password">Password</label>
+      <input 
+        type="password" 
+        id="password" 
+        class="form-input" 
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        required
+      >
+    </div>
 
-      var data = await response.json();
+    <button type="submit" class="login-btn">Sign In</button>
+  </form>
 
-      if (data.success) {
-        setUserSession(data.user);
-        window.location.href = 'portal.html';
-      } else {
-        errorMessage.textContent = data.message || 'Invalid username or password. Please try again.';
-        errorMessage.classList.add('show');
-        document.getElementById('password').value = '';
-        document.getElementById('password').focus();
+  <div class="back-link" style="margin-top: 15px;">
+    <a href="forgot-password.html">Forgot your password?</a>
+  </div>
 
-        setTimeout(function() {
-          errorMessage.classList.remove('show');
-        }, 4000);
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      errorMessage.textContent = 'Connection error. Please try again.';
-      errorMessage.classList.add('show');
-    } finally {
-      loginBtn.disabled = false;
-      loginBtn.textContent = 'Sign In';
-    }
-  });
-}
+  <div class="back-link">
+    <a href="index.html">← Back to Main Website</a>
+  </div>
+
+  <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(11,78,162,0.1);">
+    <p style="font-size: 14px; color: #555; margin-bottom: 10px;">Don't have an account?</p>
+    <a href="signup.html" style="color: #0b4ea2; text-decoration: none; font-weight: 600; font-size: 15px;">Create Account →</a>
+  </div>
+</div>
+
+<script src="auth.js"></script>
+
+</body>
+</html>
