@@ -219,6 +219,32 @@ body {
   color: #27ae60;
 }
 
+.status-archived {
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.3);
+}
+
+.archived-card {
+  opacity: 0.55;
+}
+
+.archive-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.archive-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.7);
+}
+
 .status-select {
   padding: 6px 12px;
   border-radius: 6px;
@@ -341,6 +367,9 @@ body {
   <div class="filter-tab" data-filter="Complete" onclick="filterOrders('Complete', this)">
     Complete <span class="filter-count" id="countComplete">0</span>
   </div>
+  <div class="filter-tab" data-filter="Archived" onclick="filterOrders('Archived', this)">
+    Archived <span class="filter-count" id="countArchived">0</span>
+  </div>
 </div>
 
 <div class="orders-container" id="ordersContainer">
@@ -399,18 +428,23 @@ async function fetchOrdersFromSheet() {
 function renderOrders() {
   var container = document.getElementById('ordersContainer');
   
-  // Filter
-  var filtered = currentFilter === 'all' 
-    ? allOrders 
-    : allOrders.filter(function(o) { return o.status === currentFilter; });
+  // "All" excludes archived; "Archived" shows only archived
+  var filtered;
+  if (currentFilter === 'all') {
+    filtered = allOrders.filter(function(o) { return o.status !== 'Archived'; });
+  } else {
+    filtered = allOrders.filter(function(o) { return o.status === currentFilter; });
+  }
   
-  // Update counts
-  document.getElementById('countAll').textContent = allOrders.length;
+  // Update counts (All count excludes archived)
+  var activeOrders = allOrders.filter(function(o) { return o.status !== 'Archived'; });
+  document.getElementById('countAll').textContent = activeOrders.length;
   document.getElementById('countNew').textContent = allOrders.filter(function(o) { return o.status === 'New'; }).length;
   document.getElementById('countInProgress').textContent = allOrders.filter(function(o) { return o.status === 'In Progress'; }).length;
   document.getElementById('countComplete').textContent = allOrders.filter(function(o) { return o.status === 'Complete'; }).length;
+  document.getElementById('countArchived').textContent = allOrders.filter(function(o) { return o.status === 'Archived'; }).length;
   
-  document.getElementById('orderCount').textContent = allOrders.length + ' total orders';
+  document.getElementById('orderCount').textContent = activeOrders.length + ' active orders';
   
   if (filtered.length === 0) {
     container.innerHTML = `
@@ -427,7 +461,8 @@ function renderOrders() {
   
   filtered.forEach(function(order, index) {
     var statusClass = order.status === 'New' ? 'status-new' : 
-                      order.status === 'In Progress' ? 'status-inprogress' : 'status-complete';
+                      order.status === 'In Progress' ? 'status-inprogress' : 
+                      order.status === 'Archived' ? 'status-archived' : 'status-complete';
     
     // Parse items
     var itemsHtml = '';
@@ -438,7 +473,7 @@ function renderOrders() {
     }
     
     html += `
-      <div class="order-card" data-order-id="${order.orderId}">
+      <div class="order-card ${order.status === 'Archived' ? 'archived-card' : ''}" data-order-id="${order.orderId}">
         <div class="order-header">
           <span class="order-id">${order.orderId}</span>
           <span class="order-time">${order.timestamp}</span>
@@ -457,11 +492,14 @@ function renderOrders() {
         
         <div class="order-footer">
           <span class="status-badge ${statusClass}">${order.status}</span>
-          <select class="status-select" onchange="updateStatus('${order.orderId}', this.value, ${index})">
-            <option value="New" ${order.status === 'New' ? 'selected' : ''}>New</option>
-            <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-            <option value="Complete" ${order.status === 'Complete' ? 'selected' : ''}>Complete</option>
-          </select>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            ${order.status !== 'Archived' ? '<button class="archive-btn" onclick="archiveOrder(\'' + order.orderId + '\')">Archive</button>' : '<button class="archive-btn" onclick="unarchiveOrder(\'' + order.orderId + '\')">Restore</button>'}
+            <select class="status-select" onchange="updateStatus('${order.orderId}', this.value)">
+              <option value="New" ${order.status === 'New' ? 'selected' : ''}>New</option>
+              <option value="In Progress" ${order.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+              <option value="Complete" ${order.status === 'Complete' ? 'selected' : ''}>Complete</option>
+            </select>
+          </div>
         </div>
       </div>
     `;
@@ -481,17 +519,44 @@ function filterOrders(filter, tab) {
   renderOrders();
 }
 
-function updateStatus(orderId, newStatus, index) {
-  // Update locally
+function updateStatus(orderId, newStatus) {
   var order = allOrders.find(function(o) { return o.orderId === orderId; });
   if (order) {
     order.status = newStatus;
     localStorage.setItem('agentEdgeOrders', JSON.stringify(allOrders));
     renderOrders();
+    syncStatusToSheet(orderId, newStatus);
   }
-  
-  // Note: To update the Google Sheet, we'd need a separate endpoint.
-  // For now, status changes are local. We'll build sheet-sync later.
+}
+
+function archiveOrder(orderId) {
+  var order = allOrders.find(function(o) { return o.orderId === orderId; });
+  if (order) {
+    order.status = 'Archived';
+    localStorage.setItem('agentEdgeOrders', JSON.stringify(allOrders));
+    renderOrders();
+    syncStatusToSheet(orderId, 'Archived');
+  }
+}
+
+function unarchiveOrder(orderId) {
+  var order = allOrders.find(function(o) { return o.orderId === orderId; });
+  if (order) {
+    order.status = 'Complete';
+    localStorage.setItem('agentEdgeOrders', JSON.stringify(allOrders));
+    renderOrders();
+    syncStatusToSheet(orderId, 'Complete');
+  }
+}
+
+function syncStatusToSheet(orderId, status) {
+  fetch('https://agent-edge-backend.vercel.app/api/update-order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId: orderId, status: status })
+  }).catch(function(err) {
+    console.log('Status sync failed:', err);
+  });
 }
 
 // Load on page open
