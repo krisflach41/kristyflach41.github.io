@@ -615,11 +615,18 @@ if (form) {
     formData.set('order_data', JSON.stringify(cartData, null, 2));
     
     try {
-      // Send to Formspree (replace with your actual Formspree ID)
+      // Send to Formspree (email notification)
       fetch('https://formspree.io/f/mgoyyney', {
         method: 'POST',
         body: formData,
         headers: { 'Accept': 'application/json' }
+      });
+      
+      // Send to Order Queue (Google Sheets via Vercel)
+      fetch('https://agent-edge-backend.vercel.app/api/submit-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
       });
       
       // Track the order submission
