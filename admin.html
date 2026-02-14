@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control - Agent Edge Admin</title>
+<script src="auth.js"></script>
+
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background:
+    linear-gradient(135deg, #0b1f3a 0%, #132d54 50%, #0b1f3a 100%);
+  color: #e8ecf1;
+}
+
+/* ===== PIN GATE ===== */
+.pin-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-card {
+  width: 90%;
+  max-width: 360px;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  text-align: center;
+}
+
+.pin-card h2 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.pin-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 30px;
+}
+
+.pin-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px;
+  font-size: 24px;
+  letter-spacing: 8px;
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  box-sizing: border-box;
+  transition: 0.25s ease;
+}
+
+.pin-input:focus {
+  outline: none;
+  border-color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.08);
+}
+
+.pin-input::placeholder {
+  letter-spacing: 4px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.25);
+}
+
+.pin-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #0b4ea2;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 16px;
+}
+
+.pin-btn:hover {
+  background: #0d5ec4;
+  transform: translateY(-1px);
+}
+
+.pin-error {
+  color: #e74c3c;
+  font-size: 13px;
+  margin-top: 12px;
+  display: none;
+}
+
+.pin-error.show {
+  display: block;
+}
+
+/* ===== COMMAND CENTER ===== */
+.command-center {
+  display: none;
+  padding: 60px 24px 80px;
+}
+
+.command-center.active {
+  display: block;
+}
+
+.cc-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.cc-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.cc-subtitle {
+  font-size: 14px;
+  color: rgba(255,255,255,0.45);
+}
+
+.cc-greeting {
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 4px;
+}
+
+/* ===== ROOM GRID ===== */
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.room-card {
+  padding: 32px 28px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.room-card:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.room-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 18px 18px 0 0;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.room-card:hover::before {
+  opacity: 1;
+}
+
+.room-card.active-room::before {
+  opacity: 1;
+}
+
+.room-card.blue::before { background: #3498db; }
+.room-card.green::before { background: #27ae60; }
+.room-card.orange::before { background: #e67e22; }
+.room-card.purple::before { background: #9b59b6; }
+.room-card.red::before { background: #e74c3c; }
+.room-card.teal::before { background: #1abc9c; }
+
+.room-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.room-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.room-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+}
+
+.room-status {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-live {
+  background: rgba(39,174,96,0.15);
+  color: #27ae60;
+}
+
+.status-building {
+  background: rgba(230,126,34,0.15);
+  color: #e67e22;
+}
+
+.status-planned {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.35);
+}
+
+/* ===== RETURN LINK ===== */
+.return-portal {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.12);
+  text-decoration: none;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.25s ease;
+}
+
+.return-portal:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .cc-title { font-size: 26px; }
+  .room-grid { grid-template-columns: 1fr; }
+  .pin-card { padding: 40px 25px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== PIN GATE ===== -->
+<div class="pin-gate" id="pinGate">
+  <div class="pin-card">
+    <h2>Mission Control</h2>
+    <p id="pinPrompt">Enter your admin PIN to continue</p>
+    
+    <form id="pinForm" onsubmit="verifyPin(event)">
+      <input 
+        type="password" 
+        id="adminPin" 
+        class="pin-input" 
+        placeholder="PIN"
+        maxlength="6"
+        autocomplete="off"
+        required
+      >
+      <button type="submit" class="pin-btn">Enter</button>
+    </form>
+    
+    <div class="pin-error" id="pinError">Invalid PIN. Try again.</div>
+  </div>
+</div>
+
+<!-- ===== COMMAND CENTER ===== -->
+<div class="command-center" id="commandCenter">
+  
+  <div class="cc-header">
+    <p class="cc-greeting" id="ccGreeting">Welcome back, Commander</p>
+    <h1 class="cc-title">Mission Control</h1>
+    <p class="cc-subtitle">Agent Edge Administration</p>
+  </div>
+
+  <div class="room-grid">
+
+    <!-- DAILY BRIEFING -->
+    <a href="briefing-admin.html" class="room-card blue active-room">
+      <div class="room-icon">📡</div>
+      <div class="room-title">Daily Briefing</div>
+      <div class="room-desc">Update rates, economic calendar, market summary, and client-friendly brief.</div>
+      <span class="room-status status-live">Live</span>
+    </a>
+
+    <!-- ORDER QUEUE -->
+    <a href="#" class="room-card green" onclick="comingSoon(event)">
+      <div class="room-icon">📋</div>
+      <div class="room-title">Order Queue</div>
+      <div class="room-desc">View incoming requests from realtors. Reports, flyers, and materials awaiting production.</div>
+      <span class="room-status status-building">Building</span>
+    </a>
+
+    <!-- CRM / ACTIVITY -->
+    <a href="#" class="room-card purple" onclick="comingSoon(event)">
+      <div class="room-icon">📊</div>
+      <div class="room-title">CRM &amp; Activity</div>
+      <div class="room-desc">Track realtor engagement. Who's logging in, what tools they use, and where to follow up.</div>
+      <span class="room-status status-building">Building</span>
+    </a>
+
+    <!-- REPORT GENERATOR -->
+    <a href="#" class="room-card orange" onclick="comingSoon(event)">
+      <div class="room-icon">📈</div>
+      <div class="room-title">Report Generator</div>
+      <div class="room-desc">Generate Bid Over Ask, Buy vs Rent, Cost of Waiting, and more using live FHFA data.</div>
+      <span class="room-status status-planned">Planned</span>
+    </a>
+
+    <!-- USER MANAGEMENT -->
+    <a href="#" class="room-card red" onclick="comingSoon(event)">
+      <div class="room-icon">👥</div>
+      <div class="room-title">User Management</div>
+      <div class="room-desc">Add or remove realtors, reset passwords, and manage portal access.</div>
+      <span class="room-status status-building">Building</span>
+    </a>
+
+    <!-- FLYER STUDIO -->
+    <a href="#" class="room-card teal" onclick="comingSoon(event)">
+      <div class="room-icon">🎨</div>
+      <div class="room-title">Flyer Studio</div>
+      <div class="room-desc">Create branded marketing materials for your realtors. Open house, buyer, listing flyers and more.</div>
+      <span class="room-status status-planned">Planned</span>
+    </a>
+
+  </div>
+
+</div>
+
+<a href="portal.html" class="return-portal">← Return to Portal</a>
+
+<script>
+// ===== SECURITY CHECK =====
+// Must be logged in
+protectPage();
+
+// Check admin flag from session (set during login)
+var isAdmin = sessionStorage.getItem('agentEdgeAdmin') === 'true';
+if (!isAdmin) {
+  // Not flagged as admin - redirect to portal
+  window.location.href = 'portal.html';
+}
+
+// ===== PIN VERIFICATION =====
+function simpleHash(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+function verifyPin(e) {
+  e.preventDefault();
+  var pin = document.getElementById('adminPin').value;
+  var pinError = document.getElementById('pinError');
+  var pinHash = simpleHash(pin);
+  
+  // Check if PIN has been set
+  var storedPinHash = localStorage.getItem('agentEdgeAdminPin');
+  
+  if (!storedPinHash) {
+    // First time - set the PIN
+    localStorage.setItem('agentEdgeAdminPin', pinHash);
+    enterCommandCenter();
+    return;
+  }
+  
+  // Verify PIN
+  if (pinHash !== storedPinHash) {
+    pinError.classList.add('show');
+    document.getElementById('adminPin').value = '';
+    document.getElementById('adminPin').focus();
+    return;
+  }
+  
+  // PIN accepted
+  enterCommandCenter();
+}
+
+function enterCommandCenter() {
+  document.getElementById('pinGate').style.display = 'none';
+  document.getElementById('commandCenter').classList.add('active');
+  
+  var name = getCurrentUserName();
+  document.getElementById('ccGreeting').textContent = 'Welcome back, ' + name;
+}
+
+// Check if first time setup
+if (!localStorage.getItem('agentEdgeAdminPin')) {
+  document.getElementById('pinPrompt').textContent = 'Choose your admin PIN (you\'ll use this every time)';
+  document.querySelector('.pin-btn').textContent = 'Set PIN';
+}
+
+function comingSoon(e) {
+  e.preventDefault();
+  var card = e.currentTarget;
+  var title = card.querySelector('.room-title').textContent;
+  
+  // Quick flash effect
+  card.style.borderColor = 'rgba(255,255,255,0.3)';
+  setTimeout(function() {
+    card.style.borderColor = 'rgba(255,255,255,0.08)';
+  }, 300);
+}
+</script>
+
+</body>
+</html>
