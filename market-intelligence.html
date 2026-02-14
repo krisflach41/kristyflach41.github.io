@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Market Intelligence</title>
+<script src="universal-cart.js"></script>
+<script src="tracking.js"></script>
 
 <style>
 
@@ -424,53 +426,12 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 
 </div>
 
-<hr style="margin:60px 0; border:none; border-top:1px solid rgba(0,0,0,0.08);">
-
-<h3 style="text-align:center;">Prepare Your Market Intelligence Kit</h3>
-
-<form id="advisoryForm">
-
-<input type="hidden" id="selected_materials">
-
-<input type="text" placeholder="Your Name" required style="width:100%; padding:12px; margin-bottom:14px;">
-<input type="email" placeholder="Email Address" required style="width:100%; padding:12px; margin-bottom:14px;">
-<input type="text" placeholder="Brokerage" required style="width:100%; padding:12px; margin-bottom:20px;">
-
-<div class="kit-panel">
-<h3>Your Selected Materials</h3>
+<!-- Cart Summary Panel -->
+<div class="kit-panel" id="cartSummaryPanel" style="display:none;">
+<h3>Your Cart</h3>
 <div id="kit" style="min-height: 40px;">
-<p class="empty">No materials selected yet</p>
 </div>
 </div>
-
-<label>
-<input type="radio" name="branding" required> Co-branded (MBS HYW member)
-<span class="info-icon">i
-<span class="tooltip-box">
-Co-branded advisory materials are available to MBS HYW members.
-Membership is $20 and complies with RESPA Section 8.
-</span>
-</span>
-</label><br><br>
-
-<label>
-<input type="radio" name="branding"> Kristy-branded only
-</label><br><br>
-
-<textarea placeholder="Additional notes or customization requests"
-style="width:100%; height:100px; padding:12px;"></textarea>
-
-<p style="text-align:center; font-size:13px; margin:14px 0;">
-<strong>Production Time:</strong> Most materials are prepared within 2 business days.
-Need a rush? Add "Rush" in notes or contact Kristy directly.
-</p>
-
-<button type="submit"
-style="width:100%; padding:14px; background:#0b4ea2; color:#fff; border:none; border-radius:8px; font-weight:600;">
-Prepare My Advisory Kit
-</button>
-
-</form>
 
 <div style="text-align:center; margin-top:30px;">
   <a href="advisory-collection.html" class="back-btn">
@@ -481,7 +442,46 @@ Prepare My Advisory Kit
 </section>
 </div>
 
-<a href="index.html" class="return-main">Return to Main Website</a>
+<!-- FLOATING CART BUTTON -->
+<a href="checkout.html" id="cartBtn" onclick="goToCheckout(event)" style="
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 9999;
+  transition: 0.25s ease;
+  cursor: pointer;
+  font-size: 22px;
+">
+  🛒
+  <span id="cartBadge" style="
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #c0392b;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  "></span>
+</a>
+
+<a href="portal.html" class="return-main" style="right: 85px;">Return to Portal</a>
 
 <!-- IMAGE LIGHTBOX -->
 <div class="lightbox" id="lightbox">
@@ -868,16 +868,23 @@ function addToKit() {
     }
   });
 
-  // Save or update
+  // Save or update - NOW USING UNIVERSAL CART
   if (isEditMode) {
     if (valid.length === 0) {
+      universalCart.setAdvisoryReport(activeReport, null);
       delete reportConfigs[activeReport];
     } else {
+      universalCart.setAdvisoryReport(activeReport, JSON.parse(JSON.stringify(valid)));
       reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
     }
   } else {
+    universalCart.setAdvisoryReport(activeReport, JSON.parse(JSON.stringify(valid)));
     reportConfigs[activeReport] = JSON.parse(JSON.stringify(valid));
   }
+
+  // Track activity
+  var reportName = universalCart.getReportDisplayName(activeReport);
+  trackActivity('Advisory', 'Market Intelligence', 'Added to Cart', reportName + ' - ' + valid.length + ' properties');
 
   isEditMode = false;
   renderKit();
@@ -886,12 +893,22 @@ function addToKit() {
 }
 
 function renderKit() {
-  kit.innerHTML = "";
+  var cartPanel = document.getElementById('cartSummaryPanel');
+  
+  // Sync reportConfigs from universal cart
+  reportConfigs = {};
+  var cartData = universalCart.cart.advisory;
+  Object.keys(cartData).forEach(function(r) {
+    reportConfigs[r] = cartData[r];
+  });
   
   if (Object.keys(reportConfigs).length === 0) {
-    kit.innerHTML = '<p class="empty">No materials selected yet</p>';
+    cartPanel.style.display = 'none';
     return;
   }
+  
+  cartPanel.style.display = 'block';
+  kit.innerHTML = "";
   
   Object.keys(reportConfigs).forEach(r => {
     if (!Array.isArray(reportConfigs[r])) return;
@@ -910,6 +927,8 @@ function renderKit() {
         ✔ ${displayName} (${reportConfigs[r].length} ${reportConfigs[r].length === 1 ? 'property' : 'properties'})
         <span style="float:right; cursor:pointer; color:#0b4ea2"
           onclick="editReport('${r}')">Edit</span>
+        <span style="float:right; cursor:pointer; color:#c0392b; margin-right:16px;"
+          onclick="removeReport('${r}')">Remove</span>
       </div>`;
   });
 }
@@ -918,6 +937,13 @@ function editReport(r) {
   activeReport = r;
   workingSet = JSON.parse(JSON.stringify(reportConfigs[r] || []));
   openPanel(r, "edit");
+}
+
+function removeReport(r) {
+  universalCart.setAdvisoryReport(r, null);
+  delete reportConfigs[r];
+  renderKit();
+  updateCardButtons();
 }
 
 function closePanel() {
@@ -941,6 +967,12 @@ function updateCardButtons() {
   });
 }
 
+function goToCheckout(e) {
+  e.preventDefault();
+  sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
+  window.location.href = 'checkout.html';
+}
+
 /* ===== WIRE UP CARD BUTTONS TO OPEN PANEL ===== */
 document.querySelectorAll('.add-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -950,6 +982,10 @@ document.querySelectorAll('.add-btn').forEach(btn => {
     openPanel(report, "new");
   });
 });
+
+// Load existing cart data on page load
+renderKit();
+updateCardButtons();
 
 </script>
 
