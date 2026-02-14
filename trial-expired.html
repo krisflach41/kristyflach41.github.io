@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trial Complete - Agent Edge Partner Portal</title>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+.expired-card {
+  width: 90%;
+  max-width: 520px;
+  padding: 55px 45px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+  text-align: center;
+}
+
+.expired-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.expired-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #0b1f3a;
+}
+
+.expired-message {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 35px;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.expired-message strong {
+  color: #0b1f3a;
+}
+
+.cta-btn {
+  display: inline-block;
+  padding: 16px 36px;
+  background: #0b4ea2;
+  color: white;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  transition: 0.25s ease;
+  margin-bottom: 16px;
+}
+
+.cta-btn:hover {
+  background: #0a3d7f;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(11,78,162,0.35);
+}
+
+.contact-info {
+  margin-top: 30px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(11,78,162,0.1);
+}
+
+.contact-info p {
+  font-size: 14px;
+  color: #555;
+  margin: 6px 0;
+}
+
+.contact-info a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+.trial-stats {
+  background: rgba(11,78,162,0.04);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 30px;
+}
+
+.trial-stats p {
+  font-size: 13px;
+  color: #666;
+  margin: 4px 0;
+}
+
+.logout-link {
+  display: inline-block;
+  margin-top: 20px;
+  font-size: 13px;
+  color: #999;
+  text-decoration: none;
+}
+
+.logout-link:hover {
+  color: #666;
+}
+
+@media (max-width: 480px) {
+  .expired-card { padding: 40px 25px; }
+  .expired-title { font-size: 24px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="expired-card">
+  <div class="expired-icon">🌟</div>
+  
+  <h1 class="expired-title">Your Trial Has Wrapped Up!</h1>
+  
+  <p class="expired-message">
+    I hope you've enjoyed exploring Agent Edge and all the tools available to support your business. 
+    I'd love to <strong>chat about how we can grow together</strong> as partners. 
+    Let's schedule a quick call to talk about your goals and how I can help.
+  </p>
+
+  <div class="trial-stats" id="trialStats">
+    <p id="trialDays"></p>
+  </div>
+
+  <a href="https://calendly.com" class="cta-btn" id="scheduleBtn">Schedule a Partnership Call</a>
+  <br>
+
+  <div class="contact-info">
+    <p>Or reach out directly:</p>
+    <p><a href="tel:2063135883">(206) 313-5883</a></p>
+    <p><a href="mailto:kflach@prmg.net">kflach@prmg.net</a></p>
+    <p style="margin-top: 12px; font-size: 13px; color: #888;">Kristy Flach | NMLS# 2632259</p>
+  </div>
+
+  <a href="#" class="logout-link" onclick="handleLogout()">Log Out</a>
+</div>
+
+<script src="auth.js"></script>
+<script>
+// Calculate trial duration
+var trialStart = sessionStorage.getItem('agentEdgeTrialStart');
+if (trialStart) {
+  var start = new Date(trialStart);
+  var now = new Date();
+  var days = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+  document.getElementById('trialDays').textContent = 'You explored Agent Edge for ' + days + ' days during your trial.';
+} else {
+  document.getElementById('trialStats').style.display = 'none';
+}
+
+function handleLogout() {
+  event.preventDefault();
+  logout();
+}
+</script>
+
+</body>
+</html>
