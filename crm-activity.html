@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM & Activity - Mission Control</title>
+<script src="auth.js"></script>
+
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 24px 80px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0b1f3a 0%, #132d54 50%, #0b1f3a 100%);
+  color: #e8ecf1;
+}
+
+.page-header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px 0;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+
+/* ===== TAB NAVIGATION ===== */
+.sheet-tabs {
+  max-width: 1200px;
+  margin: 0 auto 20px;
+  display: flex;
+  gap: 6px;
+}
+
+.sheet-tab {
+  padding: 10px 24px;
+  border-radius: 10px 10px 0 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-bottom: none;
+  color: rgba(255,255,255,0.4);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.sheet-tab:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.7);
+}
+
+.sheet-tab.active {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border-color: rgba(255,255,255,0.15);
+}
+
+.tab-icon {
+  margin-right: 6px;
+}
+
+/* ===== SHEET CONTAINER ===== */
+.sheet-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  border-radius: 0 14px 14px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
+  position: relative;
+}
+
+.sheet-frame {
+  width: 100%;
+  height: 600px;
+  border: none;
+  display: none;
+}
+
+.sheet-frame.active {
+  display: block;
+}
+
+/* ===== SHEET HEADER BAR ===== */
+.sheet-header {
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.sheet-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+.sheet-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.sheet-action-btn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: 0.25s ease;
+}
+
+.sheet-action-btn:hover {
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+/* ===== QUICK STATS BAR ===== */
+.stats-bar {
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 4px;
+}
+
+/* ===== FUTURE CRM NOTE ===== */
+.crm-roadmap {
+  max-width: 1200px;
+  margin: 30px auto 0;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: rgba(155,89,182,0.08);
+  border: 1px solid rgba(155,89,182,0.15);
+}
+
+.crm-roadmap h3 {
+  font-size: 15px;
+  color: #9b59b6;
+  margin: 0 0 8px 0;
+}
+
+.crm-roadmap p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ===== RETURN LINK ===== */
+.return-link {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.12);
+  text-decoration: none;
+  color: rgba(255,255,255,0.6);
+  font-weight: 600;
+  font-size: 13px;
+  transition: 0.25s ease;
+}
+
+.return-link:hover {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .stats-bar { grid-template-columns: repeat(2, 1fr); }
+  .sheet-frame { height: 450px; }
+  .sheet-tabs { flex-wrap: wrap; }
+}
+
+@media (max-width: 480px) {
+  .stats-bar { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-header">
+  <h1 class="page-title">📊 CRM & Activity</h1>
+  <p class="page-subtitle">Your command center for tracking engagement, orders, and relationships</p>
+</div>
+
+<!-- QUICK STATS -->
+<div class="stats-bar" id="statsBar">
+  <div class="stat-card">
+    <div class="stat-value" id="statOrders">-</div>
+    <div class="stat-label">Total Orders</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statUsers">-</div>
+    <div class="stat-label">Registered Users</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statActivities">-</div>
+    <div class="stat-label">Activities Logged</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-value" id="statNewOrders">-</div>
+    <div class="stat-label">Orders Pending</div>
+  </div>
+</div>
+
+<!-- SHEET TABS -->
+<div class="sheet-tabs">
+  <div class="sheet-tab active" onclick="switchTab('activity', this)">
+    <span class="tab-icon">📋</span> Activity Feed
+  </div>
+  <div class="sheet-tab" onclick="switchTab('orders', this)">
+    <span class="tab-icon">📦</span> Orders
+  </div>
+  <div class="sheet-tab" onclick="switchTab('users', this)">
+    <span class="tab-icon">👥</span> Users
+  </div>
+  <div class="sheet-tab" onclick="switchTab('sm', this)">
+    <span class="tab-icon">🤖</span> AI Generator Log
+  </div>
+</div>
+
+<!-- SHEET EMBEDS -->
+<div class="sheet-container">
+  <div class="sheet-header">
+    <span class="sheet-label" id="sheetLabel">Showing: Activity Feed</span>
+    <div class="sheet-actions">
+      <a href="https://docs.google.com/spreadsheets/d/1GTJy_IilOPiGNaJ3YxRS8UnY5iBZPiHpF2Nhbt0Zt4A/edit" target="_blank" class="sheet-action-btn">Open in Google Sheets</a>
+    </div>
+  </div>
+
+  <iframe 
+    class="sheet-frame active" 
+    id="frame-activity"
+    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5WVEdWxhLEdTr2uhalSrrO4goyLGoqkUtyCziN4DxqkW_0DKoAefNAnW-QeRJ3eV3rj3zpVb2qoex/pubhtml?gid=347712469&single=true&widget=true&headers=false">
+  </iframe>
+
+  <iframe 
+    class="sheet-frame" 
+    id="frame-orders"
+    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5WVEdWxhLEdTr2uhalSrrO4goyLGoqkUtyCziN4DxqkW_0DKoAefNAnW-QeRJ3eV3rj3zpVb2qoex/pubhtml?gid=252341331&single=true&widget=true&headers=false">
+  </iframe>
+
+  <iframe 
+    class="sheet-frame" 
+    id="frame-users"
+    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5WVEdWxhLEdTr2uhalSrrO4goyLGoqkUtyCziN4DxqkW_0DKoAefNAnW-QeRJ3eV3rj3zpVb2qoex/pubhtml?gid=961910361&single=true&widget=true&headers=false">
+  </iframe>
+
+  <iframe 
+    class="sheet-frame" 
+    id="frame-sm"
+    src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQ5WVEdWxhLEdTr2uhalSrrO4goyLGoqkUtyCziN4DxqkW_0DKoAefNAnW-QeRJ3eV3rj3zpVb2qoex/pubhtml?gid=0&single=true&widget=true&headers=false">
+  </iframe>
+</div>
+
+<!-- CRM ROADMAP -->
+<div class="crm-roadmap">
+  <h3>CRM Roadmap</h3>
+  <p>This is Phase 1 - raw data visibility. Coming next: visual pipeline boards, contact profiles, automated email/SMS campaigns, webinar funnels, calendar booking, and the full CRM built specifically for Loan Originators. No more GoHighLevel. No more Total Expert. No more Trello. One platform to rule them all.</p>
+</div>
+
+<a href="admin.html" class="return-link">← Back to Mission Control</a>
+
+<script>
+// Protect page
+protectPage();
+if (sessionStorage.getItem('agentEdgeAdmin') !== 'true') {
+  window.location.href = 'portal.html';
+}
+
+var tabLabels = {
+  activity: 'Showing: Activity Feed',
+  orders: 'Showing: Orders',
+  users: 'Showing: Users',
+  sm: 'Showing: AI Generator Log'
+};
+
+function switchTab(tab, el) {
+  // Hide all frames
+  document.querySelectorAll('.sheet-frame').forEach(function(f) {
+    f.classList.remove('active');
+  });
+  
+  // Deactivate all tabs
+  document.querySelectorAll('.sheet-tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  
+  // Show selected frame
+  document.getElementById('frame-' + tab).classList.add('active');
+  el.classList.add('active');
+  
+  // Update label
+  document.getElementById('sheetLabel').textContent = tabLabels[tab];
+}
+
+// Load quick stats
+async function loadStats() {
+  try {
+    // Fetch orders count
+    var orderRes = await fetch('https://agent-edge-backend.vercel.app/api/get-orders');
+    var orderData = await orderRes.json();
+    
+    if (orderData.success && orderData.orders) {
+      document.getElementById('statOrders').textContent = orderData.orders.length;
+      
+      var pending = orderData.orders.filter(function(o) { 
+        return o.status === 'New' || o.status === 'In Progress'; 
+      }).length;
+      document.getElementById('statNewOrders').textContent = pending;
+    }
+  } catch (e) {
+    console.log('Stats load error:', e);
+  }
+  
+  // Users and activities would need additional endpoints
+  // For now show placeholder
+  document.getElementById('statUsers').textContent = '-';
+  document.getElementById('statActivities').textContent = '-';
+}
+
+loadStats();
+</script>
+
+</body>
+</html>
