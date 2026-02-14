@@ -88,6 +88,13 @@ body {
   border-radius: 6px;
   margin-bottom: 6px;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summary-item-info {
+  flex: 1;
 }
 
 .summary-item strong {
@@ -98,6 +105,24 @@ body {
   color: #666;
   font-size: 13px;
   margin-top: 2px;
+}
+
+.remove-item-btn {
+  background: none;
+  border: none;
+  color: #c0392b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: 0.2s ease;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.remove-item-btn:hover {
+  background: rgba(192,57,43,0.1);
 }
 
 .total-items {
@@ -399,6 +424,7 @@ label {
 
 <a href="portal.html" class="return-main">Return to Portal</a>
 
+<script src="universal-cart.js"></script>
 <script src="tracking.js"></script>
 <script>
 // Auto-fill user info from login session
@@ -449,10 +475,11 @@ function renderOrderSummary() {
     html += `<div class="summary-section">`;
     html += `<div class="section-title">Marketing Materials</div>`;
     
-    cartData.marketing.forEach(item => {
+    cartData.marketing.forEach(function(item, index) {
       html += `
         <div class="summary-item">
-          <strong>${item}</strong>
+          <div class="summary-item-info"><strong>${item}</strong></div>
+          <button class="remove-item-btn" onclick="removeMarketing(${index})">Remove</button>
         </div>
       `;
       totalCount++;
@@ -466,14 +493,17 @@ function renderOrderSummary() {
     html += `<div class="summary-section">`;
     html += `<div class="section-title">Advisory Reports</div>`;
     
-    Object.keys(cartData.advisory).forEach(reportType => {
-      const properties = cartData.advisory[reportType];
-      const displayName = getReportDisplayName(reportType);
+    Object.keys(cartData.advisory).forEach(function(reportType) {
+      var properties = cartData.advisory[reportType];
+      var displayName = getReportDisplayName(reportType);
       
       html += `
         <div class="summary-item">
-          <strong>${displayName}</strong>
-          <div class="meta">${properties.length} ${properties.length === 1 ? 'property' : 'properties'}</div>
+          <div class="summary-item-info">
+            <strong>${displayName}</strong>
+            <div class="meta">${properties.length} ${properties.length === 1 ? 'property' : 'properties'}</div>
+          </div>
+          <button class="remove-item-btn" onclick="removeAdvisory('${reportType}')">Remove</button>
         </div>
       `;
       totalCount++;
@@ -487,11 +517,14 @@ function renderOrderSummary() {
     html += `<div class="summary-section">`;
     html += `<div class="section-title">Property Websites</div>`;
     
-    cartData.websites.forEach(prop => {
+    cartData.websites.forEach(function(prop, index) {
       html += `
         <div class="summary-item">
-          <strong>${prop.address}</strong>
-          ${prop.mls ? `<div class="meta">MLS: ${prop.mls}</div>` : ''}
+          <div class="summary-item-info">
+            <strong>${prop.address}</strong>
+            ${prop.mls ? `<div class="meta">MLS: ${prop.mls}</div>` : ''}
+          </div>
+          <button class="remove-item-btn" onclick="removeWebsite(${index})">Remove</button>
         </div>
       `;
       totalCount++;
@@ -502,6 +535,41 @@ function renderOrderSummary() {
   
   summaryContainer.innerHTML = html;
   totalContainer.innerHTML = `Total Items: <strong>${totalCount}</strong>`;
+}
+
+// Remove individual items
+function removeMarketing(index) {
+  var itemName = cartData.marketing[index];
+  universalCart.removeMarketingItem(itemName);
+  cartData.marketing.splice(index, 1);
+  sessionStorage.setItem('checkoutCart', JSON.stringify(cartData));
+  checkIfEmpty();
+  renderOrderSummary();
+}
+
+function removeAdvisory(reportType) {
+  universalCart.setAdvisoryReport(reportType, null);
+  delete cartData.advisory[reportType];
+  sessionStorage.setItem('checkoutCart', JSON.stringify(cartData));
+  checkIfEmpty();
+  renderOrderSummary();
+}
+
+function removeWebsite(index) {
+  cartData.websites.splice(index, 1);
+  universalCart.setWebsites(cartData.websites);
+  sessionStorage.setItem('checkoutCart', JSON.stringify(cartData));
+  checkIfEmpty();
+  renderOrderSummary();
+}
+
+function checkIfEmpty() {
+  if ((!cartData.marketing || cartData.marketing.length === 0) &&
+      (!cartData.advisory || Object.keys(cartData.advisory).length === 0) &&
+      (!cartData.websites || cartData.websites.length === 0)) {
+    document.getElementById('emptyCart').style.display = 'block';
+    document.getElementById('checkoutForm').style.display = 'none';
+  }
 }
 
 function getReportDisplayName(reportType) {
