@@ -382,51 +382,17 @@ function loadOrders() {
 
 async function fetchOrdersFromSheet() {
   try {
-    // Use the Google Sheets public CSV endpoint
-    var sheetId = '1GTJy_IilOPiGNaJ3YxRS8UnY5iBZPiHpF2Nhbt0Zt4A';
-    var url = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:json&sheet=Orders';
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/get-orders');
+    var data = await response.json();
     
-    var response = await fetch(url);
-    var text = await response.text();
-    
-    // Parse Google Sheets JSON response (it wraps it in a callback)
-    var jsonStr = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-    if (!jsonStr) return;
-    
-    var json = JSON.parse(jsonStr[1]);
-    var rows = json.table.rows;
-    var cols = json.table.cols;
-    
-    if (!rows || rows.length === 0) return;
-    
-    allOrders = rows.map(function(row) {
-      return {
-        orderId: (row.c[0] && row.c[0].v) || '',
-        timestamp: (row.c[1] && row.c[1].v) || '',
-        name: (row.c[2] && row.c[2].v) || '',
-        email: (row.c[3] && row.c[3].v) || '',
-        brokerage: (row.c[4] && row.c[4].v) || '',
-        branding: (row.c[5] && row.c[5].v) || '',
-        items: (row.c[6] && row.c[6].v) || '',
-        itemCount: (row.c[7] && row.c[7].v) || 0,
-        notes: (row.c[8] && row.c[8].v) || '',
-        status: (row.c[9] && row.c[9].v) || 'New',
-        cartJson: (row.c[10] && row.c[10].v) || ''
-      };
-    }).filter(function(order) {
-      return order.orderId && order.orderId !== 'Order ID';
-    });
-    
-    // Reverse so newest first
-    allOrders.reverse();
-    
-    // Cache locally
-    localStorage.setItem('agentEdgeOrders', JSON.stringify(allOrders));
-    
-    renderOrders();
+    if (data.success && data.orders && data.orders.length > 0) {
+      allOrders = data.orders;
+      localStorage.setItem('agentEdgeOrders', JSON.stringify(allOrders));
+      renderOrders();
+    }
     
   } catch (error) {
-    console.log('Could not fetch orders from sheet:', error);
+    console.log('Could not fetch orders:', error);
   }
 }
 
