@@ -505,7 +505,7 @@ function loadContacts() {
   }
 
   // Then fetch fresh data from API
-  fetch(API_BASE + '/get-contacts')
+  fetch(API_BASE + '/pipeline-api?action=list')
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success && data.contacts) {
@@ -535,7 +535,7 @@ function loadContacts() {
 
 // Save stage change to API (fire and forget)
 function syncStageToSheet(contactId, stage) {
-  fetch(API_BASE + '/update-stage', {
+  fetch(API_BASE + '/pipeline-api?action=updateStage', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contactId: contactId, stage: stage, updatedAt: new Date().toISOString() })
