@@ -241,6 +241,8 @@ body {
 protectPage();
 if (sessionStorage.getItem('agentEdgeAdmin') !== 'true') { window.location.href = 'portal.html'; }
 
+var API_BASE = 'https://kristyflach.com/api';
+
 // ===== GET CONTACT =====
 var params = new URLSearchParams(window.location.search);
 var contactId = params.get('id');
@@ -528,7 +530,7 @@ function saveAll() {
     closing: document.getElementById('dateClosing').value
   };
 
-  // Save to contacts array
+  // Save to contacts array (localStorage cache)
   var idx = contacts.findIndex(function(c) { return c.id === contact.id; });
   if (idx >= 0) {
     contacts[idx] = contact;
@@ -540,13 +542,37 @@ function saveAll() {
   isNew = false;
   document.getElementById('deleteBtn').style.display = 'block';
 
-  showToast('Saved!');
+  // Sync to Google Sheets
+  fetch(API_BASE + '/save-contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contact: contact })
+  }).then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        showToast('Saved & synced!');
+      } else {
+        showToast('Saved locally (sync pending)');
+      }
+    })
+    .catch(function(err) {
+      console.log('Sheet sync error:', err);
+      showToast('Saved locally (sync pending)');
+    });
 }
 
 function deleteContact() {
   if (!confirm('Delete this contact permanently?')) return;
   contacts = contacts.filter(function(c) { return c.id !== contact.id; });
   localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
+  
+  // Delete from Google Sheets
+  fetch(API_BASE + '/delete-contact', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contactId: contact.id })
+  }).catch(function(err) { console.log('Delete sync error:', err); });
+  
   window.location.href = 'pipeline.html';
 }
 
