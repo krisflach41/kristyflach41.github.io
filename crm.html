@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM - Mission Control</title>
+<script src="auth.js"></script>
+<style>
+* { box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0; padding: 20px 24px 80px; min-height: 100vh;
+  background: linear-gradient(135deg, #0b1f3a 0%, #132d54 50%, #0b1f3a 100%);
+  color: #e8ecf1;
+}
+.page-wrap { max-width: 1200px; margin: 0 auto; }
+
+/* HEADER */
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.header-left h1 { font-size: 22px; margin: 0 0 4px; }
+.header-left p { font-size: 13px; color: rgba(255,255,255,0.4); margin: 0; }
+.header-actions { display: flex; gap: 10px; align-items: center; }
+.header-btn { padding: 9px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; cursor: pointer; }
+.header-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.header-btn.primary { background: rgba(52,152,219,0.2); border-color: rgba(52,152,219,0.3); color: #3498db; }
+.stat { font-size: 13px; color: rgba(255,255,255,0.5); }
+.stat strong { color: #fff; }
+
+/* FILTERS */
+.filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filter-bar input, .filter-bar select {
+  padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 13px; font-family: inherit;
+}
+.filter-bar select { background-color: #1a2d4a; }
+.filter-bar select option { background-color: #1a2d4a; color: #e8ecf1; }
+.filter-bar input { flex: 1; min-width: 200px; }
+.filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: rgba(52,152,219,0.4); }
+.bulk-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(155,89,182,0.3); background: rgba(155,89,182,0.15); color: #b97fd0; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
+.bulk-btn:hover { background: rgba(155,89,182,0.3); }
+
+/* TABLE */
+.crm-table { width: 100%; border-collapse: collapse; }
+.crm-table th {
+  text-align: left; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.crm-table td {
+  padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.8);
+}
+.crm-table tr:hover td { background: rgba(255,255,255,0.03); }
+.crm-table .check-col { width: 36px; text-align: center; }
+.crm-table input[type="checkbox"] { accent-color: #3498db; cursor: pointer; }
+
+.type-badge {
+  display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 11px; font-weight: 600;
+}
+.type-client { background: rgba(52,152,219,0.15); color: #5dade2; }
+.type-realtor { background: rgba(39,174,96,0.15); color: #58d68d; }
+.type-title { background: rgba(230,126,34,0.15); color: #f0b27a; }
+.type-appraiser { background: rgba(155,89,182,0.15); color: #c39bd3; }
+.type-contractor { background: rgba(231,76,60,0.15); color: #ec7063; }
+.type-vendor { background: rgba(26,188,156,0.15); color: #76d7c4; }
+.type-other { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+
+.action-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); font-size: 11px; cursor: pointer; margin-right: 4px; }
+.action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.action-btn.pipeline-btn { border-color: rgba(26,188,156,0.3); color: #1abc9c; }
+.action-btn.pipeline-btn:hover { background: rgba(26,188,156,0.15); }
+
+.empty-msg { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.25); font-size: 14px; }
+
+/* MODAL */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; }
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #132d54; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+  padding: 28px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.modal h2 { font-size: 18px; margin: 0 0 20px; }
+.modal .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+.modal .form-row.full { grid-template-columns: 1fr; }
+.modal .field { display: flex; flex-direction: column; }
+.modal .field label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.modal .field input, .modal .field select, .modal .field textarea {
+  padding: 9px 12px; border-radius: 6px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 13px; font-family: inherit;
+}
+.modal .field select { background-color: #1a2d4a; }
+.modal .field select option { background-color: #1a2d4a; color: #e8ecf1; }
+.modal .field textarea { height: 60px; resize: vertical; }
+.modal .field input:focus, .modal .field select:focus, .modal .field textarea:focus { outline: none; border-color: rgba(52,152,219,0.4); }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+.modal-btn { padding: 9px 20px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; }
+.modal-btn.save { background: #3498db; color: #fff; }
+.modal-btn.save:hover { background: #2980b9; }
+.modal-btn.cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
+.modal-btn.cancel:hover { background: rgba(255,255,255,0.12); }
+.modal-btn.delete { background: rgba(192,57,43,0.15); color: #c0392b; }
+#customTypeField { display: none; }
+
+/* PIPELINE MODAL */
+.stage-option { padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); cursor: pointer; margin-bottom: 8px; font-size: 13px; }
+.stage-option:hover { background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); color: #fff; }
+
+/* BULK EMAIL MODAL */
+.bulk-count { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+#bulkSubject, #bulkBody { width: 100%; }
+#bulkBody { height: 120px; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #27ae60; color: #fff; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; display: none; z-index: 200; }
+.toast.show { display: block; }
+
+.return-link { display: block; text-align: center; margin-top: 30px; color: rgba(255,255,255,0.35); text-decoration: none; font-size: 13px; }
+.return-link:hover { color: #fff; }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+<!-- HEADER -->
+<div class="page-header">
+  <div class="header-left">
+    <h1>Client Database</h1>
+    <p>Master contact list — every client, realtor, and partner in one place</p>
+  </div>
+  <div class="header-actions">
+    <span class="stat"><strong id="totalCount">0</strong> contacts</span>
+    <button class="header-btn primary" onclick="openAddModal()">+ Add Contact</button>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-bar">
+  <input type="text" id="searchInput" placeholder="Search by name, email, phone, or company..." oninput="renderTable()">
+  <select id="typeFilter" onchange="renderTable()">
+    <option value="">All Types</option>
+    <option value="client">Clients / Borrowers</option>
+    <option value="realtor">Realtors / Agents</option>
+    <option value="title">Title & Escrow</option>
+    <option value="appraiser">Appraisers</option>
+    <option value="contractor">Contractors</option>
+    <option value="vendor">Vendors / Partners</option>
+    <option value="other">Other</option>
+  </select>
+  <button class="bulk-btn" id="bulkEmailBtn" onclick="openBulkEmail()">✉ Email Selected</button>
+</div>
+
+<!-- TABLE -->
+<table class="crm-table">
+  <thead>
+    <tr>
+      <th class="check-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Phone</th>
+      <th>Type</th>
+      <th>Company</th>
+      <th>Added</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="crmBody"></tbody>
+</table>
+<div class="empty-msg" id="emptyMsg" style="display:none;">No contacts found. Add your first contact to get started.</div>
+
+</div>
+
+<!-- ADD/EDIT MODAL -->
+<div class="modal-overlay" id="contactModal">
+  <div class="modal">
+    <h2 id="modalTitle">Add Contact</h2>
+    <input type="hidden" id="crmId">
+
+    <div class="form-row">
+      <div class="field"><label>Full Name *</label><input type="text" id="crmName"></div>
+      <div class="field"><label>Email</label><input type="email" id="crmEmail"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Phone</label><input type="text" id="crmPhone"></div>
+      <div class="field"><label>Company / Brokerage</label><input type="text" id="crmCompany"></div>
+    </div>
+    <div class="form-row">
+      <div class="field">
+        <label>Contact Type</label>
+        <select id="crmType" onchange="toggleCustomType()">
+          <option value="client">Client / Borrower</option>
+          <option value="realtor">Realtor / Agent</option>
+          <option value="title">Title & Escrow</option>
+          <option value="appraiser">Appraiser</option>
+          <option value="contractor">Contractor</option>
+          <option value="vendor">Vendor / Partner</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="field" id="customTypeField">
+        <label>Specify Type</label>
+        <input type="text" id="crmCustomType" placeholder="e.g. Insurance Agent">
+      </div>
+      <div class="field">
+        <label>Source</label>
+        <select id="crmSource">
+          <option value="">--</option>
+          <option value="pipeline">Pipeline</option>
+          <option value="portal">Partner Portal</option>
+          <option value="referral">Referral</option>
+          <option value="webinar">Webinar</option>
+          <option value="social">Social Media</option>
+          <option value="manual">Manual Entry</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Address</label><input type="text" id="crmAddress"></div>
+      <div class="field"><label>City</label><input type="text" id="crmCity"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>State</label><input type="text" id="crmState"></div>
+      <div class="field"><label>Zip</label><input type="text" id="crmZip"></div>
+    </div>
+    <div class="form-row full">
+      <div class="field"><label>Tags (comma separated)</label><input type="text" id="crmTags" placeholder="e.g. VIP, South Florida, 2024 closer"></div>
+    </div>
+    <div class="form-row full">
+      <div class="field"><label>Notes</label><textarea id="crmNotes"></textarea></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-btn delete" id="deleteContactBtn" onclick="deleteContact()" style="display:none;">Delete</button>
+      <div style="flex:1;"></div>
+      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-btn save" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE STAGE MODAL -->
+<div class="modal-overlay" id="pipelineModal">
+  <div class="modal" style="max-width: 400px;">
+    <h2>Send to Pipeline</h2>
+    <p style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:16px;" id="pipelineName"></p>
+    <div id="stageOptions"></div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closePipelineModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- BULK EMAIL MODAL -->
+<div class="modal-overlay" id="bulkModal">
+  <div class="modal" style="max-width: 550px;">
+    <h2>Send Bulk Email</h2>
+    <p class="bulk-count" id="bulkCount"></p>
+    <div class="form-row full">
+      <div class="field"><label>Subject</label><input type="text" id="bulkSubject"></div>
+    </div>
+    <div class="form-row full">
+      <div class="field"><label>Message Body</label><textarea id="bulkBody" placeholder="Type your message here. Your full email signature will be appended automatically."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn cancel" onclick="closeBulkModal()">Cancel</button>
+      <button class="modal-btn save" onclick="sendBulkEmail()">Send Emails</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<a href="admin.html" class="return-link">← Back to Mission Control</a>
+
+<script>
+protectPage();
+if (sessionStorage.getItem('agentEdgeAdmin') !== 'true') { window.location.href = 'portal.html'; }
+
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+var crmContacts = [];
+var selectedIds = new Set();
+
+var columns = [
+  { id: 'cold', title: 'Cold Leads' },
+  { id: 'warm', title: 'Warm Leads' },
+  { id: 'active', title: 'Active Conversations' },
+  { id: 'credit', title: 'Credit Repair' },
+  { id: 'preapproval', title: 'Pre-Approval' },
+  { id: 'preapproved', title: 'Pre Approved' },
+  { id: 'ratewatch', title: 'Rate Watch' },
+  { id: 'underwriting', title: 'Underwriting' },
+  { id: 'closed', title: 'Closed - Funded' },
+  { id: 'dead', title: 'Dead Leads' }
+];
+
+var typeLabels = {
+  client: 'Client', realtor: 'Realtor', title: 'Title & Escrow',
+  appraiser: 'Appraiser', contractor: 'Contractor', vendor: 'Vendor', other: 'Other'
+};
+
+// ===== LOAD DATA =====
+function loadCRM() {
+  fetch(API_BASE + '/crm-api?action=list')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        crmContacts = data.contacts || [];
+        renderTable();
+      }
+    })
+    .catch(function(err) { console.log('CRM load error:', err); });
+}
+
+// ===== RENDER TABLE =====
+function renderTable() {
+  var search = document.getElementById('searchInput').value.toLowerCase();
+  var typeFilter = document.getElementById('typeFilter').value;
+
+  var filtered = crmContacts.filter(function(c) {
+    var matchType = !typeFilter || c.type === typeFilter;
+    var matchSearch = !search ||
+      (c.name && c.name.toLowerCase().indexOf(search) !== -1) ||
+      (c.email && c.email.toLowerCase().indexOf(search) !== -1) ||
+      (c.phone && c.phone.indexOf(search) !== -1) ||
+      (c.company && c.company.toLowerCase().indexOf(search) !== -1) ||
+      (c.tags && c.tags.toLowerCase().indexOf(search) !== -1);
+    return matchType && matchSearch;
+  });
+
+  // Sort by name
+  filtered.sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
+
+  var body = document.getElementById('crmBody');
+  var empty = document.getElementById('emptyMsg');
+
+  if (filtered.length === 0) {
+    body.innerHTML = '';
+    empty.style.display = 'block';
+    document.getElementById('totalCount').textContent = crmContacts.length;
+    return;
+  }
+
+  empty.style.display = 'none';
+  document.getElementById('totalCount').textContent = crmContacts.length;
+
+  var html = '';
+  filtered.forEach(function(c) {
+    var typeClass = 'type-' + (c.type || 'other');
+    var typeLabel = c.type === 'other' && c.customType ? c.customType : (typeLabels[c.type] || 'Other');
+    var dateStr = '';
+    if (c.createdAt) {
+      var d = new Date(c.createdAt);
+      if (!isNaN(d)) dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+    }
+
+    var checked = selectedIds.has(c.id) ? 'checked' : '';
+
+    html += '<tr>' +
+      '<td class="check-col"><input type="checkbox" ' + checked + ' onchange="toggleSelect(\'' + c.id + '\', this.checked)"></td>' +
+      '<td style="font-weight:600; color:#fff;">' + esc(c.name) + '</td>' +
+      '<td>' + esc(c.email) + '</td>' +
+      '<td>' + esc(c.phone) + '</td>' +
+      '<td><span class="type-badge ' + typeClass + '">' + esc(typeLabel) + '</span></td>' +
+      '<td>' + esc(c.company) + '</td>' +
+      '<td style="color:rgba(255,255,255,0.4); font-size:12px;">' + dateStr + '</td>' +
+      '<td>' +
+        '<button class="action-btn" onclick="openEditModal(\'' + c.id + '\')">Edit</button>' +
+        '<button class="action-btn pipeline-btn" onclick="openPipelineModal(\'' + c.id + '\')" title="Send to Pipeline">→ Pipeline</button>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  body.innerHTML = html;
+
+  // Show/hide bulk email button
+  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+}
+
+// ===== SELECT / CHECKBOX =====
+function toggleSelect(id, checked) {
+  if (checked) { selectedIds.add(id); } else { selectedIds.delete(id); }
+  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+}
+
+function toggleSelectAll() {
+  var checked = document.getElementById('selectAll').checked;
+  var checkboxes = document.querySelectorAll('#crmBody input[type="checkbox"]');
+  selectedIds.clear();
+  if (checked) {
+    // Select all visible/filtered
+    var search = document.getElementById('searchInput').value.toLowerCase();
+    var typeFilter = document.getElementById('typeFilter').value;
+    crmContacts.forEach(function(c) {
+      var matchType = !typeFilter || c.type === typeFilter;
+      var matchSearch = !search ||
+        (c.name && c.name.toLowerCase().indexOf(search) !== -1) ||
+        (c.email && c.email.toLowerCase().indexOf(search) !== -1) ||
+        (c.phone && c.phone.indexOf(search) !== -1) ||
+        (c.company && c.company.toLowerCase().indexOf(search) !== -1);
+      if (matchType && matchSearch && c.email) selectedIds.add(c.id);
+    });
+  }
+  checkboxes.forEach(function(cb) { cb.checked = checked; });
+  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+}
+
+// ===== MODAL - ADD/EDIT =====
+function openAddModal() {
+  document.getElementById('modalTitle').textContent = 'Add Contact';
+  document.getElementById('crmId').value = '';
+  document.getElementById('crmName').value = '';
+  document.getElementById('crmEmail').value = '';
+  document.getElementById('crmPhone').value = '';
+  document.getElementById('crmCompany').value = '';
+  document.getElementById('crmType').value = 'client';
+  document.getElementById('crmCustomType').value = '';
+  document.getElementById('crmSource').value = 'manual';
+  document.getElementById('crmAddress').value = '';
+  document.getElementById('crmCity').value = '';
+  document.getElementById('crmState').value = '';
+  document.getElementById('crmZip').value = '';
+  document.getElementById('crmTags').value = '';
+  document.getElementById('crmNotes').value = '';
+  document.getElementById('deleteContactBtn').style.display = 'none';
+  toggleCustomType();
+  document.getElementById('contactModal').classList.add('show');
+}
+
+function openEditModal(id) {
+  var c = crmContacts.find(function(x) { return x.id === id; });
+  if (!c) return;
+  document.getElementById('modalTitle').textContent = 'Edit Contact';
+  document.getElementById('crmId').value = c.id;
+  document.getElementById('crmName').value = c.name || '';
+  document.getElementById('crmEmail').value = c.email || '';
+  document.getElementById('crmPhone').value = c.phone || '';
+  document.getElementById('crmCompany').value = c.company || '';
+  document.getElementById('crmType').value = c.type || 'other';
+  document.getElementById('crmCustomType').value = c.customType || '';
+  document.getElementById('crmSource').value = c.source || '';
+  document.getElementById('crmAddress').value = c.address || '';
+  document.getElementById('crmCity').value = c.city || '';
+  document.getElementById('crmState').value = c.state || '';
+  document.getElementById('crmZip').value = c.zip || '';
+  document.getElementById('crmTags').value = c.tags || '';
+  document.getElementById('crmNotes').value = c.notes || '';
+  document.getElementById('deleteContactBtn').style.display = 'inline-block';
+  toggleCustomType();
+  document.getElementById('contactModal').classList.add('show');
+}
+
+function closeModal() { document.getElementById('contactModal').classList.remove('show'); }
+
+function toggleCustomType() {
+  document.getElementById('customTypeField').style.display =
+    document.getElementById('crmType').value === 'other' ? 'flex' : 'none';
+}
+
+function saveContact() {
+  var name = document.getElementById('crmName').value.trim();
+  if (!name) { document.getElementById('crmName').style.borderColor = '#c0392b'; return; }
+
+  var id = document.getElementById('crmId').value || ('crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4));
+  var isEdit = !!document.getElementById('crmId').value;
+  var now = new Date().toISOString();
+
+  var contact = {
+    id: id,
+    name: name,
+    email: document.getElementById('crmEmail').value.trim(),
+    phone: document.getElementById('crmPhone').value.trim(),
+    company: document.getElementById('crmCompany').value.trim(),
+    type: document.getElementById('crmType').value,
+    customType: document.getElementById('crmCustomType').value.trim(),
+    source: document.getElementById('crmSource').value,
+    address: document.getElementById('crmAddress').value.trim(),
+    city: document.getElementById('crmCity').value.trim(),
+    state: document.getElementById('crmState').value.trim(),
+    zip: document.getElementById('crmZip').value.trim(),
+    tags: document.getElementById('crmTags').value.trim(),
+    notes: document.getElementById('crmNotes').value.trim(),
+    pipelineId: '',
+    createdAt: isEdit ? (crmContacts.find(function(c) { return c.id === id; }) || {}).createdAt || now : now,
+    updatedAt: now
+  };
+
+  // Preserve pipelineId if editing
+  if (isEdit) {
+    var existing = crmContacts.find(function(c) { return c.id === id; });
+    if (existing) contact.pipelineId = existing.pipelineId || '';
+  }
+
+  // Update local array
+  var idx = crmContacts.findIndex(function(c) { return c.id === id; });
+  if (idx >= 0) { crmContacts[idx] = contact; } else { crmContacts.push(contact); }
+
+  renderTable();
+  closeModal();
+
+  // Sync to sheet
+  fetch(API_BASE + '/crm-api?action=save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crm: contact })
+  }).then(function(r) { return r.json(); })
+    .then(function(d) { showToast(d.success ? 'Saved & synced!' : 'Saved locally'); })
+    .catch(function() { showToast('Saved locally'); });
+}
+
+function deleteContact() {
+  var id = document.getElementById('crmId').value;
+  if (!id || !confirm('Delete this contact permanently?')) return;
+
+  crmContacts = crmContacts.filter(function(c) { return c.id !== id; });
+  renderTable();
+  closeModal();
+
+  fetch(API_BASE + '/crm-api?action=delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crmId: id })
+  }).catch(function(err) { console.log('Delete error:', err); });
+
+  showToast('Contact deleted');
+}
+
+// ===== SEND TO PIPELINE =====
+var pipelineContactId = null;
+
+function openPipelineModal(id) {
+  var c = crmContacts.find(function(x) { return x.id === id; });
+  if (!c) return;
+
+  if (c.pipelineId) {
+    if (confirm(c.name + ' is already in the pipeline. Open their pipeline card?')) {
+      window.location.href = 'contact-detail.html?id=' + c.pipelineId;
+    }
+    return;
+  }
+
+  pipelineContactId = id;
+  document.getElementById('pipelineName').textContent = 'Select a stage for ' + c.name + ':';
+
+  var html = '';
+  columns.forEach(function(col) {
+    html += '<div class="stage-option" onclick="sendToPipeline(\'' + col.id + '\')">' + col.title + '</div>';
+  });
+  document.getElementById('stageOptions').innerHTML = html;
+  document.getElementById('pipelineModal').classList.add('show');
+}
+
+function closePipelineModal() { document.getElementById('pipelineModal').classList.remove('show'); pipelineContactId = null; }
+
+function sendToPipeline(stage) {
+  var c = crmContacts.find(function(x) { return x.id === pipelineContactId; });
+  if (!c) return;
+
+  var pipelineId = 'c-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+  var now = new Date().toISOString();
+
+  // Create pipeline contact
+  var pipelineContact = {
+    id: pipelineId,
+    name: c.name,
+    phone: c.phone || '',
+    email: c.email || '',
+    stage: stage,
+    source: 'crm',
+    realtorName: '',
+    loanType: '', loanYear: '', interestRate: '', lockStatus: '',
+    subjectAddress: '',
+    borrowers: [{ name: c.name, currentAddress: c.address || '', ownRent: '', monthlyPayment: '', retainSell: '', employer: c.company || '', selfReportedWages: '', incomeType: '', w2Year1: '', w2Year2: '', ytd: '', qualifyingEarnings: '' }],
+    dates: {},
+    notes: [],
+    documents: [],
+    createdAt: now,
+    updatedAt: now
+  };
+
+  // Save to pipeline localStorage
+  var contacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
+  contacts.push(pipelineContact);
+  localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
+
+  // Sync to pipeline sheet
+  fetch(API_BASE + '/pipeline-api?action=save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contact: pipelineContact })
+  }).catch(function(err) { console.log('Pipeline sync error:', err); });
+
+  // Update CRM contact with pipeline link
+  c.pipelineId = pipelineId;
+  c.updatedAt = now;
+  fetch(API_BASE + '/crm-api?action=save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crm: c })
+  }).catch(function(err) { console.log('CRM update error:', err); });
+
+  renderTable();
+  closePipelineModal();
+  showToast(c.name + ' added to ' + columns.find(function(col) { return col.id === stage; }).title);
+}
+
+// ===== BULK EMAIL =====
+function openBulkEmail() {
+  var emailContacts = crmContacts.filter(function(c) { return selectedIds.has(c.id) && c.email; });
+  if (emailContacts.length === 0) { showToast('No selected contacts have email addresses'); return; }
+  document.getElementById('bulkCount').textContent = 'Sending to ' + emailContacts.length + ' contact' + (emailContacts.length > 1 ? 's' : '') + ' with email addresses';
+  document.getElementById('bulkSubject').value = '';
+  document.getElementById('bulkBody').value = '';
+  document.getElementById('bulkModal').classList.add('show');
+}
+
+function closeBulkModal() { document.getElementById('bulkModal').classList.remove('show'); }
+
+function sendBulkEmail() {
+  var subject = document.getElementById('bulkSubject').value.trim();
+  var body = document.getElementById('bulkBody').value.trim();
+  if (!subject || !body) { showToast('Please fill in subject and message'); return; }
+
+  var emailContacts = crmContacts.filter(function(c) { return selectedIds.has(c.id) && c.email; });
+  if (emailContacts.length === 0) return;
+
+  var bodyHtml = '<p>' + body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
+  var sent = 0;
+  var failed = 0;
+
+  emailContacts.forEach(function(c) {
+    // Personalize with name
+    var personalBody = bodyHtml.replace(/\{name\}/g, c.name.split(' ')[0]);
+
+    fetch(API_BASE + '/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: c.email, subject: subject, body: personalBody })
+    }).then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.success) sent++; else failed++;
+        if (sent + failed === emailContacts.length) {
+          showToast('Sent: ' + sent + (failed > 0 ? ' | Failed: ' + failed : ''));
+        }
+      })
+      .catch(function() {
+        failed++;
+        if (sent + failed === emailContacts.length) {
+          showToast('Sent: ' + sent + ' | Failed: ' + failed);
+        }
+      });
+  });
+
+  closeBulkModal();
+  selectedIds.clear();
+  document.getElementById('selectAll').checked = false;
+  renderTable();
+  showToast('Sending ' + emailContacts.length + ' email' + (emailContacts.length > 1 ? 's' : '') + '...');
+}
+
+// ===== HELPERS =====
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3000);
+}
+
+// Init
+loadCRM();
+</script>
+</body>
+</html>
