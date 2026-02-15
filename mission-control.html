@@ -462,6 +462,21 @@ body {
 </head>
 <body>
 
+<!-- PIN GATE -->
+<div id="pinGate" style="display:none; min-height:100vh; align-items:center; justify-content:center; background:linear-gradient(135deg,#070e1a 0%,#0c1829 50%,#070e1a 100%);">
+  <div style="width:90%; max-width:340px; padding:44px 36px; border-radius:18px; background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center;">
+    <div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px;font-weight:700;color:#fff;box-shadow:0 4px 15px rgba(59,130,246,0.3);">AE</div>
+    <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;color:#fff;">Mission Control</h2>
+    <p id="pinPrompt" style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:24px;">Enter your admin PIN to continue</p>
+    <form onsubmit="verifyPin(event)">
+      <input type="password" id="adminPinInput" maxlength="6" autocomplete="off" required placeholder="PIN"
+        style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:22px;letter-spacing:8px;text-align:center;background:rgba(255,255,255,0.04);color:#fff;box-sizing:border-box;font-family:inherit;">
+      <button type="submit" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent-blue);color:#fff;font-weight:600;font-size:14px;cursor:pointer;margin-top:12px;font-family:inherit;">Enter</button>
+    </form>
+    <div id="pinError" style="display:none;color:#ef4444;font-size:12px;margin-top:10px;">Invalid PIN. Try again.</div>
+  </div>
+</div>
+
 <div class="app-layout">
 
 <!-- ===== SIDEBAR ===== -->
@@ -1088,8 +1103,70 @@ var SHEET_ID = '1GTJy_IilOPiGNaJ3YxRS8UnY5iBZPiHpF2Nhbt0Zt4A';
 
 // ===== AUTH =====
 protectPage();
-if (sessionStorage.getItem('agentEdgeAdmin') !== 'true') {
+
+// Check admin flag from session (set during login from Users sheet)
+var isAdmin = sessionStorage.getItem('agentEdgeAdmin') === 'true';
+if (!isAdmin) {
   window.location.href = 'portal.html';
+}
+
+// ===== PIN GATE =====
+// PIN stored as hash in localStorage
+function simpleHash(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    var char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return hash.toString(36);
+}
+
+// Check if PIN already verified this session
+var pinVerified = sessionStorage.getItem('agentEdgePinVerified') === 'true';
+
+if (pinVerified) {
+  // Already verified - show dashboard immediately
+  document.getElementById('pinGate').style.display = 'none';
+  document.querySelector('.app-layout').style.display = 'flex';
+} else {
+  // Show PIN gate, hide dashboard
+  document.getElementById('pinGate').style.display = 'flex';
+  document.querySelector('.app-layout').style.display = 'none';
+  // Show setup message if no PIN set yet
+  if (!localStorage.getItem('agentEdgeAdminPin')) {
+    document.getElementById('pinPrompt').textContent = 'Create your admin PIN (first time setup)';
+  }
+}
+
+function verifyPin(e) {
+  e.preventDefault();
+  var pin = document.getElementById('adminPinInput').value;
+  var pinHash = simpleHash(pin);
+  var storedPinHash = localStorage.getItem('agentEdgeAdminPin');
+
+  if (!storedPinHash) {
+    // First time - set the PIN
+    localStorage.setItem('agentEdgeAdminPin', pinHash);
+    enterDashboard();
+    return;
+  }
+
+  if (pinHash !== storedPinHash) {
+    document.getElementById('pinError').style.display = 'block';
+    document.getElementById('adminPinInput').value = '';
+    document.getElementById('adminPinInput').focus();
+    return;
+  }
+
+  enterDashboard();
+}
+
+function enterDashboard() {
+  sessionStorage.setItem('agentEdgePinVerified', 'true');
+  document.getElementById('pinGate').style.display = 'none';
+  document.querySelector('.app-layout').style.display = 'flex';
+  updateDashboard();
 }
 
 // ===== VIEW SWITCHING =====
