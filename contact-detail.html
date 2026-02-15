@@ -44,6 +44,8 @@ body {
 .field { display: flex; flex-direction: column; }
 .field label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
 .field input, .field select, .field textarea { padding: 9px 12px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 13px; font-family: inherit; }
+.field select { background-color: #1a2d4a; }
+.field select option { background-color: #1a2d4a; color: #e8ecf1; }
 .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: rgba(52,152,219,0.4); background: rgba(255,255,255,0.08); }
 .field textarea { height: 60px; resize: vertical; }
 .section-divider { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -343,6 +345,12 @@ function populateFields() {
   document.getElementById('dateClosing').value = d.closing || '';
 
   if (!contact.borrowers || contact.borrowers.length === 0) contact.borrowers = [emptyBorrower()];
+  
+  // Auto-populate primary borrower name from contact name if borrower name is empty
+  if (contact.borrowers[0] && !contact.borrowers[0].name && contact.name) {
+    contact.borrowers[0].name = contact.name;
+  }
+  
   renderBorrowers();
   renderNotes();
   renderDocs();
@@ -585,6 +593,16 @@ function showToast(msg) {
 
 // Init
 populateFields();
+
+// Keep primary borrower name in sync with contact name
+document.getElementById('primaryName').addEventListener('input', function() {
+  if (contact.borrowers && contact.borrowers[0]) {
+    contact.borrowers[0].name = this.value;
+    // Update the borrower name field if it's visible
+    var bNameField = document.querySelector('[data-b="0"][data-f="name"]');
+    if (bNameField) bNameField.value = this.value;
+  }
+});
 </script>
 </body>
 </html>
