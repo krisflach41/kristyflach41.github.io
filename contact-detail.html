@@ -543,7 +543,7 @@ function saveAll() {
   document.getElementById('deleteBtn').style.display = 'block';
 
   // Sync to Google Sheets
-  fetch(API_BASE + '/save-contact', {
+  fetch(API_BASE + '/pipeline-api?action=save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contact: contact })
@@ -567,7 +567,7 @@ function deleteContact() {
   localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
   
   // Delete from Google Sheets
-  fetch(API_BASE + '/delete-contact', {
+  fetch(API_BASE + '/pipeline-api?action=delete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ contactId: contact.id })
