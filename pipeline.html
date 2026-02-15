@@ -490,9 +490,61 @@ var sourceLabels = {
   other: 'Other'
 };
 
-// Contact data - stored in localStorage
-var contacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
+// Contact data - loaded from API, cached in localStorage
+var contacts = [];
 var draggedCard = null;
+var API_BASE = 'https://kristyflach.com/api';
+
+// Load contacts from API (with localStorage fallback)
+function loadContacts() {
+  // Show cached data immediately
+  var cached = localStorage.getItem('pipelineContacts');
+  if (cached) {
+    contacts = JSON.parse(cached);
+    buildBoard();
+  }
+
+  // Then fetch fresh data from API
+  fetch(API_BASE + '/get-contacts')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.contacts) {
+        // Merge: keep localStorage documents since sheets can't store them
+        var docMap = {};
+        contacts.forEach(function(c) {
+          if (c.documents && c.documents.length > 0) docMap[c.id] = c.documents;
+        });
+        
+        data.contacts.forEach(function(c) {
+          if (docMap[c.id]) c.documents = docMap[c.id];
+        });
+        
+        contacts = data.contacts;
+        localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
+        buildBoard();
+      }
+    })
+    .catch(function(err) {
+      console.log('API fetch failed, using cache:', err);
+      if (!cached) {
+        contacts = [];
+        buildBoard();
+      }
+    });
+}
+
+// Save stage change to API (fire and forget)
+function syncStageToSheet(contactId, stage) {
+  fetch(API_BASE + '/update-stage', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contactId: contactId, stage: stage, updatedAt: new Date().toISOString() })
+  }).catch(function(err) { console.log('Stage sync error:', err); });
+}
+
+function saveData() {
+  localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
+}
 
 // Build the board
 function buildBoard() {
@@ -552,6 +604,7 @@ function buildBoard() {
           contact.stage = col.id;
           contact.updatedAt = new Date().toISOString();
           saveData();
+          syncStageToSheet(contactId, col.id);
           buildBoard();
         }
       }
@@ -627,12 +680,15 @@ function updateStats() {
 }
 
 function exportPipeline() {
-  var csv = 'Name,Phone,Email,Source,Stage,Notes,Created,Updated\n';
+  var csv = 'Name,Phone,Email,Source,Stage,Loan Type,Rate,Lock Status,Subject Property,Closing Date,Created,Updated\n';
   contacts.forEach(function(c) {
     var stageName = columns.find(function(col) { return col.id === c.stage; });
+    var dates = c.dates || {};
     csv += '"' + (c.name || '') + '","' + (c.phone || '') + '","' + (c.email || '') + '","' +
            (sourceLabels[c.source] || '') + '","' + (stageName ? stageName.title : '') + '","' +
-           (c.notes || '').replace(/"/g, '""') + '","' + (c.createdAt || '') + '","' + (c.updatedAt || '') + '"\n';
+           (c.loanType || '') + '","' + (c.interestRate || '') + '","' + (c.lockStatus || '') + '","' +
+           (c.subjectAddress || '') + '","' + (dates.closing || '') + '","' +
+           (c.createdAt || '') + '","' + (c.updatedAt || '') + '"\n';
   });
   
   var blob = new Blob([csv], { type: 'text/csv' });
@@ -644,8 +700,8 @@ function exportPipeline() {
   URL.revokeObjectURL(url);
 }
 
-// Build it
-buildBoard();
+// Load contacts from API and build board
+loadContacts();
 </script>
 
 </body>
