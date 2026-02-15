@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="refresh" content="600">
 <title>Agent Edge Partner Portal</title>
+<script src="credentials.js"></script>
 <script src="auth.js"></script>
 <script src="universal-cart.js"></script>
 
@@ -649,20 +650,6 @@ h1 {
 
 <div class="date-bar" id="currentDate"></div>
 
-<!-- Trial Banner (hidden by default, shown for trial users) -->
-<div id="trialBanner" style="
-  display: none;
-  background: linear-gradient(135deg, #0b4ea2, #1a6dd4);
-  color: white;
-  text-align: center;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 500;
-">
-  <span id="trialMessage"></span>
-  <a href="tel:2063135883" style="color: #ffd700; font-weight: 700; text-decoration: none; margin-left: 8px;">Let's Talk →</a>
-</div>
-
 <div class="rate-ticker">
   <div class="ticker-track">
     <div class="ticker-line">
@@ -841,34 +828,6 @@ h1 {
 <script>
 // PROTECT THIS PAGE - Must be logged in
 protectPage();
-
-// TRIAL BANNER
-var userRole = sessionStorage.getItem('agentEdgeRole');
-var trialStart = sessionStorage.getItem('agentEdgeTrialStart');
-
-if (userRole === 'trial' && trialStart) {
-  var start = new Date(trialStart);
-  var now = new Date();
-  var daysUsed = Math.floor((now - start) / (1000 * 60 * 60 * 24));
-  var daysLeft = Math.max(0, 7 - daysUsed);
-  
-  if (daysLeft > 0) {
-    var banner = document.getElementById('trialBanner');
-    var message = document.getElementById('trialMessage');
-    banner.style.display = 'block';
-    
-    if (daysLeft === 1) {
-      message.textContent = 'Last day of your trial! Ready to become a full partner?';
-    } else if (daysLeft <= 3) {
-      message.textContent = daysLeft + ' days left in your trial. Love what you see?';
-    } else {
-      message.textContent = 'Welcome! You have ' + daysLeft + ' days left to explore Agent Edge.';
-    }
-  } else {
-    // Trial expired - redirect
-    window.location.href = 'trial-expired.html';
-  }
-}
 
 // DATE
 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -1141,26 +1100,16 @@ window.addEventListener('load', function() {
   console.log('Briefing data loaded:', briefingData); // DEBUG
 });
 </script>
-<!-- Admin Access - Bottom Left (admin only) -->
-<a href="admin.html" id="adminLink" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  color: rgba(11,30,58,0.25);
-  font-size: 11px;
-  text-decoration: none;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: 0.25s ease;
-  z-index: 9999;
-  display: none;
-" onmouseover="this.style.color='rgba(11,30,58,0.6)'" onmouseout="this.style.color='rgba(11,30,58,0.25)'">⚙ Admin</a>
-
-<script>
-// Show admin link only for admins
-if (sessionStorage.getItem('agentEdgeAdmin') === 'true') {
-  document.getElementById('adminLink').style.display = 'block';
-}
-</script>
+<!-- Add before closing </body> tag -->
+<div style="text-align: center; padding: 20px;">
+  <a href="mission-control.html" 
+     style="color: #0b4ea2; 
+            font-size: 12px; 
+            text-decoration: none; 
+            opacity: 0.5;
+            font-weight: 600;">
+    🔧 Mission Control
+  </a>
+</div>
 </body>
 </html>
