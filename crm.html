@@ -41,10 +41,17 @@ body {
 .contact-list { flex: 1; overflow-y: auto; }
 .contact-item {
   display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.03); border-left: 3px solid transparent;
 }
 .contact-item:hover { background: rgba(255,255,255,0.03); }
 .contact-item.active { background: rgba(52,152,219,0.1); border-left: 3px solid #3498db; }
+.contact-item.t-client { border-left-color: #3498db; }
+.contact-item.t-realtor { border-left-color: #27ae60; }
+.contact-item.t-title { border-left-color: #e67e22; }
+.contact-item.t-appraiser { border-left-color: #9b59b6; }
+.contact-item.t-contractor { border-left-color: #e74c3c; }
+.contact-item.t-vendor { border-left-color: #1abc9c; }
+.contact-item.t-other { border-left-color: rgba(255,255,255,0.15); }
 .contact-item input[type="checkbox"] { accent-color: #3498db; cursor: pointer; flex-shrink: 0; }
 .ci-info { flex: 1; min-width: 0; }
 .ci-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -103,8 +110,9 @@ body {
 
 .section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; }
 .save-row { display: flex; justify-content: flex-end; margin-top: 16px; }
-.save-btn { padding: 9px 22px; border-radius: 8px; border: none; background: #3498db; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
-.save-btn:hover { background: #2980b9; }
+.save-btn { padding: 9px 22px; border-radius: 8px; border: none; background: #3498db; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.save-btn:hover:not(:disabled) { background: #2980b9; }
+.save-btn:disabled { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.2); cursor: default; }
 
 /* ACTIVITY TIMELINE */
 .timeline { padding: 0; }
@@ -182,6 +190,9 @@ body {
         <option value="other">Other</option>
       </select>
       <button class="add-btn" onclick="addNew()">+ New</button>
+      <button class="add-btn" onclick="document.getElementById('importFile').click()" style="border-color:rgba(39,174,96,0.3); background:rgba(39,174,96,0.1); color:#27ae60;">↑ Import</button>
+      <input type="file" id="importFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleImport(this)">
+      <a href="crm-import-template.xlsx" download class="add-btn" style="text-decoration:none; border-color:rgba(255,255,255,0.08); color:rgba(255,255,255,0.4);">📥 Template</a>
     </div>
     <div class="list-actions-row">
       <span class="list-stat"><strong id="totalCount">0</strong> contacts</span>
@@ -221,57 +232,68 @@ body {
     <div class="dtab-panel active" id="tab-info">
       <div class="section-label">Contact Info</div>
       <div class="field-grid">
-        <div class="fg"><label>Name</label><input type="text" id="dNameEdit"></div>
-        <div class="fg"><label>Email</label><input type="email" id="dEmailEdit"></div>
-        <div class="fg"><label>Phone</label><input type="tel" id="dPhoneEdit"></div>
-        <div class="fg"><label>Company / Brokerage</label><input type="text" id="dCompany"></div>
+        <div class="fg"><label>Name</label><input type="text" id="dNameEdit" class="tracked"></div>
+        <div class="fg"><label>Email</label><input type="email" id="dEmailEdit" class="tracked"></div>
+        <div class="fg"><label>Phone</label><input type="tel" id="dPhoneEdit" class="tracked"></div>
+        <div class="fg"><label>Company / Brokerage</label><input type="text" id="dCompany" class="tracked"></div>
       </div>
       <div class="field-grid three">
         <div class="fg"><label>Type</label>
-          <select id="dType" onchange="toggleCT()">
+          <select id="dType" onchange="toggleCT(); markDirty()" class="tracked">
             <option value="client">Client / Borrower</option><option value="realtor">Realtor / Agent</option>
             <option value="title">Title & Escrow</option><option value="appraiser">Appraiser</option>
             <option value="contractor">Contractor</option><option value="vendor">Vendor / Partner</option>
             <option value="other">Other</option>
           </select>
         </div>
-        <div class="fg" id="ctField" style="display:none;"><label>Specify Type</label><input type="text" id="dCustomType"></div>
+        <div class="fg" id="ctField" style="display:none;"><label>Specify Type</label><input type="text" id="dCustomType" class="tracked"></div>
         <div class="fg"><label>Source</label>
-          <select id="dSource">
+          <select id="dSource" class="tracked" onchange="markDirty()">
             <option value="">--</option><option value="pipeline">Pipeline</option><option value="portal">Partner Portal</option>
             <option value="referral">Referral</option><option value="webinar">Webinar</option>
-            <option value="social">Social Media</option><option value="manual">Manual Entry</option>
+            <option value="social">Social Media</option><option value="manual">Manual Entry</option><option value="import">Import</option>
           </select>
         </div>
       </div>
 
       <div class="section-label">Personal</div>
       <div class="field-grid three">
-        <div class="fg"><label>Birthday</label><input type="date" id="dBirthday"></div>
-        <div class="fg"><label>Spouse / Partner</label><input type="text" id="dSpouse"></div>
-        <div class="fg"><label>Kids</label><input type="text" id="dKids" placeholder="e.g. Emma (8), Jack (5)"></div>
+        <div class="fg"><label>Birthday</label><input type="date" id="dBirthday" class="tracked"></div>
+        <div class="fg"><label>Spouse / Partner</label><input type="text" id="dSpouse" class="tracked"></div>
+        <div class="fg"><label>Kids</label><input type="text" id="dKids" placeholder="e.g. Emma (8), Jack (5)" class="tracked"></div>
       </div>
       <div class="field-grid">
-        <div class="fg"><label>Employer</label><input type="text" id="dEmployer"></div>
-        <div class="fg"><label>Job Title</label><input type="text" id="dJobTitle"></div>
+        <div class="fg"><label>Employer</label><input type="text" id="dEmployer" class="tracked"></div>
+        <div class="fg"><label>Job Title</label><input type="text" id="dJobTitle" class="tracked"></div>
       </div>
 
       <div class="section-label">Address</div>
       <div class="field-grid">
-        <div class="fg"><label>Street</label><input type="text" id="dAddress"></div>
-        <div class="fg"><label>City</label><input type="text" id="dCity"></div>
+        <div class="fg"><label>Street</label><input type="text" id="dAddress" class="tracked"></div>
+        <div class="fg"><label>City</label><input type="text" id="dCity" class="tracked"></div>
       </div>
       <div class="field-grid three">
-        <div class="fg"><label>State</label><input type="text" id="dState"></div>
-        <div class="fg"><label>Zip</label><input type="text" id="dZip"></div>
-        <div class="fg"><label>Tags</label><input type="text" id="dTags" placeholder="VIP, South FL, 2024"></div>
+        <div class="fg"><label>State</label><input type="text" id="dState" class="tracked"></div>
+        <div class="fg"><label>Zip</label><input type="text" id="dZip" class="tracked"></div>
+        <div class="fg"><label>Tags</label><input type="text" id="dTags" placeholder="VIP, South FL, 2024" class="tracked"></div>
+      </div>
+
+      <div class="section-label">Web & Social</div>
+      <div class="field-grid">
+        <div class="fg"><label>Website</label><input type="text" id="dWebsite" placeholder="www.example.com" class="tracked"></div>
+        <div class="fg"><label>LinkedIn</label><input type="text" id="dLinkedin" placeholder="linkedin.com/in/name" class="tracked"></div>
+      </div>
+      <div class="field-grid three">
+        <div class="fg"><label>Facebook</label><input type="text" id="dFacebook" placeholder="handle or URL" class="tracked"></div>
+        <div class="fg"><label>Instagram</label><input type="text" id="dInstagram" placeholder="@handle" class="tracked"></div>
+        <div class="fg"><label>TikTok</label><input type="text" id="dTiktok" placeholder="@handle" class="tracked"></div>
       </div>
 
       <div class="section-label">Notes</div>
-      <div class="fg"><textarea id="dNotes" style="width:100%; height:80px;"></textarea></div>
+      <div class="fg"><textarea id="dNotes" style="width:100%; height:80px;" class="tracked"></textarea></div>
 
       <div class="save-row">
-        <button class="save-btn" onclick="saveContact()">Save Changes</button>
+        <button class="save-btn" id="saveBtn" onclick="saveContact()" disabled>Save Changes</button>
       </div>
     </div>
 
@@ -382,7 +404,7 @@ function renderList() {
     var sub = [];
     if (c.email) sub.push(c.email);
     if (c.company) sub.push(c.company);
-    html += '<div class="contact-item' + act + '" onclick="selectContact(\'' + c.id + '\')">' +
+    html += '<div class="contact-item t-' + (c.type||'other') + act + '" onclick="selectContact(\'' + c.id + '\')">' +
       '<input type="checkbox" ' + (selectedIds.has(c.id)?'checked':'') + ' onclick="event.stopPropagation(); toggleSel(\'' + c.id + '\', this.checked)">' +
       '<div class="ci-info"><div class="ci-name">' + esc(c.name) + '</div>' +
       '<div class="ci-sub">' + esc(sub.join(' · ')) + '</div></div>' +
@@ -438,8 +460,14 @@ function showDetail() {
   document.getElementById('dZip').value = c.zip || '';
   document.getElementById('dTags').value = c.tags || '';
   document.getElementById('dNotes').value = c.notes || '';
+  document.getElementById('dWebsite').value = c.website || '';
+  document.getElementById('dFacebook').value = c.facebook || '';
+  document.getElementById('dInstagram').value = c.instagram || '';
+  document.getElementById('dLinkedin').value = c.linkedin || '';
+  document.getElementById('dTiktok').value = c.tiktok || '';
   toggleCT();
   renderActivity();
+  resetDirty();
 }
 
 // ===== ACTIVITY TIMELINE =====
@@ -504,6 +532,11 @@ function saveContact() {
   c.zip = document.getElementById('dZip').value.trim();
   c.tags = document.getElementById('dTags').value.trim();
   c.notes = document.getElementById('dNotes').value.trim();
+  c.website = document.getElementById('dWebsite').value.trim();
+  c.facebook = document.getElementById('dFacebook').value.trim();
+  c.instagram = document.getElementById('dInstagram').value.trim();
+  c.linkedin = document.getElementById('dLinkedin').value.trim();
+  c.tiktok = document.getElementById('dTiktok').value.trim();
 
   // Map to API format
   var payload = {
@@ -512,6 +545,8 @@ function saveContact() {
     city: c.city, state: c.state, zip: c.zip, tags: c.tags, notes: c.notes,
     pipelineId: c.pipeline_id || '', birthday: c.birthday, spouseName: c.spouse_name,
     kids: c.kids, employer: c.employer, jobTitle: c.job_title,
+    website: c.website, facebook: c.facebook, instagram: c.instagram,
+    linkedin: c.linkedin, tiktok: c.tiktok,
     createdAt: c.created_at
   };
 
@@ -525,7 +560,7 @@ function saveContact() {
     method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({ crm: payload })
   }).then(function(r){return r.json();})
-    .then(function(d){ showToast(d.success ? 'Saved!' : 'Error saving'); })
+    .then(function(d){ showToast(d.success ? 'Saved!' : 'Error saving'); resetDirty(); })
     .catch(function(){ showToast('Saved locally'); });
 }
 
@@ -686,6 +721,183 @@ function closeMobileDetail(e) { e.preventDefault(); document.getElementById('det
 // ===== HELPERS =====
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function showToast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},3000); }
+
+// ===== DIRTY TRACKING =====
+var isDirty = false;
+function markDirty() {
+  if (!isDirty) {
+    isDirty = true;
+    document.getElementById('saveBtn').disabled = false;
+  }
+}
+function resetDirty() {
+  isDirty = false;
+  document.getElementById('saveBtn').disabled = true;
+}
+
+// Attach listeners to all tracked fields
+document.addEventListener('DOMContentLoaded', function() { attachTracking(); });
+function attachTracking() {
+  document.querySelectorAll('.tracked').forEach(function(el) {
+    el.addEventListener('input', markDirty);
+    el.addEventListener('change', markDirty);
+  });
+}
+// Re-attach after detail loads
+var origShowDetail = showDetail;
+showDetail = function() { origShowDetail(); setTimeout(attachTracking, 50); };
+
+// ===== IMPORT =====
+function handleImport(input) {
+  var file = input.files[0];
+  if (!file) return;
+  input.value = '';
+
+  var ext = file.name.split('.').pop().toLowerCase();
+
+  if (ext === 'csv') {
+    var reader = new FileReader();
+    reader.onload = function(e) { parseCSV(e.target.result); };
+    reader.readAsText(file);
+  } else if (ext === 'xlsx' || ext === 'xls') {
+    // Load SheetJS from CDN
+    if (!window.XLSX) {
+      var script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+      script.onload = function() { readXLSX(file); };
+      document.head.appendChild(script);
+    } else {
+      readXLSX(file);
+    }
+  } else {
+    showToast('Please use .csv or .xlsx files');
+  }
+}
+
+function readXLSX(file) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var data = new Uint8Array(e.target.result);
+    var wb = XLSX.read(data, { type: 'array' });
+    var sheet = wb.Sheets[wb.SheetNames[0]];
+    var rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+    processImportRows(rows);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseCSV(text) {
+  var lines = text.split('\n').filter(function(l) { return l.trim(); });
+  if (lines.length < 2) { showToast('Empty file'); return; }
+
+  var headers = parseCSVLine(lines[0]);
+  var rows = [];
+  for (var i = 1; i < lines.length; i++) {
+    var vals = parseCSVLine(lines[i]);
+    var obj = {};
+    headers.forEach(function(h, idx) { obj[h.trim()] = (vals[idx] || '').trim(); });
+    rows.push(obj);
+  }
+  processImportRows(rows);
+}
+
+function parseCSVLine(line) {
+  var result = [];
+  var current = '';
+  var inQuotes = false;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; }
+    else if (ch === ',' && !inQuotes) { result.push(current); current = ''; }
+    else { current += ch; }
+  }
+  result.push(current);
+  return result;
+}
+
+function processImportRows(rows) {
+  if (!rows || rows.length === 0) { showToast('No data found'); return; }
+
+  // Map headers flexibly
+  var imported = 0;
+  var skipped = 0;
+  var promises = [];
+
+  rows.forEach(function(row) {
+    var name = row['Name *'] || row['Name'] || row['name'] || row['Full Name'] || row['full_name'] || '';
+    if (!name) { skipped++; return; }
+
+    var id = 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+    var now = new Date().toISOString();
+
+    var contact = {
+      id: id,
+      name: name,
+      email: row['Email'] || row['email'] || row['Email Address'] || '',
+      phone: row['Phone'] || row['phone'] || row['Phone Number'] || '',
+      type: (row['Type'] || row['type'] || 'other').toLowerCase(),
+      customType: row['Custom Type'] || row['custom_type'] || '',
+      company: row['Company'] || row['company'] || row['Brokerage'] || row['brokerage'] || '',
+      address: row['Address'] || row['address'] || row['Street'] || '',
+      city: row['City'] || row['city'] || '',
+      state: row['State'] || row['state'] || '',
+      zip: row['Zip'] || row['zip'] || row['ZIP'] || '',
+      source: row['Source'] || row['source'] || 'import',
+      tags: row['Tags'] || row['tags'] || '',
+      birthday: row['Birthday'] || row['birthday'] || '',
+      spouseName: row['Spouse'] || row['spouse'] || row['Spouse Name'] || '',
+      kids: row['Kids'] || row['kids'] || row['Children'] || '',
+      employer: row['Employer'] || row['employer'] || '',
+      jobTitle: row['Job Title'] || row['job_title'] || row['Title'] || '',
+      notes: row['Notes'] || row['notes'] || '',
+      website: row['Website'] || row['website'] || row['URL'] || '',
+      facebook: row['Facebook'] || row['facebook'] || '',
+      instagram: row['Instagram'] || row['instagram'] || '',
+      linkedin: row['LinkedIn'] || row['linkedin'] || '',
+      tiktok: row['TikTok'] || row['tiktok'] || '',
+      pipelineId: '',
+      createdAt: now
+    };
+
+    // Validate type
+    var validTypes = ['client','realtor','title','appraiser','contractor','vendor','other'];
+    if (validTypes.indexOf(contact.type) === -1) contact.type = 'other';
+
+    imported++;
+
+    // Add to local list immediately
+    allContacts.push({
+      id: id, name: contact.name, email: contact.email, phone: contact.phone,
+      type: contact.type, custom_type: contact.customType, company: contact.company,
+      address: contact.address, city: contact.city, state: contact.state, zip: contact.zip,
+      source: contact.source, tags: contact.tags, notes: contact.notes,
+      pipeline_id: '', birthday: contact.birthday, spouse_name: contact.spouseName,
+      kids: contact.kids, employer: contact.employer, job_title: contact.jobTitle,
+      website: contact.website, facebook: contact.facebook, instagram: contact.instagram,
+      linkedin: contact.linkedin, tiktok: contact.tiktok,
+      created_at: now, updated_at: now
+    });
+
+    // Save to Supabase
+    promises.push(
+      fetch(API + '?action=save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ crm: contact })
+      }).catch(function(e) { console.log('Import save error:', e); })
+    );
+  });
+
+  renderList();
+  showToast('Importing ' + imported + ' contacts...' + (skipped > 0 ? ' (' + skipped + ' skipped - no name)' : ''));
+
+  // Wait for all saves to complete
+  Promise.all(promises).then(function() {
+    showToast('Imported ' + imported + ' contacts!');
+    // Reload fresh from Supabase
+    setTimeout(loadCRM, 1000);
+  });
+}
 
 loadCRM();
 </script>
