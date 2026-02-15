@@ -51,6 +51,20 @@ body {
 .section-divider { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.6); margin: 24px 0 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
 .section-divider:first-child { margin-top: 0; }
 
+/* AUTOCOMPLETE */
+.autocomplete-dropdown {
+  display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+  background: #1a2d4a; border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+  max-height: 180px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+.autocomplete-dropdown.show { display: block; }
+.ac-item {
+  padding: 9px 12px; cursor: pointer; font-size: 13px; color: #e8ecf1;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.ac-item:hover { background: rgba(52,152,219,0.15); }
+.ac-item .ac-sub { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
 /* BORROWER CARDS */
 .borrower-card { padding: 20px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); margin-bottom: 16px; }
 .borrower-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
@@ -120,7 +134,11 @@ body {
 <div class="tab-panel active" id="tab-overview">
   <div class="section-divider">Contact Info</div>
   <div class="form-row">
-    <div class="field"><label>Primary Contact Name *</label><input type="text" id="primaryName" placeholder="Jane Smith"></div>
+    <div class="field" style="position:relative;">
+      <label>Primary Contact Name *</label>
+      <input type="text" id="primaryName" placeholder="Jane Smith" autocomplete="off" oninput="onNameInput(this.value)">
+      <div class="autocomplete-dropdown" id="nameDropdown"></div>
+    </div>
     <div class="field"><label>Phone</label><input type="tel" id="primaryPhone" placeholder="(555) 123-4567"></div>
   </div>
   <div class="form-row">
@@ -598,11 +616,95 @@ populateFields();
 document.getElementById('primaryName').addEventListener('input', function() {
   if (contact.borrowers && contact.borrowers[0]) {
     contact.borrowers[0].name = this.value;
-    // Update the borrower name field if it's visible
     var bNameField = document.querySelector('[data-b="0"][data-f="name"]');
     if (bNameField) bNameField.value = this.value;
   }
 });
+
+// Close autocomplete when clicking elsewhere
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('#primaryName') && !e.target.closest('#nameDropdown')) {
+    document.getElementById('nameDropdown').classList.remove('show');
+  }
+});
+
+// ===== CRM AUTOCOMPLETE =====
+var crmCache = null;
+
+function onNameInput(val) {
+  if (!val || val.length < 2 || !isNew) {
+    document.getElementById('nameDropdown').classList.remove('show');
+    return;
+  }
+
+  // Fetch CRM contacts (cache after first load)
+  if (crmCache) {
+    showSuggestions(val, crmCache);
+  } else {
+    fetch(API_BASE + '/crm-api?action=search&q=' + encodeURIComponent(val))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          crmCache = data.contacts || [];
+          showSuggestions(val, crmCache);
+        }
+      })
+      .catch(function() {});
+  }
+}
+
+function showSuggestions(val, allContacts) {
+  var dd = document.getElementById('nameDropdown');
+  var q = val.toLowerCase();
+  var matches = allContacts.filter(function(c) {
+    return c.name && c.name.toLowerCase().indexOf(q) !== -1;
+  }).slice(0, 8);
+
+  if (matches.length === 0) {
+    dd.classList.remove('show');
+    return;
+  }
+
+  var html = '';
+  matches.forEach(function(c) {
+    var sub = [];
+    if (c.email) sub.push(c.email);
+    if (c.phone) sub.push(c.phone);
+    if (c.type) sub.push(c.type);
+    html += '<div class="ac-item" onclick="selectCRMContact(\'' + esc(c.id) + '\')">' +
+      '<div>' + esc(c.name) + '</div>' +
+      (sub.length > 0 ? '<div class="ac-sub">' + esc(sub.join(' · ')) + '</div>' : '') +
+    '</div>';
+  });
+
+  dd.innerHTML = html;
+  dd.classList.add('show');
+}
+
+function selectCRMContact(crmId) {
+  var c = crmCache.find(function(x) { return x.id === crmId; });
+  if (!c) return;
+
+  // Pre-fill from CRM data
+  document.getElementById('primaryName').value = c.name || '';
+  document.getElementById('primaryEmail').value = c.email || '';
+  document.getElementById('primaryPhone').value = c.phone || '';
+
+  // Update contact object
+  contact.name = c.name || '';
+  contact.email = c.email || '';
+  contact.phone = c.phone || '';
+
+  // Sync to borrower
+  if (contact.borrowers && contact.borrowers[0]) {
+    contact.borrowers[0].name = c.name || '';
+    var bNameField = document.querySelector('[data-b="0"][data-f="name"]');
+    if (bNameField) bNameField.value = c.name || '';
+  }
+
+  document.getElementById('nameDropdown').classList.remove('show');
+  showToast('Loaded from CRM: ' + c.name);
+}
 </script>
 </body>
 </html>
