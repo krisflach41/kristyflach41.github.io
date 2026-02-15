@@ -164,12 +164,11 @@ body {
 .stat-change.down { color: var(--accent-red); }
 
 /* ===== PIPELINE BOARD ===== */
-.pipeline-board { display: flex; gap: 10px; flex: 1; overflow-x: auto; padding-bottom: 10px; }
+.pipeline-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; flex: 1; }
 .pipeline-col {
-  min-width: 200px; width: 200px; flex-shrink: 0;
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; display: flex; flex-direction: column;
-  max-height: calc(100vh - 140px);
+  min-height: 0;
 }
 .pipeline-col-header {
   padding: 10px 12px; border-bottom: 1px solid var(--border);
@@ -206,6 +205,13 @@ body {
 }
 .add-card-btn:hover { background: rgba(255,255,255,0.03); color: var(--text-secondary); }
 .drop-zone { border: 2px dashed var(--accent-blue); background: rgba(59,130,246,0.05); border-radius: 6px; }
+.pipeline-cold-btn {
+  width: 100%; padding: 5px; border: 1px dashed rgba(150,150,255,0.15);
+  background: transparent; color: var(--text-muted); border-radius: 6px;
+  font-size: 9px; cursor: pointer; font-family: inherit; margin-top: 4px;
+  transition: 0.15s;
+}
+.pipeline-cold-btn:hover { background: rgba(100,100,255,0.06); color: var(--text-secondary); }
 
 /* ===== CRM ===== */
 .crm-layout { display: flex; gap: 0; flex: 1; height: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
@@ -636,7 +642,7 @@ body {
       <button class="topbar-btn primary" onclick="addNewPipelineContact()">+ Add Contact</button>
     </div>
   </div>
-  <div class="content-area" style="overflow-x:auto;overflow-y:hidden;padding:12px;">
+  <div class="content-area" style="overflow-y:auto;padding:12px;">
     <div class="pipeline-board" id="pipelineBoard"></div>
   </div>
 </div>
@@ -1078,7 +1084,7 @@ body {
       <div class="crm-field"><label>Realtor Name</label><input id="pcm_realtor"></div>
       <div class="crm-field">
         <label>Stage</label>
-        <select id="pcm_stage"><option value="cold">Cold Leads</option><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Pre-Approval</option><option value="preapproved">Pre Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option><option value="closed">Closed - Funded</option><option value="dead">Dead Leads</option></select>
+        <select id="pcm_stage"><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Started Pre-Approval</option><option value="preapproved">Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option><option value="closed">Closed - Funded</option></select>
       </div>
       <div class="crm-field"><label>Loan Type</label><input id="pcm_loanType" placeholder="Conv, FHA, VA, USDA, Jumbo"></div>
       <div class="crm-field"><label>Interest Rate</label><input id="pcm_rate" placeholder="6.25"></div>
@@ -1086,8 +1092,38 @@ body {
     </div>
     <div class="modal-actions">
       <button class="topbar-btn" onclick="closePipelineModal()">Cancel</button>
+      <button class="topbar-btn" id="pcmColdBtn" style="display:none;border-color:rgba(100,140,255,0.3);color:#8ba8f5;" onclick="markContactCold(editingPipelineId)">❄ Mark Cold</button>
       <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
       <button class="topbar-btn primary" onclick="savePipelineContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- FUNDED MODAL -->
+<div class="modal-overlay" id="fundedModal">
+  <div class="modal-box" style="width:420px;">
+    <div class="modal-title">🎉 Congratulations! Closing <span id="fundedName"></span></div>
+    <div class="crm-field-grid">
+      <div class="crm-field"><label>Date Funded</label><input type="date" id="funded_date"></div>
+      <div class="crm-field"><label>Interest Rate</label><input id="funded_rate" placeholder="6.25"></div>
+      <div class="crm-field">
+        <label>Loan Type</label>
+        <select id="funded_loanType">
+          <option value="purchase">Purchase</option>
+          <option value="refi">Refinance</option>
+          <option value="heloc">HELOC</option>
+          <option value="va">VA</option>
+          <option value="fha">FHA</option>
+          <option value="usda">USDA</option>
+          <option value="conventional">Conventional</option>
+          <option value="jumbo">Jumbo</option>
+        </select>
+      </div>
+      <div class="crm-field"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="topbar-btn" onclick="closeFundedModal()">Cancel</button>
+      <button class="topbar-btn primary" onclick="saveFundedContact()">🎉 Mark as Funded</button>
     </div>
   </div>
 </div>
@@ -1218,21 +1254,21 @@ function updateDashboard() {
 var pipelineLoaded = false;
 var pipelineContacts = [];
 var pipelineColumns = [
-  { id: 'cold', title: 'Cold Leads' },
   { id: 'warm', title: 'Warm Leads' },
   { id: 'active', title: 'Active Conversations' },
   { id: 'credit', title: 'Credit Repair' },
-  { id: 'preapproval', title: 'Pre-Approval' },
-  { id: 'preapproved', title: 'Pre Approved' },
+  { id: 'preapproval', title: 'Started Pre-Approval' },
+  { id: 'preapproved', title: 'Approved' },
   { id: 'ratewatch', title: 'Rate Watch' },
   { id: 'underwriting', title: 'Underwriting' },
-  { id: 'closed', title: 'Closed - Funded' },
-  { id: 'dead', title: 'Dead Leads' }
+  { id: 'closed', title: 'Closed - Funded' }
 ];
 var draggedContactId = null;
 
 function loadPipeline() {
   pipelineContacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
+  // Filter out cold/funded - they live in CRM now
+  // But keep 'closed' stage on board until funded modal completes
   pipelineLoaded = true;
   renderPipeline();
 }
@@ -1240,12 +1276,15 @@ function loadPipeline() {
 function renderPipeline() {
   var board = document.getElementById('pipelineBoard');
   board.innerHTML = '';
-  var total = pipelineContacts.length;
-  var activeCount = pipelineContacts.filter(function(c) { return c.stage !== 'closed' && c.stage !== 'dead'; }).length;
-  document.getElementById('pipelineSubtitle').textContent = activeCount + ' active across ' + pipelineColumns.length + ' stages';
+  // Only show contacts that are in active pipeline stages (not cold/archived)
+  var activeContacts = pipelineContacts.filter(function(c) {
+    return c.stage !== 'cold' && c.stage !== 'dead' && c.stage !== 'archived';
+  });
+  var activeCount = activeContacts.filter(function(c) { return c.stage !== 'closed'; }).length;
+  document.getElementById('pipelineSubtitle').textContent = activeCount + ' active loans · ' + activeContacts.length + ' total on board';
 
   pipelineColumns.forEach(function(col) {
-    var colContacts = pipelineContacts.filter(function(c) { return c.stage === col.id; });
+    var colContacts = activeContacts.filter(function(c) { return c.stage === col.id; });
     var colEl = document.createElement('div');
     colEl.className = 'pipeline-col';
     colEl.innerHTML =
@@ -1265,15 +1304,16 @@ function renderPipeline() {
       if (draggedContactId && newStage) {
         var c = pipelineContacts.find(function(x) { return x.id === draggedContactId; });
         if (c) {
+          // If dropping into Closed - Funded, open funded modal
+          if (newStage === 'closed') {
+            openFundedModal(c.id);
+            return;
+          }
           c.stage = newStage;
           c.updatedAt = new Date().toISOString();
           localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
           renderPipeline();
-          // Sync to sheet
-          fetch(API_BASE + '/save-contact', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contact: c })
-          }).catch(function() {});
+          syncPipelineContact(c);
         }
       }
     });
@@ -1310,7 +1350,131 @@ function renderPipeline() {
     addBtn.textContent = '+ Add';
     addBtn.onclick = function() { addNewPipelineContact(col.id); };
     body.appendChild(addBtn);
+
+    // Cold lead button (on every column except Closed)
+    if (col.id !== 'closed') {
+      var coldBtn = document.createElement('button');
+      coldBtn.className = 'pipeline-cold-btn';
+      coldBtn.textContent = '❄ Move to Cold';
+      coldBtn.style.display = colContacts.length > 0 ? 'block' : 'none';
+      coldBtn.onclick = function() {
+        // Show instructions
+        showToast('Drag a card here or click a card then use "Mark Cold"');
+      };
+      body.appendChild(coldBtn);
+    }
   });
+}
+
+function syncPipelineContact(c) {
+  fetch(API_BASE + '/save-contact', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contact: c })
+  }).catch(function() {});
+}
+
+// ===== FUNDED MODAL =====
+var fundingContactId = null;
+
+function openFundedModal(contactId) {
+  fundingContactId = contactId;
+  var c = pipelineContacts.find(function(x) { return x.id === contactId; });
+  if (!c) return;
+  document.getElementById('fundedName').textContent = c.name || 'Contact';
+  document.getElementById('funded_date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('funded_rate').value = c.interestRate || '';
+  document.getElementById('funded_loanType').value = c.loanType || 'purchase';
+  document.getElementById('funded_amount').value = '';
+  document.getElementById('fundedModal').classList.add('show');
+}
+
+function closeFundedModal() {
+  document.getElementById('fundedModal').classList.remove('show');
+  fundingContactId = null;
+}
+
+function saveFundedContact() {
+  if (!fundingContactId) return;
+  var c = pipelineContacts.find(function(x) { return x.id === fundingContactId; });
+  if (!c) return;
+
+  var fundedDate = document.getElementById('funded_date').value;
+  var rate = document.getElementById('funded_rate').value;
+  var loanType = document.getElementById('funded_loanType').value;
+  var amount = document.getElementById('funded_amount').value;
+
+  // Update pipeline contact
+  c.stage = 'closed';
+  c.fundedDate = fundedDate;
+  c.interestRate = rate;
+  c.loanType = loanType;
+  c.loanAmount = amount;
+  c.updatedAt = new Date().toISOString();
+
+  // Remove from pipeline (it lives in CRM now)
+  pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
+  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+
+  // Update CRM with funded data
+  fetch(API_BASE + '/crm', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'save',
+      contact: {
+        pipeline_id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        pipeline_status: 'funded',
+        funded_date: fundedDate,
+        interest_rate: parseFloat(rate) || null,
+        loan_type: loanType,
+        loan_amount: parseFloat(amount) || null,
+        type: 'client',
+        source: 'pipeline'
+      }
+    })
+  }).catch(function() {});
+
+  // Also sync to Google Sheet
+  syncPipelineContact(c);
+
+  closeFundedModal();
+  renderPipeline();
+  updateDashboard();
+  showToast('🎉 ' + c.name + ' funded! Moved to CRM.');
+}
+
+// ===== MARK COLD =====
+function markContactCold(contactId) {
+  var c = pipelineContacts.find(function(x) { return x.id === contactId; });
+  if (!c) return;
+  if (!confirm('Move ' + c.name + ' to cold leads? They\'ll be removed from the pipeline but stay in your CRM.')) return;
+
+  // Update CRM
+  fetch(API_BASE + '/crm', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'save',
+      contact: {
+        pipeline_id: c.id,
+        name: c.name,
+        email: c.email,
+        phone: c.phone,
+        pipeline_status: 'cold',
+        type: 'client',
+        source: 'pipeline'
+      }
+    })
+  }).catch(function() {});
+
+  // Remove from pipeline
+  pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== contactId; });
+  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+  closePipelineModal();
+  renderPipeline();
+  updateDashboard();
+  showToast('❄ ' + c.name + ' moved to cold leads in CRM');
 }
 
 var editingPipelineId = null;
@@ -1328,6 +1492,7 @@ function addNewPipelineContact(stage) {
   document.getElementById('pcm_rate').value = '';
   document.getElementById('pcm_address').value = '';
   document.getElementById('pcmDeleteBtn').style.display = 'none';
+  document.getElementById('pcmColdBtn').style.display = 'none';
   document.getElementById('pipelineContactModal').classList.add('show');
 }
 
@@ -1346,6 +1511,7 @@ function openPipelineContact(id) {
   document.getElementById('pcm_rate').value = c.interestRate || '';
   document.getElementById('pcm_address').value = c.subjectAddress || '';
   document.getElementById('pcmDeleteBtn').style.display = 'inline-block';
+  document.getElementById('pcmColdBtn').style.display = 'inline-block';
   document.getElementById('pipelineContactModal').classList.add('show');
 }
 
@@ -1367,6 +1533,22 @@ function savePipelineContact() {
   contact.source = document.getElementById('pcm_source').value;
   contact.realtorName = document.getElementById('pcm_realtor').value.trim();
   contact.stage = document.getElementById('pcm_stage').value;
+  
+  // If setting to Closed - Funded, open the funded modal instead
+  if (contact.stage === 'closed') {
+    if (!editingPipelineId) {
+      // New contact - save first, then open funded modal
+      pipelineContacts.push(contact);
+      localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+      closePipelineModal();
+      openFundedModal(contact.id);
+      return;
+    } else {
+      closePipelineModal();
+      openFundedModal(contact.id);
+      return;
+    }
+  }
   contact.loanType = document.getElementById('pcm_loanType').value.trim();
   contact.interestRate = document.getElementById('pcm_rate').value.trim();
   contact.subjectAddress = document.getElementById('pcm_address').value.trim();
