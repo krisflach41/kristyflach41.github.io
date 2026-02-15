@@ -1120,6 +1120,13 @@ body {
         </select>
       </div>
       <div class="crm-field"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
+      <div class="crm-field" style="grid-column:1/-1;">
+        <label>Strike Rate (target rate for refi)</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="funded_strikeRate" placeholder="5.75" style="width:100px;">
+          <span style="font-size:10px;color:var(--text-muted);">When market rates hit this number, you'll be alerted to call this client</span>
+        </div>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="topbar-btn" onclick="closeFundedModal()">Cancel</button>
@@ -1402,6 +1409,7 @@ function saveFundedContact() {
   var rate = document.getElementById('funded_rate').value;
   var loanType = document.getElementById('funded_loanType').value;
   var amount = document.getElementById('funded_amount').value;
+  var strikeRate = document.getElementById('funded_strikeRate').value;
 
   // Update pipeline contact
   c.stage = 'closed';
@@ -1409,6 +1417,7 @@ function saveFundedContact() {
   c.interestRate = rate;
   c.loanType = loanType;
   c.loanAmount = amount;
+  c.strikeRate = strikeRate;
   c.updatedAt = new Date().toISOString();
 
   // Remove from pipeline (it lives in CRM now)
@@ -1430,6 +1439,7 @@ function saveFundedContact() {
         interest_rate: parseFloat(rate) || null,
         loan_type: loanType,
         loan_amount: parseFloat(amount) || null,
+        strike_rate: parseFloat(strikeRate) || null,
         type: 'client',
         source: 'pipeline'
       }
