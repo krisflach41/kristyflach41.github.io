@@ -9,53 +9,48 @@
 * { box-sizing: border-box; }
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  margin: 0; padding: 20px 24px 80px; min-height: 100vh;
+  margin: 0; padding: 0; min-height: 100vh;
   background: linear-gradient(135deg, #0b1f3a 0%, #132d54 50%, #0b1f3a 100%);
   color: #e8ecf1;
 }
-.page-wrap { max-width: 1200px; margin: 0 auto; }
 
-/* HEADER */
-.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
-.header-left h1 { font-size: 22px; margin: 0 0 4px; }
-.header-left p { font-size: 13px; color: rgba(255,255,255,0.4); margin: 0; }
-.header-actions { display: flex; gap: 10px; align-items: center; }
-.header-btn { padding: 9px 18px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-weight: 600; font-size: 13px; cursor: pointer; }
-.header-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.header-btn.primary { background: rgba(52,152,219,0.2); border-color: rgba(52,152,219,0.3); color: #3498db; }
-.stat { font-size: 13px; color: rgba(255,255,255,0.5); }
-.stat strong { color: #fff; }
+/* LAYOUT: list left, detail right */
+.crm-layout { display: flex; height: 100vh; }
+.crm-list-panel { width: 380px; min-width: 320px; border-right: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; }
+.crm-detail-panel { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 
-/* FILTERS */
-.filter-bar { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-.filter-bar input, .filter-bar select {
-  padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 13px; font-family: inherit;
+/* LIST PANEL */
+.list-header { padding: 16px 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.list-header h1 { font-size: 18px; margin: 0 0 4px; }
+.list-header p { font-size: 11px; color: rgba(255,255,255,0.35); margin: 0 0 10px; }
+.list-header-row { display: flex; gap: 8px; align-items: center; }
+.list-header-row input { flex: 1; padding: 7px 10px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 12px; font-family: inherit; }
+.list-header-row input:focus { outline: none; border-color: rgba(52,152,219,0.4); }
+.list-header-row select { padding: 7px 8px; border-radius: 6px; background-color: #1a2d4a; border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 12px; font-family: inherit; }
+.list-header-row select option { background-color: #1a2d4a; color: #e8ecf1; }
+.add-btn { padding: 7px 12px; border-radius: 6px; border: 1px solid rgba(52,152,219,0.3); background: rgba(52,152,219,0.15); color: #3498db; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.add-btn:hover { background: rgba(52,152,219,0.25); }
+
+.list-actions-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.list-stat { font-size: 11px; color: rgba(255,255,255,0.35); }
+.list-stat strong { color: rgba(255,255,255,0.7); }
+.bulk-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(155,89,182,0.3); background: rgba(155,89,182,0.1); color: #b97fd0; font-size: 11px; font-weight: 600; cursor: pointer; display: none; }
+.bulk-btn:hover { background: rgba(155,89,182,0.25); }
+
+/* CONTACT LIST */
+.contact-list { flex: 1; overflow-y: auto; }
+.contact-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 16px; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
 }
-.filter-bar select { background-color: #1a2d4a; }
-.filter-bar select option { background-color: #1a2d4a; color: #e8ecf1; }
-.filter-bar input { flex: 1; min-width: 200px; }
-.filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: rgba(52,152,219,0.4); }
-.bulk-btn { padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(155,89,182,0.3); background: rgba(155,89,182,0.15); color: #b97fd0; font-size: 12px; font-weight: 600; cursor: pointer; display: none; }
-.bulk-btn:hover { background: rgba(155,89,182,0.3); }
-
-/* TABLE */
-.crm-table { width: 100%; border-collapse: collapse; }
-.crm-table th {
-  text-align: left; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4);
-  text-transform: uppercase; letter-spacing: 0.5px; padding: 10px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-.crm-table td {
-  padding: 12px; font-size: 13px; border-bottom: 1px solid rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.8);
-}
-.crm-table tr:hover td { background: rgba(255,255,255,0.03); }
-.crm-table .check-col { width: 36px; text-align: center; }
-.crm-table input[type="checkbox"] { accent-color: #3498db; cursor: pointer; }
-
-.type-badge {
-  display: inline-block; padding: 3px 9px; border-radius: 10px; font-size: 11px; font-weight: 600;
+.contact-item:hover { background: rgba(255,255,255,0.03); }
+.contact-item.active { background: rgba(52,152,219,0.1); border-left: 3px solid #3498db; }
+.contact-item input[type="checkbox"] { accent-color: #3498db; cursor: pointer; flex-shrink: 0; }
+.ci-info { flex: 1; min-width: 0; }
+.ci-name { font-size: 13px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-sub { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ci-type {
+  flex-shrink: 0; padding: 2px 8px; border-radius: 8px; font-size: 10px; font-weight: 600;
 }
 .type-client { background: rgba(52,152,219,0.15); color: #5dade2; }
 .type-realtor { background: rgba(39,174,96,0.15); color: #58d68d; }
@@ -63,611 +58,635 @@ body {
 .type-appraiser { background: rgba(155,89,182,0.15); color: #c39bd3; }
 .type-contractor { background: rgba(231,76,60,0.15); color: #ec7063; }
 .type-vendor { background: rgba(26,188,156,0.15); color: #76d7c4; }
-.type-other { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+.type-other { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); }
 
-.action-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.5); font-size: 11px; cursor: pointer; margin-right: 4px; }
-.action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-.action-btn.pipeline-btn { border-color: rgba(26,188,156,0.3); color: #1abc9c; }
-.action-btn.pipeline-btn:hover { background: rgba(26,188,156,0.15); }
+.empty-list { padding: 40px 16px; text-align: center; color: rgba(255,255,255,0.2); font-size: 13px; }
 
-.empty-msg { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.25); font-size: 14px; }
+/* DETAIL PANEL */
+.detail-empty { display: flex; align-items: center; justify-content: center; flex: 1; color: rgba(255,255,255,0.15); font-size: 14px; }
+.detail-content { padding: 24px 28px; display: none; }
+.detail-content.show { display: block; }
 
-/* MODAL */
+.detail-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.detail-name { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
+.detail-type-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 600; margin-bottom: 8px; }
+.detail-email { font-size: 13px; color: #5dade2; }
+.detail-phone { font-size: 13px; color: rgba(255,255,255,0.6); }
+.detail-actions { display: flex; gap: 8px; }
+.d-btn { padding: 7px 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.6); font-size: 12px; cursor: pointer; font-weight: 600; }
+.d-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.d-btn.email-btn { border-color: rgba(52,152,219,0.3); color: #3498db; }
+.d-btn.pipeline-btn { border-color: rgba(26,188,156,0.3); color: #1abc9c; }
+.d-btn.delete-btn { border-color: rgba(192,57,43,0.2); color: #c0392b; }
+
+/* DETAIL TABS */
+.detail-tabs { display: flex; gap: 0; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+.dtab { padding: 8px 16px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; }
+.dtab:hover { color: rgba(255,255,255,0.6); }
+.dtab.active { color: #3498db; border-bottom-color: #3498db; }
+.dtab-panel { display: none; }
+.dtab-panel.active { display: block; }
+
+/* DETAIL FIELDS */
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
+.field-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+.fg { display: flex; flex-direction: column; }
+.fg label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.fg input, .fg select, .fg textarea {
+  padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  color: #e8ecf1; font-size: 13px; font-family: inherit;
+}
+.fg select { background-color: #1a2d4a; }
+.fg select option { background-color: #1a2d4a; color: #e8ecf1; }
+.fg textarea { height: 60px; resize: vertical; }
+.fg input:focus, .fg select:focus, .fg textarea:focus { outline: none; border-color: rgba(52,152,219,0.3); }
+
+.section-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin: 20px 0 10px; }
+.save-row { display: flex; justify-content: flex-end; margin-top: 16px; }
+.save-btn { padding: 9px 22px; border-radius: 8px; border: none; background: #3498db; color: #fff; font-weight: 600; font-size: 13px; cursor: pointer; }
+.save-btn:hover { background: #2980b9; }
+
+/* ACTIVITY TIMELINE */
+.timeline { padding: 0; }
+.tl-item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.tl-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.tl-icon.email { background: rgba(52,152,219,0.15); }
+.tl-icon.note { background: rgba(241,196,15,0.15); }
+.tl-icon.call { background: rgba(39,174,96,0.15); }
+.tl-icon.meeting { background: rgba(155,89,182,0.15); }
+.tl-body { flex: 1; }
+.tl-type { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; }
+.tl-subject { font-size: 13px; color: #fff; margin-top: 2px; }
+.tl-text { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+.tl-date { font-size: 11px; color: rgba(255,255,255,0.2); flex-shrink: 0; }
+
+.add-activity-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.aa-select { padding: 6px 10px; border-radius: 6px; background-color: #1a2d4a; border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 12px; font-family: inherit; }
+.aa-select option { background-color: #1a2d4a; color: #e8ecf1; }
+.aa-input { flex: 1; padding: 6px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #e8ecf1; font-size: 12px; font-family: inherit; }
+.aa-input:focus { outline: none; border-color: rgba(52,152,219,0.3); }
+.aa-btn { padding: 6px 14px; border-radius: 6px; border: none; background: rgba(52,152,219,0.2); color: #3498db; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+/* EMAIL MODAL */
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.show { display: flex; }
 .modal {
   background: #132d54; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
-  padding: 28px; width: 90%; max-width: 550px; max-height: 85vh; overflow-y: auto;
+  padding: 24px; width: 90%; max-width: 520px; max-height: 85vh; overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0,0,0,0.5);
 }
-.modal h2 { font-size: 18px; margin: 0 0 20px; }
-.modal .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.modal .form-row.full { grid-template-columns: 1fr; }
-.modal .field { display: flex; flex-direction: column; }
-.modal .field label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
-.modal .field input, .modal .field select, .modal .field textarea {
-  padding: 9px 12px; border-radius: 6px; background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 13px; font-family: inherit;
-}
-.modal .field select { background-color: #1a2d4a; }
-.modal .field select option { background-color: #1a2d4a; color: #e8ecf1; }
-.modal .field textarea { height: 60px; resize: vertical; }
-.modal .field input:focus, .modal .field select:focus, .modal .field textarea:focus { outline: none; border-color: rgba(52,152,219,0.4); }
-.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
-.modal-btn { padding: 9px 20px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; }
-.modal-btn.save { background: #3498db; color: #fff; }
-.modal-btn.save:hover { background: #2980b9; }
+.modal h2 { font-size: 17px; margin: 0 0 16px; }
+.modal .fg { margin-bottom: 12px; }
+.modal-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; }
+.modal-btn { padding: 8px 18px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; cursor: pointer; }
+.modal-btn.send { background: #3498db; color: #fff; }
 .modal-btn.cancel { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.6); }
-.modal-btn.cancel:hover { background: rgba(255,255,255,0.12); }
-.modal-btn.delete { background: rgba(192,57,43,0.15); color: #c0392b; }
-#customTypeField { display: none; }
 
 /* PIPELINE MODAL */
-.stage-option { padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); cursor: pointer; margin-bottom: 8px; font-size: 13px; }
-.stage-option:hover { background: rgba(52,152,219,0.15); border-color: rgba(52,152,219,0.3); color: #fff; }
-
-/* BULK EMAIL MODAL */
-.bulk-count { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
-#bulkSubject, #bulkBody { width: 100%; }
-#bulkBody { height: 120px; }
+.stage-option { padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.6); cursor: pointer; margin-bottom: 6px; font-size: 13px; }
+.stage-option:hover { background: rgba(52,152,219,0.12); border-color: rgba(52,152,219,0.3); color: #fff; }
 
 /* TOAST */
 .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #27ae60; color: #fff; padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 600; display: none; z-index: 200; }
 .toast.show { display: block; }
 
-.return-link { display: block; text-align: center; margin-top: 30px; color: rgba(255,255,255,0.35); text-decoration: none; font-size: 13px; }
-.return-link:hover { color: #fff; }
+.back-link { display: none; padding: 10px 16px; font-size: 12px; color: rgba(255,255,255,0.35); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.back-link:hover { color: #fff; }
+
+@media (max-width: 768px) {
+  .crm-list-panel { width: 100%; }
+  .crm-detail-panel { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0b1f3a 0%, #132d54 50%, #0b1f3a 100%); z-index: 50; display: none; }
+  .crm-detail-panel.mobile-show { display: flex; }
+  .back-link { display: block; }
+}
 </style>
 </head>
 <body>
-<div class="page-wrap">
+<div class="crm-layout">
 
-<!-- HEADER -->
-<div class="page-header">
-  <div class="header-left">
+<!-- LEFT: CONTACT LIST -->
+<div class="crm-list-panel">
+  <div class="list-header">
     <h1>Client Database</h1>
-    <p>Master contact list — every client, realtor, and partner in one place</p>
-  </div>
-  <div class="header-actions">
-    <span class="stat"><strong id="totalCount">0</strong> contacts</span>
-    <button class="header-btn primary" onclick="openAddModal()">+ Add Contact</button>
-  </div>
-</div>
-
-<!-- FILTERS -->
-<div class="filter-bar">
-  <input type="text" id="searchInput" placeholder="Search by name, email, phone, or company..." oninput="renderTable()">
-  <select id="typeFilter" onchange="renderTable()">
-    <option value="">All Types</option>
-    <option value="client">Clients / Borrowers</option>
-    <option value="realtor">Realtors / Agents</option>
-    <option value="title">Title & Escrow</option>
-    <option value="appraiser">Appraisers</option>
-    <option value="contractor">Contractors</option>
-    <option value="vendor">Vendors / Partners</option>
-    <option value="other">Other</option>
-  </select>
-  <button class="bulk-btn" id="bulkEmailBtn" onclick="openBulkEmail()">✉ Email Selected</button>
-</div>
-
-<!-- TABLE -->
-<table class="crm-table">
-  <thead>
-    <tr>
-      <th class="check-col"><input type="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Phone</th>
-      <th>Type</th>
-      <th>Company</th>
-      <th>Added</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="crmBody"></tbody>
-</table>
-<div class="empty-msg" id="emptyMsg" style="display:none;">No contacts found. Add your first contact to get started.</div>
-
-</div>
-
-<!-- ADD/EDIT MODAL -->
-<div class="modal-overlay" id="contactModal">
-  <div class="modal">
-    <h2 id="modalTitle">Add Contact</h2>
-    <input type="hidden" id="crmId">
-
-    <div class="form-row">
-      <div class="field"><label>Full Name *</label><input type="text" id="crmName"></div>
-      <div class="field"><label>Email</label><input type="email" id="crmEmail"></div>
+    <p>Every client, realtor, and partner</p>
+    <div class="list-header-row">
+      <input type="text" id="searchInput" placeholder="Search..." oninput="renderList()">
+      <select id="typeFilter" onchange="renderList()">
+        <option value="">All</option>
+        <option value="client">Clients</option>
+        <option value="realtor">Realtors</option>
+        <option value="title">Title</option>
+        <option value="appraiser">Appraisers</option>
+        <option value="contractor">Contractors</option>
+        <option value="vendor">Vendors</option>
+        <option value="other">Other</option>
+      </select>
+      <button class="add-btn" onclick="addNew()">+ New</button>
     </div>
-    <div class="form-row">
-      <div class="field"><label>Phone</label><input type="text" id="crmPhone"></div>
-      <div class="field"><label>Company / Brokerage</label><input type="text" id="crmCompany"></div>
-    </div>
-    <div class="form-row">
-      <div class="field">
-        <label>Contact Type</label>
-        <select id="crmType" onchange="toggleCustomType()">
-          <option value="client">Client / Borrower</option>
-          <option value="realtor">Realtor / Agent</option>
-          <option value="title">Title & Escrow</option>
-          <option value="appraiser">Appraiser</option>
-          <option value="contractor">Contractor</option>
-          <option value="vendor">Vendor / Partner</option>
-          <option value="other">Other</option>
-        </select>
-      </div>
-      <div class="field" id="customTypeField">
-        <label>Specify Type</label>
-        <input type="text" id="crmCustomType" placeholder="e.g. Insurance Agent">
-      </div>
-      <div class="field">
-        <label>Source</label>
-        <select id="crmSource">
-          <option value="">--</option>
-          <option value="pipeline">Pipeline</option>
-          <option value="portal">Partner Portal</option>
-          <option value="referral">Referral</option>
-          <option value="webinar">Webinar</option>
-          <option value="social">Social Media</option>
-          <option value="manual">Manual Entry</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="field"><label>Address</label><input type="text" id="crmAddress"></div>
-      <div class="field"><label>City</label><input type="text" id="crmCity"></div>
-    </div>
-    <div class="form-row">
-      <div class="field"><label>State</label><input type="text" id="crmState"></div>
-      <div class="field"><label>Zip</label><input type="text" id="crmZip"></div>
-    </div>
-    <div class="form-row full">
-      <div class="field"><label>Tags (comma separated)</label><input type="text" id="crmTags" placeholder="e.g. VIP, South Florida, 2024 closer"></div>
-    </div>
-    <div class="form-row full">
-      <div class="field"><label>Notes</label><textarea id="crmNotes"></textarea></div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="modal-btn delete" id="deleteContactBtn" onclick="deleteContact()" style="display:none;">Delete</button>
+    <div class="list-actions-row">
+      <span class="list-stat"><strong id="totalCount">0</strong> contacts</span>
       <div style="flex:1;"></div>
-      <button class="modal-btn cancel" onclick="closeModal()">Cancel</button>
-      <button class="modal-btn save" onclick="saveContact()">Save</button>
+      <button class="bulk-btn" id="bulkBtn" onclick="openBulkEmail()">✉ Email Selected</button>
     </div>
   </div>
+  <div class="contact-list" id="contactList"></div>
 </div>
 
-<!-- PIPELINE STAGE MODAL -->
-<div class="modal-overlay" id="pipelineModal">
-  <div class="modal" style="max-width: 400px;">
-    <h2>Send to Pipeline</h2>
-    <p style="font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:16px;" id="pipelineName"></p>
-    <div id="stageOptions"></div>
-    <div class="modal-actions">
-      <button class="modal-btn cancel" onclick="closePipelineModal()">Cancel</button>
+<!-- RIGHT: DETAIL VIEW -->
+<div class="crm-detail-panel" id="detailPanel">
+  <a href="#" class="back-link" onclick="closeMobileDetail(event)">← Back to list</a>
+  <div class="detail-empty" id="detailEmpty">Select a contact to view details</div>
+  <div class="detail-content" id="detailContent">
+
+    <div class="detail-top">
+      <div>
+        <h2 class="detail-name" id="dName"></h2>
+        <span class="detail-type-badge" id="dTypeBadge"></span><br>
+        <span class="detail-email" id="dEmail"></span>
+        <span class="detail-phone" id="dPhone"></span>
+      </div>
+      <div class="detail-actions">
+        <button class="d-btn email-btn" onclick="openEmailModal()">✉ Email</button>
+        <button class="d-btn pipeline-btn" onclick="openPipelineModal()">→ Pipeline</button>
+        <button class="d-btn delete-btn" onclick="deleteContact()">Delete</button>
+      </div>
+    </div>
+
+    <div class="detail-tabs">
+      <div class="dtab active" onclick="switchTab('info', this)">Details</div>
+      <div class="dtab" onclick="switchTab('activity', this)">Activity</div>
+    </div>
+
+    <!-- INFO TAB -->
+    <div class="dtab-panel active" id="tab-info">
+      <div class="section-label">Contact Info</div>
+      <div class="field-grid">
+        <div class="fg"><label>Name</label><input type="text" id="dNameEdit"></div>
+        <div class="fg"><label>Email</label><input type="email" id="dEmailEdit"></div>
+        <div class="fg"><label>Phone</label><input type="tel" id="dPhoneEdit"></div>
+        <div class="fg"><label>Company / Brokerage</label><input type="text" id="dCompany"></div>
+      </div>
+      <div class="field-grid three">
+        <div class="fg"><label>Type</label>
+          <select id="dType" onchange="toggleCT()">
+            <option value="client">Client / Borrower</option><option value="realtor">Realtor / Agent</option>
+            <option value="title">Title & Escrow</option><option value="appraiser">Appraiser</option>
+            <option value="contractor">Contractor</option><option value="vendor">Vendor / Partner</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="fg" id="ctField" style="display:none;"><label>Specify Type</label><input type="text" id="dCustomType"></div>
+        <div class="fg"><label>Source</label>
+          <select id="dSource">
+            <option value="">--</option><option value="pipeline">Pipeline</option><option value="portal">Partner Portal</option>
+            <option value="referral">Referral</option><option value="webinar">Webinar</option>
+            <option value="social">Social Media</option><option value="manual">Manual Entry</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-label">Personal</div>
+      <div class="field-grid three">
+        <div class="fg"><label>Birthday</label><input type="date" id="dBirthday"></div>
+        <div class="fg"><label>Spouse / Partner</label><input type="text" id="dSpouse"></div>
+        <div class="fg"><label>Kids</label><input type="text" id="dKids" placeholder="e.g. Emma (8), Jack (5)"></div>
+      </div>
+      <div class="field-grid">
+        <div class="fg"><label>Employer</label><input type="text" id="dEmployer"></div>
+        <div class="fg"><label>Job Title</label><input type="text" id="dJobTitle"></div>
+      </div>
+
+      <div class="section-label">Address</div>
+      <div class="field-grid">
+        <div class="fg"><label>Street</label><input type="text" id="dAddress"></div>
+        <div class="fg"><label>City</label><input type="text" id="dCity"></div>
+      </div>
+      <div class="field-grid three">
+        <div class="fg"><label>State</label><input type="text" id="dState"></div>
+        <div class="fg"><label>Zip</label><input type="text" id="dZip"></div>
+        <div class="fg"><label>Tags</label><input type="text" id="dTags" placeholder="VIP, South FL, 2024"></div>
+      </div>
+
+      <div class="section-label">Notes</div>
+      <div class="fg"><textarea id="dNotes" style="width:100%; height:80px;"></textarea></div>
+
+      <div class="save-row">
+        <button class="save-btn" onclick="saveContact()">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- ACTIVITY TAB -->
+    <div class="dtab-panel" id="tab-activity">
+      <div class="add-activity-row">
+        <select class="aa-select" id="aaType">
+          <option value="note">📝 Note</option>
+          <option value="call">📞 Call</option>
+          <option value="meeting">🤝 Meeting</option>
+          <option value="text">💬 Text</option>
+        </select>
+        <input type="text" class="aa-input" id="aaText" placeholder="Add a note or log activity...">
+        <button class="aa-btn" onclick="addActivity()">Add</button>
+      </div>
+      <div class="timeline" id="activityTimeline"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal">
+    <h2 id="emailModalTitle">Send Email</h2>
+    <div class="fg"><label>To</label><input type="text" id="emTo" readonly></div>
+    <div class="fg"><label>Subject</label><input type="text" id="emSubject"></div>
+    <div class="fg"><label>Message</label><textarea id="emBody" style="height:100px;" placeholder="Your signature will be appended automatically."></textarea></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="closeEmailModal()">Cancel</button>
+      <button class="modal-btn send" onclick="sendEmail()">Send</button>
     </div>
   </div>
 </div>
 
 <!-- BULK EMAIL MODAL -->
 <div class="modal-overlay" id="bulkModal">
-  <div class="modal" style="max-width: 550px;">
+  <div class="modal">
     <h2>Send Bulk Email</h2>
-    <p class="bulk-count" id="bulkCount"></p>
-    <div class="form-row full">
-      <div class="field"><label>Subject</label><input type="text" id="bulkSubject"></div>
-    </div>
-    <div class="form-row full">
-      <div class="field"><label>Message Body</label><textarea id="bulkBody" placeholder="Type your message here. Your full email signature will be appended automatically."></textarea></div>
-    </div>
-    <div class="modal-actions">
+    <p style="font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:12px;" id="bulkCount"></p>
+    <div class="fg"><label>Subject</label><input type="text" id="bulkSubject" style="width:100%;"></div>
+    <div class="fg"><label>Message (use {name} for first name)</label><textarea id="bulkBody" style="width:100%; height:100px;"></textarea></div>
+    <div class="modal-btns">
       <button class="modal-btn cancel" onclick="closeBulkModal()">Cancel</button>
-      <button class="modal-btn save" onclick="sendBulkEmail()">Send Emails</button>
+      <button class="modal-btn send" onclick="sendBulkEmail()">Send All</button>
     </div>
+  </div>
+</div>
+
+<!-- PIPELINE MODAL -->
+<div class="modal-overlay" id="pipelineModal">
+  <div class="modal" style="max-width:380px;">
+    <h2>Send to Pipeline</h2>
+    <p style="font-size:12px; color:rgba(255,255,255,0.4); margin-bottom:12px;" id="plName"></p>
+    <div id="stageOptions"></div>
+    <div class="modal-btns"><button class="modal-btn cancel" onclick="closePipelineModal()">Cancel</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<a href="admin.html" class="return-link">← Back to Mission Control</a>
-
 <script>
 protectPage();
 if (sessionStorage.getItem('agentEdgeAdmin') !== 'true') { window.location.href = 'portal.html'; }
 
-var API_BASE = 'https://agent-edge-backend.vercel.app/api';
-var crmContacts = [];
+var API = 'https://agent-edge-backend.vercel.app/api/crm-api';
+var SEND_API = 'https://agent-edge-backend.vercel.app/api/send-email';
+var allContacts = [];
 var selectedIds = new Set();
+var currentContact = null;
+var currentActivity = [];
 
-var columns = [
-  { id: 'cold', title: 'Cold Leads' },
-  { id: 'warm', title: 'Warm Leads' },
-  { id: 'active', title: 'Active Conversations' },
-  { id: 'credit', title: 'Credit Repair' },
-  { id: 'preapproval', title: 'Pre-Approval' },
-  { id: 'preapproved', title: 'Pre Approved' },
-  { id: 'ratewatch', title: 'Rate Watch' },
-  { id: 'underwriting', title: 'Underwriting' },
-  { id: 'closed', title: 'Closed - Funded' },
-  { id: 'dead', title: 'Dead Leads' }
+var stages = [
+  { id:'cold', t:'Cold Leads' },{ id:'warm', t:'Warm Leads' },{ id:'active', t:'Active Conversations' },
+  { id:'credit', t:'Credit Repair' },{ id:'preapproval', t:'Pre-Approval' },{ id:'preapproved', t:'Pre Approved' },
+  { id:'ratewatch', t:'Rate Watch' },{ id:'underwriting', t:'Underwriting' },
+  { id:'closed', t:'Closed - Funded' },{ id:'dead', t:'Dead Leads' }
 ];
+var typeLabels = { client:'Client', realtor:'Realtor', title:'Title & Escrow', appraiser:'Appraiser', contractor:'Contractor', vendor:'Vendor', other:'Other' };
 
-var typeLabels = {
-  client: 'Client', realtor: 'Realtor', title: 'Title & Escrow',
-  appraiser: 'Appraiser', contractor: 'Contractor', vendor: 'Vendor', other: 'Other'
-};
-
-// ===== LOAD DATA =====
+// ===== LOAD =====
 function loadCRM() {
-  fetch(API_BASE + '/crm-api?action=list')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.success) {
-        crmContacts = data.contacts || [];
-        renderTable();
-      }
-    })
-    .catch(function(err) { console.log('CRM load error:', err); });
+  fetch(API + '?action=list').then(function(r){return r.json();}).then(function(d){
+    if (d.success) { allContacts = d.contacts || []; renderList(); }
+  }).catch(function(e){ console.log('Load error:', e); });
 }
 
-// ===== RENDER TABLE =====
-function renderTable() {
-  var search = document.getElementById('searchInput').value.toLowerCase();
-  var typeFilter = document.getElementById('typeFilter').value;
-
-  var filtered = crmContacts.filter(function(c) {
-    var matchType = !typeFilter || c.type === typeFilter;
-    var matchSearch = !search ||
-      (c.name && c.name.toLowerCase().indexOf(search) !== -1) ||
-      (c.email && c.email.toLowerCase().indexOf(search) !== -1) ||
-      (c.phone && c.phone.indexOf(search) !== -1) ||
-      (c.company && c.company.toLowerCase().indexOf(search) !== -1) ||
-      (c.tags && c.tags.toLowerCase().indexOf(search) !== -1);
-    return matchType && matchSearch;
+// ===== RENDER LIST =====
+function renderList() {
+  var q = document.getElementById('searchInput').value.toLowerCase();
+  var tf = document.getElementById('typeFilter').value;
+  var filtered = allContacts.filter(function(c){
+    var mt = !tf || c.type === tf;
+    var ms = !q || (c.name||'').toLowerCase().indexOf(q)!==-1 || (c.email||'').toLowerCase().indexOf(q)!==-1 ||
+      (c.phone||'').indexOf(q)!==-1 || (c.company||'').toLowerCase().indexOf(q)!==-1 || (c.tags||'').toLowerCase().indexOf(q)!==-1;
+    return mt && ms;
   });
-
-  // Sort by name
-  filtered.sort(function(a, b) { return (a.name || '').localeCompare(b.name || ''); });
-
-  var body = document.getElementById('crmBody');
-  var empty = document.getElementById('emptyMsg');
-
-  if (filtered.length === 0) {
-    body.innerHTML = '';
-    empty.style.display = 'block';
-    document.getElementById('totalCount').textContent = crmContacts.length;
-    return;
-  }
-
-  empty.style.display = 'none';
-  document.getElementById('totalCount').textContent = crmContacts.length;
+  document.getElementById('totalCount').textContent = allContacts.length;
+  var el = document.getElementById('contactList');
+  if (filtered.length === 0) { el.innerHTML = '<div class="empty-list">No contacts found</div>'; return; }
 
   var html = '';
-  filtered.forEach(function(c) {
-    var typeClass = 'type-' + (c.type || 'other');
-    var typeLabel = c.type === 'other' && c.customType ? c.customType : (typeLabels[c.type] || 'Other');
+  filtered.forEach(function(c){
+    var act = currentContact && currentContact.id === c.id ? ' active' : '';
+    var tc = 'type-' + (c.type||'other');
+    var tl = c.type==='other' && c.custom_type ? c.custom_type : (typeLabels[c.type]||'Other');
+    var sub = [];
+    if (c.email) sub.push(c.email);
+    if (c.company) sub.push(c.company);
+    html += '<div class="contact-item' + act + '" onclick="selectContact(\'' + c.id + '\')">' +
+      '<input type="checkbox" ' + (selectedIds.has(c.id)?'checked':'') + ' onclick="event.stopPropagation(); toggleSel(\'' + c.id + '\', this.checked)">' +
+      '<div class="ci-info"><div class="ci-name">' + esc(c.name) + '</div>' +
+      '<div class="ci-sub">' + esc(sub.join(' · ')) + '</div></div>' +
+      '<span class="ci-type ' + tc + '">' + esc(tl) + '</span></div>';
+  });
+  el.innerHTML = html;
+  document.getElementById('bulkBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+}
+
+// ===== SELECT CONTACT =====
+function selectContact(id) {
+  fetch(API + '?action=get&id=' + id).then(function(r){return r.json();}).then(function(d){
+    if (!d.success) return;
+    currentContact = d.contact;
+    currentActivity = d.activity || [];
+    showDetail();
+    renderList();
+    // Mobile
+    document.getElementById('detailPanel').classList.add('mobile-show');
+  }).catch(function(e){ console.log(e); });
+}
+
+function showDetail() {
+  var c = currentContact;
+  document.getElementById('detailEmpty').style.display = 'none';
+  document.getElementById('detailContent').classList.add('show');
+
+  document.getElementById('dName').textContent = c.name;
+  var tc = 'type-' + (c.type||'other');
+  var tl = c.type==='other' && c.custom_type ? c.custom_type : (typeLabels[c.type]||'Other');
+  var badge = document.getElementById('dTypeBadge');
+  badge.textContent = tl;
+  badge.className = 'detail-type-badge ' + tc;
+  document.getElementById('dEmail').textContent = c.email || '';
+  document.getElementById('dPhone').textContent = c.phone ? '  ·  ' + c.phone : '';
+
+  // Fill form
+  document.getElementById('dNameEdit').value = c.name || '';
+  document.getElementById('dEmailEdit').value = c.email || '';
+  document.getElementById('dPhoneEdit').value = c.phone || '';
+  document.getElementById('dCompany').value = c.company || '';
+  document.getElementById('dType').value = c.type || 'other';
+  document.getElementById('dCustomType').value = c.custom_type || '';
+  document.getElementById('dSource').value = c.source || '';
+  document.getElementById('dBirthday').value = c.birthday || '';
+  document.getElementById('dSpouse').value = c.spouse_name || '';
+  document.getElementById('dKids').value = c.kids || '';
+  document.getElementById('dEmployer').value = c.employer || '';
+  document.getElementById('dJobTitle').value = c.job_title || '';
+  document.getElementById('dAddress').value = c.address || '';
+  document.getElementById('dCity').value = c.city || '';
+  document.getElementById('dState').value = c.state || '';
+  document.getElementById('dZip').value = c.zip || '';
+  document.getElementById('dTags').value = c.tags || '';
+  document.getElementById('dNotes').value = c.notes || '';
+  toggleCT();
+  renderActivity();
+}
+
+// ===== ACTIVITY TIMELINE =====
+function renderActivity() {
+  var el = document.getElementById('activityTimeline');
+  if (!currentActivity || currentActivity.length === 0) {
+    el.innerHTML = '<div style="color:rgba(255,255,255,0.15); font-size:13px; padding:20px 0;">No activity yet. Add a note or send an email.</div>';
+    return;
+  }
+  var icons = { email_sent:'✉️', email_received:'📩', call:'📞', note:'📝', meeting:'🤝', text:'💬' };
+  var html = '';
+  currentActivity.forEach(function(a){
+    var icon = icons[a.type] || '📌';
+    var iconClass = a.type.indexOf('email')!==-1 ? 'email' : (a.type==='note' ? 'note' : (a.type==='call' ? 'call' : 'meeting'));
     var dateStr = '';
-    if (c.createdAt) {
-      var d = new Date(c.createdAt);
-      if (!isNaN(d)) dateStr = (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
-    }
-
-    var checked = selectedIds.has(c.id) ? 'checked' : '';
-
-    html += '<tr>' +
-      '<td class="check-col"><input type="checkbox" ' + checked + ' onchange="toggleSelect(\'' + c.id + '\', this.checked)"></td>' +
-      '<td style="font-weight:600; color:#fff;">' + esc(c.name) + '</td>' +
-      '<td>' + esc(c.email) + '</td>' +
-      '<td>' + esc(c.phone) + '</td>' +
-      '<td><span class="type-badge ' + typeClass + '">' + esc(typeLabel) + '</span></td>' +
-      '<td>' + esc(c.company) + '</td>' +
-      '<td style="color:rgba(255,255,255,0.4); font-size:12px;">' + dateStr + '</td>' +
-      '<td>' +
-        '<button class="action-btn" onclick="openEditModal(\'' + c.id + '\')">Edit</button>' +
-        '<button class="action-btn pipeline-btn" onclick="openPipelineModal(\'' + c.id + '\')" title="Send to Pipeline">→ Pipeline</button>' +
-      '</td>' +
-    '</tr>';
+    if (a.date) { var d = new Date(a.date); dateStr = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}); }
+    html += '<div class="tl-item"><div class="tl-icon ' + iconClass + '">' + icon + '</div>' +
+      '<div class="tl-body"><div class="tl-type">' + esc(a.type.replace('_',' ')) + '</div>' +
+      (a.subject ? '<div class="tl-subject">' + esc(a.subject) + '</div>' : '') +
+      (a.body ? '<div class="tl-text">' + esc(a.body) + '</div>' : '') +
+      '</div><div class="tl-date">' + dateStr + '</div></div>';
   });
-
-  body.innerHTML = html;
-
-  // Show/hide bulk email button
-  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+  el.innerHTML = html;
 }
 
-// ===== SELECT / CHECKBOX =====
-function toggleSelect(id, checked) {
-  if (checked) { selectedIds.add(id); } else { selectedIds.delete(id); }
-  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
+function addActivity() {
+  if (!currentContact) return;
+  var type = document.getElementById('aaType').value;
+  var text = document.getElementById('aaText').value.trim();
+  if (!text) return;
+
+  var activity = { crm_id: currentContact.id, type: type, subject: text, body: '', date: new Date().toISOString() };
+  currentActivity.unshift(activity);
+  renderActivity();
+  document.getElementById('aaText').value = '';
+
+  fetch(API + '?action=addActivity', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ activity: activity })
+  }).catch(function(e){ console.log(e); });
 }
 
-function toggleSelectAll() {
-  var checked = document.getElementById('selectAll').checked;
-  var checkboxes = document.querySelectorAll('#crmBody input[type="checkbox"]');
-  selectedIds.clear();
-  if (checked) {
-    // Select all visible/filtered
-    var search = document.getElementById('searchInput').value.toLowerCase();
-    var typeFilter = document.getElementById('typeFilter').value;
-    crmContacts.forEach(function(c) {
-      var matchType = !typeFilter || c.type === typeFilter;
-      var matchSearch = !search ||
-        (c.name && c.name.toLowerCase().indexOf(search) !== -1) ||
-        (c.email && c.email.toLowerCase().indexOf(search) !== -1) ||
-        (c.phone && c.phone.indexOf(search) !== -1) ||
-        (c.company && c.company.toLowerCase().indexOf(search) !== -1);
-      if (matchType && matchSearch && c.email) selectedIds.add(c.id);
-    });
-  }
-  checkboxes.forEach(function(cb) { cb.checked = checked; });
-  document.getElementById('bulkEmailBtn').style.display = selectedIds.size > 0 ? 'inline-block' : 'none';
-}
-
-// ===== MODAL - ADD/EDIT =====
-function openAddModal() {
-  document.getElementById('modalTitle').textContent = 'Add Contact';
-  document.getElementById('crmId').value = '';
-  document.getElementById('crmName').value = '';
-  document.getElementById('crmEmail').value = '';
-  document.getElementById('crmPhone').value = '';
-  document.getElementById('crmCompany').value = '';
-  document.getElementById('crmType').value = 'client';
-  document.getElementById('crmCustomType').value = '';
-  document.getElementById('crmSource').value = 'manual';
-  document.getElementById('crmAddress').value = '';
-  document.getElementById('crmCity').value = '';
-  document.getElementById('crmState').value = '';
-  document.getElementById('crmZip').value = '';
-  document.getElementById('crmTags').value = '';
-  document.getElementById('crmNotes').value = '';
-  document.getElementById('deleteContactBtn').style.display = 'none';
-  toggleCustomType();
-  document.getElementById('contactModal').classList.add('show');
-}
-
-function openEditModal(id) {
-  var c = crmContacts.find(function(x) { return x.id === id; });
-  if (!c) return;
-  document.getElementById('modalTitle').textContent = 'Edit Contact';
-  document.getElementById('crmId').value = c.id;
-  document.getElementById('crmName').value = c.name || '';
-  document.getElementById('crmEmail').value = c.email || '';
-  document.getElementById('crmPhone').value = c.phone || '';
-  document.getElementById('crmCompany').value = c.company || '';
-  document.getElementById('crmType').value = c.type || 'other';
-  document.getElementById('crmCustomType').value = c.customType || '';
-  document.getElementById('crmSource').value = c.source || '';
-  document.getElementById('crmAddress').value = c.address || '';
-  document.getElementById('crmCity').value = c.city || '';
-  document.getElementById('crmState').value = c.state || '';
-  document.getElementById('crmZip').value = c.zip || '';
-  document.getElementById('crmTags').value = c.tags || '';
-  document.getElementById('crmNotes').value = c.notes || '';
-  document.getElementById('deleteContactBtn').style.display = 'inline-block';
-  toggleCustomType();
-  document.getElementById('contactModal').classList.add('show');
-}
-
-function closeModal() { document.getElementById('contactModal').classList.remove('show'); }
-
-function toggleCustomType() {
-  document.getElementById('customTypeField').style.display =
-    document.getElementById('crmType').value === 'other' ? 'flex' : 'none';
-}
-
+// ===== SAVE CONTACT =====
 function saveContact() {
-  var name = document.getElementById('crmName').value.trim();
-  if (!name) { document.getElementById('crmName').style.borderColor = '#c0392b'; return; }
+  if (!currentContact) return;
+  var c = currentContact;
+  c.name = document.getElementById('dNameEdit').value.trim();
+  c.email = document.getElementById('dEmailEdit').value.trim();
+  c.phone = document.getElementById('dPhoneEdit').value.trim();
+  c.company = document.getElementById('dCompany').value.trim();
+  c.type = document.getElementById('dType').value;
+  c.custom_type = document.getElementById('dCustomType').value.trim();
+  c.source = document.getElementById('dSource').value;
+  c.birthday = document.getElementById('dBirthday').value;
+  c.spouse_name = document.getElementById('dSpouse').value.trim();
+  c.kids = document.getElementById('dKids').value.trim();
+  c.employer = document.getElementById('dEmployer').value.trim();
+  c.job_title = document.getElementById('dJobTitle').value.trim();
+  c.address = document.getElementById('dAddress').value.trim();
+  c.city = document.getElementById('dCity').value.trim();
+  c.state = document.getElementById('dState').value.trim();
+  c.zip = document.getElementById('dZip').value.trim();
+  c.tags = document.getElementById('dTags').value.trim();
+  c.notes = document.getElementById('dNotes').value.trim();
 
-  var id = document.getElementById('crmId').value || ('crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4));
-  var isEdit = !!document.getElementById('crmId').value;
-  var now = new Date().toISOString();
-
-  var contact = {
-    id: id,
-    name: name,
-    email: document.getElementById('crmEmail').value.trim(),
-    phone: document.getElementById('crmPhone').value.trim(),
-    company: document.getElementById('crmCompany').value.trim(),
-    type: document.getElementById('crmType').value,
-    customType: document.getElementById('crmCustomType').value.trim(),
-    source: document.getElementById('crmSource').value,
-    address: document.getElementById('crmAddress').value.trim(),
-    city: document.getElementById('crmCity').value.trim(),
-    state: document.getElementById('crmState').value.trim(),
-    zip: document.getElementById('crmZip').value.trim(),
-    tags: document.getElementById('crmTags').value.trim(),
-    notes: document.getElementById('crmNotes').value.trim(),
-    pipelineId: '',
-    createdAt: isEdit ? (crmContacts.find(function(c) { return c.id === id; }) || {}).createdAt || now : now,
-    updatedAt: now
+  // Map to API format
+  var payload = {
+    id: c.id, name: c.name, email: c.email, phone: c.phone, company: c.company,
+    type: c.type, customType: c.custom_type, source: c.source, address: c.address,
+    city: c.city, state: c.state, zip: c.zip, tags: c.tags, notes: c.notes,
+    pipelineId: c.pipeline_id || '', birthday: c.birthday, spouseName: c.spouse_name,
+    kids: c.kids, employer: c.employer, jobTitle: c.job_title,
+    createdAt: c.created_at
   };
 
-  // Preserve pipelineId if editing
-  if (isEdit) {
-    var existing = crmContacts.find(function(c) { return c.id === id; });
-    if (existing) contact.pipelineId = existing.pipelineId || '';
-  }
+  // Update local
+  var idx = allContacts.findIndex(function(x){ return x.id === c.id; });
+  if (idx >= 0) allContacts[idx] = c;
+  showDetail();
+  renderList();
 
-  // Update local array
-  var idx = crmContacts.findIndex(function(c) { return c.id === id; });
-  if (idx >= 0) { crmContacts[idx] = contact; } else { crmContacts.push(contact); }
-
-  renderTable();
-  closeModal();
-
-  // Sync to sheet
-  fetch(API_BASE + '/crm-api?action=save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ crm: contact })
-  }).then(function(r) { return r.json(); })
-    .then(function(d) { showToast(d.success ? 'Saved & synced!' : 'Saved locally'); })
-    .catch(function() { showToast('Saved locally'); });
+  fetch(API + '?action=save', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ crm: payload })
+  }).then(function(r){return r.json();})
+    .then(function(d){ showToast(d.success ? 'Saved!' : 'Error saving'); })
+    .catch(function(){ showToast('Saved locally'); });
 }
 
+// ===== ADD NEW =====
+function addNew() {
+  var id = 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+  var now = new Date().toISOString();
+  currentContact = {
+    id: id, name: 'New Contact', email: '', phone: '', type: 'client', custom_type: '',
+    company: '', address: '', city: '', state: '', zip: '', source: 'manual', tags: '', notes: '',
+    pipeline_id: '', birthday: '', spouse_name: '', kids: '', employer: '', job_title: '',
+    created_at: now, updated_at: now
+  };
+  currentActivity = [];
+  allContacts.unshift(currentContact);
+  showDetail();
+  renderList();
+  document.getElementById('dNameEdit').focus();
+  document.getElementById('dNameEdit').select();
+  document.getElementById('detailPanel').classList.add('mobile-show');
+}
+
+// ===== DELETE =====
 function deleteContact() {
-  var id = document.getElementById('crmId').value;
-  if (!id || !confirm('Delete this contact permanently?')) return;
-
-  crmContacts = crmContacts.filter(function(c) { return c.id !== id; });
-  renderTable();
-  closeModal();
-
-  fetch(API_BASE + '/crm-api?action=delete', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ crmId: id })
-  }).catch(function(err) { console.log('Delete error:', err); });
-
-  showToast('Contact deleted');
+  if (!currentContact || !confirm('Delete ' + currentContact.name + ' permanently?')) return;
+  var id = currentContact.id;
+  allContacts = allContacts.filter(function(c){ return c.id !== id; });
+  currentContact = null;
+  document.getElementById('detailContent').classList.remove('show');
+  document.getElementById('detailEmpty').style.display = 'flex';
+  renderList();
+  fetch(API + '?action=delete', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ crmId: id }) });
+  showToast('Deleted');
 }
 
-// ===== SEND TO PIPELINE =====
-var pipelineContactId = null;
-
-function openPipelineModal(id) {
-  var c = crmContacts.find(function(x) { return x.id === id; });
-  if (!c) return;
-
-  if (c.pipelineId) {
-    if (confirm(c.name + ' is already in the pipeline. Open their pipeline card?')) {
-      window.location.href = 'contact-detail.html?id=' + c.pipelineId;
-    }
-    return;
-  }
-
-  pipelineContactId = id;
-  document.getElementById('pipelineName').textContent = 'Select a stage for ' + c.name + ':';
-
-  var html = '';
-  columns.forEach(function(col) {
-    html += '<div class="stage-option" onclick="sendToPipeline(\'' + col.id + '\')">' + col.title + '</div>';
-  });
-  document.getElementById('stageOptions').innerHTML = html;
-  document.getElementById('pipelineModal').classList.add('show');
+// ===== TABS =====
+function switchTab(tab, el) {
+  document.querySelectorAll('.dtab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.dtab-panel').forEach(function(p){ p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
 }
+function toggleCT() { document.getElementById('ctField').style.display = document.getElementById('dType').value === 'other' ? 'flex' : 'none'; }
 
-function closePipelineModal() { document.getElementById('pipelineModal').classList.remove('show'); pipelineContactId = null; }
+// ===== EMAIL =====
+function openEmailModal() {
+  if (!currentContact || !currentContact.email) { showToast('No email address'); return; }
+  document.getElementById('emTo').value = currentContact.email;
+  document.getElementById('emSubject').value = '';
+  document.getElementById('emBody').value = '';
+  document.getElementById('emailModalTitle').textContent = 'Email ' + currentContact.name;
+  document.getElementById('emailModal').classList.add('show');
+}
+function closeEmailModal() { document.getElementById('emailModal').classList.remove('show'); }
 
-function sendToPipeline(stage) {
-  var c = crmContacts.find(function(x) { return x.id === pipelineContactId; });
-  if (!c) return;
+function sendEmail() {
+  var subject = document.getElementById('emSubject').value.trim();
+  var body = document.getElementById('emBody').value.trim();
+  if (!subject || !body) { showToast('Fill in subject and message'); return; }
 
-  var pipelineId = 'c-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
-  var now = new Date().toISOString();
+  var bodyHtml = '<p>' + body.replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
 
-  // Create pipeline contact
-  var pipelineContact = {
-    id: pipelineId,
-    name: c.name,
-    phone: c.phone || '',
-    email: c.email || '',
-    stage: stage,
-    source: 'crm',
-    realtorName: '',
-    loanType: '', loanYear: '', interestRate: '', lockStatus: '',
-    subjectAddress: '',
-    borrowers: [{ name: c.name, currentAddress: c.address || '', ownRent: '', monthlyPayment: '', retainSell: '', employer: c.company || '', selfReportedWages: '', incomeType: '', w2Year1: '', w2Year2: '', ytd: '', qualifyingEarnings: '' }],
-    dates: {},
-    notes: [],
-    documents: [],
-    createdAt: now,
-    updatedAt: now
-  };
+  fetch(SEND_API, {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ to: currentContact.email, subject: subject, body: bodyHtml })
+  }).then(function(r){return r.json();}).then(function(d){
+    if (d.success) {
+      showToast('Email sent!');
+      // Log activity
+      var act = { crm_id: currentContact.id, type:'email_sent', subject: subject, body: body.substring(0,100), date: new Date().toISOString() };
+      currentActivity.unshift(act);
+      renderActivity();
+      fetch(API + '?action=addActivity', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ activity: act }) });
+    } else { showToast('Send failed'); }
+  }).catch(function(){ showToast('Send failed'); });
 
-  // Save to pipeline localStorage
-  var contacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
-  contacts.push(pipelineContact);
-  localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
-
-  // Sync to pipeline sheet
-  fetch(API_BASE + '/pipeline-api?action=save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contact: pipelineContact })
-  }).catch(function(err) { console.log('Pipeline sync error:', err); });
-
-  // Update CRM contact with pipeline link
-  c.pipelineId = pipelineId;
-  c.updatedAt = now;
-  fetch(API_BASE + '/crm-api?action=save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ crm: c })
-  }).catch(function(err) { console.log('CRM update error:', err); });
-
-  renderTable();
-  closePipelineModal();
-  showToast(c.name + ' added to ' + columns.find(function(col) { return col.id === stage; }).title);
+  closeEmailModal();
 }
 
 // ===== BULK EMAIL =====
 function openBulkEmail() {
-  var emailContacts = crmContacts.filter(function(c) { return selectedIds.has(c.id) && c.email; });
-  if (emailContacts.length === 0) { showToast('No selected contacts have email addresses'); return; }
-  document.getElementById('bulkCount').textContent = 'Sending to ' + emailContacts.length + ' contact' + (emailContacts.length > 1 ? 's' : '') + ' with email addresses';
+  var ct = allContacts.filter(function(c){ return selectedIds.has(c.id) && c.email; });
+  if (ct.length === 0) { showToast('No selected contacts have emails'); return; }
+  document.getElementById('bulkCount').textContent = 'Sending to ' + ct.length + ' contact' + (ct.length>1?'s':'');
   document.getElementById('bulkSubject').value = '';
   document.getElementById('bulkBody').value = '';
   document.getElementById('bulkModal').classList.add('show');
 }
-
 function closeBulkModal() { document.getElementById('bulkModal').classList.remove('show'); }
 
 function sendBulkEmail() {
   var subject = document.getElementById('bulkSubject').value.trim();
   var body = document.getElementById('bulkBody').value.trim();
-  if (!subject || !body) { showToast('Please fill in subject and message'); return; }
-
-  var emailContacts = crmContacts.filter(function(c) { return selectedIds.has(c.id) && c.email; });
-  if (emailContacts.length === 0) return;
-
-  var bodyHtml = '<p>' + body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>') + '</p>';
-  var sent = 0;
-  var failed = 0;
-
-  emailContacts.forEach(function(c) {
-    // Personalize with name
-    var personalBody = bodyHtml.replace(/\{name\}/g, c.name.split(' ')[0]);
-
-    fetch(API_BASE + '/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ to: c.email, subject: subject, body: personalBody })
-    }).then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.success) sent++; else failed++;
-        if (sent + failed === emailContacts.length) {
-          showToast('Sent: ' + sent + (failed > 0 ? ' | Failed: ' + failed : ''));
-        }
-      })
-      .catch(function() {
-        failed++;
-        if (sent + failed === emailContacts.length) {
-          showToast('Sent: ' + sent + ' | Failed: ' + failed);
-        }
-      });
+  if (!subject || !body) { showToast('Fill in subject and message'); return; }
+  var ct = allContacts.filter(function(c){ return selectedIds.has(c.id) && c.email; });
+  var sent = 0, fail = 0;
+  ct.forEach(function(c){
+    var pb = '<p>' + body.replace(/\{name\}/g, (c.name||'').split(' ')[0]).replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>') + '</p>';
+    fetch(SEND_API, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ to: c.email, subject: subject, body: pb }) })
+      .then(function(r){return r.json();}).then(function(d){ if(d.success) sent++; else fail++; if(sent+fail===ct.length) showToast('Sent: '+sent+(fail?' | Failed: '+fail:'')); })
+      .catch(function(){ fail++; if(sent+fail===ct.length) showToast('Sent: '+sent+' | Failed: '+fail); });
   });
-
   closeBulkModal();
-  selectedIds.clear();
-  document.getElementById('selectAll').checked = false;
-  renderTable();
-  showToast('Sending ' + emailContacts.length + ' email' + (emailContacts.length > 1 ? 's' : '') + '...');
+  selectedIds.clear(); renderList();
+  showToast('Sending...');
 }
+
+// ===== PIPELINE =====
+function openPipelineModal() {
+  if (!currentContact) return;
+  if (currentContact.pipeline_id) {
+    if (confirm(currentContact.name + ' is already in the pipeline. Open their card?')) {
+      window.location.href = 'contact-detail.html?id=' + currentContact.pipeline_id;
+    }
+    return;
+  }
+  document.getElementById('plName').textContent = 'Select a stage for ' + currentContact.name;
+  var html = '';
+  stages.forEach(function(s){ html += '<div class="stage-option" onclick="sendToPipeline(\''+s.id+'\')">' + s.t + '</div>'; });
+  document.getElementById('stageOptions').innerHTML = html;
+  document.getElementById('pipelineModal').classList.add('show');
+}
+function closePipelineModal() { document.getElementById('pipelineModal').classList.remove('show'); }
+
+function sendToPipeline(stage) {
+  var c = currentContact;
+  var pid = 'c-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+  var now = new Date().toISOString();
+  var pc = {
+    id: pid, name: c.name, phone: c.phone||'', email: c.email||'', stage: stage, source: 'crm',
+    realtorName:'', loanType:'', loanYear:'', interestRate:'', lockStatus:'', subjectAddress:'',
+    borrowers: [{ name: c.name, currentAddress: c.address||'', ownRent:'', monthlyPayment:'', retainSell:'', employer: c.employer||'', selfReportedWages:'', incomeType:'', w2Year1:'', w2Year2:'', ytd:'', qualifyingEarnings:'' }],
+    dates:{}, notes:[], documents:[], createdAt: now, updatedAt: now
+  };
+  var contacts = JSON.parse(localStorage.getItem('pipelineContacts')||'[]');
+  contacts.push(pc); localStorage.setItem('pipelineContacts', JSON.stringify(contacts));
+
+  fetch('https://agent-edge-backend.vercel.app/api/pipeline-api?action=save', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contact: pc })
+  }).catch(function(e){ console.log(e); });
+
+  c.pipeline_id = pid;
+  fetch(API + '?action=save', { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ crm: { id: c.id, name: c.name, pipelineId: pid } })
+  }).catch(function(e){ console.log(e); });
+
+  closePipelineModal();
+  var stName = stages.find(function(s){return s.id===stage;});
+  showToast(c.name + ' → ' + (stName?stName.t:stage));
+}
+
+// ===== SELECTION =====
+function toggleSel(id, ch) { if(ch) selectedIds.add(id); else selectedIds.delete(id); document.getElementById('bulkBtn').style.display = selectedIds.size>0?'inline-block':'none'; }
+
+// ===== MOBILE =====
+function closeMobileDetail(e) { e.preventDefault(); document.getElementById('detailPanel').classList.remove('mobile-show'); }
 
 // ===== HELPERS =====
-function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function showToast(m) { var t=document.getElementById('toast'); t.textContent=m; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},3000); }
 
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function() { t.classList.remove('show'); }, 3000);
-}
-
-// Init
 loadCRM();
 </script>
 </body>
