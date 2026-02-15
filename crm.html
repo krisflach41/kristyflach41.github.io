@@ -28,7 +28,8 @@ body {
 .list-header-row input:focus { outline: none; border-color: rgba(52,152,219,0.4); }
 .list-header-row select { padding: 7px 8px; border-radius: 6px; background-color: #1a2d4a; border: 1px solid rgba(255,255,255,0.1); color: #e8ecf1; font-size: 12px; font-family: inherit; }
 .list-header-row select option { background-color: #1a2d4a; color: #e8ecf1; }
-.add-btn { padding: 7px 12px; border-radius: 6px; border: 1px solid rgba(52,152,219,0.3); background: rgba(52,152,219,0.15); color: #3498db; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.list-btn-row { display: flex; gap: 6px; margin-top: 8px; }
+.add-btn { padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(52,152,219,0.3); background: rgba(52,152,219,0.15); color: #3498db; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
 .add-btn:hover { background: rgba(52,152,219,0.25); }
 
 .list-actions-row { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
@@ -189,6 +190,8 @@ body {
         <option value="vendor">Vendors</option>
         <option value="other">Other</option>
       </select>
+    </div>
+    <div class="list-btn-row">
       <button class="add-btn" onclick="addNew()">+ New</button>
       <button class="add-btn" onclick="document.getElementById('importFile').click()" style="border-color:rgba(39,174,96,0.3); background:rgba(39,174,96,0.1); color:#27ae60;">↑ Import</button>
       <input type="file" id="importFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleImport(this)">
