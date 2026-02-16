@@ -7,6 +7,7 @@
 <script src="auth.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -500,58 +501,58 @@ body {
   <nav class="sidebar-nav">
     <div class="nav-section-label">Overview</div>
     <div class="nav-item active" onclick="switchView('dashboard', this)">
-      <span class="nav-icon">ðŸ“Š</span> Dashboard
+      <span class="nav-icon"><i class="fas fa-chart-line"></i></span> Dashboard
     </div>
 
     <div class="nav-section-label">Manage</div>
     <div class="nav-item" onclick="switchView('pipeline', this)">
-      <span class="nav-icon">ðŸ”„</span> Pipeline
+      <span class="nav-icon"><i class="fas fa-funnel-dollar"></i></span> Pipeline
       <span class="nav-badge green" id="navPipelineCount">0</span>
     </div>
     <div class="nav-item" onclick="switchView('crm', this)">
-      <span class="nav-icon">ðŸ—‚ï¸</span> Client Database
+      <span class="nav-icon"><i class="fas fa-address-book"></i></span> Client Database
       <span class="nav-badge" id="navCrmCount">0</span>
     </div>
     <div class="nav-item" onclick="switchView('orders', this)">
-      <span class="nav-icon">ðŸ“‹</span> Order Queue
+      <span class="nav-icon"><i class="fas fa-clipboard-list"></i></span> Order Queue
       <span class="nav-badge orange" id="navOrderCount">0</span>
     </div>
     <div class="nav-item" onclick="switchView('webinars', this)">
-      <span class="nav-icon">ðŸŽ¥</span> Webinars
+      <span class="nav-icon"><i class="fas fa-video"></i></span> Webinars
     </div>
 
     <div class="nav-section-label">Tools</div>
     <div class="nav-item" onclick="switchView('portal', this)">
-      <span class="nav-icon">ðŸ¤</span> Partner Portal
+      <span class="nav-icon"><i class="fas fa-handshake"></i></span> Partner Portal
     </div>
     <div class="nav-item" onclick="switchView('reports', this)">
-      <span class="nav-icon">ðŸ“„</span> Report Generator
+      <span class="nav-icon"><i class="fas fa-file-alt"></i></span> Report Generator
     </div>
     <div class="nav-item" onclick="switchView('flyers', this)">
-      <span class="nav-icon">ðŸŽ¨</span> Flyer Studio
+      <span class="nav-icon"><i class="fas fa-palette"></i></span> Flyer Studio
     </div>
     <div class="nav-item" onclick="switchView('email', this)">
-      <span class="nav-icon">âœ‰ï¸</span> Email Center
+      <span class="nav-icon"><i class="fas fa-envelope"></i></span> Email Center
     </div>
     <div class="nav-item" onclick="switchView('prospecting', this)">
-      <span class="nav-icon">ðŸ”</span> Prospecting
+      <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
       <span class="nav-badge purple">PRO</span>
     </div>
 
     <div class="nav-section-label">Insights</div>
     <div class="nav-item" onclick="switchView('analytics', this)">
-      <span class="nav-icon">ðŸ“ˆ</span> Analytics
+      <span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Analytics
     </div>
     <div class="nav-item" onclick="switchView('briefings', this)">
-      <span class="nav-icon">â˜€ï¸</span> Daily Briefings
+      <span class="nav-icon"><i class="fas fa-sun"></i></span> Daily Briefings
     </div>
 
     <div class="nav-section-label">Admin</div>
     <div class="nav-item" onclick="switchView('users', this)">
-      <span class="nav-icon">ðŸ‘¥</span> User Management
+      <span class="nav-icon"><i class="fas fa-users"></i></span> User Management
     </div>
     <div class="nav-item" onclick="switchView('settings', this)">
-      <span class="nav-icon">âš™ï¸</span> Settings
+      <span class="nav-icon"><i class="fas fa-cog"></i></span> Settings
     </div>
   </nav>
 
@@ -859,220 +860,21 @@ body {
 <div class="view-panel" id="view-reports">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
-      <div><div class="topbar-title">Report Generator</div><div class="topbar-subtitle" id="reportGenSubtitle">Select a report template</div></div>
+      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <div><div class="topbar-title">Report Generator</div><div class="topbar-subtitle">Generate branded market reports</div></div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" id="rptBackToMenu" style="display:none;" onclick="rptShowMenu()">← Back to Templates</button>
-      <button class="topbar-btn" id="rptEditBtn" style="display:none;" onclick="rptEditForm()">← Edit</button>
-      <button class="topbar-btn primary" id="rptPrintBtn" style="display:none;" onclick="window.print()">📄 Export PDF</button>
+      <button class="topbar-btn primary">+ New Report</button>
     </div>
   </div>
-  <div class="content-area" id="reportContentArea">
-
-    <!-- TEMPLATE MENU -->
-    <div id="rptMenu">
-      <div class="dash-stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 20px;">
-        <div class="stat-card blue" style="cursor:pointer;" onclick="rptSelectTemplate('amortization')">
-          <div class="stat-label">Ready</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Amortization</div>
-          <div class="stat-change">Mortgage payoff schedule with optional acceleration</div>
-        </div>
-        <div class="stat-card" style="opacity:0.4;cursor:not-allowed;">
-          <div class="stat-label">Coming Soon</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Bid Over Ask</div>
-          <div style="font-size:10px;color:var(--text-muted);">Offer vs list price analysis</div>
-        </div>
-        <div class="stat-card" style="opacity:0.4;cursor:not-allowed;">
-          <div class="stat-label">Coming Soon</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Buy vs Rent</div>
-          <div style="font-size:10px;color:var(--text-muted);">Ownership vs renting comparison</div>
-        </div>
-        <div class="stat-card" style="opacity:0.4;cursor:not-allowed;">
-          <div class="stat-label">Coming Soon</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Cost of Waiting</div>
-          <div style="font-size:10px;color:var(--text-muted);">Impact of delaying a purchase</div>
-        </div>
-        <div class="stat-card" style="opacity:0.4;cursor:not-allowed;">
-          <div class="stat-label">Coming Soon</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Report Card</div>
-          <div style="font-size:10px;color:var(--text-muted);">Real estate market scorecard</div>
-        </div>
-        <div class="stat-card" style="opacity:0.4;cursor:not-allowed;">
-          <div class="stat-label">Coming Soon</div>
-          <div style="font-size:18px;font-weight:700;margin:6px 0 4px;">Appreciation</div>
-          <div style="font-size:10px;color:var(--text-muted);">Home value growth analysis</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- AMORTIZATION GENERATOR (hidden until selected) -->
-    <div id="rptAmortPanel" style="display:none;">
-
-      <!-- INPUT FORM -->
-      <div id="rptAmortForm" style="max-width:560px;margin:0 auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px;">
-        <div style="font-size:16px;font-weight:700;margin-bottom:4px;">Mortgage Amortization Report</div>
-        <div style="font-size:11px;color:var(--text-muted);margin-bottom:20px;">Generate a branded amortization schedule with payoff comparison</div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div style="grid-column:1/-1;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding-top:4px;">Client Info</div>
-          <div style="grid-column:1/-1;display:flex;flex-direction:column;gap:3px;">
-            <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Client Name</label>
-            <input type="text" id="rpt_clientName" placeholder="Susie Homebuyer" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-          </div>
-
-          <div style="grid-column:1/-1;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">Loan Details</div>
-          <div style="display:flex;flex-direction:column;gap:3px;">
-            <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</label>
-            <input type="text" id="rpt_loanAmount" placeholder="400,000" oninput="rptFormatCurrency(this)" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:3px;">
-            <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Term (Years)</label>
-            <select id="rpt_term" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-              <option value="30" style="background:#0f2035;">30 years</option>
-              <option value="25" style="background:#0f2035;">25 years</option>
-              <option value="20" style="background:#0f2035;">20 years</option>
-              <option value="15" style="background:#0f2035;">15 years</option>
-              <option value="10" style="background:#0f2035;">10 years</option>
-            </select>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:3px;">
-            <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Annual Interest Rate (%)</label>
-            <input type="text" id="rpt_rate" placeholder="6.0" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-          </div>
-          <div style="display:flex;flex-direction:column;gap:3px;">
-            <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">APR (%)</label>
-            <input type="text" id="rpt_apr" placeholder="6.5" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-          </div>
-
-          <div style="grid-column:1/-1;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">Accelerated Payoff (Optional)</div>
-          <div style="grid-column:1/-1;font-size:9px;color:rgba(255,255,255,0.2);margin-top:-4px;">Leave blank or $0 for standard amortization only</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;grid-column:1/-1;">
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Extra Monthly ($)</label>
-              <input type="text" id="rpt_extraMonthly" placeholder="0" oninput="rptFormatCurrency(this)" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-            </div>
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Extra Annual ($)</label>
-              <input type="text" id="rpt_extraAnnual" placeholder="0" oninput="rptFormatCurrency(this)" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-            </div>
-            <div style="display:flex;flex-direction:column;gap:3px;">
-              <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;">Payment Frequency</label>
-              <select id="rpt_frequency" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-                <option value="monthly" style="background:#0f2035;">Monthly</option>
-                <option value="biweekly" style="background:#0f2035;">Bi-Weekly</option>
-              </select>
-            </div>
-          </div>
-
-          <div style="grid-column:1/-1;font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">Co-Branding (Optional)</div>
-          <div style="display:flex;align-items:center;gap:8px;grid-column:1/-1;">
-            <input type="checkbox" id="rpt_cta" checked style="width:16px;height:16px;accent-color:var(--accent-blue);">
-            <label for="rpt_cta" style="font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;">Include "ask about accelerated payoff" call-to-action</label>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px;grid-column:1/-1;">
-            <input type="checkbox" id="rpt_cobrand" onchange="rptToggleCobrand()" style="width:16px;height:16px;accent-color:var(--accent-blue);">
-            <label for="rpt_cobrand" style="font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;">Include realtor co-branding</label>
-          </div>
-
-          <div id="rptCobrandFields" style="display:none;grid-column:1/-1;">
-            <div style="display:flex;gap:10px;margin-bottom:14px;">
-              <div id="rptLayoutLeft" onclick="rptPickLayout('left')" style="flex:1;border-radius:10px;border:2px solid var(--accent-blue);background:rgba(59,130,246,0.08);padding:12px;cursor:pointer;text-align:center;">
-                <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);margin-bottom:4px;">Realtor Left</div>
-              </div>
-              <div id="rptLayoutRight" onclick="rptPickLayout('right')" style="flex:1;border-radius:10px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);padding:12px;cursor:pointer;text-align:center;">
-                <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);">Kristy Left</div>
-              </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;">Realtor Name</label>
-                <input type="text" id="rpt_realtorName" placeholder="Jane Agent" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-              </div>
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;">Brokerage</label>
-                <input type="text" id="rpt_realtorBrokerage" placeholder="Keller Williams" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-              </div>
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;">Realtor Phone</label>
-                <input type="text" id="rpt_realtorPhone" placeholder="(555) 123-4567" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-              </div>
-              <div style="display:flex;flex-direction:column;gap:3px;">
-                <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;">Realtor Email</label>
-                <input type="text" id="rpt_realtorEmail" placeholder="jane@kw.com" style="padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;">
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:18px;">
-          <button style="width:100%;padding:10px 20px;border-radius:8px;border:none;background:var(--accent-blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" onclick="rptGenerateAmort()">Generate Report</button>
-        </div>
-      </div>
-
-      <!-- REPORT OUTPUT -->
-      <div id="rptAmortOutput" style="display:none;max-width:850px;margin:0 auto;">
-        <div style="background:#fff;color:#0f1923;overflow:hidden;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,0.3);">
-          <div style="background:#0a1628;padding:18px 50px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:10px;">
-              <div style="width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;">AE</div>
-              <div style="font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:#fff;">Agent Edge</div>
-            </div>
-            <div style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:2px;">Amortization Schedule</div>
-          </div>
-          <div style="padding:36px 50px 28px;border-bottom:1px solid #e2e8f0;">
-            <div id="rptHeroGreeting" style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0a1628;line-height:1.3;margin-bottom:4px;">Your Mortgage Amortization</div>
-            <div id="rptHeroSub" style="font-size:12px;color:#64748b;"></div>
-          </div>
-          <div id="rptMetrics" style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #e2e8f0;"></div>
-          <div id="rptDetailRow" style="display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e2e8f0;background:#fafaf8;"></div>
-          <div id="rptSavingsSection" style="display:none;"></div>
-          <div id="rptCtaSection" style="display:none;"></div>
-          <div style="padding:28px 50px;border-bottom:1px solid #e2e8f0;">
-            <div id="rptChartTitle" style="font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:#0a1628;margin-bottom:16px;">How Your Balance Changes Over Time</div>
-            <div style="display:flex;align-items:flex-start;gap:30px;">
-              <canvas id="rptAmortChart" width="460" height="200" style="width:460px;height:200px;"></canvas>
-              <div>
-                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">After Year 1</div>
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;"><div style="width:18px;height:3px;border-radius:2px;margin-top:7px;flex-shrink:0;background:#3b82f6;"></div><div><div style="font-size:10px;color:#64748b;">Remaining Balance</div><div id="rptLgBalance" style="font-size:14px;font-weight:700;color:#0f1923;">$0</div></div></div>
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;"><div style="width:18px;height:3px;border-radius:2px;margin-top:7px;flex-shrink:0;background:#34d399;"></div><div><div style="font-size:10px;color:#64748b;">Principal Paid</div><div id="rptLgPrincipal" style="font-size:14px;font-weight:700;color:#0f1923;">$0</div></div></div>
-                <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px;"><div style="width:18px;height:3px;border-radius:2px;margin-top:7px;flex-shrink:0;background:#f87171;"></div><div><div style="font-size:10px;color:#64748b;">Interest Paid</div><div id="rptLgInterest" style="font-size:14px;font-weight:700;color:#0f1923;">$0</div></div></div>
-                <div id="rptLgAccelItem" style="display:none;"><div style="display:flex;align-items:flex-start;gap:10px;"><div style="width:18px;height:3px;border-radius:2px;margin-top:7px;flex-shrink:0;border-top:2px dashed #059669;"></div><div><div style="font-size:10px;color:#64748b;">Accelerated Balance</div><div id="rptLgAccelBal" style="font-size:14px;font-weight:700;color:#059669;">$0</div></div></div></div>
-              </div>
-            </div>
-          </div>
-          <div style="padding:24px 50px 32px;border-bottom:1px solid #e2e8f0;">
-            <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:#0a1628;margin-bottom:12px;">Year-by-Year Breakdown</div>
-            <div id="rptTableTabs" style="display:none;margin-bottom:12px;"></div>
-            <table style="width:100%;border-collapse:collapse;">
-              <thead id="rptTableHead" style="font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;"></thead>
-              <tbody id="rptTableBody"></tbody>
-            </table>
-          </div>
-          <div style="background:#0a1628;padding:24px 50px;display:flex;align-items:center;justify-content:space-between;">
-            <div style="display:flex;align-items:center;gap:14px;">
-              <div id="rptFooterLeftImg" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.08);border:2px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px;">KF</div>
-              <div>
-                <div id="rptFooterLeftName" style="font-family:'Playfair Display',serif;font-size:13px;font-weight:600;color:#fff;">Kristy Flach</div>
-                <div id="rptFooterLeftDetail" style="font-size:9px;color:rgba(255,255,255,0.4);line-height:1.6;">NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net</div>
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div id="rptFooterRightName" style="font-family:'Playfair Display',serif;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);">Paramount Residential Mortgage Group</div>
-              <div id="rptFooterRightDetail" style="font-size:8px;color:rgba(255,255,255,0.25);">NMLS# 75243 · Equal Housing Lender</div>
-            </div>
-          </div>
-          <div id="rptCobrandBar" style="display:none;padding:14px 50px;background:#0f2035;border-top:1px solid rgba(255,255,255,0.06);"></div>
-          <div style="padding:12px 50px 16px;background:#060d18;font-size:6.5px;color:rgba(255,255,255,0.18);line-height:1.7;">
-            Prepared <span id="rptPrepDate"></span>. © Paramount Residential Mortgage Group, Inc. NMLS ID #75243. All Rights Reserved. Loan scenarios are for informational purposes only. Not a commitment to lend. Monthly P&amp;I based on fully amortizing fixed interest loan. Taxes, insurance, HOA not included.
-            <div style="display:flex;gap:14px;margin-top:6px;font-size:7px;font-weight:600;color:rgba(255,255,255,0.12);"><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span></div>
-          </div>
-        </div>
-      </div>
+  <div class="content-area">
+    <div class="placeholder-center">
+      <div class="placeholder-icon">ðŸ“„</div>
+      <div class="placeholder-text">Generate branded market reports for your clients and partners</div>
+      <div class="placeholder-sub">Select a template, customize data, and export as PDF</div>
     </div>
   </div>
 </div>
-
 
 <!-- ========================================== -->
 <!-- FLYER STUDIO VIEW -->
@@ -2216,263 +2018,6 @@ function runProspectSearch() {
   if (!q) return;
   showToast('Prospecting coming soon - will search: ' + q);
 }
-
-
-// ===== REPORT GENERATOR =====
-var rptCobrandLayout = 'left';
-var rptStdData = null, rptAccData = null, rptHasAccel = false;
-
-function rptSelectTemplate(type) {
-  if (type === 'amortization') {
-    document.getElementById('rptMenu').style.display = 'none';
-    document.getElementById('rptAmortPanel').style.display = 'block';
-    document.getElementById('rptAmortForm').style.display = 'block';
-    document.getElementById('rptAmortOutput').style.display = 'none';
-    document.getElementById('rptBackToMenu').style.display = 'inline-block';
-    document.getElementById('reportGenSubtitle').textContent = 'Amortization Report';
-  }
-}
-
-function rptShowMenu() {
-  document.getElementById('rptMenu').style.display = 'block';
-  document.getElementById('rptAmortPanel').style.display = 'none';
-  document.getElementById('rptBackToMenu').style.display = 'none';
-  document.getElementById('rptEditBtn').style.display = 'none';
-  document.getElementById('rptPrintBtn').style.display = 'none';
-  document.getElementById('reportGenSubtitle').textContent = 'Select a report template';
-}
-
-function rptEditForm() {
-  document.getElementById('rptAmortForm').style.display = 'block';
-  document.getElementById('rptAmortOutput').style.display = 'none';
-  document.getElementById('rptEditBtn').style.display = 'none';
-  document.getElementById('rptPrintBtn').style.display = 'none';
-}
-
-function rptFormatCurrency(el) {
-  var val = el.value.replace(/[^0-9]/g, '');
-  if (val) el.value = parseInt(val).toLocaleString();
-}
-function rptParseCurrency(str) { return parseFloat((str || '0').replace(/[^0-9.]/g, '')) || 0; }
-function rptFmtMoney(n) { return '$' + Math.round(n).toLocaleString(); }
-
-function rptToggleCobrand() {
-  document.getElementById('rptCobrandFields').style.display = document.getElementById('rpt_cobrand').checked ? 'block' : 'none';
-}
-
-function rptPickLayout(side) {
-  rptCobrandLayout = side;
-  var l = document.getElementById('rptLayoutLeft');
-  var r = document.getElementById('rptLayoutRight');
-  if (side === 'left') {
-    l.style.borderColor = 'var(--accent-blue)'; l.style.background = 'rgba(59,130,246,0.08)';
-    r.style.borderColor = 'rgba(255,255,255,0.1)'; r.style.background = 'rgba(255,255,255,0.02)';
-  } else {
-    r.style.borderColor = 'var(--accent-blue)'; r.style.background = 'rgba(59,130,246,0.08)';
-    l.style.borderColor = 'rgba(255,255,255,0.1)'; l.style.background = 'rgba(255,255,255,0.02)';
-  }
-}
-
-function rptCalcAmort(principal, annualRate, termYears) {
-  var mr = annualRate / 100 / 12, n = termYears * 12;
-  var mp = mr === 0 ? principal / n : principal * (mr * Math.pow(1 + mr, n)) / (Math.pow(1 + mr, n) - 1);
-  var schedule = [], yearlyData = [], bal = principal, tInt = 0, tPrin = 0;
-  var yPaid = 0, yInt = 0, yPrin = 0;
-  for (var i = 1; i <= n; i++) {
-    var ip = bal * mr, pp = mp - ip;
-    bal -= pp; if (bal < 0) bal = 0;
-    tInt += ip; tPrin += pp; yPaid += mp; yInt += ip; yPrin += pp;
-    schedule.push({ month: i, balance: bal, totalPrincipal: tPrin, totalInterest: tInt });
-    if (i % 12 === 0 || i === n) {
-      yearlyData.push({ year: Math.ceil(i / 12), paid: yPaid, interest: yInt, principal: yPrin, balance: bal });
-      yPaid = 0; yInt = 0; yPrin = 0;
-    }
-  }
-  return { monthlyPayment: mp, totalPaid: mp * n, totalInterest: tInt, schedule: schedule, yearlyData: yearlyData, months: n };
-}
-
-function rptCalcAccelerated(principal, annualRate, termYears, extraMonthly, extraAnnual, biweekly) {
-  var mr = annualRate / 100 / 12, n = termYears * 12;
-  var mp = mr === 0 ? principal / n : principal * (mr * Math.pow(1 + mr, n)) / (Math.pow(1 + mr, n) - 1);
-  var schedule = [], yearlyData = [], bal = principal, tInt = 0, tPrin = 0, tPaid = 0;
-  var yPaid = 0, yInt = 0, yPrin = 0;
-  var effectiveExtra = extraMonthly;
-  if (biweekly) effectiveExtra += mp / 12;
-  var month = 0;
-  while (bal > 0.01 && month < n + 120) {
-    month++;
-    var ip = bal * mr;
-    var totalPayment = mp + effectiveExtra;
-    if (extraAnnual > 0 && month % 12 === 0) totalPayment += extraAnnual;
-    if (totalPayment > bal + ip) totalPayment = bal + ip;
-    var pp = totalPayment - ip;
-    bal -= pp; if (bal < 0.01) bal = 0;
-    tInt += ip; tPrin += pp; tPaid += totalPayment;
-    yPaid += totalPayment; yInt += ip; yPrin += pp;
-    schedule.push({ month: month, balance: bal, totalPrincipal: tPrin, totalInterest: tInt });
-    if (month % 12 === 0 || bal === 0) {
-      yearlyData.push({ year: Math.ceil(month / 12), paid: yPaid, interest: yInt, principal: yPrin, balance: bal });
-      yPaid = 0; yInt = 0; yPrin = 0;
-      if (bal === 0) break;
-    }
-  }
-  return { monthlyPayment: mp, effectivePayment: mp + effectiveExtra, totalPaid: tPaid, totalInterest: tInt, schedule: schedule, yearlyData: yearlyData, months: month };
-}
-
-function rptGenerateAmort() {
-  var clientName = document.getElementById('rpt_clientName').value.trim() || 'Homebuyer';
-  var loanAmount = rptParseCurrency(document.getElementById('rpt_loanAmount').value);
-  var term = parseInt(document.getElementById('rpt_term').value);
-  var rate = parseFloat(document.getElementById('rpt_rate').value) || 0;
-  var apr = document.getElementById('rpt_apr').value.trim();
-  var extraMonthly = rptParseCurrency(document.getElementById('rpt_extraMonthly').value);
-  var extraAnnual = rptParseCurrency(document.getElementById('rpt_extraAnnual').value);
-  var biweekly = document.getElementById('rpt_frequency').value === 'biweekly';
-
-  if (!loanAmount || loanAmount < 1000) { showToast('Please enter a valid loan amount'); return; }
-  if (rate <= 0) { showToast('Please enter an interest rate'); return; }
-
-  rptStdData = rptCalcAmort(loanAmount, rate, term);
-  rptHasAccel = extraMonthly > 0 || extraAnnual > 0 || biweekly;
-  if (rptHasAccel) rptAccData = rptCalcAccelerated(loanAmount, rate, term, extraMonthly, extraAnnual, biweekly);
-  else rptAccData = null;
-
-  var n = term * 12;
-  document.getElementById('rptHeroSub').textContent = 'Prepared for ' + clientName + ' \u00b7 ' + term + '-Year Fixed';
-
-  // Metrics
-  var mCell = function(label, value, small) {
-    return '<div style="padding:18px 20px;border-right:1px solid #e2e8f0;text-align:center;"><div style="font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">' + label + '</div><div style="font-family:Playfair Display,serif;font-size:' + (small ? '16' : '20') + 'px;font-weight:700;color:#0a1628;">' + value + '</div></div>';
-  };
-  document.getElementById('rptMetrics').innerHTML = mCell('Loan Amount', rptFmtMoney(loanAmount)) + mCell('Monthly P&I', rptFmtMoney(rptStdData.monthlyPayment)) + mCell('Interest Rate', rate.toFixed(2) + '%', true) + mCell('APR', (apr || rate) + '%', true).replace('border-right:1px solid #e2e8f0;', '');
-
-  // Detail row
-  var dCell = function(label, value) {
-    return '<div style="padding:12px 20px;border-right:1px solid #e2e8f0;text-align:center;"><div style="font-size:8px;font-weight:600;color:#94a3b8;text-transform:uppercase;margin-bottom:2px;">' + label + '</div><div style="font-size:14px;font-weight:700;color:#0f1923;">' + value + '</div></div>';
-  };
-  document.getElementById('rptDetailRow').innerHTML = dCell('Payments', n) + dCell('Total Paid', rptFmtMoney(rptStdData.totalPaid)) + dCell('Total Interest', rptFmtMoney(rptStdData.totalInterest)).replace('border-right:1px solid #e2e8f0;', '');
-
-  // Date
-  var now = new Date();
-  var mos = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('rptPrepDate').textContent = mos[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
-
-  // Legend
-  var p12 = rptStdData.schedule[Math.min(11, rptStdData.schedule.length - 1)];
-  document.getElementById('rptLgBalance').textContent = rptFmtMoney(p12.balance);
-  document.getElementById('rptLgPrincipal').textContent = rptFmtMoney(p12.totalPrincipal);
-  document.getElementById('rptLgInterest').textContent = rptFmtMoney(p12.totalInterest);
-
-  // Savings
-  if (rptHasAccel) {
-    var savedInt = rptStdData.totalInterest - rptAccData.totalInterest;
-    var savedMonths = rptStdData.months - rptAccData.months;
-    var savedYrs = Math.floor(savedMonths / 12), savedMo = savedMonths % 12;
-    var accYrs = Math.floor(rptAccData.months / 12), accMo = rptAccData.months % 12;
-    var desc = 'Pay off your mortgage ';
-    if (savedYrs > 0) desc += savedYrs + ' year' + (savedYrs > 1 ? 's' : '');
-    if (savedYrs > 0 && savedMo > 0) desc += ' and ';
-    if (savedMo > 0) desc += savedMo + ' month' + (savedMo > 1 ? 's' : '');
-    desc += ' early';
-
-    document.getElementById('rptSavingsSection').style.display = 'block';
-    document.getElementById('rptSavingsSection').innerHTML = '<div style="padding:28px 50px;border-bottom:1px solid #e2e8f0;background:linear-gradient(135deg,#f0fdf4,#ecfdf5,#f0fdfa);"><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:600;color:#059669;margin-bottom:16px;">Your Accelerated Payoff Advantage</div><div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;"><div style="text-align:center;"><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Standard</div><div style="margin-bottom:10px;"><div style="font-size:10px;color:#64748b;">Payoff</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:700;">' + term + ' years</div></div><div><div style="font-size:10px;color:#64748b;">Total Interest</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:700;">' + rptFmtMoney(rptStdData.totalInterest) + '</div></div></div><div style="width:50px;height:50px;border-radius:50%;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin:0 16px;">VS</div><div style="text-align:center;"><div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Accelerated</div><div style="margin-bottom:10px;"><div style="font-size:10px;color:#64748b;">Payoff</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:700;color:#059669;">' + accYrs + ' yrs ' + accMo + ' mo</div></div><div><div style="font-size:10px;color:#64748b;">Total Interest</div><div style="font-family:Playfair Display,serif;font-size:18px;font-weight:700;color:#059669;">' + rptFmtMoney(rptAccData.totalInterest) + '</div></div></div></div><div style="margin-top:16px;padding:14px 20px;border-radius:10px;background:rgba(5,150,105,0.08);border:1px solid rgba(5,150,105,0.15);text-align:center;"><div style="font-family:Playfair Display,serif;font-size:28px;font-weight:700;color:#059669;">' + rptFmtMoney(savedInt) + '</div><div style="font-size:11px;color:#059669;font-weight:600;">Total Interest Saved</div><div style="font-size:11px;color:#64748b;margin-top:4px;">' + desc + '</div></div></div>';
-    document.getElementById('rptTableTabs').style.display = 'block';
-    document.getElementById('rptTableTabs').innerHTML = '<button onclick="rptShowTable(\'standard\',this)" style="padding:6px 14px;border-radius:6px;font-size:10px;font-weight:700;background:#0a1628;color:#fff;border:1px solid #0a1628;cursor:pointer;font-family:inherit;margin-right:2px;">Standard</button><button onclick="rptShowTable(\'accelerated\',this)" style="padding:6px 14px;border-radius:6px;font-size:10px;font-weight:700;background:transparent;color:#64748b;border:1px solid #e2e8f0;cursor:pointer;font-family:inherit;margin-right:2px;">Accelerated</button><button onclick="rptShowTable(\'comparison\',this)" style="padding:6px 14px;border-radius:6px;font-size:10px;font-weight:700;background:transparent;color:#64748b;border:1px solid #e2e8f0;cursor:pointer;font-family:inherit;">Side-by-Side</button>';
-    document.getElementById('rptLgAccelItem').style.display = 'block';
-    var ap12 = rptAccData.schedule[Math.min(11, rptAccData.schedule.length - 1)];
-    document.getElementById('rptLgAccelBal').textContent = rptFmtMoney(ap12.balance);
-    document.getElementById('rptChartTitle').textContent = 'Standard vs. Accelerated Payoff';
-    document.getElementById('rptCtaSection').style.display = 'none';
-  } else {
-    document.getElementById('rptSavingsSection').style.display = 'none';
-    document.getElementById('rptTableTabs').style.display = 'none';
-    document.getElementById('rptLgAccelItem').style.display = 'none';
-    document.getElementById('rptChartTitle').textContent = 'How Your Balance Changes Over Time';
-    var showCta = document.getElementById('rpt_cta').checked;
-    document.getElementById('rptCtaSection').style.display = showCta ? 'block' : 'none';
-    if (showCta) document.getElementById('rptCtaSection').innerHTML = '<div style="padding:20px 50px;border-bottom:1px solid #e2e8f0;background:#f8fafc;text-align:center;"><div style="font-family:Playfair Display,serif;font-size:15px;font-weight:600;color:#0a1628;margin-bottom:4px;">Could you pay off your mortgage faster?</div><div style="font-size:11px;color:#64748b;max-width:500px;margin:0 auto 8px;">Small extra payments can save tens of thousands in interest. Ask about a personalized accelerated payoff strategy.</div><div style="font-size:12px;font-weight:700;color:#3b82f6;">Contact Kristy Flach \u00b7 (206) 313-5883 \u00b7 kflach@prmg.net</div></div>';
-  }
-
-  // Co-brand
-  var kristy = { initials: 'KF', name: 'Kristy Flach', detail: 'NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net' };
-  var company = { name: 'Paramount Residential Mortgage Group', detail: 'NMLS# 75243 \u00b7 Equal Housing Lender' };
-  if (document.getElementById('rpt_cobrand').checked) {
-    var rName = document.getElementById('rpt_realtorName').value.trim() || 'Realtor';
-    var rBrok = document.getElementById('rpt_realtorBrokerage').value.trim();
-    var rPhone = document.getElementById('rpt_realtorPhone').value.trim();
-    var rEmail = document.getElementById('rpt_realtorEmail').value.trim();
-    var rInitials = rName.split(' ').map(function(w){return w[0];}).join('').toUpperCase().substring(0,2);
-    var rDetail = [rBrok, rPhone, rEmail].filter(Boolean).join(' \u00b7 ');
-    var realtor = { initials: rInitials, name: rName, detail: rDetail };
-    var left = rptCobrandLayout === 'left' ? realtor : kristy;
-    var right = rptCobrandLayout === 'left' ? kristy : realtor;
-    document.getElementById('rptFooterLeftImg').textContent = left.initials;
-    document.getElementById('rptFooterLeftName').textContent = left.name;
-    document.getElementById('rptFooterLeftDetail').innerHTML = left.detail;
-    document.getElementById('rptFooterRightName').textContent = right.name;
-    document.getElementById('rptFooterRightDetail').innerHTML = right.detail;
-    document.getElementById('rptCobrandBar').style.display = 'flex';
-    document.getElementById('rptCobrandBar').innerHTML = '<div><div style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:2px;">Presented by</div><div style="font-family:Playfair Display,serif;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);">Paramount Residential Mortgage Group</div><div style="font-size:8px;color:rgba(255,255,255,0.25);">NMLS# 75243 \u00b7 Equal Housing Lender</div></div>';
-  } else {
-    document.getElementById('rptFooterLeftImg').textContent = 'KF';
-    document.getElementById('rptFooterLeftName').textContent = kristy.name;
-    document.getElementById('rptFooterLeftDetail').innerHTML = kristy.detail;
-    document.getElementById('rptFooterRightName').textContent = company.name;
-    document.getElementById('rptFooterRightDetail').innerHTML = company.detail;
-    document.getElementById('rptCobrandBar').style.display = 'none';
-  }
-
-  rptShowTable('standard', null);
-  rptDrawChart(rptStdData.schedule, rptAccData ? rptAccData.schedule : null, n, loanAmount);
-
-  document.getElementById('rptAmortForm').style.display = 'none';
-  document.getElementById('rptAmortOutput').style.display = 'block';
-  document.getElementById('rptEditBtn').style.display = 'inline-block';
-  document.getElementById('rptPrintBtn').style.display = 'inline-block';
-}
-
-function rptShowTable(mode, btn) {
-  if (btn) {
-    btn.parentElement.querySelectorAll('button').forEach(function(b){b.style.background='transparent';b.style.color='#64748b';b.style.borderColor='#e2e8f0';});
-    btn.style.background='#0a1628';btn.style.color='#fff';btn.style.borderColor='#0a1628';
-  }
-  var thead = document.getElementById('rptTableHead');
-  var tbody = document.getElementById('rptTableBody');
-  tbody.innerHTML = '';
-  var ts = 'padding:8px 10px;text-align:right;border-bottom:2px solid #0a1628;background:#fafaf8;font-size:8px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;';
-  var ds = 'padding:6px 10px;font-size:11px;color:#334155;border-bottom:1px solid #f1f5f9;text-align:right;font-variant-numeric:tabular-nums;';
-  if (mode === 'standard') {
-    thead.innerHTML = '<tr><th style="'+ts+'text-align:left;">Year</th><th style="'+ts+'">Paid</th><th style="'+ts+'">Interest</th><th style="'+ts+'">Principal</th><th style="'+ts+'">Balance</th></tr>';
-    rptStdData.yearlyData.forEach(function(yr){tbody.innerHTML += '<tr><td style="'+ds+'text-align:left;font-weight:600;color:#0a1628;">'+yr.year+'</td><td style="'+ds+'">'+rptFmtMoney(yr.paid)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.interest)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.principal)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.balance)+'</td></tr>';});
-  } else if (mode === 'accelerated' && rptAccData) {
-    thead.innerHTML = '<tr><th style="'+ts+'text-align:left;">Year</th><th style="'+ts+'">Paid</th><th style="'+ts+'">Interest</th><th style="'+ts+'">Principal</th><th style="'+ts+'">Balance</th></tr>';
-    rptAccData.yearlyData.forEach(function(yr){tbody.innerHTML += '<tr><td style="'+ds+'text-align:left;font-weight:600;color:#0a1628;">'+yr.year+'</td><td style="'+ds+'">'+rptFmtMoney(yr.paid)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.interest)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.principal)+'</td><td style="'+ds+'">'+rptFmtMoney(yr.balance)+'</td></tr>';});
-  } else if (mode === 'comparison' && rptAccData) {
-    thead.innerHTML = '<tr><th style="'+ts+'text-align:left;">Year</th><th style="'+ts+'">Std Balance</th><th style="'+ts+'">Accel Balance</th><th style="'+ts+'">Difference</th></tr>';
-    for (var i=0;i<rptStdData.yearlyData.length;i++){var sy=rptStdData.yearlyData[i];var ay=rptAccData.yearlyData[i];var aB=ay?ay.balance:0;var diff=sy.balance-aB;tbody.innerHTML+='<tr><td style="'+ds+'text-align:left;font-weight:600;color:#0a1628;">'+sy.year+'</td><td style="'+ds+'">'+rptFmtMoney(sy.balance)+'</td><td style="'+ds+'">'+(ay?rptFmtMoney(aB):'Paid Off')+'</td><td style="'+ds+'color:#059669;font-weight:600;">'+(diff>0?'-'+rptFmtMoney(diff):'$0')+'</td></tr>';}
-  }
-}
-
-function rptDrawChart(stdSchedule, accSchedule, numPayments, loanAmount) {
-  var canvas = document.getElementById('rptAmortChart');
-  var ctx = canvas.getContext('2d');
-  canvas.width = 460; canvas.height = 200;
-  var W=460,H=200,pad={top:14,right:14,bottom:28,left:50};
-  var cw=W-pad.left-pad.right,ch=H-pad.top-pad.bottom;
-  ctx.clearRect(0,0,W,H);
-  ctx.strokeStyle='#eef2f6';ctx.lineWidth=1;
-  for(var i=0;i<=4;i++){var y=pad.top+(ch/4)*i;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(W-pad.right,y);ctx.stroke();ctx.fillStyle='#94a3b8';ctx.font='8px DM Sans';ctx.textAlign='right';ctx.fillText('$'+Math.round(loanAmount*(1-i/4)/1000)+'K',pad.left-6,y+3);}
-  ctx.textAlign='center';var termYrs=numPayments/12;
-  for(var x=0;x<=5;x++){ctx.fillText('Yr '+Math.round((termYrs/5)*x),pad.left+(cw/5)*x,H-6);}
-  var step=Math.max(1,Math.floor(numPayments/120));
-  var stdPts=[];for(var i=0;i<stdSchedule.length;i+=step){var s=stdSchedule[i];stdPts.push({x:pad.left+(s.month/numPayments)*cw,y:pad.top+(1-s.balance/loanAmount)*ch});}
-  function drawLine(pts,color,width,dashed){if(pts.length<2)return;ctx.beginPath();ctx.setLineDash(dashed||[]);ctx.moveTo(pts[0].x,pts[0].y);for(var i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke();ctx.setLineDash([]);}
-  function drawArea(pts,color,alpha){if(pts.length<2)return;ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(var i=1;i<pts.length;i++)ctx.lineTo(pts[i].x,pts[i].y);ctx.lineTo(pts[pts.length-1].x,pad.top+ch);ctx.lineTo(pts[0].x,pad.top+ch);ctx.closePath();ctx.fillStyle=color;ctx.globalAlpha=alpha;ctx.fill();ctx.globalAlpha=1;}
-  drawArea(stdPts,'#3b82f6',0.07);drawLine(stdPts,'#3b82f6',2.5);
-  if(accSchedule){var accPts=[];for(var i=0;i<accSchedule.length;i+=step){var s=accSchedule[i];accPts.push({x:pad.left+(s.month/numPayments)*cw,y:pad.top+(1-s.balance/loanAmount)*ch});}if(accSchedule.length>0){var last=accSchedule[accSchedule.length-1];accPts.push({x:pad.left+(last.month/numPayments)*cw,y:pad.top+ch});}drawLine(accPts,'#059669',2.5,[6,3]);if(accPts.length>0){var lp=accPts[accPts.length-1];ctx.fillStyle='#059669';ctx.font='bold 8px DM Sans';ctx.textAlign='left';ctx.fillText('Paid off!',lp.x+4,lp.y-4);}}
-}
-
 
 // ===== INIT =====
 updateDashboard();
