@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Pulse · Agent Edge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --navy:#0a1628; --blue:#3b82f6; --green:#34d399; --red:#f87171; }
+body { font-family:'DM Sans',system-ui,sans-serif; background:var(--navy); color:#eaf0f6; min-height:100vh; overflow-x:hidden; }
+
+.mp-wrap { max-width:880px; margin:0 auto; padding:20px; }
+
+/* Header */
+.mp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
+.mp-brand { display:flex; align-items:center; gap:10px; }
+.mp-icon { width:28px; height:28px; border-radius:7px; background:linear-gradient(135deg,var(--blue),#6366f1); display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; }
+.mp-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; }
+.mp-sub { font-size:9px; color:rgba(255,255,255,0.3); }
+
+/* Pills */
+.mp-pills { display:flex; gap:3px; }
+.mp-pill {
+  padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700;
+  background:transparent; border:1px solid rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.3); cursor:pointer; font-family:inherit; transition:0.15s;
+}
+.mp-pill:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.15); }
+.mp-pill.active { background:rgba(59,130,246,0.12); border-color:rgba(59,130,246,0.25); color:var(--blue); }
+
+/* National */
+.mp-national {
+  text-align:center; padding:18px; margin-bottom:18px;
+  background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px;
+}
+.mp-nat-label { font-size:9px; font-weight:700; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:1.5px; }
+.mp-nat-value { font-family:'Playfair Display',serif; font-size:38px; font-weight:700; margin:4px 0 2px; }
+.mp-nat-sub { font-size:9px; color:rgba(255,255,255,0.2); }
+
+/* Legend */
+.mp-legend { display:flex; gap:14px; justify-content:center; margin-bottom:14px; font-size:9px; color:rgba(255,255,255,0.3); }
+.mp-ldot { width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:3px; vertical-align:middle; }
+
+/* Map */
+.mp-map-wrap { position:relative; margin-bottom:14px; }
+.mp-map-wrap svg { width:100%; height:auto; }
+.mp-map-wrap svg path.state {
+  stroke:rgba(255,255,255,0.15); stroke-width:1; cursor:pointer; transition:0.15s;
+}
+.mp-map-wrap svg path.state:hover {
+  stroke:#fff; stroke-width:2; filter:brightness(1.3);
+}
+/* State labels on map */
+.mp-map-wrap svg text.st-label {
+  font-family:'DM Sans',sans-serif; font-size:9px; font-weight:700; fill:rgba(255,255,255,0.85);
+  pointer-events:none; text-anchor:middle; dominant-baseline:central;
+}
+.mp-map-wrap svg text.st-val {
+  font-family:'DM Sans',sans-serif; font-size:7px; font-weight:600; fill:rgba(255,255,255,0.6);
+  pointer-events:none; text-anchor:middle; dominant-baseline:central;
+}
+/* NE state callouts */
+.ne-callouts { position:absolute; right:0; top:80px; width:80px; }
+.ne-row { display:flex; align-items:center; gap:4px; margin-bottom:5px; }
+.ne-code { font-size:8px; font-weight:700; color:rgba(255,255,255,0.5); width:18px; text-align:right; }
+.ne-badge { padding:2px 6px; border-radius:4px; font-size:8px; font-weight:700; }
+
+/* Tooltip */
+.mp-tip {
+  display:none; position:fixed; z-index:100;
+  background:#0f2035; border:1px solid rgba(255,255,255,0.12);
+  border-radius:8px; padding:10px 14px; pointer-events:none;
+  box-shadow:0 8px 30px rgba(0,0,0,0.5); min-width:120px;
+}
+.mp-tip.show { display:block; }
+.mp-tip-name { font-size:12px; font-weight:700; margin-bottom:2px; }
+.mp-tip-val { font-size:20px; font-weight:700; }
+.mp-tip-vs { font-size:9px; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+/* Detail */
+.mp-detail {
+  display:none; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px; margin-bottom:16px;
+}
+.mp-detail.show { display:block; }
+.mp-detail-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.mp-detail-name { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; }
+.mp-detail-x { background:none; border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.35); padding:3px 10px; border-radius:6px; cursor:pointer; font-family:inherit; font-size:10px; }
+.mp-detail-x:hover { color:#fff; border-color:rgba(255,255,255,0.25); }
+.mp-detail-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.mp-stat { text-align:center; padding:12px 8px; background:rgba(255,255,255,0.02); border-radius:8px; }
+.mp-stat-label { font-size:8px; font-weight:700; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:0.5px; }
+.mp-stat-value { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-top:4px; }
+
+/* Source */
+.mp-source { font-size:7px; color:rgba(255,255,255,0.12); text-align:center; margin-top:8px; }
+
+/* Loading */
+.mp-load { text-align:center; padding:40px; color:rgba(255,255,255,0.25); }
+
+/* Compare button */
+.mp-compare-btn, .mp-download-btn {
+  padding:5px 14px; border-radius:20px; font-size:10px; font-weight:700;
+  background:transparent; border:1px solid rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.3); cursor:pointer; font-family:inherit; transition:0.15s;
+  white-space:nowrap;
+}
+.mp-compare-btn:hover, .mp-download-btn:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.15); }
+.mp-compare-btn.active { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.3); color:#c9a84c; }
+
+/* Compare mode banner */
+.mp-compare-banner {
+  display:none; text-align:center; padding:10px 16px; margin-bottom:14px;
+  background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.15);
+  border-radius:8px; font-size:11px; color:#c9a84c;
+}
+.mp-compare-banner.show { display:block; }
+.mp-compare-chips { display:flex; gap:6px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+.mp-compare-chip {
+  padding:3px 10px; border-radius:12px; font-size:10px; font-weight:700;
+  background:rgba(201,168,76,0.15); color:#c9a84c; display:flex; align-items:center; gap:4px;
+}
+.mp-compare-chip-x { cursor:pointer; opacity:0.6; font-size:12px; }
+.mp-compare-chip-x:hover { opacity:1; }
+.mp-compare-go {
+  margin-top:8px; padding:5px 16px; border-radius:6px; font-size:10px; font-weight:700;
+  background:#c9a84c; color:var(--navy); border:none; cursor:pointer; font-family:inherit;
+}
+.mp-compare-go:hover { background:#dfc06a; }
+
+/* Compare panel */
+.mp-compare-panel {
+  display:none; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
+  border-radius:12px; padding:20px; margin-bottom:16px;
+}
+.mp-compare-panel.show { display:block; }
+.mp-compare-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.mp-compare-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; }
+.mp-compare-table { width:100%; border-collapse:collapse; }
+.mp-compare-table th {
+  padding:8px 12px; font-size:8px; font-weight:700; color:rgba(255,255,255,0.25);
+  text-transform:uppercase; letter-spacing:1px; text-align:left;
+  border-bottom:2px solid rgba(255,255,255,0.1);
+}
+.mp-compare-table th:not(:first-child) { text-align:center; }
+.mp-compare-table td { padding:10px 12px; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.04); }
+.mp-compare-table td:first-child { font-weight:700; color:rgba(255,255,255,0.7); }
+.mp-compare-table td:not(:first-child) { text-align:center; font-weight:700; }
+.mp-compare-bar-wrap { display:flex; align-items:center; gap:8px; justify-content:center; }
+.mp-compare-bar { height:8px; border-radius:4px; min-width:2px; }
+
+/* Selected state highlight */
+.mp-map-wrap svg path.state.selected { stroke:#c9a84c; stroke-width:3; filter:brightness(1.2); }
+.mp-spin { width:22px; height:22px; border:2px solid rgba(255,255,255,0.06); border-top-color:var(--blue); border-radius:50%; animation:sp .7s linear infinite; margin:0 auto 8px; }
+@keyframes sp { to{transform:rotate(360deg);} }
+
+@media print {
+  body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .mp-compare-btn, .mp-download-btn, .mp-compare-banner, .mp-detail-x, .mp-pills { display:none !important; }
+  .mp-header { justify-content:center; }
+  @page { margin:0.4in; }
+}
+</style>
+</head>
+<body>
+
+<div class="mp-wrap">
+  <div class="mp-header">
+    <div class="mp-brand">
+      <div class="mp-icon">AE</div>
+      <div>
+        <div class="mp-title">Market Pulse: Home Value Tracker</div>
+        <div class="mp-sub">FHFA All-Transactions House Price Index</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="mp-pills">
+        <button class="mp-pill active" onclick="setPeriod('quarter',this)">Quarter</button>
+        <button class="mp-pill" onclick="setPeriod('1year',this)">1 Year</button>
+        <button class="mp-pill" onclick="setPeriod('5year',this)">5 Year</button>
+        <button class="mp-pill" onclick="setPeriod('since1991',this)">Since 1991</button>
+      </div>
+      <button class="mp-compare-btn" id="compareBtn" onclick="toggleCompare()">Compare</button>
+      <button class="mp-download-btn" onclick="downloadView()">⬇ Download</button>
+    </div>
+  </div>
+
+  <div class="mp-national">
+    <div class="mp-nat-label" id="periodLabel">Quarterly Average</div>
+    <div class="mp-nat-value" id="natValue">—</div>
+    <div class="mp-nat-sub">National Average</div>
+  </div>
+
+  <div class="mp-legend">
+    <span><span class="mp-ldot" style="background:#1e3a5f;"></span>20%+ above avg</span>
+    <span><span class="mp-ldot" style="background:#2563eb;"></span>Above avg</span>
+    <span><span class="mp-ldot" style="background:#60a5fa;"></span>Near avg</span>
+    <span><span class="mp-ldot" style="background:#93c5fd;"></span>Below avg</span>
+    <span><span class="mp-ldot" style="background:#f87171;"></span>Declining</span>
+  </div>
+
+  <div class="mp-load" id="loading"><div class="mp-spin"></div>Loading data...</div>
+
+  <div id="mapSection" style="display:none;">
+    <div class="mp-compare-banner" id="compareBanner">
+      Select up to 4 states to compare (click on the map)
+      <div class="mp-compare-chips" id="compareChips"></div>
+      <button class="mp-compare-go" id="compareGo" style="display:none;" onclick="runCompare()">Compare Selected States</button>
+    </div>
+
+    <div class="mp-map-wrap" id="mapWrap"></div>
+
+    <div class="mp-compare-panel" id="comparePanel">
+      <div class="mp-compare-top">
+        <div class="mp-compare-title">State Comparison</div>
+        <button class="mp-detail-x" onclick="closeCompare()">✕ Close</button>
+      </div>
+      <table class="mp-compare-table" id="compareTable"></table>
+    </div>
+
+    <div class="mp-detail" id="detailPanel">
+      <div class="mp-detail-top">
+        <div class="mp-detail-name" id="detailName">Ohio</div>
+        <button class="mp-detail-x" onclick="document.getElementById('detailPanel').classList.remove('show')">✕ Close</button>
+      </div>
+      <div class="mp-detail-grid" id="detailGrid"></div>
+    </div>
+  </div>
+
+  <div class="mp-source">Source: Federal Housing Finance Agency (FHFA) · All-Transactions House Price Index via FRED</div>
+</div>
+
+<div class="mp-tip" id="tip">
+  <div class="mp-tip-name" id="tipName">Ohio</div>
+  <div class="mp-tip-val" id="tipVal">+0.7%</div>
+  <div class="mp-tip-vs" id="tipVs">+0.54% vs national</div>
+</div>
+
+<script>
+// ===== STATE SVG PATHS (public domain, simplified) =====
+var PATHS = {
+AL:"M628,466 L632,414 L672,417 L672,467 L668,487 L661,486 L660,493 L650,493 L628,466Z",
+AK:"M161,485 L183,485 L183,510 L195,525 L176,530 L161,520 L148,530 L132,520 L120,530 L110,515 L100,525 L85,510 L80,497 L100,485 L120,490 L140,485 L161,485Z",
+AZ:"M205,410 L270,417 L258,485 L220,485 L195,463 L195,430 L205,410Z",
+AR:"M568,420 L628,417 L628,466 L565,466 L560,430 L568,420Z",
+CA:"M120,275 L140,285 L155,315 L170,340 L195,370 L195,430 L195,463 L168,443 L142,417 L115,375 L108,340 L110,305 L120,275Z",
+CO:"M305,310 L400,315 L398,370 L300,365 L305,310Z",
+CT:"M852,210 L875,204 L880,225 L860,232 L852,210Z",
+DE:"M815,310 L828,300 L833,325 L820,330 L815,310Z",
+FL:"M672,467 L700,465 L740,475 L745,500 L738,530 L720,555 L700,565 L690,548 L680,530 L672,530 L668,515 L668,487 L672,467Z",
+GA:"M672,417 L720,420 L725,465 L700,465 L672,467Z",
+HI:"M260,525 L275,520 L280,530 L300,528 L310,540 L295,548 L275,545 L260,535 L260,525Z",
+ID:"M220,175 L265,180 L260,270 L235,275 L220,240 L220,175Z",
+IL:"M590,270 L610,270 L620,285 L625,340 L615,365 L600,375 L585,360 L578,330 L580,290 L590,270Z",
+IN:"M625,275 L655,278 L655,355 L625,355 L615,340 L625,275Z",
+IA:"M515,255 L580,258 L580,305 L518,302 L510,278 L515,255Z",
+KS:"M410,340 L505,343 L505,390 L410,387 L410,340Z",
+KY:"M625,355 L710,345 L730,365 L692,380 L625,385 L615,365 L625,355Z",
+LA:"M565,466 L618,466 L620,500 L600,520 L580,520 L560,510 L555,490 L565,466Z",
+ME:"M878,115 L900,105 L910,130 L905,165 L885,180 L870,165 L878,115Z",
+MD:"M770,305 L815,310 L820,330 L800,340 L780,335 L762,320 L770,305Z",
+MA:"M855,195 L893,188 L898,200 L880,210 L855,210 L855,195Z",
+MI:"M615,180 L640,170 L668,190 L680,220 L665,260 L640,270 L620,255 L620,220 L630,200 L615,180Z",
+MN:"M505,145 L560,148 L565,235 L515,232 L505,200 L505,145Z",
+MS:"M610,420 L632,414 L628,466 L618,466 L600,466 L595,435 L610,420Z",
+MO:"M545,330 L580,330 L585,360 L600,375 L595,410 L568,420 L545,400 L520,400 L505,390 L505,343 L545,330Z",
+MT:"M270,140 L395,148 L390,210 L268,205 L270,140Z",
+NE:"M398,280 L505,283 L505,325 L410,322 L395,310 L398,280Z",
+NV:"M170,260 L220,270 L205,375 L155,355 L155,315 L170,260Z",
+NH:"M868,140 L878,135 L885,180 L870,190 L862,170 L868,140Z",
+NJ:"M825,260 L838,255 L842,290 L830,310 L820,300 L825,260Z",
+NM:"M270,395 L348,400 L345,478 L260,472 L258,435 L270,395Z",
+NY:"M760,180 L820,175 L845,195 L840,235 L825,250 L790,260 L772,240 L760,200 L760,180Z",
+NC:"M720,370 L800,360 L810,380 L790,400 L735,405 L720,395 L720,370Z",
+ND:"M400,145 L505,148 L505,200 L400,197 L400,145Z",
+OH:"M660,270 L710,265 L720,300 L715,340 L680,350 L655,345 L655,278 L660,270Z",
+OK:"M410,387 L505,390 L520,400 L545,400 L545,430 L505,440 L440,440 L410,430 L400,405 L410,387Z",
+OR:"M115,175 L220,185 L220,240 L165,240 L120,215 L108,200 L115,175Z",
+PA:"M730,250 L810,245 L825,260 L820,300 L770,305 L730,295 L730,250Z",
+RI:"M878,215 L888,210 L890,225 L880,228 L878,215Z",
+SC:"M720,395 L735,405 L760,420 L738,435 L710,420 L720,395Z",
+SD:"M400,210 L505,213 L505,265 L400,262 L400,210Z",
+TN:"M620,385 L730,375 L730,405 L620,410 L610,400 L620,385Z",
+TX:"M348,420 L440,440 L505,440 L545,430 L555,468 L555,490 L545,530 L520,555 L480,560 L440,545 L400,515 L370,490 L345,478 L348,420Z",
+UT:"M235,275 L305,280 L300,365 L240,360 L235,310 L235,275Z",
+VT:"M855,145 L868,140 L870,185 L855,195 L848,175 L855,145Z",
+VA:"M720,335 L790,330 L815,310 L810,350 L800,360 L730,365 L710,345 L720,335Z",
+WA:"M130,100 L225,108 L220,175 L155,170 L125,155 L118,130 L130,100Z",
+WV:"M720,300 L745,295 L760,320 L750,345 L730,365 L720,345 L715,340 L720,300Z",
+WI:"M560,165 L600,170 L610,185 L610,255 L580,258 L560,250 L555,200 L560,165Z",
+WY:"M270,210 L390,215 L395,285 L270,280 L270,210Z",
+DC:"M790,325 L795,320 L800,328 L795,332 L790,325Z"
+};
+
+// State center coordinates for labels
+var CENTERS = {
+AL:[650,450],AK:[140,507],AZ:[228,445],AR:[590,440],CA:[150,365],
+CO:[350,340],CT:[866,218],DE:[824,315],FL:[710,510],GA:[700,440],
+HI:[280,533],ID:[240,225],IL:[600,320],IN:[640,315],IA:[545,278],
+KS:[458,365],KY:[670,370],LA:[585,490],ME:[890,140],MD:[790,322],
+MA:[873,200],MI:[648,220],MN:[535,190],MS:[613,445],MO:[555,370],
+MT:[330,175],NE:[450,300],NV:[180,315],NH:[873,162],NJ:[832,278],
+NM:[305,438],NY:[798,215],NC:[762,380],ND:[450,172],OH:[685,305],
+OK:[470,415],OR:[160,205],PA:[775,272],RI:[883,220],SC:[730,415],
+SD:[450,238],TN:[670,395],TX:[450,488],UT:[268,318],VT:[858,165],
+VA:[760,345],WA:[170,135],WV:[732,325],WI:[580,210],WY:[330,248]
+};
+
+// States too small for internal labels
+var SMALL_STATES = ['CT','RI','MA','NH','VT','NJ','DE','MD','DC'];
+
+var NAMES = {
+US:'United States',AL:'Alabama',AK:'Alaska',AZ:'Arizona',AR:'Arkansas',CA:'California',
+CO:'Colorado',CT:'Connecticut',DE:'Delaware',DC:'Dist. of Columbia',FL:'Florida',
+GA:'Georgia',HI:'Hawaii',ID:'Idaho',IL:'Illinois',IN:'Indiana',IA:'Iowa',KS:'Kansas',
+KY:'Kentucky',LA:'Louisiana',ME:'Maine',MD:'Maryland',MA:'Massachusetts',MI:'Michigan',
+MN:'Minnesota',MS:'Mississippi',MO:'Missouri',MT:'Montana',NE:'Nebraska',NV:'Nevada',
+NH:'New Hampshire',NJ:'New Jersey',NM:'New Mexico',NY:'New York',NC:'North Carolina',
+ND:'North Dakota',OH:'Ohio',OK:'Oklahoma',OR:'Oregon',PA:'Pennsylvania',RI:'Rhode Island',
+SC:'South Carolina',SD:'South Dakota',TN:'Tennessee',TX:'Texas',UT:'Utah',VT:'Vermont',
+VA:'Virginia',WA:'Washington',WV:'West Virginia',WI:'Wisconsin',WY:'Wyoming'
+};
+
+var PLABELS = {quarter:'Quarterly Average','1year':'1-Year Change','5year':'5-Year Change',since1991:'Change Since 1991'};
+
+// ===== CONFIG =====
+var API_BASE='https://agent-edge-backend-kristy-flachs-projects.vercel.app'; var USE_LIVE=true;
+var currentPeriod='quarter'; var data=null;
+var compareMode=false; var compareList=[];
+
+// ===== COMPARE MODE =====
+function toggleCompare(){
+  compareMode=!compareMode;
+  var btn=document.getElementById('compareBtn');
+  var banner=document.getElementById('compareBanner');
+  if(compareMode){
+    btn.classList.add('active'); btn.textContent='Cancel';
+    banner.classList.add('show');
+    compareList=[]; updateCompareChips();
+    document.getElementById('detailPanel').classList.remove('show');
+    document.getElementById('comparePanel').classList.remove('show');
+  } else {
+    btn.classList.remove('active'); btn.textContent='Compare';
+    banner.classList.remove('show');
+    compareList=[];
+    // Remove selected highlights
+    document.querySelectorAll('.state.selected').forEach(function(el){el.classList.remove('selected');});
+  }
+}
+
+function addToCompare(code){
+  if(compareList.indexOf(code)>=0){
+    // Remove it
+    compareList=compareList.filter(function(c){return c!==code;});
+    var el=document.getElementById('s-'+code);
+    if(el)el.classList.remove('selected');
+  } else if(compareList.length<4){
+    compareList.push(code);
+    var el=document.getElementById('s-'+code);
+    if(el)el.classList.add('selected');
+  }
+  updateCompareChips();
+}
+
+function removeFromCompare(code){
+  compareList=compareList.filter(function(c){return c!==code;});
+  var el=document.getElementById('s-'+code);
+  if(el)el.classList.remove('selected');
+  updateCompareChips();
+}
+
+function updateCompareChips(){
+  var chips=document.getElementById('compareChips');
+  var goBtn=document.getElementById('compareGo');
+  if(compareList.length===0){
+    chips.innerHTML=''; goBtn.style.display='none'; return;
+  }
+  var h='';
+  compareList.forEach(function(code){
+    h+='<span class="mp-compare-chip">'+NAMES[code]+' <span class="mp-compare-chip-x" onclick="removeFromCompare(\''+code+'\')">&times;</span></span>';
+  });
+  chips.innerHTML=h;
+  goBtn.style.display=compareList.length>=2?'inline-block':'none';
+}
+
+function runCompare(){
+  if(compareList.length<2)return;
+  var nat=data.national.change;
+
+  // Build comparison table
+  var sorted=Object.entries(data.states).filter(function(e){return e[1].change!==null;}).sort(function(a,b){return b[1].change-a[1].change;});
+  var rankMap={};
+  sorted.forEach(function(e,i){rankMap[e[0]]=i+1;});
+
+  var maxChange=0;
+  compareList.forEach(function(c){
+    var ch=Math.abs(data.states[c]?data.states[c].change:0);
+    if(ch>maxChange)maxChange=ch;
+  });
+
+  var h='<thead><tr><th>Metric</th>';
+  compareList.forEach(function(c){ h+='<th>'+NAMES[c]+'</th>'; });
+  h+='<th>National</th></tr></thead><tbody>';
+
+  // Row: Change %
+  h+='<tr><td>'+PLABELS[currentPeriod]+'</td>';
+  compareList.forEach(function(c){
+    var ch=data.states[c]?data.states[c].change:null;
+    var col=ch!==null?(ch>=0?'#34d399':'#f87171'):'rgba(255,255,255,0.3)';
+    var val=ch!==null?(ch>=0?'+':'')+ch+'%':'N/A';
+    var barW=ch!==null?Math.round(Math.abs(ch)/Math.max(maxChange,0.1)*80):0;
+    var barCol=ch>=0?'#34d399':'#f87171';
+    h+='<td><div class="mp-compare-bar-wrap"><span style="color:'+col+';">'+val+'</span><div class="mp-compare-bar" style="width:'+barW+'px;background:'+barCol+';"></div></div></td>';
+  });
+  h+='<td style="color:'+(nat>=0?'#34d399':'#f87171')+';">'+(nat>=0?'+':'')+nat+'%</td></tr>';
+
+  // Row: vs National
+  h+='<tr><td>vs National</td>';
+  compareList.forEach(function(c){
+    var ch=data.states[c]?data.states[c].change:null;
+    var diff=ch!==null?Math.round((ch-nat)*100)/100:null;
+    var col=diff!==null?(diff>=0?'#34d399':'#f87171'):'rgba(255,255,255,0.3)';
+    var val=diff!==null?(diff>=0?'+':'')+diff+'%':'N/A';
+    h+='<td style="color:'+col+';">'+val+'</td>';
+  });
+  h+='<td style="color:rgba(255,255,255,0.25);">baseline</td></tr>';
+
+  // Row: Rank
+  h+='<tr><td>Rank</td>';
+  compareList.forEach(function(c){
+    var r=rankMap[c]||'—';
+    h+='<td style="color:rgba(255,255,255,0.7);">#'+r+' / '+sorted.length+'</td>';
+  });
+  h+='<td style="color:rgba(255,255,255,0.25);">—</td></tr>';
+
+  // Row: Performance tier
+  h+='<tr><td>Performance</td>';
+  compareList.forEach(function(c){
+    var ch=data.states[c]?data.states[c].change:null;
+    var tier='—'; var tierCol='rgba(255,255,255,0.3)';
+    if(ch!==null){
+      if(ch<0){tier='Declining';tierCol='#f87171';}
+      else{
+        var d=nat!==0?((ch-nat)/Math.abs(nat))*100:0;
+        if(d>30){tier='Strong Growth';tierCol='#34d399';}
+        else if(d>0){tier='Above Average';tierCol='#60a5fa';}
+        else if(d>-15){tier='Near Average';tierCol='#93c5fd';}
+        else{tier='Below Average';tierCol='#bfdbfe';}
+      }
+    }
+    h+='<td style="color:'+tierCol+';font-size:11px;">'+tier+'</td>';
+  });
+  h+='<td style="color:rgba(255,255,255,0.25);">—</td></tr>';
+
+  h+='</tbody>';
+  document.getElementById('compareTable').innerHTML=h;
+  document.getElementById('comparePanel').classList.add('show');
+  document.getElementById('detailPanel').classList.remove('show');
+}
+
+function closeCompare(){
+  document.getElementById('comparePanel').classList.remove('show');
+}
+
+// ===== SAMPLE DATA =====
+function sample(p){
+  var r={quarter:[-2,3],'1year':[-5,12],'5year':[5,60],since1991:[50,400]}[p];
+  var s={}; Object.keys(NAMES).forEach(function(c,i){
+    if(c==='US')return;
+    var h=(c.charCodeAt(0)*31+c.charCodeAt(1)+(p==='quarter'?1:p==='1year'?2:p==='5year'?3:4)*17+i*7)%100;
+    s[c]={change:Math.round((r[0]+(h/100)*(r[1]-r[0]))*10)/10};
+  });
+  var sum=0,cnt=0; Object.values(s).forEach(function(x){sum+=x.change;cnt++;});
+  return {national:{change:Math.round(sum/cnt*100)/100},states:s};
+}
+
+// ===== FETCH =====
+async function fetchData(){
+  document.getElementById('loading').style.display='block';
+  document.getElementById('mapSection').style.display='none';
+  if(USE_LIVE){try{var r=await fetch(API_BASE+'/api/hpi?view=all&period='+currentPeriod);data=await r.json();}catch(e){data=sample(currentPeriod);}}
+  else{await new Promise(function(r){setTimeout(r,250);});data=sample(currentPeriod);}
+  document.getElementById('loading').style.display='none';
+  document.getElementById('mapSection').style.display='block';
+  render();
+}
+
+// ===== COLOR =====
+function stateColor(ch, nat){
+  if(ch===null||ch===undefined)return '#1e293b';
+  if(ch<0)return '#f87171';
+  var d=nat!==0?((ch-nat)/Math.abs(nat))*100:0;
+  if(d>30)return '#1e3a5f';
+  if(d>0)return '#2563eb';
+  if(d>-15)return '#60a5fa';
+  return '#93c5fd';
+}
+
+// ===== RENDER MAP =====
+function render(){
+  var nat=data.national.change;
+  document.getElementById('natValue').textContent=(nat>=0?'+':'')+nat+'%';
+  document.getElementById('natValue').style.color=nat>=0?'#34d399':'#f87171';
+  document.getElementById('periodLabel').textContent=PLABELS[currentPeriod];
+
+  // Build SVG
+  var svg='<svg viewBox="60 80 870 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">';
+
+  // State paths
+  Object.keys(PATHS).forEach(function(code){
+    var s=data.states[code];
+    var ch=s?s.change:null;
+    var fill=stateColor(ch,nat);
+    svg+='<path class="state" id="s-'+code+'" d="'+PATHS[code]+'" fill="'+fill+'" ';
+    svg+='onmouseenter="showTip(event,\''+code+'\')" onmouseleave="hideTip()" ';
+    svg+='onclick="stateClick(\''+code+'\')" />';
+  });
+
+  // State labels (skip small states)
+  Object.keys(CENTERS).forEach(function(code){
+    if(SMALL_STATES.indexOf(code)>=0)return;
+    var c=CENTERS[code];
+    var s=data.states[code];
+    var ch=s?s.change:null;
+    var val=ch!==null?(ch>=0?'+':'')+ch:'—';
+    svg+='<text class="st-label" x="'+c[0]+'" y="'+(c[1]-5)+'">'+code+'</text>';
+    svg+='<text class="st-val" x="'+c[0]+'" y="'+(c[1]+5)+'">'+val+'</text>';
+  });
+
+  svg+='</svg>';
+
+  // NE state callouts (right side)
+  var neHtml='<div class="ne-callouts">';
+  var neY=0;
+  SMALL_STATES.forEach(function(code){
+    var s=data.states[code];
+    var ch=s?s.change:null;
+    var val=ch!==null?(ch>=0?'+':'')+ch:'—';
+    var bg=stateColor(ch,nat);
+    neHtml+='<div class="ne-row" style="cursor:pointer;" onmouseenter="showTipNE(event,\''+code+'\')" onmouseleave="hideTip()" onclick="stateClick(\''+code+'\')">';
+    neHtml+='<span class="ne-code">'+code+'</span>';
+    neHtml+='<span class="ne-badge" style="background:'+bg+';color:rgba(255,255,255,0.9);">'+val+'</span>';
+    neHtml+='</div>';
+  });
+  neHtml+='</div>';
+
+  document.getElementById('mapWrap').innerHTML=svg+neHtml;
+}
+
+// ===== TOOLTIP =====
+function showTip(e,code){
+  var s=data.states[code]; if(!s)return;
+  var t=document.getElementById('tip');
+  document.getElementById('tipName').textContent=NAMES[code];
+  var ch=s.change;
+  document.getElementById('tipVal').textContent=(ch>=0?'+':'')+ch+'%';
+  document.getElementById('tipVal').style.color=ch>=0?'#34d399':'#f87171';
+  var d=Math.round((ch-data.national.change)*100)/100;
+  document.getElementById('tipVs').textContent=(d>=0?'+':'')+d+'% vs national';
+  t.classList.add('show');
+  t.style.left=(e.clientX+16)+'px'; t.style.top=(e.clientY-10)+'px';
+}
+function showTipNE(e,code){showTip(e,code);}
+function hideTip(){document.getElementById('tip').classList.remove('show');}
+document.addEventListener('mousemove',function(e){
+  var t=document.getElementById('tip');
+  if(t.classList.contains('show')){t.style.left=(e.clientX+16)+'px';t.style.top=(e.clientY-10)+'px';}
+});
+
+// ===== STATE CLICK ROUTER =====
+function stateClick(code){
+  if(compareMode){ addToCompare(code); }
+  else { showDetail(code); }
+}
+
+// ===== DETAIL =====
+function showDetail(code){
+  var s=data.states[code]; if(!s)return;
+  var nat=data.national.change;
+  var diff=Math.round((s.change-nat)*100)/100;
+  var sorted=Object.entries(data.states).filter(function(e){return e[1].change!==null;}).sort(function(a,b){return b[1].change-a[1].change;});
+  var rank='—'; sorted.forEach(function(e,i){if(e[0]===code)rank=i+1;});
+
+  document.getElementById('detailName').textContent=NAMES[code];
+  var h='';
+  h+='<div class="mp-stat"><div class="mp-stat-label">'+PLABELS[currentPeriod]+'</div><div class="mp-stat-value" style="color:'+(s.change>=0?'#34d399':'#f87171')+';">'+(s.change>=0?'+':'')+s.change+'%</div></div>';
+  h+='<div class="mp-stat"><div class="mp-stat-label">National Avg</div><div class="mp-stat-value" style="color:'+(nat>=0?'#34d399':'#f87171')+';">'+(nat>=0?'+':'')+nat+'%</div></div>';
+  h+='<div class="mp-stat"><div class="mp-stat-label">vs National</div><div class="mp-stat-value" style="color:'+(diff>=0?'#34d399':'#f87171')+';">'+(diff>=0?'+':'')+diff+'%</div></div>';
+  h+='<div class="mp-stat"><div class="mp-stat-label">Rank</div><div class="mp-stat-value">#'+rank+' <span style="font-size:11px;color:rgba(255,255,255,0.25);">/ '+sorted.length+'</span></div></div>';
+  document.getElementById('detailGrid').innerHTML=h;
+  document.getElementById('detailPanel').classList.add('show');
+}
+
+// ===== PERIOD =====
+function setPeriod(p,btn){
+  currentPeriod=p;
+  document.querySelectorAll('.mp-pill').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('detailPanel').classList.remove('show');
+  document.getElementById('comparePanel').classList.remove('show');
+  if(compareMode){ compareList=[]; updateCompareChips(); }
+  fetchData();
+}
+
+function downloadView(){ window.print(); }
+
+fetchData();
+</script>
+</body>
+</html>
