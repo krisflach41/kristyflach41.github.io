@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Tools · Agent Edge</title>
+
+<style>
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 50px auto;
+  color: #555;
+  line-height: 1.6;
+}
+
+/* ===== TOOL GRID ===== */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 35px;
+}
+
+/* ===== TOOL CARD ===== */
+.tool-card {
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tool-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.14);
+}
+
+.tool-preview {
+  height: 180px;
+  background: linear-gradient(135deg, #0a1628 0%, #162d4a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mini map preview for Market Pulse */
+.preview-map {
+  opacity: 0.35;
+  font-size: 80px;
+  filter: grayscale(0.3);
+}
+
+.preview-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background: rgba(52, 211, 153, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.preview-badge.coming {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.4);
+  border-color: rgba(255,255,255,0.1);
+}
+
+.preview-title {
+  position: absolute;
+  bottom: 16px;
+  left: 20px;
+  right: 20px;
+}
+
+.preview-title h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 2px 0;
+}
+
+.preview-title p {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+}
+
+.tool-body {
+  padding: 20px 22px 24px;
+}
+
+.tool-body p {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+}
+
+.tool-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.tool-feat-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(11,78,162,0.08);
+  color: #0b4ea2;
+}
+
+.tool-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 25px;
+  background: #0b4ea2;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.tool-btn:hover {
+  background: #0a3d7f;
+  transform: scale(1.03);
+}
+
+.tool-btn.disabled {
+  background: rgba(11,30,58,0.12);
+  color: rgba(11,30,58,0.35);
+  pointer-events: none;
+}
+
+/* ===== DATA SOURCE TAG ===== */
+.data-source {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 11px;
+  color: #999;
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  body { padding: 40px 0; }
+  .gallery-card { padding: 30px 20px; }
+  .section-title { font-size: 26px; }
+  .tool-grid { grid-template-columns: 1fr; gap: 24px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="gallery-card">
+
+  <h2 class="section-title">Decision Tools</h2>
+  <p class="section-subtitle">
+    Interactive tools designed to support planning and decision-making.
+    These are self-serve — explore the data, compare scenarios, and share insights with clients.
+  </p>
+
+  <div class="tool-grid">
+
+    <!-- MARKET PULSE -->
+    <div class="tool-card">
+      <div class="tool-preview">
+        <div class="preview-map">🗺️</div>
+        <span class="preview-badge">Live Data</span>
+        <div class="preview-title">
+          <h3>Market Pulse</h3>
+          <p>Home Value Tracker</p>
+        </div>
+      </div>
+      <div class="tool-body">
+        <p>
+          Explore home value trends across all 50 states using FHFA housing data.
+          Compare states, view quarterly and long-term performance, and identify
+          where markets are growing — or cooling.
+        </p>
+        <div class="tool-features">
+          <span class="tool-feat-tag">Interactive Map</span>
+          <span class="tool-feat-tag">State Comparison</span>
+          <span class="tool-feat-tag">4 Time Periods</span>
+          <span class="tool-feat-tag">FHFA Data</span>
+        </div>
+        <a href="market-pulse.html" class="tool-btn">Launch Tool →</a>
+      </div>
+    </div>
+
+    <!-- PLACEHOLDER: FUTURE TOOL -->
+    <div class="tool-card">
+      <div class="tool-preview" style="background: linear-gradient(135deg, #0a1628 0%, #1a2744 100%);">
+        <div class="preview-map" style="opacity:0.15;">📊</div>
+        <span class="preview-badge coming">Coming Soon</span>
+        <div class="preview-title">
+          <h3>Rate Scenario Planner</h3>
+          <p>Payment Comparison Tool</p>
+        </div>
+      </div>
+      <div class="tool-body">
+        <p>
+          Help clients visualize how different rate scenarios affect their monthly
+          payment, total cost, and buying power. Side-by-side comparisons made simple.
+        </p>
+        <div class="tool-features">
+          <span class="tool-feat-tag">Payment Calculator</span>
+          <span class="tool-feat-tag">Scenario Builder</span>
+          <span class="tool-feat-tag">Visual Output</span>
+        </div>
+        <span class="tool-btn disabled">Coming Soon</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="data-source">
+    Powered by Federal Housing Finance Agency (FHFA) data via FRED · Updated quarterly
+  </div>
+
+  <div style="text-align:center;">
+    <a href="advisory-collection.html" class="back-btn">← Back to Advisory Collection</a>
+  </div>
+
+</section>
+</div>
+
+<a href="portal.html" class="return-main">← Return to Portal</a>
+
+</body>
+</html>
