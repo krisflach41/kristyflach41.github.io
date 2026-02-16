@@ -20,7 +20,7 @@ body {
 }
 
 .page-wrap {
-  max-width: 1400px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -55,19 +55,26 @@ body {
   transform: translateY(-1px);
 }
 
-/* ===== BRANDING HEADER (inside glass) ===== */
-.brand-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 24px 40px;
-  border-radius: 18px 18px 0 0;
+/* ===== GLASS CONTAINER (wraps brand + map) ===== */
+.glass-container {
+  border-radius: 22px;
   background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  border-bottom: none;
-  max-width: 680px;
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+  overflow: visible;
+}
+
+/* ===== BRANDING BAR (inside glass) ===== */
+.brand-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 30px 50px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
 .brand-left {
@@ -85,7 +92,7 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.brand-info-block {
+.brand-info {
   flex: 1;
 }
 
@@ -93,7 +100,7 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
-  text-align: right;
+  margin-left: auto;
 }
 
 .brand-creds {
@@ -120,24 +127,21 @@ body {
 :root { --navy:#0a1628; --blue:#3b82f6; --green:#34d399; --red:#f87171; }
 
 .map-container {
-  border-radius: 0 0 18px 18px;
+  margin: 30px 36px 36px;
+  border-radius: 16px;
   background: var(--navy);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-top: 1px solid rgba(0,0,0,0.15);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.15),
-    0 6px 18px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
   overflow: visible;
   color: #eaf0f6;
 }
 
 /* ===== MAP INTERNAL STYLES ===== */
-.mp-wrap { max-width:100%; margin:0 auto; padding:24px 36px; padding-right:140px; font-family:'DM Sans',system-ui,sans-serif; }
+.mp-wrap { max-width:100%; margin:0 auto; padding:28px 40px; padding-right:140px; font-family:'DM Sans',system-ui,sans-serif; }
 
-.mp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+.mp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
 .mp-title-row { display:flex; align-items:baseline; gap:10px; }
 .mp-page-title { font-family:'Playfair Display',serif; font-size:24px; font-weight:700; color:#eaf0f6; margin:0; }
-.mp-page-subtitle { font-size:12px; color:rgba(255,255,255,0.25); font-weight:500; }
+.mp-page-subtitle { font-size:12px; color:rgba(255,255,255,0.3); font-weight:500; }
 
 /* Pills */
 .mp-pills { display:flex; gap:3px; }
@@ -301,6 +305,8 @@ body {
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .brand-header { flex-direction: column; text-align: center; gap: 16px; padding: 24px 20px; }
+  .glass-container { border-radius: 16px; }
+  .map-container { margin: 16px 16px 16px; }
   .brand-left { flex-direction: column; text-align: center; }
   .brand-right { justify-content: center; }
   .brand-info h1 { font-size: 28px; }
@@ -312,7 +318,7 @@ body {
 @media print {
   body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .mp-compare-btn, .mp-download-btn, .mp-compare-banner, .mp-detail-x, .mp-pills, .back-btn, .return-main { display:none !important; }
-  .brand-header { border-radius: 18px 18px 0 0; }
+  
   @page { margin:0.4in; }
 }
 </style>
@@ -326,22 +332,27 @@ body {
     <a href="decision-tools.html" class="back-btn">&#8592; Back to Decision Tools</a>
   </div>
 
-  <!-- BRANDING HEADER -->
+  <!-- GLASS CONTAINER -->
+  <div class="glass-container">
+
+  <!-- BRANDING BAR -->
   <div class="brand-header">
     <div class="brand-left">
       <img src="hero-headshot.jpg" alt="Kristy Flach" class="brand-headshot">
-      <div class="brand-info-block">
-        <div class="brand-creds">
-          Kristy Flach
-          <span>NMLS# 2632259 &middot; Paramount Residential Mortgage Group</span>
-          <span>Cell: (206) 313-5883</span>
-          <span><a href="mailto:kflach@prmg.net" style="color:#0b4ea2;text-decoration:none;">kflach@prmg.net</a> &middot; <a href="https://kflach.myprmg.net" target="_blank" style="color:#0b4ea2;text-decoration:none;">kflach.myprmg.net</a> &middot; <a href="https://kristyflach.com" target="_blank" style="color:#0b4ea2;text-decoration:none;">kristyflach.com</a></span>
+      <div class="brand-info">
+        <div style="font-size:14px;font-weight:700;color:#0b1f3a;">Kristy Flach</div>
+        <div style="font-size:11px;color:#666;line-height:1.6;">
+          NMLS# 2632259 &middot; Paramount Residential Mortgage Group<br>
+          Cell: (206) 313-5883<br>
+          <a href="mailto:kflach@prmg.net" style="color:#0b4ea2;text-decoration:none;">kflach@prmg.net</a> &middot;
+          <a href="https://kflach.myprmg.net" target="_blank" style="color:#0b4ea2;text-decoration:none;">kflach.myprmg.net</a> &middot;
+          <a href="https://kristyflach.com" target="_blank" style="color:#0b4ea2;text-decoration:none;">kristyflach.com</a>
         </div>
       </div>
     </div>
     <div class="brand-right">
       <img src="CMA Logo.png" alt="Certified Mortgage Advisor" class="brand-cma">
-      <img src="PRMG-Logo.png" alt="PRMG" style="height:40px;width:auto;object-fit:contain;">
+      <img src="PRMG-Logo.png" alt="PRMG" style="height:42px;width:auto;object-fit:contain;">
     </div>
   </div>
 
@@ -410,6 +421,8 @@ body {
       <div class="mp-source">Source: Federal Housing Finance Agency (FHFA) &middot; All-Transactions House Price Index via FRED</div>
     </div>
   </div>
+
+  </div><!-- /glass-container -->
 
 </div>
 
