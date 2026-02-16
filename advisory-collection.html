@@ -60,6 +60,14 @@ body {
   justify-content: center;
 }
 
+/* Full-width card for odd-one-out */
+.studio-gallery .full-width {
+  grid-column: 1 / -1;
+  max-width: 480px;
+  justify-self: center;
+  width: 100%;
+}
+
 /* ===== CATEGORY PANELS ===== */
 .studio-panel {
   background: rgba(255,255,255,0.35);
@@ -87,7 +95,8 @@ body {
   border-radius: 6px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-  /* ===== THUMB HOVER TITLE OVERLAY ===== */
+
+/* ===== THUMB HOVER TITLE OVERLAY ===== */
 .thumb-wrap {
   position: relative;
   width: 60px;
@@ -104,11 +113,9 @@ body {
   font-size: 11px;
   font-weight: 600;
   text-align: center;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   opacity: 0;
   transition: opacity 0.25s ease;
   padding: 6px;
@@ -117,7 +124,6 @@ body {
 .thumb-wrap:hover .thumb-overlay {
   opacity: 1;
 }
-
 
 .thumb:hover {
   transform: scale(1.08);
@@ -136,6 +142,38 @@ body {
   font-weight: 600;
 }
 
+/* ===== TOOL-STYLE THUMBS (for Decision Tools card) ===== */
+.tool-thumb {
+  width: 60px;
+  height: 80px;
+  background: linear-gradient(135deg, #0a1628, #162d4a);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tool-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+/* ===== LIVE BADGE ===== */
+.live-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(52, 211, 153, 0.15);
+  color: #059669;
+  margin-left: 6px;
+  vertical-align: middle;
+  letter-spacing: 0.5px;
+}
+
 /* ===== FLOATING RETURN LINK ===== */
 .return-main {
   position: fixed;
@@ -150,6 +188,11 @@ body {
   text-decoration: none;
   color: #0b1f3a;
   font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .studio-gallery { grid-template-columns: 1fr; }
+  .studio-gallery .full-width { max-width: 100%; }
 }
 
 </style>
@@ -167,36 +210,28 @@ body {
 
     <div class="studio-gallery">
 
-      <!-- REPORTS -->
+      <!-- WING 1: MARKET INTELLIGENCE -->
       <div class="studio-panel">
-      <div class="panel-thumbs">
-
-  <div class="thumb-wrap">
-    <img src="Real-Estate-Report-Card.png" class="thumb" alt="Real Estate Report Card">
-    <div class="thumb-overlay">Report Card</div>
-  </div>
-
-  <div class="thumb-wrap">
-    <img src="Bid-Over-Ask.png" class="thumb" alt="Bid Over Ask">
-    <div class="thumb-overlay">Bid Over Ask</div>
-  </div>
-
-  <div class="thumb-wrap">
-    <img src="Appreciation.png" class="thumb" alt="Appreciation">
-    <div class="thumb-overlay">Appreciation</div>
-  </div>
-
-</div>
-
-
+        <div class="panel-thumbs">
+          <div class="thumb-wrap">
+            <img src="Real-Estate-Report-Card.png" class="thumb" alt="Real Estate Report Card">
+            <div class="thumb-overlay">Report Card</div>
+          </div>
+          <div class="thumb-wrap">
+            <img src="Bid-Over-Ask.png" class="thumb" alt="Bid Over Ask">
+            <div class="thumb-overlay">Bid Over Ask</div>
+          </div>
+          <div class="thumb-wrap">
+            <img src="Appreciation.png" class="thumb" alt="Appreciation">
+            <div class="thumb-overlay">Appreciation</div>
+          </div>
+        </div>
         <h3>Market Intelligence</h3>
-
         <p>Market insights and visual reports to support client conversations.</p>
-       <a href="market-intelligence.html" class="panel-btn">Enter Collection →</a>
-
+        <a href="market-intelligence.html" class="panel-btn">Enter Collection →</a>
       </div>
 
-      <!-- LOAN PRODUCT PROFILES -->
+      <!-- WING 2: FINANCING STRATEGIES -->
       <div class="studio-panel">
         <div class="panel-thumbs">
           <div class="thumb"></div>
@@ -204,22 +239,20 @@ body {
           <div class="thumb"></div>
         </div>
         <h3>Financing Strategies</h3>
-
         <p>Clear program overviews to help explain financing strategies with confidence.</p>
         <a href="loan-product-profiles.html" class="panel-btn">Enter Collection →</a>
       </div>
 
-      <!-- TOOLS -->
-      <div class="studio-panel">
+      <!-- WING 3: DECISION TOOLS (centered, full-width) -->
+      <div class="studio-panel full-width">
         <div class="panel-thumbs">
-          <div class="thumb"></div>
-          <div class="thumb"></div>
-          <div class="thumb"></div>
+          <div class="tool-thumb">🗺️</div>
+          <div class="tool-thumb">📊</div>
+          <div class="tool-thumb">📈</div>
         </div>
-       <h3>Decision Tools</h3>
-
+        <h3>Decision Tools <span class="live-badge">LIVE</span></h3>
         <p>Interactive tools designed to support planning and decision-making.</p>
-        <a href="tools.html" class="panel-btn">Enter Collection →</a>
+        <a href="decision-tools.html" class="panel-btn">Enter Collection →</a>
       </div>
 
     </div>
@@ -231,4 +264,3 @@ body {
 
 </body>
 </html>
-
