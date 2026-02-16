@@ -8,11 +8,11 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ===== PORTAL SHELL ===== */
+/* ===== PORTAL SHELL (matches kristyflach.com) ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 50px 0 80px;
+  padding: 40px 0 80px;
   background:
     linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
@@ -25,19 +25,13 @@ body {
   padding: 0 24px;
 }
 
-/* ===== PORTAL HEADER ===== */
-.portal-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
+/* ===== BACK BUTTON ===== */
 .back-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 10px 20px;
+  margin-bottom: 18px;
   border-radius: 25px;
   background: rgba(255,255,255,0.45);
   backdrop-filter: blur(6px);
@@ -47,106 +41,109 @@ body {
   color: #0b1f3a;
   font-weight: 600;
   font-size: 13px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   transition: all 0.2s ease;
 }
-
 .back-btn:hover {
   background: rgba(255,255,255,0.7);
   transform: translateY(-1px);
 }
 
-/* ===== BRANDING HEADER (inside glass) ===== */
-.brand-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 30px 40px;
-  border-radius: 18px 18px 0 0;
+/* ===== FROSTED GLASS CONTAINER ===== */
+.glass-container {
+  border-radius: 22px;
   background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  border-bottom: none;
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+  overflow: hidden;
 }
 
-.brand-left {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+/* ===== TITLE ===== */
+.tool-title {
+  text-align: center;
+  padding: 45px 50px 10px;
 }
-
-.brand-headshot {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid rgba(255,255,255,0.8);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.brand-info h1 {
-  font-family: 'Playfair Display', serif;
+.tool-title h1 {
+  font-family: 'Playfair Display', Georgia, serif;
   font-size: 36px;
   font-weight: 700;
   color: #0b1f3a;
-  line-height: 1.1;
-  margin-bottom: 4px;
+  margin: 0 0 6px;
 }
-
-.brand-info .brand-subtitle {
-  font-size: 17px;
+.tool-title p {
+  font-size: 16px;
   color: #555;
-  font-weight: 500;
+  margin: 0;
 }
 
-.brand-right {
+/* ===== BRANDING BAR ===== */
+.brand-bar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  text-align: right;
+  gap: 14px;
+  padding: 18px 40px 28px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
 }
-
-.brand-creds {
-  font-size: 13px;
-  font-weight: 600;
+.brand-headshot {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.8);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.brand-info {
+  flex: 1;
+}
+.brand-info .brand-name {
+  font-size: 14px;
+  font-weight: 700;
   color: #0b1f3a;
+  margin-bottom: 1px;
+}
+.brand-info .brand-details {
+  font-size: 11px;
+  color: #666;
   line-height: 1.5;
 }
-
-.brand-creds span {
-  display: block;
-  font-size: 11px;
-  color: #888;
-  font-weight: 500;
+.brand-info .brand-details a {
+  color: #0b4ea2;
+  text-decoration: none;
 }
-
-.brand-cma {
-  height: 55px;
+.brand-info .brand-details a:hover {
+  text-decoration: underline;
+}
+.brand-logos {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand-logos img {
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
 
-/* ===== DARK MAP CONTAINER ===== */
+/* ===== DARK MAP CARD ===== */
 :root { --navy:#0a1628; --blue:#3b82f6; --green:#34d399; --red:#f87171; }
 
-.map-container {
-  border-radius: 0 0 18px 18px;
+.map-card {
+  margin: 24px 28px 28px;
+  border-radius: 16px;
   background: var(--navy);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-top: 1px solid rgba(0,0,0,0.15);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.15),
-    0 6px 18px rgba(0,0,0,0.08);
-  overflow: hidden;
-  color: #eaf0f6;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.03);
+  overflow: visible;
 }
 
 /* ===== MAP INTERNAL STYLES ===== */
-.mp-wrap { max-width:100%; margin:0 auto; padding:20px 24px; font-family:'DM Sans',system-ui,sans-serif; }
+.mp-wrap { padding: 20px 24px; font-family:'DM Sans',system-ui,sans-serif; color:#eaf0f6; position:relative; padding-right:130px; }
 
 .mp-header { display:flex; align-items:center; justify-content:flex-end; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
 
-/* Pills */
 .mp-pills { display:flex; gap:3px; }
 .mp-pill {
   padding:5px 12px; border-radius:20px; font-size:10px; font-weight:700;
@@ -156,7 +153,6 @@ body {
 .mp-pill:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.15); }
 .mp-pill.active { background:rgba(59,130,246,0.12); border-color:rgba(59,130,246,0.25); color:var(--blue); }
 
-/* National */
 .mp-national {
   text-align:center; padding:18px; margin-bottom:18px;
   background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px;
@@ -165,11 +161,9 @@ body {
 .mp-nat-value { font-family:'Playfair Display',serif; font-size:38px; font-weight:700; margin:4px 0 2px; }
 .mp-nat-sub { font-size:9px; color:rgba(255,255,255,0.2); }
 
-/* Legend */
 .mp-legend { display:flex; gap:14px; justify-content:center; margin-bottom:14px; font-size:9px; color:rgba(255,255,255,0.3); }
 .mp-ldot { width:10px; height:10px; border-radius:2px; display:inline-block; margin-right:3px; vertical-align:middle; }
 
-/* Map */
 .mp-map-wrap { position:relative; margin-bottom:14px; overflow:visible; }
 .mp-map-wrap svg { width:100%; height:auto; }
 .mp-map-wrap svg path.state {
@@ -187,13 +181,11 @@ body {
   pointer-events:none; text-anchor:middle; dominant-baseline:central;
 }
 
-/* NE state callouts */
-.ne-callouts { position:absolute; right:-95px; top:60px; width:85px; }
+.ne-callouts { position:absolute; right:-105px; top:60px; width:85px; }
 .ne-row { display:flex; align-items:center; gap:4px; margin-bottom:5px; }
 .ne-code { font-size:8px; font-weight:700; color:rgba(255,255,255,0.5); width:18px; text-align:right; }
 .ne-badge { padding:2px 6px; border-radius:4px; font-size:8px; font-weight:700; }
 
-/* Tooltip */
 .mp-tip {
   display:none; position:fixed; z-index:100;
   background:#0f2035; border:1px solid rgba(255,255,255,0.12);
@@ -205,7 +197,6 @@ body {
 .mp-tip-val { font-size:20px; font-weight:700; color:#eaf0f6; }
 .mp-tip-vs { font-size:9px; color:rgba(255,255,255,0.4); margin-top:2px; }
 
-/* Detail */
 .mp-detail {
   display:none; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
   border-radius:12px; padding:20px; margin-bottom:16px;
@@ -220,13 +211,9 @@ body {
 .mp-stat-label { font-size:8px; font-weight:700; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:0.5px; }
 .mp-stat-value { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-top:4px; }
 
-/* Source */
 .mp-source { font-size:7px; color:rgba(255,255,255,0.12); text-align:center; margin-top:8px; }
-
-/* Loading */
 .mp-load { text-align:center; padding:40px; color:rgba(255,255,255,0.25); }
 
-/* Compare button */
 .mp-compare-btn, .mp-download-btn {
   padding:5px 14px; border-radius:20px; font-size:10px; font-weight:700;
   background:transparent; border:1px solid rgba(255,255,255,0.08);
@@ -236,7 +223,6 @@ body {
 .mp-compare-btn:hover, .mp-download-btn:hover { color:rgba(255,255,255,0.6); border-color:rgba(255,255,255,0.15); }
 .mp-compare-btn.active { background:rgba(201,168,76,0.15); border-color:rgba(201,168,76,0.3); color:#c9a84c; }
 
-/* Compare mode banner */
 .mp-compare-banner {
   display:none; text-align:center; padding:10px 16px; margin-bottom:14px;
   background:rgba(201,168,76,0.08); border:1px solid rgba(201,168,76,0.15);
@@ -256,7 +242,6 @@ body {
 }
 .mp-compare-go:hover { background:#dfc06a; }
 
-/* Compare panel */
 .mp-compare-panel {
   display:none; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);
   border-radius:12px; padding:20px; margin-bottom:16px;
@@ -277,12 +262,11 @@ body {
 .mp-compare-bar-wrap { display:flex; align-items:center; gap:8px; justify-content:center; }
 .mp-compare-bar { height:8px; border-radius:4px; min-width:2px; }
 
-/* Selected state highlight */
 .mp-map-wrap svg path.state.selected { stroke:#c9a84c; stroke-width:3; filter:brightness(1.2); }
 .mp-spin { width:22px; height:22px; border:2px solid rgba(255,255,255,0.06); border-top-color:var(--blue); border-radius:50%; animation:sp .7s linear infinite; margin:0 auto 8px; }
 @keyframes sp { to{transform:rotate(360deg);} }
 
-/* ===== FLOATING RETURN LINK ===== */
+/* ===== FLOATING RETURN ===== */
 .return-main {
   position: fixed;
   bottom: 20px;
@@ -299,7 +283,6 @@ body {
   font-size: 13px;
   transition: all 0.25s ease;
 }
-
 .return-main:hover {
   background: rgba(255,255,255,0.7);
   transform: translateY(-2px);
@@ -307,19 +290,16 @@ body {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-  .brand-header { flex-direction: column; text-align: center; gap: 16px; padding: 24px 20px; }
-  .brand-left { flex-direction: column; text-align: center; }
-  .brand-right { justify-content: center; }
-  .brand-info h1 { font-size: 28px; }
-  .portal-top { flex-direction: column; gap: 10px; }
+  .brand-bar { flex-direction: column; text-align: center; gap: 12px; }
+  .brand-logos { justify-content: center; }
   .mp-detail-grid { grid-template-columns: repeat(2, 1fr); }
+  .mp-wrap { padding-right: 24px; }
   .ne-callouts { position: relative; right: auto; top: auto; width: 100%; display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; margin-top: 10px; }
 }
 
 @media print {
   body { background:#fff; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
   .mp-compare-btn, .mp-download-btn, .mp-compare-banner, .mp-detail-x, .mp-pills, .back-btn, .return-main { display:none !important; }
-  .brand-header { border-radius: 18px 18px 0 0; }
   @page { margin:0.4in; }
 }
 </style>
@@ -328,106 +308,110 @@ body {
 
 <div class="page-wrap">
 
-  <!-- TOP NAV -->
-  <div class="portal-top">
-    <a href="decision-tools.html" class="back-btn">&#8592; Back to Decision Tools</a>
-  </div>
+  <a href="decision-tools.html" class="back-btn">&#8592; Back to Decision Tools</a>
 
-  <!-- BRANDING HEADER -->
-  <div class="brand-header">
-    <div class="brand-left">
+  <div class="glass-container">
+
+    <!-- TITLE -->
+    <div class="tool-title">
+      <h1>Market Pulse</h1>
+      <p>Home Value Tracker &middot; FHFA All-Transactions House Price Index</p>
+    </div>
+
+    <!-- BRANDING BAR -->
+    <div class="brand-bar">
       <img src="hero-headshot.jpg" alt="Kristy Flach" class="brand-headshot">
       <div class="brand-info">
-        <h1>Market Pulse</h1>
-        <div class="brand-subtitle">Home Value Tracker &middot; FHFA House Price Index</div>
+        <div class="brand-name">Kristy Flach</div>
+        <div class="brand-details">
+          NMLS# 2632259 &middot; Paramount Residential Mortgage Group<br>
+          Cell: (206) 313-5883<br>
+          <a href="mailto:kflach@prmg.net">kflach@prmg.net</a> &middot;
+          <a href="https://kflach.myprmg.net" target="_blank">kflach.myprmg.net</a> &middot;
+          <a href="https://kristyflach.com" target="_blank">kristyflach.com</a>
+        </div>
+      </div>
+      <div class="brand-logos">
+        <img src="CMA Logo.png" alt="Certified Mortgage Advisor">
+        <img src="prmg-logo.png" alt="PRMG">
       </div>
     </div>
-    <div class="brand-right">
-      <div class="brand-creds">
-        Kristy Flach
-        <span>NMLS #2632259</span>
-        <span>Paramount Residential Mortgage Group</span>
+
+    <!-- DARK MAP CARD -->
+    <div class="map-card">
+      <div class="mp-wrap">
+        <div class="mp-header">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="mp-pills">
+              <button class="mp-pill active" onclick="setPeriod('quarter',this)">Quarter</button>
+              <button class="mp-pill" onclick="setPeriod('1year',this)">1 Year</button>
+              <button class="mp-pill" onclick="setPeriod('5year',this)">5 Year</button>
+              <button class="mp-pill" onclick="setPeriod('since1991',this)">Since 1991</button>
+            </div>
+            <button class="mp-compare-btn" id="compareBtn" onclick="toggleCompare()">Compare</button>
+            <button class="mp-download-btn" onclick="downloadView()">&#11015; Download</button>
+          </div>
+        </div>
+
+        <div class="mp-national">
+          <div class="mp-nat-label" id="periodLabel">Quarterly Average</div>
+          <div class="mp-nat-value" id="natValue">&mdash;</div>
+          <div class="mp-nat-sub">National Average</div>
+        </div>
+
+        <div class="mp-legend">
+          <span><span class="mp-ldot" style="background:#1e3a5f;"></span>20%+ above avg</span>
+          <span><span class="mp-ldot" style="background:#2563eb;"></span>Above avg</span>
+          <span><span class="mp-ldot" style="background:#60a5fa;"></span>Near avg</span>
+          <span><span class="mp-ldot" style="background:#93c5fd;"></span>Below avg</span>
+          <span><span class="mp-ldot" style="background:#f87171;"></span>Declining</span>
+        </div>
+
+        <div class="mp-load" id="loading"><div class="mp-spin"></div>Loading data...</div>
+
+        <div id="mapSection" style="display:none;">
+          <div class="mp-compare-banner" id="compareBanner">
+            Select up to 4 states to compare (click on the map)
+            <div class="mp-compare-chips" id="compareChips"></div>
+            <button class="mp-compare-go" id="compareGo" style="display:none;" onclick="runCompare()">Compare Selected States</button>
+          </div>
+
+          <div class="mp-map-wrap" id="mapWrap"></div>
+
+          <div class="mp-compare-panel" id="comparePanel">
+            <div class="mp-compare-top">
+              <div class="mp-compare-title">State Comparison</div>
+              <button class="mp-detail-x" onclick="closeCompare()">&#10005; Close</button>
+            </div>
+            <table class="mp-compare-table" id="compareTable"></table>
+          </div>
+
+          <div class="mp-detail" id="detailPanel">
+            <div class="mp-detail-top">
+              <div class="mp-detail-name" id="detailName">Ohio</div>
+              <button class="mp-detail-x" onclick="document.getElementById('detailPanel').classList.remove('show')">&#10005; Close</button>
+            </div>
+            <div class="mp-detail-grid" id="detailGrid"></div>
+          </div>
+        </div>
+
+        <div class="mp-source">Source: Federal Housing Finance Agency (FHFA) &middot; All-Transactions House Price Index via FRED</div>
       </div>
-      <img src="CMA Logo.png" alt="Certified Mortgage Advisor" class="brand-cma">
     </div>
+
   </div>
-
-  <!-- DARK MAP PANEL -->
-  <div class="map-container">
-    <div class="mp-wrap">
-      <div class="mp-header">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <div class="mp-pills">
-            <button class="mp-pill active" onclick="setPeriod('quarter',this)">Quarter</button>
-            <button class="mp-pill" onclick="setPeriod('1year',this)">1 Year</button>
-            <button class="mp-pill" onclick="setPeriod('5year',this)">5 Year</button>
-            <button class="mp-pill" onclick="setPeriod('since1991',this)">Since 1991</button>
-          </div>
-          <button class="mp-compare-btn" id="compareBtn" onclick="toggleCompare()">Compare</button>
-          <button class="mp-download-btn" onclick="downloadView()">&#11015; Download</button>
-        </div>
-      </div>
-
-      <div class="mp-national">
-        <div class="mp-nat-label" id="periodLabel">Quarterly Average</div>
-        <div class="mp-nat-value" id="natValue">&mdash;</div>
-        <div class="mp-nat-sub">National Average</div>
-      </div>
-
-      <div class="mp-legend">
-        <span><span class="mp-ldot" style="background:#1e3a5f;"></span>20%+ above avg</span>
-        <span><span class="mp-ldot" style="background:#2563eb;"></span>Above avg</span>
-        <span><span class="mp-ldot" style="background:#60a5fa;"></span>Near avg</span>
-        <span><span class="mp-ldot" style="background:#93c5fd;"></span>Below avg</span>
-        <span><span class="mp-ldot" style="background:#f87171;"></span>Declining</span>
-      </div>
-
-      <div class="mp-load" id="loading"><div class="mp-spin"></div>Loading data...</div>
-
-      <div id="mapSection" style="display:none;">
-        <div class="mp-compare-banner" id="compareBanner">
-          Select up to 4 states to compare (click on the map)
-          <div class="mp-compare-chips" id="compareChips"></div>
-          <button class="mp-compare-go" id="compareGo" style="display:none;" onclick="runCompare()">Compare Selected States</button>
-        </div>
-
-        <div class="mp-map-wrap" id="mapWrap"></div>
-
-        <div class="mp-compare-panel" id="comparePanel">
-          <div class="mp-compare-top">
-            <div class="mp-compare-title">State Comparison</div>
-            <button class="mp-detail-x" onclick="closeCompare()">&#10005; Close</button>
-          </div>
-          <table class="mp-compare-table" id="compareTable"></table>
-        </div>
-
-        <div class="mp-detail" id="detailPanel">
-          <div class="mp-detail-top">
-            <div class="mp-detail-name" id="detailName">Ohio</div>
-            <button class="mp-detail-x" onclick="document.getElementById('detailPanel').classList.remove('show')">&#10005; Close</button>
-          </div>
-          <div class="mp-detail-grid" id="detailGrid"></div>
-        </div>
-      </div>
-
-      <div class="mp-source">Source: Federal Housing Finance Agency (FHFA) &middot; All-Transactions House Price Index via FRED</div>
-    </div>
-  </div>
-
 </div>
 
-<!-- TOOLTIP (must be outside containers for position:fixed) -->
+<!-- TOOLTIP -->
 <div class="mp-tip" id="tip">
   <div class="mp-tip-name" id="tipName">Ohio</div>
   <div class="mp-tip-val" id="tipVal">+0.7%</div>
   <div class="mp-tip-vs" id="tipVs">+0.54% vs national</div>
 </div>
 
-<!-- FLOATING RETURN -->
 <a href="portal.html" class="return-main">&#8592; Return to Agent Edge Partner Portal</a>
 
 <script>
-// ===== STATE SVG PATHS (US Census TIGER/Line, Albers USA projection) =====
 var PATHS = {
 AK:"M211,476 L216,474 L221,476 L214,468 L227,459 L232,462 L245,463 L251,494 L254,493 L258,497 L261,493 L270,501 L273,502 L274,507 L261,495 L263,498 L260,496 L260,499 L254,494 L246,496 L245,494 L242,495 L242,492 L239,494 L240,492 L240,496 L234,500 L234,494 L238,494 L237,492 L230,499 L231,501 L230,503 L222,510 L209,514 L216,510 L218,510 L224,505 L225,500 L217,501 L216,495 L214,496 L212,494 L211,489 L215,485 L219,485 L220,481 L213,480 L211,476Z",
 AL:"M613,314 L641,311 L649,339 L653,345 L652,347 L654,347 L652,349 L651,353 L653,358 L653,362 L654,365 L624,368 L624,370 L627,372 L627,374 L628,375 L627,377 L620,379 L623,378 L621,376 L621,373 L620,372 L619,378 L617,377 L616,377 L613,356 L614,315 L613,314Z",
