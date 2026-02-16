@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mortgage Amortization Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy: #0a1628;
+  --navy-mid: #0f2035;
+  --navy-light: #162d4a;
+  --blue: #3b82f6;
+  --gold: #c9a84c;
+  --green: #34d399;
+  --green-dark: #059669;
+  --red: #f87171;
+  --text-dark: #0f1923;
+  --text-body: #334155;
+  --text-light: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --bg-warm: #fafaf8;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--navy);
+  color: #eaf0f6;
+  min-height: 100vh;
+}
+
+/* ===== GENERATOR FORM ===== */
+.generator-panel {
+  max-width: 560px;
+  margin: 30px auto;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 28px;
+}
+.gen-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.gen-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+.gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gen-field { display: flex; flex-direction: column; gap: 3px; }
+.gen-field.full { grid-column: 1 / -1; }
+.gen-field.third { }
+.gen-field label {
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.gen-field input, .gen-field select {
+  padding: 8px 10px; border-radius: 7px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 13px; font-family: inherit;
+}
+.gen-field select option {
+  background: #0f2035; color: #fff;
+}
+.gen-field input:focus, .gen-field select:focus { outline: none; border-color: rgba(59,130,246,0.4); }
+.gen-field input::placeholder { color: rgba(255,255,255,0.2); }
+.gen-section {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin: 16px 0 6px; grid-column: 1 / -1;
+  padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.gen-actions { display: flex; gap: 8px; margin-top: 18px; }
+.gen-btn {
+  padding: 10px 20px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.15s;
+}
+.gen-btn.primary { background: var(--blue); color: #fff; flex: 1; }
+.gen-btn.primary:hover { background: #2563eb; }
+.gen-check { display: flex; align-items: center; gap: 8px; grid-column: 1 / -1; }
+.gen-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue); }
+.gen-check label { font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer; }
+.gen-hint { font-size: 9px; color: rgba(255,255,255,0.2); grid-column: 1 / -1; margin-top: -4px; }
+.gen-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; grid-column: 1 / -1; }
+
+/* ===== REPORT OUTPUT ===== */
+.report-container { display: none; max-width: 850px; margin: 20px auto; }
+.report-controls { display: flex; gap: 8px; justify-content: flex-end; margin-bottom: 12px; }
+.report-controls button {
+  padding: 8px 16px; border-radius: 7px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.6);
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.report-controls button:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.report-controls button.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+/* ===== THE REPORT ===== */
+.report-page { background: #fff; color: var(--text-dark); overflow: hidden; }
+
+.rpt-topbar {
+  background: var(--navy); padding: 18px 50px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rpt-brand-mark { display: flex; align-items: center; gap: 10px; }
+.rpt-ae-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--blue), #6366f1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: #fff;
+}
+.rpt-ae-text { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 600; color: #fff; }
+.rpt-doc-type { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 2px; }
+
+.rpt-hero { padding: 36px 50px 28px; border-bottom: 1px solid var(--border); }
+.rpt-greeting { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 4px; }
+.rpt-greeting-sub { font-size: 12px; color: var(--text-light); }
+
+/* Metrics */
+.rpt-metrics { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
+.rpt-metric { padding: 18px 20px; border-right: 1px solid var(--border); text-align: center; }
+.rpt-metric:last-child { border-right: none; }
+.rpt-metric-label { font-size: 8px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.rpt-metric-value { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--navy); }
+.rpt-metric-value.small { font-size: 16px; }
+
+/* Detail row */
+.rpt-detail-row { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); background: var(--bg-warm); }
+.rpt-detail-cell { padding: 12px 20px; border-right: 1px solid var(--border); text-align: center; }
+.rpt-detail-cell:last-child { border-right: none; }
+.rpt-detail-label { font-size: 8px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.rpt-detail-value { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+
+/* ===== SAVINGS COMPARISON ===== */
+.rpt-savings { padding: 28px 50px; border-bottom: 1px solid var(--border); background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0fdfa 100%); }
+.rpt-savings-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 600; color: var(--green-dark); margin-bottom: 16px; }
+.rpt-savings-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center; }
+.rpt-savings-col { text-align: center; }
+.rpt-savings-col-label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.rpt-savings-stat { margin-bottom: 10px; }
+.rpt-savings-stat-label { font-size: 10px; color: var(--text-light); margin-bottom: 1px; }
+.rpt-savings-stat-value { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--text-dark); }
+.rpt-savings-divider {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: var(--green-dark); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; margin: 0 16px;
+}
+.rpt-savings-highlight {
+  margin-top: 16px; padding: 14px 20px; border-radius: 10px;
+  background: rgba(5,150,105,0.08); border: 1px solid rgba(5,150,105,0.15);
+  text-align: center;
+}
+.rpt-savings-big {
+  font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: var(--green-dark);
+}
+.rpt-savings-big-label { font-size: 11px; color: var(--green-dark); font-weight: 600; margin-top: 2px; }
+.rpt-savings-desc { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+/* Chart */
+.rpt-chart-section { padding: 28px 50px; border-bottom: 1px solid var(--border); }
+.rpt-section-title { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 600; color: var(--navy); margin-bottom: 16px; }
+.rpt-chart-wrap { display: flex; align-items: flex-start; gap: 30px; }
+.rpt-chart-canvas { width: 460px; height: 200px; }
+.rpt-chart-sidebar-title { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.rpt-legend-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+.rpt-legend-line { width: 18px; height: 3px; border-radius: 2px; margin-top: 7px; flex-shrink: 0; }
+.rpt-legend-label { font-size: 10px; color: var(--text-light); }
+.rpt-legend-value { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+
+/* Table */
+.rpt-table-section { padding: 24px 50px 32px; border-bottom: 1px solid var(--border); }
+.rpt-table-tabs { display: flex; gap: 2px; margin-bottom: 12px; }
+.rpt-table-tab {
+  padding: 6px 14px; border-radius: 6px; font-size: 10px; font-weight: 700;
+  background: transparent; border: 1px solid var(--border); color: var(--text-light);
+  cursor: pointer; font-family: inherit;
+}
+.rpt-table-tab.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.rpt-table { width: 100%; border-collapse: collapse; }
+.rpt-table thead th {
+  padding: 8px 10px; text-align: left;
+  font-size: 8px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 1px;
+  border-bottom: 2px solid var(--navy); background: var(--bg-warm);
+}
+.rpt-table thead th:not(:first-child) { text-align: right; }
+.rpt-table tbody td {
+  padding: 6px 10px; font-size: 11px; color: var(--text-body); border-bottom: 1px solid #f1f5f9;
+}
+.rpt-table tbody td:first-child { font-weight: 600; color: var(--navy); }
+.rpt-table tbody td:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+.rpt-table tbody tr:hover { background: #f8fafc; }
+.rpt-table tbody td.savings { color: var(--green-dark); font-weight: 600; }
+
+/* Footer */
+.rpt-footer {
+  background: var(--navy); padding: 24px 50px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.rpt-footer-left { display: flex; align-items: center; gap: 14px; }
+.rpt-headshot-placeholder {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 14px;
+}
+.rpt-lo-name { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 600; color: #fff; }
+.rpt-lo-detail { font-size: 9px; color: rgba(255,255,255,0.4); line-height: 1.6; }
+.rpt-footer-right { text-align: right; }
+.rpt-company-name { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
+.rpt-company-sub { font-size: 8px; color: rgba(255,255,255,0.25); }
+
+.rpt-cobrand { display: none; padding: 14px 50px; background: var(--navy-mid); border-top: 1px solid rgba(255,255,255,0.06); align-items: center; }
+.rpt-cobrand.show { display: flex; }
+.rpt-cobrand-tag { font-size: 7px; font-weight: 700; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
+.rpt-cobrand-name { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
+.rpt-cobrand-detail { font-size: 9px; color: rgba(255,255,255,0.3); }
+
+.rpt-disclosures {
+  padding: 12px 50px 16px; background: #060d18;
+  font-size: 6.5px; color: rgba(255,255,255,0.18); line-height: 1.7;
+}
+.rpt-disc-logos { display: flex; align-items: center; gap: 14px; margin-top: 6px; font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.12); }
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .generator-panel, .report-controls { display: none !important; }
+  .report-container { display: block !important; margin: 0; max-width: 100%; }
+  .rpt-topbar, .rpt-footer, .rpt-cobrand, .rpt-disclosures, .rpt-savings { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .rpt-hero { padding: 24px 40px 20px; }
+  .rpt-metric { padding: 14px 16px; }
+  .rpt-metric-value { font-size: 16px; }
+  .rpt-chart-section { padding: 20px 40px; }
+  .rpt-table-section { padding: 16px 40px 24px; }
+  .rpt-table tbody td { padding: 4px 6px; font-size: 9px; }
+  .rpt-table thead th { font-size: 7px; padding: 6px; }
+  .rpt-footer { padding: 18px 40px; }
+  .rpt-disclosures { padding: 8px 40px 12px; }
+  .rpt-chart-canvas { width: 360px; height: 170px; }
+  .rpt-savings { padding: 20px 40px; }
+  .rpt-cta { padding: 16px 40px !important; }
+  .rpt-table-tabs { display: none; }
+  @page { margin: 0.25in; size: letter; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== INPUT FORM ===== -->
+<div class="generator-panel" id="generatorPanel">
+  <div class="gen-title">Mortgage Amortization Report</div>
+  <div class="gen-sub">Generate a branded amortization schedule with payoff comparison</div>
+
+  <div class="gen-grid">
+    <div class="gen-section">Client Info</div>
+    <div class="gen-field full">
+      <label>Client Name</label>
+      <input type="text" id="inp_clientName" placeholder="Susie Homebuyer">
+    </div>
+
+    <div class="gen-section">Loan Details</div>
+    <div class="gen-field">
+      <label>Loan Amount</label>
+      <input type="text" id="inp_loanAmount" placeholder="400,000" oninput="formatCurrency(this)">
+    </div>
+    <div class="gen-field">
+      <label>Term (Years)</label>
+      <select id="inp_term">
+        <option value="30">30 years</option>
+        <option value="25">25 years</option>
+        <option value="20">20 years</option>
+        <option value="15">15 years</option>
+        <option value="10">10 years</option>
+      </select>
+    </div>
+    <div class="gen-field">
+      <label>Annual Interest Rate (%)</label>
+      <input type="text" id="inp_rate" placeholder="6.0">
+    </div>
+    <div class="gen-field">
+      <label>APR (%)</label>
+      <input type="text" id="inp_apr" placeholder="6.5">
+    </div>
+
+    <div class="gen-section">Accelerated Payoff (Optional)</div>
+    <div class="gen-hint">Leave blank or $0 for standard amortization only</div>
+    <div class="gen-grid-3">
+      <div class="gen-field">
+        <label>Extra Monthly ($)</label>
+        <input type="text" id="inp_extraMonthly" placeholder="0" oninput="formatCurrency(this)">
+      </div>
+      <div class="gen-field">
+        <label>Extra Annual ($)</label>
+        <input type="text" id="inp_extraAnnual" placeholder="0" oninput="formatCurrency(this)">
+      </div>
+      <div class="gen-field">
+        <label>Payment Frequency</label>
+        <select id="inp_frequency">
+          <option value="monthly">Monthly</option>
+          <option value="biweekly">Bi-Weekly</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="gen-section">Co-Branding (Optional)</div>
+    <div class="gen-check">
+      <input type="checkbox" id="inp_cta" checked>
+      <label for="inp_cta">Include "ask about accelerated payoff" call-to-action</label>
+    </div>
+    <div class="gen-check">
+      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()">
+      <label for="inp_cobrand">Include realtor co-branding</label>
+    </div>
+    <div id="cobrandFields" style="display:none; grid-column:1/-1;">
+      <!-- LAYOUT PICKER -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Choose Layout</label>
+        <div style="display:flex;gap:10px;" id="layoutPicker">
+          <!-- Option: Realtor LEFT -->
+          <div class="layout-option active" id="layoutLeft" onclick="pickLayout('left')" style="flex:1;border-radius:10px;border:2px solid var(--blue);background:rgba(59,130,246,0.08);padding:12px;cursor:pointer;transition:0.15s;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
+                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
+              </div>
+              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
+                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:var(--blue);">Realtor Left</div>
+          </div>
+          <!-- Option: Realtor RIGHT -->
+          <div class="layout-option" id="layoutRight" onclick="pickLayout('right')" style="flex:1;border-radius:10px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);padding:12px;cursor:pointer;transition:0.15s;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
+                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
+              </div>
+              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
+                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);">Realtor Right</div>
+          </div>
+        </div>
+      </div>
+      <!-- REALTOR FIELDS -->
+      <div class="gen-grid" style="gap:10px;">
+        <div class="gen-field">
+          <label>Realtor Name</label>
+          <input type="text" id="inp_realtorName" placeholder="Jane Agent">
+        </div>
+        <div class="gen-field">
+          <label>Brokerage</label>
+          <input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams">
+        </div>
+        <div class="gen-field">
+          <label>Realtor Phone</label>
+          <input type="text" id="inp_realtorPhone" placeholder="(555) 123-4567">
+        </div>
+        <div class="gen-field">
+          <label>Realtor Email</label>
+          <input type="text" id="inp_realtorEmail" placeholder="jane@kw.com">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gen-actions">
+    <button class="gen-btn primary" onclick="generateReport()">Generate Report</button>
+  </div>
+</div>
+
+<!-- ===== REPORT OUTPUT ===== -->
+<div class="report-container" id="reportContainer">
+  <div class="report-controls">
+    <button onclick="editReport()">← Edit</button>
+    <button class="primary" onclick="window.print()">📄 Export PDF</button>
+  </div>
+
+  <div class="report-page" id="reportPage">
+    <div class="rpt-topbar">
+      <div class="rpt-brand-mark">
+        <div class="rpt-ae-icon">AE</div>
+        <div class="rpt-ae-text">Agent Edge</div>
+      </div>
+      <div class="rpt-doc-type">Amortization Schedule</div>
+    </div>
+
+    <div class="rpt-hero">
+      <div class="rpt-greeting" id="rptGreeting">Your Mortgage Amortization</div>
+      <div class="rpt-greeting-sub" id="rptGreetingSub">Prepared for Susie Homebuyer · 30-Year Fixed</div>
+    </div>
+
+    <div class="rpt-metrics">
+      <div class="rpt-metric"><div class="rpt-metric-label">Loan Amount</div><div class="rpt-metric-value" id="rptLoanAmt">$400,000</div></div>
+      <div class="rpt-metric"><div class="rpt-metric-label">Monthly P&I</div><div class="rpt-metric-value" id="rptPI">$2,398</div></div>
+      <div class="rpt-metric"><div class="rpt-metric-label">Interest Rate</div><div class="rpt-metric-value small" id="rptRate">6.00%</div></div>
+      <div class="rpt-metric"><div class="rpt-metric-label">APR</div><div class="rpt-metric-value small" id="rptApr">6.50%</div></div>
+    </div>
+
+    <div class="rpt-detail-row">
+      <div class="rpt-detail-cell"><div class="rpt-detail-label">Payments</div><div class="rpt-detail-value" id="rptPayments">360</div></div>
+      <div class="rpt-detail-cell"><div class="rpt-detail-label">Total Paid</div><div class="rpt-detail-value" id="rptTotalPaid">$863,353</div></div>
+      <div class="rpt-detail-cell"><div class="rpt-detail-label">Total Interest</div><div class="rpt-detail-value" id="rptTotalInt">$463,353</div></div>
+    </div>
+
+    <!-- SAVINGS COMPARISON (hidden if no extra payments) -->
+    <div class="rpt-savings" id="rptSavings" style="display:none;">
+      <div class="rpt-savings-title">Your Accelerated Payoff Advantage</div>
+      <div class="rpt-savings-grid">
+        <div class="rpt-savings-col">
+          <div class="rpt-savings-col-label">Standard</div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Payoff Time</div><div class="rpt-savings-stat-value" id="svStdTime">30 years</div></div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Total Interest</div><div class="rpt-savings-stat-value" id="svStdInt">$463,353</div></div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Total Paid</div><div class="rpt-savings-stat-value" id="svStdPaid">$863,353</div></div>
+        </div>
+        <div class="rpt-savings-divider">VS</div>
+        <div class="rpt-savings-col">
+          <div class="rpt-savings-col-label">Accelerated</div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Payoff Time</div><div class="rpt-savings-stat-value" id="svAccTime" style="color:var(--green-dark);">23 yrs 4 mo</div></div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Total Interest</div><div class="rpt-savings-stat-value" id="svAccInt" style="color:var(--green-dark);">$342,100</div></div>
+          <div class="rpt-savings-stat"><div class="rpt-savings-stat-label">Total Paid</div><div class="rpt-savings-stat-value" id="svAccPaid" style="color:var(--green-dark);">$742,100</div></div>
+        </div>
+      </div>
+      <div class="rpt-savings-highlight">
+        <div class="rpt-savings-big" id="svSavedAmount">$121,253</div>
+        <div class="rpt-savings-big-label">Total Interest Saved</div>
+        <div class="rpt-savings-desc" id="svSavedDesc">Pay off your mortgage 6 years and 8 months early</div>
+      </div>
+    </div>
+
+    <!-- CTA teaser (shown when NO acceleration is included) -->
+    <div class="rpt-cta" id="rptCta" style="display:none; padding:20px 50px; border-bottom:1px solid var(--border); background:#f8fafc; text-align:center;">
+      <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--navy); margin-bottom:4px;">Could you pay off your mortgage faster?</div>
+      <div style="font-size:11px; color:var(--text-light); max-width:500px; margin:0 auto 8px;">Small extra payments can save you tens of thousands in interest and years off your loan. Ask about a personalized accelerated payoff strategy.</div>
+      <div style="font-size:12px; font-weight:700; color:var(--blue);">Contact Kristy Flach · (206) 313-5883 · kflach@prmg.net</div>
+    </div>
+
+    <!-- CHART -->
+    <div class="rpt-chart-section">
+      <div class="rpt-section-title" id="rptChartTitle">How Your Balance Changes Over Time</div>
+      <div class="rpt-chart-wrap">
+        <canvas id="amortChart" class="rpt-chart-canvas"></canvas>
+        <div class="rpt-chart-sidebar">
+          <div class="rpt-chart-sidebar-title">After Year 1</div>
+          <div class="rpt-legend-item">
+            <div class="rpt-legend-line" style="background:var(--blue);"></div>
+            <div><div class="rpt-legend-label">Remaining Balance</div><div class="rpt-legend-value" id="lgBalance">$395,088</div></div>
+          </div>
+          <div class="rpt-legend-item">
+            <div class="rpt-legend-line" style="background:var(--green);"></div>
+            <div><div class="rpt-legend-label">Principal Paid</div><div class="rpt-legend-value" id="lgPrincipal">$4,912</div></div>
+          </div>
+          <div class="rpt-legend-item">
+            <div class="rpt-legend-line" style="background:var(--red);"></div>
+            <div><div class="rpt-legend-label">Interest Paid</div><div class="rpt-legend-value" id="lgInterest">$23,866</div></div>
+          </div>
+          <div class="rpt-legend-item" id="lgAccelItem" style="display:none;">
+            <div class="rpt-legend-line" style="background:var(--gold); height:3px; border-top:2px dashed var(--gold); background:none;"></div>
+            <div><div class="rpt-legend-label">Accelerated Balance</div><div class="rpt-legend-value" id="lgAccelBal" style="color:var(--green-dark);">$390,000</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="rpt-table-section">
+      <div class="rpt-section-title">Year-by-Year Breakdown</div>
+      <div class="rpt-table-tabs" id="rptTableTabs" style="display:none;">
+        <button class="rpt-table-tab active" onclick="showTable('standard',this)">Standard</button>
+        <button class="rpt-table-tab" onclick="showTable('accelerated',this)">Accelerated</button>
+        <button class="rpt-table-tab" onclick="showTable('comparison',this)">Side-by-Side</button>
+      </div>
+      <table class="rpt-table" id="rptTable">
+        <thead id="rptTableHead">
+          <tr><th>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>
+        </thead>
+        <tbody id="rptTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="rpt-footer" id="rptFooter">
+      <div class="rpt-footer-left" id="rptFooterLeft">
+        <div class="rpt-headshot-placeholder" id="rptFooterLeftImg">KF</div>
+        <div>
+          <div class="rpt-lo-name" id="rptFooterLeftName">Kristy Flach</div>
+          <div class="rpt-lo-detail" id="rptFooterLeftDetail">NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net · kflach.myprmg.net</div>
+        </div>
+      </div>
+      <div class="rpt-footer-right" id="rptFooterRight">
+        <div class="rpt-company-name" id="rptFooterRightName">Paramount Residential Mortgage Group</div>
+        <div class="rpt-company-sub" id="rptFooterRightDetail">NMLS# 75243 · Equal Housing Lender</div>
+      </div>
+    </div>
+
+    <div class="rpt-cobrand" id="rptCobrand" style="display:none;"></div>
+
+    <div class="rpt-disclosures">
+      Prepared <span id="rptDate"></span>. &copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243; 1265 Corona Pointe Court, Corona, CA 92879. All Rights Reserved. Licensed in all 50 states. Loan and monthly payment scenarios are for informational purposes only and may not be specific to your situation. Rates expressed may not be available at this time. This document should not be construed as mortgage advice or a commitment to lend. Results may vary. Monthly P&I based on a fully amortizing fixed interest loan. Taxes, insurance, and HOA fees not included. Accelerated payoff scenarios are estimates and assume consistent additional payments throughout the loan term.
+      <div class="rpt-disc-logos">
+        <span>MEMBER FDIC</span><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function formatCurrency(el) {
+  var val = el.value.replace(/[^0-9]/g, '');
+  if (val) el.value = parseInt(val).toLocaleString();
+}
+function parseCurrency(str) { return parseFloat((str || '0').replace(/[^0-9.]/g, '')) || 0; }
+function fmtMoney(n) { return '$' + Math.round(n).toLocaleString(); }
+function toggleCobrand() {
+  document.getElementById('cobrandFields').style.display = document.getElementById('inp_cobrand').checked ? 'block' : 'none';
+}
+
+var cobrandLayout = 'left'; // realtor on left by default
+
+function pickLayout(side) {
+  cobrandLayout = side;
+  var leftEl = document.getElementById('layoutLeft');
+  var rightEl = document.getElementById('layoutRight');
+  if (side === 'left') {
+    leftEl.style.borderColor = 'var(--blue)';
+    leftEl.style.background = 'rgba(59,130,246,0.08)';
+    leftEl.querySelector('div:last-child').style.color = 'var(--blue)';
+    rightEl.style.borderColor = 'rgba(255,255,255,0.1)';
+    rightEl.style.background = 'rgba(255,255,255,0.02)';
+    rightEl.querySelector('div:last-child').style.color = 'rgba(255,255,255,0.3)';
+  } else {
+    rightEl.style.borderColor = 'var(--blue)';
+    rightEl.style.background = 'rgba(59,130,246,0.08)';
+    rightEl.querySelector('div:last-child').style.color = 'var(--blue)';
+    leftEl.style.borderColor = 'rgba(255,255,255,0.1)';
+    leftEl.style.background = 'rgba(255,255,255,0.02)';
+    leftEl.querySelector('div:last-child').style.color = 'rgba(255,255,255,0.3)';
+  }
+}
+
+// ===== STANDARD AMORTIZATION =====
+function calcAmort(principal, annualRate, termYears) {
+  var mr = annualRate / 100 / 12, n = termYears * 12;
+  var mp = mr === 0 ? principal / n : principal * (mr * Math.pow(1 + mr, n)) / (Math.pow(1 + mr, n) - 1);
+  var schedule = [], yearlyData = [], bal = principal, tInt = 0, tPrin = 0;
+  var yPaid = 0, yInt = 0, yPrin = 0;
+
+  for (var i = 1; i <= n; i++) {
+    var ip = bal * mr, pp = mp - ip;
+    bal -= pp; if (bal < 0) bal = 0;
+    tInt += ip; tPrin += pp; yPaid += mp; yInt += ip; yPrin += pp;
+    schedule.push({ month: i, balance: bal, totalPrincipal: tPrin, totalInterest: tInt });
+    if (i % 12 === 0 || i === n) {
+      yearlyData.push({ year: Math.ceil(i / 12), paid: yPaid, interest: yInt, principal: yPrin, balance: bal });
+      yPaid = 0; yInt = 0; yPrin = 0;
+    }
+  }
+  return { monthlyPayment: mp, totalPaid: mp * n, totalInterest: tInt, schedule: schedule, yearlyData: yearlyData, months: n };
+}
+
+// ===== ACCELERATED AMORTIZATION =====
+function calcAccelerated(principal, annualRate, termYears, extraMonthly, extraAnnual, biweekly) {
+  var mr = annualRate / 100 / 12;
+  var n = termYears * 12;
+  var mp = mr === 0 ? principal / n : principal * (mr * Math.pow(1 + mr, n)) / (Math.pow(1 + mr, n) - 1);
+  var schedule = [], yearlyData = [], bal = principal, tInt = 0, tPrin = 0, tPaid = 0;
+  var yPaid = 0, yInt = 0, yPrin = 0;
+
+  // Bi-weekly: 26 half-payments per year = 13 full payments instead of 12
+  var effectiveExtra = extraMonthly;
+  if (biweekly) effectiveExtra += mp / 12; // extra 1 payment spread over 12 months
+
+  var month = 0;
+  while (bal > 0.01 && month < n + 120) { // safety cap
+    month++;
+    var ip = bal * mr;
+    var totalPayment = mp + effectiveExtra;
+    // Annual extra in month 12 of each year
+    if (extraAnnual > 0 && month % 12 === 0) totalPayment += extraAnnual;
+    if (totalPayment > bal + ip) totalPayment = bal + ip;
+    var pp = totalPayment - ip;
+    bal -= pp; if (bal < 0.01) bal = 0;
+    tInt += ip; tPrin += pp; tPaid += totalPayment;
+    yPaid += totalPayment; yInt += ip; yPrin += pp;
+
+    schedule.push({ month: month, balance: bal, totalPrincipal: tPrin, totalInterest: tInt });
+
+    if (month % 12 === 0 || bal === 0) {
+      yearlyData.push({ year: Math.ceil(month / 12), paid: yPaid, interest: yInt, principal: yPrin, balance: bal });
+      yPaid = 0; yInt = 0; yPrin = 0;
+      if (bal === 0) break;
+    }
+  }
+  return { monthlyPayment: mp, effectivePayment: mp + effectiveExtra, totalPaid: tPaid, totalInterest: tInt, schedule: schedule, yearlyData: yearlyData, months: month };
+}
+
+// ===== GLOBALS =====
+var stdData = null, accData = null, hasAcceleration = false;
+
+// ===== GENERATE =====
+function generateReport() {
+  var clientName = document.getElementById('inp_clientName').value.trim() || 'Homebuyer';
+  var loanAmount = parseCurrency(document.getElementById('inp_loanAmount').value);
+  var term = parseInt(document.getElementById('inp_term').value);
+  var rate = parseFloat(document.getElementById('inp_rate').value) || 0;
+  var apr = document.getElementById('inp_apr').value.trim();
+  var extraMonthly = parseCurrency(document.getElementById('inp_extraMonthly').value);
+  var extraAnnual = parseCurrency(document.getElementById('inp_extraAnnual').value);
+  var biweekly = document.getElementById('inp_frequency').value === 'biweekly';
+
+  if (!loanAmount || loanAmount < 1000) { alert('Please enter a valid loan amount'); return; }
+  if (rate <= 0) { alert('Please enter an interest rate'); return; }
+
+  stdData = calcAmort(loanAmount, rate, term);
+  hasAcceleration = extraMonthly > 0 || extraAnnual > 0 || biweekly;
+
+  if (hasAcceleration) {
+    accData = calcAccelerated(loanAmount, rate, term, extraMonthly, extraAnnual, biweekly);
+  }
+
+  var n = term * 12;
+
+  // Summary
+  document.getElementById('rptGreetingSub').textContent = 'Prepared for ' + clientName + ' · ' + term + '-Year Fixed';
+  document.getElementById('rptLoanAmt').textContent = fmtMoney(loanAmount);
+  document.getElementById('rptPayments').textContent = n.toLocaleString();
+  document.getElementById('rptRate').textContent = rate.toFixed(2) + '%';
+  document.getElementById('rptApr').textContent = (apr || rate) + '%';
+  document.getElementById('rptPI').textContent = fmtMoney(stdData.monthlyPayment);
+  document.getElementById('rptTotalPaid').textContent = fmtMoney(stdData.totalPaid);
+  document.getElementById('rptTotalInt').textContent = fmtMoney(stdData.totalInterest);
+
+  var now = new Date();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('rptDate').textContent = months[now.getMonth()] + ' ' + now.getDate() + ', ' + now.getFullYear();
+
+  // Legend
+  var p12 = stdData.schedule[Math.min(11, stdData.schedule.length - 1)];
+  document.getElementById('lgBalance').textContent = fmtMoney(p12.balance);
+  document.getElementById('lgPrincipal').textContent = fmtMoney(p12.totalPrincipal);
+  document.getElementById('lgInterest').textContent = fmtMoney(p12.totalInterest);
+
+  // Savings section
+  if (hasAcceleration) {
+    document.getElementById('rptSavings').style.display = 'block';
+    document.getElementById('rptTableTabs').style.display = 'flex';
+    document.getElementById('lgAccelItem').style.display = 'flex';
+
+    var stdYrs = Math.floor(stdData.months / 12);
+    var stdMo = stdData.months % 12;
+    var accYrs = Math.floor(accData.months / 12);
+    var accMo = accData.months % 12;
+    var savedMonths = stdData.months - accData.months;
+    var savedYrs = Math.floor(savedMonths / 12);
+    var savedMo = savedMonths % 12;
+    var savedInt = stdData.totalInterest - accData.totalInterest;
+
+    document.getElementById('svStdTime').textContent = stdYrs + ' years';
+    document.getElementById('svStdInt').textContent = fmtMoney(stdData.totalInterest);
+    document.getElementById('svStdPaid').textContent = fmtMoney(stdData.totalPaid);
+    document.getElementById('svAccTime').textContent = accYrs + ' yrs ' + accMo + ' mo';
+    document.getElementById('svAccInt').textContent = fmtMoney(accData.totalInterest);
+    document.getElementById('svAccPaid').textContent = fmtMoney(accData.totalPaid);
+    document.getElementById('svSavedAmount').textContent = fmtMoney(savedInt);
+
+    var desc = 'Pay off your mortgage ';
+    if (savedYrs > 0) desc += savedYrs + ' year' + (savedYrs > 1 ? 's' : '');
+    if (savedYrs > 0 && savedMo > 0) desc += ' and ';
+    if (savedMo > 0) desc += savedMo + ' month' + (savedMo > 1 ? 's' : '');
+    desc += ' early';
+    document.getElementById('svSavedDesc').textContent = desc;
+
+    var ap12 = accData.schedule[Math.min(11, accData.schedule.length - 1)];
+    document.getElementById('lgAccelBal').textContent = fmtMoney(ap12.balance);
+
+    document.getElementById('rptChartTitle').textContent = 'Standard vs. Accelerated Payoff';
+  } else {
+    document.getElementById('rptSavings').style.display = 'none';
+    document.getElementById('rptTableTabs').style.display = 'none';
+    document.getElementById('lgAccelItem').style.display = 'none';
+    document.getElementById('rptChartTitle').textContent = 'How Your Balance Changes Over Time';
+  }
+
+  // CTA - show when no acceleration and checkbox is on
+  var showCta = !hasAcceleration && document.getElementById('inp_cta').checked;
+  document.getElementById('rptCta').style.display = showCta ? 'block' : 'none';
+
+  // Co-brand footer
+  var kristyLeft = {
+    initials: 'KF',
+    name: 'Kristy Flach',
+    detail: 'NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net · kflach.myprmg.net'
+  };
+  var companyRight = {
+    name: 'Paramount Residential Mortgage Group',
+    detail: 'NMLS# 75243 · Equal Housing Lender'
+  };
+
+  if (document.getElementById('inp_cobrand').checked) {
+    var rName = document.getElementById('inp_realtorName').value.trim() || 'Realtor';
+    var rBrok = document.getElementById('inp_realtorBrokerage').value.trim();
+    var rPhone = document.getElementById('inp_realtorPhone').value.trim();
+    var rEmail = document.getElementById('inp_realtorEmail').value.trim();
+    var rInitials = rName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
+    var rDetail = [rBrok, rPhone, rEmail].filter(Boolean).join(' · ');
+
+    var realtorBlock = {
+      initials: rInitials,
+      name: rName,
+      detail: rDetail
+    };
+
+    var leftPerson, rightPerson;
+    if (cobrandLayout === 'left') {
+      // Realtor left, Kristy right
+      leftPerson = realtorBlock;
+      rightPerson = kristyLeft;
+    } else {
+      // Kristy left, Realtor right
+      leftPerson = kristyLeft;
+      rightPerson = realtorBlock;
+    }
+
+    document.getElementById('rptFooterLeftImg').textContent = leftPerson.initials;
+    document.getElementById('rptFooterLeftName').textContent = leftPerson.name;
+    document.getElementById('rptFooterLeftDetail').innerHTML = leftPerson.detail;
+    document.getElementById('rptFooterRightName').textContent = rightPerson.name;
+    document.getElementById('rptFooterRightDetail').innerHTML = rightPerson.detail;
+
+    // Show the company line below as a subtle cobrand bar
+    document.getElementById('rptCobrand').style.display = 'flex';
+    document.getElementById('rptCobrand').innerHTML =
+      '<div style="flex:1;">' +
+        '<div class="rpt-cobrand-tag">Presented by</div>' +
+        '<div class="rpt-company-name">Paramount Residential Mortgage Group</div>' +
+        '<div class="rpt-company-sub">NMLS# 75243 · Equal Housing Lender</div>' +
+      '</div>';
+  } else {
+    // No co-brand - standard footer
+    document.getElementById('rptFooterLeftImg').textContent = 'KF';
+    document.getElementById('rptFooterLeftName').textContent = kristyLeft.name;
+    document.getElementById('rptFooterLeftDetail').innerHTML = kristyLeft.detail;
+    document.getElementById('rptFooterRightName').textContent = companyRight.name;
+    document.getElementById('rptFooterRightDetail').innerHTML = companyRight.detail;
+    document.getElementById('rptCobrand').style.display = 'none';
+  }
+
+  // Table & Chart
+  showTable('standard', document.querySelector('.rpt-table-tab'));
+  drawChart(stdData.schedule, accData ? accData.schedule : null, n, loanAmount);
+
+  document.getElementById('generatorPanel').style.display = 'none';
+  document.getElementById('reportContainer').style.display = 'block';
+}
+
+// ===== TABLE SWITCHING =====
+function showTable(mode, btn) {
+  if (btn) {
+    document.querySelectorAll('.rpt-table-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+  }
+  var thead = document.getElementById('rptTableHead');
+  var tbody = document.getElementById('rptTableBody');
+  tbody.innerHTML = '';
+
+  if (mode === 'standard') {
+    thead.innerHTML = '<tr><th>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>';
+    stdData.yearlyData.forEach(function(yr) {
+      tbody.innerHTML += '<tr><td>' + yr.year + '</td><td>' + fmtMoney(yr.paid) + '</td><td>' + fmtMoney(yr.interest) + '</td><td>' + fmtMoney(yr.principal) + '</td><td>' + fmtMoney(yr.balance) + '</td></tr>';
+    });
+  } else if (mode === 'accelerated' && accData) {
+    thead.innerHTML = '<tr><th>Year</th><th>Paid</th><th>Interest</th><th>Principal</th><th>Balance</th></tr>';
+    accData.yearlyData.forEach(function(yr) {
+      tbody.innerHTML += '<tr><td>' + yr.year + '</td><td>' + fmtMoney(yr.paid) + '</td><td>' + fmtMoney(yr.interest) + '</td><td>' + fmtMoney(yr.principal) + '</td><td>' + fmtMoney(yr.balance) + '</td></tr>';
+    });
+  } else if (mode === 'comparison' && accData) {
+    thead.innerHTML = '<tr><th>Year</th><th>Std Balance</th><th>Accel Balance</th><th>Difference</th></tr>';
+    var maxYears = Math.max(stdData.yearlyData.length, accData.yearlyData.length);
+    for (var i = 0; i < stdData.yearlyData.length; i++) {
+      var sy = stdData.yearlyData[i];
+      var ay = accData.yearlyData[i];
+      var aBal = ay ? ay.balance : 0;
+      var diff = sy.balance - aBal;
+      tbody.innerHTML += '<tr><td>' + sy.year + '</td><td>' + fmtMoney(sy.balance) + '</td><td>' + (ay ? fmtMoney(aBal) : 'Paid Off') + '</td><td class="savings">' + (diff > 0 ? '-' + fmtMoney(diff) : '$0') + '</td></tr>';
+    }
+  }
+}
+
+// ===== CHART =====
+function drawChart(stdSchedule, accSchedule, numPayments, loanAmount) {
+  var canvas = document.getElementById('amortChart');
+  var ctx = canvas.getContext('2d');
+  canvas.width = 460; canvas.height = 200;
+  var W = 460, H = 200;
+  var pad = { top: 14, right: 14, bottom: 28, left: 50 };
+  var cw = W - pad.left - pad.right, ch = H - pad.top - pad.bottom;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = '#eef2f6'; ctx.lineWidth = 1;
+  for (var i = 0; i <= 4; i++) {
+    var y = pad.top + (ch / 4) * i;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8'; ctx.font = '8px DM Sans'; ctx.textAlign = 'right';
+    ctx.fillText('$' + Math.round(loanAmount * (1 - i / 4) / 1000) + 'K', pad.left - 6, y + 3);
+  }
+  ctx.textAlign = 'center';
+  var termYrs = numPayments / 12;
+  for (var x = 0; x <= 5; x++) {
+    ctx.fillText('Yr ' + Math.round((termYrs / 5) * x), pad.left + (cw / 5) * x, H - 6);
+  }
+
+  var step = Math.max(1, Math.floor(numPayments / 120));
+
+  // Standard balance line
+  var stdPts = [];
+  for (var i = 0; i < stdSchedule.length; i += step) {
+    var s = stdSchedule[i];
+    stdPts.push({ x: pad.left + (s.month / numPayments) * cw, y: pad.top + (1 - s.balance / loanAmount) * ch });
+  }
+
+  function drawLine(pts, color, width, dashed) {
+    if (pts.length < 2) return;
+    ctx.beginPath(); ctx.setLineDash(dashed || []);
+    ctx.moveTo(pts[0].x, pts[0].y);
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.strokeStyle = color; ctx.lineWidth = width; ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawArea(pts, color, alpha) {
+    if (pts.length < 2) return;
+    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.lineTo(pts[pts.length - 1].x, pad.top + ch);
+    ctx.lineTo(pts[0].x, pad.top + ch);
+    ctx.closePath(); ctx.fillStyle = color; ctx.globalAlpha = alpha; ctx.fill(); ctx.globalAlpha = 1;
+  }
+
+  drawArea(stdPts, '#3b82f6', 0.07);
+  drawLine(stdPts, '#3b82f6', 2.5);
+
+  // Accelerated line (if applicable)
+  if (accSchedule) {
+    var accPts = [];
+    for (var i = 0; i < accSchedule.length; i += step) {
+      var s = accSchedule[i];
+      accPts.push({ x: pad.left + (s.month / numPayments) * cw, y: pad.top + (1 - s.balance / loanAmount) * ch });
+    }
+    // Add final point at zero
+    if (accSchedule.length > 0) {
+      var last = accSchedule[accSchedule.length - 1];
+      accPts.push({ x: pad.left + (last.month / numPayments) * cw, y: pad.top + ch });
+    }
+
+    // Fill the area between curves to show savings
+    if (stdPts.length > 0 && accPts.length > 0) {
+      ctx.beginPath();
+      ctx.moveTo(stdPts[0].x, stdPts[0].y);
+      for (var i = 0; i < stdPts.length; i++) ctx.lineTo(stdPts[i].x, stdPts[i].y);
+      // Reverse along accelerated curve
+      for (var i = accPts.length - 1; i >= 0; i--) ctx.lineTo(accPts[i].x, accPts[i].y);
+      ctx.closePath();
+      ctx.fillStyle = '#059669'; ctx.globalAlpha = 0.08; ctx.fill(); ctx.globalAlpha = 1;
+    }
+
+    drawLine(accPts, '#059669', 2.5, [6, 3]);
+
+    // Label
+    if (accPts.length > 0) {
+      var labelPt = accPts[accPts.length - 1];
+      ctx.fillStyle = '#059669'; ctx.font = 'bold 8px DM Sans'; ctx.textAlign = 'left';
+      ctx.fillText('Paid off!', labelPt.x + 4, labelPt.y - 4);
+    }
+  }
+
+  // Label standard line
+  ctx.fillStyle = '#3b82f6'; ctx.font = '8px DM Sans'; ctx.textAlign = 'right';
+  ctx.fillText('Standard', stdPts[stdPts.length - 1].x - 4, stdPts[stdPts.length - 1].y - 4);
+}
+
+function editReport() {
+  document.getElementById('generatorPanel').style.display = 'block';
+  document.getElementById('reportContainer').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
