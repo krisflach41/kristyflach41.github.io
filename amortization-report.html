@@ -96,6 +96,11 @@ body {
 .report-page { background: #fff; color: var(--text-dark); overflow: hidden; }
 
 
+
+
+
+
+
 .rpt-hero { padding: 36px 50px 28px; border-bottom: 1px solid var(--border); }
 .rpt-greeting { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 4px; }
 .rpt-greeting-sub { font-size: 12px; color: var(--text-light); }
@@ -177,7 +182,6 @@ body {
 .rpt-table tbody tr:hover { background: #f8fafc; }
 .rpt-table tbody td.savings { color: var(--green-dark); font-weight: 600; }
 
-/* Footer */
 /* ===== FOOTER BRANDING ===== */
 .rpt-footer {
   background: #f8f9fa;
@@ -185,7 +189,6 @@ body {
   border-top: 3px solid #9CB5A0;
 }
 
-/* STANDARD FOOTER (NO CO-BRAND) */
 .footer-standard {
   display: flex;
   justify-content: space-between;
@@ -237,7 +240,6 @@ body {
   object-fit: contain;
 }
 
-/* CO-BRAND FOOTER (EQUAL BILLING) */
 .footer-cobrand {
   display: flex;
   justify-content: space-between;
@@ -274,7 +276,6 @@ body {
   height: 40px;
 }
 
-/* DISCLAIMER */
 .footer-disclaimer {
   margin-top: 20px;
   padding-top: 20px;
@@ -283,6 +284,24 @@ body {
   color: #999;
   line-height: 1.5;
   text-align: center;
+}
+
+.layout-picker-box {
+  flex: 1;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.layout-picker-box:hover {
+  border-color: rgba(59,130,246,0.3);
+}
+
+.layout-picker-box.selected {
+  border-color: rgba(59,130,246,0.6);
+  background: rgba(59,130,246,0.08);
 }
 
 /* ===== PRINT ===== */
@@ -366,66 +385,119 @@ body {
       </div>
     </div>
 
-   <div class="gen-section">Co-Branding (Optional)</div>
+    <div class="gen-section">Co-Branding (Optional)</div>
+        <div class="gen-section">Co-Branding (Optional)</div>
+    
+    <div class="gen-check">
+      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrandFields()">
+      <label for="inp_cobrand">Include Realtor Co-Branding</label>
+    </div>
 
-<div class="gen-check">
-  <input type="checkbox" id="inp_cobrand" onchange="toggleCobrandFields()">
-  <label for="inp_cobrand">Include Realtor Co-Branding</label>
-</div>
-
-<div id="cobrandFields" style="display:none; grid-column: 1 / -1;">
-  
-  <!-- LAYOUT PICKER -->
-  <div style="margin: 15px 0 20px;">
-    <div style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Select Layout</div>
-    <div style="display: flex; gap: 12px;">
+    <div id="cobrandFields" style="display:none; grid-column: 1 / -1;">
       
-      <div class="layout-option" id="layoutLeft" onclick="selectCobrandLayout('left')" style="flex: 1; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; cursor: pointer; transition: 0.2s;">
-        <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Left</div>
-        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
-          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
-          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
+      <div style="margin: 15px 0 20px;">
+        <div style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Select Layout</div>
+        <div style="display: flex; gap: 12px;">
+          
+          <div class="layout-picker-box" id="layoutLeft" onclick="selectCobrandLayout('left')">
+            <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Left</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
+              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
+            </div>
+          </div>
+          
+          <div class="layout-picker-box" id="layoutRight" onclick="selectCobrandLayout('right')">
+            <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Right</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
+              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
+            </div>
+          </div>
+          
         </div>
       </div>
-      
-      <div class="layout-option" id="layoutRight" onclick="selectCobrandLayout('right')" style="flex: 1; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; cursor: pointer; transition: 0.2s;">
-        <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Right</div>
-        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
-          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
-          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
+
+      <div id="cobrandRealtorInfo" style="grid-column: 1 / -1; padding: 12px; background: rgba(76,175,80,0.08); border-radius: 6px; border: 1px solid rgba(76,175,80,0.2);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+          <img id="cobrandHeadshot" src="hero-headshot.jpg" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid rgba(76,175,80,0.4); object-fit: cover;">
+          <div>
+            <div id="cobrandName" style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px;">Loading realtor info...</div>
+            <div id="cobrandBrokerage" style="font-size: 10px; color: rgba(255,255,255,0.5);"></div>
+          </div>
+        </div>
+        <div style="font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.6;">
+          <div id="cobrandLicense"></div>
+          <div id="cobrandContact"></div>
         </div>
       </div>
-      
+    </div>
+    <div id="cobrandFields" style="display:none; grid-column:1/-1;">
+      <!-- LAYOUT PICKER -->
+      <div style="margin-bottom:14px;">
+        <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Choose Layout</label>
+        <div style="display:flex;gap:10px;" id="layoutPicker">
+          <!-- Option: Realtor LEFT -->
+          <div class="layout-option active" id="layoutLeft" onclick="pickLayout('left')" style="flex:1;border-radius:10px;border:2px solid var(--blue);background:rgba(59,130,246,0.08);padding:12px;cursor:pointer;transition:0.15s;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
+                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
+              </div>
+              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
+                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:var(--blue);">Realtor Left</div>
+          </div>
+          <!-- Option: Realtor RIGHT -->
+          <div class="layout-option" id="layoutRight" onclick="pickLayout('right')" style="flex:1;border-radius:10px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);padding:12px;cursor:pointer;transition:0.15s;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
+                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
+              </div>
+              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
+              <div style="flex:1;text-align:center;">
+                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
+                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
+                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
+              </div>
+            </div>
+            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);">Realtor Right</div>
+          </div>
+        </div>
+      </div>
+      <!-- REALTOR FIELDS -->
+      <div class="gen-grid" style="gap:10px;">
+        <div class="gen-field">
+          <label>Realtor Name</label>
+          <input type="text" id="inp_realtorName" placeholder="Jane Agent">
+        </div>
+        <div class="gen-field">
+          <label>Brokerage</label>
+          <input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams">
+        </div>
+        <div class="gen-field">
+          <label>Realtor Phone</label>
+          <input type="text" id="inp_realtorPhone" placeholder="(555) 123-4567">
+        </div>
+        <div class="gen-field">
+          <label>Realtor Email</label>
+          <input type="text" id="inp_realtorEmail" placeholder="jane@kw.com">
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- REALTOR INFO FIELDS -->
-  <div class="gen-grid" style="grid-column: 1 / -1;">
-    <div class="gen-field full">
-      <label>Realtor Name</label>
-      <input type="text" id="inp_realtorName" placeholder="Sarah Johnson">
-    </div>
-    <div class="gen-field">
-      <label>Brokerage</label>
-      <input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams">
-    </div>
-    <div class="gen-field">
-      <label>License #</label>
-      <input type="text" id="inp_realtorLicense" placeholder="12345">
-    </div>
-    <div class="gen-field">
-      <label>Phone</label>
-      <input type="text" id="inp_realtorPhone" placeholder="(206) 555-1234">
-    </div>
-   <div class="gen-field">
-      <label>Email</label>
-      <input type="text" id="inp_realtorEmail" placeholder="sarah@example.com">
-    </div>
+  <div class="gen-actions">
+    <button class="gen-btn primary" onclick="generateReport()">Generate Report</button>
   </div>
-</div>
-
-<div class="gen-actions">
-  <button class="gen-btn primary" onclick="generateReport()">Generate Report</button>
 </div>
 
 <!-- ===== REPORT OUTPUT ===== -->
@@ -436,13 +508,7 @@ body {
   </div>
 
   <div class="report-page" id="reportPage">
-    <div class="rpt-topbar">
-      <div class="rpt-brand-mark">
-        <div class="rpt-ae-icon">AE</div>
-        <div class="rpt-ae-text">Agent Edge</div>
-      </div>
-      <div class="rpt-doc-type">Amortization Schedule</div>
-    </div>
+    
 
     <div class="rpt-hero">
       <div class="rpt-greeting" id="rptGreeting">Your Mortgage Amortization</div>
@@ -491,7 +557,7 @@ body {
     <div class="rpt-cta" id="rptCta" style="display:none; padding:20px 50px; border-bottom:1px solid var(--border); background:#f8fafc; text-align:center;">
       <div style="font-family:'Playfair Display',serif; font-size:15px; font-weight:600; color:var(--navy); margin-bottom:4px;">Could you pay off your mortgage faster?</div>
       <div style="font-size:11px; color:var(--text-light); max-width:500px; margin:0 auto 8px;">Small extra payments can save you tens of thousands in interest and years off your loan. Ask about a personalized accelerated payoff strategy.</div>
-      <div style="font-size:12px; font-weight:700; color:var(--blue);">Contact Kristy Flach · (206) 313-5883 · kflach@prmg.net</div>
+      <div style="font-size:12px; font-weight:700; color:var(--blue);">Contact Kristy Flach · (206) 313-5883 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bad1dcd6dbd9d2facac8d7dd94d4dfce">[email&#160;protected]</a></div>
     </div>
 
     <!-- CHART -->
@@ -543,7 +609,7 @@ body {
         <div class="rpt-headshot-placeholder" id="rptFooterLeftImg">KF</div>
         <div>
           <div class="rpt-lo-name" id="rptFooterLeftName">Kristy Flach</div>
-          <div class="rpt-lo-detail" id="rptFooterLeftDetail">NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net · kflach.myprmg.net</div>
+          <div class="rpt-lo-detail" id="rptFooterLeftDetail">NMLS# 2632259<br>Cell: (206) 313-5883<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85eee3e9e4e6edc5f5f7e8e2abebe0f1">[email&#160;protected]</a> · kflach.myprmg.net</div>
         </div>
       </div>
       <div class="rpt-footer-right" id="rptFooterRight">
@@ -563,7 +629,7 @@ body {
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 function formatCurrency(el) {
   var val = el.value.replace(/[^0-9]/g, '');
   if (val) el.value = parseInt(val).toLocaleString();
