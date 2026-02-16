@@ -47,8 +47,8 @@ body {
   display: flex; flex-direction: column; flex-shrink: 0;
   position: relative; z-index: 10;
 }
-.sidebar-brand { padding: 18px 18px 14px; border-bottom: 1px solid var(--border); }
-.brand-badge { display: flex; align-items: center; gap: 10px; }
+.sidebar-brand { padding: 20px 15px 18px; border-bottom: 1px solid var(--border); text-align: center; }
+.brand-badge { display: flex; align-items: center; justify-content: center; }
 .brand-icon {
   width: 34px; height: 34px; border-radius: 10px;
   background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
@@ -472,7 +472,7 @@ body {
 <!-- PIN GATE -->
 <div id="pinGate" style="display:none; min-height:100vh; align-items:center; justify-content:center; background:linear-gradient(135deg,#070e1a 0%,#0c1829 50%,#070e1a 100%);">
   <div style="width:90%; max-width:340px; padding:44px 36px; border-radius:18px; background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center;">
-    <div style="width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--accent-blue),var(--accent-purple));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:22px;font-weight:700;color:#fff;box-shadow:0 4px 15px rgba(59,130,246,0.3);">AE</div>
+    <img src="agent-edge-logo.png" alt="Agent Edge" style="width:180px;height:auto;margin:0 auto 20px;display:block;">
     <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;color:#fff;">Mission Control</h2>
     <p id="pinPrompt" style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:24px;">Enter your admin PIN to continue</p>
     <form onsubmit="verifyPin(event)">
@@ -490,11 +490,7 @@ body {
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
     <div class="brand-badge">
-      <div class="brand-icon">AE</div>
-      <div>
-        <div class="brand-text">Agent Edge</div>
-        <div class="brand-sub">Mission Control</div>
-      </div>
+      <img src="agent-edge-logo.png" alt="Agent Edge" style="width:100%;height:auto;max-width:200px;">
     </div>
   </div>
 
