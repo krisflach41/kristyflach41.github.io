@@ -95,19 +95,6 @@ body {
 /* ===== THE REPORT ===== */
 .report-page { background: #fff; color: var(--text-dark); overflow: hidden; }
 
-.rpt-topbar {
-  background: var(--navy); padding: 18px 50px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.rpt-brand-mark { display: flex; align-items: center; gap: 10px; }
-.rpt-ae-icon {
-  width: 30px; height: 30px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--blue), #6366f1);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #fff;
-}
-.rpt-ae-text { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 600; color: #fff; }
-.rpt-doc-type { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 2px; }
 
 .rpt-hero { padding: 36px 50px 28px; border-bottom: 1px solid var(--border); }
 .rpt-greeting { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--navy); line-height: 1.3; margin-bottom: 4px; }
@@ -191,34 +178,112 @@ body {
 .rpt-table tbody td.savings { color: var(--green-dark); font-weight: 600; }
 
 /* Footer */
+/* ===== FOOTER BRANDING ===== */
 .rpt-footer {
-  background: var(--navy); padding: 24px 50px;
-  display: flex; align-items: center; justify-content: space-between;
+  background: #f8f9fa;
+  padding: 30px 50px;
+  border-top: 3px solid #9CB5A0;
 }
-.rpt-footer-left { display: flex; align-items: center; gap: 14px; }
-.rpt-headshot-placeholder {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.15);
-  display: flex; align-items: center; justify-content: center;
-  color: #fff; font-weight: 700; font-size: 14px;
-}
-.rpt-lo-name { font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 600; color: #fff; }
-.rpt-lo-detail { font-size: 9px; color: rgba(255,255,255,0.4); line-height: 1.6; }
-.rpt-footer-right { text-align: right; }
-.rpt-company-name { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
-.rpt-company-sub { font-size: 8px; color: rgba(255,255,255,0.25); }
 
-.rpt-cobrand { display: none; padding: 14px 50px; background: var(--navy-mid); border-top: 1px solid rgba(255,255,255,0.06); align-items: center; }
-.rpt-cobrand.show { display: flex; }
-.rpt-cobrand-tag { font-size: 7px; font-weight: 700; color: rgba(255,255,255,0.2); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2px; }
-.rpt-cobrand-name { font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.6); }
-.rpt-cobrand-detail { font-size: 9px; color: rgba(255,255,255,0.3); }
-
-.rpt-disclosures {
-  padding: 12px 50px 16px; background: #060d18;
-  font-size: 6.5px; color: rgba(255,255,255,0.18); line-height: 1.7;
+/* STANDARD FOOTER (NO CO-BRAND) */
+.footer-standard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
 }
-.rpt-disc-logos { display: flex; align-items: center; gap: 14px; margin-top: 6px; font-size: 7px; font-weight: 600; color: rgba(255,255,255,0.12); }
+
+.footer-your-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex: 1;
+}
+
+.footer-headshot {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #002F6C;
+}
+
+.footer-details {
+  line-height: 1.6;
+}
+
+.footer-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #002F6C;
+  margin-bottom: 3px;
+}
+
+.footer-credentials {
+  font-size: 11px;
+  color: #666;
+}
+
+.footer-logos {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.footer-logo {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* CO-BRAND FOOTER (EQUAL BILLING) */
+.footer-cobrand {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+}
+
+.footer-person {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.footer-person.realtor .footer-headshot {
+  border-color: #1976d2;
+}
+
+.footer-divider {
+  width: 2px;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, #ddd 20%, #ddd 80%, transparent);
+  flex-shrink: 0;
+}
+
+.footer-company-logos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.footer-company-logos .footer-logo {
+  height: 40px;
+}
+
+/* DISCLAIMER */
+.footer-disclaimer {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+  font-size: 9px;
+  color: #999;
+  line-height: 1.5;
+  text-align: center;
+}
 
 /* ===== PRINT ===== */
 @media print {
@@ -301,81 +366,66 @@ body {
       </div>
     </div>
 
-    <div class="gen-section">Co-Branding (Optional)</div>
-    <div class="gen-check">
-      <input type="checkbox" id="inp_cta" checked>
-      <label for="inp_cta">Include "ask about accelerated payoff" call-to-action</label>
-    </div>
-    <div class="gen-check">
-      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()">
-      <label for="inp_cobrand">Include realtor co-branding</label>
-    </div>
-    <div id="cobrandFields" style="display:none; grid-column:1/-1;">
-      <!-- LAYOUT PICKER -->
-      <div style="margin-bottom:14px;">
-        <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Choose Layout</label>
-        <div style="display:flex;gap:10px;" id="layoutPicker">
-          <!-- Option: Realtor LEFT -->
-          <div class="layout-option active" id="layoutLeft" onclick="pickLayout('left')" style="flex:1;border-radius:10px;border:2px solid var(--blue);background:rgba(59,130,246,0.08);padding:12px;cursor:pointer;transition:0.15s;">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <div style="flex:1;text-align:center;">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
-                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
-                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
-              </div>
-              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
-              <div style="flex:1;text-align:center;">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
-                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
-                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
-              </div>
-            </div>
-            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:var(--blue);">Realtor Left</div>
-          </div>
-          <!-- Option: Realtor RIGHT -->
-          <div class="layout-option" id="layoutRight" onclick="pickLayout('right')" style="flex:1;border-radius:10px;border:2px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);padding:12px;cursor:pointer;transition:0.15s;">
-            <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
-              <div style="flex:1;text-align:center;">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;">KF</div>
-                <div style="font-size:7px;color:#fff;font-weight:600;">Kristy Flach</div>
-                <div style="font-size:6px;color:rgba(255,255,255,0.4);">NMLS# 2632259</div>
-              </div>
-              <div style="width:1px;height:30px;background:rgba(255,255,255,0.1);"></div>
-              <div style="flex:1;text-align:center;">
-                <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:1px dashed rgba(255,255,255,0.3);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-size:7px;color:rgba(255,255,255,0.4);">IMG</div>
-                <div style="font-size:7px;color:rgba(255,255,255,0.4);">Realtor Name</div>
-                <div style="font-size:6px;color:rgba(255,255,255,0.2);">Brokerage · Phone</div>
-              </div>
-            </div>
-            <div style="text-align:center;margin-top:6px;font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);">Realtor Right</div>
-          </div>
+   <div class="gen-section">Co-Branding (Optional)</div>
+
+<div class="gen-check">
+  <input type="checkbox" id="inp_cobrand" onchange="toggleCobrandFields()">
+  <label for="inp_cobrand">Include Realtor Co-Branding</label>
+</div>
+
+<div id="cobrandFields" style="display:none; grid-column: 1 / -1;">
+  
+  <!-- LAYOUT PICKER -->
+  <div style="margin: 15px 0 20px;">
+    <div style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Select Layout</div>
+    <div style="display: flex; gap: 12px;">
+      
+      <div class="layout-option" id="layoutLeft" onclick="selectCobrandLayout('left')" style="flex: 1; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; cursor: pointer; transition: 0.2s;">
+        <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Left</div>
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
+          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
         </div>
       </div>
-      <!-- REALTOR FIELDS -->
-      <div class="gen-grid" style="gap:10px;">
-        <div class="gen-field">
-          <label>Realtor Name</label>
-          <input type="text" id="inp_realtorName" placeholder="Jane Agent">
-        </div>
-        <div class="gen-field">
-          <label>Brokerage</label>
-          <input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams">
-        </div>
-        <div class="gen-field">
-          <label>Realtor Phone</label>
-          <input type="text" id="inp_realtorPhone" placeholder="(555) 123-4567">
-        </div>
-        <div class="gen-field">
-          <label>Realtor Email</label>
-          <input type="text" id="inp_realtorEmail" placeholder="jane@kw.com">
+      
+      <div class="layout-option" id="layoutRight" onclick="selectCobrandLayout('right')" style="flex: 1; border: 2px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px; cursor: pointer; transition: 0.2s;">
+        <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Right</div>
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
+          <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
         </div>
       </div>
+      
     </div>
   </div>
 
-  <div class="gen-actions">
-    <button class="gen-btn primary" onclick="generateReport()">Generate Report</button>
+  <!-- REALTOR INFO FIELDS -->
+  <div class="gen-grid" style="grid-column: 1 / -1;">
+    <div class="gen-field full">
+      <label>Realtor Name</label>
+      <input type="text" id="inp_realtorName" placeholder="Sarah Johnson">
+    </div>
+    <div class="gen-field">
+      <label>Brokerage</label>
+      <input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams">
+    </div>
+    <div class="gen-field">
+      <label>License #</label>
+      <input type="text" id="inp_realtorLicense" placeholder="12345">
+    </div>
+    <div class="gen-field">
+      <label>Phone</label>
+      <input type="text" id="inp_realtorPhone" placeholder="(206) 555-1234">
+    </div>
+   <div class="gen-field">
+      <label>Email</label>
+      <input type="text" id="inp_realtorEmail" placeholder="sarah@example.com">
+    </div>
   </div>
+</div>
+
+<div class="gen-actions">
+  <button class="gen-btn primary" onclick="generateReport()">Generate Report</button>
 </div>
 
 <!-- ===== REPORT OUTPUT ===== -->
