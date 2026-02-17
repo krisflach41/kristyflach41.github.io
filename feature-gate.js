@@ -167,8 +167,8 @@
     overlay.style.display = 'flex';
     overlay.style.alignItems = 'center';
     overlay.style.justifyContent = 'center';
-    overlay.style.background = 'rgba(255,255,255,0.88)';
-    overlay.style.backdropFilter = 'blur(3px)';
+    overlay.style.background = 'rgba(255,255,255,0.45)';
+    overlay.style.backdropFilter = 'none';
 
     overlay.innerHTML = 
       '<div style="text-align:center; padding:40px; max-width:450px;">' +
