@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trial Complete - Agent Edge Partner Portal</title>
+<title>Your Trial Has Ended - Agent Edge Partner Portal</title>
+<script src="auth.js"></script>
 <style>
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 0;
+  padding: 40px 20px;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -19,9 +20,9 @@ body {
   color: #0b1f3a;
 }
 
-.expired-card {
+.decision-card {
   width: 90%;
-  max-width: 520px;
+  max-width: 600px;
   padding: 55px 45px;
   border-radius: 22px;
   background: rgba(255,255,255,0.58);
@@ -34,53 +35,116 @@ body {
   text-align: center;
 }
 
-.expired-icon {
+.decision-icon {
   font-size: 48px;
   margin-bottom: 20px;
 }
 
-.expired-title {
+.decision-title {
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 12px;
   color: #0b1f3a;
 }
 
-.expired-message {
+.decision-message {
   font-size: 15px;
   line-height: 1.7;
   color: #555;
-  margin-bottom: 35px;
-  max-width: 420px;
+  margin-bottom: 15px;
+  max-width: 480px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.expired-message strong {
+.decision-message strong {
   color: #0b1f3a;
 }
 
-.cta-btn {
-  display: inline-block;
-  padding: 16px 36px;
-  background: #0b4ea2;
-  color: white;
-  border-radius: 30px;
-  text-decoration: none;
+.trial-stats {
+  background: rgba(11,78,162,0.04);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 35px;
+}
+
+.trial-stats p {
+  font-size: 13px;
+  color: #666;
+  margin: 4px 0;
+}
+
+/* ===== PARTNER BENEFITS ===== */
+.benefits-list {
+  text-align: left;
+  max-width: 420px;
+  margin: 0 auto 35px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.benefit-check {
+  color: #22c55e;
   font-weight: 700;
   font-size: 16px;
-  transition: 0.25s ease;
-  margin-bottom: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
-.cta-btn:hover {
-  background: #0a3d7f;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(11,78,162,0.35);
-}
-
-.contact-info {
+/* ===== BUTTONS ===== */
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
   margin-top: 30px;
+}
+
+.convert-btn {
+  display: inline-block;
+  width: 100%;
+  max-width: 380px;
+  padding: 18px 36px;
+  background: linear-gradient(135deg, #0b4ea2, #1e6fd4);
+  color: white;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 17px;
+  transition: 0.25s ease;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(11,78,162,0.3);
+}
+
+.convert-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(11,78,162,0.4);
+}
+
+.cancel-link {
+  font-size: 14px;
+  color: #999;
+  text-decoration: none;
+  padding: 10px;
+  transition: 0.25s ease;
+}
+
+.cancel-link:hover {
+  color: #666;
+}
+
+/* ===== CONTACT INFO ===== */
+.contact-info {
+  margin-top: 35px;
   padding-top: 25px;
   border-top: 1px solid rgba(11,78,162,0.1);
 }
@@ -101,34 +165,9 @@ body {
   text-decoration: underline;
 }
 
-.trial-stats {
-  background: rgba(11,78,162,0.04);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 30px;
-}
-
-.trial-stats p {
-  font-size: 13px;
-  color: #666;
-  margin: 4px 0;
-}
-
-.logout-link {
-  display: inline-block;
-  margin-top: 20px;
-  font-size: 13px;
-  color: #999;
-  text-decoration: none;
-}
-
-.logout-link:hover {
-  color: #666;
-}
-
 @media (max-width: 480px) {
-  .expired-card { padding: 40px 25px; }
-  .expired-title { font-size: 24px; }
+  .decision-card { padding: 40px 25px; }
+  .decision-title { font-size: 24px; }
 }
 </style>
 <script src="tracking.js"></script>
@@ -136,35 +175,60 @@ body {
 
 <body>
 
-<div class="expired-card">
-  <div class="expired-icon">🌟</div>
+<div class="decision-card">
+  <div class="decision-icon">&#127775;</div>
   
-  <h1 class="expired-title">Your Trial Has Wrapped Up!</h1>
+  <h1 class="decision-title">Your Trial Has Wrapped Up!</h1>
   
-  <p class="expired-message">
-    I hope you've enjoyed exploring Agent Edge and all the tools available to support your business. 
-    I'd love to <strong>chat about how we can grow together</strong> as partners. 
-    Let's schedule a quick call to talk about your goals and how I can help.
+  <p class="decision-message">
+    I hope you've enjoyed exploring Agent Edge! You've had a chance to see what's possible. 
+    Now it's time to decide &mdash; <strong>are you ready to unlock everything?</strong>
   </p>
 
   <div class="trial-stats" id="trialStats">
     <p id="trialDays"></p>
   </div>
 
-  <a href="https://calendly.com" class="cta-btn" id="scheduleBtn">Schedule a Partnership Call</a>
-  <br>
+  <p class="decision-message" style="font-weight: 600; color: #0b1f3a; font-size: 16px;">
+    Here's what Partner members get:
+  </p>
+
+  <div class="benefits-list">
+    <div class="benefit-item">
+      <span class="benefit-check">&#10003;</span>
+      <span><strong>Co-branded reports &amp; flyers</strong> &mdash; your headshot, your branding, your clients</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-check">&#10003;</span>
+      <span><strong>Unlimited Messaging tools</strong> &mdash; AI-generated posts and Grab &amp; Go content</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-check">&#10003;</span>
+      <span><strong>Full Financial Calculators</strong> &mdash; income, self-employed, and amortization tools</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-check">&#10003;</span>
+      <span><strong>Credit Score Tools</strong> &mdash; simulator and education resources for your clients</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-check">&#10003;</span>
+      <span><strong>Priority support</strong> &mdash; direct line to Kristy for your deals</span>
+    </div>
+  </div>
+
+  <div class="btn-group">
+    <a href="convert-membership.html" class="convert-btn">Yes &mdash; Unlock Full Partner Access</a>
+    <a href="cancel-membership.html" class="cancel-link">No thanks, I'd like to cancel my account</a>
+  </div>
 
   <div class="contact-info">
-    <p>Or reach out directly:</p>
+    <p>Have questions first? Let's talk:</p>
     <p><a href="tel:2063135883">(206) 313-5883</a></p>
     <p><a href="mailto:kflach@prmg.net">kflach@prmg.net</a></p>
     <p style="margin-top: 12px; font-size: 13px; color: #888;">Kristy Flach | NMLS# 2632259</p>
   </div>
-
-  <a href="#" class="logout-link" onclick="handleLogout()">Log Out</a>
 </div>
 
-<script src="auth.js"></script>
 <script>
 // Calculate trial duration
 var trialStart = sessionStorage.getItem('agentEdgeTrialStart');
@@ -175,11 +239,6 @@ if (trialStart) {
   document.getElementById('trialDays').textContent = 'You explored Agent Edge for ' + days + ' days during your trial.';
 } else {
   document.getElementById('trialStats').style.display = 'none';
-}
-
-function handleLogout() {
-  event.preventDefault();
-  logout();
 }
 </script>
 
