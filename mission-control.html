@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -554,7 +555,7 @@ body {
 
   <div class="sidebar-footer">
     <a href="portal.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;color:var(--text-secondary);font-size:12px;font-weight:500;text-decoration:none;margin-bottom:6px;border:1px solid var(--border);transition:all 0.15s;" onmouseover="this.style.background='var(--bg-hover)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
-      <span style="width:18px;text-align:center;font-size:14px;">â†</span> Back to Website
+      <span style="width:18px;text-align:center;font-size:14px;"><i class="fas fa-arrow-left"></i></span> Back to Website
     </a>
     <div class="sidebar-user">
       <div class="user-avatar">KF</div>
@@ -575,14 +576,14 @@ body {
 <div class="view-panel active" id="view-dashboard">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div>
         <div class="topbar-title" id="dashGreeting">Good evening, Kristy</div>
         <div class="topbar-subtitle" id="dashSubtitle">Loading...</div>
       </div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="switchView('settings', document.querySelector('[onclick*=settings]'))">âš™ Settings</button>
+      <button class="topbar-btn" onclick="switchView('settings', document.querySelector('[onclick*=settings]'))"><i class="fas fa-cog"></i> Settings</button>
     </div>
   </div>
   <div class="content-area">
@@ -629,7 +630,7 @@ body {
 <div class="view-panel" id="view-pipeline">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div>
         <div class="topbar-title">Pipeline</div>
         <div class="topbar-subtitle" id="pipelineSubtitle">Loading...</div>
@@ -650,14 +651,14 @@ body {
 <div class="view-panel" id="view-crm">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div>
         <div class="topbar-title">Client Database</div>
         <div class="topbar-subtitle" id="crmSubtitle">Loading...</div>
       </div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="document.getElementById('crmImportFile').click()">â†‘ Import</button>
+      <button class="topbar-btn" onclick="document.getElementById('crmImportFile').click()"><i class="fas fa-arrow-left"></i>‘ Import</button>
       <input type="file" id="crmImportFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleCrmImport(this)">
       <button class="topbar-btn primary" onclick="crmAddNew()">+ New Contact</button>
     </div>
@@ -692,8 +693,8 @@ body {
             <div class="crm-detail-name" id="crmDName"></div>
             <div class="crm-detail-meta" id="crmDMeta"></div>
             <div class="crm-detail-actions">
-              <button class="topbar-btn" style="font-size:10px;" onclick="crmOpenEmailModal()">âœ‰ Email</button>
-              <button class="topbar-btn" style="font-size:10px;" onclick="crmSaveContact()" id="crmSaveBtn" disabled>ðŸ’¾ Save Changes</button>
+              <button class="topbar-btn" style="font-size:10px;" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
+              <button class="topbar-btn" style="font-size:10px;" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save Changes</button>
               <button class="topbar-btn danger" style="font-size:10px;" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
             </div>
           </div>
@@ -781,14 +782,14 @@ body {
 <div class="view-panel" id="view-orders">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div>
         <div class="topbar-title">Order Queue</div>
         <div class="topbar-subtitle" id="ordersSubtitle">Loading...</div>
       </div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="loadOrders()">â†» Refresh</button>
+      <button class="topbar-btn" onclick="loadOrders()"><i class="fas fa-arrow-left"></i>» Refresh</button>
     </div>
   </div>
   <div class="content-area">
@@ -808,7 +809,7 @@ body {
 <div class="view-panel" id="view-webinars">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Webinars</div><div class="topbar-subtitle">Manage events and registrations</div></div>
     </div>
     <div class="topbar-right">
@@ -830,11 +831,11 @@ body {
 <div class="view-panel" id="view-portal">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Partner Portal</div><div class="topbar-subtitle">Manage realtor-facing tools and content</div></div>
     </div>
     <div class="topbar-right">
-      <a href="portal.html" target="_blank" class="topbar-btn">ðŸ”— Open Portal</a>
+      <a href="portal.html" target="_blank" class="topbar-btn"><i class="fas fa-external-link-alt"></i> Open Portal</a>
     </div>
   </div>
   <div class="content-area">
@@ -856,7 +857,7 @@ body {
 <div class="view-panel" id="view-reports">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Report Generator</div><div class="topbar-subtitle">Generate branded market reports</div></div>
     </div>
     <div class="topbar-right">
@@ -865,7 +866,7 @@ body {
   </div>
   <div class="content-area">
     <div class="placeholder-center">
-      <div class="placeholder-icon">ðŸ“„</div>
+      <div class="placeholder-icon"><i class="fas fa-file-alt"></i></div>
       <div class="placeholder-text">Generate branded market reports for your clients and partners</div>
       <div class="placeholder-sub">Select a template, customize data, and export as PDF</div>
     </div>
@@ -878,7 +879,7 @@ body {
 <div class="view-panel" id="view-flyers">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Flyer Studio</div><div class="topbar-subtitle">Design and manage co-branded marketing materials</div></div>
     </div>
     <div class="topbar-right">
@@ -887,7 +888,7 @@ body {
   </div>
   <div class="content-area">
     <div class="placeholder-center">
-      <div class="placeholder-icon">ðŸŽ¨</div>
+      <div class="placeholder-icon"><i class="fas fa-palette"></i></div>
       <div class="placeholder-text">Create co-branded flyers for your realtor partners</div>
       <div class="placeholder-sub">Templates, custom branding, drag-and-drop editor</div>
     </div>
@@ -900,7 +901,7 @@ body {
 <div class="view-panel" id="view-email">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Email Center</div><div class="topbar-subtitle">Send and track emails</div></div>
     </div>
     <div class="topbar-right">
@@ -926,7 +927,7 @@ body {
 <div class="view-panel" id="view-prospecting">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Prospecting</div><div class="topbar-subtitle">Find active realtors and untapped opportunities</div></div>
     </div>
     <div class="topbar-right">
@@ -936,7 +937,7 @@ body {
   </div>
   <div class="content-area">
     <div class="placeholder-center">
-      <div class="placeholder-icon">ðŸ”</div>
+      <div class="placeholder-icon"><i class="fas fa-envelope"></i></div>
       <div class="placeholder-text">Search for realtors by location to discover partnership opportunities</div>
       <div class="placeholder-sub">Powered by public records Â· Updated daily</div>
     </div>
@@ -949,7 +950,7 @@ body {
 <div class="view-panel" id="view-analytics">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Performance insights</div></div>
     </div>
     <div class="topbar-right">
@@ -992,13 +993,13 @@ body {
 <div class="view-panel" id="view-briefings">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Daily Briefings</div><div class="topbar-subtitle">Your morning overview</div></div>
     </div>
   </div>
   <div class="content-area">
     <div class="placeholder-center">
-      <div class="placeholder-icon">â˜€ï¸</div>
+      <div class="placeholder-icon"><i class="fas fa-sun"></i></div>
       <div class="placeholder-text">Your daily briefing with pipeline updates, rate changes, and action items</div>
       <div class="placeholder-sub">Auto-generated each morning based on your data</div>
     </div>
@@ -1011,7 +1012,7 @@ body {
 <div class="view-panel" id="view-users">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">User Management</div><div class="topbar-subtitle">Manage membership and access</div></div>
     </div>
     <div class="topbar-right">
@@ -1033,13 +1034,13 @@ body {
 <div class="view-panel" id="view-settings">
   <div class="topbar">
     <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()">â˜°</button>
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Settings</div><div class="topbar-subtitle">Configuration and preferences</div></div>
     </div>
   </div>
   <div class="content-area">
     <div class="placeholder-center">
-      <div class="placeholder-icon">âš™ï¸</div>
+      <div class="placeholder-icon"><i class="fas fa-cog"></i>ï¸</div>
       <div class="placeholder-text">System settings and configuration</div>
       <div class="placeholder-sub">API keys, email settings, branding, integrations</div>
     </div>
@@ -1055,7 +1056,7 @@ body {
 <!-- EMAIL MODAL -->
 <div class="modal-overlay" id="emailModal">
   <div class="modal-box">
-    <div class="modal-title">âœ‰ Send Email</div>
+    <div class="modal-title"><i class="fas fa-envelope"></i> Send Email</div>
     <div class="modal-field"><label>To</label><input id="emailTo" readonly></div>
     <div class="modal-field"><label>Subject</label><input id="emailSubject"></div>
     <div class="modal-field"><label>Message</label><textarea id="emailBody"></textarea></div>
@@ -1099,7 +1100,7 @@ body {
 <!-- FUNDED MODAL -->
 <div class="modal-overlay" id="fundedModal">
   <div class="modal-box" style="width:420px;">
-    <div class="modal-title">ðŸŽ‰ Congratulations! Closing <span id="fundedName"></span></div>
+    <div class="modal-title"><i class="fas fa-trophy"></i> Congratulations! Closing <span id="fundedName"></span></div>
     <div class="crm-field-grid">
       <div class="crm-field"><label>Date Funded</label><input type="date" id="funded_date"></div>
       <div class="crm-field"><label>Interest Rate</label><input id="funded_rate" placeholder="6.25"></div>
@@ -1127,7 +1128,7 @@ body {
     </div>
     <div class="modal-actions">
       <button class="topbar-btn" onclick="closeFundedModal()">Cancel</button>
-      <button class="topbar-btn primary" onclick="saveFundedContact()">ðŸŽ‰ Mark as Funded</button>
+      <button class="topbar-btn primary" onclick="saveFundedContact()"><i class="fas fa-trophy"></i> Mark as Funded</button>
     </div>
   </div>
 </div>
@@ -1136,10 +1137,10 @@ body {
 <!-- JAVASCRIPT -->
 <!-- ========================================== -->
 <script>
-// ===== CONFIG =====
-var API_BASE = 'https://agent-edge-backend.vercel.app/api';
-var SUPABASE_URL = '';  // Set if needed for direct calls
-var SHEET_ID = '1GTJy_IilOPiGNaJ3YxRS8UnY5iBZPiHpF2Nhbt0Zt4A';
+// ===== SUPABASE INIT =====
+const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ===== AUTH =====
 protectPage();
@@ -1449,7 +1450,7 @@ function saveFundedContact() {
   closeFundedModal();
   renderPipeline();
   updateDashboard();
-  showToast('ðŸŽ‰ ' + c.name + ' funded! Moved to CRM.');
+  showToast('<i class="fas fa-trophy"></i> ' + c.name + ' funded! Moved to CRM.');
 }
 
 // ===== MARK COLD =====
@@ -1600,16 +1601,21 @@ var crmDirty = false;
 var crmDeleteArmed = false;
 
 function loadCrm() {
-  fetch(API_BASE + '/crm?action=list')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.contacts) {
-        crmContacts = data.contacts;
+  supabase
+    .from('crm_contacts')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .then(function(response) {
+      if (response.data) {
+        crmContacts = response.data;
         crmLoaded = true;
         crmRenderList();
         document.getElementById('navCrmCount').textContent = crmContacts.length;
         document.getElementById('dashCrm').textContent = crmContacts.length;
         document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
+      }
+      if (response.error) {
+        console.error('CRM load error:', response.error);
       }
     })
     .catch(function(err) { console.error('CRM load error:', err); });
@@ -1679,8 +1685,15 @@ function crmPopulateDetail(c) {
   if (c.activity && c.activity.length > 0) {
     var ahtml = '';
     c.activity.forEach(function(a) {
-      var icons = { email_sent: 'ðŸ“¤', email_received: 'ðŸ“¥', call: 'ðŸ“ž', note: 'ðŸ“', meeting: 'ðŸ¤', text: 'ðŸ’¬' };
-      ahtml += '<div class="activity-item"><div class="activity-icon">' + (icons[a.type] || 'ðŸ“') + '</div><div><div class="activity-text">' + (a.subject || a.body || '') + '</div><div class="activity-date">' + (a.type || '') + ' Â· ' + new Date(a.date).toLocaleDateString() + '</div></div></div>';
+      var icons = { 
+        email_sent: '<i class="fas fa-paper-plane"></i>', 
+        email_received: '<i class="fas fa-inbox"></i>', 
+        call: '<i class="fas fa-phone"></i>', 
+        note: '<i class="fas fa-sticky-note"></i>', 
+        meeting: '<i class="fas fa-handshake"></i>', 
+        text: '<i class="fas fa-comment"></i>' 
+      };
+      ahtml += '<div class="activity-item"><div class="activity-icon">' + (icons[a.type] || '<i class="fas fa-sticky-note"></i>') + '</div><div><div class="activity-text">' + (a.subject || a.body || '<i class="fas fa-sticky-note"></i>') + '</div><div class="activity-date">' + (a.type || '<i class="fas fa-sticky-note"></i>') + ' Â· ' + new Date(a.date).toLocaleDateString() + '</div></div></div>';
     });
     document.getElementById('crmActivityTimeline').innerHTML = ahtml;
   } else {
@@ -1707,29 +1720,63 @@ document.addEventListener('change', function(e) {
 });
 
 function crmSaveContact() {
-  var contact = { id: crmCurrentId };
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes'];
+  var contact = {};
+  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','custom_type','brokerage','license_number','headshot_url'];
   fields.forEach(function(f) {
     var el = document.getElementById('cf_' + f);
-    if (el) contact[f] = el.value;
+    if (el) contact[f] = el.value || null;
   });
+  
+  contact.updated_at = new Date().toISOString();
 
-  fetch(API_BASE + '/crm', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save', contact: contact })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.contact) {
-      // Update in local array
-      var idx = crmContacts.findIndex(function(c) { return c.id === data.contact.id; });
-      if (idx >= 0) crmContacts[idx] = Object.assign(crmContacts[idx], data.contact);
-      else { crmContacts.push(data.contact); crmCurrentId = data.contact.id; }
-      crmRenderList();
-      document.getElementById('crmDName').textContent = data.contact.name || 'Unnamed';
-      crmDirty = false;
-      document.getElementById('crmSaveBtn').disabled = true;
-      showToast('Saved!');
+  if (crmCurrentId) {
+    // Update existing
+    supabase
+      .from('crm_contacts')
+      .update(contact)
+      .eq('id', crmCurrentId)
+      .select()
+      .then(function(response) {
+        if (response.data && response.data[0]) {
+          var idx = crmContacts.findIndex(function(c) { return c.id === crmCurrentId; });
+          if (idx >= 0) crmContacts[idx] = response.data[0];
+          crmRenderList();
+          document.getElementById('crmDName').textContent = response.data[0].name || 'Unnamed';
+          crmDirty = false;
+          document.getElementById('crmSaveBtn').disabled = true;
+          showToast('Saved!');
+        }
+        if (response.error) {
+          showToast('Save failed');
+          console.error(response.error);
+        }
+      });
+  } else {
+    // Create new
+    contact.id = 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
+    contact.created_at = new Date().toISOString();
+    
+    supabase
+      .from('crm_contacts')
+      .insert([contact])
+      .select()
+      .then(function(response) {
+        if (response.data && response.data[0]) {
+          crmContacts.push(response.data[0]);
+          crmCurrentId = response.data[0].id;
+          crmRenderList();
+          document.getElementById('crmDName').textContent = response.data[0].name || 'Unnamed';
+          crmDirty = false;
+          document.getElementById('crmSaveBtn').disabled = true;
+          showToast('Contact created!');
+        }
+        if (response.error) {
+          showToast('Save failed');
+          console.error(response.error);
+        }
+      });
+  }
+}
     }
   })
   .catch(function(err) { showToast('Save failed'); console.error(err); });
@@ -1748,19 +1795,22 @@ function crmConfirmDelete() {
     }, 4000);
     return;
   }
-  fetch(API_BASE + '/crm', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'delete', id: crmCurrentId })
-  })
-  .then(function() {
-    crmContacts = crmContacts.filter(function(c) { return c.id !== crmCurrentId; });
-    crmCurrentId = null;
-    document.getElementById('crmDetailContent').style.display = 'none';
-    document.getElementById('crmDetailEmpty').style.display = 'flex';
-    crmRenderList();
-    showToast('Contact deleted');
-  })
-  .catch(function() { showToast('Delete failed'); });
+  supabase
+    .from('crm_contacts')
+    .delete()
+    .eq('id', crmCurrentId)
+    .then(function(response) {
+      crmContacts = crmContacts.filter(function(c) { return c.id !== crmCurrentId; });
+      crmCurrentId = null;
+      document.getElementById('crmDetailContent').style.display = 'none';
+      document.getElementById('crmDetailEmpty').style.display = 'flex';
+      crmRenderList();
+      showToast('Contact deleted');
+      if (response.error) {
+        console.error('Delete error:', response.error);
+      }
+    })
+    .catch(function() { showToast('Delete failed'); });
 }
 
 function crmAddNew() {
@@ -1861,35 +1911,40 @@ var allOrders = [];
 var orderFilter = 'all';
 
 function loadOrders() {
-  try {
-    var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?tqx=out:json&sheet=Orders';
-    fetch(url)
-      .then(function(r) { return r.text(); })
-      .then(function(text) {
-        var match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\);/);
-        if (!match) { renderOrders(); return; }
-        var json = JSON.parse(match[1]);
-        var rows = json.table.rows;
-        if (!rows || rows.length === 0) { allOrders = []; renderOrders(); return; }
-        allOrders = rows.map(function(row) {
+  supabase
+    .from('orders')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .then(function(response) {
+      if (response.data) {
+        allOrders = response.data.map(function(row) {
           return {
-            orderId: (row.c[0] && row.c[0].v) || '',
-            timestamp: (row.c[1] && row.c[1].v) || '',
-            name: (row.c[2] && row.c[2].v) || '',
-            email: (row.c[3] && row.c[3].v) || '',
-            brokerage: (row.c[4] && row.c[4].v) || '',
-            branding: (row.c[5] && row.c[5].v) || '',
-            items: (row.c[6] && row.c[6].v) || '',
-            itemCount: (row.c[7] && row.c[7].v) || 0,
-            notes: (row.c[8] && row.c[8].v) || '',
-            status: (row.c[9] && row.c[9].v) || 'New'
+            orderId: row.order_id || '',
+            timestamp: row.created_at || '',
+            name: row.user_name || '',
+            email: row.user_email || '',
+            brokerage: row.brokerage || '',
+            branding: row.co_branding ? (row.co_brand_layout || 'yes') : 'no',
+            items: row.items ? JSON.stringify(row.items) : '',
+            itemCount: row.item_count || 0,
+            notes: row.notes || '',
+            status: row.status || 'new'
           };
-        }).filter(function(o) { return o.orderId && o.orderId !== 'Order ID'; });
-        allOrders.reverse();
+        });
         ordersLoaded = true;
         renderOrders();
-      });
-  } catch (e) { console.error('Orders load error:', e); }
+      }
+      if (response.error) {
+        console.error('Orders load error:', response.error);
+        allOrders = [];
+        renderOrders();
+      }
+    })
+    .catch(function(err) { 
+      console.error('Orders load error:', err); 
+      allOrders = [];
+      renderOrders();
+    });
 }
 
 function renderOrders() {
@@ -1907,7 +1962,7 @@ function renderOrders() {
   document.getElementById('dashOrders').textContent = newCount;
 
   if (filtered.length === 0) {
-    document.getElementById('ordersContainer').innerHTML = '<div class="placeholder-center" style="height:40%;"><div class="placeholder-icon">ðŸ“­</div><div class="placeholder-text">No ' + (orderFilter === 'all' ? '' : orderFilter.toLowerCase() + ' ') + 'orders</div></div>';
+    document.getElementById('ordersContainer').innerHTML = '<div class="placeholder-center" style="height:40%;"><div class="placeholder-icon"><i class="fas fa-search"></i></div><div class="placeholder-text">No ' + (orderFilter === 'all' ? '' : orderFilter.toLowerCase() + ' ') + 'orders</div></div>';
     return;
   }
 
