@@ -1124,35 +1124,27 @@ window.addEventListener('load', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // ===== SUPABASE INIT =====
-  const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
-  
-  // Make supabase global
-  window.supabase = window.supabase || {};
-  if (!window.supabase.from) {
-    window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-
-  // ===== TRACK PORTAL ACTIVITY =====
+  // ===== TRACK PORTAL ACTIVITY VIA VERCEL API =====
   function trackActivity(type, subject, details) {
     var userEmail = sessionStorage.getItem('agentEdgeUser');
     var userName = sessionStorage.getItem('agentEdgeName') || 'User';
     
     if (!userEmail) return;
     
-    window.supabase
-      .from('crm_activity')
-      .insert([{
-        crm_id: userEmail,
-        type: type || 'portal_visit',
-        subject: subject || 'Portal Activity',
-        body: details || '',
-        date: new Date().toISOString()
-      }])
-      .then(function(response) {
-        if (response.error) console.error('Activity tracking error:', response.error);
-      });
+    fetch('https://agent-edge-backend.vercel.app/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: userName,
+        userEmail: userEmail,
+        collection: 'Portal',
+        tool: subject || 'Portal Activity',
+        action: type || 'portal_visit',
+        details: details || ''
+      })
+    }).catch(function(err) {
+      console.error('Activity tracking error:', err);
+    });
   }
 
   // Track portal homepage visit
