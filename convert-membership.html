@@ -255,10 +255,10 @@ body {
     <div class="form-section">Your Professional Photo</div>
     <div class="headshot-upload">
       <div class="headshot-preview" id="headshotPreview" onclick="document.getElementById('headshotFile').click()">
-        <span class="headshot-placeholder" id="headshotPlaceholder">Click to upload<br>your headshot</span>
+        <span class="headshot-placeholder" id="headshotPlaceholder">Click to upload<br>your headshot<br><small style="color:#aaa">(optional)</small></span>
       </div>
       <input type="file" id="headshotFile" class="headshot-input" accept="image/*">
-      <div class="form-helper">Professional headshot for co-branded materials. JPG or PNG, square crop works best.</div>
+      <div class="form-helper">Professional headshot for co-branded materials (optional — you can add this later). JPG or PNG, square crop works best.</div>
     </div>
 
     <!-- CREDENTIALS -->
@@ -370,13 +370,6 @@ convertForm.addEventListener('submit', async function(e) {
 
   errorMessage.classList.remove('show');
   successMessage.classList.remove('show');
-
-  // Validate headshot
-  if (!headshotData) {
-    errorMessage.textContent = 'Please upload your professional headshot.';
-    errorMessage.classList.add('show');
-    return;
-  }
 
   var userEmail = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser');
   if (!userEmail) {
