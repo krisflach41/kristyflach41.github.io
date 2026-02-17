@@ -428,27 +428,7 @@ label {
 <script src="universal-cart.js"></script>
 <script src="tracking.js"></script>
 <script>
-// ===== TRACK ACTIVITY VIA VERCEL API =====
-function trackActivity(type, subject, action, details) {
-  var userEmail = sessionStorage.getItem('agentEdgeUser');
-  var userName = sessionStorage.getItem('agentEdgeName');
-  if (!userEmail) return;
-  
-  fetch('https://agent-edge-backend.vercel.app/api/track', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      userName: userName || '',
-      userEmail: userEmail,
-      collection: type || 'Checkout',
-      tool: subject || 'Activity',
-      action: action || '',
-      details: details || ''
-    })
-  }).catch(function(err) {
-    console.error('Activity tracking error:', err);
-  });
-}
+// trackActivity() is now provided by tracking.js (smart auto-detection)
 
 // Auto-fill user info from login session
 document.addEventListener('DOMContentLoaded', function() {
