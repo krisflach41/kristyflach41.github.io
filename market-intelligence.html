@@ -987,6 +987,75 @@ document.querySelectorAll('.add-btn').forEach(btn => {
 renderKit();
 updateCardButtons();
 
+/* ===========================
+   COMPREHENSIVE TRACKING
+=========================== */
+(function() {
+  var userEmail = sessionStorage.getItem('agentEdgeUser');
+  var userName = sessionStorage.getItem('agentEdgeName') || 'User';
+  var pageLoadTime = new Date();
+  
+  if (!userEmail) return;
+  
+  function trackEvent(action, tool, details) {
+    fetch('https://agent-edge-backend.vercel.app/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: userName,
+        userEmail: userEmail,
+        collection: 'Marketing Intelligence',
+        tool: tool || 'Market Intelligence',
+        action: action,
+        details: details || ''
+      })
+    }).catch(function(err) {
+      console.error('Tracking error:', err);
+    });
+  }
+
+  // 1. TRACK PAGE VISIT
+  trackEvent('page_visit', 'Marketing Intelligence', 'Viewed Market Intelligence collection');
+
+  // 2. TRACK TIME SPENT
+  window.addEventListener('beforeunload', function() {
+    var timeSpent = Math.round((new Date() - pageLoadTime) / 1000);
+    trackEvent('time_spent', 'Marketing Intelligence', timeSpent + ' seconds');
+  });
+
+  // 3. TRACK REPORT ADDITIONS (when they add reports to kit)
+  var originalOpenPanel = window.openPanel;
+  window.openPanel = function(report, mode) {
+    trackEvent('report_interaction', 'Report Panel', 'Opened: ' + report);
+    return originalOpenPanel(report, mode);
+  };
+
+  // 4. TRACK REPORT SAVES (when they save a report configuration)
+  var originalSaveConfig = window.saveConfig;
+  window.saveConfig = function() {
+    var report = document.getElementById('panelTitle').textContent.replace('Configure ', '');
+    trackEvent('report_added', 'Report Configuration', 'Configured: ' + report);
+    return originalSaveConfig();
+  };
+
+  // 5. TRACK DOWNLOADS (PDFs, images, etc.)
+  document.querySelectorAll('a[download], a[href$=".pdf"], a[href$=".jpg"], a[href$=".png"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      var fileName = this.getAttribute('download') || this.getAttribute('href').split('/').pop();
+      trackEvent('download', 'Marketing Material', 'Downloaded: ' + fileName);
+    });
+  });
+
+  // 6. TRACK CHECKOUT NAVIGATION
+  var originalGoToCheckout = window.goToCheckout;
+  window.goToCheckout = function(e) {
+    var itemCount = Object.keys(universalCart.cart.advisory || {}).length;
+    trackEvent('checkout_click', 'Checkout', 'Proceeding to checkout with ' + itemCount + ' items');
+    return originalGoToCheckout(e);
+  };
+
+})();
+
 </script>
 
 </body>
