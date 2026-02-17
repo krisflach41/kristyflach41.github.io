@@ -1137,19 +1137,19 @@ body {
 <!-- JAVASCRIPT -->
 <!-- ========================================== -->
 <script>
-// ===== SUPABASE INIT =====
-const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// ===== AUTH =====
-protectPage();
-
-// Check admin flag from session (set during login from Users sheet)
-var isAdmin = sessionStorage.getItem('agentEdgeAdmin') === 'true';
-if (!isAdmin) {
-  window.location.href = 'portal.html';
-}
+// ===== WAIT FOR AUTH.JS TO LOAD =====
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== AUTH =====
+  if (typeof protectPage === 'function') {
+    protectPage();
+  }
+  
+  // Check admin flag from session (set during login from Users sheet)
+  var isAdmin = sessionStorage.getItem('agentEdgeAdmin') === 'true';
+  if (!isAdmin) {
+    window.location.href = 'portal.html';
+  }
+});
 
 // ===== PIN GATE =====
 // PIN stored as hash in localStorage
@@ -1601,21 +1601,19 @@ var crmDirty = false;
 var crmDeleteArmed = false;
 
 function loadCrm() {
-  supabase
-    .from('crm_contacts')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .then(function(response) {
-      if (response.data) {
-        crmContacts = response.data;
+  fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=list', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.success && data.contacts) {
+        crmContacts = data.contacts;
         crmLoaded = true;
         crmRenderList();
         document.getElementById('navCrmCount').textContent = crmContacts.length;
         document.getElementById('dashCrm').textContent = crmContacts.length;
         document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
-      }
-      if (response.error) {
-        console.error('CRM load error:', response.error);
       }
     })
     .catch(function(err) { console.error('CRM load error:', err); });
@@ -1727,59 +1725,46 @@ function crmSaveContact() {
     if (el) contact[f] = el.value || null;
   });
   
-  contact.updated_at = new Date().toISOString();
-
   if (crmCurrentId) {
-    // Update existing
-    supabase
-      .from('crm_contacts')
-      .update(contact)
-      .eq('id', crmCurrentId)
-      .select()
-      .then(function(response) {
-        if (response.data && response.data[0]) {
+    contact.id = crmCurrentId;
+  }
+
+  // Call Vercel API to save
+  fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crm: contact })
+  })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.success) {
+        if (crmCurrentId) {
+          // Update in local array
           var idx = crmContacts.findIndex(function(c) { return c.id === crmCurrentId; });
-          if (idx >= 0) crmContacts[idx] = response.data[0];
-          crmRenderList();
-          document.getElementById('crmDName').textContent = response.data[0].name || 'Unnamed';
-          crmDirty = false;
-          document.getElementById('crmSaveBtn').disabled = true;
+          if (idx >= 0) {
+            crmContacts[idx] = Object.assign(crmContacts[idx], contact);
+          }
           showToast('Saved!');
-        }
-        if (response.error) {
-          showToast('Save failed');
-          console.error(response.error);
-        }
-      });
-  } else {
-    // Create new
-    contact.id = 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4);
-    contact.created_at = new Date().toISOString();
-    
-    supabase
-      .from('crm_contacts')
-      .insert([contact])
-      .select()
-      .then(function(response) {
-        if (response.data && response.data[0]) {
-          crmContacts.push(response.data[0]);
-          crmCurrentId = response.data[0].id;
-          crmRenderList();
-          document.getElementById('crmDName').textContent = response.data[0].name || 'Unnamed';
-          crmDirty = false;
-          document.getElementById('crmSaveBtn').disabled = true;
+        } else {
+          // Add to local array
+          contact.id = data.id;
+          contact.created_at = new Date().toISOString();
+          crmContacts.push(contact);
+          crmCurrentId = data.id;
           showToast('Contact created!');
         }
-        if (response.error) {
-          showToast('Save failed');
-          console.error(response.error);
-        }
-      });
-  }
-}
-    }
-  })
-  .catch(function(err) { showToast('Save failed'); console.error(err); });
+        crmRenderList();
+        document.getElementById('crmDName').textContent = contact.name || 'Unnamed';
+        crmDirty = false;
+        document.getElementById('crmSaveBtn').disabled = true;
+      } else {
+        showToast('Save failed');
+      }
+    })
+    .catch(function(err) { 
+      showToast('Save failed'); 
+      console.error(err); 
+    });
 }
 
 function crmConfirmDelete() {
@@ -1795,7 +1780,7 @@ function crmConfirmDelete() {
     }, 4000);
     return;
   }
-  supabase
+  window.supabase
     .from('crm_contacts')
     .delete()
     .eq('id', crmCurrentId)
@@ -1911,31 +1896,17 @@ var allOrders = [];
 var orderFilter = 'all';
 
 function loadOrders() {
-  supabase
-    .from('orders')
-    .select('*')
-    .order('created_at', { ascending: false })
-    .then(function(response) {
-      if (response.data) {
-        allOrders = response.data.map(function(row) {
-          return {
-            orderId: row.order_id || '',
-            timestamp: row.created_at || '',
-            name: row.user_name || '',
-            email: row.user_email || '',
-            brokerage: row.brokerage || '',
-            branding: row.co_branding ? (row.co_brand_layout || 'yes') : 'no',
-            items: row.items ? JSON.stringify(row.items) : '',
-            itemCount: row.item_count || 0,
-            notes: row.notes || '',
-            status: row.status || 'new'
-          };
-        });
+  fetch('https://agent-edge-backend.vercel.app/api/get-orders', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' }
+  })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      if (data.success && data.orders) {
+        allOrders = data.orders;
         ordersLoaded = true;
         renderOrders();
-      }
-      if (response.error) {
-        console.error('Orders load error:', response.error);
+      } else {
         allOrders = [];
         renderOrders();
       }
