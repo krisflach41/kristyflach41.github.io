@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Partner Portal - Login</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
@@ -214,6 +215,77 @@ body {
 </div>
 
 <script src="auth.js"></script>
+<script>
+// ===== LOGIN HANDLER =====
+var loginForm = document.getElementById('loginForm');
+var errorMessage = document.getElementById('errorMessage');
+
+loginForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  var username = document.getElementById('username').value.trim().toLowerCase();
+  var password = document.getElementById('password').value;
+
+  // Hide error message
+  errorMessage.classList.remove('show');
+
+  try {
+    // ===== CALL VERCEL API TO LOGIN =====
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })
+    });
+
+    var data = await response.json();
+
+    if (!response.ok || !data.success) {
+      // Login failed
+      errorMessage.classList.add('show');
+      document.getElementById('password').value = '';
+      return;
+    }
+
+    // Set session using auth.js function if available
+    if (typeof setUserSession === 'function') {
+      setUserSession({
+        username: data.user.username,
+        email: data.user.email,
+        name: data.user.name,
+        isAdmin: data.isAdmin || false
+      });
+    } else {
+      // Fallback session storage
+      sessionStorage.setItem('agentEdgeUser', data.user.email);
+      sessionStorage.setItem('agentEdgeName', data.user.name);
+      sessionStorage.setItem('agentEdgeAdmin', data.isAdmin ? 'true' : 'false');
+      if (data.trialStart) {
+        sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
+      }
+    }
+
+    // Check if temp password
+    if (data.tempPassword) {
+      // Redirect to password reset page
+      window.location.href = 'reset-password.html';
+    } else {
+      // Redirect to portal
+      window.location.href = 'portal.html';
+    }
+
+  } catch (error) {
+    console.error('Login error:', error);
+    errorMessage.textContent = 'Connection error. Please try again.';
+    errorMessage.classList.add('show');
+  }
+});
+
+// Auto-focus username field
+document.getElementById('username').focus();
+</script>
 
 </body>
 </html>
