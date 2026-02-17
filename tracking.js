@@ -5,7 +5,10 @@
    Include this script on any page
    that needs tracking. It reads the
    logged-in user from sessionStorage
-   and sends activity to Google Sheets.
+   and sends activity to Vercel API.
+   
+   ENHANCED: Now includes automatic tracking
+   for page visits, time spent, downloads, etc.
 =========================== */
 
 const TRACKING_ENDPOINT = 'https://agent-edge-backend.vercel.app/api/track';
@@ -16,8 +19,8 @@ const TRACKING_ENDPOINT = 'https://agent-edge-backend.vercel.app/api/track';
  */
 function getTrackedUser() {
   return {
-    name: sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeUser') || 'Unknown',
-    email: sessionStorage.getItem('agentEdgeUserEmail') || ''
+    name: sessionStorage.getItem('agentEdgeName') || sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeUser') || 'Unknown',
+    email: sessionStorage.getItem('agentEdgeUser') || sessionStorage.getItem('agentEdgeUserEmail') || ''
   };
 }
 
@@ -74,3 +77,78 @@ function autoFillUserInfo(nameFieldId, emailFieldId) {
     }
   }
 }
+
+/* ===========================
+   AUTOMATIC TRACKING
+   Runs on every page automatically
+=========================== */
+
+(function() {
+  'use strict';
+  
+  var user = getTrackedUser();
+  
+  // Don't auto-track if no user logged in
+  if (!user.email || user.email === '') return;
+  
+  var pageLoadTime = new Date();
+  var pagePath = window.location.pathname;
+  var pageTitle = document.title || 'Unknown Page';
+  
+  // Detect collection based on URL/title
+  var collection = 'Portal';
+  var tool = pageTitle;
+  
+  if (pagePath.includes('market-intelligence') || pageTitle.toLowerCase().includes('market intelligence')) {
+    collection = 'Marketing Intelligence';
+  } else if (pagePath.includes('advisory') || pagePath.includes('amortization') || pagePath.includes('report')) {
+    collection = 'Advisory Tools';
+  } else if (pagePath.includes('education') || pagePath.includes('market-pulse')) {
+    collection = 'Education';
+  } else if (pagePath.includes('messaging')) {
+    collection = 'Messaging';
+  } else if (pagePath.includes('mission-control')) {
+    collection = 'Admin';
+  } else if (pagePath.includes('checkout')) {
+    collection = 'Checkout';
+  }
+  
+  // 1. AUTO-TRACK PAGE VISIT
+  trackActivity(collection, tool, 'page_visit', 'Viewed: ' + pagePath);
+  
+  // 2. AUTO-TRACK TIME SPENT (on page unload)
+  window.addEventListener('beforeunload', function() {
+    var timeSpent = Math.round((new Date() - pageLoadTime) / 1000);
+    trackActivity(collection, tool, 'time_spent', timeSpent + ' seconds');
+  });
+  
+  // 3. AUTO-TRACK DOWNLOADS
+  document.addEventListener('click', function(e) {
+    var target = e.target.closest('a, button');
+    if (!target) return;
+    
+    var href = target.getAttribute('href') || '';
+    var download = target.getAttribute('download');
+    
+    if (download || href.match(/\.(pdf|docx|xlsx|pptx|png|jpg|jpeg|gif)$/i)) {
+      var fileName = download || href.split('/').pop();
+      trackActivity(collection, 'File Download', 'download', fileName);
+    }
+  });
+  
+  // 4. AUTO-TRACK FORM SUBMISSIONS
+  document.addEventListener('submit', function(e) {
+    var form = e.target;
+    var formName = form.getAttribute('name') || form.getAttribute('id') || 'Form';
+    trackActivity(collection, 'Form', 'form_submit', 'Submitted: ' + formName);
+  });
+  
+  // 5. AUTO-TRACK PRINT
+  window.addEventListener('beforeprint', function() {
+    trackActivity(collection, tool, 'print', 'Printed page');
+  });
+  
+  // Console confirmation
+  console.log('✅ Agent Edge Tracking Active - ' + collection + ' - ' + tool);
+  
+})();
