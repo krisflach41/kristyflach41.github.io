@@ -1009,6 +1009,71 @@ function editReport() {
   document.getElementById('generatorPanel').style.display = 'block';
   document.getElementById('reportContainer').style.display = 'none';
 }
+
+/* ===========================
+   COMPREHENSIVE TRACKING
+=========================== */
+(function() {
+  var userEmail = sessionStorage.getItem('agentEdgeUser');
+  var userName = sessionStorage.getItem('agentEdgeName') || 'User';
+  var pageLoadTime = new Date();
+  
+  if (!userEmail) return;
+  
+  function trackEvent(action, tool, details) {
+    fetch('https://agent-edge-backend.vercel.app/api/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userName: userName,
+        userEmail: userEmail,
+        collection: 'Advisory Tools',
+        tool: tool || 'Amortization Report',
+        action: action,
+        details: details || ''
+      })
+    }).catch(function(err) {
+      console.error('Tracking error:', err);
+    });
+  }
+
+  // 1. TRACK PAGE VISIT
+  trackEvent('page_visit', 'Amortization Report', 'Opened amortization calculator');
+
+  // 2. TRACK TIME SPENT
+  window.addEventListener('beforeunload', function() {
+    var timeSpent = Math.round((new Date() - pageLoadTime) / 1000);
+    trackEvent('time_spent', 'Amortization Report', timeSpent + ' seconds');
+  });
+
+  // 3. TRACK REPORT GENERATION
+  var originalGenerateReport = window.generateReport;
+  window.generateReport = function() {
+    var loanAmount = document.getElementById('loanAmount').value;
+    var interestRate = document.getElementById('interestRate').value;
+    var loanTerm = document.getElementById('loanTerm').value;
+    
+    trackEvent('report_generated', 'Amortization Report', 
+      'Generated report: $' + loanAmount + ' @ ' + interestRate + '% for ' + loanTerm + ' years');
+    
+    return originalGenerateReport();
+  };
+
+  // 4. TRACK DOWNLOADS
+  document.querySelectorAll('button').forEach(function(btn) {
+    if (btn.textContent.includes('Download') || btn.textContent.includes('PDF')) {
+      btn.addEventListener('click', function() {
+        trackEvent('download', 'Amortization Report', 'Downloaded PDF report');
+      });
+    }
+  });
+
+  // 5. TRACK PRINT
+  window.addEventListener('beforeprint', function() {
+    trackEvent('print', 'Amortization Report', 'Printed report');
+  });
+
+})();
 </script>
 
 </body>
