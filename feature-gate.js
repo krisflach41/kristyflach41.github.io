@@ -2,23 +2,22 @@
    AGENT EDGE — FEATURE GATING SYSTEM
    
    Auto-detects page and applies appropriate gates.
-   Drop this script into ANY page — it handles the rest.
    
    TRIAL members:
-   - Marketing/Advisory: full access, NO co-branding
+   - Marketing/Advisory: FULL access, can order, NO co-branding option
    - Education Videos & Loan Guides: full access
-   - Education Calculators: can see, can't use
-   - Education Credit Tools: can see, can't use
+   - Education Calculator LANDING page: open (can browse)
+   - Education Credit Tools LANDING page: open (can browse)
+   - Income Calculator (actual tool): can see, can't use
+   - Self-Employed Calculator (actual tool): can see, can't use
+   - Credit Score Simulator (actual tool): can see, can't use
+   - Credit Score Education: can see, can't use
    - Messaging Image Library: full access
    - Messaging Grab & Go: 5 free uses
    - Messaging On-Demand AI: 5 free uses
-   - Checkout/Ordering: blocked
+   - Checkout: OPEN (they can order, co-branding handled separately)
    
    PARTNER members: everything unlocked
-   
-   Manual gating also available:
-   - checkPremiumAccess('Feature Name') → returns true/false
-   - checkUsageLimit('tool-key', 5) → returns true/false
 =================================================== */
 
 (function() {
@@ -39,7 +38,6 @@
   }
 
   function hasHeadshot() {
-    // TODO: check from CRM contact data when loaded
     return sessionStorage.getItem('agentEdgeHasHeadshot') === 'true';
   }
 
@@ -62,17 +60,12 @@
     return path.split('/').pop().replace('.html', '').replace('.htm', '') || 'index';
   }
 
-  // Pages that are FULLY BLOCKED for trial users
-  var BLOCKED_PAGES = ['checkout'];
-
-  // Pages where trial users can SEE but not USE (overlay applied)
+  // Pages where trial users can SEE but not USE (overlay applied to actual tools only)
   var VIEW_ONLY_PAGES = [
     'income-calculator',
     'self-employed-calculator',
     'credit-score-simulator',
-    'credit-score-education',
-    'education-calculators',
-    'education-credit-tools'
+    'credit-score-education'
   ];
 
   // Pages with usage limits (5 free)
@@ -139,7 +132,7 @@
     document.body.appendChild(modal);
   };
 
-  // ===== USAGE REMAINING BANNER =====
+  // ===== USAGE REMAINING BANNER (big and visible) =====
   function showUsageBanner(toolName, used, limit) {
     var remaining = limit - used;
     if (remaining <= 0) return;
@@ -147,15 +140,22 @@
     var banner = document.createElement('div');
     banner.className = 'usage-banner';
     banner.innerHTML = 
-      '<span>&#9889; <strong>' + remaining + ' free ' + toolName + ' remaining</strong> in your trial</span>' +
-      '<a href="convert-membership.html">Upgrade for unlimited</a>';
+      '<div class="usage-banner-inner">' +
+        '<div class="usage-banner-text">' +
+          '<span class="usage-banner-icon">&#9889;</span>' +
+          '<strong>' + remaining + ' of ' + limit + ' free ' + toolName + ' remaining</strong>' +
+          '<span class="usage-banner-sub">in your trial</span>' +
+        '</div>' +
+        '<a href="convert-membership.html" class="usage-banner-btn">Upgrade for Unlimited Access</a>' +
+      '</div>';
 
-    // Insert at top of body
     document.body.insertBefore(banner, document.body.firstChild);
+    // Push page content down so banner doesn't cover it
+    document.body.style.paddingTop = (banner.offsetHeight) + 'px';
   }
 
-  // ===== FULL PAGE OVERLAY (for blocked/view-only pages) =====
-  function applyPageOverlay(title, message, showContent) {
+  // ===== FULL PAGE OVERLAY (for view-only pages) =====
+  function applyPageOverlay(title, message) {
     var overlay = document.createElement('div');
     overlay.className = 'premium-page-overlay';
     overlay.style.position = 'fixed';
@@ -167,16 +167,8 @@
     overlay.style.display = 'flex';
     overlay.style.alignItems = 'center';
     overlay.style.justifyContent = 'center';
-
-    if (showContent) {
-      // Semi-transparent — they can see the page behind it
-      overlay.style.background = 'rgba(255,255,255,0.88)';
-      overlay.style.backdropFilter = 'blur(3px)';
-    } else {
-      // Fully blocked
-      overlay.style.background = 'rgba(255,255,255,0.95)';
-      overlay.style.backdropFilter = 'blur(8px)';
-    }
+    overlay.style.background = 'rgba(255,255,255,0.88)';
+    overlay.style.backdropFilter = 'blur(3px)';
 
     overlay.innerHTML = 
       '<div style="text-align:center; padding:40px; max-width:450px;">' +
@@ -213,7 +205,6 @@
     var used = getUsageCount(toolKey);
     if (used >= limit) {
       var config = null;
-      // Find the display name
       for (var page in USAGE_LIMITED_PAGES) {
         if (USAGE_LIMITED_PAGES[page].key === toolKey) {
           config = USAGE_LIMITED_PAGES[page];
@@ -234,7 +225,6 @@
       return false;
     }
     if (!hasHeadshot()) {
-      // Partner but no headshot yet
       var existing = document.getElementById('premiumModal');
       if (existing) existing.remove();
 
@@ -287,24 +277,42 @@
       'display:inline-block; width:100%; padding:14px 30px;' +
       'background:linear-gradient(135deg,#0b4ea2,#1e6fd4);' +
       'color:white; border-radius:10px; text-decoration:none;' +
-      'font-weight:700; font-size:16px; box-sizing:border-box;' +
+      'font-weight:700; font-size:16px; box-sizing:border-box; text-align:center;' +
     '}' +
     '.premium-modal-upgrade:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(11,78,162,0.3); }' +
     '.premium-modal-close { background:none; border:none; color:#999; font-size:14px; cursor:pointer; padding:8px; }' +
     '.premium-modal-close:hover { color:#666; }' +
+    /* Big visible usage banner */
     '.usage-banner {' +
       'position:fixed; top:0; left:0; right:0; z-index:9000;' +
-      'background:linear-gradient(135deg,#0b4ea2,#1e6fd4);' +
-      'color:white; text-align:center; padding:10px 20px;' +
-      'font-size:13px; display:flex; align-items:center;' +
-      'justify-content:center; gap:16px;' +
+      'background:linear-gradient(135deg, #f59e0b, #d97706);' +
+      'box-shadow: 0 4px 20px rgba(217,119,6,0.4);' +
     '}' +
-    '.usage-banner a {' +
-      'color:white; background:rgba(255,255,255,0.2);' +
-      'padding:4px 14px; border-radius:20px; text-decoration:none;' +
-      'font-weight:600; font-size:12px;' +
+    '.usage-banner-inner {' +
+      'max-width:1100px; margin:0 auto; padding:14px 24px;' +
+      'display:flex; align-items:center; justify-content:space-between;' +
+      'flex-wrap:wrap; gap:12px;' +
     '}' +
-    '.usage-banner a:hover { background:rgba(255,255,255,0.3); }';
+    '.usage-banner-text {' +
+      'display:flex; align-items:center; gap:10px; flex-wrap:wrap;' +
+      'color:#7c2d12; font-size:15px;' +
+    '}' +
+    '.usage-banner-icon { font-size:20px; }' +
+    '.usage-banner-sub { font-size:13px; opacity:0.8; }' +
+    '.usage-banner-btn {' +
+      'background:white; color:#d97706; padding:8px 20px;' +
+      'border-radius:8px; text-decoration:none; font-weight:700;' +
+      'font-size:13px; white-space:nowrap;' +
+      'box-shadow:0 2px 8px rgba(0,0,0,0.1);' +
+      'transition:0.2s ease;' +
+    '}' +
+    '.usage-banner-btn:hover {' +
+      'transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,0.15);' +
+    '}' +
+    '@media (max-width:600px) {' +
+      '.usage-banner-inner { justify-content:center; text-align:center; }' +
+      '.usage-banner-text { justify-content:center; }' +
+    '}';
 
   document.head.appendChild(style);
 
@@ -321,33 +329,12 @@
 
     var page = getPageKey();
 
-    // ----- FULLY BLOCKED PAGES -----
-    if (BLOCKED_PAGES.indexOf(page) !== -1) {
-      applyPageOverlay(
-        'Partner Feature',
-        'Ordering and co-branded materials are available exclusively to Partner members. Upgrade to start placing orders!',
-        false
-      );
-      return;
-    }
-
     // ----- VIEW-ONLY PAGES (can see, can't use) -----
     if (VIEW_ONLY_PAGES.indexOf(page) !== -1) {
-      // For the landing/menu pages, show a softer overlay
-      if (page === 'education-calculators' || page === 'education-credit-tools') {
-        applyPageOverlay(
-          'Partner Feature',
-          'Financial calculators and credit tools are fully functional for Partner members. You can preview them, but upgrade to use them with your clients.',
-          true
-        );
-      } else {
-        // For the actual tool pages (income-calculator, credit-score-simulator, etc.)
-        applyPageOverlay(
-          'Partner Feature',
-          'This tool is fully functional for Partner members. Upgrade to use it with your clients!',
-          true
-        );
-      }
+      applyPageOverlay(
+        'Partner Feature',
+        'This tool is fully functional for Partner members. You can preview it here, but upgrade to use it with your clients!'
+      );
       return;
     }
 
@@ -360,11 +347,10 @@
         // Out of free uses — block the page
         applyPageOverlay(
           'Free Limit Reached',
-          'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your trial. Upgrade to Partner for unlimited access!',
-          false
+          'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your trial. Upgrade to Partner for unlimited access!'
         );
       } else {
-        // Still has uses left — show the banner
+        // Still has uses left — show the big banner
         showUsageBanner(limitConfig.name, used, limitConfig.limit);
       }
     }
