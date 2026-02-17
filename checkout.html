@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Checkout - Agent Edge Partner Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -427,13 +428,41 @@ label {
 <script src="universal-cart.js"></script>
 <script src="tracking.js"></script>
 <script>
+// ===== SUPABASE INIT =====
+const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
+window.supabase = window.supabase || {};
+if (!window.supabase.from) {
+  window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
+// ===== TRACK ACTIVITY TO SUPABASE =====
+function trackActivity(type, subject, action, details) {
+  var userEmail = sessionStorage.getItem('agentEdgeUser');
+  if (!userEmail) return;
+  
+  window.supabase
+    .from('crm_activity')
+    .insert([{
+      crm_id: userEmail,
+      type: type || 'activity',
+      subject: subject || 'Activity',
+      body: (action ? action + ': ' : '') + (details || ''),
+      date: new Date().toISOString()
+    }])
+    .then(function(response) {
+      if (response.error) console.error('Activity tracking error:', response.error);
+    });
+}
+
 // Auto-fill user info from login session
 document.addEventListener('DOMContentLoaded', function() {
-  var user = getTrackedUser();
+  var userName = sessionStorage.getItem('agentEdgeName');
+  var userEmail = sessionStorage.getItem('agentEdgeUser');
   var nameField = document.querySelector('input[name="name"]');
   var emailField = document.querySelector('input[name="email"]');
-  if (nameField && user.name && user.name !== 'Unknown') nameField.value = user.name;
-  if (emailField && user.email) emailField.value = user.email;
+  if (nameField && userName) nameField.value = userName;
+  if (emailField && userEmail) emailField.value = userEmail;
 });
 
 /* ===========================
@@ -622,7 +651,42 @@ if (form) {
         headers: { 'Accept': 'application/json' }
       });
       
-      // Send to Order Queue (Google Sheets via Vercel)
+      // ===== SAVE TO SUPABASE ORDERS TABLE =====
+      var orderId = 'ORD-' + Date.now().toString(36).toUpperCase();
+      var itemCount = 0;
+      if (cartData.marketing) itemCount += cartData.marketing.length;
+      if (cartData.advisory) itemCount += Object.keys(cartData.advisory).length;
+      if (cartData.websites) itemCount += cartData.websites.length;
+      
+      var supabaseOrder = {
+        order_id: orderId,
+        user_email: form.email.value,
+        user_name: form.name.value,
+        brokerage: form.brokerage.value || null,
+        items: cartData,
+        item_count: itemCount,
+        co_branding: form.branding.value !== 'None',
+        co_brand_layout: null, // Will be added when co-brand picker is implemented
+        notes: form.notes.value || null,
+        status: 'new',
+        cart_data: cartData
+      };
+      
+      window.supabase
+        .from('orders')
+        .insert([supabaseOrder])
+        .then(function(response) {
+          if (response.error) {
+            console.error('Supabase order insert error:', response.error);
+          } else {
+            console.log('Order saved to Supabase:', orderId);
+          }
+        })
+        .catch(function(err) {
+          console.error('Supabase error:', err);
+        });
+      
+      // Send to Order Queue (Google Sheets via Vercel) - DEPRECATED, keeping as backup
       fetch('https://agent-edge-backend.vercel.app/api/submit-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
