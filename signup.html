@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Account - Agent Edge Partner Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
@@ -336,7 +337,7 @@ body {
       <h3>Terms & Conditions</h3>
       <p><strong>Welcome to the Agent Edge Partner Portal!</strong></p>
       
-      <!-- ⭐ HIGHLIGHTED SOFT LEAD REQUIREMENT ⭐ -->
+      <!-- HIGHLIGHTED SOFT LEAD REQUIREMENT -->
       <div style="
         background: linear-gradient(135deg, #fff9e6 0%, #ffe6cc 100%);
         border: 3px solid #ff9800;
@@ -346,7 +347,7 @@ body {
         box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
       ">
         <p style="margin: 0; font-size: 15px; font-weight: 700; color: #e65100; text-align: center; line-height: 1.6;">
-          🎯 VIP PARTNER REQUIREMENT:<br>
+          ★ VIP PARTNER REQUIREMENT:<br>
           To maintain access to this portal and its resources, you must provide<br>
           <span style="font-size: 18px; color: #ff5722;">ONE SOFT LEAD PER MONTH</span><br>
           to Kristy Flach / Agent Edge
@@ -384,9 +385,17 @@ body {
 
 <script src="auth.js"></script>
 <script>
+// ===== SUPABASE INIT =====
+const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
+window.supabase = window.supabase || {};
+if (!window.supabase.from) {
+  window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+}
+
 /* ===========================
    SIGNUP FORM HANDLER
-   Server-side registration
+   Supabase registration
 =========================== */
 
 var signupForm = document.getElementById('signupForm');
@@ -441,23 +450,67 @@ signupForm.addEventListener('submit', async function(e) {
   submitBtn.textContent = 'Creating Account...';
 
   try {
-    var response = await fetch('https://agent-edge-backend.vercel.app/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        fullName: fullName,
-        email: email,
-        brokerage: brokerage,
-        username: username,
-        password: password
-      })
-    });
+    // ===== CREATE USER IN SUPABASE =====
+    var newUser = {
+      username: username,
+      password: password, // In production, this should be hashed on the server!
+      email: email,
+      full_name: fullName,
+      brokerage: brokerage,
+      role: 'trial',
+      is_admin: false,
+      temp_password: false,
+      trial_start_date: new Date().toISOString(),
+      joined_date: new Date().toISOString()
+    };
 
-    var data = await response.json();
+    var response = await window.supabase
+      .from('users')
+      .insert([newUser])
+      .select();
 
-    if (data.success) {
-      // Auto-login
-      setUserSession(data.user);
+    if (response.error) {
+      // Check for duplicate username/email
+      if (response.error.message.includes('duplicate') || response.error.code === '23505') {
+        errorMessage.textContent = 'Username or email already exists. Please try different credentials.';
+      } else {
+        errorMessage.textContent = response.error.message || 'Registration failed. Please try again.';
+      }
+      errorMessage.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Create Account';
+      return;
+    }
+
+    if (response.data && response.data[0]) {
+      // Auto-login by setting session
+      if (typeof setUserSession === 'function') {
+        setUserSession({
+          username: username,
+          email: email,
+          name: fullName,
+          isAdmin: false
+        });
+      } else {
+        // Fallback session storage
+        sessionStorage.setItem('agentEdgeUser', email);
+        sessionStorage.setItem('agentEdgeName', fullName);
+        sessionStorage.setItem('agentEdgeAdmin', 'false');
+      }
+
+      // Also create CRM contact for new user
+      await window.supabase
+        .from('crm_contacts')
+        .insert([{
+          id: 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
+          name: fullName,
+          email: email,
+          company: brokerage,
+          type: 'realtor',
+          source: 'portal_signup',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }]);
 
       // Show success
       successMessage.classList.add('show');
@@ -466,11 +519,6 @@ signupForm.addEventListener('submit', async function(e) {
       setTimeout(function() {
         window.location.href = 'portal.html';
       }, 2000);
-    } else {
-      errorMessage.textContent = data.message || 'Registration failed. Please try again.';
-      errorMessage.classList.add('show');
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Create Account';
     }
   } catch (error) {
     console.error('Signup error:', error);
