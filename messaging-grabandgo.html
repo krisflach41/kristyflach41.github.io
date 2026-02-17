@@ -776,6 +776,7 @@ body {
 </div>
 
 <script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
 <script>
 // ===== POST DATABASE - 40 POSTS =====
 const posts = [
@@ -957,6 +958,9 @@ var selectedImageCredit = '';
 var currentPostIndex = -1;
 
 function openCreator(index) {
+  // Check usage limit for trial users (5 free)
+  if (typeof checkUsageLimit === 'function' && !checkUsageLimit('grab-and-go', 5)) return;
+
   currentPostIndex = index;
   var post = posts[index];
 

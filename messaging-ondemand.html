@@ -353,6 +353,7 @@ body {
 </div>
 
 <script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
 <script>
 // Auto-fill name and email from login session
 document.addEventListener('DOMContentLoaded', function() {
@@ -370,6 +371,9 @@ var generatedPost = '';
 
 generatorForm.addEventListener('submit', async function(e) {
   e.preventDefault();
+
+  // Check usage limit for trial users (5 free)
+  if (typeof checkUsageLimit === 'function' && !checkUsageLimit('on-demand', 5)) return;
 
   var userName = document.getElementById('userName').value;
   var userEmail = document.getElementById('userEmail').value;

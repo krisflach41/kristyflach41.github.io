@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Start Your Free Trial - Agent Edge Partner Portal</title>
+<title>Create Account - Agent Edge Partner Portal</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
@@ -50,18 +51,6 @@ body {
   font-size: 14px;
   color: #555;
   font-weight: 400;
-}
-
-.trial-badge {
-  display: inline-block;
-  background: linear-gradient(135deg, #0b4ea2, #1e6fd4);
-  color: white;
-  padding: 6px 18px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 700;
-  margin-top: 12px;
-  letter-spacing: 0.5px;
 }
 
 /* ===== FORM INPUTS ===== */
@@ -260,16 +249,17 @@ body {
 
 <div class="signup-card">
   <div class="signup-header">
-    <h1 class="signup-title">Start Your Free Trial</h1>
-    <p class="signup-subtitle">Get full access to Agent Edge for 7 days</p>
-    <div class="trial-badge">7-DAY FREE TRIAL</div>
+    <h1 class="signup-title">Create Your Account</h1>
+    <p class="signup-subtitle">Join the Agent Edge Partner Portal</p>
   </div>
 
   <div class="success-message" id="successMessage">
-    &#10003; Account created! Redirecting to portal...
+    ✓ Account created! Redirecting to portal...
   </div>
 
-  <div class="error-message" id="errorMessage"></div>
+  <div class="error-message" id="errorMessage">
+    <!-- Error text inserted by JavaScript -->
+  </div>
 
   <form id="signupForm">
     <div class="form-group">
@@ -292,7 +282,6 @@ body {
         placeholder="your@email.com"
         required
       >
-      <div class="form-helper">This will be your login email.</div>
     </div>
 
     <div class="form-group">
@@ -304,6 +293,19 @@ body {
         placeholder="Your brokerage name"
         required
       >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="newUsername">Create Username *</label>
+      <input 
+        type="text" 
+        id="newUsername" 
+        class="form-input" 
+        placeholder="Choose a username"
+        autocomplete="off"
+        required
+      >
+      <div class="form-helper">Letters, numbers, dots, and underscores only. No spaces.</div>
     </div>
 
     <div class="form-group">
@@ -333,7 +335,7 @@ body {
 
     <!-- TERMS & CONDITIONS -->
     <div class="terms-box">
-      <h3>Terms &amp; Conditions</h3>
+      <h3>Terms & Conditions</h3>
       <p><strong>Welcome to the Agent Edge Partner Portal!</strong></p>
       
       <!-- HIGHLIGHTED SOFT LEAD REQUIREMENT -->
@@ -346,7 +348,7 @@ body {
         box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
       ">
         <p style="margin: 0; font-size: 15px; font-weight: 700; color: #e65100; text-align: center; line-height: 1.6;">
-          &#9733; VIP PARTNER REQUIREMENT:<br>
+          ★ VIP PARTNER REQUIREMENT:<br>
           To maintain access to this portal and its resources, you must provide<br>
           <span style="font-size: 18px; color: #ff5722;">ONE SOFT LEAD PER MONTH</span><br>
           to Kristy Flach / Agent Edge
@@ -358,7 +360,7 @@ body {
         <li><strong>Authorized Use:</strong> This portal is exclusively for real estate professionals partnering with Kristy Flach / Agent Edge.</li>
         <li><strong>Professional Purpose:</strong> All materials and resources are provided for legitimate business purposes in serving your clients.</li>
         <li><strong>Confidentiality:</strong> Portal access credentials are personal and should not be shared with unauthorized individuals.</li>
-        <li><strong>Content Usage:</strong> Marketing materials may be customized with your branding as indicated. Co-branded materials require setup.</li>
+        <li><strong>Content Usage:</strong> Marketing materials may be customized with your branding as indicated. Co-branded materials require Total Expert setup.</li>
         <li><strong>Accuracy:</strong> You are responsible for verifying all information provided to clients, including rates, terms, and property details.</li>
         <li><strong>Compliance:</strong> All use must comply with applicable real estate and mortgage lending regulations.</li>
         <li><strong>Account Responsibility:</strong> You are responsible for all activity under your account.</li>
@@ -370,15 +372,15 @@ body {
     <div class="checkbox-group">
       <input type="checkbox" id="agreeTerms" required>
       <label for="agreeTerms">
-        I have read and agree to the Terms &amp; Conditions above, <strong>including the requirement to provide ONE soft lead per month.</strong> I confirm that I am a licensed real estate professional. *
+        I have read and agree to the Terms & Conditions above, <strong>including the requirement to provide ONE soft lead per month.</strong> I confirm that I am a licensed real estate professional. *
       </label>
     </div>
 
-    <button type="submit" class="signup-btn" id="submitBtn">Start My Free Trial</button>
+    <button type="submit" class="signup-btn" id="submitBtn">Create Account</button>
   </form>
 
   <div class="back-link">
-    <a href="login.html">&larr; Already have an account? Sign In</a>
+    <a href="login.html">← Back to Login</a>
   </div>
 </div>
 
@@ -386,7 +388,7 @@ body {
 <script>
 /* ===========================
    SIGNUP FORM HANDLER
-   Trial signup — email is username
+   Vercel API registration
 =========================== */
 
 var signupForm = document.getElementById('signupForm');
@@ -399,8 +401,9 @@ signupForm.addEventListener('submit', async function(e) {
 
   // Get form values
   var fullName = document.getElementById('fullName').value.trim();
-  var email = document.getElementById('email').value.trim().toLowerCase();
+  var email = document.getElementById('email').value.trim();
   var brokerage = document.getElementById('brokerage').value.trim();
+  var username = document.getElementById('newUsername').value.trim().toLowerCase();
   var password = document.getElementById('newPassword').value;
   var confirmPassword = document.getElementById('confirmPassword').value;
   var agreeTerms = document.getElementById('agreeTerms').checked;
@@ -410,6 +413,12 @@ signupForm.addEventListener('submit', async function(e) {
   successMessage.classList.remove('show');
 
   // Client-side validation
+  if (!/^[a-z0-9._]+$/.test(username)) {
+    errorMessage.textContent = 'Username can only contain lowercase letters, numbers, dots, and underscores.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
   if (password.length < 6) {
     errorMessage.textContent = 'Password must be at least 6 characters long.';
     errorMessage.classList.add('show');
@@ -434,6 +443,7 @@ signupForm.addEventListener('submit', async function(e) {
   submitBtn.textContent = 'Creating Account...';
 
   try {
+    // ===== CALL VERCEL API TO CREATE USER =====
     var response = await fetch('https://agent-edge-backend.vercel.app/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -441,6 +451,7 @@ signupForm.addEventListener('submit', async function(e) {
         fullName: fullName,
         email: email,
         brokerage: brokerage,
+        username: username,
         password: password
       })
     });
@@ -451,15 +462,25 @@ signupForm.addEventListener('submit', async function(e) {
       errorMessage.textContent = data.message || 'Registration failed. Please try again.';
       errorMessage.classList.add('show');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Start My Free Trial';
+      submitBtn.textContent = 'Create Account';
       return;
     }
 
     // Auto-login by setting session
-    setUserSession(data.user);
-    sessionStorage.setItem('agentEdgeAdmin', 'false');
-    sessionStorage.setItem('agentEdgeRole', 'trial');
-    sessionStorage.setItem('agentEdgeTrialStart', data.trialStart || new Date().toISOString());
+    if (typeof setUserSession === 'function') {
+      setUserSession({
+        username: data.user.username,
+        email: data.user.email,
+        name: data.user.name,
+        isAdmin: false
+      });
+    } else {
+      // Fallback session storage
+      sessionStorage.setItem('agentEdgeUser', data.user.email);
+      sessionStorage.setItem('agentEdgeName', data.user.name);
+      sessionStorage.setItem('agentEdgeAdmin', 'false');
+      sessionStorage.setItem('agentEdgeTrialStart', data.trialStart || new Date().toISOString());
+    }
 
     // Show success
     successMessage.classList.add('show');
@@ -474,8 +495,13 @@ signupForm.addEventListener('submit', async function(e) {
     errorMessage.textContent = 'Connection error. Please try again.';
     errorMessage.classList.add('show');
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Start My Free Trial';
+    submitBtn.textContent = 'Create Account';
   }
+});
+
+// Real-time username validation
+document.getElementById('newUsername').addEventListener('input', function(e) {
+  this.value = this.value.toLowerCase().replace(/[^a-z0-9._]/g, '');
 });
 
 // Password match indicator
