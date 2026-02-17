@@ -385,17 +385,9 @@ body {
 
 <script src="auth.js"></script>
 <script>
-// ===== SUPABASE INIT =====
-const SUPABASE_URL = 'https://nexsiwhlzzqoidtgioja.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_d_DWpsbTqvJ7UKFh2SBuFg_uFOxrUh8';
-window.supabase = window.supabase || {};
-if (!window.supabase.from) {
-  window.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-}
-
 /* ===========================
    SIGNUP FORM HANDLER
-   Supabase registration
+   Vercel API registration
 =========================== */
 
 var signupForm = document.getElementById('signupForm');
@@ -450,76 +442,53 @@ signupForm.addEventListener('submit', async function(e) {
   submitBtn.textContent = 'Creating Account...';
 
   try {
-    // ===== CREATE USER IN SUPABASE =====
-    var newUser = {
-      username: username,
-      password: password, // In production, this should be hashed on the server!
-      email: email,
-      full_name: fullName,
-      brokerage: brokerage,
-      role: 'trial',
-      is_admin: false,
-      temp_password: false,
-      trial_start_date: new Date().toISOString(),
-      joined_date: new Date().toISOString()
-    };
+    // ===== CALL VERCEL API TO CREATE USER =====
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fullName: fullName,
+        email: email,
+        brokerage: brokerage,
+        username: username,
+        password: password
+      })
+    });
 
-    var response = await window.supabase
-      .from('users')
-      .insert([newUser])
-      .select();
+    var data = await response.json();
 
-    if (response.error) {
-      // Check for duplicate username/email
-      if (response.error.message.includes('duplicate') || response.error.code === '23505') {
-        errorMessage.textContent = 'Username or email already exists. Please try different credentials.';
-      } else {
-        errorMessage.textContent = response.error.message || 'Registration failed. Please try again.';
-      }
+    if (!response.ok || !data.success) {
+      errorMessage.textContent = data.message || 'Registration failed. Please try again.';
       errorMessage.classList.add('show');
       submitBtn.disabled = false;
       submitBtn.textContent = 'Create Account';
       return;
     }
 
-    if (response.data && response.data[0]) {
-      // Auto-login by setting session
-      if (typeof setUserSession === 'function') {
-        setUserSession({
-          username: username,
-          email: email,
-          name: fullName,
-          isAdmin: false
-        });
-      } else {
-        // Fallback session storage
-        sessionStorage.setItem('agentEdgeUser', email);
-        sessionStorage.setItem('agentEdgeName', fullName);
-        sessionStorage.setItem('agentEdgeAdmin', 'false');
-      }
-
-      // Also create CRM contact for new user
-      await window.supabase
-        .from('crm_contacts')
-        .insert([{
-          id: 'crm-' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
-          name: fullName,
-          email: email,
-          company: brokerage,
-          type: 'realtor',
-          source: 'portal_signup',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }]);
-
-      // Show success
-      successMessage.classList.add('show');
-
-      // Redirect to portal
-      setTimeout(function() {
-        window.location.href = 'portal.html';
-      }, 2000);
+    // Auto-login by setting session
+    if (typeof setUserSession === 'function') {
+      setUserSession({
+        username: data.user.username,
+        email: data.user.email,
+        name: data.user.name,
+        isAdmin: false
+      });
+    } else {
+      // Fallback session storage
+      sessionStorage.setItem('agentEdgeUser', data.user.email);
+      sessionStorage.setItem('agentEdgeName', data.user.name);
+      sessionStorage.setItem('agentEdgeAdmin', 'false');
+      sessionStorage.setItem('agentEdgeTrialStart', data.trialStart || new Date().toISOString());
     }
+
+    // Show success
+    successMessage.classList.add('show');
+
+    // Redirect to portal
+    setTimeout(function() {
+      window.location.href = 'portal.html';
+    }, 2000);
+
   } catch (error) {
     console.error('Signup error:', error);
     errorMessage.textContent = 'Connection error. Please try again.';
