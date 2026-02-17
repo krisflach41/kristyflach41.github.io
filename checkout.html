@@ -439,6 +439,20 @@ document.addEventListener('DOMContentLoaded', function() {
   var emailField = document.querySelector('input[name="email"]');
   if (nameField && userName) nameField.value = userName;
   if (emailField && userEmail) emailField.value = userEmail;
+
+  // Gate co-branding for trial users
+  var role = sessionStorage.getItem('agentEdgeRole') || 'trial';
+  var isAdmin = sessionStorage.getItem('agentEdgeAdmin') === 'true';
+  if (role === 'trial' && !isAdmin) {
+    var coBrandRadio = document.querySelector('input[name="branding"][value="Co-branded"]');
+    var kristyRadio = document.querySelector('input[name="branding"][value="Kristy-branded only"]');
+    if (coBrandRadio && coBrandRadio.parentElement) {
+      coBrandRadio.parentElement.style.display = 'none';
+    }
+    if (kristyRadio) {
+      kristyRadio.checked = true;
+    }
+  }
 });
 
 /* ===========================
