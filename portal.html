@@ -1124,11 +1124,13 @@ window.addEventListener('load', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // ===== TRACK PORTAL ACTIVITY VIA VERCEL API =====
-  function trackActivity(type, subject, details) {
-    var userEmail = sessionStorage.getItem('agentEdgeUser');
-    var userName = sessionStorage.getItem('agentEdgeName') || 'User';
-    
+  // ===== COMPREHENSIVE TRACKING SYSTEM =====
+  var userEmail = sessionStorage.getItem('agentEdgeUser');
+  var userName = sessionStorage.getItem('agentEdgeName') || 'User';
+  var pageLoadTime = new Date();
+  
+  // Track to Vercel API
+  function trackEvent(action, tool, details) {
     if (!userEmail) return;
     
     fetch('https://agent-edge-backend.vercel.app/api/track', {
@@ -1138,17 +1140,55 @@ document.addEventListener('DOMContentLoaded', function() {
         userName: userName,
         userEmail: userEmail,
         collection: 'Portal',
-        tool: subject || 'Portal Activity',
-        action: type || 'portal_visit',
+        tool: tool || 'Portal',
+        action: action,
         details: details || ''
       })
     }).catch(function(err) {
-      console.error('Activity tracking error:', err);
+      console.error('Tracking error:', err);
     });
   }
 
-  // Track portal homepage visit
-  trackActivity('portal_visit', 'Portal Homepage', 'Viewed main portal page');
+  // 1. TRACK PAGE VISIT
+  trackEvent('page_visit', 'Portal Homepage', 'Viewed portal landing page');
+
+  // 2. TRACK TIME SPENT (when user leaves)
+  window.addEventListener('beforeunload', function() {
+    var timeSpent = Math.round((new Date() - pageLoadTime) / 1000); // seconds
+    trackEvent('time_spent', 'Portal Homepage', timeSpent + ' seconds');
+  });
+
+  // 3. TRACK LINK CLICKS (which collections they visit)
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var href = this.getAttribute('href') || '';
+      var linkText = this.textContent.trim();
+      
+      // Track collection page visits
+      if (href.includes('market-intelligence') || linkText.includes('Market Intelligence')) {
+        trackEvent('collection_click', 'Marketing Intelligence', 'Clicked to view Marketing collection');
+      } else if (href.includes('advisory') || linkText.includes('Advisory')) {
+        trackEvent('collection_click', 'Advisory Tools', 'Clicked to view Advisory collection');
+      } else if (href.includes('education') || linkText.includes('Education')) {
+        trackEvent('collection_click', 'Education', 'Clicked to view Education collection');
+      } else if (href.includes('messaging') || linkText.includes('Messaging')) {
+        trackEvent('collection_click', 'Messaging', 'Clicked to view Messaging collection');
+      } else if (href.includes('mission-control') || linkText.includes('Admin')) {
+        trackEvent('admin_access', 'Mission Control', 'Accessed admin panel');
+      } else if (href && !href.startsWith('#')) {
+        // Track other navigation
+        trackEvent('navigation', 'Portal Link', 'Clicked: ' + linkText);
+      }
+    });
+  });
+
+  // 4. TRACK DOWNLOADS (any download links)
+  document.querySelectorAll('a[download], a[href$=".pdf"], a[href$=".docx"], a[href$=".xlsx"]').forEach(function(link) {
+    link.addEventListener('click', function() {
+      var fileName = this.getAttribute('download') || this.getAttribute('href').split('/').pop();
+      trackEvent('download', 'Portal Download', 'Downloaded: ' + fileName);
+    });
+  });
 
   // Show admin link only for admins
   if (sessionStorage.getItem('agentEdgeAdmin') === 'true') {
