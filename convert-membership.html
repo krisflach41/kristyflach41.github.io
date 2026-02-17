@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Become a Partner - Agent Edge</title>
+<script src="auth.js"></script>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px;
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+.convert-card {
+  width: 90%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+.convert-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.convert-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0b1f3a;
+}
+
+.convert-subtitle {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.partner-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 12px;
+  letter-spacing: 0.5px;
+}
+
+/* ===== FORM ===== */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #0b1f3a;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(4px);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+.form-helper {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* ===== HEADSHOT UPLOAD ===== */
+.headshot-upload {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.headshot-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(11,78,162,0.06);
+  border: 3px dashed rgba(11,78,162,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.headshot-preview:hover {
+  border-color: #0b4ea2;
+  background: rgba(11,78,162,0.08);
+}
+
+.headshot-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.headshot-placeholder {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.4;
+}
+
+.headshot-input {
+  display: none;
+}
+
+/* ===== SECTION DIVIDER ===== */
+.form-section {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b4ea2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 30px 0 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(11,78,162,0.1);
+}
+
+/* ===== BUTTONS ===== */
+.submit-btn {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-weight: 700;
+  font-size: 17px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 25px;
+  box-shadow: 0 4px 15px rgba(34,197,94,0.3);
+}
+
+.submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(34,197,94,0.4);
+}
+
+.submit-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+/* ===== MESSAGES ===== */
+.success-message {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: #27ae60;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+  text-align: center;
+}
+
+.success-message.show { display: block; }
+
+.error-message {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+.error-message.show { display: block; }
+
+.back-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .convert-card { padding: 40px 25px; }
+  .convert-title { font-size: 24px; }
+}
+</style>
+<script src="tracking.js"></script>
+</head>
+
+<body>
+
+<div class="convert-card">
+  <div class="convert-header">
+    <h1 class="convert-title">Welcome to the Team!</h1>
+    <p class="convert-subtitle">Just a few details and you'll have full Partner access to everything Agent Edge has to offer.</p>
+    <div class="partner-badge">PARTNER UPGRADE</div>
+  </div>
+
+  <div class="success-message" id="successMessage">
+    &#10003; You're officially a Partner! Redirecting to your portal...
+  </div>
+
+  <div class="error-message" id="errorMessage"></div>
+
+  <form id="convertForm">
+
+    <!-- HEADSHOT -->
+    <div class="form-section">Your Professional Photo</div>
+    <div class="headshot-upload">
+      <div class="headshot-preview" id="headshotPreview" onclick="document.getElementById('headshotFile').click()">
+        <span class="headshot-placeholder" id="headshotPlaceholder">Click to upload<br>your headshot</span>
+      </div>
+      <input type="file" id="headshotFile" class="headshot-input" accept="image/*">
+      <div class="form-helper">Professional headshot for co-branded materials. JPG or PNG, square crop works best.</div>
+    </div>
+
+    <!-- CREDENTIALS -->
+    <div class="form-section">Your Credentials</div>
+
+    <div class="form-group">
+      <label class="form-label" for="licenseNumber">Real Estate License Number *</label>
+      <input 
+        type="text" 
+        id="licenseNumber" 
+        class="form-input" 
+        placeholder="Your state license number"
+        required
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="phone">Phone Number *</label>
+      <input 
+        type="tel" 
+        id="phone" 
+        class="form-input" 
+        placeholder="(555) 123-4567"
+        required
+      >
+    </div>
+
+    <!-- BROKERAGE ADDRESS -->
+    <div class="form-section">Brokerage Address</div>
+
+    <div class="form-group">
+      <label class="form-label" for="address">Street Address *</label>
+      <input 
+        type="text" 
+        id="address" 
+        class="form-input" 
+        placeholder="123 Main Street"
+        required
+      >
+    </div>
+
+    <div style="display: flex; gap: 12px;">
+      <div class="form-group" style="flex: 2;">
+        <label class="form-label" for="city">City *</label>
+        <input type="text" id="city" class="form-input" placeholder="City" required>
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label class="form-label" for="state">State *</label>
+        <input type="text" id="state" class="form-input" placeholder="OH" maxlength="2" required>
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label class="form-label" for="zip">Zip *</label>
+        <input type="text" id="zip" class="form-input" placeholder="45202" maxlength="10" required>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Activate My Partner Access</button>
+  </form>
+
+  <div class="back-link">
+    <a href="trial-expired.html">&larr; Back to options</a>
+  </div>
+</div>
+
+<script>
+/* ===========================
+   CONVERT MEMBERSHIP HANDLER
+=========================== */
+
+var convertForm = document.getElementById('convertForm');
+var errorMessage = document.getElementById('errorMessage');
+var successMessage = document.getElementById('successMessage');
+var submitBtn = document.getElementById('submitBtn');
+
+// ===== HEADSHOT PREVIEW =====
+var headshotFile = document.getElementById('headshotFile');
+var headshotPreview = document.getElementById('headshotPreview');
+var headshotPlaceholder = document.getElementById('headshotPlaceholder');
+var headshotData = null;
+
+headshotFile.addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    errorMessage.textContent = 'Headshot must be under 2MB. Please choose a smaller image.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    headshotData = event.target.result;
+    headshotPlaceholder.style.display = 'none';
+    var img = document.createElement('img');
+    img.src = headshotData;
+    // Clear previous preview
+    var existingImg = headshotPreview.querySelector('img');
+    if (existingImg) existingImg.remove();
+    headshotPreview.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== FORM SUBMISSION =====
+convertForm.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  errorMessage.classList.remove('show');
+  successMessage.classList.remove('show');
+
+  // Validate headshot
+  if (!headshotData) {
+    errorMessage.textContent = 'Please upload your professional headshot.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
+  var userEmail = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser');
+  if (!userEmail) {
+    errorMessage.textContent = 'Session expired. Please log in again.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Activating...';
+
+  try {
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/convert-membership', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userEmail,
+        licenseNumber: document.getElementById('licenseNumber').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        state: document.getElementById('state').value.trim().toUpperCase(),
+        zip: document.getElementById('zip').value.trim(),
+        headshot: headshotData
+      })
+    });
+
+    var data = await response.json();
+
+    if (!response.ok || !data.success) {
+      errorMessage.textContent = data.message || 'Something went wrong. Please try again.';
+      errorMessage.classList.add('show');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Activate My Partner Access';
+      return;
+    }
+
+    // Update session to partner
+    sessionStorage.setItem('agentEdgeRole', 'partner');
+
+    // Show success
+    successMessage.classList.add('show');
+    convertForm.style.display = 'none';
+
+    // Redirect to portal
+    setTimeout(function() {
+      window.location.href = 'portal.html';
+    }, 2500);
+
+  } catch (error) {
+    console.error('Conversion error:', error);
+    errorMessage.textContent = 'Connection error. Please try again.';
+    errorMessage.classList.add('show');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Activate My Partner Access';
+  }
+});
+
+// Phone formatting
+document.getElementById('phone').addEventListener('input', function(e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
+
+// State uppercase
+document.getElementById('state').addEventListener('input', function(e) {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+});
+</script>
+
+</body>
+</html>
