@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Edge Partner Portal - Login</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 /* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
@@ -131,7 +130,7 @@ body {
 /* ===== BACK TO MAIN SITE LINK ===== */
 .back-link {
   text-align: center;
-  margin-top: 30px;
+  margin-top: 15px;
   font-size: 14px;
 }
 
@@ -170,18 +169,18 @@ body {
   </div>
 
   <div class="error-message" id="errorMessage">
-    Invalid username or password. Please try again.
+    Invalid email or password. Please try again.
   </div>
 
   <form id="loginForm">
     <div class="form-group">
-      <label class="form-label" for="username">Username</label>
+      <label class="form-label" for="email">Email Address</label>
       <input 
-        type="text" 
-        id="username" 
+        type="email" 
+        id="email" 
         class="form-input" 
-        placeholder="Enter your username"
-        autocomplete="username"
+        placeholder="your@email.com"
+        autocomplete="email"
         required
       >
     </div>
@@ -201,91 +200,24 @@ body {
     <button type="submit" class="login-btn">Sign In</button>
   </form>
 
-  <div class="back-link" style="margin-top: 15px;">
+  <div class="back-link">
     <a href="forgot-password.html">Forgot your password?</a>
   </div>
 
   <div class="back-link">
-    <a href="index.html">← Back to Main Website</a>
+    <a href="index.html">&larr; Back to Main Website</a>
   </div>
 
   <div style="text-align: center; margin-top: 25px; padding-top: 25px; border-top: 1px solid rgba(11,78,162,0.1);">
     <p style="font-size: 14px; color: #555; margin-bottom: 10px;">Don't have an account?</p>
-    <a href="signup.html" style="color: #0b4ea2; text-decoration: none; font-weight: 600; font-size: 15px;">Create Account →</a>
+    <a href="signup.html" style="color: #0b4ea2; text-decoration: none; font-weight: 600; font-size: 15px;">Start Your 7-Day Free Trial &rarr;</a>
   </div>
 </div>
 
 <script src="auth.js"></script>
 <script>
-// ===== LOGIN HANDLER =====
-var loginForm = document.getElementById('loginForm');
-var errorMessage = document.getElementById('errorMessage');
-
-loginForm.addEventListener('submit', async function(e) {
-  e.preventDefault();
-
-  var username = document.getElementById('username').value.trim().toLowerCase();
-  var password = document.getElementById('password').value;
-
-  // Hide error message
-  errorMessage.classList.remove('show');
-
-  try {
-    // ===== CALL VERCEL API TO LOGIN =====
-    var response = await fetch('https://agent-edge-backend.vercel.app/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: username,
-        password: password
-      })
-    });
-
-    var data = await response.json();
-
-    if (!response.ok || !data.success) {
-      // Login failed
-      errorMessage.classList.add('show');
-      document.getElementById('password').value = '';
-      return;
-    }
-
-    // Set session using auth.js function if available
-    if (typeof setUserSession === 'function') {
-      setUserSession({
-        username: data.user.username,
-        email: data.user.email,
-        name: data.user.name,
-        isAdmin: data.isAdmin || false
-      });
-    } else {
-      // Fallback session storage
-      sessionStorage.setItem('agentEdgeUser', data.user.email);
-      sessionStorage.setItem('agentEdgeName', data.user.name);
-      sessionStorage.setItem('agentEdgeAdmin', data.isAdmin ? 'true' : 'false');
-      if (data.trialStart) {
-        sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
-      }
-    }
-
-    // Check if temp password
-    if (data.tempPassword) {
-      // Redirect to password reset page
-      window.location.href = 'reset-password.html';
-    } else {
-      // Redirect to portal
-      window.location.href = 'portal.html';
-    }
-
-  } catch (error) {
-    console.error('Login error:', error);
-    errorMessage.textContent = 'Connection error. Please try again.';
-    errorMessage.classList.add('show');
-  }
-});
-
-// Auto-focus username field
-document.getElementById('username').focus();
+// Auto-focus email field
+document.getElementById('email').focus();
 </script>
 
 </body>
