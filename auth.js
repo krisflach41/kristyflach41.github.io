@@ -1,72 +1,93 @@
 /* ===========================
    AUTHENTICATION SYSTEM
    Agent Edge Partner Portal
-   Server-side auth via Vercel
+   
+   Email = username = primary key
+   Everything ties to email address
 =========================== */
 
-const AUTH_API = 'https://agent-edge-backend.vercel.app/api';
+var AUTH_API = 'https://agent-edge-backend.vercel.app/api';
 
-// Check if user is authenticated
+// ===== SESSION MANAGEMENT =====
+
 function isAuthenticated() {
   return sessionStorage.getItem('agentEdgeAuth') === 'authenticated';
-}
-
-// Get current user info
-function getCurrentUser() {
-  return sessionStorage.getItem('agentEdgeUser') || 'User';
-}
-
-function getCurrentUserName() {
-  return sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeUser') || 'User';
 }
 
 function getCurrentUserEmail() {
   return sessionStorage.getItem('agentEdgeUserEmail') || '';
 }
 
+function getCurrentUserName() {
+  return sessionStorage.getItem('agentEdgeUserName') || 'User';
+}
+
 function getCurrentUserBrokerage() {
   return sessionStorage.getItem('agentEdgeUserBrokerage') || '';
 }
 
-// Store user session after successful auth
-function setUserSession(user) {
-  sessionStorage.setItem('agentEdgeAuth', 'authenticated');
-  sessionStorage.setItem('agentEdgeUser', user.username);
-  sessionStorage.setItem('agentEdgeUserName', user.name);
-  sessionStorage.setItem('agentEdgeUserEmail', user.email);
-  sessionStorage.setItem('agentEdgeUserBrokerage', user.brokerage || '');
+// Keep backward compatibility — old code references agentEdgeUser
+function getCurrentUser() {
+  return getCurrentUserEmail();
 }
 
-// Logout function
+function setUserSession(user) {
+  sessionStorage.setItem('agentEdgeAuth', 'authenticated');
+  sessionStorage.setItem('agentEdgeUserEmail', user.email);
+  sessionStorage.setItem('agentEdgeUserName', user.name);
+  sessionStorage.setItem('agentEdgeUserBrokerage', user.brokerage || '');
+  // Backward compatibility keys
+  sessionStorage.setItem('agentEdgeUser', user.email);
+  sessionStorage.setItem('agentEdgeName', user.name);
+}
+
 function logout() {
-  sessionStorage.removeItem('agentEdgeAuth');
-  sessionStorage.removeItem('agentEdgeUser');
-  sessionStorage.removeItem('agentEdgeUserName');
-  sessionStorage.removeItem('agentEdgeUserEmail');
-  sessionStorage.removeItem('agentEdgeUserBrokerage');
+  sessionStorage.clear();
   window.location.href = 'login.html';
 }
 
-// Protect portal pages - redirect to login if not authenticated
+// ===== PAGE PROTECTION =====
+
 function protectPage() {
   if (!isAuthenticated()) {
     window.location.href = 'login.html';
+    return;
+  }
+  
+  // Check trial expiration
+  var role = sessionStorage.getItem('agentEdgeRole');
+  var trialStart = sessionStorage.getItem('agentEdgeTrialStart');
+  
+  if (role === 'trial' && trialStart) {
+    var start = new Date(trialStart);
+    var now = new Date();
+    var daysSinceStart = (now - start) / (1000 * 60 * 60 * 24);
+    
+    // Don't redirect if already on trial-expired page
+    var currentPage = window.location.pathname.split('/').pop();
+    if (daysSinceStart > 7 && currentPage !== 'trial-expired.html') {
+      window.location.href = 'trial-expired.html';
+      return;
+    }
   }
 }
 
 // ===== LOGIN HANDLER =====
-if (document.getElementById('loginForm')) {
+// Attaches to login form if it exists on the page
+
+document.addEventListener('DOMContentLoaded', function() {
   var loginForm = document.getElementById('loginForm');
+  if (!loginForm) return;
+  
   var errorMessage = document.getElementById('errorMessage');
 
   loginForm.addEventListener('submit', async function(e) {
     e.preventDefault();
 
-    var username = document.getElementById('username').value.trim();
+    var email = document.getElementById('email').value.trim().toLowerCase();
     var password = document.getElementById('password').value;
     var loginBtn = loginForm.querySelector('button[type="submit"]');
 
-    // Disable button while processing
     loginBtn.disabled = true;
     loginBtn.textContent = 'Signing In...';
     errorMessage.classList.remove('show');
@@ -75,7 +96,7 @@ if (document.getElementById('loginForm')) {
       var response = await fetch(AUTH_API + '/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: username, password: password })
+        body: JSON.stringify({ email: email, password: password })
       });
 
       var data = await response.json();
@@ -84,9 +105,7 @@ if (document.getElementById('loginForm')) {
         setUserSession(data.user);
         
         // Store admin flag
-        if (data.isAdmin) {
-          sessionStorage.setItem('agentEdgeAdmin', 'true');
-        }
+        sessionStorage.setItem('agentEdgeAdmin', data.isAdmin ? 'true' : 'false');
         
         // Store role and trial info
         sessionStorage.setItem('agentEdgeRole', data.role || 'partner');
@@ -94,7 +113,7 @@ if (document.getElementById('loginForm')) {
           sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
         }
         
-        // Check if this is a temp password - force password change
+        // Check if temp password — force password change
         if (data.tempPassword) {
           sessionStorage.setItem('agentEdgeTempPassword', 'true');
           window.location.href = 'change-password.html';
@@ -114,7 +133,7 @@ if (document.getElementById('loginForm')) {
           window.location.href = 'portal.html';
         }
       } else {
-        errorMessage.textContent = data.message || 'Invalid username or password. Please try again.';
+        errorMessage.textContent = data.message || 'Invalid email or password. Please try again.';
         errorMessage.classList.add('show');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
@@ -132,4 +151,4 @@ if (document.getElementById('loginForm')) {
       loginBtn.textContent = 'Sign In';
     }
   });
-}
+});
