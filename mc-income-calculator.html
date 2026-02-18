@@ -283,7 +283,7 @@ select:focus {
   }
 }
 
-  .back-btn-hidden {
+  .back-btn {
   display: inline-block;
   margin-top: 40px;
   padding: 12px 24px;
@@ -328,6 +328,11 @@ select:focus {
 .income-section.excluded .form-group select,
 .income-section.excluded .radio-option input { pointer-events: none; }
 
+/* Fix for iframe embedding - solid background */
+.calculator-container {
+  background: rgba(255,255,255,0.97) !important;
+  backdrop-filter: none !important;
+}
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
@@ -338,8 +343,12 @@ select:focus {
 <div class="calculator-container">
   <h1>W-2 Income Calculator</h1>
   <p class="subtitle">Estimate qualifying income for mortgage underwriting purposes</p>
-
-
+  <div class="form-row" style="max-width:300px;margin-bottom:20px;">
+    <div class="form-group">
+      <label>Date Completed</label>
+      <input type="date" id="dateCompleted" value="">
+    </div>
+  </div>
 
   <!-- HOURLY INCOME -->
   <div class="income-section" id="section_hourly">
@@ -446,7 +455,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Bonus <span class="label-helper">($)</span></label>
-        <input type="number" id="bonusYTD" step="0.01" min="0" placeholder="0.00">
+        <input type="number" id="bonusYTD" step="0.01" min="0" placeholder="0.00" class="money-field">
       </div>
       <div class="form-group">
         <label>YTD Months Worked</label>
@@ -457,11 +466,11 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Prior Year Bonus <span class="label-helper">($)</span></label>
-        <input type="number" id="bonusYear1" step="0.01" min="0" placeholder="0.00">
+        <input type="number" id="bonusYear1" step="0.01" min="0" placeholder="0.00" class="money-field">
       </div>
       <div class="form-group">
         <label>Year Before Bonus <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="bonusYear2" step="0.01" min="0" placeholder="0.00">
+        <input type="number" id="bonusYear2" step="0.01" min="0" placeholder="0.00" class="money-field">
       </div>
     </div>
 
@@ -535,6 +544,7 @@ select:focus {
   <!-- OTHER INCOME -->
   <div class="income-section" id="section_other">
     <div class="section-header"><h2>Other Taxable Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_other" checked onchange="toggleSection('other')"><span class="toggle-slider"></span></label></div>
+    <div class="form-row"><div class="form-group"><label>Description of Other Income</label><input type="text" id="otherIncomeDesc" placeholder="Alimony, rental, pension, etc."></div></div>
     <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
       Examples: Rental income, dividends, interest, alimony, etc.
     </p>
@@ -626,7 +636,7 @@ function formatCurrency(amount) {
 
 // Calculate hourly income
 function calculateHourly() {
-  const rate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+  const rate = getRawValue('hourlyRate');
   const hours = parseFloat(document.getElementById('hoursPerWeek').value) || 0;
   
   // Monthly: (rate * hours * 52 weeks) / 12 months
@@ -638,7 +648,7 @@ function calculateHourly() {
 
 // Calculate salary income
 function calculateSalary() {
-  const amount = parseFloat(document.getElementById('salaryAmount').value) || 0;
+  const amount = getRawValue('salaryAmount');
   const type = document.querySelector('input[name="salaryType"]:checked').value;
   
   let monthly = 0;
@@ -664,10 +674,10 @@ function calculateSalary() {
 
 // Calculate overtime/bonus (average lowest available)
 function calculateOT() {
-  const ytd = parseFloat(document.getElementById('otYTD').value) || 0;
+  const ytd = getRawValue('otYTD');
   const ytdMonths = parseFloat(document.getElementById('otYTDMonths').value) || 0;
-  const year1 = parseFloat(document.getElementById('otYear1').value) || 0;
-  const year2 = parseFloat(document.getElementById('otYear2').value) || 0;
+  const year1 = getRawValue('otYear1');
+  const year2 = getRawValue('otYear2');
   
   let monthly = 0;
   
@@ -688,36 +698,17 @@ function calculateOT() {
   return monthly;
 }
 
-
-// Calculate bonus (average lowest, same logic as OT)
-function calculateBonus() {
-  const ytd = parseFloat(document.getElementById('bonusYTD').value) || 0;
-  const ytdMonths = parseFloat(document.getElementById('bonusYTDMonths').value) || 0;
-  const year1 = parseFloat(document.getElementById('bonusYear1').value) || 0;
-  const year2 = parseFloat(document.getElementById('bonusYear2').value) || 0;
-  
-  const ytdAvg = ytdMonths > 0 ? ytd / ytdMonths : 0;
-  const oneYearAvg = (ytdMonths > 0 && year1 > 0) ? (ytd + year1) / (ytdMonths + 12) : 0;
-  const twoYearAvg = (ytdMonths > 0 && year1 > 0 && year2 > 0) ? (ytd + year1 + year2) / (ytdMonths + 24) : 0;
-  
-  const averages = [ytdAvg, oneYearAvg, twoYearAvg].filter(val => val > 0);
-  const monthly = averages.length > 0 ? Math.min(...averages) : 0;
-  
-  document.querySelector('#bonusResult .value').textContent = formatCurrency(monthly);
-  return monthly;
-}
-
 // Calculate commission (NET of expenses, average lowest)
 function calculateCommission() {
-  const ytd = parseFloat(document.getElementById('commYTD').value) || 0;
+  const ytd = getRawValue('commYTD');
   const ytdMonths = parseFloat(document.getElementById('commYTDMonths').value) || 0;
-  const ytdExpenses = parseFloat(document.getElementById('commYTDExpenses').value) || 0;
+  const ytdExpenses = getRawValue('commYTDExpenses');
   
-  const year1 = parseFloat(document.getElementById('commYear1').value) || 0;
-  const year1Expenses = parseFloat(document.getElementById('commYear1Expenses').value) || 0;
+  const year1 = getRawValue('commYear1');
+  const year1Expenses = getRawValue('commYear1Expenses');
   
-  const year2 = parseFloat(document.getElementById('commYear2').value) || 0;
-  const year2Expenses = parseFloat(document.getElementById('commYear2Expenses').value) || 0;
+  const year2 = getRawValue('commYear2');
+  const year2Expenses = getRawValue('commYear2Expenses');
   
   // Net income
   const ytdNet = ytd - ytdExpenses;
@@ -777,6 +768,39 @@ function toggleSection(sid) {
   calculateTotal();
 }
 
+// Auto-format money fields
+function formatMoneyInput(el) {
+  var raw = el.value.replace(/[^0-9.]/g, '');
+  var num = parseFloat(raw);
+  if (isNaN(num)) { el.dataset.rawValue = ''; return; }
+  el.dataset.rawValue = raw;
+  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+function getRawValue(id) {
+  var el = document.getElementById(id);
+  if (!el) return 0;
+  var raw = el.dataset.rawValue !== undefined ? el.dataset.rawValue : el.value;
+  return parseFloat(String(raw).replace(/[^0-9.-]/g, '')) || 0;
+}
+
+// Calculate bonus (same averaging logic as OT)
+function calculateBonus() {
+  const ytd = getRawValue('bonusYTD');
+  const ytdMonths = parseFloat(document.getElementById('bonusYTDMonths').value) || 0;
+  const year1 = getRawValue('bonusYear1');
+  const year2 = getRawValue('bonusYear2');
+  
+  const ytdAvg = ytdMonths > 0 ? ytd / ytdMonths : 0;
+  const oneYearAvg = (ytdMonths > 0 && year1 > 0) ? (ytd + year1) / (ytdMonths + 12) : 0;
+  const twoYearAvg = (ytdMonths > 0 && year1 > 0 && year2 > 0) ? (ytd + year1 + year2) / (ytdMonths + 24) : 0;
+  
+  const averages = [ytdAvg, oneYearAvg, twoYearAvg].filter(val => val > 0);
+  const monthly = averages.length > 0 ? Math.min(...averages) : 0;
+  
+  document.querySelector('#bonusResult .value').textContent = formatCurrency(monthly);
+  return monthly;
+}
+
 function calculateTotal() {
   const hourly = calculateHourly();
   const salary = calculateSalary();
@@ -796,17 +820,9 @@ function calculateTotal() {
   
   document.getElementById('totalIncome').textContent = formatCurrency(total);
   
-  // Send total and breakdown to parent (Mission Control side panel)
+  // Send total to parent (Mission Control side panel)
   if (window.parent !== window) {
-    window.parent.postMessage({ type: 'calcTotal', amount: total, breakdown: {
-      hourly: sectionIncluded.hourly ? hourly : 0,
-      salary: sectionIncluded.salary ? salary : 0,
-      ot: sectionIncluded.ot ? ot : 0,
-      bonus: sectionIncluded.bonus ? bonus : 0,
-      commission: sectionIncluded.commission ? commission : 0,
-      other: sectionIncluded.other ? other : 0,
-      nontax: sectionIncluded.nontax ? nonTaxable : 0
-    }}, '*');
+    window.parent.postMessage({ type: 'calcTotal', amount: total }, '*');
   }
 }
 
@@ -836,6 +852,18 @@ document.addEventListener('DOMContentLoaded', function() {
     radio.addEventListener('change', calculateTotal);
   });
   
+
+  // Money field formatting on blur
+  document.querySelectorAll('input[type="number"]').forEach(function(el) {
+    // Skip non-money fields
+    if (['hoursPerWeek','otYTDMonths','commYTDMonths','bonusYTDMonths'].includes(el.id)) return;
+    if (el.id && el.id.match(/^(salary|hourly)/i) && el.id.includes('Type')) return;
+    el.addEventListener('blur', function() { formatMoneyInput(el); });
+    el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
+  });
+  // Set today's date
+  var dc = document.getElementById('dateCompleted');
+  if (dc) dc.value = new Date().toISOString().split('T')[0];
   // Initial calculation
   calculateTotal();
 });
