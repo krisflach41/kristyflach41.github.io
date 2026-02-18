@@ -369,8 +369,46 @@ function setPipelineStage(contactId, stage) {
     if (dd) dd.classList.remove('show');
     var btn = document.getElementById('cardPipelineBtn');
     if (btn) renderPipelineButton(btn, contactId, stage);
-    showToast((n ? n.value : 'Contact') + ' - ' + stage);
+    showToast((n ? n.value : 'Contact') + ' moved to pipeline');
     if (typeof loadPipeline === 'function') loadPipeline();
+
+    // ===== AUTO-CONVERT TO BORROWER =====
+    // If current type is not already borrower, convert it
+    if (crmCurrentType !== 'borrower') {
+      var oldType = crmCurrentType;
+      crmCurrentType = 'borrower';
+
+      // Update type in CRM database
+      fetch(CRM_API + '/crm-api?action=save', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ crm: { id: contactId, type: 'borrower' } })
+      }).catch(function(err) { console.error('Type update error:', err); });
+
+      // Update local crmContacts array
+      if (typeof crmContacts !== 'undefined') {
+        var idx = crmContacts.findIndex(function(c) { return c.id === contactId; });
+        if (idx >= 0) crmContacts[idx].type = 'borrower';
+      }
+
+      // Re-render the card as Borrower type
+      var typeInfo = CONTACT_TYPES.borrower;
+      document.getElementById('crmDTypeBadge').innerHTML =
+        '<span class="card-type-badge" style="background:' + typeInfo.color + '22;color:' + typeInfo.color + ';">' +
+        '<i class="fas ' + typeInfo.icon + '"></i> ' + typeInfo.label + '</span>';
+
+      // Collect current form data before re-rendering
+      var formContainer = document.getElementById('crmCardForm');
+      var currentData = collectCardData(formContainer);
+      currentData.type = 'borrower';
+
+      // Re-render with borrower fields, preserving existing data
+      renderCardForm(formContainer, 'borrower', currentData);
+
+      // Refresh the contact list to show updated type badge
+      if (typeof crmRenderList === 'function') crmRenderList();
+
+      showToast('Converted to Borrower - full loan fields now available');
+    }
   }).catch(function(err) { console.error('Pipeline save error:', err); });
 }
 
