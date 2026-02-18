@@ -708,6 +708,7 @@ body {
                 <div class="card-meta" id="crmDMeta"></div>
                 <div class="card-header-badges">
                   <div id="crmDTypeBadge"></div>
+                  <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 8px;font-size:10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
                   <div id="cardPipelineBtn"></div>
                 </div>
                 <div class="card-actions">
@@ -730,7 +731,7 @@ body {
           </div>
           <div class="card-tabs">
             <div class="card-tab active" data-tab="details" onclick="crmSwitchTab('details')">Details</div>
-            <div class="card-tab" data-tab="activity" onclick="crmSwitchTab('activity')">Activity</div>
+            <!-- Activity tab hidden - data still collected for reporting -->
           </div>
           <div class="crm-tab-content active" id="crmTab_details">
             <div id="crmCardForm"></div>
