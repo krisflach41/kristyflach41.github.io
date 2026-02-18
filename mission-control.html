@@ -477,6 +477,7 @@ body {
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
 </style>
+<link rel="stylesheet" href="crm-cards.css">
 <script src="tracking.js"></script>
 </head>
 <body>
@@ -699,107 +700,28 @@ body {
       <div class="crm-detail-panel">
         <div class="crm-detail-empty" id="crmDetailEmpty">Select a contact to view details</div>
         <div class="crm-detail-content" id="crmDetailContent">
-          <div class="crm-detail-top">
-            <div class="crm-detail-name" id="crmDName"></div>
-            <div class="crm-detail-meta" id="crmDMeta"></div>
-            <div class="crm-detail-actions">
-              <button class="topbar-btn" style="font-size:10px;" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
-              <button class="topbar-btn" style="font-size:10px;" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save Changes</button>
-              <button class="topbar-btn danger" style="font-size:10px;" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
+          <div class="card-header">
+            <div class="card-header-left">
+              <div class="card-name" id="crmDName"></div>
+              <div class="card-meta" id="crmDMeta"></div>
+              <div id="crmDTypeBadge" style="margin-bottom:8px;"></div>
+              <div id="cardPipelineBtn"></div>
+              <div class="card-actions">
+                <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
+                <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save Changes</button>
+                <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
+              </div>
             </div>
           </div>
-          <div class="crm-tabs">
-            <div class="crm-tab active" onclick="crmSwitchTab('details', this)">Details</div>
-            <div class="crm-tab" onclick="crmSwitchTab('activity', this)">Activity</div>
+          <div class="card-tabs">
+            <div class="card-tab active" data-tab="details" onclick="crmSwitchTab('details')">Details</div>
+            <div class="card-tab" data-tab="activity" onclick="crmSwitchTab('activity')">Activity</div>
           </div>
-          <div class="crm-tab-content active" id="crmTabDetails">
-            <div class="crm-field-grid">
-              <div class="crm-section-title" data-section="contact">Contact Info</div>
-              <div class="crm-field" data-section="contact"><label>Name</label><input id="cf_name" class="crm-tracked"></div>
-              <div class="crm-field" data-section="contact"><label>Email</label><input id="cf_email" class="crm-tracked"></div>
-              <div class="crm-field" data-section="contact"><label>Phone</label><input id="cf_phone" class="crm-tracked"></div>
-              <div class="crm-field" data-section="contact"><label>Company / Brokerage</label><input id="cf_company" class="crm-tracked"></div>
-              <div class="crm-field" data-section="contact">
-                <label>Type</label>
-                <select id="cf_type" class="crm-tracked" onchange="crmAdaptSections(this.value)">
-                  <option value="client">Client</option>
-                  <option value="realtor">Realtor</option>
-                  <option value="title">Title</option>
-                  <option value="appraiser">Appraiser</option>
-                  <option value="contractor">Contractor</option>
-                  <option value="vendor">Vendor</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div class="crm-field" data-section="contact">
-                <label>Source</label>
-                <select id="cf_source" class="crm-tracked">
-                  <option value="">--</option>
-                  <option value="pipeline">Pipeline</option>
-                  <option value="portal">Portal</option>
-                  <option value="portal_signup">Portal Signup</option>
-                  <option value="referral">Referral</option>
-                  <option value="webinar">Webinar</option>
-                  <option value="social">Social</option>
-                  <option value="manual">Manual</option>
-                  <option value="import">Import</option>
-                </select>
-              </div>
-
-              <div class="crm-section-title" data-section="address">Address</div>
-              <div class="crm-field" data-section="address"><label>Street</label><input id="cf_address" class="crm-tracked"></div>
-              <div class="crm-field" data-section="address"><label>City</label><input id="cf_city" class="crm-tracked"></div>
-              <div class="crm-field" data-section="address"><label>State</label><input id="cf_state" class="crm-tracked"></div>
-              <div class="crm-field" data-section="address"><label>Zip</label><input id="cf_zip" class="crm-tracked"></div>
-
-              <div class="crm-section-title" data-section="pipeline">Pipeline</div>
-              <div class="crm-field" data-section="pipeline">
-                <label>Pipeline Stage</label>
-                <select id="cf_pipeline_stage" class="crm-tracked">
-                  <option value="">-- Not in Pipeline --</option>
-                  <option value="warm">Warm Leads</option>
-                  <option value="active">Active Conversations</option>
-                  <option value="credit">Credit Repair</option>
-                  <option value="preapproval">Started Pre-Approval</option>
-                  <option value="preapproved">Approved</option>
-                  <option value="ratewatch">Rate Watch</option>
-                  <option value="underwriting">Underwriting</option>
-                  <option value="closed">Closed - Funded</option>
-                </select>
-              </div>
-              <div class="crm-field" data-section="pipeline">
-                <label>Referring Realtor</label>
-                <input id="cf_realtor_name" class="crm-tracked" placeholder="Realtor who referred them">
-              </div>
-
-              <div class="crm-section-title" data-section="personal">Personal</div>
-              <div class="crm-field" data-section="personal"><label>Birthday</label><input type="date" id="cf_birthday" class="crm-tracked"></div>
-              <div class="crm-field" data-section="personal"><label>Spouse / Partner</label><input id="cf_spouse_name" class="crm-tracked"></div>
-              <div class="crm-field" data-section="personal"><label>Kids</label><input id="cf_kids" class="crm-tracked"></div>
-              <div class="crm-field" data-section="personal"><label>Employer</label><input id="cf_employer" class="crm-tracked"></div>
-              <div class="crm-field" data-section="personal"><label>Job Title</label><input id="cf_job_title" class="crm-tracked"></div>
-              <div class="crm-field" data-section="personal"><label>&nbsp;</label><input type="hidden"></div>
-
-              <div class="crm-section-title" data-section="credentials">Credentials</div>
-              <div class="crm-field" data-section="credentials"><label>License Number</label><input id="cf_license_number" class="crm-tracked"></div>
-              <div class="crm-field" data-section="credentials"><label>Headshot URL</label><input id="cf_headshot_url" class="crm-tracked" placeholder="Uploaded via portal"></div>
-
-              <div class="crm-section-title" data-section="social">Web &amp; Social</div>
-              <div class="crm-field" data-section="social"><label>Website</label><input id="cf_website" class="crm-tracked"></div>
-              <div class="crm-field" data-section="social"><label>Facebook</label><input id="cf_facebook" class="crm-tracked"></div>
-              <div class="crm-field" data-section="social"><label>Instagram</label><input id="cf_instagram" class="crm-tracked"></div>
-              <div class="crm-field" data-section="social"><label>LinkedIn</label><input id="cf_linkedin" class="crm-tracked"></div>
-              <div class="crm-field" data-section="social"><label>TikTok</label><input id="cf_tiktok" class="crm-tracked"></div>
-              <div class="crm-field" data-section="social"><label>&nbsp;</label><input type="hidden"></div>
-
-              <div class="crm-section-title" data-section="notes">Tags &amp; Notes</div>
-              <div class="crm-field" data-section="notes"><label>Tags</label><input id="cf_tags" class="crm-tracked" placeholder="Comma-separated"></div>
-              <div class="crm-field" data-section="notes"><label>&nbsp;</label><input type="hidden"></div>
-              <div class="crm-field" data-section="notes" style="grid-column:1/-1;"><label>Notes</label><textarea id="cf_notes" class="crm-tracked" rows="3"></textarea></div>
-            </div>
+          <div class="crm-tab-content active" id="crmTab_details">
+            <div id="crmCardForm" class="card-form"></div>
           </div>
-          <div class="crm-tab-content" id="crmTabActivity">
-            <div id="crmActivityTimeline"></div>
+          <div class="crm-tab-content" id="crmTab_activity">
+            <div class="activity-timeline" id="crmActivityTimeline"></div>
             <div class="activity-add-row">
               <select id="crmActivityType">
                 <option value="note">Note</option>
@@ -808,7 +730,7 @@ body {
                 <option value="email_sent">Email</option>
               </select>
               <input type="text" id="crmActivityText" placeholder="Add a note...">
-              <button class="topbar-btn primary" style="font-size:10px;" onclick="crmAddActivity()">Add</button>
+              <button class="card-action-btn primary" onclick="crmAddActivity()">Add</button>
             </div>
           </div>
         </div>
@@ -1730,214 +1652,12 @@ function crmRenderList() {
   document.getElementById('crmContactList').innerHTML = html;
 }
 
-function crmSelectContact(id) {
-  crmCurrentId = id;
-  crmDirty = false;
-  crmDeleteArmed = false;
-  document.getElementById('crmSaveBtn').disabled = true;
-  document.getElementById('crmDeleteBtn').disabled = true;
-  document.getElementById('crmDeleteBtn').textContent = 'Delete';
-  document.getElementById('crmDetailEmpty').style.display = 'none';
-  document.getElementById('crmDetailContent').style.display = 'flex';
-  crmRenderList(); // Update active highlight
-
-  // Load contact detail
-  fetch(API_BASE + '/crm?action=get&id=' + id)
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.contact) crmPopulateDetail(data.contact);
-    })
-    .catch(function(err) { console.error('CRM get error:', err); });
-}
-
-// ===== TYPE-ADAPTIVE SECTIONS =====
-// Shows/hides sections based on contact type
-function crmAdaptSections(type) {
-  // Section visibility rules per type
-  var rules = {
-    client:    { contact: true, address: true, pipeline: true, personal: true, credentials: false, social: false, notes: true },
-    realtor:   { contact: true, address: true, pipeline: false, personal: false, credentials: true, social: true, notes: true },
-    title:     { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: true, notes: true },
-    appraiser: { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: true, notes: true },
-    contractor:{ contact: true, address: true, pipeline: false, personal: false, credentials: false, social: false, notes: true },
-    vendor:    { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: false, notes: true },
-    other:     { contact: true, address: true, pipeline: true, personal: true, credentials: false, social: true, notes: true }
-  };
-  var sections = rules[type] || rules.other;
-  var allFields = document.querySelectorAll('#crmTabDetails [data-section]');
-  allFields.forEach(function(el) {
-    var sec = el.dataset.section;
-    if (sections[sec] === false) {
-      el.style.display = 'none';
-    } else {
-      el.style.display = '';
-    }
-  });
-}
-
-function crmPopulateDetail(c) {
-  document.getElementById('crmDName').textContent = c.name || 'Unnamed';
-  var meta = [c.email, c.phone, c.company].filter(Boolean).join(' - ');
-  document.getElementById('crmDMeta').textContent = meta;
-
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','realtor_name','license_number','headshot_url'];
-  fields.forEach(function(f) {
-    var el = document.getElementById('cf_' + f);
-    if (el) el.value = c[f] || '';
-  });
-
-  // Check if this contact exists in pipeline and set the dropdown
-  var pipelineStageEl = document.getElementById('cf_pipeline_stage');
-  pipelineStageEl.value = ''; // Default to not in pipeline
-  
-  // Look up in pipeline by matching CRM id or email
-  var pipelineId = 'crm-' + c.id;
-  var pipelineMatch = pipelineContacts.find(function(p) {
-    return p.id === pipelineId || (c.email && p.email && p.email.toLowerCase() === c.email.toLowerCase());
-  });
-  if (pipelineMatch) {
-    pipelineStageEl.value = pipelineMatch.stage || '';
-  }
-  // Also check via API if pipeline not loaded yet
-  if (!pipelineLoaded) {
-    fetch(API_BASE + '/pipeline-api?action=list')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.success && data.contacts) {
-          var match = data.contacts.find(function(p) {
-            return p.id === pipelineId || (c.email && p.email && p.email.toLowerCase() === c.email.toLowerCase());
-          });
-          if (match) pipelineStageEl.value = match.stage || '';
-        }
-      }).catch(function() {});
-  }
-
-  // Activity
-  if (c.activity && c.activity.length > 0) {
-    var ahtml = '';
-    c.activity.forEach(function(a) {
-      var icons = { 
-        email_sent: '<i class="fas fa-paper-plane"></i>', 
-        email_received: '<i class="fas fa-inbox"></i>', 
-        call: '<i class="fas fa-phone"></i>', 
-        note: '<i class="fas fa-sticky-note"></i>', 
-        meeting: '<i class="fas fa-handshake"></i>', 
-        text: '<i class="fas fa-comment"></i>' 
-      };
-      ahtml += '<div class="activity-item"><div class="activity-icon">' + (icons[a.type] || '<i class="fas fa-sticky-note"></i>') + '</div><div><div class="activity-text">' + (a.subject || a.body || '<i class="fas fa-sticky-note"></i>') + '</div><div class="activity-date">' + (a.type || '<i class="fas fa-sticky-note"></i>') + '  -  ' + new Date(a.date).toLocaleDateString() + '</div></div></div>';
-    });
-    document.getElementById('crmActivityTimeline').innerHTML = ahtml;
-  } else {
-    document.getElementById('crmActivityTimeline').innerHTML = '<div style="color:var(--text-muted);font-size:11px;padding:10px;">No activity yet</div>';
-  }
-
-  // Reset dirty tracking
-  crmDirty = false;
-  document.getElementById('crmSaveBtn').disabled = true;
-
-  // Adapt sections based on contact type
-  crmAdaptSections(c.type || 'other');
-}
-
-// Dirty tracking
-document.addEventListener('input', function(e) {
-  if (e.target.classList.contains('crm-tracked')) {
-    crmDirty = true;
-    document.getElementById('crmSaveBtn').disabled = false;
-  }
-});
-document.addEventListener('change', function(e) {
-  if (e.target.classList.contains('crm-tracked')) {
-    crmDirty = true;
-    document.getElementById('crmSaveBtn').disabled = false;
-  }
-});
-
-function crmSaveContact() {
-  var contact = {};
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','custom_type','brokerage','license_number','headshot_url','realtor_name'];
-  fields.forEach(function(f) {
-    var el = document.getElementById('cf_' + f);
-    if (el) contact[f] = el.value || null;
-  });
-  
-  // Get pipeline stage separately (not a crm_contacts column)
-  var pipelineStage = document.getElementById('cf_pipeline_stage').value;
-
-  if (crmCurrentId) {
-    contact.id = crmCurrentId;
-  }
-
-  // Call Vercel API to save CRM contact
-  fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=save', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ crm: contact })
-  })
-    .then(function(response) { return response.json(); })
-    .then(function(data) {
-      if (data.success) {
-        if (crmCurrentId) {
-          var idx = crmContacts.findIndex(function(c) { return c.id === crmCurrentId; });
-          if (idx >= 0) {
-            crmContacts[idx] = Object.assign(crmContacts[idx], contact);
-          }
-          showToast('Saved!');
-        } else {
-          contact.id = data.id;
-          contact.created_at = new Date().toISOString();
-          crmContacts.push(contact);
-          crmCurrentId = data.id;
-          showToast('Contact created!');
-        }
-        crmRenderList();
-        document.getElementById('crmDName').textContent = contact.name || 'Unnamed';
-        crmDirty = false;
-        document.getElementById('crmSaveBtn').disabled = true;
-
-        // ===== PIPELINE SYNC =====
-        // If a pipeline stage is selected, create/update pipeline entry
-        if (pipelineStage) {
-          var pipelineId = 'crm-' + (crmCurrentId || contact.id);
-          fetch(API_BASE + '/pipeline-api', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'save',
-              id: pipelineId,
-              name: contact.name || '',
-              phone: contact.phone || '',
-              email: contact.email || '',
-              stage: pipelineStage,
-              source: contact.source || 'manual',
-              realtorName: contact.realtor_name || '',
-              loanType: '',
-              interestRate: '',
-              subjectAddress: (contact.address ? contact.address + ', ' + (contact.city || '') + ' ' + (contact.state || '') : ''),
-              dates: {},
-              borrowers: []
-            })
-          }).then(function() {
-            // Refresh pipeline if it's loaded
-            if (pipelineLoaded) loadPipeline();
-            showToast(contact.name + ' added to pipeline — ' + pipelineStage);
-          }).catch(function(err) { console.error('Pipeline sync error:', err); });
-        }
-      } else {
-        showToast('Save failed');
-      }
-    })
-    .catch(function(err) { 
-      showToast('Save failed'); 
-      console.error(err); 
-    });
-}
-
 function crmConfirmDelete() {
   if (!crmCurrentId) return;
   if (!crmDeleteArmed) {
     crmDeleteArmed = true;
     document.getElementById('crmDeleteBtn').disabled = false;
-    document.getElementById('crmDeleteBtn').textContent = 'âš  Confirm Delete';
+    document.getElementById('crmDeleteBtn').textContent = 'Confirm Delete';
     setTimeout(function() {
       crmDeleteArmed = false;
       document.getElementById('crmDeleteBtn').disabled = true;
@@ -1945,62 +1665,33 @@ function crmConfirmDelete() {
     }, 4000);
     return;
   }
-  window.supabase
-    .from('crm_contacts')
-    .delete()
-    .eq('id', crmCurrentId)
-    .then(function(response) {
-      crmContacts = crmContacts.filter(function(c) { return c.id !== crmCurrentId; });
-      crmCurrentId = null;
-      document.getElementById('crmDetailContent').style.display = 'none';
-      document.getElementById('crmDetailEmpty').style.display = 'flex';
-      crmRenderList();
-      showToast('Contact deleted');
-      if (response.error) {
-        console.error('Delete error:', response.error);
-      }
-    })
-    .catch(function() { showToast('Delete failed'); });
+  fetch(CRM_API + '/crm-api?action=delete', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crmId: crmCurrentId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() {
+    crmContacts = crmContacts.filter(function(c) { return c.id !== crmCurrentId; });
+    crmCurrentId = null;
+    document.getElementById('crmDetailContent').style.display = 'none';
+    document.getElementById('crmDetailEmpty').style.display = 'flex';
+    crmRenderList();
+    showToast('Contact deleted');
+    document.getElementById('navCrmCount').textContent = crmContacts.length;
+    document.getElementById('dashCrm').textContent = crmContacts.length;
+    document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
+  })
+  .catch(function() { showToast('Delete failed'); });
 }
-
-function crmAddNew() {
-  crmCurrentId = null;
-  crmDirty = false;
-  crmDeleteArmed = false;
-  document.getElementById('crmDetailEmpty').style.display = 'none';
-  document.getElementById('crmDetailContent').style.display = 'flex';
-  document.getElementById('crmDName').textContent = 'New Contact';
-  document.getElementById('crmDMeta').textContent = '';
-  document.getElementById('crmDeleteBtn').disabled = true;
-  document.getElementById('crmDeleteBtn').textContent = 'Delete';
-  document.getElementById('crmSaveBtn').disabled = true;
-
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes'];
-  fields.forEach(function(f) {
-    var el = document.getElementById('cf_' + f);
-    if (el) el.value = '';
-  });
-  document.getElementById('cf_type').value = 'client';
-  document.getElementById('cf_source').value = 'manual';
-  document.getElementById('crmActivityTimeline').innerHTML = '';
-}
-
-function crmSwitchTab(tab, el) {
-  document.querySelectorAll('.crm-tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.crm-tab-content').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  document.getElementById('crmTab' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
-}
-
 function crmAddActivity() {
   if (!crmCurrentId) return;
   var type = document.getElementById('crmActivityType').value;
   var text = document.getElementById('crmActivityText').value.trim();
   if (!text) return;
 
-  fetch(API_BASE + '/crm', {
+  fetch(CRM_API + '/crm-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'addActivity', crm_id: crmCurrentId, type: type, subject: text, body: text })
+    body: JSON.stringify({ action: 'addActivity', activity: { crm_id: crmCurrentId, type: type, subject: text, body: text } })
   })
   .then(function(r) { return r.json(); })
   .then(function() {
@@ -2211,6 +1902,7 @@ updateDashboard();
 // Preload orders count for dashboard
 loadOrders();
 </script>
+<script src="crm-cards.js"></script>
 
 </body>
 </html>
