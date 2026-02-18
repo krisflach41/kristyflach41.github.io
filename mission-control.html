@@ -543,6 +543,9 @@ body {
     <div class="nav-item" onclick="switchView('email', this)">
       <span class="nav-icon"><i class="fas fa-envelope"></i></span> Email Center
     </div>
+    <div class="nav-item" onclick="switchView('calculators', this)">
+      <span class="nav-icon"><i class="fas fa-calculator"></i></span> Income Calculators
+    </div>
     <div class="nav-item" onclick="switchView('prospecting', this)">
       <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
       <span class="nav-badge purple">PRO</span>
@@ -924,6 +927,27 @@ body {
 </div>
 
 <!-- ========================================== -->
+<!-- INCOME CALCULATORS VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-calculators">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Income Calculators</div><div class="topbar-subtitle">W-2 and Self-Employed income qualification tools</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="switchCalcView('w2')"><i class="fas fa-calculator"></i> W-2</button>
+      <button class="topbar-btn" onclick="switchCalcView('se')"><i class="fas fa-store"></i> Self-Employed</button>
+      <button class="topbar-btn" onclick="switchCalcView('both')"><i class="fas fa-columns"></i> Both</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:0;display:flex;gap:0;height:calc(100vh - 60px);">
+    <iframe id="calcViewW2" src="mc-income-calculator.html" style="flex:1;border:none;height:100%;display:block;"></iframe>
+    <iframe id="calcViewSE" src="mc-self-employed-calculator.html" style="flex:1;border:none;height:100%;display:none;"></iframe>
+  </div>
+</div>
+
+<!-- ========================================== -->
 <!-- ANALYTICS VIEW -->
 <!-- ========================================== -->
 <div class="view-panel" id="view-analytics">
@@ -1208,6 +1232,14 @@ function switchView(viewId, navEl) {
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+function switchCalcView(mode) {
+  var w2 = document.getElementById('calcViewW2');
+  var se = document.getElementById('calcViewSE');
+  if (mode === 'w2') { w2.style.display = 'block'; se.style.display = 'none'; }
+  else if (mode === 'se') { w2.style.display = 'none'; se.style.display = 'block'; }
+  else { w2.style.display = 'block'; se.style.display = 'block'; }
+}
 
 function showToast(msg) {
   var t = document.getElementById('toast');
