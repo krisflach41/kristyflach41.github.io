@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self-Employed Income Calculator - Agent Edge</title>
+<style>
+/* ===== MATCHES PORTAL STYLING ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 40px 20px 80px 20px;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+.calculator-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 50px 40px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10);
+}
+
+h1 {
+  text-align: center;
+  color: #0b1f3a;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 15px;
+}
+
+/* ===== DISCLAIMER ===== */
+.disclaimer {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe5a3 100%);
+  border: 2px solid #ff9800;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 35px;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
+}
+
+.disclaimer h3 {
+  margin: 0 0 12px 0;
+  color: #e65100;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.disclaimer p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #5d4037;
+}
+
+.disclaimer ul {
+  margin: 10px 0 0 20px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #5d4037;
+}
+
+/* ===== INCOME SECTIONS ===== */
+.income-section {
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.income-section h2 {
+  margin: 0 0 20px 0;
+  font-size: 22px;
+  color: #0b4ea2;
+  border-bottom: 2px solid #0b4ea2;
+  padding-bottom: 10px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #0b1f3a;
+}
+
+.label-helper {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+input[type="number"],
+input[type="text"],
+select {
+  padding: 10px 14px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 15px;
+  background: rgba(255,255,255,0.7);
+  transition: all 0.25s ease;
+}
+
+input[type="number"]:focus,
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.95);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+/* ===== INFO BOX ===== */
+.info-box {
+  background: rgba(11,78,162,0.08);
+  border-left: 4px solid #0b4ea2;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 6px;
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #0b1f3a;
+}
+
+/* ===== YEAR COMPARISON ===== */
+.year-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.year-box {
+  background: rgba(255,255,255,0.6);
+  border: 2px solid rgba(11,78,162,0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.year-box.recommended {
+  border-color: #27ae60;
+  background: rgba(46,204,113,0.08);
+}
+
+.year-box h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #0b1f3a;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.year-box .badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: #27ae60;
+  color: white;
+}
+
+.year-box .amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #0b4ea2;
+  margin: 10px 0;
+}
+
+.year-box .label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* ===== TOTAL INCOME BOX ===== */
+.total-income {
+  background: linear-gradient(135deg, #0b4ea2 0%, #0a3d7f 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 30px;
+  margin-top: 40px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(11,78,162,0.25);
+}
+
+.total-income h2 {
+  margin: 0 0 15px 0;
+  font-size: 24px;
+  color: white;
+  border: none;
+  padding: 0;
+}
+
+.total-income .amount {
+  font-size: 48px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+.total-income .helper {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+/* ===== BREAKDOWN TABLE ===== */
+.breakdown-table {
+  background: rgba(255,255,255,0.6);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 25px;
+}
+
+.breakdown-table h3 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  color: #0b1f3a;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.breakdown-row:last-child {
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 16px;
+  padding-top: 15px;
+  margin-top: 10px;
+  border-top: 2px solid #0b4ea2;
+}
+
+.breakdown-label {
+  color: #0b1f3a;
+}
+
+.breakdown-value {
+  color: #0b4ea2;
+  font-weight: 600;
+}
+
+/* ===== BUTTONS ===== */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.btn {
+  flex: 1;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.btn-primary {
+  background: #0b4ea2;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0a3d7f;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: #0b4ea2;
+  border: 2px solid #0b4ea2;
+}
+
+.btn-secondary:hover {
+  background: rgba(11,78,162,0.05);
+}
+
+/* ===== BACK LINK ===== */
+.back-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.25s ease;
+}
+
+.back-link a:hover {
+  color: #0a3d7f;
+  text-decoration: underline;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .year-comparison {
+    grid-template-columns: 1fr;
+  }
+  
+  .calculator-container {
+    padding: 30px 20px;
+  }
+  
+  .total-income .amount {
+    font-size: 36px;
+  }
+}
+
+  .back-btn {
+  display: inline-block;
+  margin-top: 40px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+
+<body>
+
+<div class="calculator-container">
+  <h1>Self-Employed Income Calculator</h1>
+  <p class="subtitle">Calculate qualifying income from business tax returns</p>
+
+  <!-- DISCLAIMER -->
+  
+
+    <div class="info-box">
+      <p>💡 <strong>Note:</strong> If ownership is less than 100%, only your percentage of the business income will be used for qualification purposes.</p>
+    </div>
+  </div>
+
+  <!-- MOST RECENT YEAR -->
+  <div class="income-section">
+    <h2>Most Recent Tax Year (Year 1)</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tax Year</label>
+        <input type="number" id="year1" min="2020" max="2030" step="1" value="2024" placeholder="2024">
+      </div>
+      <div class="form-group">
+        <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
+        <input type="number" id="year1NetProfit" step="0.01" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">Add-Backs (Non-Cash Expenses)</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Depreciation <span class="label-helper">($)</span></label>
+        <input type="number" id="year1Depreciation" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
+      </div>
+      <div class="form-group">
+        <label>Amortization <span class="label-helper">($)</span></label>
+        <input type="number" id="year1Amortization" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Depletion <span class="label-helper">($)</span></label>
+        <input type="number" id="year1Depletion" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
+      </div>
+      <div class="form-group">
+        <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
+        <input type="number" id="year1OtherAddBack" step="0.01" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">One-Time Adjustments</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
+        <input type="number" id="year1OneTimeLoss" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
+      </div>
+      <div class="form-group">
+        <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
+        <input type="number" id="year1OneTimeGain" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
+      </div>
+    </div>
+
+    <!-- YEAR 1 BREAKDOWN -->
+    <div class="breakdown-table">
+      <h3>Year 1 Calculation Breakdown</h3>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Net Profit/Loss</span>
+        <span class="breakdown-value" id="year1NetDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">+ Depreciation/Amortization/Depletion</span>
+        <span class="breakdown-value" id="year1AddBacksDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">+ One-Time Losses</span>
+        <span class="breakdown-value" id="year1LossDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">- One-Time Gains</span>
+        <span class="breakdown-value" id="year1GainDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">= Adjusted Annual Income</span>
+        <span class="breakdown-value" id="year1AdjustedDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">× Ownership Percentage</span>
+        <span class="breakdown-value" id="year1OwnershipDisplay">100%</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label"><strong>Total Year 1 Annual Income</strong></span>
+        <span class="breakdown-value" id="year1TotalDisplay">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRIOR YEAR -->
+  <div class="income-section">
+    <h2>Prior Tax Year (Year 2)</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Tax Year</label>
+        <input type="number" id="year2" min="2020" max="2030" step="1" value="2023" placeholder="2023">
+      </div>
+      <div class="form-group">
+        <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
+        <input type="number" id="year2NetProfit" step="0.01" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">Add-Backs (Non-Cash Expenses)</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Depreciation <span class="label-helper">($)</span></label>
+        <input type="number" id="year2Depreciation" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
+      </div>
+      <div class="form-group">
+        <label>Amortization <span class="label-helper">($)</span></label>
+        <input type="number" id="year2Amortization" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Depletion <span class="label-helper">($)</span></label>
+        <input type="number" id="year2Depletion" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
+      </div>
+      <div class="form-group">
+        <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
+        <input type="number" id="year2OtherAddBack" step="0.01" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
+      </div>
+    </div>
+
+    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">One-Time Adjustments</h3>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
+        <input type="number" id="year2OneTimeLoss" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
+      </div>
+      <div class="form-group">
+        <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
+        <input type="number" id="year2OneTimeGain" step="0.01" min="0" placeholder="0.00">
+        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
+      </div>
+    </div>
+
+    <!-- YEAR 2 BREAKDOWN -->
+    <div class="breakdown-table">
+      <h3>Year 2 Calculation Breakdown</h3>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Net Profit/Loss</span>
+        <span class="breakdown-value" id="year2NetDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">+ Depreciation/Amortization/Depletion</span>
+        <span class="breakdown-value" id="year2AddBacksDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">+ One-Time Losses</span>
+        <span class="breakdown-value" id="year2LossDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">- One-Time Gains</span>
+        <span class="breakdown-value" id="year2GainDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">= Adjusted Annual Income</span>
+        <span class="breakdown-value" id="year2AdjustedDisplay">$0.00</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">× Ownership Percentage</span>
+        <span class="breakdown-value" id="year2OwnershipDisplay">100%</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label"><strong>Total Year 2 Annual Income</strong></span>
+        <span class="breakdown-value" id="year2TotalDisplay">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- YEAR COMPARISON -->
+  <div class="year-comparison">
+    <div class="year-box" id="mostRecentBox">
+      <h3>
+        Most Recent Year Only
+        <span class="badge" id="mostRecentBadge" style="display: none;">RECOMMENDED</span>
+      </h3>
+      <div class="amount" id="mostRecentAmount">$0.00</div>
+      <div class="label">per month</div>
+    </div>
+
+    <div class="year-box" id="averageBox">
+      <h3>
+        2-Year Average
+        <span class="badge" id="averageBadge" style="display: none;">RECOMMENDED</span>
+      </h3>
+      <div class="amount" id="averageAmount">$0.00</div>
+      <div class="label">per month</div>
+    </div>
+  </div>
+
+  <div class="info-box" style="margin-top: 20px;">
+    <p id="recommendationText">💡 Enter income data to see which calculation method is more conservative and typically used for underwriting.</p>
+  </div>
+
+  <!-- TOTAL INCOME -->
+  <div class="total-income">
+    <h2>Qualifying Monthly Income</h2>
+    <div class="amount" id="totalIncome">$0.00</div>
+    <div class="helper" id="totalHelper">Conservative calculation will be used for qualification</div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="button-group">
+    <button class="btn btn-secondary" onclick="resetCalculator()">Clear All</button>
+    <button class="btn btn-primary" onclick="printCalculator()">Print / Save PDF</button>
+  </div>
+
+
+<script>
+/* ===========================
+   SELF-EMPLOYED CALCULATOR
+=========================== */
+
+// Format currency
+function formatCurrency(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount);
+}
+
+// Calculate Year 1 income
+function calculateYear1() {
+  const netProfit = parseFloat(document.getElementById('year1NetProfit').value) || 0;
+  const depreciation = parseFloat(document.getElementById('year1Depreciation').value) || 0;
+  const amortization = parseFloat(document.getElementById('year1Amortization').value) || 0;
+  const depletion = parseFloat(document.getElementById('year1Depletion').value) || 0;
+  const otherAddBack = parseFloat(document.getElementById('year1OtherAddBack').value) || 0;
+  const oneTimeLoss = parseFloat(document.getElementById('year1OneTimeLoss').value) || 0;
+  const oneTimeGain = parseFloat(document.getElementById('year1OneTimeGain').value) || 0;
+  const ownershipPct = parseFloat(document.getElementById('ownershipPct').value) || 100;
+  
+  const totalAddBacks = depreciation + amortization + depletion + otherAddBack;
+  const adjustedIncome = netProfit + totalAddBacks + oneTimeLoss - oneTimeGain;
+  const totalIncome = adjustedIncome * (ownershipPct / 100);
+  
+  // Update breakdown display
+  document.getElementById('year1NetDisplay').textContent = formatCurrency(netProfit);
+  document.getElementById('year1AddBacksDisplay').textContent = formatCurrency(totalAddBacks);
+  document.getElementById('year1LossDisplay').textContent = formatCurrency(oneTimeLoss);
+  document.getElementById('year1GainDisplay').textContent = formatCurrency(oneTimeGain);
+  document.getElementById('year1AdjustedDisplay').textContent = formatCurrency(adjustedIncome);
+  document.getElementById('year1OwnershipDisplay').textContent = ownershipPct + '%';
+  document.getElementById('year1TotalDisplay').textContent = formatCurrency(totalIncome);
+  
+  return totalIncome;
+}
+
+// Calculate Year 2 income
+function calculateYear2() {
+  const netProfit = parseFloat(document.getElementById('year2NetProfit').value) || 0;
+  const depreciation = parseFloat(document.getElementById('year2Depreciation').value) || 0;
+  const amortization = parseFloat(document.getElementById('year2Amortization').value) || 0;
+  const depletion = parseFloat(document.getElementById('year2Depletion').value) || 0;
+  const otherAddBack = parseFloat(document.getElementById('year2OtherAddBack').value) || 0;
+  const oneTimeLoss = parseFloat(document.getElementById('year2OneTimeLoss').value) || 0;
+  const oneTimeGain = parseFloat(document.getElementById('year2OneTimeGain').value) || 0;
+  const ownershipPct = parseFloat(document.getElementById('ownershipPct').value) || 100;
+  
+  const totalAddBacks = depreciation + amortization + depletion + otherAddBack;
+  const adjustedIncome = netProfit + totalAddBacks + oneTimeLoss - oneTimeGain;
+  const totalIncome = adjustedIncome * (ownershipPct / 100);
+  
+  // Update breakdown display
+  document.getElementById('year2NetDisplay').textContent = formatCurrency(netProfit);
+  document.getElementById('year2AddBacksDisplay').textContent = formatCurrency(totalAddBacks);
+  document.getElementById('year2LossDisplay').textContent = formatCurrency(oneTimeLoss);
+  document.getElementById('year2GainDisplay').textContent = formatCurrency(oneTimeGain);
+  document.getElementById('year2AdjustedDisplay').textContent = formatCurrency(adjustedIncome);
+  document.getElementById('year2OwnershipDisplay').textContent = ownershipPct + '%';
+  document.getElementById('year2TotalDisplay').textContent = formatCurrency(totalIncome);
+  
+  return totalIncome;
+}
+
+// Calculate totals and determine recommendation
+function calculateTotal() {
+  const year1Annual = calculateYear1();
+  const year2Annual = calculateYear2();
+  
+  const year1Monthly = year1Annual / 12;
+  const averageMonthly = (year1Annual + year2Annual) / 24;
+  
+  // Display both options
+  document.getElementById('mostRecentAmount').textContent = formatCurrency(year1Monthly);
+  document.getElementById('averageAmount').textContent = formatCurrency(averageMonthly);
+  
+  // Determine which is more conservative (lower)
+  let qualifyingIncome = 0;
+  let method = '';
+  
+  if (year1Annual > 0 && year2Annual > 0) {
+    // Both years have data
+    if (year1Monthly <= averageMonthly) {
+      // Most recent year is lower (declining income)
+      qualifyingIncome = year1Monthly;
+      method = 'most recent year';
+      document.getElementById('mostRecentBox').classList.add('recommended');
+      document.getElementById('averageBox').classList.remove('recommended');
+      document.getElementById('mostRecentBadge').style.display = 'inline-block';
+      document.getElementById('averageBadge').style.display = 'none';
+      document.getElementById('recommendationText').innerHTML = 
+        '⚠️ <strong>Income is declining.</strong> Underwriters typically use the most recent year only when income is trending downward. Additional documentation or explanation may be required.';
+    } else {
+      // Average is lower (stable or growing income)
+      qualifyingIncome = averageMonthly;
+      method = '2-year average';
+      document.getElementById('averageBox').classList.add('recommended');
+      document.getElementById('mostRecentBox').classList.remove('recommended');
+      document.getElementById('averageBadge').style.display = 'inline-block';
+      document.getElementById('mostRecentBadge').style.display = 'none';
+      document.getElementById('recommendationText').innerHTML = 
+        '✅ <strong>Income is stable or increasing.</strong> Using 2-year average is standard practice and shows income consistency.';
+    }
+  } else if (year1Annual > 0) {
+    // Only Year 1 has data
+    qualifyingIncome = year1Monthly;
+    method = 'most recent year (Year 2 data missing)';
+    document.getElementById('mostRecentBox').classList.add('recommended');
+    document.getElementById('averageBox').classList.remove('recommended');
+    document.getElementById('mostRecentBadge').style.display = 'inline-block';
+    document.getElementById('averageBadge').style.display = 'none';
+    document.getElementById('recommendationText').innerHTML = 
+      '💡 Enter Year 2 data to calculate 2-year average. Most lenders require 2 years of tax returns for self-employed borrowers.';
+  } else {
+    // No data
+    qualifyingIncome = 0;
+    method = '';
+    document.getElementById('mostRecentBox').classList.remove('recommended');
+    document.getElementById('averageBox').classList.remove('recommended');
+    document.getElementById('mostRecentBadge').style.display = 'none';
+    document.getElementById('averageBadge').style.display = 'none';
+    document.getElementById('recommendationText').innerHTML = 
+      '💡 Enter income data to see which calculation method is more conservative and typically used for underwriting.';
+  }
+  
+  // Update total
+  document.getElementById('totalIncome').textContent = formatCurrency(qualifyingIncome);
+  
+  // Send total to parent (Mission Control side panel)
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'calcTotal', amount: qualifyingIncome }, '*');
+  }
+  
+  if (method) {
+    document.getElementById('totalHelper').textContent = `Using ${method} (more conservative calculation)`;
+  } else {
+    document.getElementById('totalHelper').textContent = 'Conservative calculation will be used for qualification';
+  }
+}
+
+// Reset calculator
+function resetCalculator() {
+  if (confirm('Clear all inputs and start over?')) {
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+      if (input.id === 'ownershipPct') {
+        input.value = '100';
+      } else if (input.id === 'year1') {
+        input.value = '2024';
+      } else if (input.id === 'year2') {
+        input.value = '2023';
+      } else {
+        input.value = '';
+      }
+    });
+    document.getElementById('businessType').value = 'sole-prop';
+    calculateTotal();
+  }
+}
+
+// Print calculator
+function printCalculator() {
+  window.print();
+}
+
+// Add event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('input[type="number"], select').forEach(input => {
+    input.addEventListener('input', calculateTotal);
+    input.addEventListener('change', calculateTotal);
+  });
+  
+  // Initial calculation
+  calculateTotal();
+});
+</script>
+
+</body>
+</html>
