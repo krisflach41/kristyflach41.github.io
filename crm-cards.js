@@ -788,6 +788,21 @@ function renderCoBorrowerTabs() {
     else label.textContent = 'B' + (activeCoBorrowerIdx + 1) + ' Qualifying Income';
   }
   updateCombinedIncome();
+
+  // Show Create/View Contact button when on a co-borrower tab
+  var cbBtn = document.getElementById('cbContactBtn');
+  if (cbBtn) {
+    if (activeCoBorrowerIdx > 0) {
+      var cb = coBorrowers[activeCoBorrowerIdx - 1];
+      if (cb.contact_id) {
+        cbBtn.innerHTML = '<button class="card-action-btn" onclick="viewCBContact(\'' + cb.contact_id + '\')"><i class="fas fa-address-card"></i> View Contact</button>';
+      } else {
+        cbBtn.innerHTML = '<button class="card-action-btn" style="background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:#22c55e;" onclick="createCBContact(' + (activeCoBorrowerIdx - 1) + ')"><i class="fas fa-user-plus"></i> Create Contact</button>';
+      }
+    } else {
+      cbBtn.innerHTML = '';
+    }
+  }
 }
 
 function switchCoBorrower(idx) {
@@ -984,6 +999,66 @@ function editCBRelationship(cbIdx) {
   renderCoBorrowerTabs();
   crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
   showToast('Relationship changed to ' + next);
+}
+
+// Create a CRM contact from a co-borrower
+function createCBContact(cbIdx) {
+  var cb = coBorrowers[cbIdx];
+  if (!cb) return;
+  // Save current state first
+  saveCoBorrowerState();
+  // Build contact data from co-borrower
+  var contactData = Object.assign({}, cb.data || {});
+  contactData.name = cb.name;
+  contactData.phone = cb.phone;
+  contactData.email = cb.email;
+  contactData.type = 'borrower';
+  contactData.linked_to = crmCurrentId;
+  contactData.relationship = cb.relationship;
+
+  fetch(CRM_API + '/crm-api?action=save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crm: contactData })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.success) {
+      // Store the new contact ID on the co-borrower
+      coBorrowers[cbIdx].contact_id = result.id;
+      // Add to local contacts list
+      contactData.id = result.id;
+      contactData.created_at = new Date().toISOString();
+      if (typeof crmContacts !== 'undefined') crmContacts.push(contactData);
+      // Update counts
+      var countEl = document.getElementById('navCrmCount');
+      if (countEl) countEl.textContent = crmContacts.length;
+      var dashEl = document.getElementById('dashCrm');
+      if (dashEl) dashEl.textContent = crmContacts.length;
+      var subEl = document.getElementById('crmSubtitle');
+      if (subEl) subEl.textContent = crmContacts.length + ' contacts';
+      // Re-render list and tabs
+      if (typeof crmRenderList === 'function') crmRenderList();
+      renderCoBorrowerTabs();
+      // Mark dirty so primary saves the co_borrowers array with contact_id
+      crmDirty = true;
+      var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+      showToast('Contact created for ' + cb.name);
+    } else {
+      showToast('Failed to create contact');
+    }
+  })
+  .catch(function(err) { console.error(err); showToast('Error creating contact'); });
+}
+
+// Jump to a co-borrower's CRM contact card
+function viewCBContact(contactId) {
+  // Save current state first
+  saveCoBorrowerState();
+  // Save primary's co-borrower data
+  crmSaveContact();
+  // Switch to the contact
+  crmSelectContact(contactId);
 }
 
 function updateCombinedIncome() {
