@@ -175,13 +175,13 @@ body {
 
   <form id="loginForm">
     <div class="form-group">
-      <label class="form-label" for="username">Username</label>
+      <label class="form-label" for="username">Email</label>
       <input 
-        type="text" 
+        type="email" 
         id="username" 
         class="form-input" 
-        placeholder="Enter your username"
-        autocomplete="username"
+        placeholder="Enter your email"
+        autocomplete="email"
         required
       >
     </div>
@@ -236,7 +236,7 @@ loginForm.addEventListener('submit', async function(e) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        username: username,
+        email: username,
         password: password
       })
     });
@@ -256,6 +256,7 @@ loginForm.addEventListener('submit', async function(e) {
         username: data.user.username,
         email: data.user.email,
         name: data.user.name,
+        brokerage: data.user.brokerage || '',
         isAdmin: data.isAdmin || false
       });
     } else {
@@ -263,10 +264,15 @@ loginForm.addEventListener('submit', async function(e) {
       sessionStorage.setItem('agentEdgeUser', data.user.email);
       sessionStorage.setItem('agentEdgeName', data.user.name);
       sessionStorage.setItem('agentEdgeAdmin', data.isAdmin ? 'true' : 'false');
-      if (data.trialStart) {
-        sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
-      }
     }
+
+    // Store role, trial start, and headshot flag
+    sessionStorage.setItem('agentEdgeAdmin', data.isAdmin ? 'true' : 'false');
+    sessionStorage.setItem('agentEdgeRole', data.role || 'trial');
+    if (data.trialStart) {
+      sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
+    }
+    sessionStorage.setItem('agentEdgeHasHeadshot', data.hasHeadshot ? 'true' : 'false');
 
     // Check if temp password
     if (data.tempPassword) {
