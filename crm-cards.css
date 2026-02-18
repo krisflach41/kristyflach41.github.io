@@ -296,3 +296,55 @@
   .type-picker-grid { grid-template-columns: 1fr; }
   .calc-embed-panel .calc-row { grid-template-columns: 1fr; }
 }
+
+/* ===== ACTIVE CALC TAB ===== */
+.calc-embed-toggle.active-calc {
+  background: rgba(59,130,246,0.18); border-color: rgba(59,130,246,0.4);
+  box-shadow: 0 0 12px rgba(59,130,246,0.15);
+}
+
+/* ===== DOCUMENT UPLOAD AREA ===== */
+.doc-upload-area {
+  margin-bottom: 8px;
+}
+.doc-upload-btn-row {
+  margin-top: 10px;
+}
+.doc-list { }
+.doc-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 12px; border-radius: 8px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 6px; transition: 0.15s;
+}
+.doc-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.1);
+}
+.doc-item-icon {
+  width: 32px; height: 32px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(59,130,246,0.1); color: #5b9ef5;
+  font-size: 14px; flex-shrink: 0;
+}
+.doc-item-icon .fa-file-pdf { color: #ef4444; }
+.doc-item-icon .fa-file-image { color: #22c55e; }
+.doc-item-icon .fa-calculator { color: #f59e0b; }
+.doc-item-info { flex: 1; min-width: 0; }
+.doc-item-name {
+  font-size: 13px; color: #eaf0f6; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.doc-item-date { font-size: 11px; color: rgba(255,255,255,0.35); }
+.doc-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.doc-item-btn {
+  width: 28px; height: 28px; border-radius: 6px; border: none;
+  background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 12px; transition: 0.15s;
+  text-decoration: none;
+}
+.doc-item-btn:hover {
+  background: rgba(255,255,255,0.1); color: #eaf0f6;
+}
