@@ -357,7 +357,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Hourly Rate <span class="label-helper">($/hour)</span></label>
-        <input type="number" id="hourlyRate" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="hourlyRate" placeholder="0.00">
       </div>
       <div class="form-group">
         <label>Hours Per Week</label>
@@ -400,7 +400,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Salary Amount <span class="label-helper">(based on type selected)</span></label>
-        <input type="number" id="salaryAmount" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="salaryAmount" placeholder="0.00">
       </div>
     </div>
 
@@ -417,7 +417,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Overtime <span class="label-helper">($)</span></label>
-        <input type="number" id="otYTD" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otYTD" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Paystub: YTD Overtime earnings</div>
       </div>
       <div class="form-group">
@@ -430,12 +430,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Prior Year Total <span class="label-helper">($)</span></label>
-        <input type="number" id="otYear1" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otYear1" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 W-2 Box 1 (total) minus base salary</div>
       </div>
       <div class="form-group">
         <label>Year Before Total <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="otYear2" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otYear2" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 W-2 Box 1 (total) minus base salary</div>
       </div>
     </div>
@@ -455,7 +455,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Bonus <span class="label-helper">($)</span></label>
-        <input type="number" id="bonusYTD" step="0.01" min="0" placeholder="0.00" class="money-field">
+        <input type="text" inputmode="decimal" id="bonusYTD" placeholder="0.00" class="money-field">
       </div>
       <div class="form-group">
         <label>YTD Months Worked</label>
@@ -466,11 +466,11 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Prior Year Bonus <span class="label-helper">($)</span></label>
-        <input type="number" id="bonusYear1" step="0.01" min="0" placeholder="0.00" class="money-field">
+        <input type="text" inputmode="decimal" id="bonusYear1" placeholder="0.00" class="money-field">
       </div>
       <div class="form-group">
         <label>Year Before Bonus <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="bonusYear2" step="0.01" min="0" placeholder="0.00" class="money-field">
+        <input type="text" inputmode="decimal" id="bonusYear2" placeholder="0.00" class="money-field">
       </div>
     </div>
 
@@ -487,7 +487,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Commission <span class="label-helper">($)</span></label>
-        <input type="number" id="commYTD" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYTD" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Paystub: YTD Commission line</div>
       </div>
       <div class="form-group">
@@ -500,7 +500,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Unreimbursed Expenses <span class="label-helper">(Form 2106, $)</span></label>
-        <input type="number" id="commYTDExpenses" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYTDExpenses" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 2106: Line 10 (Employee Business Expenses)</div>
       </div>
     </div>
@@ -508,12 +508,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Prior Year Commission <span class="label-helper">($)</span></label>
-        <input type="number" id="commYear1" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYear1" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 W-2 Box 1 or 1099-MISC Box 7</div>
       </div>
       <div class="form-group">
         <label>Prior Year Expenses <span class="label-helper">(Form 2106, $)</span></label>
-        <input type="number" id="commYear1Expenses" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYear1Expenses" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 2106: Line 10</div>
       </div>
     </div>
@@ -521,12 +521,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Year Before Commission <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="commYear2" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYear2" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 W-2 Box 1 or 1099-MISC Box 7</div>
       </div>
       <div class="form-group">
         <label>Year Before Expenses <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="commYear2Expenses" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="commYear2Expenses" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 2106: Line 10</div>
       </div>
     </div>
@@ -552,24 +552,24 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>YTD Other Income <span class="label-helper">($)</span></label>
-        <input type="number" id="otherYTD" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otherYTD" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Varies by income type (rental, dividends, etc.)</div>
       </div>
       <div class="form-group">
         <label>YTD Months</label>
-        <input type="number" id="otherYTDMonths" step="1" min="0" max="12" placeholder="0">
+        <input type="text" inputmode="decimal" id="otherYTDMonths" max="12" placeholder="0">
       </div>
     </div>
 
     <div class="form-row">
       <div class="form-group">
         <label>Prior Year Total <span class="label-helper">($)</span></label>
-        <input type="number" id="otherYear1" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otherYear1" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 1040 Schedule E (rental) or Schedule B (interest/dividends)</div>
       </div>
       <div class="form-group">
         <label>Year Before Total <span class="label-helper">(optional, $)</span></label>
-        <input type="number" id="otherYear2" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="otherYear2" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 1040 Schedule E or Schedule B</div>
       </div>
     </div>
@@ -590,7 +590,7 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Monthly Non-Taxable Amount <span class="label-helper">($)</span></label>
-        <input type="number" id="nonTaxable" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="nonTaxable" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 SSA-1099 Box 5 (SS) or 1099-R Box 2a (Pension/IRA)</div>
       </div>
     </div>
@@ -772,17 +772,9 @@ function toggleSection(sid) {
 function formatMoneyInput(el) {
   var raw = el.value.replace(/[^0-9.\-]/g, '');
   var num = parseFloat(raw);
-  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; return; }
+  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; el.value = ''; return; }
   el.dataset.rawValue = raw;
-  // Show formatted in a sibling span
-  var display = el.parentElement.querySelector('.money-display');
-  if (!display) {
-    display = document.createElement('div');
-    display.className = 'money-display';
-    display.style.cssText = 'font-size:11px;color:#22c55e;font-weight:600;margin-top:2px;';
-    el.parentElement.appendChild(display);
-  }
-  display.textContent = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 function getRawValue(id) {
   var el = document.getElementById(id);
@@ -837,7 +829,7 @@ function calculateTotal() {
 // Reset calculator
 function resetCalculator() {
   if (confirm('Clear all inputs and start over?')) {
-    document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
+    document.querySelectorAll('input[type="number"], input[type="text"][inputmode="decimal"]').forEach(input => { input.value = ''; input.dataset.rawValue = ''; });
     document.getElementById('salaryMonthly').checked = true;
     calculateTotal();
   }
@@ -851,7 +843,7 @@ function printCalculator() {
 // Add event listeners to all inputs
 document.addEventListener('DOMContentLoaded', function() {
   // Number inputs
-  document.querySelectorAll('input[type="number"]').forEach(input => {
+  document.querySelectorAll('input[type="number"], input[type="text"]').forEach(input => {
     input.addEventListener('input', calculateTotal);
   });
   
@@ -861,13 +853,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
 
-  // Money field formatting on blur
-  document.querySelectorAll('input[type="number"]').forEach(function(el) {
-    // Skip non-money fields
-    if (['hoursPerWeek','otYTDMonths','commYTDMonths','bonusYTDMonths'].includes(el.id)) return;
-    if (el.id && el.id.match(/^(salary|hourly)/i) && el.id.includes('Type')) return;
+  // Money field formatting on blur and Enter key
+  document.querySelectorAll('input[inputmode="decimal"]').forEach(function(el) {
     el.addEventListener('blur', function() { formatMoneyInput(el); });
     el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { el.blur(); }
+    });
   });
   // Set today's date
   var dc = document.getElementById('dateCompleted');
