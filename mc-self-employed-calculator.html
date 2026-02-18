@@ -430,7 +430,7 @@ select:focus {
       </div>
       <div class="form-group">
         <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
-        <input type="number" id="year1NetProfit" step="0.01" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1NetProfit" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
       </div>
     </div>
@@ -440,12 +440,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Depreciation <span class="label-helper">($)</span></label>
-        <input type="number" id="year1Depreciation" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1Depreciation" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
       </div>
       <div class="form-group">
         <label>Amortization <span class="label-helper">($)</span></label>
-        <input type="number" id="year1Amortization" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1Amortization" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
       </div>
     </div>
@@ -453,12 +453,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Depletion <span class="label-helper">($)</span></label>
-        <input type="number" id="year1Depletion" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1Depletion" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
       </div>
       <div class="form-group">
         <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
-        <input type="number" id="year1OtherAddBack" step="0.01" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1OtherAddBack" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
       </div>
     </div>
@@ -468,12 +468,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
-        <input type="number" id="year1OneTimeLoss" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1OneTimeLoss" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
       </div>
       <div class="form-group">
         <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
-        <input type="number" id="year1OneTimeGain" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year1OneTimeGain" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
       </div>
     </div>
@@ -523,7 +523,7 @@ select:focus {
       </div>
       <div class="form-group">
         <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
-        <input type="number" id="year2NetProfit" step="0.01" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2NetProfit" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
       </div>
     </div>
@@ -533,12 +533,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Depreciation <span class="label-helper">($)</span></label>
-        <input type="number" id="year2Depreciation" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2Depreciation" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
       </div>
       <div class="form-group">
         <label>Amortization <span class="label-helper">($)</span></label>
-        <input type="number" id="year2Amortization" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2Amortization" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
       </div>
     </div>
@@ -546,12 +546,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>Depletion <span class="label-helper">($)</span></label>
-        <input type="number" id="year2Depletion" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2Depletion" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
       </div>
       <div class="form-group">
         <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
-        <input type="number" id="year2OtherAddBack" step="0.01" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2OtherAddBack" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
       </div>
     </div>
@@ -561,12 +561,12 @@ select:focus {
     <div class="form-row">
       <div class="form-group">
         <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
-        <input type="number" id="year2OneTimeLoss" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2OneTimeLoss" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
       </div>
       <div class="form-group">
         <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
-        <input type="number" id="year2OneTimeGain" step="0.01" min="0" placeholder="0.00">
+        <input type="text" inputmode="decimal" id="year2OneTimeGain" placeholder="0.00">
         <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
       </div>
     </div>
@@ -665,17 +665,9 @@ function formatCurrency(amount) {
 function formatMoneyInput(el) {
   var raw = el.value.replace(/[^0-9.\-]/g, '');
   var num = parseFloat(raw);
-  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; return; }
+  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; el.value = ''; return; }
   el.dataset.rawValue = raw;
-  // Show formatted in a sibling span
-  var display = el.parentElement.querySelector('.money-display');
-  if (!display) {
-    display = document.createElement('div');
-    display.className = 'money-display';
-    display.style.cssText = 'font-size:11px;color:#22c55e;font-weight:600;margin-top:2px;';
-    el.parentElement.appendChild(display);
-  }
-  display.textContent = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 function getMoneyValue(id) {
   var el = document.getElementById(id);
@@ -835,7 +827,7 @@ function printCalculator() {
 
 // Add event listeners
 document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('input[type="number"], select').forEach(input => {
+  document.querySelectorAll('input[type="number"], input[type="text"], select').forEach(input => {
     input.addEventListener('input', calculateTotal);
     input.addEventListener('change', calculateTotal);
   });
@@ -843,14 +835,13 @@ document.addEventListener('DOMContentLoaded', function() {
   // Initial calculation
 
   // Money field formatting
-  const moneyFields = ['year1NetProfit','year1Depreciation','year1Amortization','year1Depletion','year1OtherAddBacks','year1OneTime',
-    'year2NetProfit','year2Depreciation','year2Amortization','year2Depletion','year2OtherAddBacks','year2OneTime'];
-  moneyFields.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) {
-      el.addEventListener('blur', function() { formatMoneyInput(el); });
-      el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
-    }
+  // Money field formatting on blur and Enter key
+  document.querySelectorAll('input[inputmode="decimal"]').forEach(function(el) {
+    el.addEventListener('blur', function() { formatMoneyInput(el); });
+    el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
+    el.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { el.blur(); }
+    });
   });
   // Set today's date
   var dc = document.getElementById('dateCompleted');
