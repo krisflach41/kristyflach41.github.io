@@ -528,14 +528,21 @@ function closeCalcPanel(){var o=document.getElementById('calcSideOverlay');if(o)
 function switchCalcType(type){
   activeCalcType=type;
   var frame=document.getElementById('calcIframe');
-  if(type==='w2') frame.src='income-calculator.html';
-  else frame.src='self-employed-calculator.html';
-  // Tab active states
+  if(type==='w2') frame.src='mc-income-calculator.html';
+  else frame.src='mc-self-employed-calculator.html';
   var w2Tab=document.getElementById('calcTabW2');
   var seTab=document.getElementById('calcTabSE');
   if(w2Tab){w2Tab.classList.toggle('active-calc',type==='w2');}
   if(seTab){seTab.classList.toggle('active-calc',type==='se');}
 }
+
+// Listen for postMessage from calculator iframes - auto-fill qualifying input
+window.addEventListener('message', function(e) {
+  if (e.data && e.data.type === 'calcTotal') {
+    var input = document.getElementById('calcQualifyingInput');
+    if (input) input.value = (e.data.amount || 0).toFixed(2);
+  }
+});
 
 function buildCalcSidePanel(){
   var ov=document.createElement('div');ov.id='calcSideOverlay';ov.className='calc-side-overlay';
@@ -549,7 +556,7 @@ function buildCalcSidePanel(){
       '<button class="calc-side-tab" id="calcTabSE" onclick="switchCalcType(\'se\')"><i class="fas fa-store"></i> Self-Employed Calculator</button>'+
     '</div>'+
     '<div class="calc-side-body">'+
-      '<iframe id="calcIframe" src="income-calculator.html" style="width:100%;height:100%;border:none;border-radius:8px;"></iframe>'+
+      '<iframe id="calcIframe" src="mc-income-calculator.html" style="width:100%;height:100%;border:none;border-radius:8px;"></iframe>'+
     '</div>'+
     '<div class="calc-side-footer">'+
       '<div class="calc-save-row">'+
