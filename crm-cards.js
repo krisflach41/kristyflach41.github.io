@@ -406,12 +406,23 @@ function syncEmpField(el){
   var val=el.type==='checkbox'?el.checked:el.value;
   if(eduIdx!==undefined&&eduIdx!==''){
     var ei=parseInt(eduIdx); if(borrowerEducation[ei]) borrowerEducation[ei][key]=val;
+    // Update tab label without re-rendering
+    if(key==='school_name') updateEmpTabLabel(borrowerEmployers.length+ei, val||'Education '+(ei+1));
   } else if(empIdx!==undefined&&empIdx!==''){
     var i=parseInt(empIdx); if(borrowerEmployers[i]) borrowerEmployers[i][key]=val;
+    // Update tab label without re-rendering
+    if(key==='employer_name') updateEmpTabLabel(i, val||'Employer '+(i+1));
+    // Update tab color on end_date change (current vs past)
+    if(key==='end_date') {
+      clearTimeout(window._empColorRefresh);
+      window._empColorRefresh=setTimeout(function(){renderEmpTabs();},600);
+    }
   }
-  // Debounce tab refresh for name/date changes
-  clearTimeout(window._empRefresh);
-  window._empRefresh=setTimeout(function(){renderEmpTabs();},500);
+}
+
+function updateEmpTabLabel(idx, label) {
+  var tabs = document.querySelectorAll('.emp-tabs-row .emp-tab');
+  if(tabs[idx]) tabs[idx].textContent = label;
 }
 
 function switchEmpTab(i){activeEmpTab=i;renderEmpTabs();}
@@ -495,9 +506,9 @@ function removePipelineStage(contactId){
   }).catch(function(err){console.error(err);});
 }
 
-// ===== INCOME CALCULATOR SIDE PANEL =====
+// ===== INCOME CALCULATOR SIDE PANEL (iframe-based) =====
 var calcPanelEmpIdx = 0;
-var calcSourceIncluded = {hourly:true,salary:true,ot:true,commission:true,se:true,nontax:true,other:true};
+var activeCalcType = 'w2'; // 'w2' or 'se'
 
 function openCalcPanel(empIdx){
   calcPanelEmpIdx=empIdx;
@@ -505,170 +516,114 @@ function openCalcPanel(empIdx){
   if(!ov){buildCalcSidePanel();ov=document.getElementById('calcSideOverlay');}
   var emp=borrowerEmployers[empIdx];
   document.getElementById('calcSideTitle').textContent='Income Calculator - '+(emp.employer_name||'Employer '+(empIdx+1));
-  // Reset fields
-  ov.querySelectorAll('input[type="number"]').forEach(function(el){el.value='';});
-  // Reset includes
-  calcSourceIncluded={hourly:true,salary:true,ot:true,commission:true,se:true,nontax:true,other:true};
-  ov.querySelectorAll('.calc-source-toggle').forEach(function(t){t.classList.add('on');});
-  ov.querySelectorAll('.calc-source').forEach(function(s){s.classList.add('expanded');});
-  // Reset ownership default
-  var ownEl=document.getElementById('cs_se_ownership');if(ownEl)ownEl.value='100';
+  // Show qualifying input with current value
+  var qInput=document.getElementById('calcQualifyingInput');
+  if(qInput) qInput.value=emp.qualifying_income||'';
+  // Default to W-2 calc
+  switchCalcType('w2');
   ov.classList.add('open');
-  calcAllSources();
 }
 function closeCalcPanel(){var o=document.getElementById('calcSideOverlay');if(o)o.classList.remove('open');}
+
+function switchCalcType(type){
+  activeCalcType=type;
+  var frame=document.getElementById('calcIframe');
+  if(type==='w2') frame.src='income-calculator.html';
+  else frame.src='self-employed-calculator.html';
+  // Tab active states
+  var w2Tab=document.getElementById('calcTabW2');
+  var seTab=document.getElementById('calcTabSE');
+  if(w2Tab){w2Tab.classList.toggle('active-calc',type==='w2');}
+  if(seTab){seTab.classList.toggle('active-calc',type==='se');}
+}
 
 function buildCalcSidePanel(){
   var ov=document.createElement('div');ov.id='calcSideOverlay';ov.className='calc-side-overlay';
   ov.innerHTML='<div class="calc-side-panel">'+
-    '<div class="calc-side-header"><div class="calc-side-title" id="calcSideTitle">Income Calculator</div>'+
-    '<button class="calc-side-close" onclick="closeCalcPanel()"><i class="fas fa-times"></i></button></div>'+
-    '<div class="calc-side-body" id="calcSideBody">'+buildCalcSources()+'</div>'+
+    '<div class="calc-side-header">'+
+      '<div class="calc-side-title" id="calcSideTitle">Income Calculator</div>'+
+      '<button class="calc-side-close" onclick="closeCalcPanel()"><i class="fas fa-times"></i></button>'+
+    '</div>'+
+    '<div class="calc-side-tabs">'+
+      '<button class="calc-side-tab active-calc" id="calcTabW2" onclick="switchCalcType(\'w2\')"><i class="fas fa-calculator"></i> W-2 Calculator</button>'+
+      '<button class="calc-side-tab" id="calcTabSE" onclick="switchCalcType(\'se\')"><i class="fas fa-store"></i> Self-Employed Calculator</button>'+
+    '</div>'+
+    '<div class="calc-side-body">'+
+      '<iframe id="calcIframe" src="income-calculator.html" style="width:100%;height:100%;border:none;border-radius:8px;"></iframe>'+
+    '</div>'+
     '<div class="calc-side-footer">'+
-    '<button class="card-action-btn primary" onclick="saveCalcToEmployer()"><i class="fas fa-save"></i> Save to Card</button>'+
-    '<button class="card-action-btn" onclick="exportCalcPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>'+
-    '<button class="card-action-btn" onclick="exportCalcToDoc()"><i class="fas fa-folder-plus"></i> Save to Docs</button>'+
-    '</div></div>';
+      '<div class="calc-save-row">'+
+        '<label class="calc-save-label">Qualifying Income (monthly):</label>'+
+        '<input type="number" id="calcQualifyingInput" placeholder="Enter amount from calculator" step="0.01" min="0" style="flex:1;padding:8px 12px;border-radius:7px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.08);border:1px solid rgba(34,197,94,0.3);color:#22c55e;">'+
+      '</div>'+
+      '<div style="display:flex;gap:8px;margin-top:10px;">'+
+        '<button class="card-action-btn primary" onclick="saveCalcToEmployer()" style="flex:1;"><i class="fas fa-save"></i> Save to Card</button>'+
+        '<button class="card-action-btn" onclick="exportCalcToDoc()"><i class="fas fa-folder-plus"></i> Save to Docs</button>'+
+      '</div>'+
+    '</div>'+
+  '</div>';
   ov.addEventListener('click',function(e){if(e.target===ov)closeCalcPanel();});
   document.body.appendChild(ov);
 }
 
-function buildCalcSources(){
-  var sources=[
-    {id:'hourly',title:'Hourly Income',fields:[
-      {id:'cs_hourly_rate',l:'Hourly Rate ($/hr)'},{id:'cs_hourly_hours',l:'Hours/Week'}]},
-    {id:'salary',title:'Salary',fields:[
-      {id:'cs_salary_amount',l:'Amount'},
-      {id:'cs_salary_type',l:'Pay Period',t:'select',opts:[
-        {value:'monthly',label:'Monthly'},{value:'biweekly',label:'Bi-Weekly'},
-        {value:'semimonthly',label:'Semi-Monthly'},{value:'weekly',label:'Weekly'}]}]},
-    {id:'ot',title:'Overtime / Bonus',fields:[
-      {id:'cs_ot_ytd',l:'YTD Amount'},{id:'cs_ot_months',l:'YTD Months'},
-      {id:'cs_ot_year1',l:'Prior Year Total'},{id:'cs_ot_year2',l:'Year Before Total'}]},
-    {id:'commission',title:'Commission (net of expenses)',fields:[
-      {id:'cs_comm_ytd',l:'YTD Gross'},{id:'cs_comm_exp',l:'YTD Expenses'},
-      {id:'cs_comm_months',l:'YTD Months'},{id:'cs_comm_year1',l:'Prior Year Net'},
-      {id:'cs_comm_year2',l:'Year Before Net'}]},
-    {id:'se',title:'Self-Employment',fields:[
-      {id:'cs_se_y1_net',l:'Year 1 Net Profit'},{id:'cs_se_y1_addbacks',l:'Year 1 Add-Backs'},
-      {id:'cs_se_y2_net',l:'Year 2 Net Profit'},{id:'cs_se_y2_addbacks',l:'Year 2 Add-Backs'},
-      {id:'cs_se_ownership',l:'Ownership %',def:'100'}]},
-    {id:'nontax',title:'Non-Taxable (SSI, disability) - 125% gross-up',fields:[
-      {id:'cs_nontax_monthly',l:'Monthly Amount'}]},
-    {id:'other',title:'Other Income',fields:[
-      {id:'cs_other_monthly',l:'Monthly Amount'}]}
-  ];
-
-  var h='';
-  sources.forEach(function(src){
-    h+='<div class="calc-source" id="calcSrc_'+src.id+'" data-source="'+src.id+'">';
-    h+='<div class="calc-source-header">';
-    h+='<div class="calc-source-left" onclick="toggleCalcExpand(\''+src.id+'\')">';
-    h+='<div class="calc-source-title">'+src.title+'</div>';
-    h+='<div class="calc-source-total" id="calcTotal_'+src.id+'">$0.00</div></div>';
-    h+='<button class="calc-source-toggle on" id="calcToggle_'+src.id+'" onclick="toggleCalcInclude(\''+src.id+'\')"></button>';
-    h+='</div><div class="calc-source-body"><div class="calc-source-fields">';
-    src.fields.forEach(function(f){
-      h+='<div class="card-field"><label>'+f.l+'</label>';
-      if(f.t==='select'){
-        h+='<select id="'+f.id+'" onchange="calcAllSources()">';
-        f.opts.forEach(function(o){h+='<option value="'+o.value+'">'+o.label+'</option>';});
-        h+='</select>';
-      } else {
-        h+='<input type="number" id="'+f.id+'" step="0.01" min="0" placeholder="0.00" oninput="calcAllSources()"';
-        if(f.def)h+=' value="'+f.def+'"';
-        h+='>';
-      }
-      h+='</div>';
-    });
-    h+='</div></div></div>';
-  });
-  h+='<div class="calc-total-bar"><span class="calc-total-label">Total Monthly Qualifying Income</span><span class="calc-total-value" id="calcGrandTotal">$0.00</span></div>';
-  return h;
-}
-
-function toggleCalcExpand(srcId){var el=document.getElementById('calcSrc_'+srcId);if(el)el.classList.toggle('expanded');}
-function toggleCalcInclude(srcId){
-  calcSourceIncluded[srcId]=!calcSourceIncluded[srcId];
-  var btn=document.getElementById('calcToggle_'+srcId);
-  if(btn)btn.classList.toggle('on',calcSourceIncluded[srcId]);
-  calcAllSources();
-}
-
-function cv(id){var el=document.getElementById(id);return el?(parseFloat(el.value)||0):0;}
-function lowestAvg(ytd,months,y1,y2){
-  var a=[];
-  if(months>0)a.push(ytd/months);
-  if(months>0&&y1>0)a.push((ytd+y1)/(months+12));
-  if(months>0&&y1>0&&y2>0)a.push((ytd+y1+y2)/(months+24));
-  return a.length>0?Math.min.apply(null,a):0;
-}
-
-function calcAllSources(){
-  var r={};
-  // Hourly
-  r.hourly=(cv('cs_hourly_rate')*cv('cs_hourly_hours')*52)/12;
-  // Salary
-  var sa=cv('cs_salary_amount'),stEl=document.getElementById('cs_salary_type'),st=stEl?stEl.value:'monthly';
-  if(st==='monthly')r.salary=sa;else if(st==='biweekly')r.salary=sa*26/12;
-  else if(st==='semimonthly')r.salary=sa*24/12;else r.salary=sa*52/12;
-  // OT
-  r.ot=lowestAvg(cv('cs_ot_ytd'),cv('cs_ot_months'),cv('cs_ot_year1'),cv('cs_ot_year2'));
-  // Commission
-  r.commission=lowestAvg(cv('cs_comm_ytd')-cv('cs_comm_exp'),cv('cs_comm_months'),cv('cs_comm_year1'),cv('cs_comm_year2'));
-  // SE
-  var own=cv('cs_se_ownership')||100;
-  var se1=(cv('cs_se_y1_net')+cv('cs_se_y1_addbacks'))*(own/100);
-  var se2=(cv('cs_se_y2_net')+cv('cs_se_y2_addbacks'))*(own/100);
-  var seR=se1/12,seA=(se1+se2)/24;
-  r.se=(se1>0&&se2>0)?Math.min(seR,seA):seR;
-  // Non-taxable
-  r.nontax=cv('cs_nontax_monthly')*1.25;
-  // Other
-  r.other=cv('cs_other_monthly');
-
-  var grand=0;
-  Object.keys(r).forEach(function(k){
-    var el=document.getElementById('calcTotal_'+k);if(el)el.textContent=formatMoney(r[k]);
-    if(calcSourceIncluded[k])grand+=r[k];
-  });
-  var gt=document.getElementById('calcGrandTotal');if(gt)gt.textContent=formatMoney(grand);
-}
-
 function saveCalcToEmployer(){
-  var gt=document.getElementById('calcGrandTotal');if(!gt)return;
-  var amt=parseFloat(gt.textContent.replace(/[^0-9.]/g,''))||0;
+  var input=document.getElementById('calcQualifyingInput');
+  if(!input||!input.value){showToast('Enter the qualifying income amount');return;}
+  var amt=parseFloat(input.value)||0;
   borrowerEmployers[calcPanelEmpIdx].qualifying_income=amt;
-  renderEmpTabs();updateTotalQualifying();
+  // Update the employer panel display
+  var qEl=document.getElementById('emp_'+calcPanelEmpIdx+'_qualifying');
+  if(qEl) qEl.textContent=formatMoney(amt);
+  updateTotalQualifying();
   crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
   showToast('Income saved: '+formatMoney(amt));
   closeCalcPanel();
 }
 
-function exportCalcPDF(){
-  var emp=borrowerEmployers[calcPanelEmpIdx];
-  var name=document.getElementById('cf_name')?document.getElementById('cf_name').value:'Borrower';
-  var total=document.getElementById('calcGrandTotal').textContent;
-  var w=window.open('','_blank','width=700,height=900');
-  w.document.write('<html><head><title>Income - '+name+'</title><style>body{font-family:Arial,sans-serif;padding:40px;color:#0b1f3a;}h1{font-size:22px;}.meta{color:#666;margin-bottom:20px;font-size:13px;}.line{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;}.total{font-size:20px;font-weight:700;margin-top:20px;padding:16px;background:#f0f7ff;border-radius:8px;}.disc{font-size:11px;color:#999;margin-top:30px;font-style:italic;}</style></head><body>');
-  w.document.write('<h1>Income Calculation</h1><div class="meta">Borrower: '+name+' | Employer: '+(emp.employer_name||'N/A')+' | Date: '+new Date().toLocaleDateString()+'</div>');
-  var labels={hourly:'Hourly',salary:'Salary',ot:'OT/Bonus',commission:'Commission',se:'Self-Employment',nontax:'Non-Taxable (125%)',other:'Other'};
-  Object.keys(labels).forEach(function(k){
-    var el=document.getElementById('calcTotal_'+k);
-    if(el&&el.textContent!=='$0.00'&&calcSourceIncluded[k])
-      w.document.write('<div class="line">'+labels[k]+': <strong>'+el.textContent+'</strong>'+(calcSourceIncluded[k]?'':' (excluded)')+'</div>');
-  });
-  w.document.write('<div class="total">Total Monthly Qualifying: '+total+'</div>');
-  w.document.write('<div class="disc">For informational purposes only. Not a substitute for underwriter review.</div></body></html>');
-  w.document.close();w.focus();w.print();
-}
-
 function exportCalcToDoc(){
   var emp=borrowerEmployers[calcPanelEmpIdx];
   var name=document.getElementById('cf_name')?document.getElementById('cf_name').value:'Borrower';
-  var total=document.getElementById('calcGrandTotal').textContent;
-  addDocumentToCard('Income Calc - '+(emp.employer_name||'Employer')+' - '+name+' - '+total,'income_calc',new Date().toISOString());
+  var input=document.getElementById('calcQualifyingInput');
+  var amt=input?input.value:'0';
+  addDocumentToCard('Income Calc - '+(emp.employer_name||'Employer')+' - '+name+' - '+formatMoney(amt),'income_calc',new Date().toISOString());
   showToast('Saved to documents');
+}
+
+// ===== TYPE CHANGER =====
+function showTypeChanger(){
+  showTypePicker(function(newType){
+    if(newType===crmCurrentType) return;
+    var oldType=crmCurrentType;
+    crmCurrentType=newType;
+    // Update in database
+    if(crmCurrentId){
+      fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({crm:{id:crmCurrentId,type:newType}})}).catch(function(){});
+      if(typeof crmContacts!=='undefined'){
+        var idx=crmContacts.findIndex(function(c){return c.id===crmCurrentId;});
+        if(idx>=0) crmContacts[idx].type=newType;
+      }
+    }
+    // Update badge
+    var ti=CONTACT_TYPES[newType]||CONTACT_TYPES.other;
+    document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+    // Qualifying total visibility
+    var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(newType==='borrower'?'block':'none');
+    // Re-render form
+    var fc=document.getElementById('crmCardForm');
+    var currentData=collectAllCardData();
+    currentData.type=newType;
+    if(newType==='borrower'){
+      borrowerEmployers=[];borrowerEducation=[];
+      renderBorrowerCard(fc,currentData);
+    } else {
+      var secs=getFieldsForType(newType);
+      renderStandardForm(fc,secs,currentData);
+    }
+    if(typeof crmRenderList==='function') crmRenderList();
+    crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
+    showToast('Changed to '+ti.label);
+  });
 }
 
 // ===== DOCUMENT SYSTEM =====
