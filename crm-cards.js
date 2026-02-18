@@ -138,7 +138,7 @@ function getFieldsForType(type) {
           { id: 'date_final_approval', label: 'Final Approval', type: 'date' },
           { id: 'date_closing', label: 'Closing', type: 'date' }
         ]},
-        { section: 'Tags & Notes', fields: noteFields }
+        { section: 'Documents & Notes', fields: [], documents: true }
       ];
 
     case 'realtor':
@@ -228,13 +228,39 @@ function renderCardForm(container, type, data) {
   var html = '';
 
   sections.forEach(function(sec) {
+    // Income calculator section — dual mode (W-2 and Self-Employed)
     if (sec.calculator) {
       html += '<div class="card-section">' +
         '<div class="card-section-title">' + sec.section + '</div>' +
-        '<div class="calc-embed-toggle" onclick="toggleCalcEmbed()">' +
-          '<i class="fas fa-calculator"></i> Open Income Calculator</div>' +
-        '<div class="calc-embed-panel" id="calcEmbedPanel">' +
-          buildIncomeCalculatorHTML() + '</div></div>';
+        '<div style="display:flex;gap:8px;margin-bottom:14px;">' +
+          '<div class="calc-embed-toggle" onclick="showCalcTab(\'w2\')" id="calcTabW2" style="flex:1;">' +
+            '<i class="fas fa-calculator"></i> W-2 Income Calculator</div>' +
+          '<div class="calc-embed-toggle" onclick="showCalcTab(\'se\')" id="calcTabSE" style="flex:1;">' +
+            '<i class="fas fa-store"></i> Self-Employed Calculator</div>' +
+        '</div>' +
+        '<div class="calc-embed-panel" id="calcPanelW2">' + buildIncomeCalculatorHTML() + '</div>' +
+        '<div class="calc-embed-panel" id="calcPanelSE">' + buildSECalculatorHTML() + '</div>' +
+      '</div>';
+      return;
+    }
+
+    // Documents & Notes section
+    if (sec.documents) {
+      html += '<div class="card-section">' +
+        '<div class="card-section-title">' + sec.section + '</div>' +
+        '<div class="doc-upload-area">' +
+          '<div class="doc-list" id="docList"></div>' +
+          '<div class="doc-upload-btn-row">' +
+            '<label class="card-action-btn" style="cursor:pointer;"><i class="fas fa-upload"></i> Upload Document' +
+              '<input type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" style="display:none;" onchange="handleDocUpload(this)" multiple>' +
+            '</label>' +
+          '</div>' +
+        '</div>' +
+        '<div class="card-fields" style="margin-top:14px;">' +
+          '<div class="card-field full-width"><label>Notes</label>' +
+            '<textarea id="cf_notes" class="card-tracked" rows="3">' + (data.notes || '') + '</textarea></div>' +
+        '</div>' +
+      '</div>';
       return;
     }
 
@@ -428,10 +454,58 @@ function removePipelineStage(contactId) {
 }
 
 // ===== INCOME CALCULATOR (EMBEDDED) =====
-function toggleCalcEmbed() {
-  var p = document.getElementById('calcEmbedPanel');
-  if (p) p.classList.toggle('open');
+function showCalcTab(which) {
+  var w2 = document.getElementById('calcPanelW2');
+  var se = document.getElementById('calcPanelSE');
+  var tabW2 = document.getElementById('calcTabW2');
+  var tabSE = document.getElementById('calcTabSE');
+  if (which === 'w2') {
+    if (w2) { w2.classList.toggle('open'); if (se) se.classList.remove('open'); }
+    if (tabW2) tabW2.classList.add('active-calc');
+    if (tabSE) tabSE.classList.remove('active-calc');
+    // Pre-populate W-2 calc from card fields
+    if (w2 && w2.classList.contains('open')) populateW2CalcFromCard();
+  } else {
+    if (se) { se.classList.toggle('open'); if (w2) w2.classList.remove('open'); }
+    if (tabSE) tabSE.classList.add('active-calc');
+    if (tabW2) tabW2.classList.remove('active-calc');
+    // Pre-populate SE calc from card fields
+    if (se && se.classList.contains('open')) populateSECalcFromCard();
+  }
 }
+
+// Pre-populate W-2 calculator from Employment & Income card fields
+function populateW2CalcFromCard() {
+  var mappings = [
+    // Card field id → Calc field id
+    { card: 'cf_w2_year1', calc: 'calc_otYear1' },
+    { card: 'cf_w2_year2', calc: 'calc_otYear2' },
+    { card: 'cf_ytd', calc: 'calc_otYTD' },
+    { card: 'cf_self_reported_wages', calc: 'calc_salaryAmount' }
+  ];
+  mappings.forEach(function(m) {
+    var cardEl = document.getElementById(m.card);
+    var calcEl = document.getElementById(m.calc);
+    if (cardEl && calcEl && cardEl.value && !calcEl.value) {
+      calcEl.value = cardEl.value;
+    }
+  });
+  calcTotal();
+}
+
+// Pre-populate SE calculator from card fields
+function populateSECalcFromCard() {
+  // If W-2 year fields have data, use them as SE net profit
+  var w2y1 = document.getElementById('cf_w2_year1');
+  var w2y2 = document.getElementById('cf_w2_year2');
+  var seY1 = document.getElementById('calc_se_y1_net');
+  var seY2 = document.getElementById('calc_se_y2_net');
+  if (w2y1 && seY1 && w2y1.value && !seY1.value) seY1.value = w2y1.value;
+  if (w2y2 && seY2 && w2y2.value && !seY2.value) seY2.value = w2y2.value;
+  calcSETotal();
+}
+
+function toggleCalcEmbed() { showCalcTab('w2'); }
 
 function calcFormat(amt) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amt);
@@ -482,14 +556,28 @@ function calcTotal() {
 
 function saveCalcToBorrower() {
   var total = document.getElementById('calcTotalIncome').textContent;
+  
+  // Write qualifying earnings
   var qe = document.getElementById('cf_qualifying_earnings');
-  if (qe) {
-    qe.value = total.replace(/[^0-9.]/g, '');
-    crmDirty = true;
-    var sb = document.getElementById('crmSaveBtn');
-    if (sb) sb.disabled = false;
-    showToast('Qualifying earnings updated: ' + total);
-  }
+  if (qe) qe.value = total.replace(/[^0-9.]/g, '');
+
+  // Write calc values back to card fields
+  var writeBack = [
+    { calc: 'calc_salaryAmount', card: 'cf_self_reported_wages' },
+    { calc: 'calc_otYear1', card: 'cf_w2_year1' },
+    { calc: 'calc_otYear2', card: 'cf_w2_year2' },
+    { calc: 'calc_otYTD', card: 'cf_ytd' }
+  ];
+  writeBack.forEach(function(wb) {
+    var calcEl = document.getElementById(wb.calc);
+    var cardEl = document.getElementById(wb.card);
+    if (calcEl && cardEl && calcEl.value) cardEl.value = calcEl.value;
+  });
+
+  crmDirty = true;
+  var sb = document.getElementById('crmSaveBtn');
+  if (sb) sb.disabled = false;
+  showToast('Income data synced to card: ' + total);
 }
 
 function exportCalcPDF() {
@@ -591,7 +679,245 @@ function buildIncomeCalculatorHTML() {
     '<div class="calc-action-btns">' +
       '<button class="card-action-btn primary" onclick="saveCalcToBorrower()"><i class="fas fa-save"></i> Save to Card</button>' +
       '<button class="card-action-btn" onclick="exportCalcPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>' +
+      '<button class="card-action-btn" onclick="exportCalcToDoc()"><i class="fas fa-folder-plus"></i> Save to Documents</button>' +
     '</div>';
+}
+
+// ===== SELF-EMPLOYED CALCULATOR (EMBEDDED) =====
+function buildSECalculatorHTML() {
+  return '' +
+    '<div class="calc-section"><div class="calc-section-title">Business Info</div>' +
+    '<div class="calc-row">' +
+      '<div class="card-field"><label>Business Type</label><select id="calc_se_bizType"><option value="sole-prop">Sole Proprietorship</option><option value="s-corp">S-Corporation</option><option value="partnership">Partnership</option><option value="llc">LLC</option></select></div>' +
+      '<div class="card-field"><label>Ownership %</label><input type="number" id="calc_se_ownership" value="100" min="1" max="100" oninput="calcSETotal()"></div>' +
+    '</div></div>' +
+
+    '<div class="calc-section"><div class="calc-section-title">Most Recent Tax Year</div>' +
+    '<div class="calc-row">' +
+      '<div class="card-field"><label>Net Profit (Sched C / K-1)</label><input type="number" id="calc_se_y1_net" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>Depreciation</label><input type="number" id="calc_se_y1_dep" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>Amortization</label><input type="number" id="calc_se_y1_amort" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>Depletion</label><input type="number" id="calc_se_y1_depl" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>Other Add-Backs</label><input type="number" id="calc_se_y1_other" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>One-Time Loss (add back)</label><input type="number" id="calc_se_y1_loss" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>One-Time Gain (subtract)</label><input type="number" id="calc_se_y1_gain" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"></div>' +
+    '</div>' +
+    '<div class="calc-result"><span class="calc-result-label">Year 1 Annual:</span><span class="calc-result-value" id="calcSEY1Result">$0.00</span></div></div>' +
+
+    '<div class="calc-section"><div class="calc-section-title">Prior Tax Year</div>' +
+    '<div class="calc-row">' +
+      '<div class="card-field"><label>Net Profit</label><input type="number" id="calc_se_y2_net" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>Depreciation</label><input type="number" id="calc_se_y2_dep" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>Amortization</label><input type="number" id="calc_se_y2_amort" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>Depletion</label><input type="number" id="calc_se_y2_depl" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>Other Add-Backs</label><input type="number" id="calc_se_y2_other" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"><label>One-Time Loss (add back)</label><input type="number" id="calc_se_y2_loss" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+    '</div><div class="calc-row">' +
+      '<div class="card-field"><label>One-Time Gain (subtract)</label><input type="number" id="calc_se_y2_gain" step="0.01" placeholder="0.00" oninput="calcSETotal()"></div>' +
+      '<div class="card-field"></div>' +
+    '</div>' +
+    '<div class="calc-result"><span class="calc-result-label">Year 2 Annual:</span><span class="calc-result-value" id="calcSEY2Result">$0.00</span></div></div>' +
+
+    '<div class="calc-section"><div class="calc-section-title">Qualifying Income</div>' +
+    '<div style="display:flex;gap:10px;margin-bottom:10px;">' +
+      '<div class="calc-result" style="flex:1;"><span class="calc-result-label">Most Recent Year (monthly):</span><span class="calc-result-value" id="calcSERecentResult">$0.00</span></div>' +
+      '<div class="calc-result" style="flex:1;"><span class="calc-result-label">2-Year Average (monthly):</span><span class="calc-result-value" id="calcSEAvgResult">$0.00</span></div>' +
+    '</div>' +
+    '<div id="calcSERecommendation" style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:10px;"></div></div>' +
+
+    '<div class="calc-total-bar"><span class="calc-total-label">Monthly Qualifying Income</span><span class="calc-total-value" id="calcSETotalIncome">$0.00</span></div>' +
+    '<div class="calc-action-btns">' +
+      '<button class="card-action-btn primary" onclick="saveSECalcToBorrower()"><i class="fas fa-save"></i> Save to Card</button>' +
+      '<button class="card-action-btn" onclick="exportSECalcPDF()"><i class="fas fa-file-pdf"></i> Export PDF</button>' +
+      '<button class="card-action-btn" onclick="exportSECalcToDoc()"><i class="fas fa-folder-plus"></i> Save to Documents</button>' +
+    '</div>';
+}
+
+function calcSEYear(prefix) {
+  var net = calcVal('calc_se_' + prefix + '_net');
+  var dep = calcVal('calc_se_' + prefix + '_dep');
+  var amort = calcVal('calc_se_' + prefix + '_amort');
+  var depl = calcVal('calc_se_' + prefix + '_depl');
+  var other = calcVal('calc_se_' + prefix + '_other');
+  var loss = calcVal('calc_se_' + prefix + '_loss');
+  var gain = calcVal('calc_se_' + prefix + '_gain');
+  var ownership = calcVal('calc_se_ownership') || 100;
+  var adjusted = net + dep + amort + depl + other + loss - gain;
+  return adjusted * (ownership / 100);
+}
+
+function calcSETotal() {
+  var y1 = calcSEYear('y1');
+  var y2 = calcSEYear('y2');
+  document.getElementById('calcSEY1Result').textContent = calcFormat(y1);
+  document.getElementById('calcSEY2Result').textContent = calcFormat(y2);
+
+  var y1Monthly = y1 / 12;
+  var avgMonthly = (y1 + y2) / 24;
+  document.getElementById('calcSERecentResult').textContent = calcFormat(y1Monthly);
+  document.getElementById('calcSEAvgResult').textContent = calcFormat(avgMonthly);
+
+  var qualifying = 0;
+  var rec = document.getElementById('calcSERecommendation');
+  if (y1 > 0 && y2 > 0) {
+    if (y1Monthly <= avgMonthly) {
+      qualifying = y1Monthly;
+      if (rec) rec.textContent = 'Income is declining - using most recent year (more conservative).';
+    } else {
+      qualifying = avgMonthly;
+      if (rec) rec.textContent = 'Income is stable/increasing - using 2-year average.';
+    }
+  } else if (y1 > 0) {
+    qualifying = y1Monthly;
+    if (rec) rec.textContent = 'Enter Year 2 for 2-year average. Most lenders require 2 years for self-employed.';
+  } else {
+    if (rec) rec.textContent = '';
+  }
+  document.getElementById('calcSETotalIncome').textContent = calcFormat(qualifying);
+}
+
+function saveSECalcToBorrower() {
+  var total = document.getElementById('calcSETotalIncome').textContent;
+  
+  // Write qualifying earnings
+  var qe = document.getElementById('cf_qualifying_earnings');
+  if (qe) qe.value = total.replace(/[^0-9.]/g, '');
+
+  // Write SE net profit back as W-2 year fields (closest equivalent on card)
+  var seY1 = document.getElementById('calc_se_y1_net');
+  var seY2 = document.getElementById('calc_se_y2_net');
+  var cardY1 = document.getElementById('cf_w2_year1');
+  var cardY2 = document.getElementById('cf_w2_year2');
+  if (seY1 && cardY1 && seY1.value) cardY1.value = seY1.value;
+  if (seY2 && cardY2 && seY2.value) cardY2.value = seY2.value;
+
+  // Set income type to self-employed
+  var incType = document.getElementById('cf_income_type');
+  if (incType) incType.value = 'self_employed';
+
+  crmDirty = true;
+  var sb = document.getElementById('crmSaveBtn');
+  if (sb) sb.disabled = false;
+  showToast('SE income data synced to card: ' + total);
+}
+
+function exportSECalcPDF() {
+  var totalText = document.getElementById('calcSETotalIncome').textContent;
+  var borrowerName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Borrower';
+  var y1R = document.getElementById('calcSEY1Result');
+  var y2R = document.getElementById('calcSEY2Result');
+  var recentR = document.getElementById('calcSERecentResult');
+  var avgR = document.getElementById('calcSEAvgResult');
+
+  var printWin = window.open('', '_blank', 'width=700,height=900');
+  printWin.document.write('<html><head><title>SE Income - ' + borrowerName + '</title>');
+  printWin.document.write('<style>body{font-family:Arial,sans-serif;padding:40px;color:#0b1f3a;}h1{font-size:22px;margin-bottom:5px;}');
+  printWin.document.write('.meta{color:#666;margin-bottom:20px;font-size:13px;}.line{padding:8px 0;border-bottom:1px solid #eee;font-size:14px;}');
+  printWin.document.write('.total{font-size:20px;font-weight:700;margin-top:20px;padding:16px;background:#f0f7ff;border-radius:8px;}');
+  printWin.document.write('.disc{font-size:11px;color:#999;margin-top:30px;font-style:italic;}</style></head><body>');
+  printWin.document.write('<h1>Self-Employed Income Calculation</h1>');
+  printWin.document.write('<div class="meta">Borrower: ' + borrowerName + ' | Date: ' + new Date().toLocaleDateString() + '</div>');
+  if (y1R) printWin.document.write('<div class="line">Most Recent Year Annual: <strong>' + y1R.textContent + '</strong></div>');
+  if (y2R) printWin.document.write('<div class="line">Prior Year Annual: <strong>' + y2R.textContent + '</strong></div>');
+  if (recentR) printWin.document.write('<div class="line">Most Recent Year Monthly: <strong>' + recentR.textContent + '</strong></div>');
+  if (avgR) printWin.document.write('<div class="line">2-Year Average Monthly: <strong>' + avgR.textContent + '</strong></div>');
+  printWin.document.write('<div class="total">Monthly Qualifying Income: ' + totalText + '</div>');
+  printWin.document.write('<div class="disc">This calculation is for informational purposes only. Not a substitute for underwriter review.</div>');
+  printWin.document.write('</body></html>');
+  printWin.document.close();
+  printWin.focus();
+  printWin.print();
+}
+
+function exportSECalcToDoc() {
+  var borrowerName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Borrower';
+  var total = document.getElementById('calcSETotalIncome').textContent;
+  addDocumentToCard('SE Income Calc - ' + borrowerName + ' - ' + total, 'income_calc', new Date().toISOString());
+  showToast('Self-employed income calc saved to documents');
+}
+
+// ===== DOCUMENT UPLOAD SYSTEM =====
+var cardDocuments = [];
+
+function handleDocUpload(input) {
+  if (!input.files || !input.files.length) return;
+  Array.from(input.files).forEach(function(file) {
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('File too large (max 10MB): ' + file.name);
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      addDocumentToCard(file.name, file.type, new Date().toISOString(), e.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+  input.value = '';
+}
+
+function addDocumentToCard(name, type, date, dataUrl) {
+  cardDocuments.push({
+    name: name,
+    type: type,
+    date: date,
+    data: dataUrl || null,
+    id: 'doc-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4)
+  });
+  renderDocList();
+  crmDirty = true;
+  var sb = document.getElementById('crmSaveBtn');
+  if (sb) sb.disabled = false;
+}
+
+function removeDocument(docId) {
+  cardDocuments = cardDocuments.filter(function(d) { return d.id !== docId; });
+  renderDocList();
+  crmDirty = true;
+  var sb = document.getElementById('crmSaveBtn');
+  if (sb) sb.disabled = false;
+}
+
+function renderDocList() {
+  var list = document.getElementById('docList');
+  if (!list) return;
+  if (cardDocuments.length === 0) {
+    list.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">No documents uploaded yet</div>';
+    return;
+  }
+  var html = '';
+  cardDocuments.forEach(function(doc) {
+    var icon = 'fa-file';
+    if (doc.type && doc.type.includes('pdf')) icon = 'fa-file-pdf';
+    else if (doc.type && doc.type.includes('image')) icon = 'fa-file-image';
+    else if (doc.type === 'income_calc') icon = 'fa-calculator';
+    else if (doc.type && doc.type.includes('word')) icon = 'fa-file-word';
+
+    html += '<div class="doc-item">' +
+      '<div class="doc-item-icon"><i class="fas ' + icon + '"></i></div>' +
+      '<div class="doc-item-info"><div class="doc-item-name">' + doc.name + '</div>' +
+        '<div class="doc-item-date">' + new Date(doc.date).toLocaleDateString() + '</div></div>' +
+      '<div class="doc-item-actions">';
+    if (doc.data) {
+      html += '<a class="doc-item-btn" href="' + doc.data + '" download="' + doc.name + '" title="Download"><i class="fas fa-download"></i></a>';
+    }
+    html += '<button class="doc-item-btn" onclick="removeDocument(\'' + doc.id + '\')" title="Remove"><i class="fas fa-times"></i></button>' +
+      '</div></div>';
+  });
+  list.innerHTML = html;
+}
+
+// Also update the W-2 calc export to save to documents
+function exportCalcToDoc() {
+  var borrowerName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Borrower';
+  var total = document.getElementById('calcTotalIncome').textContent;
+  addDocumentToCard('W-2 Income Calc - ' + borrowerName + ' - ' + total, 'income_calc', new Date().toISOString());
+  showToast('W-2 income calc saved to documents');
 }
 
 // ===== CRM INTEGRATION FUNCTIONS =====
