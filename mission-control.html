@@ -702,16 +702,30 @@ body {
         <div class="crm-detail-empty" id="crmDetailEmpty">Select a contact to view details</div>
         <div class="crm-detail-content" id="crmDetailContent">
           <div class="card-header">
-            <div class="card-header-left">
-              <div class="card-name" id="crmDName"></div>
-              <div class="card-meta" id="crmDMeta"></div>
-              <div id="crmDTypeBadge" style="margin-bottom:8px;"></div>
-              <div id="cardPipelineBtn"></div>
-              <div class="card-actions">
-                <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
-                <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save Changes</button>
-                <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
+            <div class="card-header-row">
+              <div class="card-header-left">
+                <div class="card-name" id="crmDName"></div>
+                <div class="card-meta" id="crmDMeta"></div>
+                <div class="card-header-badges">
+                  <div id="crmDTypeBadge"></div>
+                  <div id="cardPipelineBtn"></div>
+                </div>
+                <div class="card-actions">
+                  <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
+                  <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save</button>
+                  <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
+                </div>
               </div>
+              <div class="card-qualifying-total" id="cardQualifyingWrap" style="display:none;">
+                <div class="card-qualifying-label">Total Qualifying Income</div>
+                <div class="card-qualifying-amount" id="cardTotalQualifying">$0.00</div>
+              </div>
+            </div>
+            <!-- Always-visible contact fields -->
+            <div class="card-fields" style="margin-top:14px;">
+              <div class="card-field"><label>Name</label><input type="text" id="cf_name" class="card-tracked" required></div>
+              <div class="card-field"><label>Phone</label><input type="tel" id="cf_phone" class="card-tracked"></div>
+              <div class="card-field"><label>Email</label><input type="email" id="cf_email" class="card-tracked"></div>
             </div>
           </div>
           <div class="card-tabs">
@@ -719,7 +733,7 @@ body {
             <div class="card-tab" data-tab="activity" onclick="crmSwitchTab('activity')">Activity</div>
           </div>
           <div class="crm-tab-content active" id="crmTab_details">
-            <div id="crmCardForm" class="card-form"></div>
+            <div id="crmCardForm"></div>
           </div>
           <div class="crm-tab-content" id="crmTab_activity">
             <div class="activity-timeline" id="crmActivityTimeline"></div>
