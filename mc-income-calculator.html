@@ -770,11 +770,19 @@ function toggleSection(sid) {
 
 // Auto-format money fields
 function formatMoneyInput(el) {
-  var raw = el.value.replace(/[^0-9.]/g, '');
+  var raw = el.value.replace(/[^0-9.\-]/g, '');
   var num = parseFloat(raw);
-  if (isNaN(num)) { el.dataset.rawValue = ''; return; }
+  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; return; }
   el.dataset.rawValue = raw;
-  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  // Show formatted in a sibling span
+  var display = el.parentElement.querySelector('.money-display');
+  if (!display) {
+    display = document.createElement('div');
+    display.className = 'money-display';
+    display.style.cssText = 'font-size:11px;color:#22c55e;font-weight:600;margin-top:2px;';
+    el.parentElement.appendChild(display);
+  }
+  display.textContent = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 function getRawValue(id) {
   var el = document.getElementById(id);
