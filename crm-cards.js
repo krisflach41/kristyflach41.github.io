@@ -740,6 +740,270 @@ function exportCalcToDoc(){
   showToast('Saved to documents');
 }
 
+// ===== CO-BORROWER SYSTEM =====
+var coBorrowers = []; // [{id, name, phone, email, relationship, excluded, data:{...full borrower data}}]
+var activeCoBorrowerIdx = 0; // 0 = primary, 1+ = co-borrowers
+var sharedLoanData = {}; // Shared loan fields across all borrowers
+
+function initCoBorrowers(data) {
+  coBorrowers = data.co_borrowers || [];
+  sharedLoanData = data.shared_loan || {};
+  activeCoBorrowerIdx = 0;
+}
+
+function renderCoBorrowerTabs() {
+  var container = document.getElementById('coBorrowerTabs');
+  if (!container) return;
+  if (crmCurrentType !== 'borrower') { container.style.display = 'none'; return; }
+  container.style.display = 'flex';
+
+  var primaryName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Primary';
+  if (!primaryName) primaryName = 'Primary';
+  var firstName = primaryName.split(' ')[0];
+
+  var h = '<div class="coborrower-tabs">';
+  // Primary tab
+  h += '<div class="coborrower-tab primary' + (activeCoBorrowerIdx === 0 ? ' active' : '') + '" onclick="switchCoBorrower(0)">';
+  h += firstName + '<span class="cb-relationship">primary</span></div>';
+  // Co-borrower tabs
+  coBorrowers.forEach(function(cb, i) {
+    var cbName = cb.name ? cb.name.split(' ')[0] : 'B' + (i + 2);
+    var cls = 'coborrower-tab secondary' + (activeCoBorrowerIdx === (i + 1) ? ' active' : '') + (cb.excluded ? ' excluded' : '');
+    h += '<div class="' + cls + '" onclick="switchCoBorrower(' + (i + 1) + ')" oncontextmenu="event.preventDefault();showCBContext(' + i + ',event)">';
+    h += cbName + '<span class="cb-relationship">' + (cb.relationship || 'co-borrower') + '</span></div>';
+  });
+  h += '<button class="coborrower-add" onclick="showAddCoBorrower()">+ Co-Borrower</button>';
+  h += '</div>';
+  container.innerHTML = h;
+
+  // Show/hide combined income on B1
+  var combinedWrap = document.getElementById('cardCombinedWrap');
+  if (combinedWrap) {
+    combinedWrap.style.display = (coBorrowers.length > 0 && activeCoBorrowerIdx === 0) ? 'block' : 'none';
+  }
+  // Update label
+  var label = document.getElementById('cardQualifyingLabel');
+  if (label) {
+    if (activeCoBorrowerIdx === 0) label.textContent = 'B1 Qualifying Income';
+    else label.textContent = 'B' + (activeCoBorrowerIdx + 1) + ' Qualifying Income';
+  }
+  updateCombinedIncome();
+}
+
+function switchCoBorrower(idx) {
+  // Save current borrower's data before switching
+  saveCoBorrowerState();
+  activeCoBorrowerIdx = idx;
+
+  if (idx === 0) {
+    // Load primary borrower data
+    loadPrimaryBorrowerData();
+  } else {
+    // Load co-borrower data
+    var cb = coBorrowers[idx - 1];
+    if (cb && cb.data) {
+      loadCoBorrowerData(cb);
+    }
+  }
+  renderCoBorrowerTabs();
+}
+
+function saveCoBorrowerState() {
+  var data = collectAllCardData();
+  // Save shared loan data from whatever tab we're on
+  sharedLoanData = {
+    loan_type: data.loan_type, interest_rate: data.interest_rate,
+    lock_status: data.lock_status, subject_address: data.subject_address,
+    date_mutual: data.date_mutual, date_emd: data.date_emd,
+    date_appraisal: data.date_appraisal, date_inspection: data.date_inspection,
+    date_conditional: data.date_conditional, date_final_approval: data.date_final_approval,
+    date_closing: data.date_closing
+  };
+
+  if (activeCoBorrowerIdx === 0) {
+    // Save to primary (stored in main card state — already in crmContacts)
+    window._primaryBorrowerData = data;
+    window._primaryBorrowerData.employers = JSON.parse(JSON.stringify(borrowerEmployers));
+    window._primaryBorrowerData.education = JSON.parse(JSON.stringify(borrowerEducation));
+    window._primaryBorrowerData.reos = JSON.parse(JSON.stringify(borrowerREOs));
+    window._primaryBorrowerData.documents = cardDocuments.slice();
+  } else {
+    var cb = coBorrowers[activeCoBorrowerIdx - 1];
+    if (cb) {
+      cb.name = data.name || cb.name;
+      cb.phone = data.phone || cb.phone;
+      cb.email = data.email || cb.email;
+      cb.data = data;
+      cb.data.employers = JSON.parse(JSON.stringify(borrowerEmployers));
+      cb.data.education = JSON.parse(JSON.stringify(borrowerEducation));
+      cb.data.reos = JSON.parse(JSON.stringify(borrowerREOs));
+      cb.data.documents = cardDocuments.slice();
+    }
+  }
+}
+
+function loadPrimaryBorrowerData() {
+  var data = window._primaryBorrowerData || {};
+  // Merge shared loan data back
+  Object.keys(sharedLoanData).forEach(function(k) { data[k] = sharedLoanData[k]; });
+  // Reset state
+  borrowerEmployers = data.employers || [];
+  borrowerEducation = data.education || [];
+  borrowerREOs = data.reos || [];
+  cardDocuments = data.documents || [];
+  activeEmpTab = 0; activeREOTab = 0;
+  // Repopulate fields
+  populateCardFields(data);
+  var fc = document.getElementById('crmCardForm');
+  if (fc) { renderBorrowerCard(fc, data); }
+}
+
+function loadCoBorrowerData(cb) {
+  var data = cb.data || {};
+  // Merge shared loan data
+  Object.keys(sharedLoanData).forEach(function(k) { data[k] = sharedLoanData[k]; });
+  // Reset state
+  borrowerEmployers = data.employers || [newEmployer()];
+  borrowerEducation = data.education || [];
+  borrowerREOs = data.reos || [];
+  cardDocuments = data.documents || [];
+  activeEmpTab = 0; activeREOTab = 0;
+  // Populate header fields
+  var nameEl = document.getElementById('cf_name');
+  var phoneEl = document.getElementById('cf_phone');
+  var emailEl = document.getElementById('cf_email');
+  if (nameEl) nameEl.value = cb.name || '';
+  if (phoneEl) phoneEl.value = cb.phone || '';
+  if (emailEl) emailEl.value = cb.email || '';
+  // Render card body
+  var fc = document.getElementById('crmCardForm');
+  if (fc) { renderBorrowerCard(fc, data); }
+}
+
+function populateCardFields(data) {
+  var nameEl = document.getElementById('cf_name');
+  var phoneEl = document.getElementById('cf_phone');
+  var emailEl = document.getElementById('cf_email');
+  if (nameEl) nameEl.value = data.name || '';
+  if (phoneEl) phoneEl.value = data.phone || '';
+  if (emailEl) emailEl.value = data.email || '';
+}
+
+// Add co-borrower modal
+function showAddCoBorrower() {
+  var ov = document.getElementById('cbAddOverlay');
+  if (!ov) {
+    ov = document.createElement('div');
+    ov.id = 'cbAddOverlay'; ov.className = 'cb-add-overlay';
+    ov.innerHTML = '<div class="cb-add-modal">' +
+      '<h3><i class="fas fa-user-plus"></i> Add Co-Borrower</h3>' +
+      '<div class="card-fields single-col">' +
+      '<div class="card-field"><label>Name</label><input type="text" id="cbAddName" placeholder="Full name"></div>' +
+      '<div class="card-field"><label>Phone</label><input type="tel" id="cbAddPhone" placeholder="Phone"></div>' +
+      '<div class="card-field"><label>Email</label><input type="email" id="cbAddEmail" placeholder="Email"></div>' +
+      '<div class="card-field"><label>Relationship</label><select id="cbAddRelationship">' +
+      '<option value="spouse">Spouse</option><option value="co-borrower">Co-Borrower</option>' +
+      '<option value="parent">Parent</option><option value="child">Child</option>' +
+      '<option value="other">Other</option></select></div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;margin-top:16px;">' +
+      '<button class="card-action-btn primary" style="flex:1;" onclick="confirmAddCoBorrower()"><i class="fas fa-plus"></i> Add</button>' +
+      '<button class="card-action-btn" style="flex:1;" onclick="closeCBAddModal()">Cancel</button>' +
+      '</div></div>';
+    ov.addEventListener('click', function(e) { if (e.target === ov) closeCBAddModal(); });
+    document.body.appendChild(ov);
+  }
+  // Clear fields
+  document.getElementById('cbAddName').value = '';
+  document.getElementById('cbAddPhone').value = '';
+  document.getElementById('cbAddEmail').value = '';
+  document.getElementById('cbAddRelationship').value = 'spouse';
+  ov.classList.add('show');
+}
+function closeCBAddModal() { var o = document.getElementById('cbAddOverlay'); if (o) o.classList.remove('show'); }
+
+function confirmAddCoBorrower() {
+  var name = document.getElementById('cbAddName').value;
+  if (!name) { showToast('Name is required'); return; }
+  var phone = document.getElementById('cbAddPhone').value;
+  var email = document.getElementById('cbAddEmail').value;
+  var rel = document.getElementById('cbAddRelationship').value;
+
+  // Save current state first
+  saveCoBorrowerState();
+
+  // Create co-borrower
+  coBorrowers.push({
+    id: 'cb-' + Date.now(),
+    name: name, phone: phone, email: email,
+    relationship: rel, excluded: false,
+    data: { name: name, phone: phone, email: email, employers: [newEmployer()], education: [], reos: [], documents: [] }
+  });
+
+  closeCBAddModal();
+  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+
+  // Switch to the new co-borrower
+  switchCoBorrower(coBorrowers.length);
+  showToast(name + ' added as ' + rel);
+}
+
+// Context menu for co-borrower tabs (right-click or long-press)
+function showCBContext(cbIdx, event) {
+  // Remove any existing context menus
+  document.querySelectorAll('.cb-context').forEach(function(m) { m.remove(); });
+  var cb = coBorrowers[cbIdx];
+  var menu = document.createElement('div');
+  menu.className = 'cb-context show';
+  menu.style.position = 'fixed';
+  menu.style.left = event.clientX + 'px';
+  menu.style.top = event.clientY + 'px';
+  menu.innerHTML =
+    '<div class="cb-context-item" onclick="editCBRelationship(' + cbIdx + ')"><i class="fas fa-edit"></i> Change Relationship</div>' +
+    '<div class="cb-context-item' + (cb.excluded ? '' : ' danger') + '" onclick="toggleCBExclude(' + cbIdx + ')">' +
+    (cb.excluded ? '<i class="fas fa-check"></i> Include on Loan' : '<i class="fas fa-ban"></i> Exclude from Loan') + '</div>';
+  document.body.appendChild(menu);
+  setTimeout(function() {
+    var close = function() { menu.remove(); document.removeEventListener('click', close); };
+    document.addEventListener('click', close);
+  }, 10);
+}
+
+function toggleCBExclude(cbIdx) {
+  coBorrowers[cbIdx].excluded = !coBorrowers[cbIdx].excluded;
+  renderCoBorrowerTabs();
+  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  showToast(coBorrowers[cbIdx].name + (coBorrowers[cbIdx].excluded ? ' excluded from loan' : ' included on loan'));
+}
+
+function editCBRelationship(cbIdx) {
+  var current = coBorrowers[cbIdx].relationship || 'co-borrower';
+  var options = ['spouse', 'co-borrower', 'parent', 'child', 'other'];
+  var next = options[(options.indexOf(current) + 1) % options.length];
+  coBorrowers[cbIdx].relationship = next;
+  renderCoBorrowerTabs();
+  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  showToast('Relationship changed to ' + next);
+}
+
+function updateCombinedIncome() {
+  var primaryTotal = 0;
+  // Get primary's employers
+  if (window._primaryBorrowerData && window._primaryBorrowerData.employers) {
+    window._primaryBorrowerData.employers.forEach(function(e) { primaryTotal += (parseFloat(e.qualifying_income) || 0); });
+  } else {
+    borrowerEmployers.forEach(function(e) { primaryTotal += (parseFloat(e.qualifying_income) || 0); });
+  }
+  var combined = primaryTotal;
+  coBorrowers.forEach(function(cb) {
+    if (!cb.excluded && cb.data && cb.data.employers) {
+      cb.data.employers.forEach(function(e) { combined += (parseFloat(e.qualifying_income) || 0); });
+    }
+  });
+  var el = document.getElementById('cardCombinedQualifying');
+  if (el) el.textContent = formatMoney(combined);
+}
+
 // ===== TYPE CHANGER =====
 function showTypeChanger(){
   showTypePicker(function(newType){
@@ -823,6 +1087,8 @@ function collectAllCardData(){
     data.education=borrowerEducation;
     data.reos=borrowerREOs;
     data.documents=cardDocuments;
+    data.co_borrowers=coBorrowers;
+    data.shared_loan=sharedLoanData;
   }
   return data;
 }
@@ -834,6 +1100,7 @@ function crmAddNew(){
   showTypePicker(function(type){
     crmCurrentType=type;crmCurrentId=null;crmDirty=false;
     borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
+    coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
     var ti=CONTACT_TYPES[type];
@@ -842,8 +1109,9 @@ function crmAddNew(){
     document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
     document.getElementById('cardPipelineBtn').innerHTML='';
     var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
+    var cbTabs=document.getElementById('coBorrowerTabs');if(cbTabs)cbTabs.style.display=(type==='borrower'?'flex':'none');
     var fc=document.getElementById('crmCardForm');
-    if(type==='borrower'){renderBorrowerCard(fc,{});}
+    if(type==='borrower'){renderBorrowerCard(fc,{});renderCoBorrowerTabs();}
     else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});}
     document.getElementById('crmSaveBtn').disabled=true;
     document.getElementById('crmDeleteBtn').disabled=true;
@@ -854,6 +1122,7 @@ function crmAddNew(){
 function crmSelectContact(id){
   crmCurrentId=id;crmDirty=false;
   borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
+  coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;
   document.getElementById('crmSaveBtn').disabled=true;
   document.getElementById('crmDeleteBtn').disabled=true;
   document.getElementById('crmDeleteBtn').textContent='Delete';
@@ -879,6 +1148,17 @@ function crmPopulateCard(c,activity){
   document.getElementById('crmDMeta').textContent=[c.email,c.phone,c.company].filter(Boolean).join(' - ');
   document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
   var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
+  // Co-borrower tabs
+  var cbTabs=document.getElementById('coBorrowerTabs');
+  if(cbTabs) cbTabs.style.display=(type==='borrower'?'flex':'none');
+  if(type==='borrower'){
+    initCoBorrowers(c);
+    window._primaryBorrowerData=Object.assign({},c);
+    if(c.employers) window._primaryBorrowerData.employers=JSON.parse(JSON.stringify(c.employers));
+    if(c.education) window._primaryBorrowerData.education=JSON.parse(JSON.stringify(c.education));
+    if(c.reos) window._primaryBorrowerData.reos=JSON.parse(JSON.stringify(c.reos));
+    if(c.documents) window._primaryBorrowerData.documents=(c.documents||[]).slice();
+  }
   // Pipeline
   var pBtn=document.getElementById('cardPipelineBtn');
   var pid='crm-'+c.id;var fs=null;
@@ -891,6 +1171,7 @@ function crmPopulateCard(c,activity){
   var fc=document.getElementById('crmCardForm');
   if(type==='borrower'){renderBorrowerCard(fc,c);}
   else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,c);}
+  if(type==='borrower') renderCoBorrowerTabs();
   renderActivity(activity);
   crmDirty=false;document.getElementById('crmSaveBtn').disabled=true;
   crmSwitchTab('details');
@@ -916,6 +1197,8 @@ function crmSwitchTab(tab){
 }
 
 function crmSaveContact(){
+  // Save current co-borrower state before collecting
+  if(crmCurrentType==='borrower' && coBorrowers.length>0) saveCoBorrowerState();
   var data=collectAllCardData();
   data.type=crmCurrentType;
   if(!data.name){showToast('Name is required');return;}
