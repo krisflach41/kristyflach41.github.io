@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile - Agent Edge Partner Portal</title>
+<script src="auth.js"></script>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+  line-height: 1.7;
+}
+
+.page-wrap {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.profile-card {
+  padding: 50px 45px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #0b1f3a;
+}
+
+.profile-subtitle {
+  font-size: 14px;
+  color: #555;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 10px;
+}
+
+.role-partner {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.role-trial {
+  background: linear-gradient(135deg, #0b4ea2, #1e6fd4);
+  color: white;
+}
+
+.role-admin {
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  color: white;
+}
+
+/* ===== HEADSHOT SECTION ===== */
+.headshot-section {
+  text-align: center;
+  margin-bottom: 35px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(11,78,162,0.1);
+}
+
+.headshot-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.25s ease;
+  position: relative;
+}
+
+.headshot-circle.has-photo {
+  border: 4px solid #22c55e;
+}
+
+.headshot-circle.no-photo {
+  border: 3px dashed rgba(11,78,162,0.25);
+  background: rgba(11,78,162,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headshot-circle:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.headshot-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.headshot-placeholder-text {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.4;
+  text-align: center;
+  padding: 10px;
+}
+
+.headshot-helper {
+  font-size: 13px;
+  color: #666;
+}
+
+.headshot-status {
+  font-size: 12px;
+  margin-top: 6px;
+  font-weight: 600;
+}
+
+.headshot-status.uploaded { color: #22c55e; }
+.headshot-status.missing { color: #f59e0b; }
+
+.headshot-input { display: none; }
+
+/* ===== FORM SECTIONS ===== */
+.form-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b4ea2;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 30px 0 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(11,78,162,0.1);
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #0b1f3a;
+}
+
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(11,78,162,0.2);
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255,255,255,0.6);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0b4ea2;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
+}
+
+.form-input:read-only {
+  background: rgba(11,78,162,0.03);
+  color: #666;
+  cursor: default;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group { flex: 1; }
+
+/* ===== BUTTONS ===== */
+.save-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0b4ea2, #1e6fd4);
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+  margin-top: 25px;
+}
+
+.save-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+}
+
+.save-btn:disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ===== MESSAGES ===== */
+.success-message {
+  background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3);
+  color: #27ae60;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+  text-align: center;
+}
+
+.success-message.show { display: block; }
+
+.error-message {
+  background: rgba(192,57,43,0.1);
+  border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  display: none;
+}
+
+.error-message.show { display: block; }
+
+/* ===== NAV ===== */
+.back-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.back-link a {
+  color: #0b4ea2;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.back-link a:hover { text-decoration: underline; }
+
+@media (max-width: 480px) {
+  .profile-card { padding: 35px 25px; }
+  .profile-title { font-size: 24px; }
+  .form-row { flex-direction: column; gap: 0; }
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+
+<body>
+<script>protectPage();</script>
+
+<div class="page-wrap">
+<div class="profile-card">
+  <div class="profile-header">
+    <h1 class="profile-title">My Profile</h1>
+    <p class="profile-subtitle">Manage your account and co-branding info</p>
+    <div class="role-badge" id="roleBadge"></div>
+  </div>
+
+  <div class="success-message" id="successMessage">&#10003; Profile updated!</div>
+  <div class="error-message" id="errorMessage"></div>
+
+  <!-- HEADSHOT -->
+  <div class="headshot-section">
+    <div class="headshot-circle no-photo" id="headshotCircle" onclick="document.getElementById('headshotFile').click()">
+      <span class="headshot-placeholder-text" id="headshotPlaceholder">Click to upload<br>your headshot</span>
+    </div>
+    <input type="file" id="headshotFile" class="headshot-input" accept="image/*">
+    <p class="headshot-helper">Used for co-branded materials. Square crop works best.</p>
+    <p class="headshot-status missing" id="headshotStatus">No headshot uploaded</p>
+  </div>
+
+  <form id="profileForm">
+    <!-- BASIC INFO (read-only — set at signup) -->
+    <div class="form-section-title">Account Info</div>
+    
+    <div class="form-group">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-input" id="profileName" readonly>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email (login)</label>
+      <input type="email" class="form-input" id="profileEmail" readonly>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Brokerage</label>
+      <input type="text" class="form-input" id="profileBrokerage" readonly>
+    </div>
+
+    <!-- EDITABLE PARTNER INFO -->
+    <div class="form-section-title">Partner Credentials</div>
+
+    <div class="form-group">
+      <label class="form-label">Real Estate License Number</label>
+      <input type="text" class="form-input" id="profileLicense" placeholder="Your state license number">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone Number</label>
+      <input type="tel" class="form-input" id="profilePhone" placeholder="(555) 123-4567">
+    </div>
+
+    <div class="form-section-title">Brokerage Address</div>
+
+    <div class="form-group">
+      <label class="form-label">Street Address</label>
+      <input type="text" class="form-input" id="profileAddress" placeholder="123 Main Street">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input type="text" class="form-input" id="profileCity" placeholder="City">
+      </div>
+      <div class="form-group" style="max-width:80px;">
+        <label class="form-label">State</label>
+        <input type="text" class="form-input" id="profileState" placeholder="OH" maxlength="2">
+      </div>
+      <div class="form-group" style="max-width:110px;">
+        <label class="form-label">Zip</label>
+        <input type="text" class="form-input" id="profileZip" placeholder="45202" maxlength="10">
+      </div>
+    </div>
+
+    <button type="submit" class="save-btn" id="saveBtn">Save Changes</button>
+  </form>
+
+  <div class="back-link">
+    <a href="portal.html">&larr; Back to Portal</a>
+  </div>
+</div>
+</div>
+
+<script>
+/* ===========================
+   PROFILE PAGE LOGIC
+=========================== */
+
+var successMessage = document.getElementById('successMessage');
+var errorMessage = document.getElementById('errorMessage');
+var saveBtn = document.getElementById('saveBtn');
+var headshotFile = document.getElementById('headshotFile');
+var headshotCircle = document.getElementById('headshotCircle');
+var headshotPlaceholder = document.getElementById('headshotPlaceholder');
+var headshotStatus = document.getElementById('headshotStatus');
+var headshotData = null;
+
+// ===== POPULATE BASIC INFO =====
+document.getElementById('profileName').value = sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeName') || '';
+document.getElementById('profileEmail').value = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser') || '';
+document.getElementById('profileBrokerage').value = sessionStorage.getItem('agentEdgeUserBrokerage') || '';
+
+// Show role badge
+var role = sessionStorage.getItem('agentEdgeRole') || 'trial';
+var roleBadge = document.getElementById('roleBadge');
+if (role === 'partner') {
+  roleBadge.textContent = 'PARTNER';
+  roleBadge.className = 'role-badge role-partner';
+} else if (sessionStorage.getItem('agentEdgeAdmin') === 'true') {
+  roleBadge.textContent = 'ADMIN';
+  roleBadge.className = 'role-badge role-admin';
+} else {
+  roleBadge.textContent = 'TRIAL';
+  roleBadge.className = 'role-badge role-trial';
+}
+
+// ===== LOAD EXISTING PROFILE FROM SUPABASE =====
+(async function loadProfile() {
+  var email = document.getElementById('profileEmail').value;
+  if (!email) return;
+
+  try {
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/profile?email=' + encodeURIComponent(email));
+    var data = await response.json();
+
+    if (data.success && data.profile) {
+      var p = data.profile;
+      if (p.license_number) document.getElementById('profileLicense').value = p.license_number;
+      if (p.phone) document.getElementById('profilePhone').value = p.phone;
+      if (p.address) document.getElementById('profileAddress').value = p.address;
+      if (p.city) document.getElementById('profileCity').value = p.city;
+      if (p.state) document.getElementById('profileState').value = p.state;
+      if (p.zip) document.getElementById('profileZip').value = p.zip;
+
+      // Show headshot if exists
+      if (p.headshot_url) {
+        headshotCircle.classList.remove('no-photo');
+        headshotCircle.classList.add('has-photo');
+        headshotPlaceholder.style.display = 'none';
+        var img = document.createElement('img');
+        img.src = p.headshot_url;
+        headshotCircle.appendChild(img);
+        headshotStatus.textContent = 'Headshot uploaded ✓';
+        headshotStatus.className = 'headshot-status uploaded';
+        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
+      }
+    }
+  } catch (e) {
+    console.error('Failed to load profile:', e);
+  }
+})();
+
+// ===== HEADSHOT PREVIEW =====
+headshotFile.addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+
+  if (file.size > 2 * 1024 * 1024) {
+    errorMessage.textContent = 'Headshot must be under 2MB.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
+  var reader = new FileReader();
+  reader.onload = function(event) {
+    headshotData = event.target.result;
+    headshotCircle.classList.remove('no-photo');
+    headshotCircle.classList.add('has-photo');
+    headshotPlaceholder.style.display = 'none';
+    var existingImg = headshotCircle.querySelector('img');
+    if (existingImg) existingImg.remove();
+    var img = document.createElement('img');
+    img.src = headshotData;
+    headshotCircle.appendChild(img);
+    headshotStatus.textContent = 'New headshot selected — save to apply';
+    headshotStatus.className = 'headshot-status missing';
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== SAVE PROFILE =====
+document.getElementById('profileForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  errorMessage.classList.remove('show');
+  successMessage.classList.remove('show');
+
+  var email = document.getElementById('profileEmail').value;
+  if (!email) {
+    errorMessage.textContent = 'Session expired. Please log in again.';
+    errorMessage.classList.add('show');
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving...';
+
+  try {
+    var response = await fetch('https://agent-edge-backend.vercel.app/api/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email,
+        licenseNumber: document.getElementById('profileLicense').value.trim(),
+        phone: document.getElementById('profilePhone').value.trim(),
+        address: document.getElementById('profileAddress').value.trim(),
+        city: document.getElementById('profileCity').value.trim(),
+        state: document.getElementById('profileState').value.trim().toUpperCase(),
+        zip: document.getElementById('profileZip').value.trim(),
+        headshot: headshotData || null
+      })
+    });
+
+    var data = await response.json();
+
+    if (!response.ok || !data.success) {
+      errorMessage.textContent = data.message || 'Failed to save. Try again.';
+      errorMessage.classList.add('show');
+    } else {
+      successMessage.classList.add('show');
+      if (headshotData) {
+        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
+        headshotStatus.textContent = 'Headshot uploaded ✓';
+        headshotStatus.className = 'headshot-status uploaded';
+      }
+      setTimeout(function() { successMessage.classList.remove('show'); }, 3000);
+    }
+  } catch (error) {
+    console.error('Profile save error:', error);
+    errorMessage.textContent = 'Connection error. Try again.';
+    errorMessage.classList.add('show');
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Save Changes';
+  }
+});
+
+// Phone formatting
+document.getElementById('profilePhone').addEventListener('input', function(e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
+
+// State uppercase
+document.getElementById('profileState').addEventListener('input', function(e) {
+  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+});
+</script>
+
+</body>
+</html>
