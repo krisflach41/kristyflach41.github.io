@@ -220,10 +220,10 @@ body {
 .crm-list-panel { width: 320px; border-right: 1px solid var(--border); display: flex; flex-direction: column; }
 .crm-list-head { padding: 10px; border-bottom: 1px solid var(--border); }
 .crm-list-head-row { display: flex; gap: 6px; align-items: center; }
-.crm-list-head-row input { flex: 1; padding: 7px 9px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-primary); font-size: 11px; font-family: inherit; }
-.crm-list-head-row input::placeholder { color: var(--text-muted); }
-.crm-list-head-row input:focus { outline: none; border-color: rgba(59,130,246,0.3); }
-.crm-list-head-row select { padding: 7px 6px; border-radius: 6px; background-color: var(--bg-card); border: 1px solid var(--border); color: var(--text-primary); font-size: 11px; font-family: inherit; }
+.crm-list-head-row input { flex: 1; padding: 8px 10px; border-radius: 6px; background: rgba(255,255,255,0.06); border: 1px solid var(--border-light); color: var(--text-primary); font-size: 12px; font-family: inherit; }
+.crm-list-head-row input::placeholder { color: var(--text-secondary); }
+.crm-list-head-row input:focus { outline: none; border-color: rgba(59,130,246,0.4); }
+.crm-list-head-row select { padding: 8px 6px; border-radius: 6px; background-color: var(--bg-card); border: 1px solid var(--border-light); color: var(--text-primary); font-size: 12px; font-family: inherit; }
 .crm-btn-row { display: flex; gap: 5px; margin-top: 6px; }
 .crm-sm-btn { padding: 4px 8px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); font-size: 10px; font-weight: 600; cursor: pointer; font-family: inherit; }
 .crm-sm-btn:hover { background: var(--bg-hover); color: #fff; }
@@ -252,36 +252,46 @@ body {
 
 /* CRM DETAIL */
 .crm-detail-panel { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
-.crm-detail-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; }
+.crm-detail-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 14px; }
 .crm-detail-content { display: none; flex-direction: column; }
-.crm-detail-top { padding: 16px 20px; border-bottom: 1px solid var(--border); }
-.crm-detail-name { font-size: 18px; font-weight: 700; margin-bottom: 3px; }
-.crm-detail-meta { font-size: 11px; color: var(--text-secondary); }
-.crm-detail-actions { display: flex; gap: 6px; margin-top: 10px; }
-.crm-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 20px; }
+.crm-detail-top { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.crm-detail-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.crm-detail-meta { font-size: 13px; color: rgba(255,255,255,0.6); }
+.crm-detail-actions { display: flex; gap: 8px; margin-top: 12px; }
+.crm-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 24px; }
 .crm-tab {
   padding: 8px 14px; font-size: 11px; font-weight: 600;
   color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
 }
 .crm-tab:hover { color: var(--text-secondary); }
 .crm-tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
-.crm-tab-content { display: none; padding: 16px 20px; }
+.crm-tab-content { display: none; padding: 20px 24px; }
 .crm-tab-content.active { display: block; }
-.crm-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.crm-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
 .crm-field label {
-  font-size: 9px; font-weight: 700; color: var(--text-muted);
-  text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 3px;
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
+  text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;
 }
 .crm-field input, .crm-field select, .crm-field textarea {
-  width: 100%; padding: 7px 9px; border-radius: 6px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border);
-  color: var(--text-primary); font-size: 11px; font-family: inherit;
+  width: 100%; padding: 9px 12px; border-radius: 7px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: #eaf0f6; font-size: 13px; font-family: inherit;
 }
-.crm-field input:focus, .crm-field select:focus, .crm-field textarea:focus { outline: none; border-color: rgba(59,130,246,0.3); }
-.crm-field textarea { resize: vertical; min-height: 60px; }
+.crm-field input:focus, .crm-field select:focus, .crm-field textarea:focus { outline: none; border-color: rgba(59,130,246,0.4); background: rgba(255,255,255,0.08); }
+.crm-field textarea { resize: vertical; min-height: 70px; }
 .crm-field select option { background: var(--bg-card); }
-.crm-section-title { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin: 16px 0 8px; grid-column: 1 / -1; }
+.crm-section-title {
+  font-size: 11px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase;
+  letter-spacing: 1px; margin: 20px 0 10px; grid-column: 1 / -1;
+  padding-bottom: 6px; border-bottom: 1px solid rgba(59,130,246,0.15);
+  cursor: pointer; user-select: none;
+}
 .crm-section-title:first-child { margin-top: 0; }
+.crm-section-title:hover { color: #5b9ef5; }
+.crm-section-title::before { content: '\25BE '; font-size: 10px; }
+.crm-section-title.collapsed::before { content: '\25B8 '; }
+.crm-section-title.collapsed ~ .crm-field { display: none; }
+.crm-section-hidden { display: none !important; }
 
 /* ACTIVITY TIMELINE */
 .activity-item {
@@ -659,9 +669,8 @@ body {
       </div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="document.getElementById('crmImportFile').click()"><i class="fas fa-arrow-left"></i>‘ Import</button>
-      <input type="file" id="crmImportFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleCrmImport(this)">
       <button class="topbar-btn primary" onclick="crmAddNew()">+ New Contact</button>
+      <input type="file" id="crmImportFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleCrmImport(this)">
     </div>
   </div>
   <div class="content-area" style="padding:0;overflow:hidden;">
@@ -705,14 +714,14 @@ body {
           </div>
           <div class="crm-tab-content active" id="crmTabDetails">
             <div class="crm-field-grid">
-              <div class="crm-section-title">Contact Info</div>
-              <div class="crm-field"><label>Name</label><input id="cf_name" class="crm-tracked"></div>
-              <div class="crm-field"><label>Email</label><input id="cf_email" class="crm-tracked"></div>
-              <div class="crm-field"><label>Phone</label><input id="cf_phone" class="crm-tracked"></div>
-              <div class="crm-field"><label>Company</label><input id="cf_company" class="crm-tracked"></div>
-              <div class="crm-field">
+              <div class="crm-section-title" data-section="contact">Contact Info</div>
+              <div class="crm-field" data-section="contact"><label>Name</label><input id="cf_name" class="crm-tracked"></div>
+              <div class="crm-field" data-section="contact"><label>Email</label><input id="cf_email" class="crm-tracked"></div>
+              <div class="crm-field" data-section="contact"><label>Phone</label><input id="cf_phone" class="crm-tracked"></div>
+              <div class="crm-field" data-section="contact"><label>Company / Brokerage</label><input id="cf_company" class="crm-tracked"></div>
+              <div class="crm-field" data-section="contact">
                 <label>Type</label>
-                <select id="cf_type" class="crm-tracked">
+                <select id="cf_type" class="crm-tracked" onchange="crmAdaptSections(this.value)">
                   <option value="client">Client</option>
                   <option value="realtor">Realtor</option>
                   <option value="title">Title</option>
@@ -722,12 +731,13 @@ body {
                   <option value="other">Other</option>
                 </select>
               </div>
-              <div class="crm-field">
+              <div class="crm-field" data-section="contact">
                 <label>Source</label>
                 <select id="cf_source" class="crm-tracked">
-                  <option value="">â€”</option>
+                  <option value="">--</option>
                   <option value="pipeline">Pipeline</option>
                   <option value="portal">Portal</option>
+                  <option value="portal_signup">Portal Signup</option>
                   <option value="referral">Referral</option>
                   <option value="webinar">Webinar</option>
                   <option value="social">Social</option>
@@ -735,11 +745,18 @@ body {
                   <option value="import">Import</option>
                 </select>
               </div>
-              <div class="crm-section-title">Pipeline</div>
-              <div class="crm-field">
+
+              <div class="crm-section-title" data-section="address">Address</div>
+              <div class="crm-field" data-section="address"><label>Street</label><input id="cf_address" class="crm-tracked"></div>
+              <div class="crm-field" data-section="address"><label>City</label><input id="cf_city" class="crm-tracked"></div>
+              <div class="crm-field" data-section="address"><label>State</label><input id="cf_state" class="crm-tracked"></div>
+              <div class="crm-field" data-section="address"><label>Zip</label><input id="cf_zip" class="crm-tracked"></div>
+
+              <div class="crm-section-title" data-section="pipeline">Pipeline</div>
+              <div class="crm-field" data-section="pipeline">
                 <label>Pipeline Stage</label>
                 <select id="cf_pipeline_stage" class="crm-tracked">
-                  <option value="">— Not in Pipeline —</option>
+                  <option value="">-- Not in Pipeline --</option>
                   <option value="warm">Warm Leads</option>
                   <option value="active">Active Conversations</option>
                   <option value="credit">Credit Repair</option>
@@ -750,31 +767,35 @@ body {
                   <option value="closed">Closed - Funded</option>
                 </select>
               </div>
-              <div class="crm-field">
+              <div class="crm-field" data-section="pipeline">
                 <label>Referring Realtor</label>
                 <input id="cf_realtor_name" class="crm-tracked" placeholder="Realtor who referred them">
               </div>
-              <div class="crm-section-title">Personal</div>
-              <div class="crm-field"><label>Birthday</label><input type="date" id="cf_birthday" class="crm-tracked"></div>
-              <div class="crm-field"><label>Spouse / Partner</label><input id="cf_spouse_name" class="crm-tracked"></div>
-              <div class="crm-field"><label>Kids</label><input id="cf_kids" class="crm-tracked"></div>
-              <div class="crm-field"><label>Employer</label><input id="cf_employer" class="crm-tracked"></div>
-              <div class="crm-field"><label>Job Title</label><input id="cf_job_title" class="crm-tracked"></div>
-              <div class="crm-field"><label></label></div>
-              <div class="crm-section-title">Address</div>
-              <div class="crm-field"><label>Street</label><input id="cf_address" class="crm-tracked"></div>
-              <div class="crm-field"><label>City</label><input id="cf_city" class="crm-tracked"></div>
-              <div class="crm-field"><label>State</label><input id="cf_state" class="crm-tracked"></div>
-              <div class="crm-field"><label>Zip</label><input id="cf_zip" class="crm-tracked"></div>
-              <div class="crm-section-title">Web & Social</div>
-              <div class="crm-field"><label>Website</label><input id="cf_website" class="crm-tracked"></div>
-              <div class="crm-field"><label>Facebook</label><input id="cf_facebook" class="crm-tracked"></div>
-              <div class="crm-field"><label>Instagram</label><input id="cf_instagram" class="crm-tracked"></div>
-              <div class="crm-field"><label>LinkedIn</label><input id="cf_linkedin" class="crm-tracked"></div>
-              <div class="crm-field"><label>TikTok</label><input id="cf_tiktok" class="crm-tracked"></div>
-              <div class="crm-field"><label>Tags</label><input id="cf_tags" class="crm-tracked" placeholder="Comma-separated"></div>
-              <div class="crm-section-title">Notes</div>
-              <div class="crm-field" style="grid-column:1/-1;"><textarea id="cf_notes" class="crm-tracked" rows="3"></textarea></div>
+
+              <div class="crm-section-title" data-section="personal">Personal</div>
+              <div class="crm-field" data-section="personal"><label>Birthday</label><input type="date" id="cf_birthday" class="crm-tracked"></div>
+              <div class="crm-field" data-section="personal"><label>Spouse / Partner</label><input id="cf_spouse_name" class="crm-tracked"></div>
+              <div class="crm-field" data-section="personal"><label>Kids</label><input id="cf_kids" class="crm-tracked"></div>
+              <div class="crm-field" data-section="personal"><label>Employer</label><input id="cf_employer" class="crm-tracked"></div>
+              <div class="crm-field" data-section="personal"><label>Job Title</label><input id="cf_job_title" class="crm-tracked"></div>
+              <div class="crm-field" data-section="personal"><label>&nbsp;</label><input type="hidden"></div>
+
+              <div class="crm-section-title" data-section="credentials">Credentials</div>
+              <div class="crm-field" data-section="credentials"><label>License Number</label><input id="cf_license_number" class="crm-tracked"></div>
+              <div class="crm-field" data-section="credentials"><label>Headshot URL</label><input id="cf_headshot_url" class="crm-tracked" placeholder="Uploaded via portal"></div>
+
+              <div class="crm-section-title" data-section="social">Web &amp; Social</div>
+              <div class="crm-field" data-section="social"><label>Website</label><input id="cf_website" class="crm-tracked"></div>
+              <div class="crm-field" data-section="social"><label>Facebook</label><input id="cf_facebook" class="crm-tracked"></div>
+              <div class="crm-field" data-section="social"><label>Instagram</label><input id="cf_instagram" class="crm-tracked"></div>
+              <div class="crm-field" data-section="social"><label>LinkedIn</label><input id="cf_linkedin" class="crm-tracked"></div>
+              <div class="crm-field" data-section="social"><label>TikTok</label><input id="cf_tiktok" class="crm-tracked"></div>
+              <div class="crm-field" data-section="social"><label>&nbsp;</label><input type="hidden"></div>
+
+              <div class="crm-section-title" data-section="notes">Tags &amp; Notes</div>
+              <div class="crm-field" data-section="notes"><label>Tags</label><input id="cf_tags" class="crm-tracked" placeholder="Comma-separated"></div>
+              <div class="crm-field" data-section="notes"><label>&nbsp;</label><input type="hidden"></div>
+              <div class="crm-field" data-section="notes" style="grid-column:1/-1;"><label>Notes</label><textarea id="cf_notes" class="crm-tracked" rows="3"></textarea></div>
             </div>
           </div>
           <div class="crm-tab-content" id="crmTabActivity">
@@ -838,9 +859,9 @@ body {
   </div>
   <div class="content-area">
     <div class="webinar-grid" id="webinarGrid">
-      <div class="webinar-card"><div class="wc-banner upcoming"><div class="wc-badge soon">Upcoming</div></div><div class="wc-body"><div class="wc-title">First-Time Homebuyer Workshop</div><div class="wc-date">Saturday, Feb 22 Â· 11:00 AM EST</div><div class="wc-stat">23 registered</div></div></div>
-      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">VA Loan Benefits Explained</div><div class="wc-date">Feb 8, 2026</div><div class="wc-stat">41 attended Â· 8 leads</div></div></div>
-      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">Credit Score Bootcamp</div><div class="wc-date">Jan 25, 2026</div><div class="wc-stat">67 attended Â· 12 leads</div></div></div>
+      <div class="webinar-card"><div class="wc-banner upcoming"><div class="wc-badge soon">Upcoming</div></div><div class="wc-body"><div class="wc-title">First-Time Homebuyer Workshop</div><div class="wc-date">Saturday, Feb 22  -  11:00 AM EST</div><div class="wc-stat">23 registered</div></div></div>
+      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">VA Loan Benefits Explained</div><div class="wc-date">Feb 8, 2026</div><div class="wc-stat">41 attended  -  8 leads</div></div></div>
+      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">Credit Score Bootcamp</div><div class="wc-date">Jan 25, 2026</div><div class="wc-stat">67 attended  -  12 leads</div></div></div>
     </div>
   </div>
 </div>
@@ -860,9 +881,9 @@ body {
   </div>
   <div class="content-area">
     <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat-card green"><div class="stat-label">Active Partners</div><div class="stat-value" id="portalPartners">â€”</div></div>
-      <div class="stat-card blue"><div class="stat-label">Orders This Week</div><div class="stat-value" id="portalOrders">â€”</div></div>
-      <div class="stat-card purple"><div class="stat-label">Content Downloads</div><div class="stat-value" id="portalDownloads">â€”</div></div>
+      <div class="stat-card green"><div class="stat-label">Active Partners</div><div class="stat-value" id="portalPartners">--</div></div>
+      <div class="stat-card blue"><div class="stat-label">Orders This Week</div><div class="stat-value" id="portalOrders">--</div></div>
+      <div class="stat-card purple"><div class="stat-label">Content Downloads</div><div class="stat-value" id="portalDownloads">--</div></div>
     </div>
     <div class="placeholder-center" style="height:30%;">
       <div class="placeholder-text">Portal management tools coming soon</div>
@@ -930,9 +951,9 @@ body {
   </div>
   <div class="content-area">
     <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value">â€”</div></div>
-      <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value">â€”</div></div>
-      <div class="stat-card orange"><div class="stat-label">Replies</div><div class="stat-value">â€”</div></div>
+      <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value">--</div></div>
+      <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value">--</div></div>
+      <div class="stat-card orange"><div class="stat-label">Replies</div><div class="stat-value">--</div></div>
     </div>
     <div class="placeholder-center" style="height:30%;">
       <div class="placeholder-text">Email history and campaign tools coming soon</div>
@@ -959,7 +980,7 @@ body {
     <div class="placeholder-center">
       <div class="placeholder-icon"><i class="fas fa-envelope"></i></div>
       <div class="placeholder-text">Search for realtors by location to discover partnership opportunities</div>
-      <div class="placeholder-sub">Powered by public records Â· Updated daily</div>
+      <div class="placeholder-sub">Powered by public records  -  Updated daily</div>
     </div>
   </div>
 </div>
@@ -984,10 +1005,10 @@ body {
   </div>
   <div class="content-area">
     <div class="dash-stats">
-      <div class="stat-card blue"><div class="stat-label">Avg Interest Rate</div><div class="stat-value">â€”</div></div>
-      <div class="stat-card green"><div class="stat-label">Funded Volume</div><div class="stat-value">â€”</div></div>
-      <div class="stat-card purple"><div class="stat-label">Portal Signups</div><div class="stat-value">â€”</div></div>
-      <div class="stat-card orange"><div class="stat-label">Avg Days to Close</div><div class="stat-value">â€”</div></div>
+      <div class="stat-card blue"><div class="stat-label">Avg Interest Rate</div><div class="stat-value">--</div></div>
+      <div class="stat-card green"><div class="stat-label">Funded Volume</div><div class="stat-value">--</div></div>
+      <div class="stat-card purple"><div class="stat-label">Portal Signups</div><div class="stat-value">--</div></div>
+      <div class="stat-card orange"><div class="stat-label">Avg Days to Close</div><div class="stat-value">--</div></div>
     </div>
     <div class="analytics-grid">
       <div class="chart-card">
@@ -1322,7 +1343,7 @@ function renderPipeline() {
     return c.stage !== 'cold' && c.stage !== 'dead' && c.stage !== 'archived';
   });
   var activeCount = activeContacts.filter(function(c) { return c.stage !== 'closed'; }).length;
-  document.getElementById('pipelineSubtitle').textContent = activeCount + ' active loans Â· ' + activeContacts.length + ' total on board';
+  document.getElementById('pipelineSubtitle').textContent = activeCount + ' active loans  -  ' + activeContacts.length + ' total on board';
 
   pipelineColumns.forEach(function(col) {
     var colContacts = activeContacts.filter(function(c) { return c.stage === col.id; });
@@ -1729,12 +1750,37 @@ function crmSelectContact(id) {
     .catch(function(err) { console.error('CRM get error:', err); });
 }
 
+// ===== TYPE-ADAPTIVE SECTIONS =====
+// Shows/hides sections based on contact type
+function crmAdaptSections(type) {
+  // Section visibility rules per type
+  var rules = {
+    client:    { contact: true, address: true, pipeline: true, personal: true, credentials: false, social: false, notes: true },
+    realtor:   { contact: true, address: true, pipeline: false, personal: false, credentials: true, social: true, notes: true },
+    title:     { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: true, notes: true },
+    appraiser: { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: true, notes: true },
+    contractor:{ contact: true, address: true, pipeline: false, personal: false, credentials: false, social: false, notes: true },
+    vendor:    { contact: true, address: true, pipeline: false, personal: false, credentials: false, social: false, notes: true },
+    other:     { contact: true, address: true, pipeline: true, personal: true, credentials: false, social: true, notes: true }
+  };
+  var sections = rules[type] || rules.other;
+  var allFields = document.querySelectorAll('#crmTabDetails [data-section]');
+  allFields.forEach(function(el) {
+    var sec = el.dataset.section;
+    if (sections[sec] === false) {
+      el.style.display = 'none';
+    } else {
+      el.style.display = '';
+    }
+  });
+}
+
 function crmPopulateDetail(c) {
   document.getElementById('crmDName').textContent = c.name || 'Unnamed';
-  var meta = [c.email, c.phone, c.company].filter(Boolean).join(' Â· ');
+  var meta = [c.email, c.phone, c.company].filter(Boolean).join(' - ');
   document.getElementById('crmDMeta').textContent = meta;
 
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','realtor_name'];
+  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','realtor_name','license_number','headshot_url'];
   fields.forEach(function(f) {
     var el = document.getElementById('cf_' + f);
     if (el) el.value = c[f] || '';
@@ -1778,7 +1824,7 @@ function crmPopulateDetail(c) {
         meeting: '<i class="fas fa-handshake"></i>', 
         text: '<i class="fas fa-comment"></i>' 
       };
-      ahtml += '<div class="activity-item"><div class="activity-icon">' + (icons[a.type] || '<i class="fas fa-sticky-note"></i>') + '</div><div><div class="activity-text">' + (a.subject || a.body || '<i class="fas fa-sticky-note"></i>') + '</div><div class="activity-date">' + (a.type || '<i class="fas fa-sticky-note"></i>') + ' Â· ' + new Date(a.date).toLocaleDateString() + '</div></div></div>';
+      ahtml += '<div class="activity-item"><div class="activity-icon">' + (icons[a.type] || '<i class="fas fa-sticky-note"></i>') + '</div><div><div class="activity-text">' + (a.subject || a.body || '<i class="fas fa-sticky-note"></i>') + '</div><div class="activity-date">' + (a.type || '<i class="fas fa-sticky-note"></i>') + '  -  ' + new Date(a.date).toLocaleDateString() + '</div></div></div>';
     });
     document.getElementById('crmActivityTimeline').innerHTML = ahtml;
   } else {
@@ -1788,6 +1834,9 @@ function crmPopulateDetail(c) {
   // Reset dirty tracking
   crmDirty = false;
   document.getElementById('crmSaveBtn').disabled = true;
+
+  // Adapt sections based on contact type
+  crmAdaptSections(c.type || 'other');
 }
 
 // Dirty tracking
@@ -2045,7 +2094,7 @@ function renderOrders() {
   document.getElementById('oCountIP').textContent = ipCount;
   document.getElementById('oCountDone').textContent = doneCount;
   document.getElementById('navOrderCount').textContent = newCount;
-  document.getElementById('ordersSubtitle').textContent = allOrders.length + ' total Â· ' + newCount + ' new';
+  document.getElementById('ordersSubtitle').textContent = allOrders.length + ' total  -  ' + newCount + ' new';
   document.getElementById('dashOrders').textContent = newCount;
 
   if (filtered.length === 0) {
@@ -2062,7 +2111,7 @@ function renderOrders() {
     html += '<div class="order-card">' +
       '<div class="order-header"><span class="order-id">' + order.orderId + '</span><span class="order-time">' + order.timestamp + '</span></div>' +
       '<div class="order-client-name">' + order.name + (order.branding ? ' <span style="font-size:10px;color:var(--accent-purple);">(' + order.branding + ')</span>' : '') + '</div>' +
-      '<div class="order-client-meta">' + order.email + ' Â· ' + order.brokerage + '</div>' +
+      '<div class="order-client-meta">' + order.email + '  -  ' + order.brokerage + '</div>' +
       '<div class="order-items-row">' + itemsHtml + '</div>' +
       (order.notes ? '<div class="order-notes-box">"' + order.notes + '"</div>' : '') +
       '<div class="order-footer"><span class="status-badge ' + statusClass + '">' + order.status + '</span>' +
