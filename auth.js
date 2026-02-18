@@ -113,6 +113,9 @@ document.addEventListener('DOMContentLoaded', function() {
           sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
         }
         
+        // Store headshot flag for co-brand gating
+        sessionStorage.setItem('agentEdgeHasHeadshot', data.hasHeadshot ? 'true' : 'false');
+        
         // Check if temp password — force password change
         if (data.tempPassword) {
           sessionStorage.setItem('agentEdgeTempPassword', 'true');
