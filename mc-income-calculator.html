@@ -301,6 +301,33 @@ select:focus {
   background: rgba(255,255,255,0.55);
   transform: translateY(-2px);
 }
+
+/* ===== INCLUDE/EXCLUDE TOGGLES ===== */
+.section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 15px;
+}
+.section-header h2 { margin: 0; }
+.income-toggle {
+  position: relative; width: 44px; height: 24px; cursor: pointer;
+}
+.income-toggle input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; background: #ccc; border-radius: 24px;
+  transition: 0.3s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute; height: 18px; width: 18px;
+  left: 3px; bottom: 3px; background: #fff; border-radius: 50%;
+  transition: 0.3s;
+}
+.income-toggle input:checked + .toggle-slider { background: #22c55e; }
+.income-toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
+.income-section.excluded { opacity: 0.35; }
+.income-section.excluded .form-group input,
+.income-section.excluded .form-group select,
+.income-section.excluded .radio-option input { pointer-events: none; }
+
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
@@ -315,8 +342,8 @@ select:focus {
 
 
   <!-- HOURLY INCOME -->
-  <div class="income-section">
-    <h2>Hourly Income</h2>
+  <div class="income-section" id="section_hourly">
+    <div class="section-header"><h2>Hourly Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_hourly" checked onchange="toggleSection('hourly')"><span class="toggle-slider"></span></label></div>
     
     <div class="form-row">
       <div class="form-group">
@@ -336,8 +363,8 @@ select:focus {
   </div>
 
   <!-- SALARY INCOME -->
-  <div class="income-section">
-    <h2>Salary Income</h2>
+  <div class="income-section" id="section_salary">
+    <div class="section-header"><h2>Salary Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_salary" checked onchange="toggleSection('salary')"><span class="toggle-slider"></span></label></div>
     
     <div class="form-group">
       <label>Salary Type</label>
@@ -375,8 +402,8 @@ select:focus {
   </div>
 
   <!-- OVERTIME/BONUS -->
-  <div class="income-section">
-    <h2>Overtime Income</h2>
+  <div class="income-section" id="section_ot">
+    <div class="section-header"><h2>Overtime Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_ot" checked onchange="toggleSection('ot')"><span class="toggle-slider"></span></label></div>
     
     <div class="form-row">
       <div class="form-group">
@@ -413,8 +440,8 @@ select:focus {
   </div>
 
   <!-- BONUS INCOME -->
-  <div class="income-section">
-    <h2>Bonus Income</h2>
+  <div class="income-section" id="section_bonus">
+    <div class="section-header"><h2>Bonus Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_bonus" checked onchange="toggleSection('bonus')"><span class="toggle-slider"></span></label></div>
     
     <div class="form-row">
       <div class="form-group">
@@ -445,8 +472,8 @@ select:focus {
   </div>
 
   <!-- COMMISSION INCOME -->
-  <div class="income-section">
-    <h2>Commission Income</h2>
+  <div class="income-section" id="section_commission">
+    <div class="section-header"><h2>Commission Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_commission" checked onchange="toggleSection('commission')"><span class="toggle-slider"></span></label></div>
     
     <div class="form-row">
       <div class="form-group">
@@ -506,8 +533,8 @@ select:focus {
   </div>
 
   <!-- OTHER INCOME -->
-  <div class="income-section">
-    <h2>Other Taxable Income</h2>
+  <div class="income-section" id="section_other">
+    <div class="section-header"><h2>Other Taxable Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_other" checked onchange="toggleSection('other')"><span class="toggle-slider"></span></label></div>
     <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
       Examples: Rental income, dividends, interest, alimony, etc.
     </p>
@@ -544,8 +571,8 @@ select:focus {
   </div>
 
   <!-- NON-TAXABLE INCOME -->
-  <div class="income-section">
-    <h2>Non-Taxable Income</h2>
+  <div class="income-section" id="section_nontax">
+    <div class="section-header"><h2>Non-Taxable Income</h2><label class="income-toggle" title="Include in qualifying total"><input type="checkbox" id="include_nontax" checked onchange="toggleSection('nontax')"><span class="toggle-slider"></span></label></div>
     <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
       Examples: Social Security, pension, disability, child support (grossed up by 125%)
     </p>
@@ -738,6 +765,18 @@ function calculateNonTaxable() {
 }
 
 // Calculate total
+
+// Toggle include/exclude for income sections
+var sectionIncluded = { hourly: true, salary: true, ot: true, bonus: true, commission: true, other: true, nontax: true };
+
+function toggleSection(sid) {
+  var cb = document.getElementById('include_' + sid);
+  sectionIncluded[sid] = cb.checked;
+  var sec = document.getElementById('section_' + sid);
+  if (sec) sec.classList.toggle('excluded', !cb.checked);
+  calculateTotal();
+}
+
 function calculateTotal() {
   const hourly = calculateHourly();
   const salary = calculateSalary();
@@ -747,13 +786,27 @@ function calculateTotal() {
   const other = calculateOther();
   const nonTaxable = calculateNonTaxable();
   
-  const total = hourly + salary + ot + bonus + commission + other + nonTaxable;
+  const total = (sectionIncluded.hourly ? hourly : 0) +
+               (sectionIncluded.salary ? salary : 0) +
+               (sectionIncluded.ot ? ot : 0) +
+               (sectionIncluded.bonus ? bonus : 0) +
+               (sectionIncluded.commission ? commission : 0) +
+               (sectionIncluded.other ? other : 0) +
+               (sectionIncluded.nontax ? nonTaxable : 0);
   
   document.getElementById('totalIncome').textContent = formatCurrency(total);
   
-  // Send total to parent (Mission Control side panel)
+  // Send total and breakdown to parent (Mission Control side panel)
   if (window.parent !== window) {
-    window.parent.postMessage({ type: 'calcTotal', amount: total }, '*');
+    window.parent.postMessage({ type: 'calcTotal', amount: total, breakdown: {
+      hourly: sectionIncluded.hourly ? hourly : 0,
+      salary: sectionIncluded.salary ? salary : 0,
+      ot: sectionIncluded.ot ? ot : 0,
+      bonus: sectionIncluded.bonus ? bonus : 0,
+      commission: sectionIncluded.commission ? commission : 0,
+      other: sectionIncluded.other ? other : 0,
+      nontax: sectionIncluded.nontax ? nonTaxable : 0
+    }}, '*');
   }
 }
 
