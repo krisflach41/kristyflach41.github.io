@@ -369,6 +369,12 @@ select:focus {
   background: rgba(255,255,255,0.55);
   transform: translateY(-2px);
 }
+
+/* Fix for iframe embedding - solid background */
+.calculator-container {
+  background: rgba(255,255,255,0.97) !important;
+  backdrop-filter: none !important;
+}
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
@@ -379,9 +385,34 @@ select:focus {
 <div class="calculator-container">
   <h1>Self-Employed Income Calculator</h1>
   <p class="subtitle">Calculate qualifying income from business tax returns</p>
+  <div class="form-row" style="max-width:300px;margin-bottom:20px;">
+    <div class="form-group">
+      <label>Date Completed</label>
+      <input type="date" id="dateCompleted" value="">
+    </div>
+  </div>
 
   <!-- DISCLAIMER -->
-  
+
+  <!-- BUSINESS INFORMATION -->
+  <div class="income-section">
+    <h2>Business Information</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Business Type</label>
+        <select id="businessType">
+          <option value="sole-prop">Sole Proprietor (Schedule C)</option>
+          <option value="scorp">S-Corporation (1120S)</option>
+          <option value="partnership">Partnership (1065)</option>
+          <option value="llc">LLC (taxed as S-Corp or Partnership)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Ownership Percentage <span class="label-helper">(%)</span></label>
+        <input type="number" id="ownershipPct" min="0" max="100" step="1" value="100" placeholder="100">
+      </div>
+    </div>
 
     <div class="info-box">
       <p>💡 <strong>Note:</strong> If ownership is less than 100%, only your percentage of the business income will be used for qualification purposes.</p>
@@ -629,11 +660,27 @@ function formatCurrency(amount) {
 }
 
 // Calculate Year 1 income
+
+// Auto-format money fields
+function formatMoneyInput(el) {
+  var raw = el.value.replace(/[^0-9.]/g, '');
+  var num = parseFloat(raw);
+  if (isNaN(num)) { el.dataset.rawValue = ''; return; }
+  el.dataset.rawValue = raw;
+  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+function getMoneyValue(id) {
+  var el = document.getElementById(id);
+  if (!el) return 0;
+  var raw = el.dataset.rawValue !== undefined ? el.dataset.rawValue : el.value;
+  return parseFloat(String(raw).replace(/[^0-9.-]/g, '')) || 0;
+}
+
 function calculateYear1() {
-  const netProfit = parseFloat(document.getElementById('year1NetProfit').value) || 0;
-  const depreciation = parseFloat(document.getElementById('year1Depreciation').value) || 0;
-  const amortization = parseFloat(document.getElementById('year1Amortization').value) || 0;
-  const depletion = parseFloat(document.getElementById('year1Depletion').value) || 0;
+  const netProfit = getMoneyValue('year1NetProfit');
+  const depreciation = getMoneyValue('year1Depreciation');
+  const amortization = getMoneyValue('year1Amortization');
+  const depletion = getMoneyValue('year1Depletion');
   const otherAddBack = parseFloat(document.getElementById('year1OtherAddBack').value) || 0;
   const oneTimeLoss = parseFloat(document.getElementById('year1OneTimeLoss').value) || 0;
   const oneTimeGain = parseFloat(document.getElementById('year1OneTimeGain').value) || 0;
@@ -657,10 +704,10 @@ function calculateYear1() {
 
 // Calculate Year 2 income
 function calculateYear2() {
-  const netProfit = parseFloat(document.getElementById('year2NetProfit').value) || 0;
-  const depreciation = parseFloat(document.getElementById('year2Depreciation').value) || 0;
-  const amortization = parseFloat(document.getElementById('year2Amortization').value) || 0;
-  const depletion = parseFloat(document.getElementById('year2Depletion').value) || 0;
+  const netProfit = getMoneyValue('year2NetProfit');
+  const depreciation = getMoneyValue('year2Depreciation');
+  const amortization = getMoneyValue('year2Amortization');
+  const depletion = getMoneyValue('year2Depletion');
   const otherAddBack = parseFloat(document.getElementById('year2OtherAddBack').value) || 0;
   const oneTimeLoss = parseFloat(document.getElementById('year2OneTimeLoss').value) || 0;
   const oneTimeGain = parseFloat(document.getElementById('year2OneTimeGain').value) || 0;
@@ -745,11 +792,7 @@ function calculateTotal() {
   
   // Update total
   document.getElementById('totalIncome').textContent = formatCurrency(qualifyingIncome);
-  
-  // Send total to parent (Mission Control side panel)
-  if (window.parent !== window) {
-    window.parent.postMessage({ type: 'calcTotal', amount: qualifyingIncome }, '*');
-  }
+  if (window.parent !== window) { window.parent.postMessage({ type: 'calcTotal', amount: qualifyingIncome }, '*'); }
   
   if (method) {
     document.getElementById('totalHelper').textContent = `Using ${method} (more conservative calculation)`;
@@ -790,6 +833,20 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // Initial calculation
+
+  // Money field formatting
+  const moneyFields = ['year1NetProfit','year1Depreciation','year1Amortization','year1Depletion','year1OtherAddBacks','year1OneTime',
+    'year2NetProfit','year2Depreciation','year2Amortization','year2Depletion','year2OtherAddBacks','year2OneTime'];
+  moneyFields.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('blur', function() { formatMoneyInput(el); });
+      el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
+    }
+  });
+  // Set today's date
+  var dc = document.getElementById('dateCompleted');
+  if (dc) dc.value = new Date().toISOString().split('T')[0];
   calculateTotal();
 });
 </script>
