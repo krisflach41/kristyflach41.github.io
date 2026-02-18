@@ -699,18 +699,16 @@ function buildCalcSidePanel(){
       '<button class="calc-side-tab active-calc" id="calcTabW2" onclick="switchCalcType(\'w2\')"><i class="fas fa-calculator"></i> W-2 Calculator</button>'+
       '<button class="calc-side-tab" id="calcTabSE" onclick="switchCalcType(\'se\')"><i class="fas fa-store"></i> Self-Employed Calculator</button>'+
     '</div>'+
+    '<div class="calc-side-action-bar">'+
+      '<div class="calc-save-row">'+
+        '<label class="calc-save-label">Qualifying Income:</label>'+
+        '<input type="number" id="calcQualifyingInput" placeholder="0.00" step="0.01" min="0" style="width:140px;padding:8px 12px;border-radius:7px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.08);border:1px solid rgba(34,197,94,0.3);color:#22c55e;">'+
+        '<button class="card-action-btn primary" onclick="saveCalcToEmployer()" style="padding:8px 14px;"><i class="fas fa-save"></i> Save to Card</button>'+
+        '<button class="card-action-btn" onclick="exportCalcToDoc()" style="padding:8px 14px;"><i class="fas fa-folder-plus"></i> Save to Docs</button>'+
+      '</div>'+
+    '</div>'+
     '<div class="calc-side-body">'+
       '<iframe id="calcIframe" src="mc-income-calculator.html" style="width:100%;height:100%;border:none;border-radius:8px;"></iframe>'+
-    '</div>'+
-    '<div class="calc-side-footer">'+
-      '<div class="calc-save-row">'+
-        '<label class="calc-save-label">Qualifying Income (monthly):</label>'+
-        '<input type="number" id="calcQualifyingInput" placeholder="Enter amount from calculator" step="0.01" min="0" style="flex:1;padding:8px 12px;border-radius:7px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.08);border:1px solid rgba(34,197,94,0.3);color:#22c55e;">'+
-      '</div>'+
-      '<div style="display:flex;gap:8px;margin-top:10px;">'+
-        '<button class="card-action-btn primary" onclick="saveCalcToEmployer()" style="flex:1;"><i class="fas fa-save"></i> Save to Card</button>'+
-        '<button class="card-action-btn" onclick="exportCalcToDoc()"><i class="fas fa-folder-plus"></i> Save to Docs</button>'+
-      '</div>'+
     '</div>'+
   '</div>';
   ov.addEventListener('click',function(e){if(e.target===ov)closeCalcPanel();});
