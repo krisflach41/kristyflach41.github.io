@@ -197,15 +197,19 @@ function renderBorrowerCard(container, data) {
     borrowerEmployers=[first];
   }
   if(data.education&&data.education.length>0) borrowerEducation=data.education;
+  if(data.reos&&data.reos.length>0) borrowerREOs=data.reos;
+  else if(borrowerREOs.length===0) borrowerREOs=[];
   cardDocuments=data.documents||[];
   activeEmpTab=0;
+  activeREOTab=0;
 
   var html='';
-  // 4 main tabs
+  // 5 main tabs
   html+='<div class="card-tabs" id="borrowerMainTabs">';
   html+='<div class="card-tab active" data-btab="personal" onclick="switchBorrowerTab(\'personal\')">Personal</div>';
   html+='<div class="card-tab" data-btab="employment" onclick="switchBorrowerTab(\'employment\')">Employment</div>';
   html+='<div class="card-tab" data-btab="loan" onclick="switchBorrowerTab(\'loan\')">Loan</div>';
+  html+='<div class="card-tab" data-btab="reo" onclick="switchBorrowerTab(\'reo\')">REO</div>';
   html+='<div class="card-tab" data-btab="documents" onclick="switchBorrowerTab(\'documents\')">Documents</div>';
   html+='</div>';
 
@@ -218,6 +222,7 @@ function renderBorrowerCard(container, data) {
     {id:'monthly_payment',l:'Monthly Payment',t:'number',v:data.monthly_payment,ph:'0.00'},
     {id:'retain_sell',l:'Retain or Sell',t:'select',v:data.retain_sell,opts:[{value:'',label:'--'},{value:'retain',label:'Retain'},{value:'sell',label:'Sell'},{value:'na',label:'N/A'}]}
   ]);
+  html+='<button class="emp-tab-add" style="margin:-10px 0 16px;" onclick="addREOFromPersonal()"><i class="fas fa-home"></i> + Add REO</button>';
   html+=bldSec('Personal',[
     {id:'birthday',l:'Birthday',t:'date',v:data.birthday},
     {id:'spouse_name',l:'Spouse / Partner',t:'text',v:data.spouse_name},
@@ -257,6 +262,11 @@ function renderBorrowerCard(container, data) {
   ]);
   html+='</div>';
 
+  // REO TAB (Real Estate Owned)
+  html+='<div class="card-tab-content" id="btab_reo">';
+  html+='<div id="reoTabsContainer"></div><div id="reoPanelsContainer"></div>';
+  html+='</div>';
+
   // DOCUMENTS TAB
   html+='<div class="card-tab-content" id="btab_documents">';
   html+='<div class="card-section"><div class="card-section-title">Documents</div>';
@@ -270,6 +280,7 @@ function renderBorrowerCard(container, data) {
   container.innerHTML=html;
   wireTracking(container);
   renderEmpTabs();
+  renderREOTabs();
   renderDocList();
 }
 
@@ -439,6 +450,139 @@ function updateTotalQualifying(){
   borrowerEmployers.forEach(function(e){total+=(parseFloat(e.qualifying_income)||0);});
   var el=document.getElementById('cardTotalQualifying');
   if(el)el.textContent=formatMoney(total);
+}
+
+// ===== REO (REAL ESTATE OWNED) SYSTEM =====
+var borrowerREOs = [];
+var activeREOTab = 0;
+
+function newREO(addr){
+  return {id:'reo-'+Date.now()+'-'+Math.random().toString(36).substr(2,4),
+    address:addr||'',city:'',state:'',zip:'',
+    occupancy_type:'',retain_sell:'',units:'1',pct_owned:'100',
+    receive_rent:false,rent_amount:0,
+    pi_payment:0,insurance:0,taxes:0};
+}
+
+function renderREOTabs(){
+  var c1=document.getElementById('reoTabsContainer');
+  var c2=document.getElementById('reoPanelsContainer');
+  if(!c1||!c2) return;
+
+  var th='<div class="emp-tabs-row">';
+  borrowerREOs.forEach(function(r,i){
+    var selling=r.retain_sell==='sell';
+    var cls='emp-tab '+(selling?'past':'current')+(activeREOTab===i?' active':'');
+    var label=r.address||('Property '+(i+1));
+    if(label.length>25) label=label.substring(0,25)+'...';
+    th+='<div class="'+cls+'" onclick="switchREOTab('+i+')">'+label+'</div>';
+  });
+  th+='<button class="emp-tab-add" onclick="addREO()"><i class="fas fa-home"></i> + Property</button>';
+  th+='</div>';
+  c1.innerHTML=th;
+
+  var ph='';
+  borrowerREOs.forEach(function(r,i){
+    ph+='<div class="emp-panel'+(activeREOTab===i?' active':'')+'" id="reoPanel_'+i+'">'+buildREOPanel(r,i)+'</div>';
+  });
+  c2.innerHTML=ph;
+
+  // Wire tracking
+  document.querySelectorAll('.reo-tracked').forEach(function(el){
+    var h=function(){syncREOField(el);crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;};
+    el.addEventListener('input',h);el.addEventListener('change',h);
+  });
+}
+
+function buildREOPanel(reo,idx){
+  var p='reo_'+idx+'_';
+  var h='<button class="emp-remove-btn" onclick="removeREO('+idx+')">Remove</button>';
+  h+='<div class="card-fields">';
+  h+=reoField(p+'address','Street','text',reo.address,idx,'address');
+  h+=reoField(p+'city','City','text',reo.city,idx,'city');
+  h+=reoField(p+'state','State','text',reo.state,idx,'state');
+  h+=reoField(p+'zip','Zip','text',reo.zip,idx,'zip');
+  // Occupancy type
+  h+='<div class="card-field"><label>Occupancy Type</label><select id="'+p+'occupancy" class="reo-tracked" data-reo="'+idx+'" data-key="occupancy_type">';
+  [{v:'',l:'--'},{v:'primary',l:'Primary Residence'},{v:'second',l:'Second Home'},{v:'investment',l:'Investment'}].forEach(function(o){
+    h+='<option value="'+o.v+'"'+(reo.occupancy_type===o.v?' selected':'')+'>'+o.l+'</option>';
+  });
+  h+='</select></div>';
+  // Retain or sell
+  h+='<div class="card-field"><label>Retain or Sell</label><select id="'+p+'retain" class="reo-tracked" data-reo="'+idx+'" data-key="retain_sell">';
+  [{v:'',l:'--'},{v:'retain',l:'Retain'},{v:'sell',l:'Sell'},{v:'na',l:'N/A'}].forEach(function(o){
+    h+='<option value="'+o.v+'"'+(reo.retain_sell===o.v?' selected':'')+'>'+o.l+'</option>';
+  });
+  h+='</select></div>';
+  // Units
+  h+='<div class="card-field"><label>Units</label><select id="'+p+'units" class="reo-tracked" data-reo="'+idx+'" data-key="units">';
+  ['1','2','3','4'].forEach(function(u){
+    h+='<option value="'+u+'"'+(reo.units===u?' selected':'')+'>'+u+'</option>';
+  });
+  h+='</select></div>';
+  h+='<div class="card-field"></div>';
+  // % Owned
+  h+=reoField(p+'pct_owned','% Owned','number',reo.pct_owned,idx,'pct_owned');
+  // Rent toggle + amount
+  h+='<div class="card-toggle-row">';
+  h+='<label class="card-toggle"><input type="checkbox" class="reo-tracked" data-reo="'+idx+'" data-key="receive_rent" id="'+p+'rent"'+(reo.receive_rent?' checked':'')+'> Receive Rent</label>';
+  h+='</div>';
+  h+=reoField(p+'rent_amount','Monthly Rent Amount','number',reo.rent_amount,idx,'rent_amount');
+  h+=reoField(p+'pi','P&I Payment','number',reo.pi_payment,idx,'pi_payment');
+  h+=reoField(p+'insurance','Insurance Payment','number',reo.insurance,idx,'insurance');
+  h+=reoField(p+'taxes','Taxes (monthly)','number',reo.taxes,idx,'taxes');
+  h+='</div>';
+  return h;
+}
+
+function reoField(id,label,type,val,reoIdx,key){
+  var sv=String(val||'').replace(/"/g,'&quot;');
+  return '<div class="card-field"><label>'+label+'</label><input type="'+type+'" id="'+id+'" class="reo-tracked" data-reo="'+reoIdx+'" data-key="'+key+'" value="'+sv+'"'+(type==='number'?' step="0.01" min="0" placeholder="0.00"':'')+'></div>';
+}
+
+function syncREOField(el){
+  var idx=el.dataset.reo; var key=el.dataset.key;
+  if(!key||idx===undefined||idx==='') return;
+  var i=parseInt(idx);
+  if(!borrowerREOs[i]) return;
+  var val=el.type==='checkbox'?el.checked:el.value;
+  borrowerREOs[i][key]=val;
+  // Update tab label on address change
+  if(key==='address') updateREOTabLabel(i, val||'Property '+(i+1));
+  // Update tab color on retain/sell change
+  if(key==='retain_sell'){
+    clearTimeout(window._reoRefresh);
+    window._reoRefresh=setTimeout(function(){renderREOTabs();},600);
+  }
+}
+
+function updateREOTabLabel(idx,label){
+  var tabs=document.querySelectorAll('#reoTabsContainer .emp-tab');
+  if(label.length>25) label=label.substring(0,25)+'...';
+  if(tabs[idx]) tabs[idx].textContent=label;
+}
+
+function switchREOTab(i){activeREOTab=i;renderREOTabs();}
+function addREO(prefill){
+  var r=newREO();
+  if(prefill){r.address=prefill.address||'';r.city=prefill.city||'';r.state=prefill.state||'';r.zip=prefill.zip||'';}
+  borrowerREOs.push(r);activeREOTab=borrowerREOs.length-1;renderREOTabs();crmDirty=true;
+}
+function removeREO(i){
+  borrowerREOs.splice(i,1);if(activeREOTab>=borrowerREOs.length)activeREOTab=Math.max(0,borrowerREOs.length-1);renderREOTabs();crmDirty=true;
+}
+
+// Add REO from Personal tab (pre-fills current address)
+function addREOFromPersonal(){
+  var addr=document.getElementById('cf_address');
+  var city=document.getElementById('cf_city');
+  var state=document.getElementById('cf_state');
+  var zip=document.getElementById('cf_zip');
+  addREO({
+    address:addr?addr.value:'',city:city?city.value:'',
+    state:state?state.value:'',zip:zip?zip.value:''
+  });
+  switchBorrowerTab('reo');
 }
 
 // ===== BORROWER MAIN TAB SWITCHER =====
@@ -677,6 +821,7 @@ function collectAllCardData(){
   if(crmCurrentType==='borrower'){
     data.employers=borrowerEmployers;
     data.education=borrowerEducation;
+    data.reos=borrowerREOs;
     data.documents=cardDocuments;
   }
   return data;
@@ -688,7 +833,7 @@ var crmCurrentType='client';
 function crmAddNew(){
   showTypePicker(function(type){
     crmCurrentType=type;crmCurrentId=null;crmDirty=false;
-    borrowerEmployers=[];borrowerEducation=[];cardDocuments=[];
+    borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
     var ti=CONTACT_TYPES[type];
@@ -708,7 +853,7 @@ function crmAddNew(){
 
 function crmSelectContact(id){
   crmCurrentId=id;crmDirty=false;
-  borrowerEmployers=[];borrowerEducation=[];cardDocuments=[];
+  borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
   document.getElementById('crmSaveBtn').disabled=true;
   document.getElementById('crmDeleteBtn').disabled=true;
   document.getElementById('crmDeleteBtn').textContent='Delete';
