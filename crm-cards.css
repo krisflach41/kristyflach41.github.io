@@ -236,7 +236,7 @@
 }
 .calc-side-overlay.open { opacity: 1; pointer-events: all; }
 .calc-side-panel {
-  position: fixed; top: 0; right: -560px; bottom: 0; width: 540px;
+  position: fixed; top: 0; right: -820px; bottom: 0; width: 800px;
   background: #0a1628; border-left: 1px solid rgba(255,255,255,0.08);
   z-index: 901; transition: right 0.3s ease;
   display: flex; flex-direction: column;
@@ -353,5 +353,7 @@
   .calc-side-panel { width: 100%; right: -100%; }
   .card-header-row { flex-direction: column; }
   .card-qualifying-total { text-align: left; }
-  .calc-source-fields { grid-template-columns: 1fr; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .calc-side-panel { width: 600px; right: -620px; }
 }
