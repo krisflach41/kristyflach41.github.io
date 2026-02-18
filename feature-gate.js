@@ -1,27 +1,27 @@
 /* ===================================================
    AGENT EDGE — FEATURE GATING SYSTEM
    
-   Auto-detects page and applies appropriate gates.
+   Usage counts persist in Supabase via /api/usage
+   Falls back to localStorage if API is unavailable
    
    TRIAL members:
-   - Marketing/Advisory: FULL access, can order, NO co-branding option
+   - Marketing/Advisory: FULL access, can order, NO co-branding
    - Education Videos & Loan Guides: full access
-   - Education Calculator LANDING page: open (can browse)
-   - Education Credit Tools LANDING page: open (can browse)
-   - Income Calculator (actual tool): can see, can't use
-   - Self-Employed Calculator (actual tool): can see, can't use
-   - Credit Score Simulator (actual tool): can see, can't use
+   - Income Calculator: can see, can't use
+   - Self-Employed Calculator: can see, can't use
+   - Credit Score Simulator: can see, can't use
    - Credit Score Education: can see, can't use
    - Messaging Image Library: full access
    - Messaging Grab & Go: 5 free uses
    - Messaging On-Demand AI: 5 free uses
-   - Checkout: OPEN (they can order, co-branding handled separately)
    
    PARTNER members: everything unlocked
 =================================================== */
 
 (function() {
   'use strict';
+
+  var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 
   // ===== USER ROLE =====
   function getUserRole() {
@@ -37,21 +37,72 @@
     return sessionStorage.getItem('agentEdgeAdmin') === 'true';
   }
 
+  function getUserEmail() {
+    return sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser') || '';
+  }
+
   function hasHeadshot() {
     return sessionStorage.getItem('agentEdgeHasHeadshot') === 'true';
   }
 
-  // ===== USAGE TRACKING =====
+  // ===== USAGE TRACKING (Supabase-backed) =====
+  // Cache counts in sessionStorage so we don't hit API on every page load
+  var usageCache = JSON.parse(sessionStorage.getItem('agentEdgeUsageCache') || '{}');
+  var usageCacheLoaded = false;
+
+  // Load counts from Supabase on first page load
+  function loadUsageCounts(callback) {
+    if (usageCacheLoaded) {
+      if (callback) callback();
+      return;
+    }
+
+    var email = getUserEmail();
+    if (!email) {
+      usageCacheLoaded = true;
+      if (callback) callback();
+      return;
+    }
+
+    fetch(API_BASE + '/usage?email=' + encodeURIComponent(email))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success && data.counts) {
+          usageCache = data.counts;
+          sessionStorage.setItem('agentEdgeUsageCache', JSON.stringify(usageCache));
+        }
+        usageCacheLoaded = true;
+        if (callback) callback();
+      })
+      .catch(function() {
+        // Fall back to localStorage
+        usageCache = JSON.parse(localStorage.getItem('agentEdgeUsageCounts') || '{}');
+        usageCacheLoaded = true;
+        if (callback) callback();
+      });
+  }
+
   function getUsageCount(toolKey) {
-    var counts = JSON.parse(localStorage.getItem('agentEdgeUsageCounts') || '{}');
-    return counts[toolKey] || 0;
+    return usageCache[toolKey] || 0;
   }
 
   function incrementUsage(toolKey) {
-    var counts = JSON.parse(localStorage.getItem('agentEdgeUsageCounts') || '{}');
-    counts[toolKey] = (counts[toolKey] || 0) + 1;
-    localStorage.setItem('agentEdgeUsageCounts', JSON.stringify(counts));
-    return counts[toolKey];
+    usageCache[toolKey] = (usageCache[toolKey] || 0) + 1;
+    sessionStorage.setItem('agentEdgeUsageCache', JSON.stringify(usageCache));
+    // Also keep localStorage as backup
+    localStorage.setItem('agentEdgeUsageCounts', JSON.stringify(usageCache));
+
+    // Persist to Supabase (fire and forget)
+    var email = getUserEmail();
+    if (email) {
+      fetch(API_BASE + '/usage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email, toolKey: toolKey })
+      }).catch(function() { /* silent fail */ });
+    }
+
+    return usageCache[toolKey];
   }
 
   // ===== PAGE DETECTION =====
@@ -60,7 +111,7 @@
     return path.split('/').pop().replace('.html', '').replace('.htm', '') || 'index';
   }
 
-  // Pages where trial users can SEE but not USE (overlay applied to actual tools only)
+  // Pages where trial users can SEE but not USE
   var VIEW_ONLY_PAGES = [
     'income-calculator',
     'self-employed-calculator',
@@ -132,7 +183,7 @@
     document.body.appendChild(modal);
   };
 
-  // ===== USAGE REMAINING BANNER (big and visible) =====
+  // ===== USAGE REMAINING BANNER =====
   function showUsageBanner(toolName, used, limit) {
     var remaining = limit - used;
     if (remaining <= 0) return;
@@ -150,7 +201,6 @@
       '</div>';
 
     document.body.insertBefore(banner, document.body.firstChild);
-    // Push page content down so banner doesn't cover it
     document.body.style.paddingTop = (banner.offsetHeight) + 'px';
   }
 
@@ -171,7 +221,7 @@
     overlay.style.backdropFilter = 'none';
 
     overlay.innerHTML = 
-      '<div style="text-align:center; padding:40px; max-width:450px;">' +
+      '<div style="text-align:center; padding:40px; max-width:450px; background:rgba(255,255,255,0.92); border-radius:18px; box-shadow:0 10px 40px rgba(0,0,0,0.1);">' +
         '<div style="font-size:48px; margin-bottom:16px;">&#128274;</div>' +
         '<h2 style="font-size:24px; font-weight:700; color:#0b1f3a; margin:0 0 12px;">' + title + '</h2>' +
         '<p style="font-size:15px; color:#555; line-height:1.6; margin-bottom:28px;">' + message + '</p>' +
@@ -341,18 +391,19 @@
     // ----- USAGE-LIMITED PAGES -----
     var limitConfig = USAGE_LIMITED_PAGES[page];
     if (limitConfig) {
-      var used = getUsageCount(limitConfig.key);
-      
-      if (used >= limitConfig.limit) {
-        // Out of free uses — block the page
-        applyPageOverlay(
-          'Free Limit Reached',
-          'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your trial. Upgrade to Partner for unlimited access!'
-        );
-      } else {
-        // Still has uses left — show the big banner
-        showUsageBanner(limitConfig.name, used, limitConfig.limit);
-      }
+      // Load counts from Supabase first, then apply gating
+      loadUsageCounts(function() {
+        var used = getUsageCount(limitConfig.key);
+        
+        if (used >= limitConfig.limit) {
+          applyPageOverlay(
+            'Free Limit Reached',
+            'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your trial. Upgrade to Partner for unlimited access!'
+          );
+        } else {
+          showUsageBanner(limitConfig.name, used, limitConfig.limit);
+        }
+      });
     }
   });
 
