@@ -435,10 +435,13 @@ label {
 document.addEventListener('DOMContentLoaded', function() {
   var userName = sessionStorage.getItem('agentEdgeName');
   var userEmail = sessionStorage.getItem('agentEdgeUser');
+  var userBrokerage = sessionStorage.getItem('agentEdgeUserBrokerage');
   var nameField = document.querySelector('input[name="name"]');
   var emailField = document.querySelector('input[name="email"]');
+  var brokerageField = document.querySelector('input[name="brokerage"]');
   if (nameField && userName) nameField.value = userName;
   if (emailField && userEmail) emailField.value = userEmail;
+  if (brokerageField && userBrokerage) brokerageField.value = userBrokerage;
 
   // Gate co-branding for trial users
   var role = sessionStorage.getItem('agentEdgeRole') || 'trial';
