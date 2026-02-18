@@ -705,24 +705,38 @@ body {
         <div class="crm-detail-empty" id="crmDetailEmpty">Select a contact to view details</div>
         <div class="crm-detail-content" id="crmDetailContent">
           <div class="card-header">
+            <!-- Row 1: Name + Pipeline -->
             <div class="card-header-row">
-              <div class="card-header-left">
-                <div class="card-name" id="crmDName"></div>
-                <div class="card-meta" id="crmDMeta"></div>
-                <div class="card-header-badges">
-                  <div id="crmDTypeBadge"></div>
-                  <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 8px;font-size:10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
-                  <div id="cardPipelineBtn"></div>
-                </div>
-                <div class="card-actions">
-                  <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
-                  <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save</button>
-                  <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
-                </div>
+              <div class="card-name" id="crmDName"></div>
+              <div id="cardPipelineBtn"></div>
+            </div>
+            <!-- Row 2: Meta -->
+            <div class="card-meta" id="crmDMeta"></div>
+            <!-- Row 3: Type badge + swap ... Co-borrower tabs -->
+            <div class="card-header-row" style="margin-top:8px;">
+              <div class="card-header-badges">
+                <div id="crmDTypeBadge"></div>
+                <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 8px;font-size:10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
               </div>
-              <div class="card-qualifying-total" id="cardQualifyingWrap" style="display:none;">
-                <div class="card-qualifying-label">Total Qualifying Income</div>
-                <div class="card-qualifying-amount" id="cardTotalQualifying">$0.00</div>
+              <div id="coBorrowerTabs" style="display:none;"></div>
+            </div>
+            <!-- Actions -->
+            <div class="card-actions" style="margin-top:8px;">
+              <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
+              <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn" disabled><i class="fas fa-save"></i> Save</button>
+              <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn" disabled>Delete</button>
+            </div>
+            <!-- Income boxes -->
+            <div id="cardQualifyingWrap" style="display:none;margin-top:10px;">
+              <div style="display:flex;gap:12px;align-items:stretch;">
+                <div class="card-qualifying-total" style="flex:1;">
+                  <div class="card-qualifying-label" id="cardQualifyingLabel">Qualifying Income</div>
+                  <div class="card-qualifying-amount" id="cardTotalQualifying">$0.00</div>
+                </div>
+                <div class="card-qualifying-total" id="cardCombinedWrap" style="flex:1;display:none;background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.2);">
+                  <div class="card-qualifying-label" style="color:#5b9ef5;">Combined Loan Income</div>
+                  <div class="card-qualifying-amount" style="color:#5b9ef5;" id="cardCombinedQualifying">$0.00</div>
+                </div>
               </div>
             </div>
             <!-- Always-visible contact fields -->
