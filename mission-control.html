@@ -735,6 +735,25 @@ body {
                   <option value="import">Import</option>
                 </select>
               </div>
+              <div class="crm-section-title">Pipeline</div>
+              <div class="crm-field">
+                <label>Pipeline Stage</label>
+                <select id="cf_pipeline_stage" class="crm-tracked">
+                  <option value="">— Not in Pipeline —</option>
+                  <option value="warm">Warm Leads</option>
+                  <option value="active">Active Conversations</option>
+                  <option value="credit">Credit Repair</option>
+                  <option value="preapproval">Started Pre-Approval</option>
+                  <option value="preapproved">Approved</option>
+                  <option value="ratewatch">Rate Watch</option>
+                  <option value="underwriting">Underwriting</option>
+                  <option value="closed">Closed - Funded</option>
+                </select>
+              </div>
+              <div class="crm-field">
+                <label>Referring Realtor</label>
+                <input id="cf_realtor_name" class="crm-tracked" placeholder="Realtor who referred them">
+              </div>
               <div class="crm-section-title">Personal</div>
               <div class="crm-field"><label>Birthday</label><input type="date" id="cf_birthday" class="crm-tracked"></div>
               <div class="crm-field"><label>Spouse / Partner</label><input id="cf_spouse_name" class="crm-tracked"></div>
@@ -1208,6 +1227,8 @@ function enterDashboard() {
   sessionStorage.setItem('agentEdgePinVerified', 'true');
   document.getElementById('pinGate').style.display = 'none';
   document.querySelector('.app-layout').style.display = 'flex';
+  // Load pipeline from Supabase so dashboard stats populate
+  loadPipeline();
   updateDashboard();
 }
 
@@ -1247,10 +1268,9 @@ function updateDashboard() {
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dashSubtitle').textContent = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
-  // Pipeline stats
-  var contacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
-  var active = contacts.filter(function(c) { return c.stage !== 'closed' && c.stage !== 'dead'; }).length;
-  var closed = contacts.filter(function(c) { return c.stage === 'closed'; }).length;
+  // Pipeline stats (use loaded pipeline data, not localStorage)
+  var active = pipelineContacts.filter(function(c) { return c.stage !== 'closed' && c.stage !== 'dead' && c.stage !== 'cold' && c.stage !== 'archived'; }).length;
+  var closed = pipelineContacts.filter(function(c) { return c.stage === 'closed'; }).length;
   document.getElementById('dashPipeline').textContent = active;
   document.getElementById('dashClosed').textContent = closed;
   document.getElementById('navPipelineCount').textContent = active;
@@ -1259,6 +1279,8 @@ function updateDashboard() {
 // ===== PIPELINE =====
 var pipelineLoaded = false;
 var pipelineContacts = [];
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+
 var pipelineColumns = [
   { id: 'warm', title: 'Warm Leads' },
   { id: 'active', title: 'Active Conversations' },
@@ -1272,11 +1294,24 @@ var pipelineColumns = [
 var draggedContactId = null;
 
 function loadPipeline() {
-  pipelineContacts = JSON.parse(localStorage.getItem('pipelineContacts') || '[]');
-  // Filter out cold/funded - they live in CRM now
-  // But keep 'closed' stage on board until funded modal completes
-  pipelineLoaded = true;
-  renderPipeline();
+  fetch(API_BASE + '/pipeline-api?action=list')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.contacts) {
+        pipelineContacts = data.contacts;
+      } else {
+        pipelineContacts = [];
+      }
+      pipelineLoaded = true;
+      renderPipeline();
+      updateDashboard();
+    })
+    .catch(function(err) {
+      console.error('Pipeline load error:', err);
+      pipelineContacts = [];
+      pipelineLoaded = true;
+      renderPipeline();
+    });
 }
 
 function renderPipeline() {
@@ -1317,9 +1352,12 @@ function renderPipeline() {
           }
           c.stage = newStage;
           c.updatedAt = new Date().toISOString();
-          localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
           renderPipeline();
-          syncPipelineContact(c);
+          // Save stage change to Supabase
+          fetch(API_BASE + '/pipeline-api', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'updateStage', contactId: c.id, stage: newStage, updatedAt: c.updatedAt })
+          }).catch(function() {});
         }
       }
     });
@@ -1421,7 +1459,12 @@ function saveFundedContact() {
 
   // Remove from pipeline (it lives in CRM now)
   pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
-  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+
+  // Update stage to closed in Supabase pipeline
+  fetch(API_BASE + '/pipeline-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', id: c.id, name: c.name, phone: c.phone, email: c.email, stage: 'closed', source: c.source, realtorName: c.realtorName, loanType: loanType, interestRate: rate, subjectAddress: c.subjectAddress, dates: c.dates || {}, borrowers: c.borrowers || [] })
+  }).catch(function() {});
 
   // Update CRM with funded data
   fetch(API_BASE + '/crm', {
@@ -1479,7 +1522,12 @@ function markContactCold(contactId) {
 
   // Remove from pipeline
   pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== contactId; });
-  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+  
+  // Update stage to cold in Supabase
+  fetch(API_BASE + '/pipeline-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'updateStage', contactId: contactId, stage: 'cold', updatedAt: new Date().toISOString() })
+  }).catch(function() {});
   closePipelineModal();
   renderPipeline();
   updateDashboard();
@@ -1532,8 +1580,7 @@ function savePipelineContact() {
   if (editingPipelineId) {
     contact = pipelineContacts.find(function(x) { return x.id === editingPipelineId; });
   } else {
-    contact = { id: 'C' + Date.now(), createdAt: new Date().toISOString(), dates: {} };
-    pipelineContacts.push(contact);
+    contact = { id: 'pipeline-' + Date.now().toString(36), createdAt: new Date().toISOString(), dates: {}, borrowers: [{ name:'', currentAddress:'', ownRent:'', monthlyPayment:'', retainSell:'', employer:'', selfReportedWages:'', incomeType:'', w2Year1:'', w2Year2:'', ytd:'', qualifyingEarnings:'' }] };
   }
 
   contact.name = name;
@@ -1546,11 +1593,15 @@ function savePipelineContact() {
   // If setting to Closed - Funded, open the funded modal instead
   if (contact.stage === 'closed') {
     if (!editingPipelineId) {
-      // New contact - save first, then open funded modal
+      // New contact - save to Supabase first, then open funded modal
       pipelineContacts.push(contact);
-      localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
-      closePipelineModal();
-      openFundedModal(contact.id);
+      fetch(API_BASE + '/pipeline-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, dates: contact.dates, borrowers: contact.borrowers })
+      }).then(function() {
+        closePipelineModal();
+        openFundedModal(contact.id);
+      }).catch(function() {});
       return;
     } else {
       closePipelineModal();
@@ -1563,20 +1614,23 @@ function savePipelineContact() {
   contact.subjectAddress = document.getElementById('pcm_address').value.trim();
   contact.updatedAt = new Date().toISOString();
 
-  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
+  if (!editingPipelineId) {
+    pipelineContacts.push(contact);
+  }
+
   closePipelineModal();
   renderPipeline();
   updateDashboard();
   showToast('Contact saved!');
 
-  // Sync to sheet
-  fetch(API_BASE + '/save-contact', {
+  // Save to Supabase
+  fetch(API_BASE + '/pipeline-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contact: contact })
-  }).catch(function() {});
+    body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, loanType: contact.loanType, interestRate: contact.interestRate, subjectAddress: contact.subjectAddress, lockStatus: contact.lockStatus, dates: contact.dates || {}, borrowers: contact.borrowers || [] })
+  }).catch(function(err) { console.error('Pipeline save error:', err); });
 
   // Sync to CRM
-  fetch(API_BASE + '/crm', {
+  fetch(API_BASE + '/crm-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'syncFromPipeline', contact: { name: contact.name, email: contact.email, phone: contact.phone, pipeline_id: contact.id }})
   }).catch(function() {});
@@ -1584,8 +1638,14 @@ function savePipelineContact() {
 
 function deletePipelineContact() {
   if (!editingPipelineId || !confirm('Delete this contact permanently?')) return;
+  
+  // Delete from Supabase
+  fetch(API_BASE + '/pipeline-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', contactId: editingPipelineId })
+  }).catch(function(err) { console.error('Pipeline delete error:', err); });
+
   pipelineContacts = pipelineContacts.filter(function(c) { return c.id !== editingPipelineId; });
-  localStorage.setItem('pipelineContacts', JSON.stringify(pipelineContacts));
   closePipelineModal();
   renderPipeline();
   updateDashboard();
@@ -1674,11 +1734,37 @@ function crmPopulateDetail(c) {
   var meta = [c.email, c.phone, c.company].filter(Boolean).join(' Â· ');
   document.getElementById('crmDMeta').textContent = meta;
 
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes'];
+  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','realtor_name'];
   fields.forEach(function(f) {
     var el = document.getElementById('cf_' + f);
     if (el) el.value = c[f] || '';
   });
+
+  // Check if this contact exists in pipeline and set the dropdown
+  var pipelineStageEl = document.getElementById('cf_pipeline_stage');
+  pipelineStageEl.value = ''; // Default to not in pipeline
+  
+  // Look up in pipeline by matching CRM id or email
+  var pipelineId = 'crm-' + c.id;
+  var pipelineMatch = pipelineContacts.find(function(p) {
+    return p.id === pipelineId || (c.email && p.email && p.email.toLowerCase() === c.email.toLowerCase());
+  });
+  if (pipelineMatch) {
+    pipelineStageEl.value = pipelineMatch.stage || '';
+  }
+  // Also check via API if pipeline not loaded yet
+  if (!pipelineLoaded) {
+    fetch(API_BASE + '/pipeline-api?action=list')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success && data.contacts) {
+          var match = data.contacts.find(function(p) {
+            return p.id === pipelineId || (c.email && p.email && p.email.toLowerCase() === c.email.toLowerCase());
+          });
+          if (match) pipelineStageEl.value = match.stage || '';
+        }
+      }).catch(function() {});
+  }
 
   // Activity
   if (c.activity && c.activity.length > 0) {
@@ -1720,17 +1806,20 @@ document.addEventListener('change', function(e) {
 
 function crmSaveContact() {
   var contact = {};
-  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','custom_type','brokerage','license_number','headshot_url'];
+  var fields = ['name','email','phone','company','type','source','birthday','spouse_name','kids','employer','job_title','address','city','state','zip','website','facebook','instagram','linkedin','tiktok','tags','notes','custom_type','brokerage','license_number','headshot_url','realtor_name'];
   fields.forEach(function(f) {
     var el = document.getElementById('cf_' + f);
     if (el) contact[f] = el.value || null;
   });
   
+  // Get pipeline stage separately (not a crm_contacts column)
+  var pipelineStage = document.getElementById('cf_pipeline_stage').value;
+
   if (crmCurrentId) {
     contact.id = crmCurrentId;
   }
 
-  // Call Vercel API to save
+  // Call Vercel API to save CRM contact
   fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=save', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1740,14 +1829,12 @@ function crmSaveContact() {
     .then(function(data) {
       if (data.success) {
         if (crmCurrentId) {
-          // Update in local array
           var idx = crmContacts.findIndex(function(c) { return c.id === crmCurrentId; });
           if (idx >= 0) {
             crmContacts[idx] = Object.assign(crmContacts[idx], contact);
           }
           showToast('Saved!');
         } else {
-          // Add to local array
           contact.id = data.id;
           contact.created_at = new Date().toISOString();
           crmContacts.push(contact);
@@ -1758,6 +1845,34 @@ function crmSaveContact() {
         document.getElementById('crmDName').textContent = contact.name || 'Unnamed';
         crmDirty = false;
         document.getElementById('crmSaveBtn').disabled = true;
+
+        // ===== PIPELINE SYNC =====
+        // If a pipeline stage is selected, create/update pipeline entry
+        if (pipelineStage) {
+          var pipelineId = 'crm-' + (crmCurrentId || contact.id);
+          fetch(API_BASE + '/pipeline-api', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'save',
+              id: pipelineId,
+              name: contact.name || '',
+              phone: contact.phone || '',
+              email: contact.email || '',
+              stage: pipelineStage,
+              source: contact.source || 'manual',
+              realtorName: contact.realtor_name || '',
+              loanType: '',
+              interestRate: '',
+              subjectAddress: (contact.address ? contact.address + ', ' + (contact.city || '') + ' ' + (contact.state || '') : ''),
+              dates: {},
+              borrowers: []
+            })
+          }).then(function() {
+            // Refresh pipeline if it's loaded
+            if (pipelineLoaded) loadPipeline();
+            showToast(contact.name + ' added to pipeline — ' + pipelineStage);
+          }).catch(function(err) { console.error('Pipeline sync error:', err); });
+        }
       } else {
         showToast('Save failed');
       }
