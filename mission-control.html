@@ -1105,7 +1105,7 @@ body {
       <div class="crm-field"><label>Realtor Name</label><input id="pcm_realtor"></div>
       <div class="crm-field">
         <label>Stage</label>
-        <select id="pcm_stage"><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Started Pre-Approval</option><option value="preapproved">Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option><option value="closed">Closed - Funded</option></select>
+        <select id="pcm_stage"><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Started Pre-Approval</option><option value="preapproved">Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option></select>
       </div>
       <div class="crm-field"><label>Loan Type</label><input id="pcm_loanType" placeholder="Conv, FHA, VA, USDA, Jumbo"></div>
       <div class="crm-field"><label>Interest Rate</label><input id="pcm_rate" placeholder="6.25"></div>
@@ -1114,13 +1114,13 @@ body {
     <div class="modal-actions" style="flex-wrap:wrap;gap:6px;">
       <button class="topbar-btn" onclick="closePipelineModal()">Cancel</button>
       <button class="topbar-btn" id="pcmCrmBtn" style="display:none;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" onclick="openCrmFromPipeline()"><i class="fas fa-address-card"></i> View in CRM</button>
-      <button class="topbar-btn" id="pcmColdBtn" style="display:none;border-color:rgba(100,140,255,0.3);color:#8ba8f5;" onclick="markContactCold(editingPipelineId)">Mark Cold</button>
       <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
       <div style="flex:1;"></div>
       <div id="pcmOutcomeWrap" style="display:none;gap:4px;">
         <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(239,68,68,0.3);color:#ef4444;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'denied')"><i class="fas fa-times-circle"></i> Denied</button>
         <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'suspended')"><i class="fas fa-pause-circle"></i> Suspended</button>
         <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(139,92,246,0.3);color:#8b5cf6;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'withdrawn')"><i class="fas fa-undo"></i> Withdrawn</button>
+        <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(34,197,94,0.3);color:#22c55e;font-weight:700;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
       </div>
       <button class="topbar-btn primary" onclick="savePipelineContact()">Save</button>
     </div>
@@ -1297,11 +1297,9 @@ function updateDashboard() {
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   document.getElementById('dashSubtitle').textContent = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
-  // Pipeline stats (use loaded pipeline data, not localStorage)
+  // Pipeline stats
   var active = pipelineContacts.filter(function(c) { return c.stage !== 'closed' && c.stage !== 'dead' && c.stage !== 'cold' && c.stage !== 'archived'; }).length;
-  var closed = pipelineContacts.filter(function(c) { return c.stage === 'closed'; }).length;
   document.getElementById('dashPipeline').textContent = active;
-  document.getElementById('dashClosed').textContent = closed;
   document.getElementById('navPipelineCount').textContent = active;
 }
 
@@ -1317,8 +1315,7 @@ var pipelineColumns = [
   { id: 'preapproval', title: 'Started Pre-Approval' },
   { id: 'preapproved', title: 'Approved' },
   { id: 'ratewatch', title: 'Rate Watch' },
-  { id: 'underwriting', title: 'Underwriting' },
-  { id: 'closed', title: 'Closed - Funded' }
+  { id: 'underwriting', title: 'Underwriting' }
 ];
 var draggedContactId = null;
 
@@ -1346,12 +1343,11 @@ function loadPipeline() {
 function renderPipeline() {
   var board = document.getElementById('pipelineBoard');
   board.innerHTML = '';
-  // Only show contacts that are in active pipeline stages (not cold/archived)
+  // Only show contacts in active pipeline stages
   var activeContacts = pipelineContacts.filter(function(c) {
-    return c.stage !== 'cold' && c.stage !== 'dead' && c.stage !== 'archived';
+    return c.stage !== 'cold' && c.stage !== 'dead' && c.stage !== 'archived' && c.stage !== 'closed';
   });
-  var activeCount = activeContacts.filter(function(c) { return c.stage !== 'closed'; }).length;
-  document.getElementById('pipelineSubtitle').textContent = activeCount + ' active loans  -  ' + activeContacts.length + ' total on board';
+  document.getElementById('pipelineSubtitle').textContent = activeContacts.length + ' active loans';
 
   pipelineColumns.forEach(function(col) {
     var colContacts = activeContacts.filter(function(c) { return c.stage === col.id; });
@@ -1374,11 +1370,6 @@ function renderPipeline() {
       if (draggedContactId && newStage) {
         var c = pipelineContacts.find(function(x) { return x.id === draggedContactId; });
         if (c) {
-          // If dropping into Closed - Funded, open funded modal
-          if (newStage === 'closed') {
-            openFundedModal(c.id);
-            return;
-          }
           c.stage = newStage;
           c.updatedAt = new Date().toISOString();
           renderPipeline();
@@ -1434,18 +1425,6 @@ function renderPipeline() {
     addBtn.onclick = function() { addNewPipelineContact(col.id); };
     body.appendChild(addBtn);
 
-    // Cold lead button (on every column except Closed)
-    if (col.id !== 'closed') {
-      var coldBtn = document.createElement('button');
-      coldBtn.className = 'pipeline-cold-btn';
-      coldBtn.textContent = 'Move to Cold';
-      coldBtn.style.display = colContacts.length > 0 ? 'block' : 'none';
-      coldBtn.onclick = function() {
-        // Show instructions
-        showToast('Drag a card here or click a card then use "Mark Cold"');
-      };
-      body.appendChild(coldBtn);
-    }
   });
 }
 
@@ -1632,7 +1611,6 @@ function addNewPipelineContact(stage) {
   document.getElementById('pcm_rate').value = '';
   document.getElementById('pcm_address').value = '';
   document.getElementById('pcmDeleteBtn').style.display = 'none';
-  document.getElementById('pcmColdBtn').style.display = 'none';
   document.getElementById('pcmCrmBtn').style.display = 'none';
   document.getElementById('pcmBorrowersWrap').style.display = 'none';
   document.getElementById('pcmOutcomeWrap').style.display = 'none';
@@ -1654,7 +1632,6 @@ function openPipelineContact(id) {
   document.getElementById('pcm_rate').value = c.interestRate || '';
   document.getElementById('pcm_address').value = c.subjectAddress || '';
   document.getElementById('pcmDeleteBtn').style.display = 'inline-block';
-  document.getElementById('pcmColdBtn').style.display = 'inline-block';
 
   // Show borrowers if available
   var bWrap = document.getElementById('pcmBorrowersWrap');
@@ -1717,26 +1694,7 @@ function savePipelineContact() {
   contact.source = document.getElementById('pcm_source').value;
   contact.realtorName = document.getElementById('pcm_realtor').value.trim();
   contact.stage = document.getElementById('pcm_stage').value;
-  
-  // If setting to Closed - Funded, open the funded modal instead
-  if (contact.stage === 'closed') {
-    if (!editingPipelineId) {
-      // New contact - save to Supabase first, then open funded modal
-      pipelineContacts.push(contact);
-      fetch(API_BASE + '/pipeline-api', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, dates: contact.dates, borrowers: contact.borrowers })
-      }).then(function() {
-        closePipelineModal();
-        openFundedModal(contact.id);
-      }).catch(function() {});
-      return;
-    } else {
-      closePipelineModal();
-      openFundedModal(contact.id);
-      return;
-    }
-  }
+
   contact.loanType = document.getElementById('pcm_loanType').value.trim();
   contact.interestRate = document.getElementById('pcm_rate').value.trim();
   contact.subjectAddress = document.getElementById('pcm_address').value.trim();
