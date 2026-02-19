@@ -144,7 +144,7 @@
   outline: none; border-color: rgba(59,130,246,0.4); background: rgba(255,255,255,0.09);
 }
 .card-field input::placeholder { color: rgba(255,255,255,0.25); }
-.card-field select option { background: #0c1829; }
+.card-field select option { background: #0c1829; color: #eaf0f6; }
 .card-field textarea { resize: vertical; min-height: 70px; }
 .card-field.conditional { display: none; }
 .card-field.conditional.visible { display: flex; }
@@ -348,7 +348,7 @@
   color: #eaf0f6; font-family: inherit;
 }
 .activity-add-row input { flex: 1; }
-.activity-add-row select option { background: #0c1829; }
+.activity-add-row select option { background: #0c1829; color: #eaf0f6; }
 
 /* ===== CO-BORROWER TABS ===== */
 .coborrower-tabs {
