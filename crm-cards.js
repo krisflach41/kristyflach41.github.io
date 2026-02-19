@@ -20,7 +20,7 @@ var PIPELINE_STAGES = [
   { id: 'warm', label: 'Warm Leads' }, { id: 'active', label: 'Active Conversations' },
   { id: 'credit', label: 'Credit Repair' }, { id: 'preapproval', label: 'Started Pre-Approval' },
   { id: 'preapproved', label: 'Approved' }, { id: 'ratewatch', label: 'Rate Watch' },
-  { id: 'underwriting', label: 'Underwriting' }, { id: 'closed', label: 'Closed - Funded' }
+  { id: 'underwriting', label: 'Underwriting' }
 ];
 function sourceOptions() {
   return [
