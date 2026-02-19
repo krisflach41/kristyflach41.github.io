@@ -302,10 +302,17 @@ function renderBorrowerCard(container, data) {
   // LOAN TAB
   html+='<div class="card-tab-content" id="btab_loan">';
   html+=bldSec('Loan Details',[
-    {id:'loan_type',l:'Loan Type',t:'select',v:data.loan_type,opts:[
+    {id:'transaction_type',l:'Transaction Type',t:'select',v:data.transaction_type,opts:[
       {value:'',label:'--'},{value:'purchase',label:'Purchase'},{value:'refinance',label:'Refinance'},
-      {value:'cashout',label:'Cash-Out Refi'},{value:'fha',label:'FHA'},
-      {value:'va',label:'VA'},{value:'usda',label:'USDA'},{value:'jumbo',label:'Jumbo'}]},
+      {value:'new_construction',label:'New Construction'},{value:'heloc',label:'HELOC'}]},
+    {id:'loan_program',l:'Loan Program',t:'select',v:data.loan_program,opts:[
+      {value:'',label:'--'},{value:'fannie',label:'Fannie Mae'},{value:'freddie',label:'Freddie Mac'},
+      {value:'fha',label:'FHA'},{value:'va',label:'VA'},{value:'usda',label:'USDA'},
+      {value:'jumbo',label:'Jumbo'},{value:'land_lot',label:'Land / Lot'}]},
+    {id:'occupancy_type',l:'Occupancy',t:'select',v:data.occupancy_type,opts:[
+      {value:'',label:'--'},{value:'owner_occupied',label:'Owner Occupied'},{value:'investor',label:'Investor'},
+      {value:'second_home',label:'Second Home'}]},
+    {id:'loan_amount',l:'Loan Amount',t:'number',v:data.loan_amount,ph:'0.00'},
     {id:'interest_rate',l:'Interest Rate (%)',t:'number',v:data.interest_rate,ph:'0.000'},
     {id:'lock_status',l:'Lock Status',t:'select',v:data.lock_status,opts:[
       {value:'',label:'--'},{value:'unlocked',label:'Unlocked'},{value:'locked',label:'Locked'},{value:'expired',label:'Expired'}]},
@@ -713,7 +720,10 @@ function setPipelineStage(contactId,stage){
   var displayName = allBorrowers.map(function(b){ return b.name; }).filter(Boolean).join(' & ');
 
   // Gather loan data from shared loan or DOM
-  var loanType = sharedLoanData.loan_type || '';
+  var transType = sharedLoanData.transaction_type || '';
+  var loanProgram = sharedLoanData.loan_program || '';
+  var occupancy = sharedLoanData.occupancy_type || '';
+  var loanAmount = sharedLoanData.loan_amount || '';
   var intRate = sharedLoanData.interest_rate || '';
   var lockStatus = sharedLoanData.lock_status || '';
   var subAddr = sharedLoanData.subject_address || '';
@@ -737,7 +747,11 @@ function setPipelineStage(contactId,stage){
       stage: stage,
       source: 'crm',
       realtorName: '',
-      loanType: loanType,
+      loanType: transType + (loanProgram ? ' / ' + loanProgram : ''),
+      transactionType: transType,
+      loanProgram: loanProgram,
+      occupancyType: occupancy,
+      loanAmount: loanAmount,
       interestRate: intRate,
       lockStatus: lockStatus,
       subjectAddress: subAddr,
@@ -963,7 +977,9 @@ function saveCoBorrowerState() {
   var data = collectAllCardData();
   // Save shared loan data from whatever tab we're on
   sharedLoanData = {
-    loan_type: data.loan_type, interest_rate: data.interest_rate,
+    transaction_type: data.transaction_type, loan_program: data.loan_program,
+    occupancy_type: data.occupancy_type, loan_amount: data.loan_amount,
+    interest_rate: data.interest_rate,
     lock_status: data.lock_status, subject_address: data.subject_address,
     date_mutual: data.date_mutual, date_emd: data.date_emd,
     date_appraisal: data.date_appraisal, date_inspection: data.date_inspection,
