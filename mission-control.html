@@ -1823,6 +1823,7 @@ function saveFundedContact() {
   var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
 
   // Call the closeLoan API endpoint
+  console.log('=== CLOSING LOAN ===', { contactId: c.id, outcome: outcome, crmId: crmId });
   fetch(API_BASE + '/pipeline-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -1843,8 +1844,12 @@ function saveFundedContact() {
       notes: notes
     })
   })
-  .then(function(r) { return r.json(); })
+  .then(function(r) { 
+    console.log('closeLoan response status:', r.status);
+    return r.json(); 
+  })
   .then(function(result) {
+    console.log('closeLoan result:', result);
     if (result.success) {
       // Remove from active pipeline
       pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
