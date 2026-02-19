@@ -1089,6 +1089,11 @@ body {
 <div class="modal-overlay" id="pipelineContactModal">
   <div class="modal-box" style="width:600px;">
     <div class="modal-title" id="pcmTitle">Add Contact</div>
+    <!-- Borrowers on this loan (shown for CRM-linked contacts) -->
+    <div id="pcmBorrowersWrap" style="display:none;margin-bottom:14px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;display:block;">Borrowers on this Loan</label>
+      <div id="pcmBorrowersList" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
     <div class="crm-field-grid">
       <div class="crm-field"><label>Name *</label><input id="pcm_name"></div>
       <div class="crm-field"><label>Phone</label><input id="pcm_phone"></div>
@@ -1108,6 +1113,7 @@ body {
     </div>
     <div class="modal-actions">
       <button class="topbar-btn" onclick="closePipelineModal()">Cancel</button>
+      <button class="topbar-btn" id="pcmCrmBtn" style="display:none;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" onclick="openCrmFromPipeline()"><i class="fas fa-address-card"></i> View in CRM</button>
       <button class="topbar-btn" id="pcmColdBtn" style="display:none;border-color:rgba(100,140,255,0.3);color:#8ba8f5;" onclick="markContactCold(editingPipelineId)">Mark Cold</button>
       <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
       <button class="topbar-btn primary" onclick="savePipelineContact()">Save</button>
@@ -1379,10 +1385,20 @@ function renderPipeline() {
       if (contact.interestRate) tagHtml += '<span class="pc-tag' + (parseFloat(contact.interestRate) >= 7 ? ' red' : '') + '">' + contact.interestRate + '%</span> ';
       if (contact.source) tagHtml += '<span class="pc-tag green">' + contact.source + '</span>';
 
+      // Show all borrower names if available
+      var borrowerNames = '';
+      if (contact.borrowers && contact.borrowers.length > 1) {
+        borrowerNames = contact.borrowers.map(function(b){ return b.name || ''; }).filter(Boolean).join(' & ');
+      }
+      var displayName = borrowerNames || contact.name || 'Unnamed';
+
+      // CRM link indicator
+      var crmLink = (contact.crm_contact_id || (contact.id && contact.id.indexOf('crm-') === 0)) ? '<span class="pc-tag" style="background:rgba(14,165,233,0.15);color:#0ea5e9;font-size:8px;">CRM</span> ' : '';
+
       card.innerHTML =
-        '<div class="pc-name">' + (contact.name || 'Unnamed') + '</div>' +
+        '<div class="pc-name">' + displayName + '</div>' +
         '<div class="pc-sub">' + (contact.phone || contact.email || '') + '</div>' +
-        (tagHtml ? '<div>' + tagHtml + '</div>' : '');
+        (tagHtml || crmLink ? '<div>' + crmLink + tagHtml + '</div>' : '');
 
       card.addEventListener('dragstart', function(e) {
         draggedContactId = contact.id;
@@ -1556,6 +1572,8 @@ function addNewPipelineContact(stage) {
   document.getElementById('pcm_address').value = '';
   document.getElementById('pcmDeleteBtn').style.display = 'none';
   document.getElementById('pcmColdBtn').style.display = 'none';
+  document.getElementById('pcmCrmBtn').style.display = 'none';
+  document.getElementById('pcmBorrowersWrap').style.display = 'none';
   document.getElementById('pipelineContactModal').classList.add('show');
 }
 
@@ -1575,7 +1593,46 @@ function openPipelineContact(id) {
   document.getElementById('pcm_address').value = c.subjectAddress || '';
   document.getElementById('pcmDeleteBtn').style.display = 'inline-block';
   document.getElementById('pcmColdBtn').style.display = 'inline-block';
+
+  // Show borrowers if available
+  var bWrap = document.getElementById('pcmBorrowersWrap');
+  var bList = document.getElementById('pcmBorrowersList');
+  if (c.borrowers && c.borrowers.length > 0 && c.borrowers[0].name) {
+    var h = '';
+    c.borrowers.forEach(function(b) {
+      var role = b.role || 'borrower';
+      var color = role === 'primary' ? '#0ea5e9' : '#a855f7';
+      var crmTag = b.crm_id ? ' <i class="fas fa-link" style="font-size:8px;opacity:0.5;"></i>' : '';
+      h += '<div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;background:' + color + '18;border:1px solid ' + color + '40;color:' + color + ';">';
+      h += (b.name || 'Unnamed') + ' <span style="font-size:9px;opacity:0.7;">' + role + '</span>' + crmTag + '</div>';
+    });
+    bList.innerHTML = h;
+    bWrap.style.display = 'block';
+  } else {
+    bWrap.style.display = 'none';
+  }
+
+  // Show View in CRM button if linked
+  var crmBtn = document.getElementById('pcmCrmBtn');
+  var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
+  if (crmId) {
+    crmBtn.style.display = 'inline-block';
+    crmBtn.dataset.crmId = crmId;
+  } else {
+    crmBtn.style.display = 'none';
+  }
+
   document.getElementById('pipelineContactModal').classList.add('show');
+}
+
+function openCrmFromPipeline() {
+  var crmBtn = document.getElementById('pcmCrmBtn');
+  var crmId = crmBtn ? crmBtn.dataset.crmId : null;
+  if (!crmId) return;
+  closePipelineModal();
+  // Switch to CRM view and open the contact
+  switchView('crm', document.querySelector('.nav-item[onclick*="crm"]'));
+  setTimeout(function() { crmSelectContact(crmId); }, 300);
 }
 
 function savePipelineContact() {
