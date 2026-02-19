@@ -1279,10 +1279,10 @@ body {
         <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
       </div>
       <div class="modal-footer-right" id="pcmOutcomeWrap" style="display:none;">
-        <button class="outcome-btn ob-denied" onclick="closePipelineModal();openFundedModal(editingPipelineId,'denied')"><i class="fas fa-times-circle"></i> Denied</button>
-        <button class="outcome-btn ob-suspended" onclick="closePipelineModal();openFundedModal(editingPipelineId,'suspended')"><i class="fas fa-pause-circle"></i> Suspended</button>
-        <button class="outcome-btn ob-withdrawn" onclick="closePipelineModal();openFundedModal(editingPipelineId,'withdrawn')"><i class="fas fa-undo"></i> Withdrawn</button>
-        <button class="outcome-btn ob-funded" onclick="closePipelineModal();openFundedModal(editingPipelineId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
+        <button class="outcome-btn ob-denied" title="Mark as Denied" onclick="closePipelineModal();openFundedModal(editingPipelineId,'denied')"><i class="fas fa-times-circle"></i> Denied</button>
+        <button class="outcome-btn ob-suspended" title="Mark as Suspended" onclick="closePipelineModal();openFundedModal(editingPipelineId,'suspended')"><i class="fas fa-pause-circle"></i> Suspended</button>
+        <button class="outcome-btn ob-withdrawn" title="Mark as Withdrawn" onclick="closePipelineModal();openFundedModal(editingPipelineId,'withdrawn')"><i class="fas fa-undo"></i> Withdrawn</button>
+        <button class="outcome-btn ob-funded" title="Mark as Funded" onclick="closePipelineModal();openFundedModal(editingPipelineId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
         <button class="topbar-btn primary" style="margin-left:4px;" onclick="savePipelineContact()">Save</button>
       </div>
     </div>
@@ -1357,10 +1357,10 @@ body {
       <button class="topbar-btn" style="font-size:11px;" onclick="saveFaceCard()"><i class="fas fa-save"></i> Save</button>
       <button class="topbar-btn" style="font-size:11px;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" id="fcCrmBtn" onclick="fcOpenCrm()"><i class="fas fa-address-card"></i> CRM</button>
       <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
-      <button class="outcome-btn ob-denied" onclick="closeFaceCard();openFundedModal(fcContactId,'denied')"><i class="fas fa-times-circle"></i></button>
-      <button class="outcome-btn ob-suspended" onclick="closeFaceCard();openFundedModal(fcContactId,'suspended')"><i class="fas fa-pause-circle"></i></button>
-      <button class="outcome-btn ob-withdrawn" onclick="closeFaceCard();openFundedModal(fcContactId,'withdrawn')"><i class="fas fa-undo"></i></button>
-      <button class="outcome-btn ob-funded" onclick="closeFaceCard();openFundedModal(fcContactId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
+      <button class="outcome-btn ob-denied" title="Mark as Denied" onclick="closeFaceCard();openFundedModal(fcContactId,'denied')"><i class="fas fa-times-circle"></i></button>
+      <button class="outcome-btn ob-suspended" title="Mark as Suspended" onclick="closeFaceCard();openFundedModal(fcContactId,'suspended')"><i class="fas fa-pause-circle"></i></button>
+      <button class="outcome-btn ob-withdrawn" title="Mark as Withdrawn" onclick="closeFaceCard();openFundedModal(fcContactId,'withdrawn')"><i class="fas fa-undo"></i></button>
+      <button class="outcome-btn ob-funded" title="Mark as Funded" onclick="closeFaceCard();openFundedModal(fcContactId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
     </div>
   </div>
   <div class="fc-body">
