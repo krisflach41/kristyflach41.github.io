@@ -917,13 +917,18 @@ function saveCoBorrowerState() {
     date_closing: data.date_closing
   };
 
+  // Remove top-level fields that don't belong in per-borrower data
+  delete data.co_borrowers;
+  delete data.shared_loan;
+
   if (activeCoBorrowerIdx === 0) {
-    // Save to primary (stored in main card state — already in crmContacts)
     window._primaryBorrowerData = data;
     window._primaryBorrowerData.employers = JSON.parse(JSON.stringify(borrowerEmployers));
     window._primaryBorrowerData.education = JSON.parse(JSON.stringify(borrowerEducation));
     window._primaryBorrowerData.reos = JSON.parse(JSON.stringify(borrowerREOs));
     window._primaryBorrowerData.documents = cardDocuments.slice();
+    // Keep primaryBorrowerName in sync
+    if (data.name) primaryBorrowerName = data.name;
   } else {
     var cb = coBorrowers[activeCoBorrowerIdx - 1];
     if (cb) {
@@ -1361,8 +1366,8 @@ function collectAllCardData(){
     data.education=borrowerEducation;
     data.reos=borrowerREOs;
     data.documents=cardDocuments;
-    data.co_borrowers=coBorrowers;
-    data.shared_loan=sharedLoanData;
+    // NOTE: co_borrowers and shared_loan are NOT included here.
+    // They are added at the top level in crmSaveContact only.
   }
   return data;
 }
@@ -1484,44 +1489,95 @@ function crmSwitchTab(tab){
 }
 
 function crmSaveContact(){
-  // Save current co-borrower state before collecting
-  if(crmCurrentType==='borrower' && coBorrowers.length>0) saveCoBorrowerState();
+  console.log('=== SAVE CONTACT START ===');
+  console.log('crmCurrentId:', crmCurrentId);
+  console.log('crmCurrentType:', crmCurrentType);
+  console.log('activeCoBorrowerIdx:', activeCoBorrowerIdx);
+  console.log('coBorrowers count:', coBorrowers.length);
 
-  var data;
+  // Step 1: Save current co-borrower state into memory
+  if(crmCurrentType==='borrower' && coBorrowers.length>0) {
+    console.log('Saving co-borrower state...');
+    saveCoBorrowerState();
+  }
+
+  // Step 2: Build the data object — always use primary borrower as the contact record
+  var data = {};
   if(crmCurrentType==='borrower' && activeCoBorrowerIdx > 0 && window._primaryBorrowerData) {
-    // We're viewing a co-borrower — save the PRIMARY borrower's data as the contact record
-    data = Object.assign({}, window._primaryBorrowerData);
-    data.employers = window._primaryBorrowerData.employers ? JSON.parse(JSON.stringify(window._primaryBorrowerData.employers)) : borrowerEmployers;
-    data.education = window._primaryBorrowerData.education ? JSON.parse(JSON.stringify(window._primaryBorrowerData.education)) : borrowerEducation;
-    data.reos = window._primaryBorrowerData.reos ? JSON.parse(JSON.stringify(window._primaryBorrowerData.reos)) : borrowerREOs;
-    data.documents = window._primaryBorrowerData.documents ? window._primaryBorrowerData.documents.slice() : cardDocuments;
-    data.co_borrowers = coBorrowers;
-    data.shared_loan = sharedLoanData;
+    // On a co-borrower tab — pull primary's data from stored state
+    console.log('On co-borrower tab, using _primaryBorrowerData');
+    data = JSON.parse(JSON.stringify(window._primaryBorrowerData));
   } else {
+    // On primary tab or non-borrower — read from DOM
+    console.log('On primary/standard tab, collecting from DOM');
     data = collectAllCardData();
   }
-  data.type=crmCurrentType;
-  if(!data.name){showToast('Name is required');return;}
-  if(crmCurrentId)data.id=crmCurrentId;
-  fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crm:data})})
-  .then(function(r){return r.json();})
+
+  // Step 3: Always attach co-borrower and shared loan data for borrowers
+  if(crmCurrentType==='borrower') {
+    data.co_borrowers = JSON.parse(JSON.stringify(coBorrowers));
+    data.shared_loan = JSON.parse(JSON.stringify(sharedLoanData));
+  }
+
+  data.type = crmCurrentType;
+  console.log('Data name:', data.name);
+  console.log('Data keys:', Object.keys(data).join(', '));
+
+  if(!data.name){
+    showToast('Name is required');
+    console.log('ABORT: No name');
+    return;
+  }
+
+  if(crmCurrentId) data.id = crmCurrentId;
+
+  var payload = JSON.stringify({crm: data});
+  console.log('Payload size:', payload.length, 'bytes');
+  console.log('Sending to:', CRM_API + '/crm-api?action=save');
+
+  // Step 4: Send to API
+  fetch(CRM_API + '/crm-api?action=save', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: payload
+  })
+  .then(function(r){
+    console.log('Response status:', r.status);
+    return r.json();
+  })
   .then(function(result){
+    console.log('Response body:', JSON.stringify(result));
     if(result.success){
       if(crmCurrentId){
-        var idx=crmContacts.findIndex(function(c){return c.id===crmCurrentId;});
-        if(idx>=0)crmContacts[idx]=Object.assign(crmContacts[idx],data);
+        var idx = crmContacts.findIndex(function(c){return c.id === crmCurrentId;});
+        if(idx >= 0) crmContacts[idx] = Object.assign(crmContacts[idx], data);
         showToast('Saved!');
       } else {
-        data.id=result.id;data.created_at=new Date().toISOString();
-        crmContacts.push(data);crmCurrentId=result.id;
+        data.id = result.id;
+        data.created_at = new Date().toISOString();
+        crmContacts.push(data);
+        crmCurrentId = result.id;
         showToast('Contact created!');
       }
       crmRenderList();
-      document.getElementById('crmDName').textContent=data.name||'Unnamed';
-      crmDirty=false;
-      document.getElementById('navCrmCount').textContent=crmContacts.length;
-      document.getElementById('dashCrm').textContent=crmContacts.length;
-      document.getElementById('crmSubtitle').textContent=crmContacts.length+' contacts';
-    } else {showToast('Save failed: '+(result.message||''));}
-  }).catch(function(err){showToast('Save failed');console.error(err);});
+      // Update header with primary name (not co-borrower name)
+      if(crmCurrentType==='borrower' && activeCoBorrowerIdx > 0) {
+        document.getElementById('crmDName').textContent = primaryBorrowerName || data.name || 'Unnamed';
+      } else {
+        document.getElementById('crmDName').textContent = data.name || 'Unnamed';
+      }
+      crmDirty = false;
+      document.getElementById('navCrmCount').textContent = crmContacts.length;
+      document.getElementById('dashCrm').textContent = crmContacts.length;
+      document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
+      console.log('=== SAVE SUCCESS ===');
+    } else {
+      showToast('Save failed: ' + (result.message || ''));
+      console.log('=== SAVE FAILED ===', result);
+    }
+  })
+  .catch(function(err){
+    showToast('Save error — check console');
+    console.error('=== SAVE ERROR ===', err);
+  });
 }
