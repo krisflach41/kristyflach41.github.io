@@ -187,6 +187,25 @@ function formatMoney(a){
   return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',minimumFractionDigits:2,maximumFractionDigits:2}).format(a||0);
 }
 
+// ===== PHONE DUPLICATE CHECKER =====
+function normalizePhone(p) {
+  if (!p) return '';
+  return String(p).replace(/\D/g, '').slice(-10); // last 10 digits strips country code
+}
+
+function findContactByPhone(phone, excludeId) {
+  if (!phone) return null;
+  var norm = normalizePhone(phone);
+  if (norm.length < 7) return null; // too short to match
+  if (typeof crmContacts === 'undefined') return null;
+  for (var i = 0; i < crmContacts.length; i++) {
+    var c = crmContacts[i];
+    if (excludeId && c.id === excludeId) continue;
+    if (normalizePhone(c.phone) === norm) return c;
+  }
+  return null;
+}
+
 // ===== RENDER BORROWER CARD (hybrid layout) =====
 function renderBorrowerCard(container, data) {
   data=data||{};
@@ -773,9 +792,10 @@ function renderCoBorrowerTabs() {
   // Co-borrower tabs
   coBorrowers.forEach(function(cb, i) {
     var cbName = cb.name ? cb.name.split(' ')[0] : 'B' + (i + 2);
-    var cls = 'coborrower-tab secondary' + (activeCoBorrowerIdx === (i + 1) ? ' active' : '') + (cb.excluded ? ' excluded' : '');
+    var linked = cb.contact_id ? ' linked' : '';
+    var cls = 'coborrower-tab secondary' + (activeCoBorrowerIdx === (i + 1) ? ' active' : '') + (cb.excluded ? ' excluded' : '') + linked;
     h += '<div class="' + cls + '" onclick="switchCoBorrower(' + (i + 1) + ')" oncontextmenu="event.preventDefault();showCBContext(' + i + ',event)">';
-    h += cbName + '<span class="cb-relationship">' + (cb.relationship || 'co-borrower') + '</span></div>';
+    h += (cb.contact_id ? '<i class="fas fa-link cb-link-icon"></i> ' : '') + cbName + '<span class="cb-relationship">' + (cb.relationship || 'co-borrower') + '</span></div>';
   });
   h += '<button class="coborrower-add" onclick="showAddCoBorrower()">+ Co-Borrower</button>';
   h += '</div>';
@@ -818,11 +838,21 @@ function switchCoBorrower(idx) {
   if (idx === 0) {
     // Load primary borrower data
     loadPrimaryBorrowerData();
+    // Update header to show primary's name
+    if (window._primaryBorrowerData) {
+      document.getElementById('crmDName').textContent = window._primaryBorrowerData.name || 'Unnamed';
+      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, window._primaryBorrowerData.phone].filter(Boolean).join(' – ');
+    }
   } else {
     // Load co-borrower data
     var cb = coBorrowers[idx - 1];
     if (cb && cb.data) {
       loadCoBorrowerData(cb);
+    }
+    // Update header to show co-borrower's name
+    if (cb) {
+      document.getElementById('crmDName').textContent = cb.name || 'Co-Borrower';
+      document.getElementById('crmDMeta').textContent = [cb.email, cb.phone].filter(Boolean).join(' – ');
     }
   }
   renderCoBorrowerTabs();
@@ -910,7 +940,10 @@ function populateCardFields(data) {
 }
 
 // Add co-borrower modal
+var _cbPhoneMatch = null; // stores the matched contact when phone duplicate found
+
 function showAddCoBorrower() {
+  _cbPhoneMatch = null;
   var ov = document.getElementById('cbAddOverlay');
   if (!ov) {
     ov = document.createElement('div');
@@ -920,6 +953,7 @@ function showAddCoBorrower() {
       '<div class="card-fields single-col">' +
       '<div class="card-field"><label>Name</label><input type="text" id="cbAddName" placeholder="Full name"></div>' +
       '<div class="card-field"><label>Phone</label><input type="tel" id="cbAddPhone" placeholder="Phone"></div>' +
+      '<div id="cbPhoneMatchBanner" class="cb-phone-match" style="display:none;"></div>' +
       '<div class="card-field"><label>Email</label><input type="email" id="cbAddEmail" placeholder="Email"></div>' +
       '<div class="card-field"><label>Relationship</label><select id="cbAddRelationship">' +
       '<option value="spouse">Spouse</option><option value="co-borrower">Co-Borrower</option>' +
@@ -927,18 +961,94 @@ function showAddCoBorrower() {
       '<option value="other">Other</option></select></div>' +
       '</div>' +
       '<div style="display:flex;gap:8px;margin-top:16px;">' +
-      '<button class="card-action-btn primary" style="flex:1;" onclick="confirmAddCoBorrower()"><i class="fas fa-plus"></i> Add</button>' +
+      '<button class="card-action-btn primary" style="flex:1;" id="cbAddBtn" onclick="confirmAddCoBorrower()"><i class="fas fa-plus"></i> Add</button>' +
       '<button class="card-action-btn" style="flex:1;" onclick="closeCBAddModal()">Cancel</button>' +
       '</div></div>';
     ov.addEventListener('click', function(e) { if (e.target === ov) closeCBAddModal(); });
     document.body.appendChild(ov);
+
+    // Wire phone blur to check for duplicates
+    document.getElementById('cbAddPhone').addEventListener('blur', checkCBPhoneDuplicate);
+    document.getElementById('cbAddPhone').addEventListener('input', function() {
+      // Clear match banner while typing
+      var banner = document.getElementById('cbPhoneMatchBanner');
+      if (banner) { banner.style.display = 'none'; }
+      _cbPhoneMatch = null;
+      var btn = document.getElementById('cbAddBtn');
+      if (btn) { btn.innerHTML = '<i class="fas fa-plus"></i> Add'; }
+    });
   }
   // Clear fields
   document.getElementById('cbAddName').value = '';
   document.getElementById('cbAddPhone').value = '';
   document.getElementById('cbAddEmail').value = '';
   document.getElementById('cbAddRelationship').value = 'spouse';
+  var banner = document.getElementById('cbPhoneMatchBanner');
+  if (banner) banner.style.display = 'none';
+  var btn = document.getElementById('cbAddBtn');
+  if (btn) { btn.innerHTML = '<i class="fas fa-plus"></i> Add'; }
   ov.classList.add('show');
+}
+
+function checkCBPhoneDuplicate() {
+  var phone = document.getElementById('cbAddPhone').value;
+  var banner = document.getElementById('cbPhoneMatchBanner');
+  if (!banner) return;
+  var match = findContactByPhone(phone, crmCurrentId);
+  if (match) {
+    _cbPhoneMatch = match;
+    var typeBadge = (CONTACT_TYPES[match.type] || CONTACT_TYPES.other);
+    banner.innerHTML =
+      '<div class="cb-match-info">' +
+        '<i class="fas fa-exclamation-triangle"></i> ' +
+        '<strong>' + (match.name || 'Unnamed') + '</strong> (' + typeBadge.label + ') already has this phone number.' +
+      '</div>' +
+      '<div class="cb-match-actions">' +
+        '<button class="card-action-btn primary" style="padding:5px 12px;font-size:11px;" onclick="linkExistingAsCoBorrower()"><i class="fas fa-link"></i> Link Existing Contact</button>' +
+        '<span style="font-size:10px;color:rgba(255,255,255,0.35);">or continue to add new</span>' +
+      '</div>';
+    banner.style.display = 'block';
+    // Auto-fill name/email from match if fields are empty
+    var nameEl = document.getElementById('cbAddName');
+    var emailEl = document.getElementById('cbAddEmail');
+    if (nameEl && !nameEl.value && match.name) nameEl.value = match.name;
+    if (emailEl && !emailEl.value && match.email) emailEl.value = match.email;
+  } else {
+    _cbPhoneMatch = null;
+    banner.style.display = 'none';
+  }
+}
+
+function linkExistingAsCoBorrower() {
+  if (!_cbPhoneMatch) return;
+  var match = _cbPhoneMatch;
+  var rel = document.getElementById('cbAddRelationship').value;
+
+  // Save current state first
+  saveCoBorrowerState();
+
+  // Create co-borrower entry linked to the existing contact
+  var newCB = {
+    id: 'cb-' + Date.now(),
+    name: match.name || '', phone: match.phone || '', email: match.email || '',
+    relationship: rel, excluded: false,
+    contact_id: match.id, // Already linked — no need to "Create Contact" later
+    data: { name: match.name || '', phone: match.phone || '', email: match.email || '',
+            employers: [newEmployer()], education: [], reos: [], documents: [] }
+  };
+  coBorrowers.push(newCB);
+
+  closeCBAddModal();
+  _cbPhoneMatch = null;
+  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+
+  var newIdx = coBorrowers.length;
+  activeCoBorrowerIdx = newIdx;
+  loadCoBorrowerData(newCB);
+  document.getElementById('crmDName').textContent = match.name || 'Co-Borrower';
+  document.getElementById('crmDMeta').textContent = [match.email, match.phone].filter(Boolean).join(' – ');
+  renderCoBorrowerTabs();
+  showToast(match.name + ' linked as ' + rel);
 }
 function closeCBAddModal() { var o = document.getElementById('cbAddOverlay'); if (o) o.classList.remove('show'); }
 
@@ -969,6 +1079,9 @@ function confirmAddCoBorrower() {
   var newIdx = coBorrowers.length;
   activeCoBorrowerIdx = newIdx;
   loadCoBorrowerData(newCB);
+  // Update header to show co-borrower's name
+  document.getElementById('crmDName').textContent = name;
+  document.getElementById('crmDMeta').textContent = [email, phone].filter(Boolean).join(' – ');
   renderCoBorrowerTabs();
   showToast(name + ' added as ' + rel);
 }
@@ -1015,6 +1128,26 @@ function editCBRelationship(cbIdx) {
 function createCBContact(cbIdx) {
   var cb = coBorrowers[cbIdx];
   if (!cb) return;
+
+  // Check for duplicate phone before creating
+  if (cb.phone) {
+    var existing = findContactByPhone(cb.phone, crmCurrentId);
+    if (existing) {
+      // Show confirmation instead of silently creating
+      if (!confirm(existing.name + ' already exists with this phone number.\n\nClick OK to link to the existing contact, or Cancel to create a new one anyway.')) {
+        // User chose Cancel — proceed with creating new contact below
+      } else {
+        // User chose OK — link to existing contact
+        coBorrowers[cbIdx].contact_id = existing.id;
+        renderCoBorrowerTabs();
+        crmDirty = true;
+        var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+        showToast(cb.name + ' linked to existing contact ' + existing.name);
+        return;
+      }
+    }
+  }
+
   // Build contact data from co-borrower (don't call saveCoBorrowerState here — 
   // we don't want to overwrite stored data, just read what we need for the new contact)
   var contactData = {};
@@ -1289,7 +1422,20 @@ function crmSwitchTab(tab){
 function crmSaveContact(){
   // Save current co-borrower state before collecting
   if(crmCurrentType==='borrower' && coBorrowers.length>0) saveCoBorrowerState();
-  var data=collectAllCardData();
+
+  var data;
+  if(crmCurrentType==='borrower' && activeCoBorrowerIdx > 0 && window._primaryBorrowerData) {
+    // We're viewing a co-borrower — save the PRIMARY borrower's data as the contact record
+    data = Object.assign({}, window._primaryBorrowerData);
+    data.employers = window._primaryBorrowerData.employers ? JSON.parse(JSON.stringify(window._primaryBorrowerData.employers)) : borrowerEmployers;
+    data.education = window._primaryBorrowerData.education ? JSON.parse(JSON.stringify(window._primaryBorrowerData.education)) : borrowerEducation;
+    data.reos = window._primaryBorrowerData.reos ? JSON.parse(JSON.stringify(window._primaryBorrowerData.reos)) : borrowerREOs;
+    data.documents = window._primaryBorrowerData.documents ? window._primaryBorrowerData.documents.slice() : cardDocuments;
+    data.co_borrowers = coBorrowers;
+    data.shared_loan = sharedLoanData;
+  } else {
+    data = collectAllCardData();
+  }
   data.type=crmCurrentType;
   if(!data.name){showToast('Name is required');return;}
   if(crmCurrentId)data.id=crmCurrentId;
