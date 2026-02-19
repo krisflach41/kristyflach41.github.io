@@ -51,7 +51,6 @@ function getFieldsForType(type) {
   switch(type) {
     case 'client':
       return [
-        {section:'Contact Info',fields:contactFields},
         {section:'Address',fields:addressFields},
         {section:'Employment',fields:[
           {id:'employer',label:'Employer',type:'text'},
@@ -70,9 +69,10 @@ function getFieldsForType(type) {
       ];
     case 'borrower':
       return 'borrower'; // handled by renderBorrowerCard
+    case 'past_client':
+      return 'borrower'; // uses same card as borrower
     case 'realtor':
       return [
-        {section:'Contact Info',fields:contactFields},
         {section:'Brokerage',fields:[
           {id:'company',label:'Brokerage Name',type:'text'},
           {id:'license_number',label:'License Number',type:'text'}
@@ -90,7 +90,6 @@ function getFieldsForType(type) {
       ];
     case 'title': case 'appraiser':
       return [
-        {section:'Contact Info',fields:contactFields},
         {section:'Company',fields:[{id:'company',label:'Company Name',type:'text'}]},
         {section:'Address',fields:addressFields},
         {section:'Web',fields:[{id:'website',label:'Website',type:'text'}]},
@@ -98,7 +97,6 @@ function getFieldsForType(type) {
       ];
     default:
       return [
-        {section:'Contact Info',fields:contactFields},
         {section:'Company',fields:[{id:'company',label:'Company Name',type:'text'}]},
         {section:'Address',fields:addressFields},
         {section:'Tags & Notes',fields:noteFields}
@@ -1624,7 +1622,10 @@ function crmSwitchTab(tab){
   if(contentEl)contentEl.classList.add('active');
 }
 
+var crmSaving = false;
 function crmSaveContact(){
+  if (crmSaving) { console.log('Save already in progress, skipping'); return; }
+  crmSaving = true;
   console.log('=== SAVE CONTACT START ===');
   console.log('crmCurrentId:', crmCurrentId);
   console.log('crmCurrentType:', crmCurrentType);
@@ -1707,13 +1708,16 @@ function crmSaveContact(){
       document.getElementById('dashCrm').textContent = crmContacts.length;
       document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
       console.log('=== SAVE SUCCESS ===');
+      crmSaving = false;
     } else {
       showToast('Save failed: ' + (result.message || ''));
       console.log('=== SAVE FAILED ===', result);
+      crmSaving = false;
     }
   })
   .catch(function(err){
     showToast('Save error — check console');
     console.error('=== SAVE ERROR ===', err);
+    crmSaving = false;
   });
 }
