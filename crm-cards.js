@@ -7,14 +7,15 @@ var CRM_API = 'https://agent-edge-backend.vercel.app/api';
 
 // ===== TYPE DEFINITIONS =====
 var CONTACT_TYPES = {
-  client:     { label: 'Client',     icon: 'fa-user',              color: 'var(--type-client)' },
-  borrower:   { label: 'Borrower',   icon: 'fa-file-invoice-dollar', color: 'var(--type-borrower)' },
-  realtor:    { label: 'Realtor',    icon: 'fa-handshake',         color: 'var(--type-realtor)' },
-  title:      { label: 'Title',      icon: 'fa-building',          color: 'var(--type-title)' },
-  appraiser:  { label: 'Appraiser',  icon: 'fa-search-dollar',     color: 'var(--type-appraiser)' },
-  contractor: { label: 'Contractor', icon: 'fa-hard-hat',          color: 'var(--type-contractor)' },
-  vendor:     { label: 'Vendor',     icon: 'fa-store',             color: 'var(--type-vendor)' },
-  other:      { label: 'Other',      icon: 'fa-ellipsis-h',        color: 'var(--type-other)' }
+  client:      { label: 'Client',      icon: 'fa-user',              color: 'var(--type-client)' },
+  borrower:    { label: 'Borrower',    icon: 'fa-file-invoice-dollar', color: 'var(--type-borrower)' },
+  past_client: { label: 'Past Client', icon: 'fa-user-check',        color: '#22c55e' },
+  realtor:     { label: 'Realtor',     icon: 'fa-handshake',         color: 'var(--type-realtor)' },
+  title:       { label: 'Title',       icon: 'fa-building',          color: 'var(--type-title)' },
+  appraiser:   { label: 'Appraiser',   icon: 'fa-search-dollar',     color: 'var(--type-appraiser)' },
+  contractor:  { label: 'Contractor',  icon: 'fa-hard-hat',          color: 'var(--type-contractor)' },
+  vendor:      { label: 'Vendor',      icon: 'fa-store',             color: 'var(--type-vendor)' },
+  other:       { label: 'Other',       icon: 'fa-ellipsis-h',        color: 'var(--type-other)' }
 };
 var PIPELINE_STAGES = [
   { id: 'warm', label: 'Warm Leads' }, { id: 'active', label: 'Active Conversations' },
@@ -1525,15 +1526,17 @@ function crmPopulateCard(c,activity){
   document.getElementById('crmDName').textContent=c.name||'Unnamed';
   document.getElementById('crmDMeta').textContent=[c.email,c.phone,c.company].filter(Boolean).join(' - ');
   document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+  // Show qualifying income for borrowers (not past clients)
   var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
-  // Co-borrower tabs
+  // Co-borrower tabs — show for borrower and past_client (data is still there)
   var cbTabs=document.getElementById('coBorrowerTabs');
-  if(cbTabs) cbTabs.style.display=(type==='borrower'?'flex':'none');
-  if(type==='borrower'){
+  if(cbTabs) cbTabs.style.display=(type==='borrower'||type==='past_client'?'flex':'none');
+  if(type==='borrower'||type==='past_client'){
     initCoBorrowers(c);
     window._primaryBorrowerData=Object.assign({},c);
     if(c.employers) window._primaryBorrowerData.employers=JSON.parse(JSON.stringify(c.employers));
     if(c.education) window._primaryBorrowerData.education=JSON.parse(JSON.stringify(c.education));
+    if(c.assets) window._primaryBorrowerData.assets=JSON.parse(JSON.stringify(c.assets));
     if(c.reos) window._primaryBorrowerData.reos=JSON.parse(JSON.stringify(c.reos));
     if(c.documents) window._primaryBorrowerData.documents=(c.documents||[]).slice();
   }
@@ -1545,11 +1548,13 @@ function crmPopulateCard(c,activity){
     if(m)fs=m.stage;
   }
   renderPipelineButton(pBtn,c.id,fs);
-  // Form
+  // Fetch loan history for this contact
+  crmFetchLoanHistory(c.id);
+  // Form — borrower and past_client both use borrower card (past_client keeps data visible)
   var fc=document.getElementById('crmCardForm');
-  if(type==='borrower'){renderBorrowerCard(fc,c);}
+  if(type==='borrower'||type==='past_client'){renderBorrowerCard(fc,c);}
   else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,c);}
-  if(type==='borrower') renderCoBorrowerTabs();
+  if(type==='borrower'||type==='past_client') renderCoBorrowerTabs();
   // Populate header fields
   var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value=c.name||'';
   var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value=c.phone||'';
@@ -1561,6 +1566,43 @@ function crmPopulateCard(c,activity){
   // Enable delete for existing contacts
   
   crmSwitchTab('details');
+}
+
+function crmFetchLoanHistory(contactId){
+  var banner=document.getElementById('crmLoanHistoryBanner');
+  if(!banner)return;
+  banner.style.display='none';
+  banner.innerHTML='';
+  fetch(CRM_API+'/pipeline-api',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'getHistory',crm_contact_id:contactId})
+  }).then(function(r){return r.json();})
+  .then(function(data){
+    if(!data.success||!data.history||data.history.length===0)return;
+    var icons={funded:'fa-trophy',denied:'fa-times-circle',suspended:'fa-pause-circle',withdrawn:'fa-undo'};
+    var h='<div class="lh-banner">';
+    h+='<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.25);margin-bottom:2px;">Loan History</div>';
+    data.history.forEach(function(loan){
+      var cls='lh-card lh-card-'+(loan.outcome||'funded');
+      var icon=icons[loan.outcome]||'fa-file';
+      var loanType=loan.loan_type||'';
+      var rate=loan.interest_rate?(parseFloat(loan.interest_rate).toFixed(3)+'%'):'';
+      var amt=loan.loan_amount?('$'+parseFloat(loan.loan_amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')):'';
+      var addr=loan.subject_address||'';
+      var dt=loan.outcome_date?new Date(loan.outcome_date+'T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):'';
+      var details=[loanType,rate,amt].filter(Boolean).join(' · ');
+      if(addr) details+=(details?' — ':'')+addr;
+      h+='<div class="'+cls+'">';
+      h+='<i class="fas '+icon+'"></i>';
+      h+='<div class="lh-card-details">'+details+'</div>';
+      h+='<span class="lh-card-outcome">'+loan.outcome+'</span>';
+      h+='<span class="lh-card-date">'+dt+'</span>';
+      h+='</div>';
+    });
+    h+='</div>';
+    banner.innerHTML=h;
+    banner.style.display='block';
+  }).catch(function(err){console.error('Loan history fetch error:',err);});
 }
 
 function renderActivity(activity){
