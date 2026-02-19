@@ -279,7 +279,7 @@ body {
 }
 .crm-field input:focus, .crm-field select:focus, .crm-field textarea:focus { outline: none; border-color: rgba(59,130,246,0.4); background: rgba(255,255,255,0.08); }
 .crm-field textarea { resize: vertical; min-height: 70px; }
-.crm-field select option { background: var(--bg-card); }
+.crm-field select option { background: var(--bg-card); color: var(--text-primary); }
 .crm-section-title {
   font-size: 11px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase;
   letter-spacing: 1px; margin: 20px 0 10px; grid-column: 1 / -1;
@@ -540,6 +540,7 @@ body {
   border-radius:6px; padding:7px 10px; color:var(--text-primary); font-size:12px; font-family:inherit;
 }
 .fc-field input:focus, .fc-field select:focus { outline:none; border-color:var(--accent-blue); }
+.fc-field select option { background:#1a2332; color:#eaf0f6; }
 .fc-computed {
   background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2);
   border-radius:6px; padding:7px 10px; font-size:12px; color:#93c5fd;
@@ -589,6 +590,7 @@ body {
   background:rgba(255,255,255,0.04); border:1px solid var(--border-light);
   border-radius:6px; padding:6px 8px; color:var(--text-primary); font-size:11px; font-family:inherit;
 }
+.fc-task-form select option { background:#1a2332; color:#eaf0f6; }
 .fc-task-form-full { grid-column:1/-1; }
 
 /* Team roster */
@@ -1382,35 +1384,56 @@ body {
       <div class="fc-section-title"><i class="fas fa-file-invoice-dollar"></i> Loan Details</div>
       <div class="fc-grid">
         <div class="fc-field full">
-          <div class="fc-lbl">Subject Property</div>
-          <input id="fc_address" placeholder="123 Main St, City, ST 00000">
+          <div class="fc-lbl">Street Address</div>
+          <input id="fc_street" placeholder="123 Main St">
         </div>
         <div class="fc-field">
-          <div class="fc-lbl">Transaction Type</div>
-          <select id="fc_transType"><option value="">--</option><option value="purchase">Purchase</option><option value="refinance">Refinance</option><option value="new_construction">New Construction</option><option value="heloc">HELOC</option></select>
+          <div class="fc-lbl">City</div>
+          <input id="fc_city" placeholder="Columbus">
         </div>
-        <div class="fc-field">
-          <div class="fc-lbl">Loan Program</div>
-          <select id="fc_loanProgram"><option value="">--</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="jumbo">Jumbo</option><option value="land_lot">Land / Lot</option></select>
+        <div class="fc-field" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="fc-field">
+            <div class="fc-lbl">State</div>
+            <input id="fc_state" placeholder="OH" maxlength="2" style="text-transform:uppercase;">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Zip</div>
+            <input id="fc_zip" placeholder="43215" maxlength="10">
+          </div>
         </div>
-        <div class="fc-field">
-          <div class="fc-lbl">Occupancy</div>
-          <select id="fc_occupancy"><option value="">--</option><option value="owner_occupied">Owner Occupied</option><option value="investor">Investor</option><option value="second_home">Second Home</option></select>
-        </div>
-        <div class="fc-field">
-          <div class="fc-lbl">Interest Rate (%)</div>
-          <input id="fc_rate" type="number" step="0.001" placeholder="6.250">
+        <div class="fc-field full" style="margin-top:2px;">
+          <a href="#" id="fc_zillowLink" target="_blank" style="font-size:10px;color:#0ea5e9;text-decoration:none;display:none;" onclick="return fcOpenZillow()"><i class="fas fa-external-link-alt"></i> View on Zillow</a>
         </div>
       </div>
-      <div style="margin-top:14px;">
+      <div style="margin-top:12px;">
+        <div class="fc-grid">
+          <div class="fc-field">
+            <div class="fc-lbl">Transaction Type</div>
+            <select id="fc_transType"><option value="">--</option><option value="purchase">Purchase</option><option value="refinance">Refinance</option><option value="new_construction">New Construction</option><option value="heloc">HELOC</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Loan Program</div>
+            <select id="fc_loanProgram"><option value="">--</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="jumbo">Jumbo</option><option value="land_lot">Land / Lot</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Occupancy</div>
+            <select id="fc_occupancy"><option value="">--</option><option value="owner_occupied">Owner Occupied</option><option value="investor">Investor</option><option value="second_home">Second Home</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Interest Rate (%)</div>
+            <input id="fc_rate" placeholder="0.000" onblur="fcFormatRate(this)">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
         <div class="fc-grid-3">
           <div class="fc-field">
             <div class="fc-lbl">Appraised Value</div>
-            <input id="fc_appraisedValue" type="number" placeholder="0" oninput="fcCalcLTV()">
+            <input id="fc_appraisedValue" placeholder="$0.00" onblur="fcFormatMoney(this);fcCalcLTV()" onfocus="fcUnformatMoney(this)">
           </div>
           <div class="fc-field">
             <div class="fc-lbl">Loan Amount</div>
-            <input id="fc_loanAmount" type="number" placeholder="0" oninput="fcCalcLTV()">
+            <input id="fc_loanAmount" placeholder="$0.00" onblur="fcFormatMoney(this);fcCalcLTV()" onfocus="fcUnformatMoney(this)">
           </div>
           <div class="fc-field">
             <div class="fc-lbl">LTV / PMI</div>
@@ -2047,13 +2070,17 @@ function openFaceCard(contactId) {
 
   // Fields
   document.getElementById('fc_loanNumber').value = c.loanNumber || '';
-  document.getElementById('fc_address').value = c.subjectAddress || '';
+  document.getElementById('fc_street').value = c.subjectStreet || '';
+  document.getElementById('fc_city').value = c.subjectCity || '';
+  document.getElementById('fc_state').value = c.subjectState || '';
+  document.getElementById('fc_zip').value = c.subjectZip || '';
+  fcUpdateZillowLink();
   document.getElementById('fc_transType').value = c.transactionType || '';
   document.getElementById('fc_loanProgram').value = c.loanProgram || '';
   document.getElementById('fc_occupancy').value = c.occupancyType || '';
-  document.getElementById('fc_rate').value = c.interestRate || '';
-  document.getElementById('fc_appraisedValue').value = c.appraisedValue || '';
-  document.getElementById('fc_loanAmount').value = c.loanAmount || '';
+  document.getElementById('fc_rate').value = c.interestRate ? parseFloat(c.interestRate).toFixed(3) : '';
+  document.getElementById('fc_appraisedValue').value = c.appraisedValue ? fcToMoney(c.appraisedValue) : '';
+  document.getElementById('fc_loanAmount').value = c.loanAmount ? fcToMoney(c.loanAmount) : '';
   fcCalcLTV();
 
   // Borrower chips
@@ -2107,8 +2134,8 @@ function closeFaceCard() {
 }
 
 function fcCalcLTV() {
-  var av = parseFloat(document.getElementById('fc_appraisedValue').value) || 0;
-  var la = parseFloat(document.getElementById('fc_loanAmount').value) || 0;
+  var av = fcParseMoney(document.getElementById('fc_appraisedValue').value);
+  var la = fcParseMoney(document.getElementById('fc_loanAmount').value);
   var el = document.getElementById('fc_ltvDisplay');
   if (av > 0 && la > 0) {
     var ltv = (la / av * 100);
@@ -2117,6 +2144,65 @@ function fcCalcLTV() {
   } else {
     el.innerHTML = '— %';
   }
+}
+
+// Money formatting helpers
+function fcParseMoney(val) {
+  if (!val) return 0;
+  return parseFloat(String(val).replace(/[^0-9.\-]/g, '')) || 0;
+}
+
+function fcToMoney(val) {
+  var num = parseFloat(String(val).replace(/[^0-9.\-]/g, '')) || 0;
+  return '$' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fcFormatMoney(el) {
+  var num = fcParseMoney(el.value);
+  if (num > 0) {
+    el.value = fcToMoney(num);
+  } else {
+    el.value = '';
+  }
+}
+
+function fcUnformatMoney(el) {
+  var num = fcParseMoney(el.value);
+  if (num > 0) {
+    el.value = num;
+  }
+}
+
+function fcFormatRate(el) {
+  var num = parseFloat(el.value);
+  if (!isNaN(num) && num > 0) {
+    el.value = num.toFixed(3);
+  }
+}
+
+function fcUpdateZillowLink() {
+  var street = document.getElementById('fc_street').value.trim();
+  var city = document.getElementById('fc_city').value.trim();
+  var state = document.getElementById('fc_state').value.trim();
+  var zip = document.getElementById('fc_zip').value.trim();
+  var link = document.getElementById('fc_zillowLink');
+  if (street && (city || zip)) {
+    link.style.display = 'inline';
+  } else {
+    link.style.display = 'none';
+  }
+}
+
+function fcOpenZillow() {
+  var street = document.getElementById('fc_street').value.trim();
+  var city = document.getElementById('fc_city').value.trim();
+  var state = document.getElementById('fc_state').value.trim();
+  var zip = document.getElementById('fc_zip').value.trim();
+  var addr = [street, city, state, zip].filter(Boolean).join(' ');
+  if (addr) {
+    window.open('https://www.zillow.com/homes/' + encodeURIComponent(addr) + '_rb/', '_blank');
+  }
+  return false;
 }
 
 function fcDateBadge(val) {
@@ -2234,14 +2320,18 @@ function saveFaceCard() {
 
   // Collect all fields
   c.loanNumber = document.getElementById('fc_loanNumber').value.trim();
-  c.subjectAddress = document.getElementById('fc_address').value.trim();
+  c.subjectStreet = document.getElementById('fc_street').value.trim();
+  c.subjectCity = document.getElementById('fc_city').value.trim();
+  c.subjectState = document.getElementById('fc_state').value.trim().toUpperCase();
+  c.subjectZip = document.getElementById('fc_zip').value.trim();
+  c.subjectAddress = [c.subjectStreet, c.subjectCity, c.subjectState, c.subjectZip].filter(Boolean).join(', ');
   c.transactionType = document.getElementById('fc_transType').value;
   c.loanProgram = document.getElementById('fc_loanProgram').value;
   c.loanType = c.transactionType + (c.loanProgram ? ' / ' + c.loanProgram : '');
   c.occupancyType = document.getElementById('fc_occupancy').value;
   c.interestRate = document.getElementById('fc_rate').value.trim();
-  c.appraisedValue = document.getElementById('fc_appraisedValue').value.trim();
-  c.loanAmount = document.getElementById('fc_loanAmount').value.trim();
+  c.appraisedValue = String(fcParseMoney(document.getElementById('fc_appraisedValue').value) || '');
+  c.loanAmount = String(fcParseMoney(document.getElementById('fc_loanAmount').value) || '');
 
   // Collect dates
   c.dates = c.dates || {};
@@ -2269,6 +2359,8 @@ function saveFaceCard() {
       loanAmount: c.loanAmount, appraisedValue: c.appraisedValue,
       loanNumber: c.loanNumber,
       interestRate: c.interestRate, subjectAddress: c.subjectAddress,
+      subjectStreet: c.subjectStreet, subjectCity: c.subjectCity,
+      subjectState: c.subjectState, subjectZip: c.subjectZip,
       lockStatus: c.lockStatus, crm_contact_id: c.crm_contact_id,
       dates: c.dates, borrowers: c.borrowers || [],
       tasks: c.tasks || []
