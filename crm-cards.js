@@ -167,6 +167,7 @@ function wireTracking(container) {
 }
 
 // Wire the always-visible header fields (Name, Phone, Email) which live outside crmCardForm
+// Also wire the action buttons with proper JS listeners as backup for onclick attributes
 var _headerFieldsWired = false;
 function wireHeaderFields() {
   if (_headerFieldsWired) return;
@@ -185,6 +186,23 @@ function wireHeaderFields() {
     el.addEventListener('input', dirty);
     el.addEventListener('change', dirty);
   });
+  // Wire action buttons with JS listeners (more reliable than onclick attributes)
+  var saveBtn = document.getElementById('crmSaveBtn');
+  if (saveBtn && !saveBtn._wired) {
+    saveBtn._wired = true;
+    saveBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (!this.disabled) crmSaveContact();
+    });
+  }
+  var deleteBtn = document.getElementById('crmDeleteBtn');
+  if (deleteBtn && !deleteBtn._wired) {
+    deleteBtn._wired = true;
+    deleteBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      crmConfirmDelete();
+    });
+  }
 }
 
 // ===== BORROWER STATE =====
@@ -650,8 +668,20 @@ function renderPipelineButton(container,contactId,currentStage){
   container.innerHTML=h;
 }
 function togglePipelineDropdown(){
-  var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.toggle('show');
-  setTimeout(function(){var c=function(e){if(!e.target.closest('.pipeline-action')){dd.classList.remove('show');document.removeEventListener('click',c);}};document.addEventListener('click',c);},10);
+  var dd=document.getElementById('pipelineDropdown');
+  if(!dd) return;
+  dd.classList.toggle('show');
+  if(dd.classList.contains('show')){
+    setTimeout(function(){
+      var close=function(e){
+        if(!e.target.closest('.pipeline-action')){
+          dd.classList.remove('show');
+        }
+        document.removeEventListener('click',close,true);
+      };
+      document.addEventListener('click',close,true);
+    },10);
+  }
 }
 
 function setPipelineStage(contactId,stage){
@@ -1117,14 +1147,18 @@ function showCBContext(cbIdx, event) {
   menu.style.position = 'fixed';
   menu.style.left = event.clientX + 'px';
   menu.style.top = event.clientY + 'px';
+  menu.style.zIndex = '200';
   menu.innerHTML =
     '<div class="cb-context-item" onclick="editCBRelationship(' + cbIdx + ')"><i class="fas fa-edit"></i> Change Relationship</div>' +
     '<div class="cb-context-item' + (cb.excluded ? '' : ' danger') + '" onclick="toggleCBExclude(' + cbIdx + ')">' +
     (cb.excluded ? '<i class="fas fa-check"></i> Include on Loan' : '<i class="fas fa-ban"></i> Exclude from Loan') + '</div>';
   document.body.appendChild(menu);
   setTimeout(function() {
-    var close = function() { menu.remove(); document.removeEventListener('click', close); };
-    document.addEventListener('click', close);
+    var close = function(e) {
+      if (!e.target.closest('.cb-context')) menu.remove();
+      document.removeEventListener('click', close, true);
+    };
+    document.addEventListener('click', close, true);
   }, 10);
 }
 
