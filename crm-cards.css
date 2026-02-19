@@ -379,6 +379,9 @@
 .coborrower-tab .cb-relationship {
   font-size: 9px; font-weight: 400; opacity: 0.7; display: block; margin-top: 1px;
 }
+.cb-link-icon {
+  font-size: 8px; opacity: 0.6; vertical-align: middle;
+}
 .coborrower-add {
   padding: 6px 10px; border-radius: 8px; font-size: 11px;
   font-weight: 600; cursor: pointer; border: 1px dashed rgba(255,255,255,0.15);
@@ -416,6 +419,19 @@
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
 }
 .cb-add-modal h3 { margin: 0 0 20px; font-size: 16px; color: #eaf0f6; }
+
+/* Phone duplicate match banner */
+.cb-phone-match {
+  padding: 10px 14px; border-radius: 8px; margin: -4px 0 8px;
+  background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);
+}
+.cb-match-info {
+  font-size: 12px; color: #f59e0b; margin-bottom: 8px;
+}
+.cb-match-info i { margin-right: 4px; }
+.cb-match-actions {
+  display: flex; align-items: center; gap: 10px;
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
