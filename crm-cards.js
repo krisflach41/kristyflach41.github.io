@@ -755,7 +755,14 @@ function renderCoBorrowerTabs() {
   if (crmCurrentType !== 'borrower') { container.style.display = 'none'; return; }
   container.style.display = 'flex';
 
-  var primaryName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Primary';
+  // Always get primary name from stored data when on a co-borrower tab
+  // (cf_name holds the CURRENT borrower's name, not necessarily primary)
+  var primaryName;
+  if (activeCoBorrowerIdx === 0) {
+    primaryName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Primary';
+  } else {
+    primaryName = (window._primaryBorrowerData && window._primaryBorrowerData.name) ? window._primaryBorrowerData.name : 'Primary';
+  }
   if (!primaryName) primaryName = 'Primary';
   var firstName = primaryName.split(' ')[0];
 
@@ -942,22 +949,27 @@ function confirmAddCoBorrower() {
   var email = document.getElementById('cbAddEmail').value;
   var rel = document.getElementById('cbAddRelationship').value;
 
-  // Save current state first
+  // Save current state first (we're on primary at this point)
   saveCoBorrowerState();
 
   // Create co-borrower
-  coBorrowers.push({
+  var newCB = {
     id: 'cb-' + Date.now(),
     name: name, phone: phone, email: email,
     relationship: rel, excluded: false,
     data: { name: name, phone: phone, email: email, employers: [newEmployer()], education: [], reos: [], documents: [] }
-  });
+  };
+  coBorrowers.push(newCB);
 
   closeCBAddModal();
   crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
 
-  // Switch to the new co-borrower
-  switchCoBorrower(coBorrowers.length);
+  // Switch to the new co-borrower — set index directly and load,
+  // skip saveCoBorrowerState inside switchCoBorrower since we just saved above
+  var newIdx = coBorrowers.length;
+  activeCoBorrowerIdx = newIdx;
+  loadCoBorrowerData(newCB);
+  renderCoBorrowerTabs();
   showToast(name + ' added as ' + rel);
 }
 
@@ -1003,16 +1015,21 @@ function editCBRelationship(cbIdx) {
 function createCBContact(cbIdx) {
   var cb = coBorrowers[cbIdx];
   if (!cb) return;
-  // Save current state first
-  saveCoBorrowerState();
-  // Build contact data from co-borrower
-  var contactData = Object.assign({}, cb.data || {});
+  // Build contact data from co-borrower (don't call saveCoBorrowerState here — 
+  // we don't want to overwrite stored data, just read what we need for the new contact)
+  var contactData = {};
+  if (cb.data) contactData = Object.assign({}, cb.data);
   contactData.name = cb.name;
   contactData.phone = cb.phone;
   contactData.email = cb.email;
   contactData.type = 'borrower';
   contactData.linked_to = crmCurrentId;
   contactData.relationship = cb.relationship;
+  // Remove nested objects that shouldn't go to the API as top-level
+  delete contactData.employers;
+  delete contactData.education;
+  delete contactData.reos;
+  delete contactData.documents;
 
   fetch(CRM_API + '/crm-api?action=save', {
     method: 'POST',
