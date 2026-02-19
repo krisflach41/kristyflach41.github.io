@@ -689,12 +689,66 @@ function togglePipelineDropdown(){
 function setPipelineStage(contactId,stage){
   var pid='crm-'+contactId;
   var n=document.getElementById('cf_name'),p=document.getElementById('cf_phone'),e=document.getElementById('cf_email');
+  
+  // Build borrowers list from primary + co-borrowers
+  var allBorrowers = [];
+  // Primary borrower
+  var primaryName = (activeCoBorrowerIdx === 0 && n) ? n.value : (window._primaryBorrowerData ? window._primaryBorrowerData.name : (n ? n.value : ''));
+  allBorrowers.push({
+    name: primaryName,
+    role: 'primary',
+    crm_id: contactId
+  });
+  // Co-borrowers
+  coBorrowers.forEach(function(cb) {
+    if (cb.excluded) return;
+    allBorrowers.push({
+      name: cb.name || '',
+      role: cb.relationship || 'co-borrower',
+      crm_id: cb.contact_id || null
+    });
+  });
+
+  // Build display name: "Kristy Flach & Gus Flach"
+  var displayName = allBorrowers.map(function(b){ return b.name; }).filter(Boolean).join(' & ');
+
+  // Gather loan data from shared loan or DOM
+  var loanType = sharedLoanData.loan_type || '';
+  var intRate = sharedLoanData.interest_rate || '';
+  var lockStatus = sharedLoanData.lock_status || '';
+  var subAddr = sharedLoanData.subject_address || '';
+  var dates = {
+    mutual: sharedLoanData.date_mutual || '',
+    emd: sharedLoanData.date_emd || '',
+    appraisal: sharedLoanData.date_appraisal || '',
+    inspection: sharedLoanData.date_inspection || '',
+    conditional: sharedLoanData.date_conditional || '',
+    finalApproval: sharedLoanData.date_final_approval || '',
+    closing: sharedLoanData.date_closing || ''
+  };
+
   fetch(CRM_API+'/pipeline-api',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({action:'save',id:pid,name:n?n.value:'',phone:p?p.value:'',email:e?e.value:'',stage:stage,source:'crm',realtorName:'',loanType:'',interestRate:'',subjectAddress:'',dates:{},borrowers:[]})
+    body:JSON.stringify({
+      action:'save',
+      id: pid,
+      name: displayName || primaryName || '',
+      phone: p ? p.value : '',
+      email: e ? e.value : '',
+      stage: stage,
+      source: 'crm',
+      realtorName: '',
+      loanType: loanType,
+      interestRate: intRate,
+      lockStatus: lockStatus,
+      subjectAddress: subAddr,
+      dates: dates,
+      borrowers: allBorrowers,
+      crm_contact_id: contactId
+    })
   }).then(function(){
     var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.remove('show');
     var btn=document.getElementById('cardPipelineBtn');if(btn)renderPipelineButton(btn,contactId,stage);
-    showToast((n?n.value:'Contact')+' moved to pipeline');
+    showToast(displayName+' moved to pipeline');
     if(typeof loadPipeline==='function')loadPipeline();
     // Auto-convert to borrower
     if(crmCurrentType!=='borrower'){
