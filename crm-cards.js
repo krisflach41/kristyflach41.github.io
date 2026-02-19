@@ -1060,11 +1060,11 @@ function checkCBPhoneDuplicate() {
         '<span style="font-size:10px;color:rgba(255,255,255,0.35);">or continue to add new</span>' +
       '</div>';
     banner.style.display = 'block';
-    // Auto-fill name/email from match if fields are empty
+    // Only auto-fill name/email if user hasn't typed anything yet
     var nameEl = document.getElementById('cbAddName');
     var emailEl = document.getElementById('cbAddEmail');
-    if (nameEl && !nameEl.value && match.name) nameEl.value = match.name;
     if (emailEl && !emailEl.value && match.email) emailEl.value = match.email;
+    // Do NOT auto-fill name — user may have already typed the correct name
   } else {
     _cbPhoneMatch = null;
     banner.style.display = 'none';
@@ -1075,6 +1075,9 @@ function linkExistingAsCoBorrower() {
   if (!_cbPhoneMatch) return;
   var match = _cbPhoneMatch;
   var rel = document.getElementById('cbAddRelationship').value;
+  // Use the name from the modal field (what the user typed), not the match name
+  var enteredName = document.getElementById('cbAddName').value || match.name || '';
+  var enteredEmail = document.getElementById('cbAddEmail').value || match.email || '';
 
   // Save current state first
   saveCoBorrowerState();
@@ -1082,10 +1085,10 @@ function linkExistingAsCoBorrower() {
   // Create co-borrower entry linked to the existing contact
   var newCB = {
     id: 'cb-' + Date.now(),
-    name: match.name || '', phone: match.phone || '', email: match.email || '',
+    name: enteredName, phone: match.phone || '', email: enteredEmail,
     relationship: rel, excluded: false,
-    contact_id: match.id, // Already linked — no need to "Create Contact" later
-    data: { name: match.name || '', phone: match.phone || '', email: match.email || '',
+    contact_id: match.id,
+    data: { name: enteredName, phone: match.phone || '', email: enteredEmail,
             employers: [newEmployer()], education: [], reos: [], documents: [] }
   };
   coBorrowers.push(newCB);
@@ -1097,10 +1100,10 @@ function linkExistingAsCoBorrower() {
   var newIdx = coBorrowers.length;
   activeCoBorrowerIdx = newIdx;
   loadCoBorrowerData(newCB);
-  document.getElementById('crmDName').textContent = match.name || 'Co-Borrower';
-  document.getElementById('crmDMeta').textContent = [match.email, match.phone].filter(Boolean).join(' – ');
+  document.getElementById('crmDName').textContent = enteredName || 'Co-Borrower';
+  document.getElementById('crmDMeta').textContent = [enteredEmail, match.phone].filter(Boolean).join(' – ');
   renderCoBorrowerTabs();
-  showToast(match.name + ' linked as ' + rel);
+  showToast(enteredName + ' linked as ' + rel);
 }
 function closeCBAddModal() { var o = document.getElementById('cbAddOverlay'); if (o) o.classList.remove('show'); }
 
