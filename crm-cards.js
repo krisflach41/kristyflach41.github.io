@@ -210,7 +210,9 @@ function wireHeaderFields() {
 // ===== BORROWER STATE =====
 var borrowerEmployers = [];
 var borrowerEducation = [];
+var borrowerAssets = [];
 var activeEmpTab = 0;
+var activeAssetTab = 0;
 var cardDocuments = [];
 
 function newEmployer(name){
@@ -222,6 +224,10 @@ function newEmployer(name){
 function newEducation(){
   return {id:'edu-'+Date.now()+'-'+Math.random().toString(36).substr(2,4),
     school_name:'',degree:'',start_date:'',end_date:'',graduated:false};
+}
+function newAsset(){
+  return {id:'asset-'+Date.now()+'-'+Math.random().toString(36).substr(2,4),
+    institution:'',account_type:'checking',balance:0};
 }
 
 function formatMoney(a){
@@ -257,6 +263,8 @@ function renderBorrowerCard(container, data) {
     borrowerEmployers=[first];
   }
   if(data.education&&data.education.length>0) borrowerEducation=data.education;
+  if(data.assets&&data.assets.length>0) borrowerAssets=data.assets;
+  else if(borrowerAssets.length===0) borrowerAssets=[];
   if(data.reos&&data.reos.length>0) borrowerREOs=data.reos;
   else if(borrowerREOs.length===0) borrowerREOs=[];
   cardDocuments=data.documents||[];
@@ -264,11 +272,11 @@ function renderBorrowerCard(container, data) {
   activeREOTab=0;
 
   var html='';
-  // 5 main tabs
+  // 4 main tabs (Loan details now live on Pipeline Face Card)
   html+='<div class="card-tabs" id="borrowerMainTabs">';
   html+='<div class="card-tab active" data-btab="personal" onclick="switchBorrowerTab(\'personal\')">Personal</div>';
   html+='<div class="card-tab" data-btab="employment" onclick="switchBorrowerTab(\'employment\')">Employment</div>';
-  html+='<div class="card-tab" data-btab="loan" onclick="switchBorrowerTab(\'loan\')">Loan</div>';
+  html+='<div class="card-tab" data-btab="assets" onclick="switchBorrowerTab(\'assets\')">Assets</div>';
   html+='<div class="card-tab" data-btab="reo" onclick="switchBorrowerTab(\'reo\')">REO</div>';
   html+='<div class="card-tab" data-btab="documents" onclick="switchBorrowerTab(\'documents\')">Documents</div>';
   html+='</div>';
@@ -299,34 +307,9 @@ function renderBorrowerCard(container, data) {
   html+='<div id="empTabsContainer"></div><div id="empPanelsContainer"></div>';
   html+='</div>';
 
-  // LOAN TAB
-  html+='<div class="card-tab-content" id="btab_loan">';
-  html+=bldSec('Loan Details',[
-    {id:'transaction_type',l:'Transaction Type',t:'select',v:data.transaction_type,opts:[
-      {value:'',label:'--'},{value:'purchase',label:'Purchase'},{value:'refinance',label:'Refinance'},
-      {value:'new_construction',label:'New Construction'},{value:'heloc',label:'HELOC'}]},
-    {id:'loan_program',l:'Loan Program',t:'select',v:data.loan_program,opts:[
-      {value:'',label:'--'},{value:'fannie',label:'Fannie Mae'},{value:'freddie',label:'Freddie Mac'},
-      {value:'fha',label:'FHA'},{value:'va',label:'VA'},{value:'usda',label:'USDA'},
-      {value:'jumbo',label:'Jumbo'},{value:'land_lot',label:'Land / Lot'}]},
-    {id:'occupancy_type',l:'Occupancy',t:'select',v:data.occupancy_type,opts:[
-      {value:'',label:'--'},{value:'owner_occupied',label:'Owner Occupied'},{value:'investor',label:'Investor'},
-      {value:'second_home',label:'Second Home'}]},
-    {id:'loan_amount',l:'Loan Amount',t:'number',v:data.loan_amount,ph:'0.00'},
-    {id:'interest_rate',l:'Interest Rate (%)',t:'number',v:data.interest_rate,ph:'0.000'},
-    {id:'lock_status',l:'Lock Status',t:'select',v:data.lock_status,opts:[
-      {value:'',label:'--'},{value:'unlocked',label:'Unlocked'},{value:'locked',label:'Locked'},{value:'expired',label:'Expired'}]},
-    {id:'subject_address',l:'Subject Property',t:'text',v:data.subject_address,fw:true}
-  ]);
-  html+=bldSec('Key Dates',[
-    {id:'date_mutual',l:'Mutual Acceptance',t:'date',v:data.date_mutual},
-    {id:'date_emd',l:'EMD Due',t:'date',v:data.date_emd},
-    {id:'date_appraisal',l:'Appraisal',t:'date',v:data.date_appraisal},
-    {id:'date_inspection',l:'Inspection',t:'date',v:data.date_inspection},
-    {id:'date_conditional',l:'Conditional Approval',t:'date',v:data.date_conditional},
-    {id:'date_final_approval',l:'Final Approval',t:'date',v:data.date_final_approval},
-    {id:'date_closing',l:'Closing',t:'date',v:data.date_closing}
-  ]);
+  // ASSETS TAB
+  html+='<div class="card-tab-content" id="btab_assets">';
+  html+='<div id="assetsTabsContainer"></div><div id="assetsPanelsContainer"></div>';
   html+='</div>';
 
   // REO TAB (Real Estate Owned)
@@ -660,6 +643,71 @@ function switchBorrowerTab(tab){
   var contentEl=document.getElementById('btab_'+tab);
   if(tabEl)tabEl.classList.add('active');
   if(contentEl)contentEl.classList.add('active');
+  if(tab==='assets') renderAssetTabs();
+}
+
+// ===== ASSETS TAB =====
+function renderAssetTabs(){
+  var tc=document.getElementById('assetsTabsContainer');
+  var pc=document.getElementById('assetsPanelsContainer');
+  if(!tc||!pc)return;
+  var th='<div class="emp-tabs-row">';
+  borrowerAssets.forEach(function(a,i){
+    th+='<button class="emp-tab'+(activeAssetTab===i?' active':'')+'" onclick="switchAssetTab('+i+')">'+(a.institution||'Account '+(i+1))+'</button>';
+  });
+  th+='<button class="emp-tab-add" onclick="addAsset()"><i class="fas fa-plus"></i> Add Account</button></div>';
+  tc.innerHTML=th;
+
+  var ph='';
+  borrowerAssets.forEach(function(a,i){
+    ph+='<div class="emp-panel'+(activeAssetTab===i?' active':'')+'" id="assetPanel_'+i+'">';
+    ph+=bldSec('Account Details',[
+      {id:'asset_institution_'+i,l:'Institution Name',t:'text',v:a.institution,ph:'Chase, Wells Fargo, etc.'},
+      {id:'asset_type_'+i,l:'Account Type',t:'select',v:a.account_type,opts:[
+        {value:'checking',label:'Checking'},{value:'savings',label:'Savings'},
+        {value:'money_market',label:'Money Market'},{value:'cd',label:'CD'},
+        {value:'ira',label:'IRA'},{value:'401k',label:'401(k)'},
+        {value:'brokerage',label:'Brokerage'},{value:'trust',label:'Trust'},
+        {value:'gift',label:'Gift Funds'},{value:'other',label:'Other'}
+      ]},
+      {id:'asset_balance_'+i,l:'Balance',t:'number',v:a.balance,ph:'0.00'}
+    ]);
+    if(borrowerAssets.length>1){
+      ph+='<button class="emp-tab-add" style="background:rgba(239,68,68,0.08);color:#ef4444;border-color:rgba(239,68,68,0.2);margin-top:8px;" onclick="removeAsset('+i+')"><i class="fas fa-trash-alt"></i> Remove Account</button>';
+    }
+    ph+='</div>';
+  });
+  pc.innerHTML=ph;
+
+  // Wire change tracking
+  borrowerAssets.forEach(function(a,i){
+    var inst=document.getElementById('asset_institution_'+i);
+    var typ=document.getElementById('asset_type_'+i);
+    var bal=document.getElementById('asset_balance_'+i);
+    if(inst)inst.addEventListener('change',function(){ a.institution=this.value; renderAssetTabs(); });
+    if(typ)typ.addEventListener('change',function(){ a.account_type=this.value; });
+    if(bal)bal.addEventListener('change',function(){ a.balance=parseFloat(this.value)||0; });
+  });
+}
+
+function switchAssetTab(idx){
+  activeAssetTab=idx;
+  renderAssetTabs();
+}
+
+function addAsset(){
+  borrowerAssets.push(newAsset());
+  activeAssetTab=borrowerAssets.length-1;
+  renderAssetTabs();
+  crmDirty=true;
+}
+
+function removeAsset(idx){
+  if(borrowerAssets.length<=1)return;
+  borrowerAssets.splice(idx,1);
+  if(activeAssetTab>=borrowerAssets.length) activeAssetTab=borrowerAssets.length-1;
+  renderAssetTabs();
+  crmDirty=true;
 }
 
 // ===== PIPELINE BUTTON =====
@@ -719,24 +767,8 @@ function setPipelineStage(contactId,stage){
   // Build display name: "Kristy Flach & Gus Flach"
   var displayName = allBorrowers.map(function(b){ return b.name; }).filter(Boolean).join(' & ');
 
-  // Gather loan data from shared loan or DOM
-  var transType = sharedLoanData.transaction_type || '';
-  var loanProgram = sharedLoanData.loan_program || '';
-  var occupancy = sharedLoanData.occupancy_type || '';
-  var loanAmount = sharedLoanData.loan_amount || '';
-  var intRate = sharedLoanData.interest_rate || '';
-  var lockStatus = sharedLoanData.lock_status || '';
-  var subAddr = sharedLoanData.subject_address || '';
-  var dates = {
-    mutual: sharedLoanData.date_mutual || '',
-    emd: sharedLoanData.date_emd || '',
-    appraisal: sharedLoanData.date_appraisal || '',
-    inspection: sharedLoanData.date_inspection || '',
-    conditional: sharedLoanData.date_conditional || '',
-    finalApproval: sharedLoanData.date_final_approval || '',
-    closing: sharedLoanData.date_closing || ''
-  };
-
+  // Loan data now lives on the Pipeline Face Card, not CRM
+  // Just send empty fields — LO fills in on the face card
   fetch(CRM_API+'/pipeline-api',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
       action:'save',
@@ -747,15 +779,15 @@ function setPipelineStage(contactId,stage){
       stage: stage,
       source: 'crm',
       realtorName: '',
-      loanType: transType + (loanProgram ? ' / ' + loanProgram : ''),
-      transactionType: transType,
-      loanProgram: loanProgram,
-      occupancyType: occupancy,
-      loanAmount: loanAmount,
-      interestRate: intRate,
-      lockStatus: lockStatus,
-      subjectAddress: subAddr,
-      dates: dates,
+      loanType: '',
+      transactionType: '',
+      loanProgram: '',
+      occupancyType: '',
+      loanAmount: '',
+      interestRate: '',
+      lockStatus: '',
+      subjectAddress: '',
+      dates: {},
       borrowers: allBorrowers,
       crm_contact_id: contactId
     })
@@ -975,17 +1007,6 @@ function switchCoBorrower(idx) {
 
 function saveCoBorrowerState() {
   var data = collectAllCardData();
-  // Save shared loan data from whatever tab we're on
-  sharedLoanData = {
-    transaction_type: data.transaction_type, loan_program: data.loan_program,
-    occupancy_type: data.occupancy_type, loan_amount: data.loan_amount,
-    interest_rate: data.interest_rate,
-    lock_status: data.lock_status, subject_address: data.subject_address,
-    date_mutual: data.date_mutual, date_emd: data.date_emd,
-    date_appraisal: data.date_appraisal, date_inspection: data.date_inspection,
-    date_conditional: data.date_conditional, date_final_approval: data.date_final_approval,
-    date_closing: data.date_closing
-  };
 
   // Remove top-level fields that don't belong in per-borrower data
   delete data.co_borrowers;
@@ -995,6 +1016,7 @@ function saveCoBorrowerState() {
     window._primaryBorrowerData = data;
     window._primaryBorrowerData.employers = JSON.parse(JSON.stringify(borrowerEmployers));
     window._primaryBorrowerData.education = JSON.parse(JSON.stringify(borrowerEducation));
+    window._primaryBorrowerData.assets = JSON.parse(JSON.stringify(borrowerAssets));
     window._primaryBorrowerData.reos = JSON.parse(JSON.stringify(borrowerREOs));
     window._primaryBorrowerData.documents = cardDocuments.slice();
     // Keep primaryBorrowerName in sync
@@ -1016,14 +1038,13 @@ function saveCoBorrowerState() {
 
 function loadPrimaryBorrowerData() {
   var data = window._primaryBorrowerData || {};
-  // Merge shared loan data back
-  Object.keys(sharedLoanData).forEach(function(k) { data[k] = sharedLoanData[k]; });
   // Reset state
   borrowerEmployers = data.employers || [];
   borrowerEducation = data.education || [];
+  borrowerAssets = data.assets || [];
   borrowerREOs = data.reos || [];
   cardDocuments = data.documents || [];
-  activeEmpTab = 0; activeREOTab = 0;
+  activeEmpTab = 0; activeREOTab = 0; activeAssetTab = 0;
   // Repopulate fields
   populateCardFields(data);
   var fc = document.getElementById('crmCardForm');
@@ -1032,14 +1053,13 @@ function loadPrimaryBorrowerData() {
 
 function loadCoBorrowerData(cb) {
   var data = cb.data || {};
-  // Merge shared loan data
-  Object.keys(sharedLoanData).forEach(function(k) { data[k] = sharedLoanData[k]; });
   // Reset state
   borrowerEmployers = data.employers || [newEmployer()];
   borrowerEducation = data.education || [];
+  borrowerAssets = data.assets || [];
   borrowerREOs = data.reos || [];
   cardDocuments = data.documents || [];
-  activeEmpTab = 0; activeREOTab = 0;
+  activeEmpTab = 0; activeREOTab = 0; activeAssetTab = 0;
   // Populate header fields
   var nameEl = document.getElementById('cf_name');
   var phoneEl = document.getElementById('cf_phone');
@@ -1437,6 +1457,7 @@ function collectAllCardData(){
   if(crmCurrentType==='borrower'){
     data.employers=borrowerEmployers;
     data.education=borrowerEducation;
+    data.assets=borrowerAssets;
     data.reos=borrowerREOs;
     data.documents=cardDocuments;
     // NOTE: co_borrowers and shared_loan are NOT included here.
