@@ -1107,8 +1107,20 @@ body {
         <label>Stage</label>
         <select id="pcm_stage"><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Started Pre-Approval</option><option value="preapproved">Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option></select>
       </div>
-      <div class="crm-field"><label>Loan Type</label><input id="pcm_loanType" placeholder="Conv, FHA, VA, USDA, Jumbo"></div>
+      <div class="crm-field">
+        <label>Transaction Type</label>
+        <select id="pcm_transType"><option value="">--</option><option value="purchase">Purchase</option><option value="refinance">Refinance</option><option value="new_construction">New Construction</option><option value="heloc">HELOC</option></select>
+      </div>
+      <div class="crm-field">
+        <label>Loan Program</label>
+        <select id="pcm_loanProgram"><option value="">--</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="jumbo">Jumbo</option><option value="land_lot">Land / Lot</option></select>
+      </div>
+      <div class="crm-field">
+        <label>Occupancy</label>
+        <select id="pcm_occupancy"><option value="">--</option><option value="owner_occupied">Owner Occupied</option><option value="investor">Investor</option><option value="second_home">Second Home</option></select>
+      </div>
       <div class="crm-field"><label>Interest Rate</label><input id="pcm_rate" placeholder="6.25"></div>
+      <div class="crm-field"><label>Loan Amount</label><input id="pcm_loanAmount" placeholder="350000"></div>
       <div class="crm-field" style="grid-column:1/-1;"><label>Subject Address</label><input id="pcm_address"></div>
     </div>
     <div class="modal-actions" style="flex-wrap:wrap;gap:6px;">
@@ -1144,17 +1156,26 @@ body {
       <div class="crm-field"><label>Date</label><input type="date" id="funded_date"></div>
       <div class="crm-field"><label>Interest Rate</label><input id="funded_rate" placeholder="6.25"></div>
       <div class="crm-field">
-        <label>Loan Type</label>
-        <select id="funded_loanType">
+        <label>Transaction Type</label>
+        <select id="funded_transType">
           <option value="">--</option>
           <option value="purchase">Purchase</option>
           <option value="refinance">Refinance</option>
+          <option value="new_construction">New Construction</option>
           <option value="heloc">HELOC</option>
-          <option value="va">VA</option>
+        </select>
+      </div>
+      <div class="crm-field">
+        <label>Loan Program</label>
+        <select id="funded_loanProgram">
+          <option value="">--</option>
+          <option value="fannie">Fannie Mae</option>
+          <option value="freddie">Freddie Mac</option>
           <option value="fha">FHA</option>
+          <option value="va">VA</option>
           <option value="usda">USDA</option>
-          <option value="conventional">Conventional</option>
           <option value="jumbo">Jumbo</option>
+          <option value="land_lot">Land / Lot</option>
         </select>
       </div>
       <div class="crm-field" id="fundedAmountWrap"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
@@ -1445,8 +1466,9 @@ function openFundedModal(contactId, defaultOutcome) {
   document.getElementById('fundedName').textContent = c.name || 'Contact';
   document.getElementById('funded_date').value = new Date().toISOString().split('T')[0];
   document.getElementById('funded_rate').value = c.interestRate || '';
-  document.getElementById('funded_loanType').value = c.loanType || '';
-  document.getElementById('funded_amount').value = '';
+  document.getElementById('funded_transType').value = c.transactionType || '';
+  document.getElementById('funded_loanProgram').value = c.loanProgram || '';
+  document.getElementById('funded_amount').value = c.loanAmount || '';
   document.getElementById('funded_strikeRate').value = '';
   document.getElementById('funded_notes').value = '';
   document.getElementById('funded_outcome').value = defaultOutcome || 'funded';
@@ -1507,7 +1529,9 @@ function saveFundedContact() {
   var outcome = document.getElementById('funded_outcome').value;
   var outcomeDate = document.getElementById('funded_date').value;
   var rate = document.getElementById('funded_rate').value;
-  var loanType = document.getElementById('funded_loanType').value;
+  var transType = document.getElementById('funded_transType').value;
+  var loanProgram = document.getElementById('funded_loanProgram').value;
+  var loanType = transType + (loanProgram ? ' / ' + loanProgram : '');
   var amount = document.getElementById('funded_amount').value;
   var strikeRate = document.getElementById('funded_strikeRate').value;
   var notes = document.getElementById('funded_notes').value;
@@ -1607,8 +1631,11 @@ function addNewPipelineContact(stage) {
   document.getElementById('pcm_source').value = 'other';
   document.getElementById('pcm_realtor').value = '';
   document.getElementById('pcm_stage').value = stage || 'warm';
-  document.getElementById('pcm_loanType').value = '';
+  document.getElementById('pcm_transType').value = '';
+  document.getElementById('pcm_loanProgram').value = '';
+  document.getElementById('pcm_occupancy').value = '';
   document.getElementById('pcm_rate').value = '';
+  document.getElementById('pcm_loanAmount').value = '';
   document.getElementById('pcm_address').value = '';
   document.getElementById('pcmDeleteBtn').style.display = 'none';
   document.getElementById('pcmCrmBtn').style.display = 'none';
@@ -1628,8 +1655,11 @@ function openPipelineContact(id) {
   document.getElementById('pcm_source').value = c.source || 'other';
   document.getElementById('pcm_realtor').value = c.realtorName || '';
   document.getElementById('pcm_stage').value = c.stage || 'warm';
-  document.getElementById('pcm_loanType').value = c.loanType || '';
+  document.getElementById('pcm_transType').value = c.transactionType || '';
+  document.getElementById('pcm_loanProgram').value = c.loanProgram || '';
+  document.getElementById('pcm_occupancy').value = c.occupancyType || '';
   document.getElementById('pcm_rate').value = c.interestRate || '';
+  document.getElementById('pcm_loanAmount').value = c.loanAmount || '';
   document.getElementById('pcm_address').value = c.subjectAddress || '';
   document.getElementById('pcmDeleteBtn').style.display = 'inline-block';
 
@@ -1695,8 +1725,12 @@ function savePipelineContact() {
   contact.realtorName = document.getElementById('pcm_realtor').value.trim();
   contact.stage = document.getElementById('pcm_stage').value;
 
-  contact.loanType = document.getElementById('pcm_loanType').value.trim();
+  contact.transactionType = document.getElementById('pcm_transType').value;
+  contact.loanProgram = document.getElementById('pcm_loanProgram').value;
+  contact.occupancyType = document.getElementById('pcm_occupancy').value;
+  contact.loanType = contact.transactionType + (contact.loanProgram ? ' / ' + contact.loanProgram : '');
   contact.interestRate = document.getElementById('pcm_rate').value.trim();
+  contact.loanAmount = document.getElementById('pcm_loanAmount').value.trim();
   contact.subjectAddress = document.getElementById('pcm_address').value.trim();
   contact.updatedAt = new Date().toISOString();
 
@@ -1712,7 +1746,7 @@ function savePipelineContact() {
   // Save to Supabase
   fetch(API_BASE + '/pipeline-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, loanType: contact.loanType, interestRate: contact.interestRate, subjectAddress: contact.subjectAddress, lockStatus: contact.lockStatus, dates: contact.dates || {}, borrowers: contact.borrowers || [] })
+    body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, loanType: contact.loanType, transactionType: contact.transactionType, loanProgram: contact.loanProgram, occupancyType: contact.occupancyType, loanAmount: contact.loanAmount, interestRate: contact.interestRate, subjectAddress: contact.subjectAddress, lockStatus: contact.lockStatus, crm_contact_id: contact.crm_contact_id, dates: contact.dates || {}, borrowers: contact.borrowers || [] })
   }).catch(function(err) { console.error('Pipeline save error:', err); });
 
   // Sync to CRM
