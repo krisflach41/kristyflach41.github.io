@@ -1111,28 +1111,44 @@ body {
       <div class="crm-field"><label>Interest Rate</label><input id="pcm_rate" placeholder="6.25"></div>
       <div class="crm-field" style="grid-column:1/-1;"><label>Subject Address</label><input id="pcm_address"></div>
     </div>
-    <div class="modal-actions">
+    <div class="modal-actions" style="flex-wrap:wrap;gap:6px;">
       <button class="topbar-btn" onclick="closePipelineModal()">Cancel</button>
       <button class="topbar-btn" id="pcmCrmBtn" style="display:none;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" onclick="openCrmFromPipeline()"><i class="fas fa-address-card"></i> View in CRM</button>
       <button class="topbar-btn" id="pcmColdBtn" style="display:none;border-color:rgba(100,140,255,0.3);color:#8ba8f5;" onclick="markContactCold(editingPipelineId)">Mark Cold</button>
       <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
+      <div style="flex:1;"></div>
+      <div id="pcmOutcomeWrap" style="display:none;gap:4px;">
+        <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(239,68,68,0.3);color:#ef4444;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'denied')"><i class="fas fa-times-circle"></i> Denied</button>
+        <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'suspended')"><i class="fas fa-pause-circle"></i> Suspended</button>
+        <button class="topbar-btn" style="font-size:10px;padding:5px 8px;border-color:rgba(139,92,246,0.3);color:#8b5cf6;" onclick="closePipelineModal();openFundedModal(editingPipelineId,'withdrawn')"><i class="fas fa-undo"></i> Withdrawn</button>
+      </div>
       <button class="topbar-btn primary" onclick="savePipelineContact()">Save</button>
     </div>
   </div>
 </div>
 
-<!-- FUNDED MODAL -->
+<!-- LOAN OUTCOME MODAL (Funded / Denied / Suspended / Withdrawn) -->
 <div class="modal-overlay" id="fundedModal">
-  <div class="modal-box" style="width:420px;">
-    <div class="modal-title"><i class="fas fa-trophy"></i> Congratulations! Closing <span id="fundedName"></span></div>
+  <div class="modal-box" style="width:480px;">
+    <div class="modal-title" id="outcomeModalTitle"><i class="fas fa-trophy"></i> Congratulations! Closing <span id="fundedName"></span></div>
     <div class="crm-field-grid">
-      <div class="crm-field"><label>Date Funded</label><input type="date" id="funded_date"></div>
+      <div class="crm-field">
+        <label>Outcome</label>
+        <select id="funded_outcome" onchange="updateOutcomeUI()">
+          <option value="funded">Funded</option>
+          <option value="denied">Denied</option>
+          <option value="suspended">Suspended</option>
+          <option value="withdrawn">Withdrawn</option>
+        </select>
+      </div>
+      <div class="crm-field"><label>Date</label><input type="date" id="funded_date"></div>
       <div class="crm-field"><label>Interest Rate</label><input id="funded_rate" placeholder="6.25"></div>
       <div class="crm-field">
         <label>Loan Type</label>
         <select id="funded_loanType">
+          <option value="">--</option>
           <option value="purchase">Purchase</option>
-          <option value="refi">Refinance</option>
+          <option value="refinance">Refinance</option>
           <option value="heloc">HELOC</option>
           <option value="va">VA</option>
           <option value="fha">FHA</option>
@@ -1141,18 +1157,19 @@ body {
           <option value="jumbo">Jumbo</option>
         </select>
       </div>
-      <div class="crm-field"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
-      <div class="crm-field" style="grid-column:1/-1;">
-        <label>Strike Rate (target rate for refi)</label>
+      <div class="crm-field" id="fundedAmountWrap"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
+      <div class="crm-field" id="fundedStrikeWrap" style="grid-column:1/-1;">
+        <label>Strike Rate (target rate for refi alert)</label>
         <div style="display:flex;gap:8px;align-items:center;">
           <input id="funded_strikeRate" placeholder="5.75" style="width:100px;">
-          <span style="font-size:10px;color:var(--text-muted);">When market rates hit this number, you'll be alerted to call this client</span>
+          <span style="font-size:10px;color:var(--text-muted);">When rates hit this, you'll be alerted to call this client</span>
         </div>
       </div>
+      <div class="crm-field" style="grid-column:1/-1;"><label>Notes</label><textarea id="funded_notes" rows="2" style="width:100%;padding:8px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;" placeholder="Optional notes about this outcome..."></textarea></div>
     </div>
     <div class="modal-actions">
       <button class="topbar-btn" onclick="closeFundedModal()">Cancel</button>
-      <button class="topbar-btn primary" onclick="saveFundedContact()"><i class="fas fa-trophy"></i> Mark as Funded</button>
+      <button class="topbar-btn primary" id="outcomeSubmitBtn" onclick="saveFundedContact()"><i class="fas fa-trophy"></i> Mark as Funded</button>
     </div>
   </div>
 </div>
@@ -1442,16 +1459,60 @@ function syncPipelineContact(c) {
 // ===== FUNDED MODAL =====
 var fundingContactId = null;
 
-function openFundedModal(contactId) {
+function openFundedModal(contactId, defaultOutcome) {
   fundingContactId = contactId;
   var c = pipelineContacts.find(function(x) { return x.id === contactId; });
   if (!c) return;
   document.getElementById('fundedName').textContent = c.name || 'Contact';
   document.getElementById('funded_date').value = new Date().toISOString().split('T')[0];
   document.getElementById('funded_rate').value = c.interestRate || '';
-  document.getElementById('funded_loanType').value = c.loanType || 'purchase';
+  document.getElementById('funded_loanType').value = c.loanType || '';
   document.getElementById('funded_amount').value = '';
+  document.getElementById('funded_strikeRate').value = '';
+  document.getElementById('funded_notes').value = '';
+  document.getElementById('funded_outcome').value = defaultOutcome || 'funded';
+  updateOutcomeUI();
   document.getElementById('fundedModal').classList.add('show');
+}
+
+function updateOutcomeUI() {
+  var outcome = document.getElementById('funded_outcome').value;
+  var title = document.getElementById('outcomeModalTitle');
+  var btn = document.getElementById('outcomeSubmitBtn');
+  var amountWrap = document.getElementById('fundedAmountWrap');
+  var strikeWrap = document.getElementById('fundedStrikeWrap');
+  var c = fundingContactId ? pipelineContacts.find(function(x) { return x.id === fundingContactId; }) : null;
+  var name = c ? c.name : 'Contact';
+
+  if (outcome === 'funded') {
+    title.innerHTML = '<i class="fas fa-trophy" style="color:#22c55e;"></i> Congratulations! Closing ' + name;
+    btn.innerHTML = '<i class="fas fa-trophy"></i> Mark as Funded';
+    btn.className = 'topbar-btn primary';
+    amountWrap.style.display = '';
+    strikeWrap.style.display = '';
+  } else if (outcome === 'denied') {
+    title.innerHTML = '<i class="fas fa-times-circle" style="color:#ef4444;"></i> Loan Denied — ' + name;
+    btn.innerHTML = '<i class="fas fa-times-circle"></i> Mark as Denied';
+    btn.className = 'topbar-btn danger';
+    amountWrap.style.display = 'none';
+    strikeWrap.style.display = 'none';
+  } else if (outcome === 'suspended') {
+    title.innerHTML = '<i class="fas fa-pause-circle" style="color:#f59e0b;"></i> Loan Suspended — ' + name;
+    btn.innerHTML = '<i class="fas fa-pause-circle"></i> Mark as Suspended';
+    btn.className = 'topbar-btn';
+    btn.style.borderColor = 'rgba(245,158,11,0.4)';
+    btn.style.color = '#f59e0b';
+    amountWrap.style.display = 'none';
+    strikeWrap.style.display = 'none';
+  } else if (outcome === 'withdrawn') {
+    title.innerHTML = '<i class="fas fa-undo" style="color:#8b5cf6;"></i> Loan Withdrawn — ' + name;
+    btn.innerHTML = '<i class="fas fa-undo"></i> Mark as Withdrawn';
+    btn.className = 'topbar-btn';
+    btn.style.borderColor = 'rgba(139,92,246,0.4)';
+    btn.style.color = '#8b5cf6';
+    amountWrap.style.display = 'none';
+    strikeWrap.style.display = 'none';
+  }
 }
 
 function closeFundedModal() {
@@ -1464,59 +1525,59 @@ function saveFundedContact() {
   var c = pipelineContacts.find(function(x) { return x.id === fundingContactId; });
   if (!c) return;
 
-  var fundedDate = document.getElementById('funded_date').value;
+  var outcome = document.getElementById('funded_outcome').value;
+  var outcomeDate = document.getElementById('funded_date').value;
   var rate = document.getElementById('funded_rate').value;
   var loanType = document.getElementById('funded_loanType').value;
   var amount = document.getElementById('funded_amount').value;
   var strikeRate = document.getElementById('funded_strikeRate').value;
+  var notes = document.getElementById('funded_notes').value;
 
-  // Update pipeline contact
-  c.stage = 'closed';
-  c.fundedDate = fundedDate;
-  c.interestRate = rate;
-  c.loanType = loanType;
-  c.loanAmount = amount;
-  c.strikeRate = strikeRate;
-  c.updatedAt = new Date().toISOString();
+  // Determine CRM contact ID from the pipeline contact
+  var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
 
-  // Remove from pipeline (it lives in CRM now)
-  pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
-
-  // Update stage to closed in Supabase pipeline
+  // Call the closeLoan API endpoint
   fetch(API_BASE + '/pipeline-api', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save', id: c.id, name: c.name, phone: c.phone, email: c.email, stage: 'closed', source: c.source, realtorName: c.realtorName, loanType: loanType, interestRate: rate, subjectAddress: c.subjectAddress, dates: c.dates || {}, borrowers: c.borrowers || [] })
-  }).catch(function() {});
-
-  // Update CRM with funded data
-  fetch(API_BASE + '/crm', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      action: 'save',
-      contact: {
-        pipeline_id: c.id,
-        name: c.name,
-        email: c.email,
-        phone: c.phone,
-        pipeline_status: 'funded',
-        funded_date: fundedDate,
-        interest_rate: parseFloat(rate) || null,
-        loan_type: loanType,
-        loan_amount: parseFloat(amount) || null,
-        strike_rate: parseFloat(strikeRate) || null,
-        type: 'client',
-        source: 'pipeline'
-      }
+      action: 'closeLoan',
+      contactId: c.id,
+      outcome: outcome,
+      outcome_date: outcomeDate,
+      crm_contact_id: crmId,
+      primary_name: c.name,
+      primary_phone: c.phone,
+      primary_email: c.email,
+      loan_type: loanType,
+      loan_amount: amount,
+      interest_rate: rate,
+      strike_rate: strikeRate,
+      subject_address: c.subjectAddress || '',
+      notes: notes
     })
-  }).catch(function() {});
-
-  // Also sync to Google Sheet
-  syncPipelineContact(c);
-
-  closeFundedModal();
-  renderPipeline();
-  updateDashboard();
-  showToast('<i class="fas fa-trophy"></i> ' + c.name + ' funded! Moved to CRM.');
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.success) {
+      // Remove from active pipeline
+      pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
+      closeFundedModal();
+      renderPipeline();
+      updateDashboard();
+      
+      var toastIcons = { funded: 'fa-trophy', denied: 'fa-times-circle', suspended: 'fa-pause-circle', withdrawn: 'fa-undo' };
+      var toastColors = { funded: '#22c55e', denied: '#ef4444', suspended: '#f59e0b', withdrawn: '#8b5cf6' };
+      var label = outcome.charAt(0).toUpperCase() + outcome.slice(1);
+      showToast('<i class="fas ' + (toastIcons[outcome] || 'fa-check') + '" style="color:' + (toastColors[outcome] || '#fff') + ';"></i> ' + c.name + ' — ' + label + '! Saved to history.');
+    } else {
+      showToast('Error: ' + (result.message || 'Unknown error'));
+    }
+  })
+  .catch(function(err) {
+    console.error('Close loan error:', err);
+    showToast('Error saving outcome');
+  });
 }
 
 // ===== MARK COLD =====
@@ -1574,6 +1635,7 @@ function addNewPipelineContact(stage) {
   document.getElementById('pcmColdBtn').style.display = 'none';
   document.getElementById('pcmCrmBtn').style.display = 'none';
   document.getElementById('pcmBorrowersWrap').style.display = 'none';
+  document.getElementById('pcmOutcomeWrap').style.display = 'none';
   document.getElementById('pipelineContactModal').classList.add('show');
 }
 
@@ -1621,6 +1683,9 @@ function openPipelineContact(id) {
   } else {
     crmBtn.style.display = 'none';
   }
+
+  // Show outcome buttons for existing contacts
+  document.getElementById('pcmOutcomeWrap').style.display = 'flex';
 
   document.getElementById('pipelineContactModal').classList.add('show');
 }
