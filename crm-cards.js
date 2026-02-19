@@ -161,7 +161,7 @@ function wireTracking(container) {
         cf.classList.toggle('visible',el.value===cf.dataset.conditionValue);
       });
     });
-    var dirty=function(){crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;};
+    var dirty=function(){crmDirty=true;};
     el.addEventListener('input',dirty);el.addEventListener('change',dirty);
   });
 }
@@ -177,10 +177,12 @@ function wireHeaderFields() {
     if (!el) return;
     var dirty = function(){
       crmDirty = true;
-      var s = document.getElementById('crmSaveBtn'); if(s) s.disabled = false;
+      
       // Update header display in real-time
       if (id === 'cf_name') {
         document.getElementById('crmDName').textContent = el.value || 'Unnamed';
+        // Keep primaryBorrowerName in sync if we're on primary tab
+        if (activeCoBorrowerIdx === 0) primaryBorrowerName = el.value;
       }
     };
     el.addEventListener('input', dirty);
@@ -192,7 +194,7 @@ function wireHeaderFields() {
     saveBtn._wired = true;
     saveBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      if (!this.disabled) crmSaveContact();
+      crmSaveContact();
     });
   }
   var deleteBtn = document.getElementById('crmDeleteBtn');
@@ -401,7 +403,7 @@ function renderEmpTabs() {
 
   // Wire tracking
   document.querySelectorAll('.emp-tracked').forEach(function(el){
-    var h=function(){syncEmpField(el);crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;};
+    var h=function(){syncEmpField(el);crmDirty=true;};
     el.addEventListener('input',h);el.addEventListener('change',h);
   });
   updateTotalQualifying();
@@ -547,7 +549,7 @@ function renderREOTabs(){
 
   // Wire tracking
   document.querySelectorAll('.reo-tracked').forEach(function(el){
-    var h=function(){syncREOField(el);crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;};
+    var h=function(){syncREOField(el);crmDirty=true;};
     el.addEventListener('input',h);el.addEventListener('change',h);
   });
 }
@@ -794,7 +796,7 @@ function saveCalcToEmployer(){
   var qEl=document.getElementById('emp_'+calcPanelEmpIdx+'_qualifying');
   if(qEl) qEl.textContent=formatMoney(amt);
   updateTotalQualifying();
-  crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
+  crmDirty=true;
   showToast('Income saved: '+formatMoney(amt));
   closeCalcPanel();
 }
@@ -812,11 +814,13 @@ function exportCalcToDoc(){
 var coBorrowers = []; // [{id, name, phone, email, relationship, excluded, data:{...full borrower data}}]
 var activeCoBorrowerIdx = 0; // 0 = primary, 1+ = co-borrowers
 var sharedLoanData = {}; // Shared loan fields across all borrowers
+var primaryBorrowerName = ''; // Dedicated store — never overwritten by co-borrower switching
 
 function initCoBorrowers(data) {
   coBorrowers = data.co_borrowers || [];
   sharedLoanData = data.shared_loan || {};
   activeCoBorrowerIdx = 0;
+  primaryBorrowerName = data.name || '';
 }
 
 function renderCoBorrowerTabs() {
@@ -825,16 +829,8 @@ function renderCoBorrowerTabs() {
   if (crmCurrentType !== 'borrower') { container.style.display = 'none'; return; }
   container.style.display = 'flex';
 
-  // Always get primary name from stored data when on a co-borrower tab
-  // (cf_name holds the CURRENT borrower's name, not necessarily primary)
-  var primaryName;
-  if (activeCoBorrowerIdx === 0) {
-    primaryName = document.getElementById('cf_name') ? document.getElementById('cf_name').value : 'Primary';
-  } else {
-    primaryName = (window._primaryBorrowerData && window._primaryBorrowerData.name) ? window._primaryBorrowerData.name : 'Primary';
-  }
-  if (!primaryName) primaryName = 'Primary';
-  var firstName = primaryName.split(' ')[0];
+  // Always use the dedicated primary name variable — never read from cf_name
+  var firstName = primaryBorrowerName ? primaryBorrowerName.split(' ')[0] : 'Primary';
 
   var h = '<div class="coborrower-tabs">';
   // Primary tab
@@ -1091,7 +1087,7 @@ function linkExistingAsCoBorrower() {
 
   closeCBAddModal();
   _cbPhoneMatch = null;
-  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  crmDirty = true; 
 
   var newIdx = coBorrowers.length;
   activeCoBorrowerIdx = newIdx;
@@ -1123,7 +1119,7 @@ function confirmAddCoBorrower() {
   coBorrowers.push(newCB);
 
   closeCBAddModal();
-  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  crmDirty = true; 
 
   // Switch to the new co-borrower — set index directly and load,
   // skip saveCoBorrowerState inside switchCoBorrower since we just saved above
@@ -1165,7 +1161,7 @@ function showCBContext(cbIdx, event) {
 function toggleCBExclude(cbIdx) {
   coBorrowers[cbIdx].excluded = !coBorrowers[cbIdx].excluded;
   renderCoBorrowerTabs();
-  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  crmDirty = true; 
   showToast(coBorrowers[cbIdx].name + (coBorrowers[cbIdx].excluded ? ' excluded from loan' : ' included on loan'));
 }
 
@@ -1175,7 +1171,7 @@ function editCBRelationship(cbIdx) {
   var next = options[(options.indexOf(current) + 1) % options.length];
   coBorrowers[cbIdx].relationship = next;
   renderCoBorrowerTabs();
-  crmDirty = true; var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+  crmDirty = true; 
   showToast('Relationship changed to ' + next);
 }
 
@@ -1196,7 +1192,7 @@ function createCBContact(cbIdx) {
         coBorrowers[cbIdx].contact_id = existing.id;
         renderCoBorrowerTabs();
         crmDirty = true;
-        var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+        
         showToast(cb.name + ' linked to existing contact ' + existing.name);
         return;
       }
@@ -1245,7 +1241,7 @@ function createCBContact(cbIdx) {
       renderCoBorrowerTabs();
       // Mark dirty so primary saves the co_borrowers array with contact_id
       crmDirty = true;
-      var s = document.getElementById('crmSaveBtn'); if (s) s.disabled = false;
+      
       showToast('Contact created for ' + cb.name);
     } else {
       showToast('Failed to create contact');
@@ -1314,7 +1310,7 @@ function showTypeChanger(){
       renderStandardForm(fc,secs,currentData);
     }
     if(typeof crmRenderList==='function') crmRenderList();
-    crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
+    crmDirty=true;
     showToast('Changed to '+ti.label);
   });
 }
@@ -1332,11 +1328,11 @@ function handleDocUpload(input){
 }
 function addDocumentToCard(name,type,date,dataUrl){
   cardDocuments.push({name:name,type:type,date:date,data:dataUrl||null,id:'doc-'+Date.now()});
-  renderDocList();crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
+  renderDocList();crmDirty=true;
 }
 function removeDocument(docId){
   cardDocuments=cardDocuments.filter(function(d){return d.id!==docId;});
-  renderDocList();crmDirty=true;var s=document.getElementById('crmSaveBtn');if(s)s.disabled=false;
+  renderDocList();crmDirty=true;
 }
 function renderDocList(){
   var list=document.getElementById('docList');if(!list)return;
@@ -1378,7 +1374,7 @@ function crmAddNew(){
   showTypePicker(function(type){
     crmCurrentType=type;crmCurrentId=null;crmDirty=false;
     borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
-    coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;
+    coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
     var ti=CONTACT_TYPES[type];
@@ -1396,8 +1392,8 @@ function crmAddNew(){
     var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value='';
     var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value='';
     wireHeaderFields();
-    document.getElementById('crmSaveBtn').disabled=true;
-    document.getElementById('crmDeleteBtn').disabled=true;
+    
+    
     crmSwitchTab('details');
   });
 }
@@ -1405,9 +1401,9 @@ function crmAddNew(){
 function crmSelectContact(id){
   crmCurrentId=id;crmDirty=false;
   borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
-  coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;
-  document.getElementById('crmSaveBtn').disabled=true;
-  document.getElementById('crmDeleteBtn').disabled=true;
+  coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
+  
+  
   document.getElementById('crmDeleteBtn').textContent='Delete';
   crmDeleteArmed=false;
   document.getElementById('crmDetailEmpty').style.display='none';
@@ -1462,9 +1458,9 @@ function crmPopulateCard(c,activity){
   // Wire header fields for dirty tracking (they live outside crmCardForm)
   wireHeaderFields();
   renderActivity(activity);
-  crmDirty=false;document.getElementById('crmSaveBtn').disabled=true;
+  crmDirty=false;
   // Enable delete for existing contacts
-  document.getElementById('crmDeleteBtn').disabled=false;
+  
   crmSwitchTab('details');
 }
 
@@ -1522,7 +1518,7 @@ function crmSaveContact(){
       }
       crmRenderList();
       document.getElementById('crmDName').textContent=data.name||'Unnamed';
-      crmDirty=false;document.getElementById('crmSaveBtn').disabled=true;
+      crmDirty=false;
       document.getElementById('navCrmCount').textContent=crmContacts.length;
       document.getElementById('dashCrm').textContent=crmContacts.length;
       document.getElementById('crmSubtitle').textContent=crmContacts.length+' contacts';
