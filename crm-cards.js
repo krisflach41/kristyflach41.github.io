@@ -166,6 +166,27 @@ function wireTracking(container) {
   });
 }
 
+// Wire the always-visible header fields (Name, Phone, Email) which live outside crmCardForm
+var _headerFieldsWired = false;
+function wireHeaderFields() {
+  if (_headerFieldsWired) return;
+  _headerFieldsWired = true;
+  ['cf_name','cf_phone','cf_email'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    var dirty = function(){
+      crmDirty = true;
+      var s = document.getElementById('crmSaveBtn'); if(s) s.disabled = false;
+      // Update header display in real-time
+      if (id === 'cf_name') {
+        document.getElementById('crmDName').textContent = el.value || 'Unnamed';
+      }
+    };
+    el.addEventListener('input', dirty);
+    el.addEventListener('change', dirty);
+  });
+}
+
 // ===== BORROWER STATE =====
 var borrowerEmployers = [];
 var borrowerEducation = [];
@@ -1336,6 +1357,11 @@ function crmAddNew(){
     var fc=document.getElementById('crmCardForm');
     if(type==='borrower'){renderBorrowerCard(fc,{});renderCoBorrowerTabs();}
     else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});}
+    // Clear and wire header fields
+    var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value='';
+    var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value='';
+    var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value='';
+    wireHeaderFields();
     document.getElementById('crmSaveBtn').disabled=true;
     document.getElementById('crmDeleteBtn').disabled=true;
     crmSwitchTab('details');
@@ -1395,8 +1421,16 @@ function crmPopulateCard(c,activity){
   if(type==='borrower'){renderBorrowerCard(fc,c);}
   else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,c);}
   if(type==='borrower') renderCoBorrowerTabs();
+  // Populate header fields
+  var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value=c.name||'';
+  var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value=c.phone||'';
+  var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value=c.email||'';
+  // Wire header fields for dirty tracking (they live outside crmCardForm)
+  wireHeaderFields();
   renderActivity(activity);
   crmDirty=false;document.getElementById('crmSaveBtn').disabled=true;
+  // Enable delete for existing contacts
+  document.getElementById('crmDeleteBtn').disabled=false;
   crmSwitchTab('details');
 }
 
