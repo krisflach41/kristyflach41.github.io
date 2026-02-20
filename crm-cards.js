@@ -278,6 +278,7 @@ function renderBorrowerCard(container, data) {
   html+='<div class="card-tab" data-btab="assets" onclick="switchBorrowerTab(\'assets\')">Assets</div>';
   html+='<div class="card-tab" data-btab="reo" onclick="switchBorrowerTab(\'reo\')">REO</div>';
   html+='<div class="card-tab" data-btab="documents" onclick="switchBorrowerTab(\'documents\')">Documents</div>';
+  html+='<div class="card-tab" data-btab="loanhistory" onclick="switchBorrowerTab(\'loanhistory\')">Loan History</div>';
   html+='</div>';
 
   // PERSONAL TAB
@@ -325,6 +326,12 @@ function renderBorrowerCard(container, data) {
   html+='</label></div></div></div>';
   html+=bldSec('Notes',[{id:'notes',l:'Notes',t:'textarea',v:data.notes,fw:true}]);
   html+='</div>';
+
+  // LOAN HISTORY TAB
+  html+='<div class="card-tab-content" id="btab_loanhistory">';
+  html+='<div class="card-section"><div class="card-section-title">Completed Loans</div>';
+  html+='<div id="borrowerLoanHistoryList" style="font-size:12px;color:rgba(255,255,255,0.3);padding:8px 0;">Loading...</div>';
+  html+='</div></div>';
 
   container.innerHTML=html;
   wireTracking(container);
@@ -643,6 +650,7 @@ function switchBorrowerTab(tab){
   if(tabEl)tabEl.classList.add('active');
   if(contentEl)contentEl.classList.add('active');
   if(tab==='assets') renderAssetTabs();
+  if(tab==='loanhistory') renderBorrowerLoanHistory();
 }
 
 // ===== ASSETS TAB =====
@@ -707,6 +715,70 @@ function removeAsset(idx){
   if(activeAssetTab>=borrowerAssets.length) activeAssetTab=borrowerAssets.length-1;
   renderAssetTabs();
   crmDirty=true;
+}
+
+// ===== LOAN HISTORY TAB =====
+function renderBorrowerLoanHistory(){
+  var el=document.getElementById('borrowerLoanHistoryList');
+  if(!el||!crmCurrentId)return;
+  el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">Loading loan history...</div>';
+  fetch(CRM_API+'/pipeline-api',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'getHistory',crm_contact_id:crmCurrentId})
+  }).then(function(r){return r.json();})
+  .then(function(data){
+    if(!data.success||!data.history||data.history.length===0){
+      el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">No completed loans on record</div>';
+      return;
+    }
+    var icons={funded:'fa-trophy',denied:'fa-times-circle',suspended:'fa-pause-circle',withdrawn:'fa-undo'};
+    var colors={funded:'#22c55e',denied:'#ef4444',suspended:'#f59e0b',withdrawn:'#8b5cf6'};
+    var h='';
+    data.history.forEach(function(loan){
+      var color=colors[loan.outcome]||'#64748b';
+      var icon=icons[loan.outcome]||'fa-file';
+      var loanType=loan.loan_type||'—';
+      var rate=loan.interest_rate?(parseFloat(loan.interest_rate).toFixed(3)+'%'):'—';
+      var amt=loan.loan_amount?('$'+parseFloat(loan.loan_amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')):'—';
+      var addr=loan.subject_address||'—';
+      var dt=loan.outcome_date?new Date(loan.outcome_date+'T00:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'}):'—';
+      var outcomeLabel=loan.outcome?(loan.outcome.charAt(0).toUpperCase()+loan.outcome.slice(1)):'—';
+
+      // Build borrower names from the borrowers array
+      var borrowerNames='';
+      if(loan.borrowers&&loan.borrowers.length>0){
+        borrowerNames=loan.borrowers.map(function(b){
+          var role=b.role?(b.role.charAt(0).toUpperCase()+b.role.slice(1)):'';
+          return (b.name||'Unknown')+(role?' <span style="font-size:9px;opacity:0.5;">('+role+')</span>':'');
+        }).join(', ');
+      } else {
+        borrowerNames=loan.primary_name||'—';
+      }
+
+      h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+color+';border-radius:8px;padding:14px 16px;margin-bottom:10px;">';
+      // Header row: outcome badge + date
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
+      h+='<span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:'+color+';"><i class="fas '+icon+'"></i> '+outcomeLabel+'</span>';
+      h+='<span style="font-size:11px;color:rgba(255,255,255,0.4);">'+dt+'</span>';
+      h+='</div>';
+      // Details grid
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;">';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Type</span><div style="margin-top:2px;">'+loanType+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Interest Rate</span><div style="margin-top:2px;">'+rate+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</span><div style="margin-top:2px;">'+amt+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Strike Rate</span><div style="margin-top:2px;">'+(loan.strike_rate||'—')+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Property</span><div style="margin-top:2px;">'+addr+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Borrowers on Loan</span><div style="margin-top:2px;">'+borrowerNames+'</div></div>';
+      if(loan.notes){
+        h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Notes</span><div style="margin-top:2px;font-style:italic;opacity:0.6;">'+loan.notes+'</div></div>';
+      }
+      h+='</div></div>';
+    });
+    el.innerHTML=h;
+  }).catch(function(err){
+    console.error('Loan history tab error:',err);
+    el.innerHTML='<div style="color:#ef4444;font-size:12px;padding:8px 0;">Error loading loan history</div>';
+  });
 }
 
 // ===== PIPELINE BUTTON =====
