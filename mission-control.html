@@ -849,13 +849,20 @@ body {
       </div>
       <!-- RIGHT: Detail -->
       <div class="crm-detail-panel">
-        <div class="crm-detail-empty" id="crmDetailEmpty">Select a contact to view details</div>
+        <div class="crm-detail-empty" id="crmDetailEmpty" style="display:flex;">
+          <img src="agent-edge-logo.png" alt="Agent Edge" style="width:200px;height:auto;opacity:0.15;margin-bottom:24px;">
+          <div style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.25);margin-bottom:8px;">Client Database</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.15);">Select a contact or create a new one to get started</div>
+        </div>
         <div class="crm-detail-content" id="crmDetailContent">
           <div class="card-header">
-            <!-- Row 1: Name + Pipeline -->
+            <!-- Row 1: Name + Close/Pipeline -->
             <div class="card-header-row">
               <div class="card-name" id="crmDName"></div>
-              <div id="cardPipelineBtn"></div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div id="cardPipelineBtn"></div>
+                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:4px 8px;font-size:12px;opacity:0.5;" title="Close card"><i class="fas fa-times"></i></button>
+              </div>
             </div>
             <!-- Row 2: Meta -->
             <div class="card-meta" id="crmDMeta"></div>
@@ -2508,6 +2515,19 @@ var crmContacts = [];
 var crmCurrentId = null;
 var crmDirty = false;
 var crmDeleteArmed = false;
+
+function crmCloseCard() {
+  crmCurrentId = null;
+  crmDirty = false;
+  document.getElementById('crmDetailContent').style.display = 'none';
+  document.getElementById('crmDetailEmpty').style.display = 'flex';
+  // Clear co-borrower tabs so they don't bleed into next card
+  var cbTabs = document.getElementById('coBorrowerTabs');
+  if (cbTabs) { cbTabs.style.display = 'none'; cbTabs.innerHTML = ''; }
+  var banner = document.getElementById('crmLoanHistoryBanner');
+  if (banner) { banner.style.display = 'none'; banner.innerHTML = ''; }
+  crmRenderList();
+}
 
 function loadCrm() {
   fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=list', {
