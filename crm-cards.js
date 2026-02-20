@@ -172,6 +172,12 @@ function wireHeaderFields() {
   if (_headerFieldsWired) return;
   _headerFieldsWired = true;
 
+  // Auto-capitalize first letter
+  function capitalizeFirst(str) {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
   // Wire name fields — update header display in real-time
   ['cf_first_name','cf_middle_initial','cf_last_name'].forEach(function(id){
     var el = document.getElementById(id);
@@ -185,6 +191,12 @@ function wireHeaderFields() {
     };
     el.addEventListener('input', dirty);
     el.addEventListener('change', dirty);
+    // Auto-capitalize first letter on blur for first/last name
+    if (id === 'cf_first_name' || id === 'cf_last_name') {
+      el.addEventListener('blur', function() {
+        if (el.value) el.value = capitalizeFirst(el.value);
+      });
+    }
   });
 
   // Wire phone field with auto-format
@@ -761,7 +773,7 @@ function renderAssetTabs(){
         {value:'brokerage',label:'Brokerage'},{value:'trust',label:'Trust'},
         {value:'gift',label:'Gift Funds'},{value:'other',label:'Other'}
       ]},
-      {id:'asset_balance_'+i,l:'Balance',t:'number',v:a.balance,ph:'0.00'}
+      {id:'asset_balance_'+i,l:'Balance',t:'text',v:a.balance?formatMoney(a.balance):'',ph:'$0.00'}
     ]);
     if(borrowerAssets.length>1){
       ph+='<button class="emp-tab-add" style="background:rgba(239,68,68,0.08);color:#ef4444;border-color:rgba(239,68,68,0.2);margin-top:8px;" onclick="removeAsset('+i+')"><i class="fas fa-trash-alt"></i> Remove Account</button>';
@@ -777,7 +789,18 @@ function renderAssetTabs(){
     var bal=document.getElementById('asset_balance_'+i);
     if(inst)inst.addEventListener('change',function(){ a.institution=this.value; renderAssetTabs(); });
     if(typ)typ.addEventListener('change',function(){ a.account_type=this.value; });
-    if(bal)bal.addEventListener('change',function(){ a.balance=parseFloat(this.value)||0; });
+    if(bal){
+      bal.addEventListener('focus',function(){
+        // Strip formatting on focus so user can type raw number
+        var raw=this.value.replace(/[^0-9.]/g,'');
+        this.value=raw;
+      });
+      bal.addEventListener('blur',function(){
+        var num=parseFloat(this.value.replace(/[^0-9.]/g,''))||0;
+        a.balance=num;
+        this.value=num?formatMoney(num):'';
+      });
+    }
   });
 }
 
