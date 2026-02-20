@@ -215,14 +215,6 @@ function wireHeaderFields() {
       crmSaveContact();
     });
   }
-  var deleteBtn = document.getElementById('crmDeleteBtn');
-  if (deleteBtn && !deleteBtn._wired) {
-    deleteBtn._wired = true;
-    deleteBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      crmConfirmDelete();
-    });
-  }
 }
 
 // Build display name from the three fields
@@ -1259,6 +1251,9 @@ function renderCoBorrowerTabs() {
       cbBtn.innerHTML = '';
     }
   }
+  // Show/hide Unlink button based on whether we're on a co-borrower tab
+  var unlinkBtn = document.getElementById('crmUnlinkBtn');
+  if (unlinkBtn) unlinkBtn.style.display = (activeCoBorrowerIdx > 0) ? '' : 'none';
 }
 
 function switchCoBorrower(idx) {
@@ -1581,6 +1576,15 @@ function unlinkCoBorrower(cbIdx) {
   if (!cb) return;
   if (!confirm('Remove ' + (cb.name || 'this co-borrower') + ' from this loan?')) return;
   
+  // If co-borrower has a CRM contact, clear their linked_to field
+  if (cb.contact_id) {
+    fetch(CRM_API + '/crm-api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'clearLink', crm_id: cb.contact_id })
+    }).catch(function(err) { console.error('Clear link error:', err); });
+  }
+
   // If we're currently viewing this co-borrower, switch to primary first
   if (activeCoBorrowerIdx === cbIdx + 1) {
     activeCoBorrowerIdx = 0;
@@ -1595,7 +1599,6 @@ function unlinkCoBorrower(cbIdx) {
       if(emailEl) emailEl.value = window._primaryBorrowerData.email || '';
     }
   } else if (activeCoBorrowerIdx > cbIdx + 1) {
-    // Adjust index since we're removing one before our position
     activeCoBorrowerIdx--;
   }
   
@@ -1603,7 +1606,13 @@ function unlinkCoBorrower(cbIdx) {
   coBorrowers.splice(cbIdx, 1);
   renderCoBorrowerTabs();
   crmDirty = true;
-  showToast(removedName + ' removed from loan');
+  showToast(removedName + ' unlinked from loan');
+}
+
+// Unlink the currently active co-borrower (from the Unlink button)
+function unlinkActiveCoBorrower() {
+  if (activeCoBorrowerIdx < 1) return;
+  unlinkCoBorrower(activeCoBorrowerIdx - 1);
 }
 
 // Create a CRM contact from a co-borrower
@@ -1875,8 +1884,6 @@ function crmSelectContact(id){
   
   
   
-  document.getElementById('crmDeleteBtn').textContent='Delete';
-  crmDeleteArmed=false;
   document.getElementById('crmDetailEmpty').style.display='none';
   document.getElementById('crmDetailContent').style.display='flex';
   // Hide New Contact button while card is open
