@@ -830,6 +830,7 @@ body {
               <option value="">All</option>
               <option value="client">Clients</option>
               <option value="borrower">Borrowers</option>
+              <option value="past_client">Past Clients</option>
               <option value="realtor">Realtors</option>
               <option value="title">Title</option>
               <option value="appraiser">Appraisers</option>
@@ -1837,6 +1838,8 @@ function saveFundedContact() {
       primary_phone: c.phone,
       primary_email: c.email,
       loan_type: loanType,
+      transaction_type: transType,
+      loan_program: loanProgram,
       loan_amount: amount,
       interest_rate: rate,
       strike_rate: strikeRate,
@@ -1862,7 +1865,7 @@ function saveFundedContact() {
       var label = outcome.charAt(0).toUpperCase() + outcome.slice(1);
       showToast('<i class="fas ' + (toastIcons[outcome] || 'fa-check') + '" style="color:' + (toastColors[outcome] || '#fff') + ';"></i> ' + c.name + ' — ' + label + '! Saved to history.');
       // Refresh CRM list to reflect type change to past_client
-      if (typeof loadCrmContacts === 'function') loadCrmContacts();
+      if (typeof loadCrm === 'function') loadCrm();
     } else {
       showToast('Error: ' + (result.message || 'Unknown error'));
     }
@@ -2536,12 +2539,13 @@ function crmRenderList() {
   filtered.forEach(function(c) {
     var activeClass = c.id === crmCurrentId ? ' active' : '';
     var typeClass = c.type ? ' t-' + c.type : '';
-    var badgeColors = { client: 'rgba(59,130,246,0.12);color:#3b82f6', borrower: 'rgba(14,165,233,0.12);color:#0ea5e9', realtor: 'rgba(34,197,94,0.12);color:#22c55e', title: 'rgba(245,158,11,0.12);color:#f59e0b', appraiser: 'rgba(168,85,247,0.12);color:#a855f7', contractor: 'rgba(239,68,68,0.12);color:#ef4444', vendor: 'rgba(20,184,166,0.12);color:#14b8a6' };
+    var badgeColors = { client: 'rgba(59,130,246,0.12);color:#3b82f6', borrower: 'rgba(14,165,233,0.12);color:#0ea5e9', past_client: 'rgba(34,197,94,0.12);color:#22c55e', realtor: 'rgba(34,197,94,0.12);color:#22c55e', title: 'rgba(245,158,11,0.12);color:#f59e0b', appraiser: 'rgba(168,85,247,0.12);color:#a855f7', contractor: 'rgba(239,68,68,0.12);color:#ef4444', vendor: 'rgba(20,184,166,0.12);color:#14b8a6' };
     var badgeStyle = badgeColors[c.type] || 'rgba(255,255,255,0.06);color:rgba(255,255,255,0.4)';
 
+    var badgeLabels = { client:'Client', borrower:'Borrower', past_client:'Past Client', realtor:'Realtor', title:'Title', appraiser:'Appraiser', contractor:'Contractor', vendor:'Vendor', other:'Other' };
     html += '<div class="crm-contact-item' + typeClass + activeClass + '" onclick="crmSelectContact(\'' + c.id + '\')">' +
       '<div><div class="ci-name">' + (c.name || 'Unnamed') + '</div><div class="ci-sub">' + (c.email || c.phone || '') + '</div></div>' +
-      '<div class="ci-badge" style="background:' + badgeStyle + '">' + (c.type || 'other') + '</div></div>';
+      '<div class="ci-badge" style="background:' + badgeStyle + '">' + (badgeLabels[c.type] || c.type || 'Other') + '</div></div>';
   });
   document.getElementById('crmContactList').innerHTML = html;
 }
