@@ -246,10 +246,10 @@ body {
 .crm-contact-item:not(.active).t-vendor { border-left-color: rgba(20,184,166,0.35); }
 .crm-contact-item.t-contractor { border-left-color: var(--accent-red); }
 .crm-contact-item.t-vendor { border-left-color: var(--accent-teal); }
-.ci-name { font-size: 11px; font-weight: 600; }
-.ci-sub { font-size: 10px; color: var(--text-muted); }
+.ci-name { font-size: 13px; font-weight: 600; }
+.ci-sub { font-size: 11px; color: rgba(255,255,255,0.45); }
 .ci-badge {
-  margin-left: auto; font-size: 8px; font-weight: 700; padding: 2px 6px;
+  margin-left: auto; font-size: 10px; font-weight: 700; padding: 3px 8px;
   border-radius: 6px; background: rgba(59,130,246,0.12); color: var(--accent-blue);
   text-transform: capitalize; flex-shrink: 0;
 }
@@ -264,7 +264,7 @@ body {
 .crm-detail-actions { display: flex; gap: 8px; margin-top: 12px; }
 .crm-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 24px; }
 .crm-tab {
-  padding: 8px 14px; font-size: 11px; font-weight: 600;
+  padding: 10px 16px; font-size: 13px; font-weight: 600;
   color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent;
 }
 .crm-tab:hover { color: var(--text-secondary); }
@@ -273,21 +273,21 @@ body {
 .crm-tab-content.active { display: block; }
 .crm-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
 .crm-field label {
-  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.55);
-  text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px;
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6);
+  text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px;
 }
 .crm-field input, .crm-field select, .crm-field textarea {
-  width: 100%; padding: 9px 12px; border-radius: 7px;
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-  color: #eaf0f6; font-size: 13px; font-family: inherit;
+  width: 100%; padding: 10px 14px; border-radius: 8px;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+  color: #f0f4f8; font-size: 14px; font-family: inherit;
 }
 .crm-field input:focus, .crm-field select:focus, .crm-field textarea:focus { outline: none; border-color: rgba(59,130,246,0.4); background: rgba(255,255,255,0.08); }
 .crm-field textarea { resize: vertical; min-height: 70px; }
 .crm-field select option { background: var(--bg-card); color: var(--text-primary); }
 .crm-section-title {
-  font-size: 11px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase;
-  letter-spacing: 1px; margin: 20px 0 10px; grid-column: 1 / -1;
-  padding-bottom: 6px; border-bottom: 1px solid rgba(59,130,246,0.15);
+  font-size: 12px; font-weight: 700; color: var(--accent-blue); text-transform: uppercase;
+  letter-spacing: 1px; margin: 24px 0 12px; grid-column: 1 / -1;
+  padding-bottom: 8px; border-bottom: 1px solid rgba(59,130,246,0.15);
   cursor: pointer; user-select: none;
 }
 .crm-section-title:first-child { margin-top: 0; }
@@ -296,6 +296,43 @@ body {
 .crm-section-title.collapsed::before { content: '\25B8 '; }
 .crm-section-title.collapsed ~ .crm-field { display: none; }
 .crm-section-hidden { display: none !important; }
+
+/* CARD SYSTEM */
+.card-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--border); }
+.card-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.card-header-badges { display: flex; align-items: center; gap: 8px; }
+.card-name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #fff; }
+.card-meta { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+.card-type-badge { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.card-fields { display: flex; gap: 12px; align-items: flex-end; padding: 0 28px; }
+.card-field { flex: 1; }
+.card-field label { display: block; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.card-field input, .card-field select { 
+  width: 100%; padding: 10px 14px; border-radius: 8px; 
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); 
+  color: #f0f4f8; font-size: 14px; font-family: inherit; 
+}
+.card-field input:focus, .card-field select:focus { outline: none; border-color: rgba(59,130,246,0.5); background: rgba(255,255,255,0.1); }
+.card-field input::placeholder { color: rgba(255,255,255,0.2); }
+.card-action-btn { 
+  padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); 
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); 
+  font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; 
+}
+.card-action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.card-action-btn.primary { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.3); color: #60a5fa; }
+.card-action-btn.primary:hover { background: rgba(59,130,246,0.25); }
+.card-action-btn.danger { background: transparent; border-color: transparent; color: rgba(239,68,68,0.7); }
+.card-action-btn.danger:hover { color: #ef4444; }
+.card-qualifying-wrap { margin: 0 28px; padding: 14px 20px; border-radius: 10px; background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(59,130,246,0.08)); border: 1px solid rgba(14,165,233,0.15); display: flex; justify-content: flex-end; align-items: center; gap: 12px; }
+.card-qualifying-label { font-size: 11px; font-weight: 700; color: rgba(14,165,233,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+.card-qualifying-amount { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: #0ea5e9; }
+
+/* CRM Home Screen */
+.crm-detail-empty { 
+  display: flex; flex-direction: column; align-items: center; justify-content: center; 
+  height: 100%; min-height: 500px; 
+}
 
 /* ACTIVITY TIMELINE */
 .activity-item {
@@ -850,9 +887,11 @@ body {
       <!-- RIGHT: Detail -->
       <div class="crm-detail-panel">
         <div class="crm-detail-empty" id="crmDetailEmpty" style="display:flex;">
-          <img src="agent-edge-logo.png" alt="Agent Edge" style="width:200px;height:auto;opacity:0.15;margin-bottom:24px;">
-          <div style="font-size:16px;font-weight:600;color:rgba(255,255,255,0.25);margin-bottom:8px;">Client Database</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.15);">Select a contact or create a new one to get started</div>
+          <div style="text-align:center;max-width:400px;">
+            <img src="agent-edge-logo.png" alt="Agent Edge" style="width:320px;height:auto;opacity:0.25;margin-bottom:32px;">
+            <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px;">Client Database</div>
+            <div style="font-size:15px;color:rgba(255,255,255,0.4);line-height:1.6;">Select a contact from the list<br>or click <strong style="color:rgba(255,255,255,0.55);">+ New Contact</strong> to get started</div>
+          </div>
         </div>
         <div class="crm-detail-content" id="crmDetailContent">
           <div class="card-header">
@@ -861,7 +900,7 @@ body {
               <div class="card-name" id="crmDName"></div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div id="cardPipelineBtn"></div>
-                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:4px 8px;font-size:12px;opacity:0.5;" title="Close card"><i class="fas fa-times"></i></button>
+                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 10px;opacity:0.4;" title="Close card"><i class="fas fa-times"></i></button>
               </div>
             </div>
             <!-- Row 2: Meta -->
@@ -870,7 +909,7 @@ body {
             <div class="card-header-row" style="margin-top:8px;">
               <div class="card-header-badges">
                 <div id="crmDTypeBadge"></div>
-                <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 8px;font-size:10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
+                <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
               </div>
               <div id="coBorrowerTabs" style="display:none;"></div>
             </div>
