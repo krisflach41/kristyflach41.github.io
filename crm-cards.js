@@ -1820,10 +1820,20 @@ function collectAllCardData(){
 var crmCurrentType='client';
 
 function crmAddNew(){
+  // Clear ALL state from any previously open card first
+  crmCurrentId=null;crmDirty=false;
+  borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];cardDocuments=[];
+  coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
+  // Clear banners and co-borrower tabs from previous card
+  var bannerPre=document.getElementById('crmLoanHistoryBanner');
+  if(bannerPre){bannerPre.style.display='none';bannerPre.innerHTML='';}
+  var cbTabsPre=document.getElementById('coBorrowerTabs');
+  if(cbTabsPre){cbTabsPre.style.display='none';cbTabsPre.innerHTML='';}
+  // Deselect in list
+  if(typeof crmRenderList==='function') crmRenderList();
+
   showTypePicker(function(type){
-    crmCurrentType=type;crmCurrentId=null;crmDirty=false;
-    borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];cardDocuments=[];
-    coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
+    crmCurrentType=type;
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
     var ti=CONTACT_TYPES[type];
@@ -1835,7 +1845,6 @@ function crmAddNew(){
     var fc=document.getElementById('crmCardForm');
     if(type==='borrower'||type==='past_client'){
       renderBorrowerCard(fc,{});
-      // Force co-borrower tabs to show with proper initialization
       var cbTabs=document.getElementById('coBorrowerTabs');
       if(cbTabs) cbTabs.style.display='flex';
       renderCoBorrowerTabs();
