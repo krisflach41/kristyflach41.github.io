@@ -171,23 +171,41 @@ var _headerFieldsWired = false;
 function wireHeaderFields() {
   if (_headerFieldsWired) return;
   _headerFieldsWired = true;
-  ['cf_name','cf_phone','cf_email'].forEach(function(id){
+
+  // Wire name fields — update header display in real-time
+  ['cf_first_name','cf_middle_initial','cf_last_name'].forEach(function(id){
     var el = document.getElementById(id);
     if (!el || el._dirtyWired) return;
     el._dirtyWired = true;
     var dirty = function(){
       crmDirty = true;
-      
-      // Update header display in real-time
-      if (id === 'cf_name') {
-        document.getElementById('crmDName').textContent = el.value || 'Unnamed';
-        // Keep primaryBorrowerName in sync if we're on primary tab
-        if (activeCoBorrowerIdx === 0) primaryBorrowerName = el.value;
-      }
+      var displayName = buildDisplayName();
+      document.getElementById('crmDName').textContent = displayName || 'Unnamed';
+      if (activeCoBorrowerIdx === 0) primaryBorrowerName = displayName;
     };
     el.addEventListener('input', dirty);
     el.addEventListener('change', dirty);
   });
+
+  // Wire phone field with auto-format
+  var phoneEl = document.getElementById('cf_phone');
+  if (phoneEl && !phoneEl._dirtyWired) {
+    phoneEl._dirtyWired = true;
+    phoneEl.addEventListener('input', function(e) {
+      crmDirty = true;
+      formatPhoneInput(phoneEl);
+    });
+    phoneEl.addEventListener('change', function() { crmDirty = true; });
+  }
+
+  // Wire email
+  var emailEl = document.getElementById('cf_email');
+  if (emailEl && !emailEl._dirtyWired) {
+    emailEl._dirtyWired = true;
+    emailEl.addEventListener('input', function() { crmDirty = true; });
+    emailEl.addEventListener('change', function() { crmDirty = true; });
+  }
+
   // Wire action buttons with JS listeners (more reliable than onclick attributes)
   var saveBtn = document.getElementById('crmSaveBtn');
   if (saveBtn && !saveBtn._wired) {
@@ -205,6 +223,79 @@ function wireHeaderFields() {
       crmConfirmDelete();
     });
   }
+}
+
+// Build display name from the three fields
+function buildDisplayName() {
+  var first = (document.getElementById('cf_first_name') || {}).value || '';
+  var mi = (document.getElementById('cf_middle_initial') || {}).value || '';
+  var last = (document.getElementById('cf_last_name') || {}).value || '';
+  var parts = [first.trim()];
+  if (mi.trim()) parts.push(mi.trim().toUpperCase() + '.');
+  parts.push(last.trim());
+  return parts.filter(Boolean).join(' ');
+}
+
+// Split a full name into first/mi/last
+function splitName(fullName) {
+  if (!fullName) return { first: '', mi: '', last: '' };
+  var parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return { first: parts[0], mi: '', last: '' };
+  if (parts.length === 2) return { first: parts[0], mi: '', last: parts[1] };
+  // Check if middle part looks like an initial (1 char or 1 char + period)
+  var mid = parts[1];
+  if (mid.length <= 2 && (mid.length === 1 || mid.charAt(1) === '.')) {
+    return { first: parts[0], mi: mid.replace('.', ''), last: parts.slice(2).join(' ') };
+  }
+  // Otherwise treat everything between first and last as middle
+  return { first: parts[0], mi: '', last: parts.slice(1).join(' ') };
+}
+
+// Populate header name fields from a contact object
+function populateNameFields(c) {
+  var firstEl = document.getElementById('cf_first_name');
+  var miEl = document.getElementById('cf_middle_initial');
+  var lastEl = document.getElementById('cf_last_name');
+  if (c.first_name !== undefined) {
+    // Has split fields already
+    if (firstEl) firstEl.value = c.first_name || '';
+    if (miEl) miEl.value = c.middle_initial || '';
+    if (lastEl) lastEl.value = c.last_name || '';
+  } else {
+    // Legacy single name — split it
+    var s = splitName(c.name || '');
+    if (firstEl) firstEl.value = s.first;
+    if (miEl) miEl.value = s.mi;
+    if (lastEl) lastEl.value = s.last;
+  }
+}
+
+// Phone formatting: (xxx) xxx-xxxx
+function formatPhoneInput(el) {
+  var raw = el.value.replace(/\D/g, '');
+  if (raw.length > 10) raw = raw.slice(0, 10);
+  var formatted = '';
+  if (raw.length > 0) formatted += '(' + raw.substring(0, 3);
+  if (raw.length >= 3) formatted += ') ';
+  if (raw.length > 3) formatted += raw.substring(3, 6);
+  if (raw.length >= 6) formatted += '-';
+  if (raw.length > 6) formatted += raw.substring(6, 10);
+  // Preserve cursor position
+  var cursorPos = el.selectionStart;
+  var prevLen = el.value.length;
+  el.value = formatted;
+  var newLen = el.value.length;
+  var newPos = cursorPos + (newLen - prevLen);
+  if (newPos < 0) newPos = 0;
+  if (newPos > newLen) newPos = newLen;
+  el.setSelectionRange(newPos, newPos);
+}
+
+function formatPhoneDisplay(phone) {
+  if (!phone) return '';
+  var raw = String(phone).replace(/\D/g, '');
+  if (raw.length === 10) return '(' + raw.substring(0,3) + ') ' + raw.substring(3,6) + '-' + raw.substring(6,10);
+  return phone; // return as-is if not 10 digits
 }
 
 // ===== BORROWER STATE =====
@@ -900,12 +991,13 @@ function togglePipelineDropdown(){
 
 function setPipelineStage(contactId,stage){
   var pid='crm-'+contactId;
-  var n=document.getElementById('cf_name'),p=document.getElementById('cf_phone'),e=document.getElementById('cf_email');
+  var p=document.getElementById('cf_phone'),e=document.getElementById('cf_email');
+  var displayName = buildDisplayName();
   
   // Build borrowers list from primary + co-borrowers
   var allBorrowers = [];
   // Primary borrower
-  var primaryName = (activeCoBorrowerIdx === 0 && n) ? n.value : (window._primaryBorrowerData ? window._primaryBorrowerData.name : (n ? n.value : ''));
+  var primaryName = (activeCoBorrowerIdx === 0) ? displayName : (window._primaryBorrowerData ? window._primaryBorrowerData.name : displayName);
   allBorrowers.push({
     name: primaryName,
     role: 'primary',
@@ -1060,7 +1152,7 @@ function saveCalcToEmployer(){
 
 function exportCalcToDoc(){
   var emp=borrowerEmployers[calcPanelEmpIdx];
-  var name=document.getElementById('cf_name')?document.getElementById('cf_name').value:'Borrower';
+  var name=buildDisplayName()||'Borrower';
   var input=document.getElementById('calcQualifyingInput');
   var amt=input?input.value:'0';
   addDocumentToCard('Income Calc - '+(emp.employer_name||'Employer')+' - '+name+' - '+formatMoney(amt),'income_calc',new Date().toISOString());
@@ -1142,10 +1234,15 @@ function switchCoBorrower(idx) {
   if (idx === 0) {
     // Load primary borrower data
     loadPrimaryBorrowerData();
-    // Update header to show primary's name
+    // Update header to show primary's name and populate fields
     if (window._primaryBorrowerData) {
       document.getElementById('crmDName').textContent = window._primaryBorrowerData.name || 'Unnamed';
-      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, window._primaryBorrowerData.phone].filter(Boolean).join(' – ');
+      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, formatPhoneDisplay(window._primaryBorrowerData.phone)].filter(Boolean).join(' – ');
+      populateNameFields(window._primaryBorrowerData);
+      var phoneEl = document.getElementById('cf_phone');
+      if(phoneEl) { phoneEl.value = window._primaryBorrowerData.phone || ''; formatPhoneInput(phoneEl); }
+      var emailEl = document.getElementById('cf_email');
+      if(emailEl) emailEl.value = window._primaryBorrowerData.email || '';
     }
   } else {
     // Load co-borrower data
@@ -1153,10 +1250,17 @@ function switchCoBorrower(idx) {
     if (cb && cb.data) {
       loadCoBorrowerData(cb);
     }
-    // Update header to show co-borrower's name
+    // Update header to show co-borrower's name and populate fields
     if (cb) {
       document.getElementById('crmDName').textContent = cb.name || 'Co-Borrower';
-      document.getElementById('crmDMeta').textContent = [cb.email, cb.phone].filter(Boolean).join(' – ');
+      document.getElementById('crmDMeta').textContent = [cb.email, formatPhoneDisplay(cb.phone)].filter(Boolean).join(' – ');
+      var cbData = cb.data || {};
+      cbData.name = cb.name; cbData.phone = cb.phone; cbData.email = cb.email;
+      populateNameFields(cbData);
+      var phoneEl = document.getElementById('cf_phone');
+      if(phoneEl) { phoneEl.value = cb.phone || ''; formatPhoneInput(phoneEl); }
+      var emailEl = document.getElementById('cf_email');
+      if(emailEl) emailEl.value = cb.email || '';
     }
   }
   renderCoBorrowerTabs();
@@ -1185,6 +1289,9 @@ function saveCoBorrowerState() {
       cb.phone = data.phone || cb.phone;
       cb.email = data.email || cb.email;
       cb.data = data;
+      cb.data.first_name = data.first_name;
+      cb.data.middle_initial = data.middle_initial;
+      cb.data.last_name = data.last_name;
       cb.data.employers = JSON.parse(JSON.stringify(borrowerEmployers));
       cb.data.education = JSON.parse(JSON.stringify(borrowerEducation));
       cb.data.assets = JSON.parse(JSON.stringify(borrowerAssets));
@@ -1219,11 +1326,12 @@ function loadCoBorrowerData(cb) {
   cardDocuments = data.documents || [];
   activeEmpTab = 0; activeREOTab = 0; activeAssetTab = 0;
   // Populate header fields
-  var nameEl = document.getElementById('cf_name');
+  var cbData = data || {};
+  cbData.name = cb.name; cbData.phone = cb.phone; cbData.email = cb.email;
+  populateNameFields(cbData);
   var phoneEl = document.getElementById('cf_phone');
   var emailEl = document.getElementById('cf_email');
-  if (nameEl) nameEl.value = cb.name || '';
-  if (phoneEl) phoneEl.value = cb.phone || '';
+  if (phoneEl) { phoneEl.value = cb.phone || ''; formatPhoneInput(phoneEl); }
   if (emailEl) emailEl.value = cb.email || '';
   // Render card body
   var fc = document.getElementById('crmCardForm');
@@ -1231,11 +1339,10 @@ function loadCoBorrowerData(cb) {
 }
 
 function populateCardFields(data) {
-  var nameEl = document.getElementById('cf_name');
+  populateNameFields(data);
   var phoneEl = document.getElementById('cf_phone');
   var emailEl = document.getElementById('cf_email');
-  if (nameEl) nameEl.value = data.name || '';
-  if (phoneEl) phoneEl.value = data.phone || '';
+  if (phoneEl) { phoneEl.value = data.phone || ''; formatPhoneInput(phoneEl); }
   if (emailEl) emailEl.value = data.email || '';
 }
 
@@ -1445,7 +1552,12 @@ function unlinkCoBorrower(cbIdx) {
     loadPrimaryBorrowerData();
     if (window._primaryBorrowerData) {
       document.getElementById('crmDName').textContent = window._primaryBorrowerData.name || 'Unnamed';
-      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, window._primaryBorrowerData.phone].filter(Boolean).join(' – ');
+      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, formatPhoneDisplay(window._primaryBorrowerData.phone)].filter(Boolean).join(' – ');
+      populateNameFields(window._primaryBorrowerData);
+      var phoneEl = document.getElementById('cf_phone');
+      if(phoneEl) { phoneEl.value = window._primaryBorrowerData.phone || ''; formatPhoneInput(phoneEl); }
+      var emailEl = document.getElementById('cf_email');
+      if(emailEl) emailEl.value = window._primaryBorrowerData.email || '';
     }
   } else if (activeCoBorrowerIdx > cbIdx + 1) {
     // Adjust index since we're removing one before our position
@@ -1650,6 +1762,13 @@ function collectAllCardData(){
   document.querySelectorAll('.card-tracked').forEach(function(el){
     var id=el.id.replace('cf_','');data[id]=el.value||null;
   });
+  // Build composite name from split fields + store individual parts
+  data.first_name = data.first_name || '';
+  data.middle_initial = data.middle_initial ? data.middle_initial.toUpperCase() : '';
+  data.last_name = data.last_name || '';
+  data.name = buildDisplayName();
+  // Clean phone to raw digits for storage, keep formatted for display
+  if(data.phone) data.phone = data.phone.replace(/\D/g,'');
   if(crmCurrentType==='borrower'){
     data.employers=borrowerEmployers;
     data.education=borrowerEducation;
@@ -1691,7 +1810,9 @@ function crmAddNew(){
       var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});
     }
     // Clear and wire header fields
-    var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value='';
+    var firstEl=document.getElementById('cf_first_name');if(firstEl)firstEl.value='';
+    var miEl=document.getElementById('cf_middle_initial');if(miEl)miEl.value='';
+    var lastEl=document.getElementById('cf_last_name');if(lastEl)lastEl.value='';
     var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value='';
     var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value='';
     wireHeaderFields();
@@ -1728,7 +1849,7 @@ function crmPopulateCard(c,activity){
   var type=c.type||'other';
   var ti=CONTACT_TYPES[type]||CONTACT_TYPES.other;
   document.getElementById('crmDName').textContent=c.name||'Unnamed';
-  document.getElementById('crmDMeta').textContent=[c.email,c.phone,c.company].filter(Boolean).join(' - ');
+  document.getElementById('crmDMeta').textContent=[c.email,formatPhoneDisplay(c.phone),c.company].filter(Boolean).join(' – ');
   document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
   // Show qualifying income for borrowers (not past clients)
   var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
@@ -1764,8 +1885,9 @@ function crmPopulateCard(c,activity){
   else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,c);}
   if(type==='borrower'||type==='past_client') renderCoBorrowerTabs();
   // Populate header fields
-  var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value=c.name||'';
-  var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value=c.phone||'';
+  populateNameFields(c);
+  var phoneEl=document.getElementById('cf_phone');
+  if(phoneEl) { phoneEl.value=c.phone||''; formatPhoneInput(phoneEl); }
   var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value=c.email||'';
   // Wire header fields for dirty tracking (they live outside crmCardForm)
   wireHeaderFields();
@@ -1837,11 +1959,13 @@ function crmSaveContact(){
   }
 
   data.type = saveType;
+  // Ensure composite name is built from parts
+  if(!data.name) data.name = [data.first_name, data.middle_initial ? data.middle_initial + '.' : '', data.last_name].filter(Boolean).join(' ');
   console.log('Data name:', data.name);
   console.log('Data keys:', Object.keys(data).join(', '));
 
-  if(!data.name){
-    showToast('Name is required');
+  if(!data.name || !data.name.trim()){
+    showToast('First or Last name is required');
     console.log('ABORT: No name');
     crmSaving = false;
     return;
