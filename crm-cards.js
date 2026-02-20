@@ -5,6 +5,21 @@
 
 var CRM_API = 'https://agent-edge-backend.vercel.app/api';
 
+// Global: auto-capitalize first letter of all text inputs in card areas on blur
+document.addEventListener('blur', function(e) {
+  var el = e.target;
+  if (el.tagName !== 'INPUT' || el.type !== 'text') return;
+  // Skip fields that shouldn't be capitalized
+  if (el.id === 'cf_middle_initial') return; // MI already uppercase via CSS
+  if (el.id && el.id.match(/asset_balance/)) return; // Currency field
+  if (el.closest('.crm-detail-panel') || el.closest('.card-header')) {
+    if (el.value && el.value.length > 0) {
+      // Capitalize first letter of each word
+      el.value = el.value.replace(/\b\w/g, function(c) { return c.toUpperCase(); });
+    }
+  }
+}, true); // useCapture so it fires before other blur handlers
+
 // ===== TYPE DEFINITIONS =====
 var CONTACT_TYPES = {
   client:      { label: 'Client',      icon: 'fa-user',              color: 'var(--type-client)' },
@@ -172,12 +187,6 @@ function wireHeaderFields() {
   if (_headerFieldsWired) return;
   _headerFieldsWired = true;
 
-  // Auto-capitalize first letter
-  function capitalizeFirst(str) {
-    if (!str) return str;
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-
   // Wire name fields — update header display in real-time
   ['cf_first_name','cf_middle_initial','cf_last_name'].forEach(function(id){
     var el = document.getElementById(id);
@@ -194,7 +203,7 @@ function wireHeaderFields() {
     // Auto-capitalize first letter on blur for first/last name
     if (id === 'cf_first_name' || id === 'cf_last_name') {
       el.addEventListener('blur', function() {
-        if (el.value) el.value = capitalizeFirst(el.value);
+        if (this.value) this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
       });
     }
   });
@@ -787,11 +796,19 @@ function renderAssetTabs(){
     var inst=document.getElementById('asset_institution_'+i);
     var typ=document.getElementById('asset_type_'+i);
     var bal=document.getElementById('asset_balance_'+i);
-    if(inst)inst.addEventListener('change',function(){ a.institution=this.value; renderAssetTabs(); });
-    if(typ)typ.addEventListener('change',function(){ a.account_type=this.value; });
+    if(inst){
+      inst.addEventListener('input',function(){ a.institution=this.value; crmDirty=true; });
+      inst.addEventListener('blur',function(){ renderAssetTabs(); });
+    }
+    if(typ)typ.addEventListener('change',function(){ a.account_type=this.value; crmDirty=true; });
     if(bal){
+      bal.addEventListener('input',function(){
+        // Track raw value as user types
+        var num=parseFloat(this.value.replace(/[^0-9.]/g,''))||0;
+        a.balance=num;
+        crmDirty=true;
+      });
       bal.addEventListener('focus',function(){
-        // Strip formatting on focus so user can type raw number
         var raw=this.value.replace(/[^0-9.]/g,'');
         this.value=raw;
       });
@@ -1836,7 +1853,7 @@ function collectAllCardData(){
   data.name = buildDisplayName();
   // Clean phone to raw digits for storage, keep formatted for display
   if(data.phone) data.phone = data.phone.replace(/\D/g,'');
-  if(crmCurrentType==='borrower'){
+  if(crmCurrentType==='borrower'||crmCurrentType==='past_client'){
     data.employers=borrowerEmployers;
     data.education=borrowerEducation;
     data.assets=borrowerAssets;
