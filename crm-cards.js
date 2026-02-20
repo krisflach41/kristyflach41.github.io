@@ -782,6 +782,91 @@ function renderBorrowerLoanHistory(){
   });
 }
 
+// ===== ACTIVE LOAN RELATIONSHIPS =====
+function fetchActiveLoanRelationships(crmId) {
+  var banner = document.getElementById('crmLoanHistoryBanner');
+  if (!banner || !crmId) return;
+
+  fetch(CRM_API + '/pipeline-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getActiveLoans', crm_contact_id: crmId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success || !data.loans || data.loans.length === 0) {
+      banner.style.display = 'none';
+      banner.innerHTML = '';
+      return;
+    }
+
+    var stageLabels = {};
+    PIPELINE_STAGES.forEach(function(s) { stageLabels[s.id] = s.label; });
+    var roleLabels = { primary: 'Primary Borrower', spouse: 'Spouse', 'co-borrower': 'Co-Borrower', parent: 'Parent', child: 'Child', sibling: 'Sibling', domestic_partner: 'Domestic Partner', other: 'Other' };
+
+    var h = '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:8px;"><i class="fas fa-link" style="margin-right:4px;"></i> Active Loan' + (data.loans.length > 1 ? 's' : '') + '</div>';
+
+    data.loans.forEach(function(loan) {
+      var stageLabel = stageLabels[loan.stage] || loan.stage || '—';
+      var roleLabel = roleLabels[loan.my_role] || loan.my_role || 'Borrower';
+      var roleColor = loan.my_role === 'primary' ? '#0ea5e9' : '#a855f7';
+
+      // Other borrowers on this loan (exclude current contact)
+      var otherBorrowers = (loan.borrowers || []).filter(function(b) {
+        return b.crm_id !== crmId;
+      });
+      var othersHtml = '';
+      if (otherBorrowers.length > 0) {
+        othersHtml = '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">';
+        otherBorrowers.forEach(function(b) {
+          var bColor = b.role === 'primary' ? '#0ea5e9' : '#a855f7';
+          var bRoleLabel = roleLabels[b.role] || b.role || '';
+          var clickAttr = b.crm_id ? ' onclick="crmSelectContact(\'' + b.crm_id + '\')" style="cursor:pointer;"' : '';
+          othersHtml += '<span' + clickAttr + ' class="fc-borrower-chip" style="background:' + bColor + '10;border:1px solid ' + bColor + '30;color:' + bColor + ';padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">';
+          othersHtml += (b.name || 'Unknown');
+          if (bRoleLabel) othersHtml += ' <span style="font-size:8px;opacity:0.6;">(' + bRoleLabel + ')</span>';
+          if (b.crm_id) othersHtml += ' <i class="fas fa-external-link-alt" style="font-size:7px;opacity:0.4;"></i>';
+          othersHtml += '</span>';
+        });
+        othersHtml += '</div>';
+      }
+
+      // Loan details
+      var details = [];
+      if (loan.loan_type) details.push(loan.loan_type);
+      if (loan.interest_rate) details.push(parseFloat(loan.interest_rate).toFixed(3) + '%');
+      if (loan.loan_amount) details.push('$' + parseFloat(loan.loan_amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
+
+      h += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + roleColor + ';border-radius:8px;padding:10px 14px;margin-bottom:6px;">';
+      // Row 1: Role badge + Stage
+      h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">';
+      h += '<span style="font-size:10px;font-weight:700;color:' + roleColor + ';"><i class="fas fa-user"></i> ' + roleLabel + '</span>';
+      h += '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);font-weight:600;">' + stageLabel + '</span>';
+      h += '</div>';
+      // Row 2: Address + details
+      if (loan.subject_address || details.length > 0) {
+        h += '<div style="margin-top:6px;font-size:11px;color:rgba(255,255,255,0.6);">';
+        if (loan.subject_address) h += '<div>' + loan.subject_address + '</div>';
+        if (details.length > 0) h += '<div style="margin-top:2px;">' + details.join(' · ') + '</div>';
+        h += '</div>';
+      }
+      // Row 3: Other borrowers
+      if (otherBorrowers.length > 0) {
+        h += '<div style="margin-top:6px;font-size:9px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Also on this loan:</div>';
+        h += othersHtml;
+      }
+      h += '</div>';
+    });
+
+    banner.innerHTML = h;
+    banner.style.display = 'block';
+  })
+  .catch(function(err) {
+    console.error('Active loans fetch error:', err);
+    banner.style.display = 'none';
+  });
+}
+
 // ===== PIPELINE BUTTON =====
 function renderPipelineButton(container,contactId,currentStage){
   var isIn=!!currentStage;
@@ -1171,8 +1256,9 @@ function showAddCoBorrower() {
       '<div id="cbPhoneMatchBanner" class="cb-phone-match" style="display:none;"></div>' +
       '<div class="card-field"><label>Email</label><input type="email" id="cbAddEmail" placeholder="Email"></div>' +
       '<div class="card-field"><label>Relationship</label><select id="cbAddRelationship">' +
-      '<option value="spouse">Spouse</option><option value="co-borrower">Co-Borrower</option>' +
+      '<option value="">-- Select --</option><option value="spouse">Spouse</option><option value="co-borrower">Co-Borrower</option>' +
       '<option value="parent">Parent</option><option value="child">Child</option>' +
+      '<option value="sibling">Sibling</option><option value="domestic_partner">Domestic Partner</option>' +
       '<option value="other">Other</option></select></div>' +
       '</div>' +
       '<div style="display:flex;gap:8px;margin-top:16px;">' +
@@ -1197,7 +1283,7 @@ function showAddCoBorrower() {
   document.getElementById('cbAddName').value = '';
   document.getElementById('cbAddPhone').value = '';
   document.getElementById('cbAddEmail').value = '';
-  document.getElementById('cbAddRelationship').value = 'spouse';
+  document.getElementById('cbAddRelationship').value = '';
   var banner = document.getElementById('cbPhoneMatchBanner');
   if (banner) banner.style.display = 'none';
   var btn = document.getElementById('cbAddBtn');
@@ -1338,9 +1424,10 @@ function toggleCBExclude(cbIdx) {
 }
 
 function editCBRelationship(cbIdx) {
-  var current = coBorrowers[cbIdx].relationship || 'co-borrower';
-  var options = ['spouse', 'co-borrower', 'parent', 'child', 'other'];
-  var next = options[(options.indexOf(current) + 1) % options.length];
+  var current = coBorrowers[cbIdx].relationship || '';
+  var options = ['spouse', 'co-borrower', 'parent', 'child', 'sibling', 'domestic_partner', 'other'];
+  var currentIdx = options.indexOf(current);
+  var next = options[(currentIdx + 1) % options.length];
   coBorrowers[cbIdx].relationship = next;
   renderCoBorrowerTabs();
   crmDirty = true; 
@@ -1436,8 +1523,9 @@ function createCBContact(cbIdx) {
       // Re-render list and tabs
       if (typeof crmRenderList === 'function') crmRenderList();
       renderCoBorrowerTabs();
-      // Mark dirty so primary saves the co_borrowers array with contact_id
+      // Auto-save primary card so the co-borrower link persists
       crmDirty = true;
+      crmSaveContact();
       
       showToast('Contact created for ' + cb.name);
     } else {
@@ -1664,9 +1752,12 @@ function crmPopulateCard(c,activity){
     if(m)fs=m.stage;
   }
   renderPipelineButton(pBtn,c.id,fs);
-  // Loan history now lives in its own tab — no banner fetch needed
+  // Active Loan Relationships banner
   var banner=document.getElementById('crmLoanHistoryBanner');
   if(banner){banner.style.display='none';banner.innerHTML='';}
+  if(type==='borrower'||type==='past_client'||type==='client'){
+    fetchActiveLoanRelationships(c.id);
+  }
   // Form — borrower and past_client both use borrower card (past_client keeps data visible)
   var fc=document.getElementById('crmCardForm');
   if(type==='borrower'||type==='past_client'){renderBorrowerCard(fc,c);}
