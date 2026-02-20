@@ -1211,18 +1211,18 @@ function renderCoBorrowerTabs() {
   var container = document.getElementById('coBorrowerTabs');
   if (!container) return;
   if (crmCurrentType !== 'borrower' && crmCurrentType !== 'past_client') { container.style.display = 'none'; return; }
-  container.style.display = 'flex';
+  container.style.display = 'block';
 
-  // Always use the dedicated primary name variable — never read from cf_name
-  var firstName = primaryBorrowerName ? primaryBorrowerName.split(' ')[0] : 'Primary';
+  // Use full primary name
+  var primName = primaryBorrowerName || 'Primary';
 
   var h = '<div class="coborrower-tabs">';
   // Primary tab
   h += '<div class="coborrower-tab primary' + (activeCoBorrowerIdx === 0 ? ' active' : '') + '" onclick="switchCoBorrower(0)">';
-  h += firstName + '<span class="cb-relationship">primary</span></div>';
-  // Co-borrower tabs
+  h += primName + '<span class="cb-relationship">primary</span></div>';
+  // Co-borrower tabs — show FULL name
   coBorrowers.forEach(function(cb, i) {
-    var cbName = cb.name ? cb.name.split(' ')[0] : 'B' + (i + 2);
+    var cbName = cb.name || 'Borrower ' + (i + 2);
     var linked = cb.contact_id ? ' linked' : '';
     var cls = 'coborrower-tab secondary' + (activeCoBorrowerIdx === (i + 1) ? ' active' : '') + (cb.excluded ? ' excluded' : '') + linked;
     h += '<div class="' + cls + '" onclick="switchCoBorrower(' + (i + 1) + ')" oncontextmenu="event.preventDefault();showCBContext(' + i + ',event)">';
@@ -1836,6 +1836,8 @@ function crmAddNew(){
     crmCurrentType=type;
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
+    // Hide New Contact button while card is open
+    var newBtn=document.getElementById('crmNewContactBtn');if(newBtn)newBtn.style.display='none';
     var ti=CONTACT_TYPES[type];
     document.getElementById('crmDName').textContent='New '+ti.label;
     document.getElementById('crmDMeta').textContent='';
@@ -1877,6 +1879,8 @@ function crmSelectContact(id){
   crmDeleteArmed=false;
   document.getElementById('crmDetailEmpty').style.display='none';
   document.getElementById('crmDetailContent').style.display='flex';
+  // Hide New Contact button while card is open
+  var newBtn=document.getElementById('crmNewContactBtn');if(newBtn)newBtn.style.display='none';
   crmRenderList();
   fetch(CRM_API+'/crm-api?action=get&id='+id)
     .then(function(r){return r.json();})
