@@ -235,11 +235,15 @@ body {
   border-bottom: 1px solid var(--border); border-left: 3px solid transparent;
 }
 .crm-contact-item:hover { background: rgba(255,255,255,0.02); }
-.crm-contact-item.active { background: rgba(59,130,246,0.08); border-left-color: var(--accent-blue); }
-.crm-contact-item.t-client { border-left-color: var(--accent-blue); }
-.crm-contact-item.t-realtor { border-left-color: var(--accent-green); }
-.crm-contact-item.t-title { border-left-color: var(--accent-orange); }
-.crm-contact-item.t-appraiser { border-left-color: var(--accent-purple); }
+.crm-contact-item.active { background: rgba(59,130,246,0.12); border-left: 3px solid var(--accent-blue); }
+.crm-contact-item:not(.active).t-client { border-left-color: rgba(59,130,246,0.35); }
+.crm-contact-item:not(.active).t-borrower { border-left-color: rgba(14,165,233,0.35); }
+.crm-contact-item:not(.active).t-past_client { border-left-color: rgba(34,197,94,0.35); }
+.crm-contact-item:not(.active).t-realtor { border-left-color: rgba(34,197,94,0.35); }
+.crm-contact-item:not(.active).t-title { border-left-color: rgba(245,158,11,0.35); }
+.crm-contact-item:not(.active).t-appraiser { border-left-color: rgba(168,85,247,0.35); }
+.crm-contact-item:not(.active).t-contractor { border-left-color: rgba(239,68,68,0.35); }
+.crm-contact-item:not(.active).t-vendor { border-left-color: rgba(20,184,166,0.35); }
 .crm-contact-item.t-contractor { border-left-color: var(--accent-red); }
 .crm-contact-item.t-vendor { border-left-color: var(--accent-teal); }
 .ci-name { font-size: 11px; font-weight: 600; }
