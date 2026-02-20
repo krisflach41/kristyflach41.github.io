@@ -955,7 +955,7 @@ body {
             <div class="card-actions" style="margin-top:10px;">
               <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
               <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn"><i class="fas fa-save"></i> Save</button>
-              <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn">Delete</button>
+              <button class="card-action-btn danger" id="crmUnlinkBtn" style="display:none;" onclick="unlinkActiveCoBorrower()"><i class="fas fa-unlink"></i> Unlink from Loan</button>
               <span id="cbContactBtn"></span>
             </div>
             <!-- Income boxes -->
@@ -1294,6 +1294,35 @@ body {
         <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
         <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
       </div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+    <!-- Import Contacts -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">Import Contacts</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.5;">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-file-upload"></i> Upload Import File
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="handleCrmImport(this)" style="display:none;">
+        </label>
+        <a href="Agent_Edge_CRM_Import_Template.xlsx" download class="topbar-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+          <i class="fas fa-download"></i> Download Template
+        </a>
+      </div>
+      <div id="importStatus" style="margin-top:12px;display:none;"></div>
+    </div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+    <!-- Delete Contact -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;color:#ef4444;">Delete Contact</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.5;">Permanently remove a contact from your database. This cannot be undone. The contact will also be unlinked from any co-borrower relationships.</div>
+      <div style="display:flex;gap:10px;align-items:flex-end;">
+        <div style="flex:1;">
+          <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Search Contact</label>
+          <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+        </div>
+      </div>
+      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
     </div>
     <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
     <!-- Portal Members (existing) -->
@@ -2723,36 +2752,138 @@ function crmOpenEmailModal() {
 function handleCrmImport(input) {
   var file = input.files[0];
   if (!file) return;
+  var statusEl = document.getElementById('importStatus');
+  if (statusEl) { statusEl.style.display = 'block'; statusEl.innerHTML = '<div style="color:#0ea5e9;font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Reading file...</div>'; }
+
   var reader = new FileReader();
   reader.onload = function(e) {
     try {
       var wb = XLSX.read(e.target.result, { type: 'array' });
       var ws = wb.Sheets[wb.SheetNames[0]];
       var rows = XLSX.utils.sheet_to_json(ws);
+      var total = rows.length;
       var imported = 0;
+      var skipped = 0;
+      var promises = [];
+
       rows.forEach(function(row) {
-        var name = row['Name'] || row['Full Name'] || row['name'] || '';
-        if (!name) return;
+        // Build name from First/Last or single Name column
+        var firstName = String(row['First Name'] || row['first_name'] || '').trim();
+        var mi = String(row['MI'] || row['Middle Initial'] || row['middle_initial'] || '').trim();
+        var lastName = String(row['Last Name'] || row['last_name'] || '').trim();
+        var fullName = String(row['Name'] || row['Full Name'] || row['name'] || '').trim();
+
+        if (firstName || lastName) {
+          var parts = [firstName];
+          if (mi) parts.push(mi.toUpperCase() + '.');
+          parts.push(lastName);
+          fullName = parts.filter(Boolean).join(' ');
+        }
+        if (!fullName) { skipped++; return; }
+
+        var phone = String(row['Phone'] || row['Phone Number'] || row['phone'] || '').replace(/\D/g, '');
+        var type = String(row['Type'] || row['type'] || 'client').toLowerCase().trim();
+        if (type === 'agent' || type === 'real estate agent') type = 'realtor';
+        if (type === 'past client' || type === 'previous client') type = 'past_client';
+
         var contact = {
-          name: name,
-          email: row['Email'] || row['email'] || '',
-          phone: row['Phone'] || row['Phone Number'] || row['phone'] || '',
-          type: (row['Type'] || row['type'] || 'other').toLowerCase(),
-          company: row['Company'] || row['Brokerage'] || '',
-          source: 'import'
+          name: fullName,
+          first_name: firstName || null,
+          middle_initial: mi ? mi.toUpperCase() : null,
+          last_name: lastName || null,
+          email: String(row['Email'] || row['email'] || '').trim(),
+          phone: phone,
+          type: type,
+          company: String(row['Company'] || row['Company / Brokerage'] || row['Brokerage'] || row['company'] || '').trim(),
+          source: String(row['Source'] || row['source'] || 'import').trim(),
+          address: String(row['Street'] || row['street'] || '').trim(),
+          city: String(row['City'] || row['city'] || '').trim(),
+          state: String(row['State'] || row['state'] || '').trim(),
+          zip: String(row['Zip'] || row['zip'] || row['ZIP'] || '').trim(),
+          license_number: String(row['License Number'] || row['license_number'] || '').trim(),
+          own_rent: String(row['Own or Rent'] || row['own_rent'] || '').trim().toLowerCase(),
+          monthly_payment: row['Monthly Payment'] || row['monthly_payment'] || '',
+          marital_status: String(row['Marital Status'] || row['marital_status'] || '').trim().toLowerCase(),
+          notes: String(row['Notes'] || row['notes'] || '').trim()
         };
-        fetch(API_BASE + '/crm', {
+
+        var p = fetch(API_BASE + '/crm-api', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save', contact: contact })
-        });
-        imported++;
+          body: JSON.stringify({ action: 'save', crm: contact })
+        }).then(function() { imported++; }).catch(function() { skipped++; });
+        promises.push(p);
       });
-      showToast('Imported ' + imported + ' contacts');
-      setTimeout(function() { loadCrm(); }, 2000);
-    } catch (err) { showToast('Import failed: ' + err.message); }
+
+      Promise.all(promises).then(function() {
+        if (statusEl) {
+          statusEl.innerHTML = '<div style="color:#22c55e;font-size:13px;font-weight:600;"><i class="fas fa-check-circle"></i> Imported ' + imported + ' of ' + total + ' contacts' + (skipped > 0 ? ' (' + skipped + ' skipped)' : '') + '</div>';
+          setTimeout(function() { statusEl.style.display = 'none'; }, 5000);
+        }
+        showToast('Imported ' + imported + ' contacts');
+        loadCrm();
+      });
+    } catch (err) {
+      if (statusEl) { statusEl.innerHTML = '<div style="color:#ef4444;font-size:13px;"><i class="fas fa-exclamation-circle"></i> Import failed: ' + err.message + '</div>'; }
+      showToast('Import failed: ' + err.message);
+    }
   };
   reader.readAsArrayBuffer(file);
   input.value = '';
+}
+
+// ===== DELETE CONTACT (User Management) =====
+function searchDeleteContacts() {
+  var q = document.getElementById('deleteContactSearch').value.toLowerCase().trim();
+  var el = document.getElementById('deleteContactResults');
+  if (!el) return;
+  if (q.length < 2) { el.innerHTML = ''; return; }
+
+  var matches = (typeof crmContacts !== 'undefined' ? crmContacts : []).filter(function(c) {
+    return (c.name || '').toLowerCase().includes(q) ||
+      (c.email || '').toLowerCase().includes(q) ||
+      (c.phone || '').includes(q);
+  }).slice(0, 10);
+
+  if (matches.length === 0) { el.innerHTML = '<div style="padding:8px;font-size:12px;color:rgba(255,255,255,0.4);">No contacts found</div>'; return; }
+
+  var h = '';
+  matches.forEach(function(c) {
+    var typeColors = { client:'#3b82f6', borrower:'#0ea5e9', past_client:'#22c55e', realtor:'#22c55e', title:'#f59e0b', appraiser:'#a855f7', contractor:'#ef4444', vendor:'#14b8a6' };
+    var tColor = typeColors[c.type] || '#888';
+    h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;margin-bottom:4px;background:rgba(255,255,255,0.03);">';
+    h += '<div><div style="font-size:13px;font-weight:600;color:#e2e8f0;">' + (c.name || 'Unnamed') + '</div>';
+    h += '<div style="font-size:11px;color:rgba(255,255,255,0.4);">' + (c.email || c.phone || '') + ' · <span style="color:' + tColor + ';">' + (c.type || 'other') + '</span></div></div>';
+    h += '<button class="card-action-btn danger" style="font-size:11px;padding:6px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;" onclick="confirmDeleteContact(\'' + c.id + '\',\'' + (c.name || '').replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> Delete</button>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function confirmDeleteContact(id, name) {
+  if (!confirm('Permanently delete ' + name + '? This cannot be undone.')) return;
+  fetch(CRM_API + '/crm-api?action=delete', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ crmId: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() {
+    crmContacts = crmContacts.filter(function(c) { return c.id !== id; });
+    // If this contact was open, close the card
+    if (crmCurrentId === id) {
+      crmCurrentId = null;
+      document.getElementById('crmDetailContent').style.display = 'none';
+      document.getElementById('crmDetailEmpty').style.display = 'flex';
+      var newBtn = document.getElementById('crmNewContactBtn');
+      if (newBtn) newBtn.style.display = '';
+    }
+    crmRenderList();
+    searchDeleteContacts(); // refresh search results
+    showToast(name + ' deleted');
+    document.getElementById('navCrmCount').textContent = crmContacts.length;
+    document.getElementById('dashCrm').textContent = crmContacts.length;
+    document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
+  })
+  .catch(function() { showToast('Delete failed'); });
 }
 
 // ===== ORDER QUEUE =====
