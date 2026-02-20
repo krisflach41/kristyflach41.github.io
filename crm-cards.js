@@ -173,7 +173,8 @@ function wireHeaderFields() {
   _headerFieldsWired = true;
   ['cf_name','cf_phone','cf_email'].forEach(function(id){
     var el = document.getElementById(id);
-    if (!el) return;
+    if (!el || el._dirtyWired) return;
+    el._dirtyWired = true;
     var dirty = function(){
       crmDirty = true;
       
@@ -1579,7 +1580,7 @@ var crmCurrentType='client';
 function crmAddNew(){
   showTypePicker(function(type){
     crmCurrentType=type;crmCurrentId=null;crmDirty=false;
-    borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
+    borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];cardDocuments=[];
     coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
@@ -1589,10 +1590,18 @@ function crmAddNew(){
     document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
     document.getElementById('cardPipelineBtn').innerHTML='';
     var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
-    var cbTabs=document.getElementById('coBorrowerTabs');if(cbTabs)cbTabs.style.display=(type==='borrower'?'flex':'none');
     var fc=document.getElementById('crmCardForm');
-    if(type==='borrower'){renderBorrowerCard(fc,{});renderCoBorrowerTabs();}
-    else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});}
+    if(type==='borrower'||type==='past_client'){
+      renderBorrowerCard(fc,{});
+      // Force co-borrower tabs to show with proper initialization
+      var cbTabs=document.getElementById('coBorrowerTabs');
+      if(cbTabs) cbTabs.style.display='flex';
+      renderCoBorrowerTabs();
+    } else {
+      var cbTabs=document.getElementById('coBorrowerTabs');
+      if(cbTabs) cbTabs.style.display='none';
+      var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});
+    }
     // Clear and wire header fields
     var nameEl=document.getElementById('cf_name');if(nameEl)nameEl.value='';
     var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value='';
@@ -1606,8 +1615,9 @@ function crmAddNew(){
 
 function crmSelectContact(id){
   crmCurrentId=id;crmDirty=false;
-  borrowerEmployers=[];borrowerEducation=[];borrowerREOs=[];cardDocuments=[];
+  borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];cardDocuments=[];
   coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
+  
   
   
   document.getElementById('crmDeleteBtn').textContent='Delete';
