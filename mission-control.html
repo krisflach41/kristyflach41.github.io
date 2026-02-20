@@ -887,8 +887,12 @@ body {
             </div>
             <!-- Always-visible contact fields -->
             <div class="card-fields" style="margin-top:14px;">
-              <div class="card-field"><label>Name</label><input type="text" id="cf_name" class="card-tracked" required></div>
-              <div class="card-field"><label>Phone</label><input type="tel" id="cf_phone" class="card-tracked"></div>
+              <div class="card-field"><label>First Name</label><input type="text" id="cf_first_name" class="card-tracked" required placeholder="First"></div>
+              <div class="card-field" style="max-width:70px;"><label>MI</label><input type="text" id="cf_middle_initial" class="card-tracked" maxlength="1" placeholder="M" style="text-transform:uppercase;text-align:center;"></div>
+              <div class="card-field"><label>Last Name</label><input type="text" id="cf_last_name" class="card-tracked" required placeholder="Last"></div>
+            </div>
+            <div class="card-fields" style="margin-top:6px;">
+              <div class="card-field"><label>Phone</label><input type="tel" id="cf_phone" class="card-tracked" placeholder="(___) ___-____"></div>
               <div class="card-field"><label>Email</label><input type="email" id="cf_email" class="card-tracked"></div>
             </div>
           </div>
@@ -2544,7 +2548,7 @@ function crmRenderList() {
 
     var badgeLabels = { client:'Client', borrower:'Borrower', past_client:'Past Client', realtor:'Realtor', title:'Title', appraiser:'Appraiser', contractor:'Contractor', vendor:'Vendor', other:'Other' };
     html += '<div class="crm-contact-item' + typeClass + activeClass + '" onclick="crmSelectContact(\'' + c.id + '\')">' +
-      '<div><div class="ci-name">' + (c.name || 'Unnamed') + '</div><div class="ci-sub">' + (c.email || c.phone || '') + '</div></div>' +
+      '<div><div class="ci-name">' + (c.name || 'Unnamed') + '</div><div class="ci-sub">' + (c.email || (typeof formatPhoneDisplay==='function'?formatPhoneDisplay(c.phone):c.phone) || '') + '</div></div>' +
       '<div class="ci-badge" style="background:' + badgeStyle + '">' + (badgeLabels[c.type] || c.type || 'Other') + '</div></div>';
   });
   document.getElementById('crmContactList').innerHTML = html;
