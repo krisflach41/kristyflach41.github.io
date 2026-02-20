@@ -1799,21 +1799,28 @@ var crmSaving = false;
 function crmSaveContact(){
   if (crmSaving) { console.log('Save already in progress, skipping'); return; }
   crmSaving = true;
+
+  // Capture state at call time to prevent race conditions when user switches contacts
+  var saveId = crmCurrentId;
+  var saveType = crmCurrentType;
+  var saveCoBorrowerIdx = activeCoBorrowerIdx;
+  var savePrimaryName = primaryBorrowerName;
+
   console.log('=== SAVE CONTACT START ===');
-  console.log('crmCurrentId:', crmCurrentId);
-  console.log('crmCurrentType:', crmCurrentType);
-  console.log('activeCoBorrowerIdx:', activeCoBorrowerIdx);
+  console.log('saveId:', saveId);
+  console.log('saveType:', saveType);
+  console.log('activeCoBorrowerIdx:', saveCoBorrowerIdx);
   console.log('coBorrowers count:', coBorrowers.length);
 
   // Step 1: Save current co-borrower state into memory
-  if((crmCurrentType==='borrower'||crmCurrentType==='past_client') && coBorrowers.length>0) {
+  if((saveType==='borrower'||saveType==='past_client') && coBorrowers.length>0) {
     console.log('Saving co-borrower state...');
     saveCoBorrowerState();
   }
 
   // Step 2: Build the data object — always use primary borrower as the contact record
   var data = {};
-  if((crmCurrentType==='borrower'||crmCurrentType==='past_client') && activeCoBorrowerIdx > 0 && window._primaryBorrowerData) {
+  if((saveType==='borrower'||saveType==='past_client') && saveCoBorrowerIdx > 0 && window._primaryBorrowerData) {
     // On a co-borrower tab — pull primary's data from stored state
     console.log('On co-borrower tab, using _primaryBorrowerData');
     data = JSON.parse(JSON.stringify(window._primaryBorrowerData));
@@ -1824,12 +1831,12 @@ function crmSaveContact(){
   }
 
   // Step 3: Always attach co-borrower and shared loan data for borrowers and past_clients
-  if(crmCurrentType==='borrower'||crmCurrentType==='past_client') {
+  if(saveType==='borrower'||saveType==='past_client') {
     data.co_borrowers = JSON.parse(JSON.stringify(coBorrowers));
     data.shared_loan = JSON.parse(JSON.stringify(sharedLoanData));
   }
 
-  data.type = crmCurrentType;
+  data.type = saveType;
   console.log('Data name:', data.name);
   console.log('Data keys:', Object.keys(data).join(', '));
 
@@ -1840,7 +1847,7 @@ function crmSaveContact(){
     return;
   }
 
-  if(crmCurrentId) data.id = crmCurrentId;
+  if(saveId) data.id = saveId;
 
   var payload = JSON.stringify({crm: data});
   console.log('Payload size:', payload.length, 'bytes');
@@ -1859,25 +1866,29 @@ function crmSaveContact(){
   .then(function(result){
     console.log('Response body:', JSON.stringify(result));
     if(result.success){
-      if(crmCurrentId){
-        var idx = crmContacts.findIndex(function(c){return c.id === crmCurrentId;});
+      if(saveId){
+        // Update local array using the captured ID, not the current one
+        var idx = crmContacts.findIndex(function(c){return c.id === saveId;});
         if(idx >= 0) crmContacts[idx] = Object.assign(crmContacts[idx], data);
         showToast('Saved!');
       } else {
         data.id = result.id;
         data.created_at = new Date().toISOString();
         crmContacts.push(data);
-        crmCurrentId = result.id;
+        // Only update crmCurrentId if user is still on this (new) card
+        if(!crmCurrentId) crmCurrentId = result.id;
         showToast('Contact created!');
       }
       crmRenderList();
-      // Update header with primary name (not co-borrower name)
-      if(crmCurrentType==='borrower' && activeCoBorrowerIdx > 0) {
-        document.getElementById('crmDName').textContent = primaryBorrowerName || data.name || 'Unnamed';
-      } else {
-        document.getElementById('crmDName').textContent = data.name || 'Unnamed';
+      // Only update header if user is still on the same card
+      if(crmCurrentId === saveId || crmCurrentId === result.id) {
+        if(saveType==='borrower' && saveCoBorrowerIdx > 0) {
+          document.getElementById('crmDName').textContent = savePrimaryName || data.name || 'Unnamed';
+        } else {
+          document.getElementById('crmDName').textContent = data.name || 'Unnamed';
+        }
+        crmDirty = false;
       }
-      crmDirty = false;
       document.getElementById('navCrmCount').textContent = crmContacts.length;
       document.getElementById('dashCrm').textContent = crmContacts.length;
       document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
