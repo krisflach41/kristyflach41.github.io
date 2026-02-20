@@ -334,6 +334,41 @@ body {
   height: 100%; min-height: 500px; 
 }
 
+/* CO-BORROWER TABS */
+.coborrower-tabs { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.coborrower-tab {
+  padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 600;
+  border: 2px solid transparent; transition: all 0.15s; position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 100px; text-align: center;
+}
+.coborrower-tab.primary {
+  background: rgba(14,165,233,0.08); border-color: rgba(14,165,233,0.2); color: #38bdf8;
+}
+.coborrower-tab.primary.active {
+  background: rgba(14,165,233,0.15); border-color: #0ea5e9; color: #7dd3fc;
+  box-shadow: 0 0 12px rgba(14,165,233,0.15);
+}
+.coborrower-tab.secondary {
+  background: rgba(168,85,247,0.08); border-color: rgba(168,85,247,0.2); color: #c084fc;
+}
+.coborrower-tab.secondary.active {
+  background: rgba(168,85,247,0.15); border-color: #a855f7; color: #d8b4fe;
+  box-shadow: 0 0 12px rgba(168,85,247,0.15);
+}
+.coborrower-tab.excluded { opacity: 0.4; text-decoration: line-through; }
+.coborrower-tab:hover:not(.active) { border-color: rgba(255,255,255,0.2); }
+.cb-relationship { 
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; 
+  opacity: 0.6; display: block; 
+}
+.cb-link-icon { font-size: 9px; opacity: 0.5; margin-right: 2px; }
+.coborrower-add {
+  padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;
+  background: transparent; border: 2px dashed rgba(255,255,255,0.15); color: rgba(255,255,255,0.4);
+  font-family: inherit; transition: all 0.15s;
+}
+.coborrower-add:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.6); }
+
 /* ACTIVITY TIMELINE */
 .activity-item {
   display: flex; gap: 10px; padding: 8px 0;
@@ -856,7 +891,7 @@ body {
       </div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn primary" onclick="crmAddNew()">+ New Contact</button>
+      <button class="topbar-btn primary" id="crmNewContactBtn" onclick="crmAddNew()">+ New Contact</button>
       <input type="file" id="crmImportFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleCrmImport(this)">
     </div>
   </div>
@@ -900,23 +935,24 @@ body {
               <div class="card-name" id="crmDName"></div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div id="cardPipelineBtn"></div>
-                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 10px;opacity:0.4;" title="Close card"><i class="fas fa-times"></i></button>
+                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 12px;color:rgba(255,255,255,0.6);font-size:14px;" title="Close card"><i class="fas fa-times"></i></button>
               </div>
             </div>
             <!-- Row 2: Meta -->
             <div class="card-meta" id="crmDMeta"></div>
-            <!-- Row 3: Type badge + swap ... Co-borrower tabs -->
+            <!-- Row 3: Type badge + swap -->
             <div class="card-header-row" style="margin-top:8px;">
               <div class="card-header-badges">
                 <div id="crmDTypeBadge"></div>
                 <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
               </div>
-              <div id="coBorrowerTabs" style="display:none;"></div>
             </div>
-            <!-- Loan History Banner -->
+            <!-- Row 4: Co-borrower tabs — prominent, full width -->
+            <div id="coBorrowerTabs" style="display:none;margin-top:12px;"></div>
+            <!-- Row 5: Loan Relationship Banners -->
             <div id="crmLoanHistoryBanner" style="display:none;margin-top:10px;"></div>
-            <!-- Actions -->
-            <div class="card-actions" style="margin-top:8px;">
+            <!-- Row 6: Actions -->
+            <div class="card-actions" style="margin-top:10px;">
               <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
               <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn"><i class="fas fa-save"></i> Save</button>
               <button class="card-action-btn danger" onclick="crmConfirmDelete()" id="crmDeleteBtn">Delete</button>
@@ -2560,6 +2596,9 @@ function crmCloseCard() {
   crmDirty = false;
   document.getElementById('crmDetailContent').style.display = 'none';
   document.getElementById('crmDetailEmpty').style.display = 'flex';
+  // Show New Contact button again
+  var newBtn = document.getElementById('crmNewContactBtn');
+  if (newBtn) newBtn.style.display = '';
   // Clear co-borrower tabs so they don't bleed into next card
   var cbTabs = document.getElementById('coBorrowerTabs');
   if (cbTabs) { cbTabs.style.display = 'none'; cbTabs.innerHTML = ''; }
@@ -2642,6 +2681,9 @@ function crmConfirmDelete() {
     crmCurrentId = null;
     document.getElementById('crmDetailContent').style.display = 'none';
     document.getElementById('crmDetailEmpty').style.display = 'flex';
+    // Show New Contact button again
+    var newBtn = document.getElementById('crmNewContactBtn');
+    if (newBtn) newBtn.style.display = '';
     crmRenderList();
     showToast('Contact deleted');
     document.getElementById('navCrmCount').textContent = crmContacts.length;
