@@ -997,7 +997,7 @@ function initCoBorrowers(data) {
 function renderCoBorrowerTabs() {
   var container = document.getElementById('coBorrowerTabs');
   if (!container) return;
-  if (crmCurrentType !== 'borrower') { container.style.display = 'none'; return; }
+  if (crmCurrentType !== 'borrower' && crmCurrentType !== 'past_client') { container.style.display = 'none'; return; }
   container.style.display = 'flex';
 
   // Always use the dedicated primary name variable — never read from cf_name
@@ -1101,6 +1101,7 @@ function saveCoBorrowerState() {
       cb.data = data;
       cb.data.employers = JSON.parse(JSON.stringify(borrowerEmployers));
       cb.data.education = JSON.parse(JSON.stringify(borrowerEducation));
+      cb.data.assets = JSON.parse(JSON.stringify(borrowerAssets));
       cb.data.reos = JSON.parse(JSON.stringify(borrowerREOs));
       cb.data.documents = cardDocuments.slice();
     }
@@ -1316,7 +1317,8 @@ function showCBContext(cbIdx, event) {
   menu.innerHTML =
     '<div class="cb-context-item" onclick="editCBRelationship(' + cbIdx + ')"><i class="fas fa-edit"></i> Change Relationship</div>' +
     '<div class="cb-context-item' + (cb.excluded ? '' : ' danger') + '" onclick="toggleCBExclude(' + cbIdx + ')">' +
-    (cb.excluded ? '<i class="fas fa-check"></i> Include on Loan' : '<i class="fas fa-ban"></i> Exclude from Loan') + '</div>';
+    (cb.excluded ? '<i class="fas fa-check"></i> Include on Loan' : '<i class="fas fa-ban"></i> Exclude from Loan') + '</div>' +
+    '<div class="cb-context-item danger" onclick="unlinkCoBorrower(' + cbIdx + ')"><i class="fas fa-unlink"></i> Remove Co-Borrower</div>';
   document.body.appendChild(menu);
   setTimeout(function() {
     var close = function(e) {
@@ -1342,6 +1344,31 @@ function editCBRelationship(cbIdx) {
   renderCoBorrowerTabs();
   crmDirty = true; 
   showToast('Relationship changed to ' + next);
+}
+
+function unlinkCoBorrower(cbIdx) {
+  var cb = coBorrowers[cbIdx];
+  if (!cb) return;
+  if (!confirm('Remove ' + (cb.name || 'this co-borrower') + ' from this loan?')) return;
+  
+  // If we're currently viewing this co-borrower, switch to primary first
+  if (activeCoBorrowerIdx === cbIdx + 1) {
+    activeCoBorrowerIdx = 0;
+    loadPrimaryBorrowerData();
+    if (window._primaryBorrowerData) {
+      document.getElementById('crmDName').textContent = window._primaryBorrowerData.name || 'Unnamed';
+      document.getElementById('crmDMeta').textContent = [window._primaryBorrowerData.email, window._primaryBorrowerData.phone].filter(Boolean).join(' – ');
+    }
+  } else if (activeCoBorrowerIdx > cbIdx + 1) {
+    // Adjust index since we're removing one before our position
+    activeCoBorrowerIdx--;
+  }
+  
+  var removedName = cb.name || 'Co-borrower';
+  coBorrowers.splice(cbIdx, 1);
+  renderCoBorrowerTabs();
+  crmDirty = true;
+  showToast(removedName + ' removed from loan');
 }
 
 // Create a CRM contact from a co-borrower
@@ -1471,10 +1498,19 @@ function showTypeChanger(){
     var fc=document.getElementById('crmCardForm');
     var currentData=collectAllCardData();
     currentData.type=newType;
-    if(newType==='borrower'){
-      borrowerEmployers=[];borrowerEducation=[];
+    if(newType==='borrower'||newType==='past_client'){
+      if(oldType!=='borrower'&&oldType!=='past_client'){
+        // Coming from a non-borrower type — reset co-borrower state
+        borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];
+        coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};
+        window._primaryBorrowerData=null;primaryBorrowerName=currentData.name||'';
+      }
       renderBorrowerCard(fc,currentData);
+      renderCoBorrowerTabs();
     } else {
+      // Switching away from borrower — hide co-borrower tabs
+      var cbTabs=document.getElementById('coBorrowerTabs');
+      if(cbTabs)cbTabs.style.display='none';
       var secs=getFieldsForType(newType);
       renderStandardForm(fc,secs,currentData);
     }
@@ -1669,14 +1705,14 @@ function crmSaveContact(){
   console.log('coBorrowers count:', coBorrowers.length);
 
   // Step 1: Save current co-borrower state into memory
-  if(crmCurrentType==='borrower' && coBorrowers.length>0) {
+  if((crmCurrentType==='borrower'||crmCurrentType==='past_client') && coBorrowers.length>0) {
     console.log('Saving co-borrower state...');
     saveCoBorrowerState();
   }
 
   // Step 2: Build the data object — always use primary borrower as the contact record
   var data = {};
-  if(crmCurrentType==='borrower' && activeCoBorrowerIdx > 0 && window._primaryBorrowerData) {
+  if((crmCurrentType==='borrower'||crmCurrentType==='past_client') && activeCoBorrowerIdx > 0 && window._primaryBorrowerData) {
     // On a co-borrower tab — pull primary's data from stored state
     console.log('On co-borrower tab, using _primaryBorrowerData');
     data = JSON.parse(JSON.stringify(window._primaryBorrowerData));
@@ -1686,8 +1722,8 @@ function crmSaveContact(){
     data = collectAllCardData();
   }
 
-  // Step 3: Always attach co-borrower and shared loan data for borrowers
-  if(crmCurrentType==='borrower') {
+  // Step 3: Always attach co-borrower and shared loan data for borrowers and past_clients
+  if(crmCurrentType==='borrower'||crmCurrentType==='past_client') {
     data.co_borrowers = JSON.parse(JSON.stringify(coBorrowers));
     data.shared_loan = JSON.parse(JSON.stringify(sharedLoanData));
   }
@@ -1699,6 +1735,7 @@ function crmSaveContact(){
   if(!data.name){
     showToast('Name is required');
     console.log('ABORT: No name');
+    crmSaving = false;
     return;
   }
 
