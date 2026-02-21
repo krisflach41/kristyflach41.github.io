@@ -828,6 +828,11 @@ body {
         <div class="stat-value" id="dashPipeline">-</div>
         <div class="stat-change" id="dashPipelineSub"></div>
       </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Active Pipeline $</div>
+        <div class="stat-value" id="dashPipelineVol">-</div>
+        <div class="stat-change" id="dashPipelineVolSub"></div>
+      </div>
       <div class="stat-card green">
         <div class="stat-label">Closed This Month</div>
         <div class="stat-value" id="dashClosed">-</div>
@@ -1761,6 +1766,36 @@ function updateDashboard() {
   var active = pipelineLoans.length;
   document.getElementById('dashPipeline').textContent = active;
   document.getElementById('navPipelineCount').textContent = active;
+
+  // Active Pipeline $ — cumulative loan amounts
+  var pipelineTotal = 0;
+  pipelineLoans.forEach(function(loan) {
+    if (loan.loan_amount) pipelineTotal += parseFloat(loan.loan_amount) || 0;
+  });
+  document.getElementById('dashPipelineVol').textContent = pipelineTotal > 0 ? '$' + Math.round(pipelineTotal).toLocaleString() : '$0';
+
+  // Closed This Month — funded loan amounts from loan_history this month
+  var userId = localStorage.getItem('agent_edge_user') || 'default';
+  var now = new Date();
+  var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getMonthlyFunded', month_start: monthStart })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      var closedTotal = 0;
+      var closedCount = 0;
+      (data.history || []).forEach(function(h) {
+        if (h.loan_amount) closedTotal += parseFloat(h.loan_amount) || 0;
+        closedCount++;
+      });
+      document.getElementById('dashClosed').textContent = closedTotal > 0 ? '$' + Math.round(closedTotal).toLocaleString() : '$0';
+      document.getElementById('dashClosedSub').textContent = closedCount + ' loan' + (closedCount !== 1 ? 's' : '') + ' funded';
+    }
+  })
+  .catch(function() {});
 }
 
 // ===== PIPELINE =====
