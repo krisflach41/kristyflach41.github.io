@@ -871,14 +871,14 @@ function removeAsset(idx){
 function renderBorrowerLoanHistory(){
   var el=document.getElementById('borrowerLoanHistoryList');
   if(!el||!crmCurrentId)return;
-  el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">Loading loan history...</div>';
-  fetch(CRM_API+'/pipeline-api',{
+  el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:8px 0;">Loading loan history...</div>';
+  fetch(CRM_API+'/ae-loans-api',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({action:'getHistory',crm_contact_id:crmCurrentId})
   }).then(function(r){return r.json();})
   .then(function(data){
     if(!data.success||!data.history||data.history.length===0){
-      el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">No completed loans on record</div>';
+      el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:8px 0;">No completed loans on record</div>';
       return;
     }
     var icons={funded:'fa-trophy',denied:'fa-times-circle',suspended:'fa-pause-circle',withdrawn:'fa-undo'};
@@ -887,7 +887,7 @@ function renderBorrowerLoanHistory(){
     data.history.forEach(function(loan){
       var color=colors[loan.outcome]||'#64748b';
       var icon=icons[loan.outcome]||'fa-file';
-      var loanType=loan.loan_type||'—';
+      var loanType=loan.loan_type||loan.transaction_type||(loan.transaction_type&&loan.loan_program?(loan.transaction_type+' / '+loan.loan_program):'—');
       var rate=loan.interest_rate?(parseFloat(loan.interest_rate).toFixed(3)+'%'):'—';
       var amt=loan.loan_amount?('$'+parseFloat(loan.loan_amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')):'—';
       var addr=loan.subject_address||'—';
@@ -898,41 +898,45 @@ function renderBorrowerLoanHistory(){
       var borrowerNames='';
       if(loan.borrowers&&loan.borrowers.length>0){
         borrowerNames=loan.borrowers.map(function(b){
-          var role=b.role?(b.role.charAt(0).toUpperCase()+b.role.slice(1)):'';
-          return (b.name||'Unknown')+(role?' <span style="font-size:9px;opacity:0.5;">('+role+')</span>':'');
+          var role=b.role?(b.role.charAt(0).toUpperCase()+b.role.slice(1).replace(/_/g,' ')):'';
+          return (b.name||'Unknown')+(role?' <span style="font-size:11px;opacity:0.5;">('+role+')</span>':'');
         }).join(', ');
       } else {
         borrowerNames=loan.primary_name||'—';
       }
 
-      h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+color+';border-radius:8px;padding:14px 16px;margin-bottom:10px;">';
-      // Header row: outcome badge + loan number + date
-      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
-      h+='<div style="display:flex;align-items:center;gap:10px;">';
-      h+='<span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:'+color+';"><i class="fas '+icon+'"></i> '+outcomeLabel+'</span>';
+      // AE ID badge
+      var aeIdBadge = loan.ae_id ? '<span style="font-family:monospace;font-size:12px;font-weight:600;color:#0ea5e9;background:rgba(14,165,233,0.1);padding:3px 10px;border-radius:4px;">' + loan.ae_id + '</span>' : '';
+
+      h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+color+';border-radius:8px;padding:16px 18px;margin-bottom:12px;">';
+      // Header row: outcome badge + AE ID + loan number + date
+      h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">';
+      h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
+      h+='<span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:'+color+';"><i class="fas '+icon+'"></i> '+outcomeLabel+'</span>';
+      h+=aeIdBadge;
       if(loan.loan_number){
-        h+='<span style="font-family:monospace;font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;">Loan #'+loan.loan_number+'</span>';
+        h+='<span style="font-family:monospace;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);padding:3px 10px;border-radius:4px;">Loan #'+loan.loan_number+'</span>';
       }
       h+='</div>';
-      h+='<span style="font-size:11px;color:rgba(255,255,255,0.4);">'+dt+'</span>';
+      h+='<span style="font-size:12px;color:rgba(255,255,255,0.4);">'+dt+'</span>';
       h+='</div>';
       // Details grid
-      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11px;">';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Type</span><div style="margin-top:2px;">'+loanType+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Interest Rate</span><div style="margin-top:2px;">'+rate+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</span><div style="margin-top:2px;">'+amt+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Strike Rate</span><div style="margin-top:2px;">'+(loan.strike_rate||'—')+'</div></div>';
-      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Property</span><div style="margin-top:2px;">'+addr+'</div></div>';
-      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Borrowers on Loan</span><div style="margin-top:2px;">'+borrowerNames+'</div></div>';
+      h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Type</span><div style="margin-top:3px;">'+loanType+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Interest Rate</span><div style="margin-top:3px;">'+rate+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</span><div style="margin-top:3px;">'+amt+'</div></div>';
+      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Strike Rate</span><div style="margin-top:3px;">'+(loan.strike_rate||'—')+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Property</span><div style="margin-top:3px;">'+addr+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Borrowers on Loan</span><div style="margin-top:3px;">'+borrowerNames+'</div></div>';
       if(loan.notes){
-        h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Notes</span><div style="margin-top:2px;font-style:italic;opacity:0.6;">'+loan.notes+'</div></div>';
+        h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Notes</span><div style="margin-top:3px;font-style:italic;opacity:0.6;">'+loan.notes+'</div></div>';
       }
       h+='</div></div>';
     });
     el.innerHTML=h;
   }).catch(function(err){
     console.error('Loan history tab error:',err);
-    el.innerHTML='<div style="color:#ef4444;font-size:12px;padding:8px 0;">Error loading loan history</div>';
+    el.innerHTML='<div style="color:#ef4444;font-size:13px;padding:8px 0;">Error loading loan history</div>';
   });
 }
 
@@ -941,102 +945,76 @@ function fetchActiveLoanRelationships(crmId) {
   var banner = document.getElementById('crmLoanHistoryBanner');
   if (!banner || !crmId) return;
 
-  var roleLabels = { primary: 'Primary Borrower', spouse: 'Spouse', 'co-borrower': 'Co-Borrower', parent: 'Parent', child: 'Child', sibling: 'Sibling', domestic_partner: 'Domestic Partner', other: 'Other', '': '' };
-  var allHtml = '';
+  var roleLabels = { primary: 'Primary Borrower', 'co-borrower': 'Co-Borrower', spouse: 'Spouse', 'non-borrowing_spouse': 'Non-Borrowing Spouse', parent: 'Parent', other: 'Other', '': '' };
+  var stageLabels = {};
+  if (typeof PIPELINE_STAGES !== 'undefined') {
+    PIPELINE_STAGES.forEach(function(s) { stageLabels[s.id] = s.label; });
+  }
 
-  // Fetch both CRM links and pipeline loans in parallel
-  var crmLinksPromise = fetch(CRM_API + '/crm-api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'getLinkedContacts', crm_id: crmId })
-  }).then(function(r) { return r.json(); }).catch(function() { return { success: false }; });
-
-  var pipelinePromise = fetch(CRM_API + '/pipeline-api', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'getActiveLoans', crm_contact_id: crmId })
-  }).then(function(r) { return r.json(); }).catch(function() { return { success: false }; });
-
-  Promise.all([crmLinksPromise, pipelinePromise]).then(function(results) {
-    var crmData = results[0];
-    var pipelineData = results[1];
+  fetch(CRM_API + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getContactLoans', crm_contact_id: crmId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success) { banner.style.display = 'none'; return; }
     var h = '';
 
-    // === CRM-LEVEL LINKS ===
-    if (crmData.success && crmData.links && crmData.links.length > 0) {
-      h += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:8px;"><i class="fas fa-users" style="margin-right:4px;"></i> Linked Contacts</div>';
+    // Active loans
+    if (data.active_loans && data.active_loans.length > 0) {
+      h += '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:10px;"><i class="fas fa-funnel-dollar" style="margin-right:6px;"></i> Active Loan' + (data.active_loans.length > 1 ? 's' : '') + '</div>';
 
-      crmData.links.forEach(function(link) {
-        var relLabel = roleLabels[link.relationship] || link.relationship || '';
-        var directionLabel = '';
-        var directionIcon = '';
-        if (link.direction === 'linked_to') {
-          directionLabel = 'Co-borrower on';
-          directionIcon = 'fa-arrow-right';
-        } else {
-          directionLabel = 'Has co-borrower';
-          directionIcon = 'fa-arrow-left';
-        }
+      data.active_loans.forEach(function(loan) {
+        var stageLabel = stageLabels[loan.pipeline_stage] || loan.pipeline_stage || '—';
+        var myRole = loan.my_role || 'primary';
+        var myRoleLabel = roleLabels[myRole] || myRole;
+        var roleColor = myRole === 'primary' ? '#0ea5e9' : '#a855f7';
 
-        h += '<div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.15);border-left:3px solid #a855f7;border-radius:8px;padding:10px 14px;margin-bottom:6px;cursor:pointer;" onclick="crmSelectContact(\'' + link.contact_id + '\')">';
-        h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">';
-        h += '<span style="font-size:10px;color:rgba(255,255,255,0.5);"><i class="fas ' + directionIcon + '" style="margin-right:4px;"></i>' + directionLabel + '</span>';
-        if (relLabel) h += '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(168,85,247,0.1);color:#a855f7;font-weight:600;">' + relLabel + '</span>';
-        h += '</div>';
-        h += '<div style="margin-top:4px;font-size:12px;font-weight:700;color:#e2e8f0;">' + (link.contact_name || 'Unknown') + ' <i class="fas fa-external-link-alt" style="font-size:8px;opacity:0.3;"></i></div>';
-        h += '</div>';
-      });
-    }
-
-    // === PIPELINE LOANS ===
-    if (pipelineData.success && pipelineData.loans && pipelineData.loans.length > 0) {
-      var stageLabels = {};
-      if (typeof PIPELINE_STAGES !== 'undefined') {
-        PIPELINE_STAGES.forEach(function(s) { stageLabels[s.id] = s.label; });
-      }
-
-      h += '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:8px;margin-top:' + (h ? '10px' : '0') + ';"><i class="fas fa-funnel-dollar" style="margin-right:4px;"></i> Active Loan' + (pipelineData.loans.length > 1 ? 's' : '') + '</div>';
-
-      pipelineData.loans.forEach(function(loan) {
-        var stageLabel = stageLabels[loan.stage] || loan.stage || '—';
-        var myRoleLabel = roleLabels[loan.my_role] || loan.my_role || 'Borrower';
-        var roleColor = loan.my_role === 'primary' ? '#0ea5e9' : '#a855f7';
-
-        var otherBorrowers = (loan.borrowers || []).filter(function(b) { return b.crm_id !== crmId; });
+        // Other borrowers on this loan
+        var otherBorrowers = (loan.borrowers || []).filter(function(b) { return b.crm_contact_id !== crmId; });
         var othersHtml = '';
         if (otherBorrowers.length > 0) {
-          othersHtml = '<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap;">';
+          othersHtml = '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">';
           otherBorrowers.forEach(function(b) {
             var bColor = b.role === 'primary' ? '#0ea5e9' : '#a855f7';
             var bRoleLabel = roleLabels[b.role] || b.role || '';
-            var clickAttr = b.crm_id ? ' onclick="event.stopPropagation();crmSelectContact(\'' + b.crm_id + '\')" style="cursor:pointer;"' : '';
-            othersHtml += '<span' + clickAttr + ' style="background:' + bColor + '10;border:1px solid ' + bColor + '30;color:' + bColor + ';padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;">';
+            var clickAttr = b.crm_contact_id ? ' onclick="event.stopPropagation();crmSelectContact(\'' + b.crm_contact_id + '\')" style="cursor:pointer;"' : '';
+            othersHtml += '<span' + clickAttr + ' style="background:' + bColor + '10;border:1px solid ' + bColor + '30;color:' + bColor + ';padding:4px 10px;border-radius:5px;font-size:12px;font-weight:600;">';
             othersHtml += (b.name || 'Unknown');
-            if (bRoleLabel) othersHtml += ' <span style="font-size:8px;opacity:0.6;">(' + bRoleLabel + ')</span>';
-            if (b.crm_id) othersHtml += ' <i class="fas fa-external-link-alt" style="font-size:7px;opacity:0.4;"></i>';
+            if (bRoleLabel) othersHtml += ' <span style="font-size:10px;opacity:0.6;">(' + bRoleLabel + ')</span>';
+            if (b.crm_contact_id) othersHtml += ' <i class="fas fa-external-link-alt" style="font-size:8px;opacity:0.4;"></i>';
             othersHtml += '</span>';
           });
           othersHtml += '</div>';
         }
 
+        // Loan details
         var details = [];
-        if (loan.loan_type) details.push(loan.loan_type);
+        if (loan.transaction_type) details.push(loan.transaction_type);
+        if (loan.loan_program) details.push(loan.loan_program);
         if (loan.interest_rate) details.push(parseFloat(loan.interest_rate).toFixed(3) + '%');
         if (loan.loan_amount) details.push('$' + parseFloat(loan.loan_amount).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ','));
 
-        h += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + roleColor + ';border-radius:8px;padding:10px 14px;margin-bottom:6px;">';
-        h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">';
-        h += '<span style="font-size:10px;font-weight:700;color:' + roleColor + ';"><i class="fas fa-user"></i> ' + myRoleLabel + '</span>';
-        h += '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);font-weight:600;">' + stageLabel + '</span>';
+        var address = [loan.subject_street, loan.subject_city, loan.subject_state].filter(Boolean).join(', ');
+
+        h += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + roleColor + ';border-radius:8px;padding:14px 16px;margin-bottom:8px;">';
+        // Top row: AE ID + role + stage
+        h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">';
+        h += '<div style="display:flex;align-items:center;gap:8px;">';
+        h += '<span style="font-family:monospace;font-size:12px;font-weight:700;color:#0ea5e9;background:rgba(14,165,233,0.1);padding:3px 10px;border-radius:4px;">' + loan.ae_id + '</span>';
+        h += '<span style="font-size:12px;font-weight:700;color:' + roleColor + ';"><i class="fas fa-user"></i> ' + myRoleLabel + '</span>';
         h += '</div>';
-        if (loan.subject_address || details.length > 0) {
-          h += '<div style="margin-top:6px;font-size:11px;color:rgba(255,255,255,0.6);">';
-          if (loan.subject_address) h += '<div>' + loan.subject_address + '</div>';
-          if (details.length > 0) h += '<div style="margin-top:2px;">' + details.join(' · ') + '</div>';
+        h += '<span style="font-size:12px;padding:3px 10px;border-radius:5px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);font-weight:600;">' + stageLabel + '</span>';
+        h += '</div>';
+        // Details
+        if (address || details.length > 0) {
+          h += '<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.6);">';
+          if (address) h += '<div><i class="fas fa-map-marker-alt" style="margin-right:4px;font-size:10px;"></i>' + address + '</div>';
+          if (details.length > 0) h += '<div style="margin-top:3px;">' + details.join(' · ') + '</div>';
           h += '</div>';
         }
         if (otherBorrowers.length > 0) {
-          h += '<div style="margin-top:6px;font-size:9px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Also on this loan:</div>';
+          h += '<div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Also on this loan:</div>';
           h += othersHtml;
         }
         h += '</div>';
@@ -1051,7 +1029,7 @@ function fetchActiveLoanRelationships(crmId) {
       banner.innerHTML = '';
     }
   }).catch(function(err) {
-    console.error('Relationships fetch error:', err);
+    console.error('Active loans fetch error:', err);
     banner.style.display = 'none';
   });
 }
