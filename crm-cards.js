@@ -906,9 +906,14 @@ function renderBorrowerLoanHistory(){
       }
 
       h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+color+';border-radius:8px;padding:14px 16px;margin-bottom:10px;">';
-      // Header row: outcome badge + date
+      // Header row: outcome badge + loan number + date
       h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
+      h+='<div style="display:flex;align-items:center;gap:10px;">';
       h+='<span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:12px;color:'+color+';"><i class="fas '+icon+'"></i> '+outcomeLabel+'</span>';
+      if(loan.loan_number){
+        h+='<span style="font-family:monospace;font-size:11px;font-weight:600;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;">Loan #'+loan.loan_number+'</span>';
+      }
+      h+='</div>';
       h+='<span style="font-size:11px;color:rgba(255,255,255,0.4);">'+dt+'</span>';
       h+='</div>';
       // Details grid
