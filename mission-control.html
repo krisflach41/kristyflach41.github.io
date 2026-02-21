@@ -2127,7 +2127,7 @@ function savePipelineContact() {
     // Create CRM contact first
     fetch(API_BASE + '/crm-api', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'save', crm: { first_name: firstName, last_name: lastName, email: email, phone: phone, type: 'borrower' }})
+      body: JSON.stringify({ action: 'save', crm: { name: name, email: email, phone: phone, type: 'borrower' }})
     })
     .then(function(r) { return r.json(); })
     .then(function(crmResult) {
