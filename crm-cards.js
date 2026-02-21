@@ -1934,12 +1934,15 @@ function crmPopulateCard(c,activity){
     if(c.reos) window._primaryBorrowerData.reos=JSON.parse(JSON.stringify(c.reos));
     if(c.documents) window._primaryBorrowerData.documents=(c.documents||[]).slice();
   }
-  // Pipeline
+  // Pipeline button — check if this contact is on an active AE loan
   var pBtn=document.getElementById('cardPipelineBtn');
-  var pid='crm-'+c.id;var fs=null;
-  if(typeof pipelineContacts!=='undefined'){
-    var m=pipelineContacts.find(function(p){return p.id===pid||(c.email&&p.email&&p.email.toLowerCase()===c.email.toLowerCase());});
-    if(m)fs=m.stage;
+  var fs=null;
+  if(typeof pipelineLoans!=='undefined'&&typeof pipelineBorrowers!=='undefined'){
+    var myLoanLink=pipelineBorrowers.find(function(b){return b.crm_contact_id===c.id;});
+    if(myLoanLink){
+      var myLoan=pipelineLoans.find(function(l){return l.ae_id===myLoanLink.ae_id;});
+      if(myLoan) fs=myLoan.pipeline_stage;
+    }
   }
   renderPipelineButton(pBtn,c.id,fs);
   // Active Loan Relationships banner
