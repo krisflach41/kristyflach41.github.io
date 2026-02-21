@@ -522,7 +522,117 @@ body {
 .mc-legend-name { flex: 1; font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-legend-val { font-size: 12px; font-weight: 700; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
 .mc-empty-msg { text-align: center; padding: 30px 0; color: rgba(59,130,246,0.25); font-size: 12px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace; }
-.analytics-table {
+
+/* ===== ANALYTICS PAGE STYLES ===== */
+.mc-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.mc-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.mc-kpi { text-align: center; padding: 16px 10px; background: rgba(59,130,246,0.03); border: 1px solid rgba(59,130,246,0.06); border-radius: 6px; }
+.mc-kpi-value { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; margin-bottom: 4px; }
+.mc-kpi-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.3); font-family: 'Share Tech Mono', monospace; }
+
+/* Vertical bars */
+.mc-vbar-wrap { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; padding: 0 10px; gap: 6px; }
+.mc-vbar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.mc-vbar { width: 100%; max-width: 50px; border-radius: 4px 4px 0 0; position: relative; transition: height 1s cubic-bezier(0.25,0.8,0.25,1); min-height: 2px; }
+.mc-vbar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent); border-radius: 4px 4px 0 0; }
+.mc-vbar-label { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 6px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.mc-vbar-val { font-size: 11px; font-weight: 700; margin-bottom: 4px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+
+/* Horizontal bars */
+.mc-hbar-row { display: flex; align-items: center; gap: 0; padding: 4px 0; }
+.mc-hbar-label { width: 120px; flex-shrink: 0; font-size: 11px; color: rgba(255,255,255,0.4); text-align: right; padding-right: 12px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.mc-hbar-track { flex: 1; height: 18px; background: rgba(255,255,255,0.02); border-radius: 9px; overflow: hidden; position: relative; }
+.mc-hbar-fill { height: 100%; border-radius: 9px; position: relative; transition: width 1s ease; }
+.mc-hbar-fill::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); animation: barSweep 4s ease-in-out infinite; }
+.mc-hbar-val { width: 50px; flex-shrink: 0; font-size: 12px; font-weight: 700; text-align: center; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+
+/* Opportunity cards */
+.mc-opp { display: flex; align-items: center; gap: 14px; padding: 12px 16px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; margin-bottom: 6px; transition: all 0.2s; cursor: pointer; }
+.mc-opp:hover { background: rgba(59,130,246,0.04); border-color: rgba(59,130,246,0.15); }
+.mc-opp-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.mc-opp-body { flex: 1; min-width: 0; }
+.mc-opp-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 2px; font-family: 'Share Tech Mono', monospace; }
+.mc-opp-detail { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
+.mc-opp-tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 1px; flex-shrink: 0; font-family: 'Share Tech Mono', monospace; }
+
+/* Alert rows */
+.mc-alert-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-left: 3px solid; border-radius: 6px; margin-bottom: 6px; background: rgba(255,255,255,0.015); }
+.mc-alert-icon { font-size: 16px; flex-shrink: 0; }
+.mc-alert-body { flex: 1; }
+.mc-alert-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); font-family: 'Share Tech Mono', monospace; }
+.mc-alert-sub { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; }
+.mc-alert-date { font-size: 12px; font-weight: 700; flex-shrink: 0; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+
+/* Analytics tabs */
+.ana-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
+.ana-tab { padding: 8px 16px; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.ana-tab:hover { color: rgba(255,255,255,0.5); }
+.ana-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.3); }
+
+/* Query builder */
+.qb-section { margin-bottom: 18px; }
+.qb-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; }
+.qb-step { font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 900; background: rgba(59,130,246,0.15); color: #3b82f6; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px; }
+.qb-types { display: flex; gap: 8px; flex-wrap: wrap; }
+.qb-type { padding: 10px 18px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 12px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); transition: all 0.2s; display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; }
+.qb-type:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.qb-type.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.3); color: #3b82f6; text-shadow: 0 0 6px rgba(59,130,246,0.2); }
+.qb-fields { display: flex; gap: 6px; flex-wrap: wrap; }
+.qb-chip { padding: 6px 14px; border-radius: 20px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.35); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qb-chip:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.5); }
+.qb-chip.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+.qb-chip.active::before { content: '\2713  '; }
+.qb-dates { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.qb-date-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px 14px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 12px; outline: none; width: 160px; }
+.qb-date-input:focus { border-color: rgba(59,130,246,0.3); }
+.qb-date-sep { color: rgba(255,255,255,0.2); font-size: 12px; }
+.qb-presets { display: flex; gap: 6px; }
+.qb-preset { padding: 6px 12px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.3); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qb-preset:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.5); }
+.qb-preset.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); color: #3b82f6; }
+.qb-filters { display: flex; flex-direction: column; gap: 8px; }
+.qb-filter-row { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 6px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap; }
+.qb-filter-field { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); color: #3b82f6; padding: 5px 12px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; min-width: 80px; text-align: center; }
+.qb-filter-select { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px 10px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 11px; outline: none; }
+.qb-filter-val { flex: 1; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px 12px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 12px; outline: none; min-width: 120px; }
+.qb-filter-val:focus { border-color: rgba(59,130,246,0.3); }
+.qb-filter-remove { background: none; border: none; color: rgba(239,68,68,0.4); font-size: 14px; cursor: pointer; padding: 2px 6px; }
+.qb-filter-remove:hover { color: #ef4444; }
+.qb-add-filter { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; cursor: pointer; background: transparent; border: 1px dashed rgba(59,130,246,0.15); color: rgba(59,130,246,0.4); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; transition: all 0.2s; margin-top: 4px; }
+.qb-add-filter:hover { border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+.qb-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
+.qb-run { padding: 10px 28px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; box-shadow: 0 0 20px rgba(59,130,246,0.2); transition: all 0.2s; }
+.qb-run:hover { box-shadow: 0 0 30px rgba(59,130,246,0.4); transform: translateY(-1px); }
+.qb-export { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1.5px; transition: all 0.2s; }
+.qb-export:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+.qb-result-count { margin-left: auto; font-size: 12px; color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+
+/* Results table */
+.mc-table-wrap { overflow-x: auto; border: 1px solid rgba(59,130,246,0.08); border-radius: 6px; }
+table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Share Tech Mono', monospace; }
+.mc-table thead { background: rgba(59,130,246,0.06); }
+.mc-table th { padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); font-weight: 700; white-space: nowrap; cursor: pointer; border-bottom: 1px solid rgba(59,130,246,0.1); }
+.mc-table th:hover { color: rgba(255,255,255,0.6); }
+.mc-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); color: rgba(255,255,255,0.6); white-space: nowrap; }
+.mc-table tbody tr { transition: all 0.15s; }
+.mc-table tbody tr:hover { background: rgba(59,130,246,0.04); }
+.mc-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.008); }
+.cell-name { color: rgba(255,255,255,0.85); font-weight: 700; }
+.cell-money { color: #22c55e; font-weight: 700; }
+.cell-rate { color: #3b82f6; font-weight: 700; }
+.cell-tag { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+.cell-tag.funded { background: rgba(34,197,94,0.1); color: #22c55e; }
+.cell-tag.denied { background: rgba(239,68,68,0.1); color: #ef4444; }
+.cell-tag.ct-active { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.cell-tag.purchase { background: rgba(168,85,247,0.1); color: #a78bfa; }
+.cell-tag.refi { background: rgba(245,158,11,0.1); color: #f59e0b; }
+
+/* Saved reports */
+.qb-saved { display: flex; gap: 8px; flex-wrap: wrap; }
+.qb-saved-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }
+.qb-saved-item:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
+.qb-saved-name { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.qb-saved-badge { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(59,130,246,0.1); color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
 .at-title { padding: 12px 14px 0; font-size: 12px; font-weight: 700; }
@@ -1272,39 +1382,179 @@ body {
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Performance insights</div></div>
-    </div>
-    <div class="topbar-right">
-      <select class="topbar-search" style="width:auto;" id="analyticsRange">
-        <option>Last 30 days</option>
-        <option>Last 90 days</option>
-        <option>Year to date</option>
-        <option>All time</option>
-      </select>
+      <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Intelligence & Opportunity Center</div></div>
     </div>
   </div>
   <div class="content-area">
-    <div class="dash-stats">
-      <div class="stat-card blue"><div class="stat-label">Avg Interest Rate</div><div class="stat-value">--</div></div>
-      <div class="stat-card green"><div class="stat-label">Funded Volume</div><div class="stat-value">--</div></div>
-      <div class="stat-card purple"><div class="stat-label">Portal Signups</div><div class="stat-value">--</div></div>
-      <div class="stat-card orange"><div class="stat-label">Avg Days to Close</div><div class="stat-value">--</div></div>
+
+    <!-- Tabs -->
+    <div class="ana-tabs">
+      <div class="ana-tab active" onclick="anaShowTab('dashboard',this)">DASHBOARD</div>
+      <div class="ana-tab" onclick="anaShowTab('reports',this)">CUSTOM REPORTS</div>
     </div>
-    <div class="analytics-grid">
-      <div class="chart-card">
-        <div class="chart-title">Monthly Funded Volume</div>
-        <div class="chart-placeholder"></div>
+
+    <!-- ======= DASHBOARD TAB ======= -->
+    <div id="anaTabDashboard">
+
+      <!-- PRODUCTION METRICS -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">PRODUCTION METRICS</div>
+          <div class="mc-status" id="anaProdStatus">LOADING</div>
+        </div>
+        <div class="mc-grid-3" style="margin-bottom:20px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedVol" style="color:#22c55e;text-shadow:0 0 15px rgba(34,197,94,0.3);">—</div><div class="mc-kpi-label">FUNDED VOLUME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedCount" style="color:#3b82f6;text-shadow:0 0 15px rgba(59,130,246,0.3);">—</div><div class="mc-kpi-label">LOANS FUNDED</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaAvgSize" style="color:#f472b6;text-shadow:0 0 15px rgba(244,114,182,0.3);">—</div><div class="mc-kpi-label">AVG LOAN SIZE</div></div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-bottom:10px;font-family:'Share Tech Mono',monospace;">MONTHLY FUNDED VOLUME</div>
+        <div class="mc-vbar-wrap" id="anaMonthlyBars"></div>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Loans by Type</div>
-        <div style="display:flex;align-items:center;justify-content:center;height:180px;"><div class="donut-chart"></div></div>
+
+      <!-- PIPELINE VELOCITY -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
+          <div class="mc-panel-title">PIPELINE VELOCITY</div>
+          <div class="mc-status" id="anaVelocityStatus">—</div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.25);margin-bottom:10px;font-family:'Share Tech Mono',monospace;">LOANS PER STAGE</div>
+        <div id="anaVelocityBars"></div>
+        <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
+        </div>
+      </div>
+
+      <!-- REFI OPPORTUNITIES -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+          <div class="mc-panel-title">REFI OPPORTUNITIES</div>
+          <div class="mc-status" id="anaRefiStatus" style="color:#f59e0b;">SCANNING</div>
+        </div>
+        <div id="anaRefiCards"><div class="mc-empty-msg">SCANNING LOAN HISTORY...</div></div>
+      </div>
+
+      <div class="mc-grid-2">
+        <!-- SOURCE PERFORMANCE -->
+        <div class="mc-panel">
+          <div class="mc-panel-head">
+            <div class="mc-blinker" style="background:#f472b6;box-shadow:0 0 8px #f472b6;"></div>
+            <div class="mc-panel-title">SOURCE PERFORMANCE</div>
+            <div class="mc-status" id="anaSourceStatus">—</div>
+          </div>
+          <div id="anaSourceBars"></div>
+          <div id="anaSourceFooter" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:1px;font-family:'Share Tech Mono',monospace;"></div>
+        </div>
+
+        <!-- BIRTHDAYS & ANNIVERSARIES -->
+        <div class="mc-panel">
+          <div class="mc-panel-head">
+            <div class="mc-blinker" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></div>
+            <div class="mc-panel-title">UPCOMING DATES</div>
+            <div class="mc-status" style="color:#a78bfa;" id="anaDateStatus">NEXT 30 DAYS</div>
+          </div>
+          <div id="anaUpcomingDates"><div class="mc-empty-msg">LOADING...</div></div>
+        </div>
+      </div>
+
+      <!-- STRIKE RATE -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title">STRIKE RATE ANALYSIS</div>
+          <div class="mc-status" id="anaStrikeStatus">MONITORING</div>
+        </div>
+        <div class="mc-grid-3" style="margin-bottom:16px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#3b82f6;" id="anaAvgRate">—</div><div class="mc-kpi-label">AVG FUNDED RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaMktRate">—</div><div class="mc-kpi-label">CURRENT MKT RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaRefiCount">—</div><div class="mc-kpi-label">REFI CANDIDATES</div></div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.2);margin-bottom:10px;font-family:'Share Tech Mono',monospace;">CLIENTS ABOVE CURRENT MARKET RATE</div>
+        <div id="anaStrikeCards"><div class="mc-empty-msg">SCANNING...</div></div>
       </div>
     </div>
-    <div class="analytics-table">
-      <div class="at-title">Contacts by Interest Rate (7%+)</div>
-      <div class="at-header at-4"><div>Name</div><div>Rate</div><div>Loan Amount</div><div>Status</div></div>
-      <div id="analyticsHighRate" style="color:var(--text-muted);padding:20px;text-align:center;font-size:12px;">Rate data will populate from pipeline</div>
+
+    <!-- ======= CUSTOM REPORTS TAB ======= -->
+    <div id="anaTabReports" style="display:none;">
+      <!-- Saved Reports -->
+      <div class="mc-panel" style="padding:14px 20px;">
+        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.2);margin-bottom:10px;font-family:'Share Tech Mono',monospace;">⚡ QUICK REPORTS</div>
+        <div class="qb-saved">
+          <div class="qb-saved-item" onclick="anaRunQuickReport('production')"><span>📊</span><div class="qb-saved-name">MONTHLY PRODUCTION</div><div class="qb-saved-badge">YTD</div></div>
+          <div class="qb-saved-item" onclick="anaRunQuickReport('refi')"><span>🎯</span><div class="qb-saved-name">REFI CANDIDATES</div><div class="qb-saved-badge">ALL</div></div>
+          <div class="qb-saved-item" onclick="anaRunQuickReport('highrate')"><span>💰</span><div class="qb-saved-name">HIGH-RATE CLIENTS</div><div class="qb-saved-badge">ALL</div></div>
+          <div class="qb-saved-item" onclick="anaRunQuickReport('sources')"><span>🤝</span><div class="qb-saved-name">SOURCE BREAKDOWN</div><div class="qb-saved-badge">YTD</div></div>
+        </div>
+      </div>
+
+      <!-- Query Builder -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title">REPORT BUILDER</div>
+          <div class="mc-status" id="anaQbStatus">READY</div>
+        </div>
+
+        <div class="qb-section">
+          <div class="qb-label"><span class="qb-step">01</span> REPORT TYPE</div>
+          <div class="qb-types" id="anaQbTypes">
+            <div class="qb-type active" data-type="production" onclick="anaSelectType(this)"><span>📋</span> LOAN PRODUCTION</div>
+            <div class="qb-type" data-type="clients" onclick="anaSelectType(this)"><span>👥</span> CLIENT DATABASE</div>
+            <div class="qb-type" data-type="pipeline" onclick="anaSelectType(this)"><span>📊</span> PIPELINE ACTIVITY</div>
+            <div class="qb-type" data-type="opportunities" onclick="anaSelectType(this)"><span>🎯</span> OPPORTUNITY SCAN</div>
+          </div>
+        </div>
+
+        <div class="qb-section">
+          <div class="qb-label"><span class="qb-step">02</span> SELECT FIELDS</div>
+          <div class="qb-fields" id="anaQbFields"></div>
+        </div>
+
+        <div class="qb-section">
+          <div class="qb-label"><span class="qb-step">03</span> DATE RANGE</div>
+          <div class="qb-dates">
+            <input type="date" class="qb-date-input" id="anaDateFrom">
+            <span class="qb-date-sep">→</span>
+            <input type="date" class="qb-date-input" id="anaDateTo">
+            <div class="qb-presets">
+              <div class="qb-preset" onclick="anaSetDatePreset('mtd',this)">MTD</div>
+              <div class="qb-preset active" onclick="anaSetDatePreset('ytd',this)">YTD</div>
+              <div class="qb-preset" onclick="anaSetDatePreset('qtr',this)">QTR</div>
+              <div class="qb-preset" onclick="anaSetDatePreset('12mo',this)">12 MO</div>
+              <div class="qb-preset" onclick="anaSetDatePreset('all',this)">ALL</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="qb-section">
+          <div class="qb-label"><span class="qb-step">04</span> FILTERS</div>
+          <div class="qb-filters" id="anaQbFilters"></div>
+          <button class="qb-add-filter" onclick="anaAddFilter()">+ ADD FILTER</button>
+        </div>
+
+        <div class="qb-actions">
+          <button class="qb-run" onclick="anaRunReport()">▶ RUN REPORT</button>
+          <button class="qb-export" onclick="anaExportCSV()">📄 EXPORT CSV</button>
+          <div class="qb-result-count" id="anaResultCount"></div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="mc-panel" id="anaResultsPanel" style="display:none;">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">RESULTS</div>
+          <div class="mc-status" id="anaResultsStatus">—</div>
+        </div>
+        <div class="mc-table-wrap" id="anaResultsTable"></div>
+        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:1px;font-family:'Share Tech Mono',monospace;"></div>
+      </div>
     </div>
+
   </div>
 </div>
 
@@ -1793,6 +2043,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'crm' && !crmLoaded) loadCrm();
   if (viewId === 'orders' && !ordersLoaded) loadOrders();
   if (viewId === 'users' && !usersLoaded) loadUsers();
+  if (viewId === 'analytics') loadAnalytics();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -2058,6 +2309,534 @@ function startTicker() {
     if (tickerInterval) clearInterval(tickerInterval);
     tickerInterval = setInterval(rotateTicker, 6000);
   }, 1000);
+}
+
+// ===== ANALYTICS =====
+var anaDataLoaded = false;
+var anaLoanHistory = [];
+var anaCrmAll = [];
+
+function anaShowTab(tab, el) {
+  document.querySelectorAll('.ana-tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('anaTabDashboard').style.display = tab === 'dashboard' ? 'block' : 'none';
+  document.getElementById('anaTabReports').style.display = tab === 'reports' ? 'block' : 'none';
+  if (tab === 'reports' && !document.getElementById('anaQbFields').children.length) anaInitQueryBuilder();
+}
+
+function loadAnalytics() {
+  if (anaDataLoaded) { renderAnalyticsDashboard(); return; }
+  // Fetch all loan history
+  fetch(API_BASE + '/ae-loans-api', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'getAllHistory' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) anaLoanHistory = data.history || [];
+    renderAnalyticsDashboard();
+  }).catch(function() { renderAnalyticsDashboard(); });
+
+  // Also need CRM data for birthdays
+  fetch(API_BASE + '/crm-api', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) anaCrmAll = data.contacts || [];
+    renderUpcomingDates();
+    renderSourcePerformance();
+  }).catch(function() {});
+
+  anaDataLoaded = true;
+}
+
+function renderAnalyticsDashboard() {
+  renderProductionMetrics();
+  renderPipelineVelocity();
+  renderRefiOpportunities();
+  renderStrikeRate();
+}
+
+// --- PRODUCTION METRICS ---
+function renderProductionMetrics() {
+  var funded = anaLoanHistory.filter(function(h) { return h.outcome === 'funded'; });
+  var totalVol = 0; var count = funded.length;
+  funded.forEach(function(h) { totalVol += parseFloat(h.loan_amount) || 0; });
+  var avg = count > 0 ? totalVol / count : 0;
+
+  document.getElementById('anaFundedVol').textContent = '$' + Math.round(totalVol).toLocaleString();
+  document.getElementById('anaFundedCount').textContent = count;
+  document.getElementById('anaAvgSize').textContent = avg > 0 ? '$' + Math.round(avg).toLocaleString() : '—';
+  document.getElementById('anaProdStatus').textContent = 'YTD ' + new Date().getFullYear();
+
+  // Monthly bars
+  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var monthlyVol = {};
+  var yr = new Date().getFullYear();
+  funded.forEach(function(h) {
+    if (!h.outcome_date) return;
+    var d = new Date(h.outcome_date);
+    if (d.getFullYear() === yr) {
+      var m = d.getMonth();
+      monthlyVol[m] = (monthlyVol[m] || 0) + (parseFloat(h.loan_amount) || 0);
+    }
+  });
+  var maxVol = 0;
+  for (var k in monthlyVol) { if (monthlyVol[k] > maxVol) maxVol = monthlyVol[k]; }
+  if (maxVol === 0) maxVol = 100000;
+
+  var barsHtml = '';
+  months.forEach(function(m, i) {
+    var vol = monthlyVol[i] || 0;
+    var h = vol > 0 ? Math.max(8, (vol / maxVol) * 140) : 2;
+    var color = vol > 0 ? '#22c55e' : 'rgba(255,255,255,0.05)';
+    var valText = vol > 0 ? '$' + Math.round(vol / 1000) + 'K' : '—';
+    var valColor = vol > 0 ? 'color:#22c55e;' : 'color:rgba(255,255,255,0.15);';
+    barsHtml += '<div class="mc-vbar-col"><div class="mc-vbar-val" style="' + valColor + '">' + valText + '</div>';
+    barsHtml += '<div class="mc-vbar" style="height:' + h + 'px;background:linear-gradient(180deg,' + color + ',' + color + '40);box-shadow:0 0 12px ' + color + '30;"></div>';
+    barsHtml += '<div class="mc-vbar-label">' + m + '</div></div>';
+  });
+  document.getElementById('anaMonthlyBars').innerHTML = barsHtml;
+}
+
+// --- PIPELINE VELOCITY ---
+function renderPipelineVelocity() {
+  var stages = [
+    { id: 'warm', label: 'WARM LEADS', color: '#818cf8' },
+    { id: 'active', label: 'ACTIVE CONVOS', color: '#f472b6' },
+    { id: 'credit', label: 'CREDIT REPAIR', color: '#fb923c' },
+    { id: 'preapproval', label: 'PRE-APPROVAL', color: '#f87171' },
+    { id: 'preapproved', label: 'APPROVED', color: '#fbbf24' },
+    { id: 'ratewatch', label: 'RATE WATCH', color: '#34d399' },
+    { id: 'underwriting', label: 'UNDERWRITING', color: '#38bdf8' }
+  ];
+  var counts = {};
+  stages.forEach(function(s) { counts[s.id] = 0; });
+  pipelineLoans.forEach(function(l) { if (counts[l.pipeline_stage] !== undefined) counts[l.pipeline_stage]++; });
+  var maxC = Math.max.apply(null, stages.map(function(s) { return counts[s.id]; }));
+  if (maxC === 0) maxC = 1;
+
+  var h = '';
+  stages.forEach(function(s) {
+    var c = counts[s.id];
+    var pct = (c / Math.max(maxC, 5)) * 100;
+    h += '<div class="mc-hbar-row"><div class="mc-hbar-label">' + s.label + '</div>';
+    h += '<div class="mc-hbar-track"><div class="mc-hbar-fill" style="width:' + pct + '%;background:linear-gradient(90deg,' + s.color + '20,' + s.color + ');box-shadow:0 0 10px ' + s.color + '30;"></div></div>';
+    h += '<div class="mc-hbar-val" style="color:' + (c > 0 ? s.color : 'rgba(255,255,255,0.15)') + ';">' + c + '</div></div>';
+  });
+  document.getElementById('anaVelocityBars').innerHTML = h;
+
+  var totalActive = pipelineLoans.length;
+  var totalDecisioned = anaLoanHistory.length;
+  var totalAll = totalActive + totalDecisioned;
+  var funded = anaLoanHistory.filter(function(x) { return x.outcome === 'funded'; }).length;
+  var convRate = totalAll > 0 ? Math.round((funded / totalAll) * 100) : 0;
+
+  document.getElementById('anaConversion').textContent = convRate + '%';
+  document.getElementById('anaStalled').textContent = totalActive;
+  document.getElementById('anaVelocityStatus').textContent = totalActive + ' IN PIPELINE';
+}
+
+// --- REFI OPPORTUNITIES ---
+function renderRefiOpportunities() {
+  var mktRate = 6.375; // TODO: could pull from MBS data
+  var funded = anaLoanHistory.filter(function(h) { return h.outcome === 'funded' && h.interest_rate; });
+  var opps = [];
+
+  funded.forEach(function(h) {
+    var rate = parseFloat(h.interest_rate);
+    var amt = parseFloat(h.loan_amount) || 0;
+    if (rate > mktRate + 0.25) {
+      var spread = rate - mktRate;
+      var monthlySave = Math.round((spread / 100) * amt / 12);
+      var names = [];
+      if (h.borrowers && Array.isArray(h.borrowers)) {
+        h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
+      }
+      var name = names.length > 0 ? names.join(' & ') : 'Unknown';
+      var priority = spread >= 0.75 ? 'HOT' : spread >= 0.5 ? 'WARM' : 'WATCH';
+      var pColor = priority === 'HOT' ? '#ef4444' : priority === 'WARM' ? '#f59e0b' : '#3b82f6';
+      opps.push({ name: name, rate: rate, spread: spread, save: monthlySave, amt: amt, priority: priority, pColor: pColor, date: h.outcome_date });
+    }
+  });
+
+  opps.sort(function(a, b) { return b.spread - a.spread; });
+  var el = document.getElementById('anaRefiCards');
+  var statusEl = document.getElementById('anaRefiStatus');
+
+  if (opps.length === 0) {
+    el.innerHTML = '<div class="mc-empty-msg">NO OPPORTUNITIES DETECTED AT CURRENT RATES</div>';
+    statusEl.textContent = '0 FOUND';
+    return;
+  }
+
+  statusEl.textContent = opps.length + ' OPPORTUNITIES';
+  var oh = '';
+  opps.forEach(function(o) {
+    oh += '<div class="mc-opp"><div class="mc-opp-icon" style="background:' + o.pColor + '15;color:' + o.pColor + ';">⬇</div>';
+    oh += '<div class="mc-opp-body"><div class="mc-opp-name">' + o.name + '</div>';
+    oh += '<div class="mc-opp-detail">RATE: ' + o.rate.toFixed(3) + '% → MKT ' + mktRate.toFixed(3) + '% · SAVES $' + o.save + '/MO · $' + Math.round(o.amt).toLocaleString() + '</div></div>';
+    oh += '<div class="mc-opp-tag" style="background:' + o.pColor + '15;color:' + o.pColor + ';">' + o.priority + '</div></div>';
+  });
+  el.innerHTML = oh;
+}
+
+// --- SOURCE PERFORMANCE ---
+function renderSourcePerformance() {
+  var srcColors = { 'Realtor': '#f472b6', 'Zillow': '#818cf8', 'Past Client': '#34d399', 'Website': '#fbbf24', 'Social Media': '#38bdf8', 'Walk-In': '#fb923c', 'Other': '#a78bfa' };
+  var srcCounts = {};
+  var allContacts = anaCrmAll.length > 0 ? anaCrmAll : [];
+  allContacts.forEach(function(c) {
+    var src = c.source || 'Other';
+    srcCounts[src] = (srcCounts[src] || 0) + 1;
+  });
+
+  var sources = Object.keys(srcCounts).sort(function(a, b) { return srcCounts[b] - srcCounts[a]; });
+  var maxS = sources.length > 0 ? srcCounts[sources[0]] : 1;
+  var el = document.getElementById('anaSourceBars');
+  var statusEl = document.getElementById('anaSourceStatus');
+
+  if (sources.length === 0) {
+    el.innerHTML = '<div class="mc-empty-msg">NO SOURCE DATA</div>';
+    statusEl.textContent = '—';
+    return;
+  }
+
+  statusEl.textContent = sources.length + ' SOURCES';
+  var sh = '';
+  sources.slice(0, 8).forEach(function(src) {
+    var c = srcCounts[src];
+    var pct = (c / Math.max(maxS, 5)) * 100;
+    var color = srcColors[src] || '#a78bfa';
+    sh += '<div class="mc-hbar-row"><div class="mc-hbar-label">' + src.toUpperCase() + '</div>';
+    sh += '<div class="mc-hbar-track"><div class="mc-hbar-fill" style="width:' + pct + '%;background:linear-gradient(90deg,' + color + '20,' + color + ');box-shadow:0 0 10px ' + color + '30;"></div></div>';
+    sh += '<div class="mc-hbar-val" style="color:' + color + ';">' + c + '</div></div>';
+  });
+  el.innerHTML = sh;
+
+  var footer = document.getElementById('anaSourceFooter');
+  if (footer && sources.length > 0) {
+    footer.innerHTML = 'TOP SOURCE: <span style="color:' + (srcColors[sources[0]] || '#a78bfa') + ';text-shadow:0 0 6px ' + (srcColors[sources[0]] || '#a78bfa') + '40;">' + sources[0].toUpperCase() + '</span> (' + srcCounts[sources[0]] + ' CONTACTS)';
+  }
+}
+
+// --- UPCOMING DATES ---
+function renderUpcomingDates() {
+  var el = document.getElementById('anaUpcomingDates');
+  var now = new Date();
+  var in30 = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  var nowMonth = now.getMonth(); var nowDay = now.getDate();
+
+  var birthdays = [];
+  var anniversaries = [];
+
+  anaCrmAll.forEach(function(c) {
+    if (c.birthday) {
+      var parts = c.birthday.split('-');
+      if (parts.length >= 3) {
+        var bMonth = parseInt(parts[1]) - 1;
+        var bDay = parseInt(parts[2]);
+        var bDate = new Date(now.getFullYear(), bMonth, bDay);
+        if (bDate < now) bDate = new Date(now.getFullYear() + 1, bMonth, bDay);
+        if (bDate >= now && bDate <= in30) {
+          birthdays.push({ name: (c.first_name || '') + ' ' + (c.last_name || ''), date: bDate, type: c.type || '', sub: (c.type || '').toUpperCase() });
+        }
+      }
+    }
+  });
+
+  // Home anniversaries from loan history
+  anaLoanHistory.forEach(function(h) {
+    if (h.outcome === 'funded' && h.outcome_date) {
+      var od = new Date(h.outcome_date);
+      var anniv = new Date(now.getFullYear(), od.getMonth(), od.getDate());
+      if (anniv < now) anniv = new Date(now.getFullYear() + 1, od.getMonth(), od.getDate());
+      if (anniv >= now && anniv <= in30) {
+        var years = now.getFullYear() - od.getFullYear();
+        var names = [];
+        if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
+        anniversaries.push({ name: names.join(' & ') || 'Unknown', date: anniv, years: years, amt: h.loan_amount });
+      }
+    }
+  });
+
+  birthdays.sort(function(a, b) { return a.date - b.date; });
+  anniversaries.sort(function(a, b) { return a.date - b.date; });
+
+  var months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var html = '';
+
+  if (birthdays.length > 0) {
+    html += '<div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.2);margin-bottom:8px;font-family:\'Share Tech Mono\',monospace;">🎂 BIRTHDAYS</div>';
+    birthdays.slice(0, 5).forEach(function(b) {
+      html += '<div class="mc-alert-row" style="border-color:#a78bfa;"><div class="mc-alert-icon">🎂</div>';
+      html += '<div class="mc-alert-body"><div class="mc-alert-name">' + b.name + '</div><div class="mc-alert-sub">' + b.sub + '</div></div>';
+      html += '<div class="mc-alert-date" style="color:#a78bfa;">' + months[b.date.getMonth()] + ' ' + b.date.getDate() + '</div></div>';
+    });
+  }
+
+  if (anniversaries.length > 0) {
+    html += '<div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.2);margin:' + (birthdays.length > 0 ? '14' : '0') + 'px 0 8px;font-family:\'Share Tech Mono\',monospace;">🏠 HOME ANNIVERSARIES</div>';
+    anniversaries.slice(0, 5).forEach(function(a) {
+      html += '<div class="mc-alert-row" style="border-color:#22c55e;"><div class="mc-alert-icon">🏠</div>';
+      html += '<div class="mc-alert-body"><div class="mc-alert-name">' + a.name + '</div><div class="mc-alert-sub">' + a.years + ' YEAR' + (a.years !== 1 ? 'S' : '') + ' · $' + Math.round(parseFloat(a.amt) || 0).toLocaleString() + '</div></div>';
+      html += '<div class="mc-alert-date" style="color:#22c55e;">' + months[a.date.getMonth()] + ' ' + a.date.getDate() + '</div></div>';
+    });
+  }
+
+  if (!html) html = '<div class="mc-empty-msg">NO UPCOMING DATES IN NEXT 30 DAYS</div>';
+  el.innerHTML = html;
+
+  var statusEl = document.getElementById('anaDateStatus');
+  var total = birthdays.length + anniversaries.length;
+  if (statusEl) statusEl.textContent = total > 0 ? total + ' UPCOMING' : 'NONE';
+}
+
+// --- STRIKE RATE ---
+function renderStrikeRate() {
+  var mktRate = 6.375;
+  document.getElementById('anaMktRate').textContent = mktRate.toFixed(3) + '%';
+
+  var funded = anaLoanHistory.filter(function(h) { return h.outcome === 'funded' && h.interest_rate; });
+  if (funded.length === 0) {
+    document.getElementById('anaAvgRate').textContent = '—';
+    document.getElementById('anaRefiCount').textContent = '0';
+    document.getElementById('anaStrikeCards').innerHTML = '<div class="mc-empty-msg">NO FUNDED LOAN DATA</div>';
+    return;
+  }
+
+  var totalRate = 0;
+  funded.forEach(function(h) { totalRate += parseFloat(h.interest_rate); });
+  var avgRate = totalRate / funded.length;
+  document.getElementById('anaAvgRate').textContent = avgRate.toFixed(3) + '%';
+
+  var candidates = [];
+  funded.forEach(function(h) {
+    var rate = parseFloat(h.interest_rate);
+    if (rate > mktRate) {
+      var spread = rate - mktRate;
+      var names = [];
+      if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
+      var priority = spread >= 0.75 ? 'HOT' : spread >= 0.5 ? 'WARM' : 'WATCH';
+      var pColor = priority === 'HOT' ? '#ef4444' : priority === 'WARM' ? '#f59e0b' : '#3b82f6';
+      candidates.push({ name: names.join(' & ') || 'Unknown', rate: rate, spread: spread, amt: parseFloat(h.loan_amount) || 0, priority: priority, pColor: pColor, strikeRate: h.strike_rate });
+    }
+  });
+  candidates.sort(function(a, b) { return b.spread - a.spread; });
+
+  document.getElementById('anaRefiCount').textContent = candidates.length;
+  document.getElementById('anaStrikeStatus').textContent = candidates.length + ' ABOVE MKT';
+
+  if (candidates.length === 0) {
+    document.getElementById('anaStrikeCards').innerHTML = '<div class="mc-empty-msg">ALL CLIENTS AT OR BELOW MARKET RATE</div>';
+    return;
+  }
+
+  var sh = '';
+  candidates.forEach(function(c) {
+    var strikeStr = c.strikeRate ? ' · STRIKE: ' + parseFloat(c.strikeRate).toFixed(3) + '%' : '';
+    sh += '<div class="mc-opp"><div class="mc-opp-icon" style="background:' + c.pColor + '15;color:' + c.pColor + ';">📊</div>';
+    sh += '<div class="mc-opp-body"><div class="mc-opp-name">' + c.name + '</div>';
+    sh += '<div class="mc-opp-detail">RATE: ' + c.rate.toFixed(3) + '% · MKT: ' + mktRate.toFixed(3) + '% · SPREAD: +' + c.spread.toFixed(3) + '% · $' + Math.round(c.amt).toLocaleString() + strikeStr + '</div></div>';
+    sh += '<div class="mc-opp-tag" style="background:' + c.pColor + '15;color:' + c.pColor + ';">' + c.priority + '</div></div>';
+  });
+  document.getElementById('anaStrikeCards').innerHTML = sh;
+}
+
+// ===== QUERY BUILDER =====
+var anaQbType = 'production';
+var anaQbFieldDefs = {
+  production: ['BORROWER','LOAN AMOUNT','RATE','STRIKE RATE','LOAN TYPE','PROGRAM','STATUS','OUTCOME DATE','SOURCE','PROPERTY','AE ID','LENDER LOAN #'],
+  clients: ['NAME','PHONE','EMAIL','TYPE','SOURCE','BIRTHDAY','ADDRESS','CREATED'],
+  pipeline: ['BORROWER','STAGE','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM','PROPERTY','DAYS IN STAGE','AE ID'],
+  opportunities: ['BORROWER','FUNDED RATE','MARKET RATE','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT','FUNDED DATE','PRIORITY']
+};
+
+function anaSelectType(el) {
+  document.querySelectorAll('#anaQbTypes .qb-type').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  anaQbType = el.getAttribute('data-type');
+  anaInitFields();
+}
+
+function anaInitQueryBuilder() {
+  anaInitFields();
+  var now = new Date();
+  document.getElementById('anaDateFrom').value = now.getFullYear() + '-01-01';
+  document.getElementById('anaDateTo').value = now.toISOString().split('T')[0];
+}
+
+function anaInitFields() {
+  var fields = anaQbFieldDefs[anaQbType] || [];
+  var h = '';
+  fields.forEach(function(f, i) {
+    h += '<div class="qb-chip' + (i < 5 ? ' active' : '') + '" onclick="this.classList.toggle(\'active\')">' + f + '</div>';
+  });
+  document.getElementById('anaQbFields').innerHTML = h;
+}
+
+function anaSetDatePreset(preset, el) {
+  document.querySelectorAll('.qb-preset').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  var now = new Date();
+  var from, to = now.toISOString().split('T')[0];
+  if (preset === 'mtd') from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  else if (preset === 'ytd') from = now.getFullYear() + '-01-01';
+  else if (preset === 'qtr') { var q = Math.floor(now.getMonth() / 3) * 3; from = new Date(now.getFullYear(), q, 1).toISOString().split('T')[0]; }
+  else if (preset === '12mo') from = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString().split('T')[0];
+  else from = '2020-01-01';
+  document.getElementById('anaDateFrom').value = from;
+  document.getElementById('anaDateTo').value = to;
+}
+
+var anaFilterCount = 0;
+function anaAddFilter() {
+  anaFilterCount++;
+  var id = 'anaFilter' + anaFilterCount;
+  var row = document.createElement('div');
+  row.className = 'qb-filter-row';
+  row.id = id;
+  row.innerHTML = '<select class="qb-filter-select"><option>STATUS</option><option>LOAN AMOUNT</option><option>RATE</option><option>SOURCE</option><option>LOAN TYPE</option></select>' +
+    '<select class="qb-filter-select"><option>is</option><option>≥</option><option>≤</option><option>contains</option></select>' +
+    '<input class="qb-filter-val" placeholder="Enter value...">' +
+    '<button class="qb-filter-remove" onclick="document.getElementById(\'' + id + '\').remove()">✕</button>';
+  document.getElementById('anaQbFilters').appendChild(row);
+}
+
+function anaRunReport() {
+  var selectedFields = [];
+  document.querySelectorAll('#anaQbFields .qb-chip.active').forEach(function(c) { selectedFields.push(c.textContent.replace('✓ ','')); });
+  var fromDate = document.getElementById('anaDateFrom').value;
+  var toDate = document.getElementById('anaDateTo').value;
+
+  var data = [];
+  if (anaQbType === 'production') {
+    anaLoanHistory.forEach(function(h) {
+      if (h.outcome_date && h.outcome_date >= fromDate && h.outcome_date <= toDate) {
+        var names = [];
+        if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
+        data.push({ 'BORROWER': names.join(' & ') || '—', 'LOAN AMOUNT': h.loan_amount ? '$' + Math.round(parseFloat(h.loan_amount)).toLocaleString() : '—',
+          'RATE': h.interest_rate ? parseFloat(h.interest_rate).toFixed(3) + '%' : '—', 'STRIKE RATE': h.strike_rate ? parseFloat(h.strike_rate).toFixed(3) + '%' : '—',
+          'LOAN TYPE': h.transaction_type || '—', 'PROGRAM': h.loan_program || '—', 'STATUS': h.outcome || '—',
+          'OUTCOME DATE': h.outcome_date || '—', 'SOURCE': '—', 'PROPERTY': h.subject_address || '—', 'AE ID': h.ae_id || '—', 'LENDER LOAN #': h.loan_number || '—',
+          _raw_amount: parseFloat(h.loan_amount) || 0, _raw_rate: parseFloat(h.interest_rate) || 0 });
+      }
+    });
+  } else if (anaQbType === 'clients') {
+    anaCrmAll.forEach(function(c) {
+      data.push({ 'NAME': (c.first_name || '') + ' ' + (c.last_name || ''), 'PHONE': c.phone || '—', 'EMAIL': c.email || '—',
+        'TYPE': (c.type || '—').toUpperCase(), 'SOURCE': c.source || '—', 'BIRTHDAY': c.birthday || '—',
+        'ADDRESS': c.address || '—', 'CREATED': c.created_at ? c.created_at.split('T')[0] : '—' });
+    });
+  } else if (anaQbType === 'pipeline') {
+    pipelineLoans.forEach(function(l) {
+      var borrowers = pipelineBorrowers.filter(function(b) { return b.ae_id === l.ae_id; });
+      var names = borrowers.map(function(b) { return b.name || '—'; });
+      data.push({ 'BORROWER': names.join(' & ') || '—', 'STAGE': (l.pipeline_stage || '').toUpperCase(), 'LOAN AMOUNT': l.loan_amount ? '$' + Math.round(parseFloat(l.loan_amount)).toLocaleString() : '—',
+        'RATE': l.interest_rate ? parseFloat(l.interest_rate).toFixed(3) + '%' : '—', 'LOAN TYPE': l.transaction_type || '—',
+        'PROGRAM': l.loan_program || '—', 'PROPERTY': (l.subject_street || '') + ' ' + (l.subject_city || ''), 'DAYS IN STAGE': '—', 'AE ID': l.ae_id || '—',
+        _raw_amount: parseFloat(l.loan_amount) || 0 });
+    });
+  } else if (anaQbType === 'opportunities') {
+    var mktRate = 6.375;
+    anaLoanHistory.filter(function(h) { return h.outcome === 'funded' && h.interest_rate && parseFloat(h.interest_rate) > mktRate; }).forEach(function(h) {
+      var rate = parseFloat(h.interest_rate);
+      var spread = rate - mktRate;
+      var save = Math.round((spread / 100) * (parseFloat(h.loan_amount) || 0) / 12);
+      var names = [];
+      if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
+      data.push({ 'BORROWER': names.join(' & ') || '—', 'FUNDED RATE': rate.toFixed(3) + '%', 'MARKET RATE': mktRate.toFixed(3) + '%',
+        'SPREAD': '+' + spread.toFixed(3) + '%', 'MONTHLY SAVINGS': '$' + save, 'LOAN AMOUNT': '$' + Math.round(parseFloat(h.loan_amount) || 0).toLocaleString(),
+        'FUNDED DATE': h.outcome_date || '—', 'PRIORITY': spread >= 0.75 ? 'HOT' : spread >= 0.5 ? 'WARM' : 'WATCH',
+        _raw_amount: parseFloat(h.loan_amount) || 0 });
+    });
+  }
+
+  // Apply filters
+  document.querySelectorAll('#anaQbFilters .qb-filter-row').forEach(function(row) {
+    var selects = row.querySelectorAll('select');
+    var valInput = row.querySelector('input');
+    if (selects.length < 2 || !valInput) return;
+    var field = selects[0].value;
+    var op = selects[1].value;
+    var val = valInput.value.replace(/[$,%]/g, '').trim();
+    if (!val) return;
+    data = data.filter(function(d) {
+      var cellVal = (d[field] || '').toString().replace(/[$,%]/g, '');
+      if (op === 'is') return cellVal.toUpperCase() === val.toUpperCase();
+      if (op === '≥') return parseFloat(cellVal) >= parseFloat(val);
+      if (op === '≤') return parseFloat(cellVal) <= parseFloat(val);
+      if (op === 'contains') return cellVal.toUpperCase().indexOf(val.toUpperCase()) >= 0;
+      return true;
+    });
+  });
+
+  // Render table
+  var panel = document.getElementById('anaResultsPanel');
+  panel.style.display = 'block';
+  document.getElementById('anaResultsStatus').textContent = data.length + ' RECORDS';
+  document.getElementById('anaResultCount').textContent = data.length + ' RECORDS FOUND';
+
+  var th = '<table class="mc-table"><thead><tr>';
+  selectedFields.forEach(function(f) { th += '<th>' + f + '</th>'; });
+  th += '</tr></thead><tbody>';
+
+  data.forEach(function(row) {
+    th += '<tr>';
+    selectedFields.forEach(function(f) {
+      var v = row[f] || '—';
+      var cls = '';
+      if (f === 'BORROWER' || f === 'NAME') cls = 'cell-name';
+      else if (f.indexOf('AMOUNT') >= 0 || f.indexOf('SAVINGS') >= 0) cls = 'cell-money';
+      else if (f.indexOf('RATE') >= 0 || f === 'SPREAD') cls = 'cell-rate';
+      else if (f === 'STATUS') { var lv = v.toLowerCase(); cls = ''; v = '<span class="cell-tag ' + (lv === 'funded' ? 'funded' : lv === 'denied' ? 'denied' : 'ct-active') + '">' + v.toUpperCase() + '</span>'; }
+      else if (f === 'LOAN TYPE') { var lt = v.toLowerCase(); v = '<span class="cell-tag ' + (lt.indexOf('refi') >= 0 ? 'refi' : 'purchase') + '">' + v.toUpperCase() + '</span>'; cls = ''; }
+      else if (f === 'PRIORITY') { var pc = v === 'HOT' ? '#ef4444' : v === 'WARM' ? '#f59e0b' : '#3b82f6'; v = '<span class="cell-tag" style="background:' + pc + '15;color:' + pc + ';">' + v + '</span>'; cls = ''; }
+      th += '<td class="' + cls + '">' + v + '</td>';
+    });
+    th += '</tr>';
+  });
+  th += '</tbody></table>';
+  document.getElementById('anaResultsTable').innerHTML = th;
+
+  // Footer summary
+  var totalAmt = 0; var rateSum = 0; var rateCount = 0;
+  data.forEach(function(d) { if (d._raw_amount) totalAmt += d._raw_amount; if (d._raw_rate) { rateSum += d._raw_rate; rateCount++; } });
+  var foot = '';
+  if (totalAmt > 0) foot += 'TOTAL VOLUME: <span style="color:#22c55e;font-weight:700;">$' + Math.round(totalAmt).toLocaleString() + '</span>';
+  if (rateCount > 0) foot += (foot ? ' · ' : '') + 'AVG RATE: <span style="color:#3b82f6;font-weight:700;">' + (rateSum / rateCount).toFixed(3) + '%</span>';
+  document.getElementById('anaResultsFooter').innerHTML = foot;
+}
+
+function anaRunQuickReport(type) {
+  // Switch to reports tab
+  anaShowTab('reports', document.querySelectorAll('.ana-tab')[1]);
+  // Select type
+  var typeMap = { production: 'production', refi: 'opportunities', highrate: 'opportunities', sources: 'clients' };
+  var t = typeMap[type] || 'production';
+  document.querySelectorAll('#anaQbTypes .qb-type').forEach(function(el) {
+    el.classList.remove('active');
+    if (el.getAttribute('data-type') === t) { el.classList.add('active'); anaQbType = t; }
+  });
+  anaInitFields();
+  // Set all fields active
+  document.querySelectorAll('#anaQbFields .qb-chip').forEach(function(c) { c.classList.add('active'); });
+  // Set date to YTD
+  anaSetDatePreset('ytd', document.querySelectorAll('.qb-preset')[1]);
+  // Run
+  setTimeout(anaRunReport, 100);
+}
+
+function anaExportCSV() {
+  var table = document.querySelector('#anaResultsTable table');
+  if (!table) return;
+  var csv = '';
+  table.querySelectorAll('tr').forEach(function(tr) {
+    var row = [];
+    tr.querySelectorAll('th,td').forEach(function(cell) { row.push('"' + cell.textContent.replace(/"/g, '""') + '"'); });
+    csv += row.join(',') + '\n';
+  });
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'agent-edge-report.csv';
+  a.click();
 }
 
 // ===== PIPELINE =====
