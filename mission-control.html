@@ -150,7 +150,7 @@ body {
 .view-panel.active { display: flex; }
 
 /* ===== STAT CARDS ===== */
-.dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+.dash-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat-card {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; padding: 16px 18px; position: relative; overflow: hidden;
@@ -466,7 +466,7 @@ body {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; padding: 16px;
 }
-.chart-title { font-size: 12px; font-weight: 700; margin-bottom: 14px; }
+.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
 .chart-placeholder {
   height: 180px; border-radius: 6px; position: relative; overflow: hidden;
   background: repeating-linear-gradient(90deg, rgba(59,130,246,0.06) 0px, rgba(59,130,246,0.06) 18px, transparent 18px, transparent 22px);
@@ -542,7 +542,7 @@ body {
   .sidebar { position: fixed; left: -250px; top: 0; bottom: 0; z-index: 100; transition: left 0.25s; }
   .sidebar.open { left: 0; }
   .sidebar-toggle { display: block; }
-  .dash-stats { grid-template-columns: repeat(2, 1fr); }
+  .dash-stats { grid-template-columns: repeat(3, 1fr); }
   .analytics-grid { grid-template-columns: 1fr; }
   .crm-layout { flex-direction: column; }
   .crm-list-panel { width: 100%; max-height: 40vh; }
@@ -851,14 +851,12 @@ body {
     </div>
     <div class="analytics-grid">
       <div class="chart-card">
-        <div class="chart-title">Pipeline Activity</div>
-        <div class="chart-placeholder"></div>
+        <div class="chart-title">Pipeline by Stage</div>
+        <canvas id="dashPipelineChart" height="200"></canvas>
       </div>
       <div class="chart-card">
         <div class="chart-title">Loan Types</div>
-        <div style="display:flex;align-items:center;justify-content:center;height:180px;">
-          <div class="donut-chart"></div>
-        </div>
+        <canvas id="dashLoanTypeChart" height="200"></canvas>
       </div>
     </div>
   </div>
@@ -1796,6 +1794,183 @@ function updateDashboard() {
     }
   })
   .catch(function() {});
+
+  // Render charts
+  renderPipelineChart();
+  renderLoanTypeChart();
+}
+
+function renderPipelineChart() {
+  var canvas = document.getElementById('dashPipelineChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 200 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '200px';
+  ctx.scale(dpr, dpr);
+  var W = rect.width;
+  var H = 200;
+
+  ctx.clearRect(0, 0, W, H);
+
+  var stageColors = {
+    warm: '#3b82f6', active: '#0ea5e9', credit: '#f59e0b',
+    preapproval: '#8b5cf6', preapproved: '#22c55e', ratewatch: '#06b6d4', underwriting: '#ec4899'
+  };
+
+  // Count loans per stage
+  var counts = {};
+  pipelineColumns.forEach(function(col) { counts[col.id] = 0; });
+  pipelineLoans.forEach(function(loan) {
+    if (counts[loan.pipeline_stage] !== undefined) counts[loan.pipeline_stage]++;
+  });
+
+  var maxCount = Math.max.apply(null, pipelineColumns.map(function(c) { return counts[c.id]; }));
+  if (maxCount === 0) maxCount = 1;
+
+  var barH = 22;
+  var gap = 8;
+  var labelW = 130;
+  var rightPad = 40;
+  var startY = 10;
+  var barAreaW = W - labelW - rightPad;
+
+  pipelineColumns.forEach(function(col, i) {
+    var y = startY + i * (barH + gap);
+    var count = counts[col.id];
+    var barW = (count / maxCount) * barAreaW;
+    if (count > 0 && barW < 8) barW = 8;
+    var color = stageColors[col.id] || '#3b82f6';
+
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(col.title, labelW - 10, y + barH / 2);
+
+    // Bar background
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath();
+    ctx.roundRect(labelW, y, barAreaW, barH, 4);
+    ctx.fill();
+
+    // Bar
+    if (count > 0) {
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath();
+      ctx.roundRect(labelW, y, barW, barH, 4);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    // Count
+    ctx.fillStyle = count > 0 ? '#fff' : 'rgba(255,255,255,0.25)';
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(count, labelW + barW + 8, y + barH / 2);
+  });
+}
+
+function renderLoanTypeChart() {
+  var canvas = document.getElementById('dashLoanTypeChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = 200 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '200px';
+  ctx.scale(dpr, dpr);
+  var W = rect.width;
+  var H = 200;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Count loan types from active pipeline
+  var typeCounts = {};
+  pipelineLoans.forEach(function(loan) {
+    var label = loan.transaction_type || 'Unknown';
+    if (loan.loan_program) label += ' / ' + loan.loan_program;
+    if (!label || label === 'Unknown') label = 'Not Set';
+    typeCounts[label] = (typeCounts[label] || 0) + 1;
+  });
+
+  var types = Object.keys(typeCounts);
+  var total = pipelineLoans.length;
+
+  if (total === 0) {
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No active loans', W / 2, H / 2);
+    return;
+  }
+
+  var colors = ['#3b82f6', '#22c55e', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444', '#14b8a6'];
+  var cx = W * 0.32;
+  var cy = H / 2;
+  var radius = 70;
+  var innerRadius = 42;
+
+  // Draw donut
+  var startAngle = -Math.PI / 2;
+  types.forEach(function(type, i) {
+    var sliceAngle = (typeCounts[type] / total) * Math.PI * 2;
+    var endAngle = startAngle + sliceAngle;
+    var color = colors[i % colors.length];
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, startAngle, endAngle);
+    ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.85;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    startAngle = endAngle;
+  });
+
+  // Center text
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, cx, cy - 6);
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText('LOANS', cx, cy + 12);
+
+  // Legend
+  var legendX = W * 0.62;
+  var legendY = 30;
+  types.forEach(function(type, i) {
+    var color = colors[i % colors.length];
+    var y = legendY + i * 26;
+
+    // Color dot
+    ctx.beginPath();
+    ctx.arc(legendX, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(type, legendX + 14, y + 1);
+
+    // Count
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillText('(' + typeCounts[type] + ')', legendX + 14 + ctx.measureText(type).width + 6, y + 1);
+  });
 }
 
 // ===== PIPELINE =====
