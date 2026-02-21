@@ -152,17 +152,19 @@ body {
 /* ===== STAT CARDS ===== */
 .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat-card {
-  background: var(--bg-card); border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(10,22,40,0.95) 0%, rgba(8,16,32,0.98) 100%);
+  border: 1px solid rgba(59,130,246,0.15);
   border-radius: 10px; padding: 20px 22px; position: relative; overflow: hidden;
+  box-shadow: 0 0 15px rgba(59,130,246,0.04);
 }
 .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.stat-card.blue::after { background: linear-gradient(90deg, var(--accent-blue), transparent); }
-.stat-card.green::after { background: linear-gradient(90deg, var(--accent-green), transparent); }
+.stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, transparent); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
+.stat-card.green::after { background: linear-gradient(90deg, #22c55e, transparent); box-shadow: 0 0 12px rgba(34,197,94,0.3); }
 .stat-card.purple::after { background: linear-gradient(90deg, var(--accent-purple), transparent); }
-.stat-card.orange::after { background: linear-gradient(90deg, var(--accent-orange), transparent); }
-.stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
-.stat-value { font-size: 34px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -1px; }
-.stat-change { font-size: 13px; color: var(--accent-green); }
+.stat-card.orange::after { background: linear-gradient(90deg, #f59e0b, transparent); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
+.stat-label { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; font-family: 'Courier New', monospace; }
+.stat-value { font-size: 34px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+.stat-change { font-size: 13px; color: var(--accent-green); font-family: 'Courier New', monospace; }
 .stat-change.down { color: var(--accent-red); }
 
 /* ===== PIPELINE BOARD ===== */
@@ -466,7 +468,42 @@ body {
   background: var(--bg-card); border: 1px solid var(--border);
   border-radius: 10px; padding: 16px;
 }
-.chart-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.chart-title { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Courier New', monospace; }
+
+/* Mission Control Panel Styles */
+.mc-panel {
+  background: linear-gradient(180deg, rgba(10,22,40,0.95) 0%, rgba(8,16,32,0.98) 100%);
+  border: 1px solid rgba(59,130,246,0.2);
+  box-shadow: 0 0 20px rgba(59,130,246,0.05), inset 0 1px 0 rgba(59,130,246,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.mc-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.015) 2px, rgba(59,130,246,0.015) 4px);
+  pointer-events: none; z-index: 1;
+}
+.mc-panel canvas { position: relative; z-index: 2; }
+.mc-panel-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 1px solid rgba(59,130,246,0.1);
+  position: relative; z-index: 2;
+}
+.mc-panel-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #3b82f6; box-shadow: 0 0 8px #3b82f6;
+  animation: mc-blink 2s ease-in-out infinite;
+}
+.mc-panel-dot.green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.mc-panel-status {
+  margin-left: auto; font-size: 11px; font-family: 'Courier New', monospace;
+  font-weight: 700; letter-spacing: 1px; color: #22c55e;
+  text-shadow: 0 0 6px rgba(34,197,94,0.4);
+}
+@keyframes mc-blink {
+  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+}
 .chart-placeholder {
   height: 180px; border-radius: 6px; position: relative; overflow: hidden;
   background: repeating-linear-gradient(90deg, rgba(59,130,246,0.06) 0px, rgba(59,130,246,0.06) 18px, transparent 18px, transparent 22px);
@@ -840,13 +877,21 @@ body {
       </div>
     </div>
     <div class="analytics-grid">
-      <div class="chart-card">
-        <div class="chart-title">Pipeline Overview</div>
-        <canvas id="dashPipelineChart" height="340"></canvas>
+      <div class="chart-card mc-panel">
+        <div class="mc-panel-header">
+          <div class="mc-panel-dot"></div>
+          <div class="chart-title">PIPELINE OVERVIEW</div>
+          <div class="mc-panel-status" id="mcPipelineStatus">NOMINAL</div>
+        </div>
+        <canvas id="dashPipelineChart" height="360"></canvas>
       </div>
-      <div class="chart-card">
-        <div class="chart-title">Loan Types</div>
-        <canvas id="dashLoanTypeChart" height="340"></canvas>
+      <div class="chart-card mc-panel">
+        <div class="mc-panel-header">
+          <div class="mc-panel-dot green"></div>
+          <div class="chart-title">LOAN TYPES</div>
+          <div class="mc-panel-status" id="mcLoanStatus">TRACKING</div>
+        </div>
+        <canvas id="dashLoanTypeChart" height="360"></canvas>
       </div>
     </div>
   </div>
@@ -1806,8 +1851,8 @@ function renderPipelineChart() {
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var rect = canvas.parentElement.getBoundingClientRect();
-  var W = rect.width;
-  var H = 340;
+  var W = rect.width - 32;
+  var H = 360;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -1815,20 +1860,19 @@ function renderPipelineChart() {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
 
-  // Stage config — pipeline stages + decisioned
   var rows = [
-    { id: 'warm', label: 'Warm Leads', color: '#818cf8' },
-    { id: 'active', label: 'Active Conversations', color: '#f472b6' },
-    { id: 'credit', label: 'Credit Repair', color: '#fb923c' },
-    { id: 'preapproval', label: 'Started Pre-Approval', color: '#f87171' },
-    { id: 'preapproved', label: 'Approved', color: '#fbbf24' },
-    { id: 'ratewatch', label: 'Rate Watch', color: '#34d399' },
-    { id: 'underwriting', label: 'Underwriting', color: '#38bdf8' },
-    { id: '_sep', label: '', color: '' },
-    { id: 'funded', label: 'Funded (This Month)', color: '#22c55e' },
-    { id: 'denied', label: 'Denied', color: '#ef4444' },
-    { id: 'suspended', label: 'Suspended', color: '#f59e0b' },
-    { id: 'withdrawn', label: 'Withdrawn', color: '#a78bfa' }
+    { id: 'warm', label: 'WARM LEADS', color: '#818cf8', glow: 'rgba(129,140,248,0.4)' },
+    { id: 'active', label: 'ACTIVE CONVOS', color: '#f472b6', glow: 'rgba(244,114,182,0.4)' },
+    { id: 'credit', label: 'CREDIT REPAIR', color: '#fb923c', glow: 'rgba(251,146,60,0.4)' },
+    { id: 'preapproval', label: 'PRE-APPROVAL', color: '#f87171', glow: 'rgba(248,113,113,0.4)' },
+    { id: 'preapproved', label: 'APPROVED', color: '#fbbf24', glow: 'rgba(251,191,36,0.4)' },
+    { id: 'ratewatch', label: 'RATE WATCH', color: '#34d399', glow: 'rgba(52,211,153,0.4)' },
+    { id: 'underwriting', label: 'UNDERWRITING', color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
+    { id: '_sep' },
+    { id: 'funded', label: 'FUNDED', color: '#22c55e', glow: 'rgba(34,197,94,0.5)' },
+    { id: 'denied', label: 'DENIED', color: '#ef4444', glow: 'rgba(239,68,68,0.4)' },
+    { id: 'suspended', label: 'SUSPENDED', color: '#f59e0b', glow: 'rgba(245,158,11,0.4)' },
+    { id: 'withdrawn', label: 'WITHDRAWN', color: '#a78bfa', glow: 'rgba(167,139,250,0.4)' }
   ];
 
   // Count pipeline stages
@@ -1837,103 +1881,121 @@ function renderPipelineChart() {
   pipelineLoans.forEach(function(loan) {
     if (counts[loan.pipeline_stage] !== undefined) counts[loan.pipeline_stage]++;
   });
-
-  // Decisioned counts come from the dashboard fetch — store them globally
   counts.funded = window._dashDecisionCounts ? window._dashDecisionCounts.funded || 0 : 0;
   counts.denied = window._dashDecisionCounts ? window._dashDecisionCounts.denied || 0 : 0;
   counts.suspended = window._dashDecisionCounts ? window._dashDecisionCounts.suspended || 0 : 0;
   counts.withdrawn = window._dashDecisionCounts ? window._dashDecisionCounts.withdrawn || 0 : 0;
 
+  // Fixed scale — max is always at least 10 so small numbers look small
   var allCounts = rows.filter(function(r) { return r.id !== '_sep'; }).map(function(r) { return counts[r.id] || 0; });
-  var maxCount = Math.max.apply(null, allCounts);
-  if (maxCount === 0) maxCount = 1;
+  var dataMax = Math.max.apply(null, allCounts);
+  var scaleMax = Math.max(10, Math.ceil(dataMax * 1.3));
 
-  // Total active
-  var totalActive = pipelineLoans.length;
-
-  var barH = 24;
-  var gap = 4;
-  var labelW = 180;
-  var rightPad = 50;
-  var barAreaW = W - labelW - rightPad;
-  var y = 8;
+  var barH = 26;
+  var gap = 3;
+  var labelW = 150;
+  var countW = 40;
+  var barAreaW = W - labelW - countW - 10;
+  var y = 4;
 
   rows.forEach(function(row) {
     if (row.id === '_sep') {
-      // Separator line
-      y += 6;
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      y += 4;
+      ctx.strokeStyle = 'rgba(59,130,246,0.15)';
       ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
       ctx.beginPath();
-      ctx.moveTo(20, y);
-      ctx.lineTo(W - 20, y);
+      ctx.moveTo(10, y);
+      ctx.lineTo(W - 10, y);
       ctx.stroke();
-      y += 10;
+      ctx.setLineDash([]);
+      y += 8;
       return;
     }
 
     var count = counts[row.id] || 0;
-    var barW = maxCount > 0 ? (count / maxCount) * barAreaW : 0;
-    if (count > 0 && barW < 14) barW = 14;
+    var barW = (count / scaleMax) * barAreaW;
+    if (count > 0 && barW < 6) barW = 6;
 
-    // Row background stripe
-    ctx.fillStyle = 'rgba(255,255,255,0.015)';
-    ctx.fillRect(0, y - 2, W, barH + 4);
+    // Alternating row bg
+    ctx.fillStyle = 'rgba(255,255,255,0.012)';
+    ctx.fillRect(0, y - 1, W, barH + 2);
 
-    // Label
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    // Label — monospace, uppercase
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '600 12px "Courier New", monospace';
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
-    ctx.fillText(row.label, labelW - 14, y + barH / 2);
+    ctx.fillText(row.label, labelW - 16, y + barH / 2);
 
-    // Bar track
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    // Bar track with subtle grid lines
+    ctx.fillStyle = 'rgba(255,255,255,0.025)';
     ctx.beginPath();
-    ctx.roundRect(labelW, y, barAreaW, barH, barH / 2);
+    ctx.roundRect(labelW, y + 2, barAreaW, barH - 4, (barH - 4) / 2);
     ctx.fill();
 
-    // Pill bar
+    // Pill bar with gradient + glow
     if (count > 0) {
-      // Gradient fill
-      var grad = ctx.createLinearGradient(labelW, y, labelW + barW, y);
-      grad.addColorStop(0, row.color + 'cc');
+      var grad = ctx.createLinearGradient(labelW, 0, labelW + barW, 0);
+      grad.addColorStop(0, row.color + '40');
+      grad.addColorStop(0.3, row.color + 'cc');
       grad.addColorStop(1, row.color);
+      
+      // Glow
+      ctx.shadowColor = row.glow;
+      ctx.shadowBlur = 12;
       ctx.fillStyle = grad;
       ctx.beginPath();
-      ctx.roundRect(labelW, y, barW, barH, barH / 2);
+      ctx.roundRect(labelW, y + 2, barW, barH - 4, (barH - 4) / 2);
       ctx.fill();
-
-      // Subtle glow
-      ctx.shadowColor = row.color;
-      ctx.shadowBlur = 8;
-      ctx.fillStyle = 'transparent';
+      
+      // Inner highlight
+      ctx.shadowBlur = 0;
+      var hiGrad = ctx.createLinearGradient(0, y + 2, 0, y + barH - 4);
+      hiGrad.addColorStop(0, 'rgba(255,255,255,0.2)');
+      hiGrad.addColorStop(0.5, 'rgba(255,255,255,0)');
+      ctx.fillStyle = hiGrad;
       ctx.beginPath();
-      ctx.roundRect(labelW, y, barW, barH, barH / 2);
+      ctx.roundRect(labelW, y + 2, barW, (barH - 4) / 2, { upperLeft: (barH-4)/2, upperRight: (barH-4)/2, lowerLeft: 0, lowerRight: 0 });
       ctx.fill();
       ctx.shadowBlur = 0;
     }
 
-    // Count label
-    ctx.fillStyle = count > 0 ? '#fff' : 'rgba(255,255,255,0.2)';
-    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
+    // Count — glowing number
+    ctx.shadowBlur = 0;
+    if (count > 0) {
+      ctx.fillStyle = row.color;
+      ctx.shadowColor = row.glow;
+      ctx.shadowBlur = 6;
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    }
+    ctx.font = 'bold 14px "Courier New", monospace';
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(count, labelW + barW + 10, y + barH / 2);
+    ctx.fillText(count, labelW + barAreaW + 10, y + barH / 2);
+    ctx.shadowBlur = 0;
 
     y += barH + gap;
   });
 
-  // Total active pipeline label at bottom
-  y += 8;
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
-  ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+  // Total active at bottom
+  y += 6;
+  var totalActive = pipelineLoans.length;
+  ctx.fillStyle = 'rgba(59,130,246,0.3)';
+  ctx.font = '600 12px "Courier New", monospace';
   ctx.textAlign = 'right';
-  ctx.fillText('Active Pipeline Total:', labelW - 14, y + 6);
+  ctx.fillText('ACTIVE PIPELINE:', labelW - 16, y + 6);
   ctx.fillStyle = '#3b82f6';
-  ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.shadowColor = 'rgba(59,130,246,0.5)';
+  ctx.shadowBlur = 8;
+  ctx.font = 'bold 18px "Courier New", monospace';
   ctx.textAlign = 'left';
-  ctx.fillText(totalActive + ' loan' + (totalActive !== 1 ? 's' : ''), labelW + 4, y + 6);
+  ctx.fillText(totalActive + ' LOANS', labelW + 4, y + 6);
+  ctx.shadowBlur = 0;
+
+  // Update status
+  var statusEl = document.getElementById('mcPipelineStatus');
+  if (statusEl) statusEl.textContent = totalActive > 0 ? totalActive + ' ACTIVE' : 'STANDBY';
 }
 
 function renderLoanTypeChart() {
@@ -1942,8 +2004,8 @@ function renderLoanTypeChart() {
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var rect = canvas.parentElement.getBoundingClientRect();
-  var W = rect.width;
-  var H = 340;
+  var W = rect.width - 32;
+  var H = 360;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
   canvas.style.width = W + 'px';
@@ -1951,7 +2013,7 @@ function renderLoanTypeChart() {
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
 
-  // Count loan types from active pipeline
+  // Count loan types
   var typeCounts = {};
   pipelineLoans.forEach(function(loan) {
     var label = '';
@@ -1966,37 +2028,51 @@ function renderLoanTypeChart() {
   var total = pipelineLoans.length;
 
   if (total === 0) {
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = 'rgba(59,130,246,0.2)';
+    ctx.font = '600 13px "Courier New", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('No active loans', W / 2, H / 2);
+    ctx.fillText('AWAITING DATA', W / 2, H / 2 - 8);
+    ctx.fillStyle = 'rgba(59,130,246,0.1)';
+    ctx.font = '11px "Courier New", monospace';
+    ctx.fillText('No active loans in pipeline', W / 2, H / 2 + 12);
+    // Update status
+    var statusEl = document.getElementById('mcLoanStatus');
+    if (statusEl) { statusEl.textContent = 'STANDBY'; statusEl.style.color = 'rgba(255,255,255,0.3)'; }
     return;
   }
 
-  var colors = ['#818cf8', '#f472b6', '#34d399', '#fbbf24', '#38bdf8', '#fb923c', '#a78bfa', '#f87171'];
-  var cx = W * 0.35;
-  var cy = H * 0.42;
-  var radius = Math.min(W * 0.28, 100);
-  var innerRadius = radius * 0.58;
+  var colors = [
+    { fill: '#818cf8', glow: 'rgba(129,140,248,0.4)' },
+    { fill: '#f472b6', glow: 'rgba(244,114,182,0.4)' },
+    { fill: '#34d399', glow: 'rgba(52,211,153,0.4)' },
+    { fill: '#fbbf24', glow: 'rgba(251,191,36,0.4)' },
+    { fill: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
+    { fill: '#fb923c', glow: 'rgba(251,146,60,0.4)' },
+    { fill: '#a78bfa', glow: 'rgba(167,139,250,0.4)' },
+    { fill: '#f87171', glow: 'rgba(248,113,113,0.4)' }
+  ];
 
-  // Draw donut slices
+  var cx = W / 2;
+  var cy = H * 0.35;
+  var radius = Math.min(W * 0.3, 85);
+  var innerRadius = radius * 0.55;
+
+  // Draw donut with glow
   var startAngle = -Math.PI / 2;
   types.forEach(function(type, i) {
     var sliceAngle = (typeCounts[type] / total) * Math.PI * 2;
     var endAngle = startAngle + sliceAngle;
-    var color = colors[i % colors.length];
+    var c = colors[i % colors.length];
 
+    // Glow layer
+    ctx.shadowColor = c.glow;
+    ctx.shadowBlur = 15;
     ctx.beginPath();
     ctx.arc(cx, cy, radius, startAngle, endAngle);
     ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
     ctx.closePath();
-    ctx.fillStyle = color;
+    ctx.fillStyle = c.fill;
     ctx.globalAlpha = 0.85;
-    ctx.fill();
-
-    // Glow
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 10;
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;
@@ -2004,44 +2080,71 @@ function renderLoanTypeChart() {
     startAngle = endAngle;
   });
 
+  // Center ring glow
+  ctx.beginPath();
+  ctx.arc(cx, cy, innerRadius + 1, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(59,130,246,0.15)';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
   // Center text
   ctx.fillStyle = '#fff';
-  ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.shadowColor = 'rgba(255,255,255,0.2)';
+  ctx.shadowBlur = 10;
+  ctx.font = 'bold 26px "Courier New", monospace';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(total, cx, cy - 8);
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillText('ACTIVE LOANS', cx, cy + 14);
+  ctx.fillText(total, cx, cy - 6);
+  ctx.shadowBlur = 0;
+  ctx.fillStyle = 'rgba(255,255,255,0.35)';
+  ctx.font = '600 9px "Courier New", monospace';
+  ctx.letterSpacing = '2px';
+  ctx.fillText('ACTIVE', cx, cy + 12);
 
-  // Legend — below the donut
-  var legendY = cy + radius + 30;
-  var legendX = 20;
+  // Legend — below donut, wrapping safely within canvas
+  var legendY = cy + radius + 28;
+  var legendX = 16;
+  var maxLabelW = W - 32;
+
   types.forEach(function(type, i) {
-    var color = colors[i % colors.length];
+    if (legendY > H - 10) return; // don't overflow
+    var c = colors[i % colors.length];
     var pct = Math.round((typeCounts[type] / total) * 100);
 
-    // Color dot
+    // Glow dot
+    ctx.shadowColor = c.glow;
+    ctx.shadowBlur = 6;
     ctx.beginPath();
-    ctx.arc(legendX + 6, legendY, 6, 0, Math.PI * 2);
-    ctx.fillStyle = color;
+    ctx.arc(legendX + 6, legendY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = c.fill;
     ctx.fill();
+    ctx.shadowBlur = 0;
 
-    // Label
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    // Label — truncate if needed
+    var labelText = type;
+    ctx.font = '12px "Courier New", monospace';
+    while (ctx.measureText(labelText + '  ' + typeCounts[type] + ' (' + pct + '%)').width > maxLabelW - 30 && labelText.length > 10) {
+      labelText = labelText.slice(0, -1);
+    }
+    if (labelText !== type) labelText += '…';
+
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(type, legendX + 18, legendY);
+    ctx.fillText(labelText, legendX + 18, legendY);
 
-    // Count + percent
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
-    var labelWidth = ctx.measureText(type).width;
-    ctx.fillText(typeCounts[type] + ' (' + pct + '%)', legendX + 18 + labelWidth + 8, legendY);
+    // Count
+    ctx.fillStyle = c.fill;
+    ctx.font = 'bold 12px "Courier New", monospace';
+    var lw = ctx.measureText(labelText).width;
+    ctx.fillText(typeCounts[type] + ' (' + pct + '%)', legendX + 18 + lw + 8, legendY);
 
-    legendY += 24;
+    legendY += 22;
   });
+
+  // Update status
+  var statusEl = document.getElementById('mcLoanStatus');
+  if (statusEl) { statusEl.textContent = types.length + ' TYPES'; statusEl.style.color = '#22c55e'; }
 }
 
 // ===== PIPELINE =====
