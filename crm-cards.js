@@ -763,6 +763,7 @@ function renderAssetTabs(){
   var tc=document.getElementById('assetsTabsContainer');
   var pc=document.getElementById('assetsPanelsContainer');
   if(!tc||!pc)return;
+
   var th='<div class="emp-tabs-row">';
   borrowerAssets.forEach(function(a,i){
     th+='<button class="emp-tab'+(activeAssetTab===i?' active':'')+'" onclick="switchAssetTab('+i+')">'+(a.institution||'Account '+(i+1))+'</button>';
@@ -772,54 +773,79 @@ function renderAssetTabs(){
 
   var ph='';
   borrowerAssets.forEach(function(a,i){
-    ph+='<div class="emp-panel'+(activeAssetTab===i?' active':'')+'" id="assetPanel_'+i+'">';
-    ph+=bldSec('Account Details',[
-      {id:'asset_institution_'+i,l:'Institution Name',t:'text',v:a.institution,ph:'Chase, Wells Fargo, etc.'},
-      {id:'asset_type_'+i,l:'Account Type',t:'select',v:a.account_type,opts:[
-        {value:'checking',label:'Checking'},{value:'savings',label:'Savings'},
-        {value:'money_market',label:'Money Market'},{value:'cd',label:'CD'},
-        {value:'ira',label:'IRA'},{value:'401k',label:'401(k)'},
-        {value:'brokerage',label:'Brokerage'},{value:'trust',label:'Trust'},
-        {value:'gift',label:'Gift Funds'},{value:'other',label:'Other'}
-      ]},
-      {id:'asset_balance_'+i,l:'Balance',t:'text',v:a.balance?formatMoney(a.balance):'',ph:'$0.00'}
-    ]);
-    if(borrowerAssets.length>1){
-      ph+='<button class="emp-tab-add" style="background:rgba(239,68,68,0.08);color:#ef4444;border-color:rgba(239,68,68,0.2);margin-top:8px;" onclick="removeAsset('+i+')"><i class="fas fa-trash-alt"></i> Remove Account</button>';
-    }
-    ph+='</div>';
+    ph+='<div class="emp-panel'+(activeAssetTab===i?' active':'')+'" id="assetPanel_'+i+'">'+buildAssetPanel(a,i)+'</div>';
   });
   pc.innerHTML=ph;
 
-  // Wire change tracking
-  borrowerAssets.forEach(function(a,i){
-    var inst=document.getElementById('cf_asset_institution_'+i);
-    var typ=document.getElementById('cf_asset_type_'+i);
-    var bal=document.getElementById('cf_asset_balance_'+i);
-    if(inst){
-      inst.addEventListener('input',function(){ a.institution=this.value; crmDirty=true; });
-      inst.addEventListener('blur',function(){ renderAssetTabs(); });
-    }
-    if(typ)typ.addEventListener('change',function(){ a.account_type=this.value; crmDirty=true; });
-    if(bal){
-      bal.addEventListener('input',function(){
-        // Track raw value as user types
-        var num=parseFloat(this.value.replace(/[^0-9.]/g,''))||0;
-        a.balance=num;
-        crmDirty=true;
-      });
-      bal.addEventListener('focus',function(){
-        var raw=this.value.replace(/[^0-9.]/g,'');
-        this.value=raw;
-      });
-      bal.addEventListener('blur',function(){
-        var num=parseFloat(this.value.replace(/[^0-9.]/g,''))||0;
-        a.balance=num;
-        this.value=num?formatMoney(num):'';
-      });
-    }
+  // Wire tracking — same pattern as employers and REOs
+  document.querySelectorAll('.asset-tracked').forEach(function(el){
+    var h=function(){ syncAssetField(el); crmDirty=true; };
+    el.addEventListener('input',h); el.addEventListener('change',h);
   });
 }
+
+function buildAssetPanel(asset,idx){
+  var p='asset_'+idx+'_';
+  var h='';
+  if(borrowerAssets.length>1){
+    h+='<button class="emp-remove-btn" onclick="removeAsset('+idx+')">Remove</button>';
+  }
+  h+='<div class="card-section"><div class="card-section-title">Account Details</div><div class="card-fields">';
+  h+=assetField(p+'institution','Institution Name','text',asset.institution,idx,'institution','Chase, Wells Fargo, etc.');
+  // Account type select
+  h+='<div class="card-field"><label>Account Type</label><select id="'+p+'type" class="asset-tracked" data-asset="'+idx+'" data-key="account_type">';
+  [{v:'checking',l:'Checking'},{v:'savings',l:'Savings'},{v:'money_market',l:'Money Market'},{v:'cd',l:'CD'},{v:'ira',l:'IRA'},{v:'401k',l:'401(k)'},{v:'brokerage',l:'Brokerage'},{v:'trust',l:'Trust'},{v:'gift',l:'Gift Funds'},{v:'other',l:'Other'}].forEach(function(o){
+    h+='<option value="'+o.v+'"'+(asset.account_type===o.v?' selected':'')+'>'+o.l+'</option>';
+  });
+  h+='</select></div>';
+  // Balance field — currency formatting
+  var balDisplay=asset.balance?formatMoney(asset.balance):'';
+  h+='<div class="card-field"><label>Balance</label><input type="text" id="'+p+'balance" class="asset-tracked" data-asset="'+idx+'" data-key="balance" value="'+balDisplay+'" placeholder="$0.00"></div>';
+  h+='</div></div>';
+  return h;
+}
+
+function assetField(id,label,type,val,assetIdx,key,ph){
+  var sv=String(val||'').replace(/"/g,'&quot;');
+  return '<div class="card-field"><label>'+label+'</label><input type="'+type+'" id="'+id+'" class="asset-tracked" data-asset="'+assetIdx+'" data-key="'+key+'" value="'+sv+'"'+(ph?' placeholder="'+ph+'"':'')+'></div>';
+}
+
+function syncAssetField(el){
+  var idx=el.dataset.asset; var key=el.dataset.key;
+  if(!key||idx===undefined||idx==='') return;
+  var i=parseInt(idx);
+  if(!borrowerAssets[i]) return;
+  var val=el.value;
+  // Special handling for balance — parse currency to number
+  if(key==='balance'){
+    var num=parseFloat(val.replace(/[^0-9.]/g,''))||0;
+    borrowerAssets[i].balance=num;
+  } else {
+    borrowerAssets[i][key]=val;
+  }
+  // Update tab label on institution change
+  if(key==='institution'){
+    var tabs=document.querySelectorAll('#assetsTabsContainer .emp-tab');
+    if(tabs[i]) tabs[i].textContent=val||'Account '+(i+1);
+  }
+}
+
+// Format balance on blur (show currency), strip on focus (show raw number)
+document.addEventListener('focus',function(e){
+  var el=e.target;
+  if(el.classList.contains('asset-tracked')&&el.dataset.key==='balance'){
+    var raw=el.value.replace(/[^0-9.]/g,'');
+    el.value=raw;
+  }
+},true);
+document.addEventListener('blur',function(e){
+  var el=e.target;
+  if(el.classList.contains('asset-tracked')&&el.dataset.key==='balance'){
+    var num=parseFloat(el.value.replace(/[^0-9.]/g,''))||0;
+    borrowerAssets[parseInt(el.dataset.asset)].balance=num;
+    el.value=num?formatMoney(num):'';
+  }
+},true);
 
 function switchAssetTab(idx){
   activeAssetTab=idx;
