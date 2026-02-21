@@ -1433,7 +1433,7 @@ body {
 <!-- LOAN OUTCOME MODAL (Funded / Denied / Suspended / Withdrawn) -->
 <div class="modal-overlay" id="fundedModal">
   <div class="modal-box" style="width:480px;">
-    <div class="modal-title" id="outcomeModalTitle"><i class="fas fa-trophy"></i> Congratulations! Closing <span id="fundedName"></span></div>
+    <div class="modal-title" id="outcomeModalTitle"><i class="fas fa-trophy"></i> Loan Outcome</div>
     <div class="crm-field-grid">
       <div class="crm-field">
         <label>Outcome</label>
@@ -1863,12 +1863,13 @@ function syncPipelineContact(c) {
 
 // ===== FUNDED MODAL =====
 var fundingContactId = null;
+var fundingContactName = '';
 
 function openFundedModal(contactId, defaultOutcome) {
   fundingContactId = contactId;
   var c = pipelineContacts.find(function(x) { return x.id === contactId; });
   if (!c) return;
-  document.getElementById('fundedName').textContent = c.name || 'Contact';
+  fundingContactName = c.name || 'Contact';
   document.getElementById('funded_date').value = new Date().toISOString().split('T')[0];
   document.getElementById('funded_rate').value = c.interestRate || '';
   document.getElementById('funded_transType').value = c.transactionType || '';
@@ -1887,8 +1888,7 @@ function updateOutcomeUI() {
   var btn = document.getElementById('outcomeSubmitBtn');
   var amountWrap = document.getElementById('fundedAmountWrap');
   var strikeWrap = document.getElementById('fundedStrikeWrap');
-  var c = fundingContactId ? pipelineContacts.find(function(x) { return x.id === fundingContactId; }) : null;
-  var name = c ? c.name : 'Contact';
+  var name = fundingContactName || 'Contact';
 
   if (outcome === 'funded') {
     title.innerHTML = '<i class="fas fa-trophy" style="color:#22c55e;"></i> Congratulations! Closing ' + name;
@@ -1924,6 +1924,7 @@ function updateOutcomeUI() {
 function closeFundedModal() {
   document.getElementById('fundedModal').classList.remove('show');
   fundingContactId = null;
+  fundingContactName = '';
 }
 
 function saveFundedContact() {
