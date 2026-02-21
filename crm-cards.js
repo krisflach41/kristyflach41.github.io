@@ -1088,85 +1088,50 @@ function togglePipelineDropdown(){
 }
 
 function setPipelineStage(contactId,stage){
-  var pid='crm-'+contactId;
-  var p=document.getElementById('cf_phone'),e=document.getElementById('cf_email');
-  var displayName = buildDisplayName();
-  
-  // Build borrowers list from primary + co-borrowers
-  var allBorrowers = [];
-  // Primary borrower
-  var primaryName = (activeCoBorrowerIdx === 0) ? displayName : (window._primaryBorrowerData ? window._primaryBorrowerData.name : displayName);
-  allBorrowers.push({
-    name: primaryName,
-    role: 'primary',
-    crm_id: contactId
-  });
-  // Co-borrowers
-  coBorrowers.forEach(function(cb) {
-    if (cb.excluded) return;
-    allBorrowers.push({
-      name: cb.name || '',
-      role: cb.relationship || 'co-borrower',
-      crm_id: cb.contact_id || null
-    });
-  });
+  var userId = localStorage.getItem('agent_edge_user') || 'default';
 
-  // Build display name: "Kristy Flach & Gus Flach"
-  var displayName = allBorrowers.map(function(b){ return b.name; }).filter(Boolean).join(' & ');
-
-  // Loan data now lives on the Pipeline Face Card, not CRM
-  // Just send empty fields — LO fills in on the face card
-  fetch(CRM_API+'/pipeline-api',{method:'POST',headers:{'Content-Type':'application/json'},
+  fetch(CRM_API+'/ae-loans-api',{method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({
-      action:'save',
-      id: pid,
-      name: displayName || primaryName || '',
-      phone: p ? p.value : '',
-      email: e ? e.value : '',
-      stage: stage,
-      source: 'crm',
-      realtorName: '',
-      loanType: '',
-      transactionType: '',
-      loanProgram: '',
-      occupancyType: '',
-      loanAmount: '',
-      interestRate: '',
-      lockStatus: '',
-      subjectAddress: '',
-      dates: {},
-      borrowers: allBorrowers,
-      crm_contact_id: contactId
+      action:'createLoan',
+      user_id: userId,
+      crm_contact_id: contactId,
+      pipeline_stage: stage,
+      source: 'crm'
     })
-  }).then(function(){
-    var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.remove('show');
-    var btn=document.getElementById('cardPipelineBtn');if(btn)renderPipelineButton(btn,contactId,stage);
-    showToast(displayName+' moved to pipeline');
-    if(typeof loadPipeline==='function')loadPipeline();
-    // Auto-convert to borrower
-    if(crmCurrentType!=='borrower'){
-      crmCurrentType='borrower';
-      fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crm:{id:contactId,type:'borrower'}})}).catch(function(){});
-      if(typeof crmContacts!=='undefined'){var idx=crmContacts.findIndex(function(c){return c.id===contactId;});if(idx>=0)crmContacts[idx].type='borrower';}
-      var ti=CONTACT_TYPES.borrower;
-      document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
-      var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display='block';
-      var fc=document.getElementById('crmCardForm');
-      var cd=collectAllCardData();cd.type='borrower';
-      renderBorrowerCard(fc,cd);
-      if(typeof crmRenderList==='function')crmRenderList();
-      showToast('Converted to Borrower');
+  }).then(function(r){return r.json();})
+  .then(function(result){
+    if(result.success){
+      var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.remove('show');
+      var btn=document.getElementById('cardPipelineBtn');if(btn)renderPipelineButton(btn,contactId,stage);
+      var displayName = buildDisplayName();
+      showToast(displayName+' pushed to pipeline — '+result.ae_id);
+      if(typeof loadPipeline==='function')loadPipeline();
+      // Auto-convert to borrower
+      if(crmCurrentType!=='borrower'){
+        crmCurrentType='borrower';
+        fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crm:{id:contactId,type:'borrower'}})}).catch(function(){});
+        if(typeof crmContacts!=='undefined'){var idx=crmContacts.findIndex(function(c){return c.id===contactId;});if(idx>=0)crmContacts[idx].type='borrower';}
+        var ti=CONTACT_TYPES.borrower;
+        document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+        var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display='block';
+        var fc=document.getElementById('crmCardForm');
+        var cd=collectAllCardData();cd.type='borrower';
+        renderBorrowerCard(fc,cd);
+        if(typeof crmRenderList==='function')crmRenderList();
+        showToast('Converted to Borrower');
+      }
+    } else {
+      showToast('Error: '+(result.message||'Unknown'));
     }
   }).catch(function(err){console.error('Pipeline error:',err);});
 }
 
 function removePipelineStage(contactId){
-  fetch(CRM_API+'/pipeline-api',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',contactId:'crm-'+contactId})
-  }).then(function(){
-    var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.remove('show');
-    var btn=document.getElementById('cardPipelineBtn');if(btn)renderPipelineButton(btn,contactId,null);
-    showToast('Removed from pipeline');if(typeof loadPipeline==='function')loadPipeline();
-  }).catch(function(err){console.error(err);});
+  // TODO: implement remove from pipeline via ae-loans-api
+  // For now, just update the UI
+  var dd=document.getElementById('pipelineDropdown');if(dd)dd.classList.remove('show');
+  var btn=document.getElementById('cardPipelineBtn');if(btn)renderPipelineButton(btn,contactId,null);
+  showToast('Removed from pipeline');if(typeof loadPipeline==='function')loadPipeline();
 }
 
 // ===== INCOME CALCULATOR SIDE PANEL (iframe-based) =====
