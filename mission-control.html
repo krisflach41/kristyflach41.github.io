@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mission Control - Agent Edge</title>
 <script src="auth.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -152,19 +152,17 @@ body {
 /* ===== STAT CARDS ===== */
 .dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat-card {
-  background: linear-gradient(180deg, rgba(10,22,40,0.95) 0%, rgba(8,16,32,0.98) 100%);
-  border: 1px solid rgba(59,130,246,0.15);
-  border-radius: 10px; padding: 20px 22px; position: relative; overflow: hidden;
-  box-shadow: 0 0 15px rgba(59,130,246,0.04);
+  background: rgba(8,16,32,0.8); border: 1px solid rgba(59,130,246,0.12);
+  border-radius: 8px; padding: 20px 22px; position: relative; overflow: hidden;
 }
 .stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-.stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, transparent); box-shadow: 0 0 12px rgba(59,130,246,0.3); }
-.stat-card.green::after { background: linear-gradient(90deg, #22c55e, transparent); box-shadow: 0 0 12px rgba(34,197,94,0.3); }
+.stat-card.blue::after { background: linear-gradient(90deg, #3b82f6, #3b82f680, transparent); box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+.stat-card.green::after { background: linear-gradient(90deg, #22c55e, #22c55e80, transparent); box-shadow: 0 0 20px rgba(34,197,94,0.3); }
 .stat-card.purple::after { background: linear-gradient(90deg, var(--accent-purple), transparent); }
-.stat-card.orange::after { background: linear-gradient(90deg, #f59e0b, transparent); box-shadow: 0 0 12px rgba(245,158,11,0.3); }
-.stat-label { font-size: 12px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; font-family: 'Courier New', monospace; }
-.stat-value { font-size: 34px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -1px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-.stat-change { font-size: 13px; color: var(--accent-green); font-family: 'Courier New', monospace; }
+.stat-card.orange::after { background: linear-gradient(90deg, #f59e0b, #f59e0b80, transparent); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
+.stat-label { font-size: 11px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-family: 'Share Tech Mono', monospace; }
+.stat-value { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; margin: 6px 0 4px; background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-change { font-size: 12px; color: #22c55e; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 .stat-change.down { color: var(--accent-red); }
 
 /* ===== PIPELINE BOARD ===== */
@@ -462,65 +460,68 @@ body {
 .wc-date { font-size: 10px; color: var(--text-muted); margin-bottom: 6px; }
 .wc-stat { font-size: 10px; color: var(--text-secondary); }
 
-/* ===== ANALYTICS ===== */
-.analytics-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 14px; }
-.chart-card {
-  background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px;
-}
-.chart-title { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Courier New', monospace; }
+/* ===== MISSION CONTROL DASHBOARD ===== */
+.analytics-grid { display: grid; grid-template-columns: 5fr 3fr; gap: 14px; margin-bottom: 14px; }
 
-/* Mission Control Panel Styles */
-.mc-panel {
-  background: linear-gradient(180deg, rgba(10,22,40,0.95) 0%, rgba(8,16,32,0.98) 100%);
-  border: 1px solid rgba(59,130,246,0.2);
-  box-shadow: 0 0 20px rgba(59,130,246,0.05), inset 0 1px 0 rgba(59,130,246,0.1);
-  position: relative;
-  overflow: hidden;
-}
-.mc-panel::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(59,130,246,0.015) 2px, rgba(59,130,246,0.015) 4px);
-  pointer-events: none; z-index: 1;
-}
-.mc-panel canvas { position: relative; z-index: 2; }
-.mc-panel-header {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-  padding-bottom: 10px; border-bottom: 1px solid rgba(59,130,246,0.1);
-  position: relative; z-index: 2;
-}
-.mc-panel-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #3b82f6; box-shadow: 0 0 8px #3b82f6;
-  animation: mc-blink 2s ease-in-out infinite;
-}
-.mc-panel-dot.green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-.mc-panel-status {
-  margin-left: auto; font-size: 11px; font-family: 'Courier New', monospace;
-  font-weight: 700; letter-spacing: 1px; color: #22c55e;
-  text-shadow: 0 0 6px rgba(34,197,94,0.4);
-}
-@keyframes mc-blink {
-  0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
-}
-.chart-placeholder {
-  height: 180px; border-radius: 6px; position: relative; overflow: hidden;
-  background: repeating-linear-gradient(90deg, rgba(59,130,246,0.06) 0px, rgba(59,130,246,0.06) 18px, transparent 18px, transparent 22px);
-}
-.chart-placeholder::after {
-  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
-  background: linear-gradient(180deg, transparent 0%, rgba(59,130,246,0.05) 40%, rgba(59,130,246,0.12) 100%);
-  clip-path: polygon(0% 80%, 5% 60%, 10% 65%, 15% 40%, 20% 45%, 25% 30%, 30% 35%, 35% 20%, 40% 25%, 45% 15%, 50% 20%, 55% 10%, 60% 18%, 65% 12%, 70% 25%, 75% 15%, 80% 20%, 85% 8%, 90% 15%, 95% 5%, 100% 10%, 100% 100%, 0% 100%);
-}
-.donut-chart {
-  width: 110px; height: 110px; border-radius: 50%; margin: 0 auto; position: relative;
-  background: conic-gradient(var(--accent-blue) 0% 35%, var(--accent-green) 35% 55%, var(--accent-purple) 55% 75%, var(--accent-orange) 75% 88%, rgba(255,255,255,0.06) 88% 100%);
-}
-.donut-chart::after {
-  content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-  width: 65px; height: 65px; background: var(--bg-card); border-radius: 50%;
-}
+/* Ticker */
+.mc-ticker-wrap { display: flex; align-items: center; gap: 0; margin-bottom: 20px; height: 38px; }
+.mc-ticker-edge { width: 30px; height: 1px; flex-shrink: 0; }
+.mc-ticker-edge.left { background: linear-gradient(90deg, transparent, rgba(59,130,246,0.4)); }
+.mc-ticker-edge.right { background: linear-gradient(90deg, rgba(59,130,246,0.4), transparent); }
+.mc-ticker-icon { flex-shrink: 0; font-size: 8px; color: #3b82f6; animation: tickerDot 2s ease-in-out infinite; text-shadow: 0 0 8px rgba(59,130,246,0.6); }
+@keyframes tickerDot { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+.mc-ticker-window { flex: 1; height: 38px; overflow: hidden; background: rgba(59,130,246,0.03); border-top: 1px solid rgba(59,130,246,0.1); border-bottom: 1px solid rgba(59,130,246,0.1); position: relative; }
+.mc-ticker-window::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(90deg, var(--bg-deep), transparent); z-index: 2; }
+.mc-ticker-window::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 40px; background: linear-gradient(90deg, transparent, var(--bg-deep)); z-index: 2; }
+.mc-ticker-track { display: flex; align-items: center; height: 100%; padding: 0 20px; position: relative; }
+.mc-ticker-msg { white-space: nowrap; font-size: 13px; letter-spacing: 1.5px; color: rgba(59,130,246,0.7); position: absolute; width: 100%; text-align: center; font-family: 'Share Tech Mono', monospace; animation: tickerFade 6s ease-in-out; }
+.mc-ticker-msg .highlight { color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.4); font-weight: 700; }
+.mc-ticker-msg .alert { color: #f59e0b; text-shadow: 0 0 8px rgba(245,158,11,0.4); font-weight: 700; }
+.mc-ticker-msg .good { color: #22c55e; text-shadow: 0 0 8px rgba(34,197,94,0.4); font-weight: 700; }
+@keyframes tickerFade { 0% { opacity: 0; transform: translateY(8px); } 10% { opacity: 1; transform: translateY(0); } 85% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); } }
+
+/* MC Panels */
+.mc-panel { background: rgba(8,16,32,0.8); border: 1px solid rgba(59,130,246,0.12); border-radius: 8px; padding: 20px; position: relative; overflow: hidden; }
+.mc-panel::before, .mc-panel::after { content: ''; position: absolute; width: 20px; height: 20px; border-color: rgba(59,130,246,0.25); border-style: solid; pointer-events: none; }
+.mc-panel::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; border-radius: 8px 0 0 0; }
+.mc-panel::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 8px 0; }
+.mc-panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(59,130,246,0.08); }
+.mc-panel-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.6); }
+.mc-blinker { width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 8px #3b82f6, 0 0 20px rgba(59,130,246,0.2); animation: mcBlink 2s ease-in-out infinite; }
+.mc-blinker.green { background: #22c55e; box-shadow: 0 0 8px #22c55e, 0 0 20px rgba(34,197,94,0.2); }
+@keyframes mcBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+.mc-panel-status { margin-left: auto; font-size: 10px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace; color: #22c55e; animation: statusGlow 3s ease-in-out infinite; }
+@keyframes statusGlow { 0%,100% { text-shadow: 0 0 4px rgba(34,197,94,0.3); } 50% { text-shadow: 0 0 12px rgba(34,197,94,0.6); } }
+
+/* Pipeline Rows */
+.mc-row { display: flex; align-items: center; gap: 0; padding: 3px 0; }
+.mc-row-label { width: 140px; flex-shrink: 0; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); text-align: right; padding-right: 14px; font-family: 'Share Tech Mono', monospace; }
+.mc-row-track { flex: 1; height: 22px; position: relative; background: rgba(255,255,255,0.02); border-radius: 11px; overflow: hidden; }
+.mc-row-bar { position: absolute; top: 0; left: 0; bottom: 0; border-radius: 11px; transition: width 1s cubic-bezier(0.25,0.8,0.25,1); }
+.mc-row-bar.glow { animation: barPulse 3s ease-in-out infinite; }
+@keyframes barPulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+.mc-row-bar::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent); animation: barSweep 4s ease-in-out infinite; }
+@keyframes barSweep { 0% { left: -50%; } 100% { left: 150%; } }
+.mc-row-count { width: 36px; flex-shrink: 0; font-size: 13px; font-weight: 700; text-align: center; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.mc-row-count.zero { color: rgba(255,255,255,0.12); }
+.mc-sep-line { border: none; border-top: 1px dashed rgba(59,130,246,0.12); margin: 6px 0; }
+.mc-total { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(59,130,246,0.08); }
+.mc-total-label { font-size: 11px; letter-spacing: 2px; color: rgba(59,130,246,0.4); text-align: right; width: 140px; padding-right: 14px; font-family: 'Share Tech Mono', monospace; }
+.mc-total-value { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; color: #3b82f6; text-shadow: 0 0 20px rgba(59,130,246,0.4); }
+
+/* Donut */
+.mc-donut-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.mc-donut-container { position: relative; width: 150px; height: 150px; }
+.mc-donut-container svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.mc-donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+.mc-donut-num { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; color: #fff; }
+.mc-donut-sub { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
+.mc-legend { width: 100%; padding: 0 8px; }
+.mc-legend-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
+.mc-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.mc-legend-name { flex: 1; font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-legend-val { font-size: 12px; font-weight: 700; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
+.mc-empty-msg { text-align: center; padding: 30px 0; color: rgba(59,130,246,0.25); font-size: 12px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace; }
 .analytics-table {
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
@@ -579,7 +580,7 @@ body {
   .sidebar { position: fixed; left: -250px; top: 0; bottom: 0; z-index: 100; transition: left 0.25s; }
   .sidebar.open { left: 0; }
   .sidebar-toggle { display: block; }
-  .dash-stats { grid-template-columns: repeat(3, 1fr); }
+  .dash-stats { grid-template-columns: 1fr 1fr 1fr; }
   .analytics-grid { grid-template-columns: 1fr; }
   .crm-layout { flex-direction: column; }
   .crm-list-panel { width: 100%; max-height: 40vh; }
@@ -859,6 +860,20 @@ body {
     </div>
   </div>
   <div class="content-area">
+    <!-- TICKER -->
+    <div class="mc-ticker-wrap">
+      <div class="mc-ticker-edge left"></div>
+      <div class="mc-ticker-icon">◆</div>
+      <div class="mc-ticker-window">
+        <div class="mc-ticker-track" id="mcTicker">
+          <div class="mc-ticker-msg">INITIALIZING DAILY BRIEFING...</div>
+        </div>
+      </div>
+      <div class="mc-ticker-icon">◆</div>
+      <div class="mc-ticker-edge right"></div>
+    </div>
+
+    <!-- STAT CARDS -->
     <div class="dash-stats">
       <div class="stat-card blue">
         <div class="stat-label">Active Pipeline $</div>
@@ -876,22 +891,35 @@ body {
         <div class="stat-change" id="dashOrdersSub"></div>
       </div>
     </div>
+
+    <!-- PANELS -->
     <div class="analytics-grid">
-      <div class="chart-card mc-panel">
-        <div class="mc-panel-header">
-          <div class="mc-panel-dot"></div>
-          <div class="chart-title">PIPELINE OVERVIEW</div>
-          <div class="mc-panel-status" id="mcPipelineStatus">NOMINAL</div>
+      <!-- Pipeline Overview -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title">PIPELINE OVERVIEW</div>
+          <div class="mc-panel-status" id="mcPipelineStatus">STANDBY</div>
         </div>
-        <canvas id="dashPipelineChart" height="360"></canvas>
+        <div id="mcPipelineRows"></div>
+        <hr class="mc-sep-line">
+        <div id="mcDecisionRows"></div>
+        <div class="mc-total">
+          <div class="mc-total-label">ACTIVE PIPELINE</div>
+          <div class="mc-total-value" id="mcTotalValue">0 LOANS</div>
+        </div>
       </div>
-      <div class="chart-card mc-panel">
-        <div class="mc-panel-header">
-          <div class="mc-panel-dot green"></div>
-          <div class="chart-title">LOAN TYPES</div>
-          <div class="mc-panel-status" id="mcLoanStatus">TRACKING</div>
+
+      <!-- Loan Types -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">LOAN TYPES</div>
+          <div class="mc-panel-status" id="mcLoanStatus">STANDBY</div>
         </div>
-        <canvas id="dashLoanTypeChart" height="360"></canvas>
+        <div id="mcLoanTypeContent">
+          <div class="mc-empty-msg">AWAITING DATA</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1835,47 +1863,39 @@ function updateDashboard() {
       
       // Store for chart rendering
       window._dashDecisionCounts = decisionCounts;
-      renderPipelineChart();
+      window._dashFundedVolume = closedTotal;
+      renderPipelineHTML();
+      tickerMessages = buildTickerMessages();
     }
   })
   .catch(function() {});
 
+  // Start ticker
+  startTicker();
+
   // Render charts
-  renderPipelineChart();
-  renderLoanTypeChart();
+  renderPipelineHTML();
+  renderLoanTypeHTML();
 }
 
-function renderPipelineChart() {
-  var canvas = document.getElementById('dashPipelineChart');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var dpr = window.devicePixelRatio || 1;
-  var rect = canvas.parentElement.getBoundingClientRect();
-  var W = rect.width - 32;
-  var H = 360;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, W, H);
-
-  var rows = [
-    { id: 'warm', label: 'WARM LEADS', color: '#818cf8', glow: 'rgba(129,140,248,0.4)' },
-    { id: 'active', label: 'ACTIVE CONVOS', color: '#f472b6', glow: 'rgba(244,114,182,0.4)' },
-    { id: 'credit', label: 'CREDIT REPAIR', color: '#fb923c', glow: 'rgba(251,146,60,0.4)' },
-    { id: 'preapproval', label: 'PRE-APPROVAL', color: '#f87171', glow: 'rgba(248,113,113,0.4)' },
-    { id: 'preapproved', label: 'APPROVED', color: '#fbbf24', glow: 'rgba(251,191,36,0.4)' },
-    { id: 'ratewatch', label: 'RATE WATCH', color: '#34d399', glow: 'rgba(52,211,153,0.4)' },
-    { id: 'underwriting', label: 'UNDERWRITING', color: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
-    { id: '_sep' },
-    { id: 'funded', label: 'FUNDED', color: '#22c55e', glow: 'rgba(34,197,94,0.5)' },
-    { id: 'denied', label: 'DENIED', color: '#ef4444', glow: 'rgba(239,68,68,0.4)' },
-    { id: 'suspended', label: 'SUSPENDED', color: '#f59e0b', glow: 'rgba(245,158,11,0.4)' },
-    { id: 'withdrawn', label: 'WITHDRAWN', color: '#a78bfa', glow: 'rgba(167,139,250,0.4)' }
+// ===== MC PIPELINE BARS (HTML) =====
+function renderPipelineHTML() {
+  var stageRows = [
+    { id: 'warm', label: 'WARM LEADS', color: '#818cf8' },
+    { id: 'active', label: 'ACTIVE CONVOS', color: '#f472b6' },
+    { id: 'credit', label: 'CREDIT REPAIR', color: '#fb923c' },
+    { id: 'preapproval', label: 'PRE-APPROVAL', color: '#f87171' },
+    { id: 'preapproved', label: 'APPROVED', color: '#fbbf24' },
+    { id: 'ratewatch', label: 'RATE WATCH', color: '#34d399' },
+    { id: 'underwriting', label: 'UNDERWRITING', color: '#38bdf8' }
+  ];
+  var decRows = [
+    { id: 'funded', label: 'FUNDED', color: '#22c55e' },
+    { id: 'denied', label: 'DENIED', color: '#ef4444' },
+    { id: 'suspended', label: 'SUSPENDED', color: '#f59e0b' },
+    { id: 'withdrawn', label: 'WITHDRAWN', color: '#a78bfa' }
   ];
 
-  // Count pipeline stages
   var counts = {};
   pipelineColumns.forEach(function(col) { counts[col.id] = 0; });
   pipelineLoans.forEach(function(loan) {
@@ -1886,134 +1906,41 @@ function renderPipelineChart() {
   counts.suspended = window._dashDecisionCounts ? window._dashDecisionCounts.suspended || 0 : 0;
   counts.withdrawn = window._dashDecisionCounts ? window._dashDecisionCounts.withdrawn || 0 : 0;
 
-  // Fixed scale — max is always at least 10 so small numbers look small
-  var allCounts = rows.filter(function(r) { return r.id !== '_sep'; }).map(function(r) { return counts[r.id] || 0; });
-  var dataMax = Math.max.apply(null, allCounts);
-  var scaleMax = Math.max(10, Math.ceil(dataMax * 1.3));
+  var allCounts = stageRows.concat(decRows).map(function(r) { return counts[r.id] || 0; });
+  var scaleMax = Math.max(10, Math.ceil(Math.max.apply(null, allCounts) * 1.3));
 
-  var barH = 26;
-  var gap = 3;
-  var labelW = 150;
-  var countW = 40;
-  var barAreaW = W - labelW - countW - 10;
-  var y = 4;
+  function buildRows(rows) {
+    var h = '';
+    rows.forEach(function(row) {
+      var count = counts[row.id] || 0;
+      var pct = (count / scaleMax) * 100;
+      var isActive = count > 0;
+      h += '<div class="mc-row">';
+      h += '<div class="mc-row-label">' + row.label + '</div>';
+      h += '<div class="mc-row-track"><div class="mc-row-bar' + (isActive ? ' glow' : '') + '" style="width:' + pct + '%;background:linear-gradient(90deg,' + row.color + '20,' + row.color + ');box-shadow:0 0 15px ' + row.color + '40;"></div></div>';
+      h += '<div class="mc-row-count' + (isActive ? '' : ' zero') + '"' + (isActive ? ' style="color:' + row.color + ';"' : '') + '>' + count + '</div>';
+      h += '</div>';
+    });
+    return h;
+  }
 
-  rows.forEach(function(row) {
-    if (row.id === '_sep') {
-      y += 4;
-      ctx.strokeStyle = 'rgba(59,130,246,0.15)';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(10, y);
-      ctx.lineTo(W - 10, y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      y += 8;
-      return;
-    }
+  var el1 = document.getElementById('mcPipelineRows');
+  if (el1) el1.innerHTML = buildRows(stageRows);
+  var el2 = document.getElementById('mcDecisionRows');
+  if (el2) el2.innerHTML = buildRows(decRows);
 
-    var count = counts[row.id] || 0;
-    var barW = (count / scaleMax) * barAreaW;
-    if (count > 0 && barW < 6) barW = 6;
-
-    // Alternating row bg
-    ctx.fillStyle = 'rgba(255,255,255,0.012)';
-    ctx.fillRect(0, y - 1, W, barH + 2);
-
-    // Label — monospace, uppercase
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '600 12px "Courier New", monospace';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(row.label, labelW - 16, y + barH / 2);
-
-    // Bar track with subtle grid lines
-    ctx.fillStyle = 'rgba(255,255,255,0.025)';
-    ctx.beginPath();
-    ctx.roundRect(labelW, y + 2, barAreaW, barH - 4, (barH - 4) / 2);
-    ctx.fill();
-
-    // Pill bar with gradient + glow
-    if (count > 0) {
-      var grad = ctx.createLinearGradient(labelW, 0, labelW + barW, 0);
-      grad.addColorStop(0, row.color + '40');
-      grad.addColorStop(0.3, row.color + 'cc');
-      grad.addColorStop(1, row.color);
-      
-      // Glow
-      ctx.shadowColor = row.glow;
-      ctx.shadowBlur = 12;
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.roundRect(labelW, y + 2, barW, barH - 4, (barH - 4) / 2);
-      ctx.fill();
-      
-      // Inner highlight
-      ctx.shadowBlur = 0;
-      var hiGrad = ctx.createLinearGradient(0, y + 2, 0, y + barH - 4);
-      hiGrad.addColorStop(0, 'rgba(255,255,255,0.2)');
-      hiGrad.addColorStop(0.5, 'rgba(255,255,255,0)');
-      ctx.fillStyle = hiGrad;
-      ctx.beginPath();
-      ctx.roundRect(labelW, y + 2, barW, (barH - 4) / 2, { upperLeft: (barH-4)/2, upperRight: (barH-4)/2, lowerLeft: 0, lowerRight: 0 });
-      ctx.fill();
-      ctx.shadowBlur = 0;
-    }
-
-    // Count — glowing number
-    ctx.shadowBlur = 0;
-    if (count > 0) {
-      ctx.fillStyle = row.color;
-      ctx.shadowColor = row.glow;
-      ctx.shadowBlur = 6;
-    } else {
-      ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    }
-    ctx.font = 'bold 14px "Courier New", monospace';
-    ctx.textAlign = 'left';
-    ctx.fillText(count, labelW + barAreaW + 10, y + barH / 2);
-    ctx.shadowBlur = 0;
-
-    y += barH + gap;
-  });
-
-  // Total active at bottom
-  y += 6;
   var totalActive = pipelineLoans.length;
-  ctx.fillStyle = 'rgba(59,130,246,0.3)';
-  ctx.font = '600 12px "Courier New", monospace';
-  ctx.textAlign = 'right';
-  ctx.fillText('ACTIVE PIPELINE:', labelW - 16, y + 6);
-  ctx.fillStyle = '#3b82f6';
-  ctx.shadowColor = 'rgba(59,130,246,0.5)';
-  ctx.shadowBlur = 8;
-  ctx.font = 'bold 18px "Courier New", monospace';
-  ctx.textAlign = 'left';
-  ctx.fillText(totalActive + ' LOANS', labelW + 4, y + 6);
-  ctx.shadowBlur = 0;
-
-  // Update status
+  var totalEl = document.getElementById('mcTotalValue');
+  if (totalEl) totalEl.textContent = totalActive + ' LOAN' + (totalActive !== 1 ? 'S' : '');
   var statusEl = document.getElementById('mcPipelineStatus');
   if (statusEl) statusEl.textContent = totalActive > 0 ? totalActive + ' ACTIVE' : 'STANDBY';
 }
 
-function renderLoanTypeChart() {
-  var canvas = document.getElementById('dashLoanTypeChart');
-  if (!canvas) return;
-  var ctx = canvas.getContext('2d');
-  var dpr = window.devicePixelRatio || 1;
-  var rect = canvas.parentElement.getBoundingClientRect();
-  var W = rect.width - 32;
-  var H = 360;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  canvas.style.width = W + 'px';
-  canvas.style.height = H + 'px';
-  ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, W, H);
+// ===== MC LOAN TYPES (SVG Donut) =====
+function renderLoanTypeHTML() {
+  var el = document.getElementById('mcLoanTypeContent');
+  if (!el) return;
 
-  // Count loan types
   var typeCounts = {};
   pipelineLoans.forEach(function(loan) {
     var label = '';
@@ -2023,128 +1950,114 @@ function renderLoanTypeChart() {
     else label = 'Not Set';
     typeCounts[label] = (typeCounts[label] || 0) + 1;
   });
-
   var types = Object.keys(typeCounts);
   var total = pipelineLoans.length;
 
   if (total === 0) {
-    ctx.fillStyle = 'rgba(59,130,246,0.2)';
-    ctx.font = '600 13px "Courier New", monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('AWAITING DATA', W / 2, H / 2 - 8);
-    ctx.fillStyle = 'rgba(59,130,246,0.1)';
-    ctx.font = '11px "Courier New", monospace';
-    ctx.fillText('No active loans in pipeline', W / 2, H / 2 + 12);
-    // Update status
+    el.innerHTML = '<div class="mc-empty-msg">AWAITING DATA</div>';
     var statusEl = document.getElementById('mcLoanStatus');
     if (statusEl) { statusEl.textContent = 'STANDBY'; statusEl.style.color = 'rgba(255,255,255,0.3)'; }
     return;
   }
 
-  var colors = [
-    { fill: '#818cf8', glow: 'rgba(129,140,248,0.4)' },
-    { fill: '#f472b6', glow: 'rgba(244,114,182,0.4)' },
-    { fill: '#34d399', glow: 'rgba(52,211,153,0.4)' },
-    { fill: '#fbbf24', glow: 'rgba(251,191,36,0.4)' },
-    { fill: '#38bdf8', glow: 'rgba(56,189,248,0.4)' },
-    { fill: '#fb923c', glow: 'rgba(251,146,60,0.4)' },
-    { fill: '#a78bfa', glow: 'rgba(167,139,250,0.4)' },
-    { fill: '#f87171', glow: 'rgba(248,113,113,0.4)' }
-  ];
-
-  var cx = W / 2;
-  var cy = H * 0.35;
-  var radius = Math.min(W * 0.3, 85);
-  var innerRadius = radius * 0.55;
-
-  // Draw donut with glow
-  var startAngle = -Math.PI / 2;
+  var colors = ['#818cf8','#f472b6','#34d399','#fbbf24','#38bdf8','#fb923c','#a78bfa','#f87171'];
+  var circumference = 2 * Math.PI * 60;
+  var offset = 0;
+  var circles = '';
   types.forEach(function(type, i) {
-    var sliceAngle = (typeCounts[type] / total) * Math.PI * 2;
-    var endAngle = startAngle + sliceAngle;
-    var c = colors[i % colors.length];
-
-    // Glow layer
-    ctx.shadowColor = c.glow;
-    ctx.shadowBlur = 15;
-    ctx.beginPath();
-    ctx.arc(cx, cy, radius, startAngle, endAngle);
-    ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
-    ctx.closePath();
-    ctx.fillStyle = c.fill;
-    ctx.globalAlpha = 0.85;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.globalAlpha = 1;
-
-    startAngle = endAngle;
+    var pct = typeCounts[type] / total;
+    var dash = pct * circumference;
+    var color = colors[i % colors.length];
+    circles += '<circle cx="80" cy="80" r="60" fill="none" stroke="' + color + '" stroke-width="16" ';
+    circles += 'stroke-dasharray="' + dash + ' ' + (circumference - dash) + '" ';
+    circles += 'stroke-dashoffset="' + (-offset) + '" ';
+    circles += 'style="filter:drop-shadow(0 0 6px ' + color + '60);opacity:0.85;"/>';
+    offset += dash;
   });
 
-  // Center ring glow
-  ctx.beginPath();
-  ctx.arc(cx, cy, innerRadius + 1, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(59,130,246,0.15)';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-
-  // Center text
-  ctx.fillStyle = '#fff';
-  ctx.shadowColor = 'rgba(255,255,255,0.2)';
-  ctx.shadowBlur = 10;
-  ctx.font = 'bold 26px "Courier New", monospace';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(total, cx, cy - 6);
-  ctx.shadowBlur = 0;
-  ctx.fillStyle = 'rgba(255,255,255,0.35)';
-  ctx.font = '600 9px "Courier New", monospace';
-  ctx.letterSpacing = '2px';
-  ctx.fillText('ACTIVE', cx, cy + 12);
-
-  // Legend — below donut, wrapping safely within canvas
-  var legendY = cy + radius + 28;
-  var legendX = 16;
-  var maxLabelW = W - 32;
-
+  var h = '<div class="mc-donut-wrap">';
+  h += '<div class="mc-donut-container">';
+  h += '<svg viewBox="0 0 160 160"><circle cx="80" cy="80" r="60" fill="none" stroke="rgba(59,130,246,0.06)" stroke-width="16"/>' + circles + '</svg>';
+  h += '<div class="mc-donut-center"><div class="mc-donut-num">' + total + '</div><div class="mc-donut-sub">ACTIVE</div></div>';
+  h += '</div>';
+  h += '<div class="mc-legend">';
   types.forEach(function(type, i) {
-    if (legendY > H - 10) return; // don't overflow
-    var c = colors[i % colors.length];
+    var color = colors[i % colors.length];
     var pct = Math.round((typeCounts[type] / total) * 100);
-
-    // Glow dot
-    ctx.shadowColor = c.glow;
-    ctx.shadowBlur = 6;
-    ctx.beginPath();
-    ctx.arc(legendX + 6, legendY, 5, 0, Math.PI * 2);
-    ctx.fillStyle = c.fill;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    // Label — truncate if needed
-    var labelText = type;
-    ctx.font = '12px "Courier New", monospace';
-    while (ctx.measureText(labelText + '  ' + typeCounts[type] + ' (' + pct + '%)').width > maxLabelW - 30 && labelText.length > 10) {
-      labelText = labelText.slice(0, -1);
-    }
-    if (labelText !== type) labelText += '…';
-
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(labelText, legendX + 18, legendY);
-
-    // Count
-    ctx.fillStyle = c.fill;
-    ctx.font = 'bold 12px "Courier New", monospace';
-    var lw = ctx.measureText(labelText).width;
-    ctx.fillText(typeCounts[type] + ' (' + pct + '%)', legendX + 18 + lw + 8, legendY);
-
-    legendY += 22;
+    h += '<div class="mc-legend-row"><div class="mc-legend-dot" style="background:' + color + ';box-shadow:0 0 6px ' + color + '60;"></div>';
+    h += '<div class="mc-legend-name">' + type + '</div>';
+    h += '<div class="mc-legend-val" style="color:' + color + ';">' + typeCounts[type] + ' (' + pct + '%)</div></div>';
   });
+  h += '</div></div>';
+  el.innerHTML = h;
 
-  // Update status
   var statusEl = document.getElementById('mcLoanStatus');
   if (statusEl) { statusEl.textContent = types.length + ' TYPES'; statusEl.style.color = '#22c55e'; }
+}
+
+// ===== TICKER SYSTEM =====
+var tickerMessages = [];
+var tickerIdx = 0;
+var tickerInterval = null;
+
+function buildTickerMessages() {
+  var msgs = [];
+  var totalActive = pipelineLoans.length;
+  var pipelineVol = 0;
+  pipelineLoans.forEach(function(l) { if (l.loan_amount) pipelineVol += parseFloat(l.loan_amount) || 0; });
+  var volStr = pipelineVol > 0 ? '$' + Math.round(pipelineVol).toLocaleString() : '$0';
+
+  // Pipeline summary
+  if (totalActive > 0) {
+    msgs.push('PIPELINE STATUS: <span class="highlight">' + totalActive + ' ACTIVE LOAN' + (totalActive !== 1 ? 'S' : '') + '</span> — ' + volStr + ' TOTAL VOLUME');
+  }
+
+  // Funded this month
+  var dc = window._dashDecisionCounts || {};
+  if (dc.funded > 0) {
+    var fundedVol = window._dashFundedVolume || 0;
+    msgs.push('MONTHLY PERFORMANCE: <span class="good">$' + Math.round(fundedVol).toLocaleString() + ' FUNDED</span> — ' + dc.funded + ' LOAN' + (dc.funded !== 1 ? 'S' : '') + ' CLOSED');
+  }
+
+  // Stage counts
+  var stageCounts = {};
+  pipelineColumns.forEach(function(col) { stageCounts[col.id] = 0; });
+  pipelineLoans.forEach(function(l) { if (stageCounts[l.pipeline_stage] !== undefined) stageCounts[l.pipeline_stage]++; });
+  if (stageCounts.underwriting > 0) msgs.push('<span class="highlight">' + stageCounts.underwriting + ' LOAN' + (stageCounts.underwriting !== 1 ? 'S' : '') + ' IN UNDERWRITING</span> — MONITORING FOR CLEAR TO CLOSE');
+  if (stageCounts.preapproved > 0) msgs.push('<span class="good">' + stageCounts.preapproved + ' APPROVED</span> — AWAITING CONTRACTS');
+  if (stageCounts.ratewatch > 0) msgs.push('<span class="alert">' + stageCounts.ratewatch + ' ON RATE WATCH</span> — MONITORING MBS');
+  if (stageCounts.credit > 0) msgs.push('<span class="alert">' + stageCounts.credit + ' IN CREDIT REPAIR</span> — TRACKING IMPROVEMENT');
+
+  // Default if nothing to say
+  if (msgs.length === 0) {
+    msgs.push('ALL SYSTEMS OPERATIONAL — PIPELINE CLEAR');
+    msgs.push('READY FOR NEW OPPORTUNITIES');
+  }
+
+  return msgs;
+}
+
+function rotateTicker() {
+  var tickerEl = document.getElementById('mcTicker');
+  if (!tickerEl) return;
+  var msg = tickerEl.querySelector('.mc-ticker-msg');
+  if (!msg) return;
+  if (tickerMessages.length === 0) tickerMessages = buildTickerMessages();
+  msg.style.animation = 'none';
+  msg.offsetHeight;
+  msg.innerHTML = tickerMessages[tickerIdx];
+  msg.style.animation = 'tickerFade 6s ease-in-out';
+  tickerIdx = (tickerIdx + 1) % tickerMessages.length;
+}
+
+function startTicker() {
+  tickerMessages = buildTickerMessages();
+  tickerIdx = 0;
+  setTimeout(function() {
+    rotateTicker();
+    if (tickerInterval) clearInterval(tickerInterval);
+    tickerInterval = setInterval(rotateTicker, 6000);
+  }, 1000);
 }
 
 // ===== PIPELINE =====
