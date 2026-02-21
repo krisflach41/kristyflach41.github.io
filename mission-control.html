@@ -2282,22 +2282,32 @@ function openFaceCard(aeId) {
       var color = (b.role === 'primary') ? '#0ea5e9' : '#a855f7';
       var crmId = b.crm_contact_id || null;
       var onclick = crmId ? ' onclick="fcOpenBorrowerCrm(\'' + crmId + '\')"' : '';
-      ch += '<div class="fc-borrower-chip" style="background:' + color + '14;border-color:' + color + '40;color:' + color + ';">';
-      ch += '<span' + onclick + ' style="cursor:' + (crmId ? 'pointer' : 'default') + ';">';
+      ch += '<div class="fc-borrower-chip" style="background:' + color + '14;border-color:' + color + '40;color:' + color + ';cursor:' + (crmId ? 'pointer' : 'default') + ';"' + onclick + '>';
       ch += '<i class="fas fa-user" style="font-size:10px;"></i> ' + (b.name || 'Unnamed');
       ch += ' <span style="font-size:9px;opacity:0.6;">' + (b.role || '') + '</span>';
       if (crmId) ch += ' <i class="fas fa-external-link-alt" style="font-size:8px;opacity:0.5;"></i>';
-      ch += '</span>';
-      // Remove button (not for primary)
-      if (b.role !== 'primary') {
-        ch += ' <span onclick="event.stopPropagation();fcRemoveBorrower(\'' + b.id + '\',\'' + (b.name||'') + '\')" style="cursor:pointer;opacity:0.5;margin-left:6px;font-size:10px;" title="Remove from loan"><i class="fas fa-times"></i></span>';
-      }
       ch += '</div>';
     });
   }
   // Add borrower button
   ch += '<div class="fc-borrower-chip" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);cursor:pointer;" onclick="fcOpenAddBorrower()">';
   ch += '<i class="fas fa-plus" style="font-size:10px;"></i> Add Borrower</div>';
+
+  // Borrower management rows (remove actions for non-primary)
+  var hasCoBorrowers = borrowers.some(function(b) { return b.role !== 'primary'; });
+  if (hasCoBorrowers) {
+    ch += '<div style="width:100%;margin-top:10px;border-top:1px solid rgba(255,255,255,0.06);padding-top:8px;">';
+    borrowers.forEach(function(b) {
+      if (b.role === 'primary') return;
+      var roleLabel = b.role ? (b.role.charAt(0).toUpperCase() + b.role.slice(1).replace(/_/g, ' ')) : 'Co-Borrower';
+      ch += '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;">';
+      ch += '<div style="font-size:12px;"><i class="fas fa-user" style="font-size:10px;color:#a855f7;margin-right:6px;"></i>' + (b.name || 'Unnamed') + ' <span style="font-size:10px;color:rgba(255,255,255,0.4);">(' + roleLabel + ')</span></div>';
+      ch += '<button onclick="fcRemoveBorrower(\'' + b.id + '\',\'' + (b.name||'').replace(/'/g,"\\'") + '\')" style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.2);border-radius:5px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer;">Remove from Loan</button>';
+      ch += '</div>';
+    });
+    ch += '</div>';
+  }
+
   chips.innerHTML = ch;
 
   // CRM button — link to primary borrower's CRM card
