@@ -150,19 +150,19 @@ body {
 .view-panel.active { display: flex; }
 
 /* ===== STAT CARDS ===== */
-.dash-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 20px; }
+.dash-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
 .stat-card {
   background: var(--bg-card); border: 1px solid var(--border);
-  border-radius: 10px; padding: 16px 18px; position: relative; overflow: hidden;
+  border-radius: 10px; padding: 20px 22px; position: relative; overflow: hidden;
 }
-.stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+.stat-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
 .stat-card.blue::after { background: linear-gradient(90deg, var(--accent-blue), transparent); }
 .stat-card.green::after { background: linear-gradient(90deg, var(--accent-green), transparent); }
 .stat-card.purple::after { background: linear-gradient(90deg, var(--accent-purple), transparent); }
 .stat-card.orange::after { background: linear-gradient(90deg, var(--accent-orange), transparent); }
-.stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; }
-.stat-value { font-size: 26px; font-weight: 700; margin: 4px 0 2px; letter-spacing: -1px; }
-.stat-change { font-size: 10px; color: var(--accent-green); }
+.stat-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700; }
+.stat-value { font-size: 34px; font-weight: 700; margin: 6px 0 4px; letter-spacing: -1px; }
+.stat-change { font-size: 13px; color: var(--accent-green); }
 .stat-change.down { color: var(--accent-red); }
 
 /* ===== PIPELINE BOARD ===== */
@@ -824,11 +824,6 @@ body {
   <div class="content-area">
     <div class="dash-stats">
       <div class="stat-card blue">
-        <div class="stat-label">Active Pipeline</div>
-        <div class="stat-value" id="dashPipeline">-</div>
-        <div class="stat-change" id="dashPipelineSub"></div>
-      </div>
-      <div class="stat-card blue">
         <div class="stat-label">Active Pipeline $</div>
         <div class="stat-value" id="dashPipelineVol">-</div>
         <div class="stat-change" id="dashPipelineVolSub"></div>
@@ -838,11 +833,6 @@ body {
         <div class="stat-value" id="dashClosed">-</div>
         <div class="stat-change" id="dashClosedSub"></div>
       </div>
-      <div class="stat-card purple">
-        <div class="stat-label">CRM Contacts</div>
-        <div class="stat-value" id="dashCrm">-</div>
-        <div class="stat-change" id="dashCrmSub"></div>
-      </div>
       <div class="stat-card orange">
         <div class="stat-label">Open Orders</div>
         <div class="stat-value" id="dashOrders">-</div>
@@ -851,12 +841,12 @@ body {
     </div>
     <div class="analytics-grid">
       <div class="chart-card">
-        <div class="chart-title">Pipeline by Stage</div>
-        <canvas id="dashPipelineChart" height="200"></canvas>
+        <div class="chart-title">Pipeline Overview</div>
+        <canvas id="dashPipelineChart" height="340"></canvas>
       </div>
       <div class="chart-card">
         <div class="chart-title">Loan Types</div>
-        <canvas id="dashLoanTypeChart" height="200"></canvas>
+        <canvas id="dashLoanTypeChart" height="340"></canvas>
       </div>
     </div>
   </div>
@@ -1762,8 +1752,8 @@ function updateDashboard() {
 
   // Pipeline stats
   var active = pipelineLoans.length;
-  document.getElementById('dashPipeline').textContent = active;
-  document.getElementById('navPipelineCount').textContent = active;
+  var navEl = document.getElementById('navPipelineCount');
+  if (navEl) navEl.textContent = active;
 
   // Active Pipeline $ — cumulative loan amounts
   var pipelineTotal = 0;
@@ -1772,25 +1762,35 @@ function updateDashboard() {
   });
   document.getElementById('dashPipelineVol').textContent = pipelineTotal > 0 ? '$' + Math.round(pipelineTotal).toLocaleString() : '$0';
 
-  // Closed This Month — funded loan amounts from loan_history this month
+  // Closed This Month + Decision counts for chart
   var userId = localStorage.getItem('agent_edge_user') || 'default';
   var now = new Date();
   var monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  
+  // Fetch all outcomes this month (not just funded)
   fetch(API_BASE + '/ae-loans-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'getMonthlyFunded', month_start: monthStart })
+    body: JSON.stringify({ action: 'getMonthlyDecisions', month_start: monthStart })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
     if (data.success) {
       var closedTotal = 0;
       var closedCount = 0;
+      var decisionCounts = { funded: 0, denied: 0, suspended: 0, withdrawn: 0 };
       (data.history || []).forEach(function(h) {
-        if (h.loan_amount) closedTotal += parseFloat(h.loan_amount) || 0;
-        closedCount++;
+        if (h.outcome === 'funded') {
+          if (h.loan_amount) closedTotal += parseFloat(h.loan_amount) || 0;
+          closedCount++;
+        }
+        if (decisionCounts[h.outcome] !== undefined) decisionCounts[h.outcome]++;
       });
       document.getElementById('dashClosed').textContent = closedTotal > 0 ? '$' + Math.round(closedTotal).toLocaleString() : '$0';
       document.getElementById('dashClosedSub').textContent = closedCount + ' loan' + (closedCount !== 1 ? 's' : '') + ' funded';
+      
+      // Store for chart rendering
+      window._dashDecisionCounts = decisionCounts;
+      renderPipelineChart();
     }
   })
   .catch(function() {});
@@ -1806,74 +1806,134 @@ function renderPipelineChart() {
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * dpr;
-  canvas.height = 200 * dpr;
-  canvas.style.width = rect.width + 'px';
-  canvas.style.height = '200px';
-  ctx.scale(dpr, dpr);
   var W = rect.width;
-  var H = 200;
-
+  var H = 340;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
 
-  var stageColors = {
-    warm: '#3b82f6', active: '#0ea5e9', credit: '#f59e0b',
-    preapproval: '#8b5cf6', preapproved: '#22c55e', ratewatch: '#06b6d4', underwriting: '#ec4899'
-  };
+  // Stage config — pipeline stages + decisioned
+  var rows = [
+    { id: 'warm', label: 'Warm Leads', color: '#818cf8' },
+    { id: 'active', label: 'Active Conversations', color: '#f472b6' },
+    { id: 'credit', label: 'Credit Repair', color: '#fb923c' },
+    { id: 'preapproval', label: 'Started Pre-Approval', color: '#f87171' },
+    { id: 'preapproved', label: 'Approved', color: '#fbbf24' },
+    { id: 'ratewatch', label: 'Rate Watch', color: '#34d399' },
+    { id: 'underwriting', label: 'Underwriting', color: '#38bdf8' },
+    { id: '_sep', label: '', color: '' },
+    { id: 'funded', label: 'Funded (This Month)', color: '#22c55e' },
+    { id: 'denied', label: 'Denied', color: '#ef4444' },
+    { id: 'suspended', label: 'Suspended', color: '#f59e0b' },
+    { id: 'withdrawn', label: 'Withdrawn', color: '#a78bfa' }
+  ];
 
-  // Count loans per stage
+  // Count pipeline stages
   var counts = {};
   pipelineColumns.forEach(function(col) { counts[col.id] = 0; });
   pipelineLoans.forEach(function(loan) {
     if (counts[loan.pipeline_stage] !== undefined) counts[loan.pipeline_stage]++;
   });
 
-  var maxCount = Math.max.apply(null, pipelineColumns.map(function(c) { return counts[c.id]; }));
+  // Decisioned counts come from the dashboard fetch — store them globally
+  counts.funded = window._dashDecisionCounts ? window._dashDecisionCounts.funded || 0 : 0;
+  counts.denied = window._dashDecisionCounts ? window._dashDecisionCounts.denied || 0 : 0;
+  counts.suspended = window._dashDecisionCounts ? window._dashDecisionCounts.suspended || 0 : 0;
+  counts.withdrawn = window._dashDecisionCounts ? window._dashDecisionCounts.withdrawn || 0 : 0;
+
+  var allCounts = rows.filter(function(r) { return r.id !== '_sep'; }).map(function(r) { return counts[r.id] || 0; });
+  var maxCount = Math.max.apply(null, allCounts);
   if (maxCount === 0) maxCount = 1;
 
-  var barH = 22;
-  var gap = 8;
-  var labelW = 130;
-  var rightPad = 40;
-  var startY = 10;
+  // Total active
+  var totalActive = pipelineLoans.length;
+
+  var barH = 24;
+  var gap = 4;
+  var labelW = 180;
+  var rightPad = 50;
   var barAreaW = W - labelW - rightPad;
+  var y = 8;
 
-  pipelineColumns.forEach(function(col, i) {
-    var y = startY + i * (barH + gap);
-    var count = counts[col.id];
-    var barW = (count / maxCount) * barAreaW;
-    if (count > 0 && barW < 8) barW = 8;
-    var color = stageColors[col.id] || '#3b82f6';
-
-    // Label
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.textAlign = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(col.title, labelW - 10, y + barH / 2);
-
-    // Bar background
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.beginPath();
-    ctx.roundRect(labelW, y, barAreaW, barH, 4);
-    ctx.fill();
-
-    // Bar
-    if (count > 0) {
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.8;
+  rows.forEach(function(row) {
+    if (row.id === '_sep') {
+      // Separator line
+      y += 6;
+      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.roundRect(labelW, y, barW, barH, 4);
-      ctx.fill();
-      ctx.globalAlpha = 1;
+      ctx.moveTo(20, y);
+      ctx.lineTo(W - 20, y);
+      ctx.stroke();
+      y += 10;
+      return;
     }
 
-    // Count
-    ctx.fillStyle = count > 0 ? '#fff' : 'rgba(255,255,255,0.25)';
-    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+    var count = counts[row.id] || 0;
+    var barW = maxCount > 0 ? (count / maxCount) * barAreaW : 0;
+    if (count > 0 && barW < 14) barW = 14;
+
+    // Row background stripe
+    ctx.fillStyle = 'rgba(255,255,255,0.015)';
+    ctx.fillRect(0, y - 2, W, barH + 4);
+
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(row.label, labelW - 14, y + barH / 2);
+
+    // Bar track
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.beginPath();
+    ctx.roundRect(labelW, y, barAreaW, barH, barH / 2);
+    ctx.fill();
+
+    // Pill bar
+    if (count > 0) {
+      // Gradient fill
+      var grad = ctx.createLinearGradient(labelW, y, labelW + barW, y);
+      grad.addColorStop(0, row.color + 'cc');
+      grad.addColorStop(1, row.color);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(labelW, y, barW, barH, barH / 2);
+      ctx.fill();
+
+      // Subtle glow
+      ctx.shadowColor = row.color;
+      ctx.shadowBlur = 8;
+      ctx.fillStyle = 'transparent';
+      ctx.beginPath();
+      ctx.roundRect(labelW, y, barW, barH, barH / 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+
+    // Count label
+    ctx.fillStyle = count > 0 ? '#fff' : 'rgba(255,255,255,0.2)';
+    ctx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(count, labelW + barW + 8, y + barH / 2);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(count, labelW + barW + 10, y + barH / 2);
+
+    y += barH + gap;
   });
+
+  // Total active pipeline label at bottom
+  y += 8;
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('Active Pipeline Total:', labelW - 14, y + 6);
+  ctx.fillStyle = '#3b82f6';
+  ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(totalActive + ' loan' + (totalActive !== 1 ? 's' : ''), labelW + 4, y + 6);
 }
 
 function renderLoanTypeChart() {
@@ -1882,22 +1942,23 @@ function renderLoanTypeChart() {
   var ctx = canvas.getContext('2d');
   var dpr = window.devicePixelRatio || 1;
   var rect = canvas.parentElement.getBoundingClientRect();
-  canvas.width = rect.width * dpr;
-  canvas.height = 200 * dpr;
-  canvas.style.width = rect.width + 'px';
-  canvas.style.height = '200px';
-  ctx.scale(dpr, dpr);
   var W = rect.width;
-  var H = 200;
-
+  var H = 340;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
 
   // Count loan types from active pipeline
   var typeCounts = {};
   pipelineLoans.forEach(function(loan) {
-    var label = loan.transaction_type || 'Unknown';
-    if (loan.loan_program) label += ' / ' + loan.loan_program;
-    if (!label || label === 'Unknown') label = 'Not Set';
+    var label = '';
+    if (loan.transaction_type && loan.loan_program) label = loan.transaction_type + ' / ' + loan.loan_program;
+    else if (loan.transaction_type) label = loan.transaction_type;
+    else if (loan.loan_program) label = loan.loan_program;
+    else label = 'Not Set';
     typeCounts[label] = (typeCounts[label] || 0) + 1;
   });
 
@@ -1905,20 +1966,20 @@ function renderLoanTypeChart() {
   var total = pipelineLoans.length;
 
   if (total === 0) {
-    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('No active loans', W / 2, H / 2);
     return;
   }
 
-  var colors = ['#3b82f6', '#22c55e', '#8b5cf6', '#f59e0b', '#ec4899', '#06b6d4', '#ef4444', '#14b8a6'];
-  var cx = W * 0.32;
-  var cy = H / 2;
-  var radius = 70;
-  var innerRadius = 42;
+  var colors = ['#818cf8', '#f472b6', '#34d399', '#fbbf24', '#38bdf8', '#fb923c', '#a78bfa', '#f87171'];
+  var cx = W * 0.35;
+  var cy = H * 0.42;
+  var radius = Math.min(W * 0.28, 100);
+  var innerRadius = radius * 0.58;
 
-  // Draw donut
+  // Draw donut slices
   var startAngle = -Math.PI / 2;
   types.forEach(function(type, i) {
     var sliceAngle = (typeCounts[type] / total) * Math.PI * 2;
@@ -1932,6 +1993,12 @@ function renderLoanTypeChart() {
     ctx.fillStyle = color;
     ctx.globalAlpha = 0.85;
     ctx.fill();
+
+    // Glow
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+    ctx.fill();
+    ctx.shadowBlur = 0;
     ctx.globalAlpha = 1;
 
     startAngle = endAngle;
@@ -1939,37 +2006,41 @@ function renderLoanTypeChart() {
 
   // Center text
   ctx.fillStyle = '#fff';
-  ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.font = 'bold 28px -apple-system, BlinkMacSystemFont, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(total, cx, cy - 6);
+  ctx.fillText(total, cx, cy - 8);
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
-  ctx.fillText('LOANS', cx, cy + 12);
+  ctx.font = 'bold 11px -apple-system, BlinkMacSystemFont, sans-serif';
+  ctx.fillText('ACTIVE LOANS', cx, cy + 14);
 
-  // Legend
-  var legendX = W * 0.62;
-  var legendY = 30;
+  // Legend — below the donut
+  var legendY = cy + radius + 30;
+  var legendX = 20;
   types.forEach(function(type, i) {
     var color = colors[i % colors.length];
-    var y = legendY + i * 26;
+    var pct = Math.round((typeCounts[type] / total) * 100);
 
     // Color dot
     ctx.beginPath();
-    ctx.arc(legendX, y, 5, 0, Math.PI * 2);
+    ctx.arc(legendX + 6, legendY, 6, 0, Math.PI * 2);
     ctx.fillStyle = color;
     ctx.fill();
 
     // Label
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.font = '13px -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(type, legendX + 14, y + 1);
+    ctx.textBaseline = 'middle';
+    ctx.fillText(type, legendX + 18, legendY);
 
-    // Count
+    // Count + percent
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.font = 'bold 12px -apple-system, BlinkMacSystemFont, sans-serif';
-    ctx.fillText('(' + typeCounts[type] + ')', legendX + 14 + ctx.measureText(type).width + 6, y + 1);
+    ctx.font = 'bold 13px -apple-system, BlinkMacSystemFont, sans-serif';
+    var labelWidth = ctx.measureText(type).width;
+    ctx.fillText(typeCounts[type] + ' (' + pct + '%)', legendX + 18 + labelWidth + 8, legendY);
+
+    legendY += 24;
   });
 }
 
@@ -3100,7 +3171,7 @@ function loadCrm() {
         crmLoaded = true;
         crmRenderList();
         document.getElementById('navCrmCount').textContent = crmContacts.length;
-        document.getElementById('dashCrm').textContent = crmContacts.length;
+        var dce=document.getElementById('dashCrm');if(dce)dce.textContent=crmContacts.length;
         document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
       }
     })
@@ -3168,7 +3239,7 @@ function crmConfirmDelete() {
     crmRenderList();
     showToast('Contact deleted');
     document.getElementById('navCrmCount').textContent = crmContacts.length;
-    document.getElementById('dashCrm').textContent = crmContacts.length;
+    var dce=document.getElementById('dashCrm');if(dce)dce.textContent=crmContacts.length;
     document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
   })
   .catch(function() { showToast('Delete failed'); });
@@ -3332,7 +3403,7 @@ function confirmDeleteContact(id, name) {
     searchDeleteContacts(); // refresh search results
     showToast(name + ' deleted');
     document.getElementById('navCrmCount').textContent = crmContacts.length;
-    document.getElementById('dashCrm').textContent = crmContacts.length;
+    var dce=document.getElementById('dashCrm');if(dce)dce.textContent=crmContacts.length;
     document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
   })
   .catch(function() { showToast('Delete failed'); });
