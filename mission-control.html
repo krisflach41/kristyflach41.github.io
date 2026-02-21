@@ -633,6 +633,39 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
 .qb-saved-item:hover { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.03); }
 .qb-saved-name { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 .qb-saved-badge { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(59,130,246,0.1); color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+
+/* Quick Report Cards */
+.qr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.qr-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; text-align: center; }
+.qr-card:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
+.qr-card.active { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); box-shadow: 0 0 15px rgba(59,130,246,0.1); }
+.qr-card.user-saved { border-style: dashed; }
+.qr-icon { font-size: 20px; }
+.qr-name { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; line-height: 1.3; }
+.qr-card.active .qr-name { color: #3b82f6; }
+
+/* Month picker */
+.qr-months { display: flex; gap: 4px; flex-wrap: wrap; }
+.qr-month { padding: 6px 12px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qr-month:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.qr-month.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+
+/* Period picker */
+.qr-periods { display: flex; gap: 6px; flex-wrap: wrap; }
+.qr-period { padding: 8px 16px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qr-period:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.qr-period.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+
+/* Custom category buttons */
+.qr-cat { padding: 10px 18px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 12px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qr-cat:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.qr-cat.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+
+/* Column filter */
+.mc-table th .col-filter { display: block; margin-top: 4px; }
+.mc-table th .col-filter input, .mc-table th .col-filter select { background: rgba(0,0,0,0.3); border: 1px solid rgba(59,130,246,0.15); color: #fff; padding: 3px 6px; border-radius: 3px; font-size: 10px; font-family: 'Share Tech Mono', monospace; width: 100%; outline: none; }
+.mc-table th .col-filter input:focus, .mc-table th .col-filter select:focus { border-color: rgba(59,130,246,0.4); }
+.mc-table th .col-filter select { appearance: auto; }
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
 .at-title { padding: 12px 14px 0; font-size: 12px; font-weight: 700; }
@@ -1487,78 +1520,73 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
 
     <!-- ======= CUSTOM REPORTS TAB ======= -->
     <div id="anaTabReports" style="display:none;">
-      <!-- Saved Reports -->
-      <div class="mc-panel" style="padding:14px 20px;">
-        <div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.2);margin-bottom:10px;font-family:'Share Tech Mono',monospace;">⚡ QUICK REPORTS</div>
-        <div class="qb-saved">
-          <div class="qb-saved-item" onclick="anaRunQuickReport('production')"><span>📊</span><div class="qb-saved-name">MONTHLY PRODUCTION</div><div class="qb-saved-badge">YTD</div></div>
-          <div class="qb-saved-item" onclick="anaRunQuickReport('refi')"><span>🎯</span><div class="qb-saved-name">REFI CANDIDATES</div><div class="qb-saved-badge">ALL</div></div>
-          <div class="qb-saved-item" onclick="anaRunQuickReport('highrate')"><span>💰</span><div class="qb-saved-name">HIGH-RATE CLIENTS</div><div class="qb-saved-badge">ALL</div></div>
-          <div class="qb-saved-item" onclick="anaRunQuickReport('sources')"><span>🤝</span><div class="qb-saved-name">SOURCE BREAKDOWN</div><div class="qb-saved-badge">YTD</div></div>
+
+      <!-- QUICK REPORTS -->
+      <div class="mc-panel" style="padding:16px 20px;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">QUICK REPORTS</div>
+          <div class="mc-status">SELECT A REPORT</div>
         </div>
+        <div class="qr-grid" id="qrGrid">
+          <div class="qr-card" onclick="qrSelect('production',this)"><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
+          <div class="qr-card" onclick="qrSelect('refi',this)"><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
+          <div class="qr-card" onclick="qrSelect('strike',this)"><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
+          <div class="qr-card" onclick="qrSelect('sources',this)"><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
+          <div class="qr-card" onclick="qrSelect('realtor',this)"><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
+          <div class="qr-card" onclick="qrSelect('birthdays',this)"><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)"><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-refi',this)"><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
+          <div class="qr-card" onclick="qrSelect('age',this)"><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
+          <div class="qr-card" onclick="qrSelect('fallout',this)"><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
+        </div>
+        <div id="qrUserSaved"></div>
       </div>
 
-      <!-- Query Builder -->
-      <div class="mc-panel">
-        <div class="mc-panel-head">
+      <!-- MINI CONFIG (appears after selecting a quick report) -->
+      <div class="mc-panel" id="qrConfigPanel" style="display:none;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker"></div>
-          <div class="mc-panel-title">REPORT BUILDER</div>
-          <div class="mc-status" id="anaQbStatus">READY</div>
+          <div class="mc-panel-title" id="qrConfigTitle">CONFIGURE</div>
         </div>
-
-        <div class="qb-section">
-          <div class="qb-label"><span class="qb-step">01</span> REPORT TYPE</div>
-          <div class="qb-types" id="anaQbTypes">
-            <div class="qb-type active" data-type="production" onclick="anaSelectType(this)"><span>📋</span> LOAN PRODUCTION</div>
-            <div class="qb-type" data-type="clients" onclick="anaSelectType(this)"><span>👥</span> CLIENT DATABASE</div>
-            <div class="qb-type" data-type="pipeline" onclick="anaSelectType(this)"><span>📊</span> PIPELINE ACTIVITY</div>
-            <div class="qb-type" data-type="opportunities" onclick="anaSelectType(this)"><span>🎯</span> OPPORTUNITY SCAN</div>
-          </div>
-        </div>
-
-        <div class="qb-section">
-          <div class="qb-label"><span class="qb-step">02</span> SELECT FIELDS</div>
-          <div class="qb-fields" id="anaQbFields"></div>
-        </div>
-
-        <div class="qb-section">
-          <div class="qb-label"><span class="qb-step">03</span> DATE RANGE</div>
-          <div class="qb-dates">
-            <input type="date" class="qb-date-input" id="anaDateFrom">
-            <span class="qb-date-sep">→</span>
-            <input type="date" class="qb-date-input" id="anaDateTo">
-            <div class="qb-presets">
-              <div class="qb-preset" onclick="anaSetDatePreset('mtd',this)">MTD</div>
-              <div class="qb-preset active" onclick="anaSetDatePreset('ytd',this)">YTD</div>
-              <div class="qb-preset" onclick="anaSetDatePreset('qtr',this)">QTR</div>
-              <div class="qb-preset" onclick="anaSetDatePreset('12mo',this)">12 MO</div>
-              <div class="qb-preset" onclick="anaSetDatePreset('all',this)">ALL</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="qb-section">
-          <div class="qb-label"><span class="qb-step">04</span> FILTERS</div>
-          <div class="qb-filters" id="anaQbFilters"></div>
-          <button class="qb-add-filter" onclick="anaAddFilter()">+ ADD FILTER</button>
-        </div>
-
-        <div class="qb-actions">
-          <button class="qb-run" onclick="anaRunReport()">▶ RUN REPORT</button>
-          <button class="qb-export" onclick="anaExportCSV()">📄 EXPORT CSV</button>
+        <div id="qrConfigBody"></div>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+          <button class="qb-run" onclick="qrRunReport()">▶ RUN REPORT</button>
+          <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
           <div class="qb-result-count" id="anaResultCount"></div>
         </div>
       </div>
 
-      <!-- Results -->
+      <!-- CUSTOM REPORT (filterable table) -->
+      <div class="mc-panel" id="qrCustomPanel" style="display:none;padding:16px 20px;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+          <div class="mc-panel-title">CUSTOM REPORT</div>
+          <div class="mc-status" style="color:#f59e0b;">BUILD YOUR OWN</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <div class="qr-cat" data-cat="loans" onclick="qrCustomCat('loans',this)">📋 ALL LOANS</div>
+          <div class="qr-cat" data-cat="clients" onclick="qrCustomCat('clients',this)">👥 ALL CLIENTS</div>
+          <div class="qr-cat" data-cat="pipeline" onclick="qrCustomCat('pipeline',this)">📊 ACTIVE PIPELINE</div>
+        </div>
+        <div id="qrCustomTable"></div>
+      </div>
+
+      <!-- RESULTS -->
       <div class="mc-panel" id="anaResultsPanel" style="display:none;">
-        <div class="mc-panel-head">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker green"></div>
-          <div class="mc-panel-title">RESULTS</div>
+          <div class="mc-panel-title" id="anaResultsTitle">RESULTS</div>
           <div class="mc-status" id="anaResultsStatus">—</div>
         </div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+          <input type="text" class="qb-filter-val" id="anaSearchBox" placeholder="Search results..." oninput="anaFilterResults()" style="max-width:300px;">
+          <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
+          <button class="qb-export" onclick="anaSaveQuickReport()">⭐ SAVE AS QUICK REPORT</button>
+          <div style="margin-left:auto;font-size:12px;color:rgba(59,130,246,0.5);letter-spacing:1px;font-family:'Share Tech Mono',monospace;" id="anaResultCount2"></div>
+        </div>
         <div class="mc-table-wrap" id="anaResultsTable"></div>
-        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.25);letter-spacing:1px;font-family:'Share Tech Mono',monospace;"></div>
+        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:1px;font-family:'Share Tech Mono',monospace;"></div>
       </div>
     </div>
 
@@ -2332,6 +2360,7 @@ function anaShowTab(tab, el) {
 }
 
 function loadAnalytics() {
+  qrLoadUserReports();
   if (anaDataLoaded) { renderAnalyticsDashboard(); return; }
   // Fetch all loan history
   fetch(API_BASE + '/ae-loans-api', { method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2646,224 +2675,78 @@ function renderStrikeRate() {
   document.getElementById('anaStrikeCards').innerHTML = sh;
 }
 
-// ===== QUERY BUILDER =====
-var anaQbType = 'production';
-var anaQbFieldDefs = {
-  production: ['BORROWER','LOAN AMOUNT','RATE','STRIKE RATE','LOAN TYPE','PROGRAM','STATUS','OUTCOME DATE','SOURCE','PROPERTY','AE ID','LENDER LOAN #'],
-  clients: ['NAME','PHONE','EMAIL','TYPE','SOURCE','BIRTHDAY','BIRTH MONTH','ADDRESS','CREATED'],
-  pipeline: ['BORROWER','STAGE','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM','PROPERTY','DAYS IN STAGE','AE ID'],
-  opportunities: ['BORROWER','FUNDED RATE','MARKET RATE','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT','FUNDED DATE','PRIORITY']
-};
+// ===== QUICK REPORTS =====
+var qrCurrentType='';var qrCurrentConfig={};var qrResultData=[];var qrResultColumns=[];
+var qrUserReports=JSON.parse(localStorage.getItem('ae_user_reports')||'[]');
 
-function anaSelectType(el) {
-  document.querySelectorAll('#anaQbTypes .qb-type').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  anaQbType = el.getAttribute('data-type');
-  anaInitFields();
-  document.getElementById('anaQbFilters').innerHTML = '';
-  anaFilterCount = 0;
+function qrLoadUserReports(){var g=document.getElementById('qrUserSaved');if(!g||qrUserReports.length===0)return;var h='<div style="margin-top:10px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;gap:8px;flex-wrap:wrap;">';qrUserReports.forEach(function(r){h+='<div class="qr-card user-saved" onclick="qrSelect(\''+r.id+'\',this)" style="flex-direction:row;padding:8px 14px;gap:8px;"><span>⭐</span><div class="qr-name">'+r.name+'</div></div>';});h+='</div>';g.innerHTML=h;}
+
+function qrSelect(type,el){document.querySelectorAll('.qr-card').forEach(function(c){c.classList.remove('active');});if(el)el.classList.add('active');qrCurrentType=type;document.getElementById('anaResultsPanel').style.display='none';document.getElementById('qrConfigPanel').style.display='block';qrBuildConfig(type);}
+
+function qrBuildConfig(type){
+  var title=document.getElementById('qrConfigTitle'),body=document.getElementById('qrConfigBody');
+  var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  var cm=new Date().getMonth();
+  var mp='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT MONTH</div><div class="qr-months">';
+  months.forEach(function(m,i){mp+='<div class="qr-month'+(i===cm?' active':'')+'" onclick="qrPickMonth(this,'+i+')">'+m+'</div>';});mp+='</div>';
+  var pp='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT PERIOD</div><div class="qr-periods"><div class="qr-period" onclick="qrPickPeriod(this,\'mtd\')">THIS MONTH</div><div class="qr-period" onclick="qrPickPeriod(this,\'qtd\')">THIS QUARTER</div><div class="qr-period active" onclick="qrPickPeriod(this,\'ytd\')">YEAR TO DATE</div><div class="qr-period" onclick="qrPickPeriod(this,\'12mo\')">LAST 12 MONTHS</div><div class="qr-period" onclick="qrPickPeriod(this,\'all\')">ALL TIME</div></div>';
+  qrCurrentConfig={};
+  if(type==='birthdays'){title.textContent='BIRTHDAYS';body.innerHTML=mp;qrCurrentConfig.month=cm;}
+  else if(type==='anniv-purchase'){title.textContent='PURCHASE CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
+  else if(type==='anniv-refi'){title.textContent='REFI CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
+  else if(type==='production'){title.textContent='MONTHLY PRODUCTION';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
+  else if(type==='sources'){title.textContent='SOURCE BREAKDOWN';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
+  else if(type==='refi'){title.textContent='REFI CANDIDATES';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">MARKET RATE: <span style="color:#3b82f6;font-weight:700;">6.375%</span> — ALL CLIENTS ABOVE MARKET</div>';}
+  else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">MARKET RATE: <span style="color:#3b82f6;font-weight:700;">6.375%</span> — ALL CLIENTS ABOVE MARKET</div>';}
+  else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
+  else if(type.startsWith('user_')){var s=qrUserReports.find(function(r){return r.id===type;});if(s){title.textContent=s.name.toUpperCase();body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);">SAVED REPORT — CLICK RUN</div>';qrCurrentConfig=JSON.parse(JSON.stringify(s.config));}}
 }
 
-function anaInitQueryBuilder() {
-  anaInitFields();
-  var now = new Date();
-  document.getElementById('anaDateFrom').value = now.getFullYear() + '-01-01';
-  document.getElementById('anaDateTo').value = now.toISOString().split('T')[0];
+function qrPickMonth(el,m){el.parentElement.querySelectorAll('.qr-month').forEach(function(e){e.classList.remove('active');});el.classList.add('active');qrCurrentConfig.month=m;}
+function qrPickPeriod(el,p){el.parentElement.querySelectorAll('.qr-period').forEach(function(e){e.classList.remove('active');});el.classList.add('active');qrCurrentConfig.period=p;}
+
+function qrGetDateRange(p){var n=new Date(),to=n.toISOString().split('T')[0],fr='2020-01-01';if(p==='mtd')fr=new Date(n.getFullYear(),n.getMonth(),1).toISOString().split('T')[0];else if(p==='qtd'){var q=Math.floor(n.getMonth()/3)*3;fr=new Date(n.getFullYear(),q,1).toISOString().split('T')[0];}else if(p==='ytd')fr=n.getFullYear()+'-01-01';else if(p==='12mo')fr=new Date(n.getFullYear()-1,n.getMonth(),n.getDate()).toISOString().split('T')[0];return{from:fr,to:to};}
+
+function qrNames(h){var n=[];if(h.borrowers&&Array.isArray(h.borrowers))h.borrowers.forEach(function(b){if(b.name)n.push(b.name);});return n.join(' & ')||'—';}
+
+function qrRunReport(){
+  var type=qrCurrentType,data=[],cols=[],mk=6.375;
+  if(type==='birthdays'){cols=['NAME','TYPE','BIRTHDAY','PHONE','EMAIL'];var m=qrCurrentConfig.month;anaCrmAll.forEach(function(c){if(!c.birthday)return;var p=c.birthday.split('-');if(p.length>=2&&parseInt(p[1])-1===m)data.push({'NAME':(c.first_name||'')+' '+(c.last_name||''),'TYPE':(c.type||'—').toUpperCase(),'BIRTHDAY':c.birthday,'PHONE':c.phone||'—','EMAIL':c.email||'—'});});}
+  else if(type==='anniv-purchase'||type==='anniv-refi'){cols=['BORROWER','CLOSE DATE','YEARS','LOAN AMOUNT','RATE','LOAN TYPE'];var m=qrCurrentConfig.month;anaLoanHistory.forEach(function(h){if(h.outcome!=='funded'||!h.outcome_date)return;var od=new Date(h.outcome_date);if(od.getMonth()!==m)return;var tt=(h.transaction_type||'').toLowerCase();if(type==='anniv-purchase'&&tt&&tt.indexOf('purch')<0)return;if(type==='anniv-refi'&&tt&&tt.indexOf('refi')<0)return;data.push({'BORROWER':qrNames(h),'CLOSE DATE':h.outcome_date,'YEARS':new Date().getFullYear()-od.getFullYear(),'LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'RATE':h.interest_rate?parseFloat(h.interest_rate).toFixed(3)+'%':'—','LOAN TYPE':h.transaction_type||'—'});});}
+  else if(type==='production'){cols=['BORROWER','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM','CLOSE DATE','AE ID'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(h.outcome!=='funded')return;if(h.outcome_date&&(h.outcome_date<r.from||h.outcome_date>r.to))return;data.push({'BORROWER':qrNames(h),'LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'RATE':h.interest_rate?parseFloat(h.interest_rate).toFixed(3)+'%':'—','LOAN TYPE':h.transaction_type||'—','PROGRAM':h.loan_program||'—','CLOSE DATE':h.outcome_date||'—','AE ID':h.ae_id||'—',_amt:parseFloat(h.loan_amount)||0,_rate:parseFloat(h.interest_rate)||0});});}
+  else if(type==='sources'){cols=['SOURCE','TOTAL CONTACTS','FUNDED','PULL-THROUGH %'];var sc={},sf={};anaCrmAll.forEach(function(c){var s=c.source||'Other';sc[s]=(sc[s]||0)+1;});anaLoanHistory.forEach(function(h){if(h.outcome==='funded'&&h.source)sf[h.source]=(sf[h.source]||0)+1;});Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];}).forEach(function(s){var f=sf[s]||0;data.push({'SOURCE':s,'TOTAL CONTACTS':sc[s],'FUNDED':f,'PULL-THROUGH %':sc[s]>0?Math.round((f/sc[s])*100)+'%':'0%'});});}
+  else if(type==='refi'||type==='strike'){cols=['BORROWER','FUNDED RATE','MARKET RATE','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT','FUNDED DATE'];anaLoanHistory.forEach(function(h){if(h.outcome!=='funded'||!h.interest_rate)return;var rate=parseFloat(h.interest_rate);if(rate<=mk)return;var sp=rate-mk,amt=parseFloat(h.loan_amount)||0;data.push({'BORROWER':qrNames(h),'FUNDED RATE':rate.toFixed(3)+'%','MARKET RATE':mk.toFixed(3)+'%','SPREAD':'+'+sp.toFixed(3)+'%','MONTHLY SAVINGS':'$'+Math.round((sp/100)*amt/12),'LOAN AMOUNT':'$'+Math.round(amt).toLocaleString(),'FUNDED DATE':h.outcome_date||'—'});});}
+  else if(type==='age'){cols=['BORROWER','AE ID','CREATED','DECISIONED','DAYS','OUTCOME'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(!h.outcome_date||!h.created_at)return;if(h.outcome_date<r.from||h.outcome_date>r.to)return;var c=new Date(h.created_at),d=new Date(h.outcome_date),days=Math.round((d-c)/(86400000));data.push({'BORROWER':qrNames(h),'AE ID':h.ae_id||'—','CREATED':h.created_at?h.created_at.split('T')[0]:'—','DECISIONED':h.outcome_date,'DAYS':days,'OUTCOME':(h.outcome||'').toUpperCase()});});}
+  else if(type==='fallout'){cols=['BORROWER','AE ID','LOAN AMOUNT','OUTCOME','OUTCOME DATE','LOAN TYPE'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(!h.outcome||h.outcome==='funded')return;if(h.outcome_date&&(h.outcome_date<r.from||h.outcome_date>r.to))return;data.push({'BORROWER':qrNames(h),'AE ID':h.ae_id||'—','LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'OUTCOME':h.outcome.toUpperCase(),'OUTCOME DATE':h.outcome_date||'—','LOAN TYPE':h.transaction_type||'—'});});}
+  qrResultData=data;qrResultColumns=cols;qrRenderResults(data,cols);
 }
 
-function anaInitFields() {
-  var fields = anaQbFieldDefs[anaQbType] || [];
-  var h = '';
-  fields.forEach(function(f) {
-    h += '<div class="qb-chip" onclick="this.classList.toggle(\'active\')">' + f + '</div>';
-  });
-  document.getElementById('anaQbFields').innerHTML = h;
+function qrRenderResults(data,cols){
+  var p=document.getElementById('anaResultsPanel');p.style.display='block';
+  document.getElementById('anaResultsStatus').textContent=data.length+' RECORDS';
+  document.getElementById('anaResultCount2').textContent=data.length+' RECORDS';
+  document.getElementById('anaSearchBox').value='';
+  var h='<table class="mc-table"><thead><tr>';
+  cols.forEach(function(c){h+='<th>'+c+'<div class="col-filter"><input placeholder="Filter..." oninput="qrFilterColumn()"></div></th>';});
+  h+='</tr></thead><tbody>';
+  data.forEach(function(row){h+='<tr>';cols.forEach(function(c){var v=row[c]!==undefined?row[c]:'—';var cls='';if(c==='BORROWER'||c==='NAME')cls='cell-name';else if(c.indexOf('AMOUNT')>=0||c.indexOf('SAVINGS')>=0)cls='cell-money';else if(c.indexOf('RATE')>=0||c==='SPREAD')cls='cell-rate';else if(c==='OUTCOME'){var lv=(''+v).toLowerCase();v='<span class="cell-tag '+(lv==='funded'?'funded':'denied')+'">'+v+'</span>';cls='';}else if(c==='TYPE'){v='<span class="cell-tag ct-active">'+v+'</span>';cls='';}h+='<td class="'+cls+'">'+v+'</td>';});h+='</tr>';});
+  h+='</tbody></table>';document.getElementById('anaResultsTable').innerHTML=h;
+  var ta=0,rs=0,rc=0;data.forEach(function(d){if(d._amt)ta+=d._amt;if(d._rate){rs+=d._rate;rc++;}});
+  var f='';if(ta>0)f+='TOTAL: <span style="color:#22c55e;font-weight:700;">$'+Math.round(ta).toLocaleString()+'</span>';
+  if(rc>0)f+=(f?' · ':'')+' AVG RATE: <span style="color:#3b82f6;font-weight:700;">'+(rs/rc).toFixed(3)+'%</span>';
+  document.getElementById('anaResultsFooter').innerHTML=f;
+  p.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
-function anaSetDatePreset(preset, el) {
-  document.querySelectorAll('.qb-preset').forEach(function(p) { p.classList.remove('active'); });
-  el.classList.add('active');
-  var now = new Date();
-  var from, to = now.toISOString().split('T')[0];
-  if (preset === 'mtd') from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  else if (preset === 'ytd') from = now.getFullYear() + '-01-01';
-  else if (preset === 'qtr') { var q = Math.floor(now.getMonth() / 3) * 3; from = new Date(now.getFullYear(), q, 1).toISOString().split('T')[0]; }
-  else if (preset === '12mo') from = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate()).toISOString().split('T')[0];
-  else from = '2020-01-01';
-  document.getElementById('anaDateFrom').value = from;
-  document.getElementById('anaDateTo').value = to;
-}
+function qrFilterColumn(){var t=document.querySelector('#anaResultsTable table');if(!t)return;var f=[];t.querySelectorAll('thead input').forEach(function(i){f.push(i.value.toLowerCase());});t.querySelectorAll('tbody tr').forEach(function(tr){var show=true;tr.querySelectorAll('td').forEach(function(td,i){if(f[i]&&td.textContent.toLowerCase().indexOf(f[i])<0)show=false;});tr.style.display=show?'':'none';});document.getElementById('anaResultCount2').textContent=t.querySelectorAll('tbody tr:not([style*="display: none"])').length+' RECORDS';}
 
-var anaFilterCount = 0;
-var anaQbFilterDefs = {
-  production: ['STATUS','LOAN AMOUNT','RATE','STRIKE RATE','LOAN TYPE','PROGRAM','SOURCE'],
-  clients: ['TYPE','SOURCE','BIRTH MONTH','NAME','EMAIL','PHONE'],
-  pipeline: ['STAGE','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM'],
-  opportunities: ['PRIORITY','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT']
-};
-function anaAddFilter() {
-  anaFilterCount++;
-  var id = 'anaFilter' + anaFilterCount;
-  var fields = anaQbFilterDefs[anaQbType] || ['STATUS'];
-  var opts = fields.map(function(f) { return '<option>' + f + '</option>'; }).join('');
-  var row = document.createElement('div');
-  row.className = 'qb-filter-row';
-  row.id = id;
-  row.innerHTML = '<select class="qb-filter-select">' + opts + '</select>' +
-    '<select class="qb-filter-select"><option>is</option><option>≥</option><option>≤</option><option>contains</option></select>' +
-    '<input class="qb-filter-val" placeholder="Enter value...">' +
-    '<button class="qb-filter-remove" onclick="document.getElementById(\'' + id + '\').remove()">✕</button>';
-  document.getElementById('anaQbFilters').appendChild(row);
-}
+function anaFilterResults(){var q=document.getElementById('anaSearchBox').value.toLowerCase();var t=document.querySelector('#anaResultsTable table');if(!t)return;t.querySelectorAll('tbody tr').forEach(function(tr){tr.style.display=tr.textContent.toLowerCase().indexOf(q)>=0?'':'none';});document.getElementById('anaResultCount2').textContent=t.querySelectorAll('tbody tr:not([style*="display: none"])').length+' RECORDS';}
 
-function anaRunReport() {
-  var selectedFields = [];
-  document.querySelectorAll('#anaQbFields .qb-chip.active').forEach(function(c) { selectedFields.push(c.textContent.replace('✓ ','')); });
-  var fromDate = document.getElementById('anaDateFrom').value;
-  var toDate = document.getElementById('anaDateTo').value;
+function anaSaveQuickReport(){var name=prompt('Name this report:');if(!name)return;qrUserReports.push({id:'user_'+Date.now(),name:name,config:JSON.parse(JSON.stringify(qrCurrentConfig)),type:qrCurrentType});localStorage.setItem('ae_user_reports',JSON.stringify(qrUserReports));qrLoadUserReports();showToast('Report saved: '+name);}
 
-  var data = [];
-  if (anaQbType === 'production') {
-    anaLoanHistory.forEach(function(h) {
-      if (h.outcome_date && h.outcome_date >= fromDate && h.outcome_date <= toDate) {
-        var names = [];
-        if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
-        data.push({ 'BORROWER': names.join(' & ') || '—', 'LOAN AMOUNT': h.loan_amount ? '$' + Math.round(parseFloat(h.loan_amount)).toLocaleString() : '—',
-          'RATE': h.interest_rate ? parseFloat(h.interest_rate).toFixed(3) + '%' : '—', 'STRIKE RATE': h.strike_rate ? parseFloat(h.strike_rate).toFixed(3) + '%' : '—',
-          'LOAN TYPE': h.transaction_type || '—', 'PROGRAM': h.loan_program || '—', 'STATUS': h.outcome || '—',
-          'OUTCOME DATE': h.outcome_date || '—', 'SOURCE': '—', 'PROPERTY': h.subject_address || '—', 'AE ID': h.ae_id || '—', 'LENDER LOAN #': h.loan_number || '—',
-          _raw_amount: parseFloat(h.loan_amount) || 0, _raw_rate: parseFloat(h.interest_rate) || 0 });
-      }
-    });
-  } else if (anaQbType === 'clients') {
-    anaCrmAll.forEach(function(c) {
-      var bMonth = '—';
-      if (c.birthday) {
-        var parts = c.birthday.split('-');
-        if (parts.length >= 2) {
-          var monthNames = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-          var mi = parseInt(parts[1]) - 1;
-          if (mi >= 0 && mi < 12) bMonth = monthNames[mi];
-        }
-      }
-      data.push({ 'NAME': (c.first_name || '') + ' ' + (c.last_name || ''), 'PHONE': c.phone || '—', 'EMAIL': c.email || '—',
-        'TYPE': (c.type || '—').toUpperCase(), 'SOURCE': c.source || '—', 'BIRTHDAY': c.birthday || '—',
-        'BIRTH MONTH': bMonth, 'ADDRESS': c.address || '—', 'CREATED': c.created_at ? c.created_at.split('T')[0] : '—' });
-    });
-  } else if (anaQbType === 'pipeline') {
-    pipelineLoans.forEach(function(l) {
-      var borrowers = pipelineBorrowers.filter(function(b) { return b.ae_id === l.ae_id; });
-      var names = borrowers.map(function(b) { return b.name || '—'; });
-      data.push({ 'BORROWER': names.join(' & ') || '—', 'STAGE': (l.pipeline_stage || '').toUpperCase(), 'LOAN AMOUNT': l.loan_amount ? '$' + Math.round(parseFloat(l.loan_amount)).toLocaleString() : '—',
-        'RATE': l.interest_rate ? parseFloat(l.interest_rate).toFixed(3) + '%' : '—', 'LOAN TYPE': l.transaction_type || '—',
-        'PROGRAM': l.loan_program || '—', 'PROPERTY': (l.subject_street || '') + ' ' + (l.subject_city || ''), 'DAYS IN STAGE': '—', 'AE ID': l.ae_id || '—',
-        _raw_amount: parseFloat(l.loan_amount) || 0 });
-    });
-  } else if (anaQbType === 'opportunities') {
-    var mktRate = 6.375;
-    anaLoanHistory.filter(function(h) { return h.outcome === 'funded' && h.interest_rate && parseFloat(h.interest_rate) > mktRate; }).forEach(function(h) {
-      var rate = parseFloat(h.interest_rate);
-      var spread = rate - mktRate;
-      var save = Math.round((spread / 100) * (parseFloat(h.loan_amount) || 0) / 12);
-      var names = [];
-      if (h.borrowers && Array.isArray(h.borrowers)) h.borrowers.forEach(function(b) { if (b.name) names.push(b.name); });
-      data.push({ 'BORROWER': names.join(' & ') || '—', 'FUNDED RATE': rate.toFixed(3) + '%', 'MARKET RATE': mktRate.toFixed(3) + '%',
-        'SPREAD': '+' + spread.toFixed(3) + '%', 'MONTHLY SAVINGS': '$' + save, 'LOAN AMOUNT': '$' + Math.round(parseFloat(h.loan_amount) || 0).toLocaleString(),
-        'FUNDED DATE': h.outcome_date || '—', 'PRIORITY': spread >= 0.75 ? 'HOT' : spread >= 0.5 ? 'WARM' : 'WATCH',
-        _raw_amount: parseFloat(h.loan_amount) || 0 });
-    });
-  }
-
-  // Apply filters
-  document.querySelectorAll('#anaQbFilters .qb-filter-row').forEach(function(row) {
-    var selects = row.querySelectorAll('select');
-    var valInput = row.querySelector('input');
-    if (selects.length < 2 || !valInput) return;
-    var field = selects[0].value;
-    var op = selects[1].value;
-    var val = valInput.value.replace(/[$,%]/g, '').trim();
-    if (!val) return;
-    data = data.filter(function(d) {
-      var cellVal = (d[field] || '').toString().replace(/[$,%]/g, '');
-      if (op === 'is') return cellVal.toUpperCase() === val.toUpperCase();
-      if (op === '≥') return parseFloat(cellVal) >= parseFloat(val);
-      if (op === '≤') return parseFloat(cellVal) <= parseFloat(val);
-      if (op === 'contains') return cellVal.toUpperCase().indexOf(val.toUpperCase()) >= 0;
-      return true;
-    });
-  });
-
-  // Render table
-  var panel = document.getElementById('anaResultsPanel');
-  panel.style.display = 'block';
-  document.getElementById('anaResultsStatus').textContent = data.length + ' RECORDS';
-  document.getElementById('anaResultCount').textContent = data.length + ' RECORDS FOUND';
-
-  var th = '<table class="mc-table"><thead><tr>';
-  selectedFields.forEach(function(f) { th += '<th>' + f + '</th>'; });
-  th += '</tr></thead><tbody>';
-
-  data.forEach(function(row) {
-    th += '<tr>';
-    selectedFields.forEach(function(f) {
-      var v = row[f] || '—';
-      var cls = '';
-      if (f === 'BORROWER' || f === 'NAME') cls = 'cell-name';
-      else if (f.indexOf('AMOUNT') >= 0 || f.indexOf('SAVINGS') >= 0) cls = 'cell-money';
-      else if (f.indexOf('RATE') >= 0 || f === 'SPREAD') cls = 'cell-rate';
-      else if (f === 'STATUS') { var lv = v.toLowerCase(); cls = ''; v = '<span class="cell-tag ' + (lv === 'funded' ? 'funded' : lv === 'denied' ? 'denied' : 'ct-active') + '">' + v.toUpperCase() + '</span>'; }
-      else if (f === 'LOAN TYPE') { var lt = v.toLowerCase(); v = '<span class="cell-tag ' + (lt.indexOf('refi') >= 0 ? 'refi' : 'purchase') + '">' + v.toUpperCase() + '</span>'; cls = ''; }
-      else if (f === 'PRIORITY') { var pc = v === 'HOT' ? '#ef4444' : v === 'WARM' ? '#f59e0b' : '#3b82f6'; v = '<span class="cell-tag" style="background:' + pc + '15;color:' + pc + ';">' + v + '</span>'; cls = ''; }
-      th += '<td class="' + cls + '">' + v + '</td>';
-    });
-    th += '</tr>';
-  });
-  th += '</tbody></table>';
-  document.getElementById('anaResultsTable').innerHTML = th;
-
-  // Footer summary
-  var totalAmt = 0; var rateSum = 0; var rateCount = 0;
-  data.forEach(function(d) { if (d._raw_amount) totalAmt += d._raw_amount; if (d._raw_rate) { rateSum += d._raw_rate; rateCount++; } });
-  var foot = '';
-  if (totalAmt > 0) foot += 'TOTAL VOLUME: <span style="color:#22c55e;font-weight:700;">$' + Math.round(totalAmt).toLocaleString() + '</span>';
-  if (rateCount > 0) foot += (foot ? ' · ' : '') + 'AVG RATE: <span style="color:#3b82f6;font-weight:700;">' + (rateSum / rateCount).toFixed(3) + '%</span>';
-  document.getElementById('anaResultsFooter').innerHTML = foot;
-}
-
-function anaRunQuickReport(type) {
-  // Switch to reports tab
-  anaShowTab('reports', document.querySelectorAll('.ana-tab')[1]);
-  // Select type
-  var typeMap = { production: 'production', refi: 'opportunities', highrate: 'opportunities', sources: 'clients' };
-  var t = typeMap[type] || 'production';
-  document.querySelectorAll('#anaQbTypes .qb-type').forEach(function(el) {
-    el.classList.remove('active');
-    if (el.getAttribute('data-type') === t) { el.classList.add('active'); anaQbType = t; }
-  });
-  anaInitFields();
-  // Set all fields active
-  document.querySelectorAll('#anaQbFields .qb-chip').forEach(function(c) { c.classList.add('active'); });
-  // Set date to YTD
-  anaSetDatePreset('ytd', document.querySelectorAll('.qb-preset')[1]);
-  // Run
-  setTimeout(anaRunReport, 100);
-}
-
-function anaExportCSV() {
-  var table = document.querySelector('#anaResultsTable table');
-  if (!table) return;
-  var csv = '';
-  table.querySelectorAll('tr').forEach(function(tr) {
-    var row = [];
-    tr.querySelectorAll('th,td').forEach(function(cell) { row.push('"' + cell.textContent.replace(/"/g, '""') + '"'); });
-    csv += row.join(',') + '\n';
-  });
-  var blob = new Blob([csv], { type: 'text/csv' });
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'agent-edge-report.csv';
-  a.click();
-}
+function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');if(!t)return;var csv='';t.querySelectorAll('tr').forEach(function(tr){if(tr.style.display==='none')return;var row=[];tr.querySelectorAll('th,td').forEach(function(cell){row.push('"'+cell.textContent.replace(/"/g,'""').replace(/Filter\.\.\./g,'')+'"');});csv+=row.join(',')+'\n';});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='agent-edge-report.csv';a.click();}
 
 // ===== PIPELINE =====
 var pipelineLoaded = false;
