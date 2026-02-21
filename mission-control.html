@@ -1724,14 +1724,15 @@ function updateDashboard() {
   document.getElementById('dashSubtitle').textContent = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
 
   // Pipeline stats
-  var active = pipelineContacts.filter(function(c) { return c.stage !== 'closed' && c.stage !== 'dead' && c.stage !== 'cold' && c.stage !== 'archived'; }).length;
+  var active = pipelineLoans.length;
   document.getElementById('dashPipeline').textContent = active;
   document.getElementById('navPipelineCount').textContent = active;
 }
 
 // ===== PIPELINE =====
 var pipelineLoaded = false;
-var pipelineContacts = [];
+var pipelineLoans = []; // AE loan objects
+var pipelineBorrowers = []; // All borrowers across all loans
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 
 var pipelineColumns = [
@@ -1743,16 +1744,22 @@ var pipelineColumns = [
   { id: 'ratewatch', title: 'Rate Watch' },
   { id: 'underwriting', title: 'Underwriting' }
 ];
-var draggedContactId = null;
+var draggedLoanId = null;
 
 function loadPipeline() {
-  fetch(API_BASE + '/pipeline-api?action=list')
+  var userId = localStorage.getItem('agent_edge_user') || 'default';
+  fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'listActive', user_id: userId })
+  })
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.success && data.contacts) {
-        pipelineContacts = data.contacts;
+      if (data.success) {
+        pipelineLoans = data.loans || [];
+        pipelineBorrowers = data.borrowers || [];
       } else {
-        pipelineContacts = [];
+        pipelineLoans = [];
+        pipelineBorrowers = [];
       }
       pipelineLoaded = true;
       renderPipeline();
@@ -1760,27 +1767,34 @@ function loadPipeline() {
     })
     .catch(function(err) {
       console.error('Pipeline load error:', err);
-      pipelineContacts = [];
+      pipelineLoans = [];
+      pipelineBorrowers = [];
       pipelineLoaded = true;
       renderPipeline();
     });
 }
 
+// Helper: get borrowers for a specific loan
+function getLoanBorrowers(aeId) {
+  return pipelineBorrowers.filter(function(b) { return b.ae_id === aeId; });
+}
+
+// Helper: get primary borrower for a loan
+function getLoanPrimary(aeId) {
+  return pipelineBorrowers.find(function(b) { return b.ae_id === aeId && b.role === 'primary'; });
+}
+
 function renderPipeline() {
   var board = document.getElementById('pipelineBoard');
   board.innerHTML = '';
-  // Only show contacts in active pipeline stages
-  var activeContacts = pipelineContacts.filter(function(c) {
-    return c.stage !== 'cold' && c.stage !== 'dead' && c.stage !== 'archived' && c.stage !== 'closed';
-  });
-  document.getElementById('pipelineSubtitle').textContent = activeContacts.length + ' active loans';
+  document.getElementById('pipelineSubtitle').textContent = pipelineLoans.length + ' active loans';
 
   pipelineColumns.forEach(function(col) {
-    var colContacts = activeContacts.filter(function(c) { return c.stage === col.id; });
+    var colLoans = pipelineLoans.filter(function(l) { return l.pipeline_stage === col.id; });
     var colEl = document.createElement('div');
     colEl.className = 'pipeline-col';
     colEl.innerHTML =
-      '<div class="pipeline-col-header"><span class="pcol-title">' + col.title + '</span><span class="pcol-count">' + colContacts.length + '</span></div>' +
+      '<div class="pipeline-col-header"><span class="pcol-title">' + col.title + '</span><span class="pcol-count">' + colLoans.length + '</span></div>' +
       '<div class="pipeline-col-body" data-stage="' + col.id + '"></div>';
     board.appendChild(colEl);
 
@@ -1793,53 +1807,58 @@ function renderPipeline() {
       e.preventDefault();
       this.classList.remove('drop-zone');
       var newStage = this.dataset.stage;
-      if (draggedContactId && newStage) {
-        var c = pipelineContacts.find(function(x) { return x.id === draggedContactId; });
-        if (c) {
-          c.stage = newStage;
-          c.updatedAt = new Date().toISOString();
+      if (draggedLoanId && newStage) {
+        var loan = pipelineLoans.find(function(l) { return l.ae_id === draggedLoanId; });
+        if (loan) {
+          loan.pipeline_stage = newStage;
           renderPipeline();
-          // Save stage change to Supabase
-          fetch(API_BASE + '/pipeline-api', {
+          fetch(API_BASE + '/ae-loans-api', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'updateStage', contactId: c.id, stage: newStage, updatedAt: c.updatedAt })
+            body: JSON.stringify({ action: 'updateStage', ae_id: loan.ae_id, pipeline_stage: newStage })
           }).catch(function() {});
         }
       }
     });
 
-    colContacts.forEach(function(contact) {
+    colLoans.forEach(function(loan) {
+      var borrowers = getLoanBorrowers(loan.ae_id);
+      var primary = borrowers.find(function(b) { return b.role === 'primary'; });
       var card = document.createElement('div');
       card.className = 'pipeline-card';
       card.draggable = true;
-      card.dataset.id = contact.id;
+      card.dataset.id = loan.ae_id;
 
+      // Build borrower display
+      var displayName = borrowers.map(function(b) { return b.name || ''; }).filter(Boolean).join(' & ') || 'Unnamed';
+
+      // Tags
       var tagHtml = '';
-      if (contact.loanType) tagHtml += '<span class="pc-tag">' + contact.loanType + '</span> ';
-      if (contact.interestRate) tagHtml += '<span class="pc-tag' + (parseFloat(contact.interestRate) >= 7 ? ' red' : '') + '">' + contact.interestRate + '%</span> ';
-      if (contact.source) tagHtml += '<span class="pc-tag green">' + contact.source + '</span>';
+      var loanType = (loan.transaction_type || '') + (loan.loan_program ? ' / ' + loan.loan_program : '');
+      if (loanType && loanType !== ' / ') tagHtml += '<span class="pc-tag">' + loanType + '</span> ';
+      if (loan.interest_rate) tagHtml += '<span class="pc-tag' + (parseFloat(loan.interest_rate) >= 7 ? ' red' : '') + '">' + loan.interest_rate + '%</span> ';
+      if (loan.source) tagHtml += '<span class="pc-tag green">' + loan.source + '</span>';
 
-      // Show all borrower names if available
-      var borrowerNames = '';
-      if (contact.borrowers && contact.borrowers.length > 1) {
-        borrowerNames = contact.borrowers.map(function(b){ return b.name || ''; }).filter(Boolean).join(' & ');
+      // AE ID badge
+      var aeTag = '<span class="pc-tag" style="background:rgba(14,165,233,0.15);color:#0ea5e9;font-size:8px;font-family:monospace;">' + loan.ae_id + '</span> ';
+
+      // Address preview
+      var addrPreview = '';
+      if (loan.subject_street) {
+        addrPreview = '<div class="pc-sub" style="font-size:9px;opacity:0.5;margin-top:2px;"><i class="fas fa-map-marker-alt" style="margin-right:3px;"></i>' + loan.subject_street + '</div>';
       }
-      var displayName = borrowerNames || contact.name || 'Unnamed';
-
-      // CRM link indicator
-      var crmLink = (contact.crm_contact_id || (contact.id && contact.id.indexOf('crm-') === 0)) ? '<span class="pc-tag" style="background:rgba(14,165,233,0.15);color:#0ea5e9;font-size:8px;">CRM</span> ' : '';
 
       card.innerHTML =
         '<div class="pc-name">' + displayName + '</div>' +
-        '<div class="pc-sub">' + (contact.phone || contact.email || '') + '</div>' +
-        (tagHtml || crmLink ? '<div>' + crmLink + tagHtml + '</div>' : '');
+        '<div class="pc-sub">' + (primary ? (primary.phone || primary.email || '') : '') + '</div>' +
+        addrPreview +
+        '<div>' + aeTag + tagHtml + '</div>';
 
       card.addEventListener('dragstart', function(e) {
-        draggedContactId = contact.id;
+        draggedLoanId = loan.ae_id;
         this.classList.add('dragging');
       });
       card.addEventListener('dragend', function() { this.classList.remove('dragging'); });
-      card.addEventListener('click', function() { openFaceCard(contact.id); });
+      card.addEventListener('click', function() { openFaceCard(loan.ae_id); });
 
       body.appendChild(card);
     });
@@ -1854,27 +1873,21 @@ function renderPipeline() {
   });
 }
 
-function syncPipelineContact(c) {
-  fetch(API_BASE + '/save-contact', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ contact: c })
-  }).catch(function() {});
-}
-
 // ===== FUNDED MODAL =====
 var fundingContactId = null;
 var fundingContactName = '';
 
-function openFundedModal(contactId, defaultOutcome) {
-  fundingContactId = contactId;
-  var c = pipelineContacts.find(function(x) { return x.id === contactId; });
-  if (!c) return;
-  fundingContactName = c.name || 'Contact';
+function openFundedModal(aeId, defaultOutcome) {
+  fundingContactId = aeId; // now stores ae_id
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === aeId; });
+  if (!loan) return;
+  var borrowers = getLoanBorrowers(aeId);
+  fundingContactName = borrowers.map(function(b) { return b.name; }).filter(Boolean).join(' & ') || 'Loan ' + aeId;
   document.getElementById('funded_date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('funded_rate').value = c.interestRate || '';
-  document.getElementById('funded_transType').value = c.transactionType || '';
-  document.getElementById('funded_loanProgram').value = c.loanProgram || '';
-  document.getElementById('funded_amount').value = c.loanAmount || '';
+  document.getElementById('funded_rate').value = loan.interest_rate || '';
+  document.getElementById('funded_transType').value = loan.transaction_type || '';
+  document.getElementById('funded_loanProgram').value = loan.loan_program || '';
+  document.getElementById('funded_amount').value = loan.loan_amount || '';
   document.getElementById('funded_strikeRate').value = '';
   document.getElementById('funded_notes').value = '';
   document.getElementById('funded_outcome').value = defaultOutcome || 'funded';
@@ -1929,56 +1942,40 @@ function closeFundedModal() {
 
 function saveFundedContact() {
   if (!fundingContactId) return;
-  var c = pipelineContacts.find(function(x) { return x.id === fundingContactId; });
-  if (!c) return;
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === fundingContactId; });
+  if (!loan) return;
 
   var outcome = document.getElementById('funded_outcome').value;
   var outcomeDate = document.getElementById('funded_date').value;
   var rate = document.getElementById('funded_rate').value;
-  var transType = document.getElementById('funded_transType').value;
-  var loanProgram = document.getElementById('funded_loanProgram').value;
-  var loanType = transType + (loanProgram ? ' / ' + loanProgram : '');
   var amount = document.getElementById('funded_amount').value;
   var strikeRate = document.getElementById('funded_strikeRate').value;
   var notes = document.getElementById('funded_notes').value;
 
-  // Determine CRM contact ID from the pipeline contact
-  var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
-
-  // Call the closeLoan API endpoint
-  console.log('=== CLOSING LOAN ===', { contactId: c.id, outcome: outcome, crmId: crmId });
-  fetch(API_BASE + '/pipeline-api', {
+  console.log('=== DECISIONING LOAN ===', { ae_id: loan.ae_id, outcome: outcome });
+  fetch(API_BASE + '/ae-loans-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      action: 'closeLoan',
-      contactId: c.id,
+      action: 'decisionLoan',
+      ae_id: loan.ae_id,
       outcome: outcome,
       outcome_date: outcomeDate,
-      crm_contact_id: crmId,
-      primary_name: c.name,
-      primary_phone: c.phone,
-      primary_email: c.email,
-      loan_number: c.loanNumber || '',
-      loan_type: loanType,
-      transaction_type: transType,
-      loan_program: loanProgram,
-      loan_amount: amount,
       interest_rate: rate,
+      loan_amount: amount,
       strike_rate: strikeRate,
-      subject_address: c.subjectAddress || '',
       notes: notes
     })
   })
   .then(function(r) { 
-    console.log('closeLoan response status:', r.status);
+    console.log('decisionLoan response status:', r.status);
     return r.json(); 
   })
   .then(function(result) {
-    console.log('closeLoan result:', result);
+    console.log('decisionLoan result:', result);
     if (result.success) {
       // Remove from active pipeline
-      pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== fundingContactId; });
+      pipelineLoans = pipelineLoans.filter(function(l) { return l.ae_id !== fundingContactId; });
       closeFundedModal();
       renderPipeline();
       updateDashboard();
@@ -1986,61 +1983,28 @@ function saveFundedContact() {
       var toastIcons = { funded: 'fa-trophy', denied: 'fa-times-circle', suspended: 'fa-pause-circle', withdrawn: 'fa-undo' };
       var toastColors = { funded: '#22c55e', denied: '#ef4444', suspended: '#f59e0b', withdrawn: '#8b5cf6' };
       var label = outcome.charAt(0).toUpperCase() + outcome.slice(1);
-      showToast('<i class="fas ' + (toastIcons[outcome] || 'fa-check') + '" style="color:' + (toastColors[outcome] || '#fff') + ';"></i> ' + c.name + ' — ' + label + '! Saved to history.');
-      // Refresh CRM list to reflect type change to past_client
+      showToast('<i class="fas ' + (toastIcons[outcome] || 'fa-check') + '" style="color:' + (toastColors[outcome] || '#fff') + ';"></i> ' + fundingContactName + ' — ' + label + '! Saved to history.');
       if (typeof loadCrm === 'function') loadCrm();
     } else {
       showToast('Error: ' + (result.message || 'Unknown error'));
     }
   })
   .catch(function(err) {
-    console.error('Close loan error:', err);
+    console.error('Decision loan error:', err);
     showToast('Error saving outcome');
   });
 }
 
-// ===== MARK COLD =====
+// ===== MARK COLD (deferred — not part of AE loan system yet) =====
 function markContactCold(contactId) {
-  var c = pipelineContacts.find(function(x) { return x.id === contactId; });
-  if (!c) return;
-  if (!confirm('Move ' + c.name + ' to cold leads? They\'ll be removed from the pipeline but stay in your CRM.')) return;
-
-  // Update CRM
-  fetch(API_BASE + '/crm', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      action: 'save',
-      contact: {
-        pipeline_id: c.id,
-        name: c.name,
-        email: c.email,
-        phone: c.phone,
-        pipeline_status: 'cold',
-        type: 'client',
-        source: 'pipeline'
-      }
-    })
-  }).catch(function() {});
-
-  // Remove from pipeline
-  pipelineContacts = pipelineContacts.filter(function(x) { return x.id !== contactId; });
-  
-  // Update stage to cold in Supabase
-  fetch(API_BASE + '/pipeline-api', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'updateStage', contactId: contactId, stage: 'cold', updatedAt: new Date().toISOString() })
-  }).catch(function() {});
-  closePipelineModal();
-  renderPipeline();
-  updateDashboard();
-  showToast(c.name + ' moved to cold leads in CRM');
+  showToast('Cold leads feature coming soon');
 }
 
-var editingPipelineId = null;
+var editingPipelineId = null; // now stores ae_id when editing
 
 function addNewPipelineContact(stage) {
   editingPipelineId = null;
-  document.getElementById('pcmTitle').textContent = 'Add Contact';
+  document.getElementById('pcmTitle').textContent = 'Add to Pipeline';
   document.getElementById('pcm_name').value = '';
   document.getElementById('pcm_phone').value = '';
   document.getElementById('pcm_email').value = '';
@@ -2060,36 +2024,37 @@ function addNewPipelineContact(stage) {
   document.getElementById('pipelineContactModal').classList.add('show');
 }
 
-function openPipelineContact(id) {
-  var c = pipelineContacts.find(function(x) { return x.id === id; });
-  if (!c) return;
-  editingPipelineId = id;
-  document.getElementById('pcmTitle').textContent = 'Edit Contact';
-  document.getElementById('pcm_name').value = c.name || '';
-  document.getElementById('pcm_phone').value = c.phone || '';
-  document.getElementById('pcm_email').value = c.email || '';
-  document.getElementById('pcm_source').value = c.source || 'other';
-  document.getElementById('pcm_realtor').value = c.realtorName || '';
-  document.getElementById('pcm_stage').value = c.stage || 'warm';
-  document.getElementById('pcm_transType').value = c.transactionType || '';
-  document.getElementById('pcm_loanProgram').value = c.loanProgram || '';
-  document.getElementById('pcm_occupancy').value = c.occupancyType || '';
-  document.getElementById('pcm_rate').value = c.interestRate || '';
-  document.getElementById('pcm_loanAmount').value = c.loanAmount || '';
-  document.getElementById('pcm_address').value = c.subjectAddress || '';
+function openPipelineContact(aeId) {
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === aeId; });
+  if (!loan) return;
+  editingPipelineId = aeId;
+  var borrowers = getLoanBorrowers(aeId);
+  var primary = borrowers.find(function(b) { return b.role === 'primary'; });
+
+  document.getElementById('pcmTitle').textContent = 'Edit Loan — ' + loan.ae_id;
+  document.getElementById('pcm_name').value = primary ? primary.name : '';
+  document.getElementById('pcm_phone').value = primary ? primary.phone : '';
+  document.getElementById('pcm_email').value = primary ? primary.email : '';
+  document.getElementById('pcm_source').value = loan.source || 'other';
+  document.getElementById('pcm_realtor').value = loan.realtor_name || '';
+  document.getElementById('pcm_stage').value = loan.pipeline_stage || 'warm';
+  document.getElementById('pcm_transType').value = loan.transaction_type || '';
+  document.getElementById('pcm_loanProgram').value = loan.loan_program || '';
+  document.getElementById('pcm_occupancy').value = loan.occupancy || '';
+  document.getElementById('pcm_rate').value = loan.interest_rate || '';
+  document.getElementById('pcm_loanAmount').value = loan.loan_amount || '';
+  document.getElementById('pcm_address').value = loan.subject_street || '';
   document.getElementById('pcmDeleteBtn').style.display = 'inline-block';
 
-  // Show borrowers if available
+  // Show borrowers
   var bWrap = document.getElementById('pcmBorrowersWrap');
   var bList = document.getElementById('pcmBorrowersList');
-  if (c.borrowers && c.borrowers.length > 0 && c.borrowers[0].name) {
+  if (borrowers.length > 0) {
     var h = '';
-    c.borrowers.forEach(function(b) {
-      var role = b.role || 'borrower';
-      var color = role === 'primary' ? '#0ea5e9' : '#a855f7';
-      var crmTag = b.crm_id ? ' <i class="fas fa-link" style="font-size:8px;opacity:0.5;"></i>' : '';
+    borrowers.forEach(function(b) {
+      var color = b.role === 'primary' ? '#0ea5e9' : '#a855f7';
       h += '<div style="padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;background:' + color + '18;border:1px solid ' + color + '40;color:' + color + ';">';
-      h += (b.name || 'Unnamed') + ' <span style="font-size:9px;opacity:0.7;">' + role + '</span>' + crmTag + '</div>';
+      h += (b.name || 'Unnamed') + ' <span style="font-size:9px;opacity:0.7;">' + b.role + '</span></div>';
     });
     bList.innerHTML = h;
     bWrap.style.display = 'block';
@@ -2097,98 +2062,132 @@ function openPipelineContact(id) {
     bWrap.style.display = 'none';
   }
 
-  // Show View in CRM button if linked
+  // CRM button — link to primary
   var crmBtn = document.getElementById('pcmCrmBtn');
-  var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
-  if (crmId) {
+  if (primary && primary.crm_contact_id) {
     crmBtn.style.display = 'inline-block';
-    crmBtn.dataset.crmId = crmId;
+    crmBtn.dataset.crmId = primary.crm_contact_id;
   } else {
     crmBtn.style.display = 'none';
   }
 
-  // Show outcome buttons for existing contacts
-  document.getElementById('pcmOutcomeWrap').style.display = 'flex';
+  // Outcome buttons — only show in underwriting
+  document.getElementById('pcmOutcomeWrap').style.display = (loan.pipeline_stage === 'underwriting') ? 'flex' : 'none';
 
   document.getElementById('pipelineContactModal').classList.add('show');
-}
-
-function openCrmFromPipeline() {
-  var crmBtn = document.getElementById('pcmCrmBtn');
-  var crmId = crmBtn ? crmBtn.dataset.crmId : null;
-  if (!crmId) return;
-  closePipelineModal();
-  // Switch to CRM view and open the contact
-  switchView('crm', document.querySelector('.nav-item[onclick*="crm"]'));
-  setTimeout(function() { crmSelectContact(crmId); }, 300);
 }
 
 function savePipelineContact() {
   var name = document.getElementById('pcm_name').value.trim();
   if (!name) { showToast('Name is required'); return; }
 
-  var contact;
+  var stage = document.getElementById('pcm_stage').value;
+  var userId = localStorage.getItem('agent_edge_user') || 'default';
+
   if (editingPipelineId) {
-    contact = pipelineContacts.find(function(x) { return x.id === editingPipelineId; });
+    // Update existing loan
+    var loan = pipelineLoans.find(function(l) { return l.ae_id === editingPipelineId; });
+    if (loan) {
+      loan.pipeline_stage = stage;
+      loan.source = document.getElementById('pcm_source').value;
+      loan.realtor_name = document.getElementById('pcm_realtor').value.trim();
+      loan.transaction_type = document.getElementById('pcm_transType').value;
+      loan.loan_program = document.getElementById('pcm_loanProgram').value;
+      loan.occupancy = document.getElementById('pcm_occupancy').value;
+      loan.interest_rate = document.getElementById('pcm_rate').value.trim();
+      loan.loan_amount = document.getElementById('pcm_loanAmount').value.trim();
+      loan.subject_street = document.getElementById('pcm_address').value.trim();
+
+      fetch(API_BASE + '/ae-loans-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'updateLoan', ae_id: loan.ae_id,
+          pipeline_stage: loan.pipeline_stage, source: loan.source,
+          realtor_name: loan.realtor_name, transaction_type: loan.transaction_type,
+          loan_program: loan.loan_program, occupancy: loan.occupancy,
+          interest_rate: loan.interest_rate, loan_amount: loan.loan_amount,
+          subject_street: loan.subject_street
+        })
+      }).catch(function(err) { console.error('Loan update error:', err); });
+    }
+    closePipelineModal();
+    renderPipeline();
+    updateDashboard();
+    showToast('Loan updated!');
   } else {
-    contact = { id: 'pipeline-' + Date.now().toString(36), createdAt: new Date().toISOString(), dates: {}, borrowers: [{ name:'', currentAddress:'', ownRent:'', monthlyPayment:'', retainSell:'', employer:'', selfReportedWages:'', incomeType:'', w2Year1:'', w2Year2:'', ytd:'', qualifyingEarnings:'' }] };
+    // Create new loan — first create a CRM contact, then create the AE loan
+    var phone = document.getElementById('pcm_phone').value.trim();
+    var email = document.getElementById('pcm_email').value.trim();
+    
+    // Split name into first/last
+    var parts = name.split(' ');
+    var firstName = parts[0] || '';
+    var lastName = parts.slice(1).join(' ') || '';
+
+    // Create CRM contact first
+    fetch(API_BASE + '/crm-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save', crm: { first_name: firstName, last_name: lastName, email: email, phone: phone, type: 'borrower' }})
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(crmResult) {
+      if (!crmResult.success || !crmResult.id) {
+        showToast('Error creating CRM contact');
+        return;
+      }
+      // Now create the AE loan
+      return fetch(API_BASE + '/ae-loans-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'createLoan',
+          user_id: userId,
+          crm_contact_id: crmResult.id,
+          pipeline_stage: stage,
+          source: document.getElementById('pcm_source').value,
+          realtor_name: document.getElementById('pcm_realtor').value.trim(),
+          transaction_type: document.getElementById('pcm_transType').value,
+          loan_program: document.getElementById('pcm_loanProgram').value,
+          loan_amount: document.getElementById('pcm_loanAmount').value.trim(),
+          interest_rate: document.getElementById('pcm_rate').value.trim(),
+          subject_street: document.getElementById('pcm_address').value.trim()
+        })
+      }).then(function(r) { return r.json(); });
+    })
+    .then(function(result) {
+      if (result && result.success) {
+        closePipelineModal();
+        loadPipeline(); // Reload to get the new loan
+        if (typeof loadCrm === 'function') loadCrm();
+        showToast('Loan ' + result.ae_id + ' created!');
+      } else {
+        showToast('Error: ' + (result ? result.message : 'Unknown'));
+      }
+    })
+    .catch(function(err) { console.error('Create loan error:', err); showToast('Error creating loan'); });
   }
-
-  contact.name = name;
-  contact.phone = document.getElementById('pcm_phone').value.trim();
-  contact.email = document.getElementById('pcm_email').value.trim();
-  contact.source = document.getElementById('pcm_source').value;
-  contact.realtorName = document.getElementById('pcm_realtor').value.trim();
-  contact.stage = document.getElementById('pcm_stage').value;
-
-  contact.transactionType = document.getElementById('pcm_transType').value;
-  contact.loanProgram = document.getElementById('pcm_loanProgram').value;
-  contact.occupancyType = document.getElementById('pcm_occupancy').value;
-  contact.loanType = contact.transactionType + (contact.loanProgram ? ' / ' + contact.loanProgram : '');
-  contact.interestRate = document.getElementById('pcm_rate').value.trim();
-  contact.loanAmount = document.getElementById('pcm_loanAmount').value.trim();
-  contact.subjectAddress = document.getElementById('pcm_address').value.trim();
-  contact.updatedAt = new Date().toISOString();
-
-  if (!editingPipelineId) {
-    pipelineContacts.push(contact);
-  }
-
-  closePipelineModal();
-  renderPipeline();
-  updateDashboard();
-  showToast('Contact saved!');
-
-  // Save to Supabase
-  fetch(API_BASE + '/pipeline-api', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save', id: contact.id, name: contact.name, phone: contact.phone, email: contact.email, stage: contact.stage, source: contact.source, realtorName: contact.realtorName, loanType: contact.loanType, transactionType: contact.transactionType, loanProgram: contact.loanProgram, occupancyType: contact.occupancyType, loanAmount: contact.loanAmount, interestRate: contact.interestRate, subjectAddress: contact.subjectAddress, lockStatus: contact.lockStatus, crm_contact_id: contact.crm_contact_id, dates: contact.dates || {}, borrowers: contact.borrowers || [] })
-  }).catch(function(err) { console.error('Pipeline save error:', err); });
-
-  // Sync to CRM
-  fetch(API_BASE + '/crm-api', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'syncFromPipeline', contact: { name: contact.name, email: contact.email, phone: contact.phone, pipeline_id: contact.id }})
-  }).catch(function() {});
 }
 
 function deletePipelineContact() {
-  if (!editingPipelineId || !confirm('Delete this contact permanently?')) return;
+  if (!editingPipelineId || !confirm('Delete this loan permanently?')) return;
   
-  // Delete from Supabase
-  fetch(API_BASE + '/pipeline-api', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'delete', contactId: editingPipelineId })
-  }).catch(function(err) { console.error('Pipeline delete error:', err); });
-
-  pipelineContacts = pipelineContacts.filter(function(c) { return c.id !== editingPipelineId; });
+  // For now, just remove from local array. TODO: add a delete endpoint to ae-loans-api
+  pipelineLoans = pipelineLoans.filter(function(l) { return l.ae_id !== editingPipelineId; });
   closePipelineModal();
   renderPipeline();
   updateDashboard();
-  showToast('Contact deleted');
+  showToast('Loan removed');
 }
 
 function closePipelineModal() { document.getElementById('pipelineContactModal').classList.remove('show'); }
+
+function openCrmFromPipeline() {
+  var crmBtn = document.getElementById('pcmCrmBtn');
+  var crmId = crmBtn ? crmBtn.dataset.crmId : null;
+  if (!crmId) return;
+  closePipelineModal();
+  switchView('crm', document.querySelector('.nav-item[onclick*="crm"]'));
+  setTimeout(function() { crmSelectContact(crmId); }, 300);
+}
 
 // ===== LOAN FACE CARD =====
 var fcContactId = null;
@@ -2205,41 +2204,40 @@ var FC_DATES = [
   { key: 'closing', label: 'Closing' }
 ];
 
-function openFaceCard(contactId) {
-  var c = pipelineContacts.find(function(x) { return x.id === contactId; });
-  if (!c) return;
-  fcContactId = contactId;
+function openFaceCard(aeId) {
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === aeId; });
+  if (!loan) return;
+  fcContactId = aeId; // now stores ae_id instead of contact id
+
+  var borrowers = getLoanBorrowers(aeId);
 
   // Title — use borrower names
-  var names = '';
-  if (c.borrowers && c.borrowers.length > 0) {
-    names = c.borrowers.map(function(b){ return b.name; }).filter(Boolean).join(' & ');
-  }
-  document.getElementById('fcTitle').textContent = names || c.name || 'Loan File';
-  document.getElementById('fcLoanNumDisplay').textContent = c.loanNumber ? 'Loan #' + c.loanNumber : '';
+  var names = borrowers.map(function(b) { return b.name; }).filter(Boolean).join(' & ');
+  document.getElementById('fcTitle').textContent = names || 'Loan File';
+  document.getElementById('fcLoanNumDisplay').textContent = loan.lender_loan_number ? 'Loan #' + loan.lender_loan_number : loan.ae_id;
 
   // Fields
-  document.getElementById('fc_loanNumber').value = c.loanNumber || '';
-  document.getElementById('fc_street').value = c.subjectStreet || '';
-  document.getElementById('fc_city').value = c.subjectCity || '';
-  document.getElementById('fc_state').value = c.subjectState || '';
-  document.getElementById('fc_zip').value = c.subjectZip || '';
+  document.getElementById('fc_loanNumber').value = loan.lender_loan_number || '';
+  document.getElementById('fc_street').value = loan.subject_street || '';
+  document.getElementById('fc_city').value = loan.subject_city || '';
+  document.getElementById('fc_state').value = loan.subject_state || '';
+  document.getElementById('fc_zip').value = loan.subject_zip || '';
   fcUpdateZillowLink();
-  document.getElementById('fc_transType').value = c.transactionType || '';
-  document.getElementById('fc_loanProgram').value = c.loanProgram || '';
-  document.getElementById('fc_occupancy').value = c.occupancyType || '';
-  document.getElementById('fc_rate').value = c.interestRate ? parseFloat(c.interestRate).toFixed(3) : '';
-  document.getElementById('fc_appraisedValue').value = c.appraisedValue ? fcToMoney(c.appraisedValue) : '';
-  document.getElementById('fc_loanAmount').value = c.loanAmount ? fcToMoney(c.loanAmount) : '';
+  document.getElementById('fc_transType').value = loan.transaction_type || '';
+  document.getElementById('fc_loanProgram').value = loan.loan_program || '';
+  document.getElementById('fc_occupancy').value = loan.occupancy || '';
+  document.getElementById('fc_rate').value = loan.interest_rate ? parseFloat(loan.interest_rate).toFixed(3) : '';
+  document.getElementById('fc_appraisedValue').value = loan.appraised_value ? fcToMoney(loan.appraised_value) : '';
+  document.getElementById('fc_loanAmount').value = loan.loan_amount ? fcToMoney(loan.loan_amount) : '';
   fcCalcLTV();
 
   // Borrower chips
   var chips = document.getElementById('fcBorrowerChips');
   var ch = '';
-  if (c.borrowers && c.borrowers.length > 0) {
-    c.borrowers.forEach(function(b) {
+  if (borrowers.length > 0) {
+    borrowers.forEach(function(b) {
       var color = (b.role === 'primary') ? '#0ea5e9' : '#a855f7';
-      var crmId = b.crm_id || null;
+      var crmId = b.crm_contact_id || null;
       var onclick = crmId ? ' onclick="fcOpenBorrowerCrm(\'' + crmId + '\')"' : '';
       ch += '<div class="fc-borrower-chip" style="background:' + color + '14;border-color:' + color + '40;color:' + color + ';"' + onclick + '>';
       ch += '<i class="fas fa-user" style="font-size:10px;"></i> ' + (b.name || 'Unnamed');
@@ -2252,15 +2250,19 @@ function openFaceCard(contactId) {
   }
   chips.innerHTML = ch;
 
-  // CRM button
-  var crmId = c.crm_contact_id || (c.id && c.id.indexOf('crm-') === 0 ? c.id.replace('crm-','') : null);
+  // CRM button — link to primary borrower's CRM card
+  var primary = borrowers.find(function(b) { return b.role === 'primary'; });
+  var crmId = primary ? primary.crm_contact_id : null;
   document.getElementById('fcCrmBtn').style.display = crmId ? '' : 'none';
   document.getElementById('fcCrmBtn').dataset.crmId = crmId || '';
 
   // Key dates
   var dh = '';
   FC_DATES.forEach(function(d) {
-    var val = (c.dates && c.dates[d.key]) ? c.dates[d.key] : '';
+    var dateKey = 'date_' + d.key;
+    // Map face card key names to ae_loans column names
+    if (d.key === 'finalApproval') dateKey = 'date_final_approval';
+    var val = loan[dateKey] || '';
     var badge = fcDateBadge(val);
     dh += '<div class="fc-date-row">';
     dh += '<div class="fc-date-label">' + d.label + '</div>';
@@ -2270,10 +2272,16 @@ function openFaceCard(contactId) {
   });
   document.getElementById('fcDatesContainer').innerHTML = dh;
 
-  // Tasks
-  fcTasks = c.tasks ? JSON.parse(JSON.stringify(c.tasks)) : [];
+  // Tasks — stored on the loan for now
+  fcTasks = loan._tasks ? JSON.parse(JSON.stringify(loan._tasks)) : [];
   fcRenderTasks();
   document.getElementById('fcTaskForm').style.display = 'none';
+
+  // Show/hide decision buttons based on stage
+  var decisionBtns = document.querySelectorAll('#fcOverlay .outcome-btn');
+  decisionBtns.forEach(function(btn) {
+    btn.style.display = (loan.pipeline_stage === 'underwriting') ? '' : 'none';
+  });
 
   document.getElementById('fcOverlay').classList.add('show');
 }
@@ -2284,9 +2292,9 @@ function closeFaceCard() {
 }
 
 function fcOutcome(outcome) {
-  var id = fcContactId; // capture before closing
+  var aeId = fcContactId; // now stores ae_id
   closeFaceCard();
-  openFundedModal(id, outcome);
+  openFundedModal(aeId, outcome);
 }
 
 function fcCalcLTV() {
@@ -2471,55 +2479,60 @@ function fcSaveTask() {
 
 function saveFaceCard() {
   if (!fcContactId) return;
-  var c = pipelineContacts.find(function(x) { return x.id === fcContactId; });
-  if (!c) return;
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === fcContactId; });
+  if (!loan) return;
 
-  // Collect all fields
-  c.loanNumber = document.getElementById('fc_loanNumber').value.trim();
-  c.subjectStreet = document.getElementById('fc_street').value.trim();
-  c.subjectCity = document.getElementById('fc_city').value.trim();
-  c.subjectState = document.getElementById('fc_state').value.trim().toUpperCase();
-  c.subjectZip = document.getElementById('fc_zip').value.trim();
-  c.subjectAddress = [c.subjectStreet, c.subjectCity, c.subjectState, c.subjectZip].filter(Boolean).join(', ');
-  c.transactionType = document.getElementById('fc_transType').value;
-  c.loanProgram = document.getElementById('fc_loanProgram').value;
-  c.loanType = c.transactionType + (c.loanProgram ? ' / ' + c.loanProgram : '');
-  c.occupancyType = document.getElementById('fc_occupancy').value;
-  c.interestRate = document.getElementById('fc_rate').value.trim();
-  c.appraisedValue = String(fcParseMoney(document.getElementById('fc_appraisedValue').value) || '');
-  c.loanAmount = String(fcParseMoney(document.getElementById('fc_loanAmount').value) || '');
+  // Collect all fields into the loan object
+  loan.lender_loan_number = document.getElementById('fc_loanNumber').value.trim();
+  loan.subject_street = document.getElementById('fc_street').value.trim();
+  loan.subject_city = document.getElementById('fc_city').value.trim();
+  loan.subject_state = document.getElementById('fc_state').value.trim().toUpperCase();
+  loan.subject_zip = document.getElementById('fc_zip').value.trim();
+  loan.transaction_type = document.getElementById('fc_transType').value;
+  loan.loan_program = document.getElementById('fc_loanProgram').value;
+  loan.occupancy = document.getElementById('fc_occupancy').value;
+  loan.interest_rate = document.getElementById('fc_rate').value.trim();
+  loan.appraised_value = String(fcParseMoney(document.getElementById('fc_appraisedValue').value) || '');
+  loan.loan_amount = String(fcParseMoney(document.getElementById('fc_loanAmount').value) || '');
 
   // Collect dates
-  c.dates = c.dates || {};
+  var dateMap = { mutual: 'date_mutual', emd: 'date_emd', appraisal: 'date_appraisal', inspection: 'date_inspection', conditional: 'date_conditional', finalApproval: 'date_final_approval', closing: 'date_closing' };
   FC_DATES.forEach(function(d) {
     var input = document.getElementById('fcd_' + d.key);
-    if (input) c.dates[d.key] = input.value || '';
+    var col = dateMap[d.key] || ('date_' + d.key);
+    if (input) loan[col] = input.value || '';
   });
 
-  // Tasks
-  c.tasks = fcTasks;
-
-  c.updatedAt = new Date().toISOString();
+  // Tasks — store locally on the loan object for now
+  loan._tasks = fcTasks;
 
   // Update display
-  document.getElementById('fcLoanNumDisplay').textContent = c.loanNumber ? 'Loan #' + c.loanNumber : '';
+  document.getElementById('fcLoanNumDisplay').textContent = loan.lender_loan_number ? 'Loan #' + loan.lender_loan_number : loan.ae_id;
 
-  // Save to Supabase
-  fetch(API_BASE + '/pipeline-api', {
+  // Save to Supabase via ae-loans-api
+  fetch(API_BASE + '/ae-loans-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      action: 'save', id: c.id, name: c.name, phone: c.phone, email: c.email,
-      stage: c.stage, source: c.source, realtorName: c.realtorName,
-      loanType: c.loanType, transactionType: c.transactionType,
-      loanProgram: c.loanProgram, occupancyType: c.occupancyType,
-      loanAmount: c.loanAmount, appraisedValue: c.appraisedValue,
-      loanNumber: c.loanNumber,
-      interestRate: c.interestRate, subjectAddress: c.subjectAddress,
-      subjectStreet: c.subjectStreet, subjectCity: c.subjectCity,
-      subjectState: c.subjectState, subjectZip: c.subjectZip,
-      lockStatus: c.lockStatus, crm_contact_id: c.crm_contact_id,
-      dates: c.dates, borrowers: c.borrowers || [],
-      tasks: c.tasks || []
+      action: 'updateLoan',
+      ae_id: loan.ae_id,
+      lender_loan_number: loan.lender_loan_number,
+      subject_street: loan.subject_street,
+      subject_city: loan.subject_city,
+      subject_state: loan.subject_state,
+      subject_zip: loan.subject_zip,
+      transaction_type: loan.transaction_type,
+      loan_program: loan.loan_program,
+      occupancy: loan.occupancy,
+      interest_rate: loan.interest_rate,
+      appraised_value: loan.appraised_value,
+      loan_amount: loan.loan_amount,
+      date_mutual: loan.date_mutual,
+      date_emd: loan.date_emd,
+      date_appraisal: loan.date_appraisal,
+      date_inspection: loan.date_inspection,
+      date_conditional: loan.date_conditional,
+      date_final_approval: loan.date_final_approval,
+      date_closing: loan.date_closing
     })
   }).then(function() {
     renderPipeline();
