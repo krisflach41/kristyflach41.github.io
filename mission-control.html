@@ -1486,6 +1486,40 @@ body {
   </div>
 </div>
 
+<!-- ===== ADD BORROWER MODAL ===== -->
+<div class="modal-overlay" id="addBorrowerModal">
+  <div class="modal-box" style="width:440px;">
+    <div class="modal-title"><i class="fas fa-user-plus"></i> Add Borrower to Loan</div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:4px;display:block;">Search Existing Contacts</label>
+      <input type="text" id="abSearchInput" placeholder="Type a name..." style="width:100%;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:13px;" oninput="abSearchContacts()">
+      <div id="abSearchResults" style="max-height:160px;overflow-y:auto;margin-top:6px;"></div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;display:block;">Or Create New Contact</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input type="text" id="abNewName" placeholder="Full Name" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
+        <input type="text" id="abNewPhone" placeholder="Phone" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
+        <input type="email" id="abNewEmail" placeholder="Email" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;grid-column:1/-1;">
+      </div>
+      <div style="margin-top:8px;">
+        <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:4px;display:block;">Role</label>
+        <select id="abRole" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
+          <option value="co-borrower">Co-Borrower</option>
+          <option value="spouse">Spouse</option>
+          <option value="non-borrowing_spouse">Non-Borrowing Spouse</option>
+          <option value="parent">Parent</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <button class="topbar-btn primary" style="margin-top:10px;width:100%;" onclick="abCreateAndAdd()"><i class="fas fa-user-plus"></i> Create Contact & Add to Loan</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="topbar-btn" onclick="abClose()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== LOAN FACE CARD OVERLAY ===== -->
 <div class="fc-overlay" id="fcOverlay">
   <div class="fc-topbar">
@@ -2248,15 +2282,22 @@ function openFaceCard(aeId) {
       var color = (b.role === 'primary') ? '#0ea5e9' : '#a855f7';
       var crmId = b.crm_contact_id || null;
       var onclick = crmId ? ' onclick="fcOpenBorrowerCrm(\'' + crmId + '\')"' : '';
-      ch += '<div class="fc-borrower-chip" style="background:' + color + '14;border-color:' + color + '40;color:' + color + ';"' + onclick + '>';
+      ch += '<div class="fc-borrower-chip" style="background:' + color + '14;border-color:' + color + '40;color:' + color + ';">';
+      ch += '<span' + onclick + ' style="cursor:' + (crmId ? 'pointer' : 'default') + ';">';
       ch += '<i class="fas fa-user" style="font-size:10px;"></i> ' + (b.name || 'Unnamed');
       ch += ' <span style="font-size:9px;opacity:0.6;">' + (b.role || '') + '</span>';
       if (crmId) ch += ' <i class="fas fa-external-link-alt" style="font-size:8px;opacity:0.5;"></i>';
+      ch += '</span>';
+      // Remove button (not for primary)
+      if (b.role !== 'primary') {
+        ch += ' <span onclick="event.stopPropagation();fcRemoveBorrower(\'' + b.id + '\',\'' + (b.name||'') + '\')" style="cursor:pointer;opacity:0.5;margin-left:6px;font-size:10px;" title="Remove from loan"><i class="fas fa-times"></i></span>';
+      }
       ch += '</div>';
     });
-  } else {
-    ch = '<span style="font-size:11px;color:var(--text-muted);">No borrowers linked</span>';
   }
+  // Add borrower button
+  ch += '<div class="fc-borrower-chip" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);cursor:pointer;" onclick="fcOpenAddBorrower()">';
+  ch += '<i class="fas fa-plus" style="font-size:10px;"></i> Add Borrower</div>';
   chips.innerHTML = ch;
 
   // CRM button — link to primary borrower's CRM card
@@ -2413,7 +2454,172 @@ function fcOpenBorrowerCrm(crmId) {
   setTimeout(function() { crmSelectContact(crmId); }, 300);
 }
 
-// Tasks
+// ===== ADD/REMOVE BORROWER =====
+function fcOpenAddBorrower() {
+  document.getElementById('abSearchInput').value = '';
+  document.getElementById('abSearchResults').innerHTML = '';
+  document.getElementById('abNewName').value = '';
+  document.getElementById('abNewPhone').value = '';
+  document.getElementById('abNewEmail').value = '';
+  document.getElementById('abRole').value = 'co-borrower';
+  document.getElementById('addBorrowerModal').classList.add('show');
+}
+
+function abClose() {
+  document.getElementById('addBorrowerModal').classList.remove('show');
+}
+
+function abSearchContacts() {
+  var query = document.getElementById('abSearchInput').value.trim();
+  var resultsEl = document.getElementById('abSearchResults');
+  if (query.length < 2) { resultsEl.innerHTML = ''; return; }
+
+  // Search CRM contacts
+  fetch(API_BASE + '/crm-api?action=list', { method: 'GET' })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.contacts) { resultsEl.innerHTML = ''; return; }
+      var matches = data.contacts.filter(function(c) {
+        return c.name && c.name.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+      }).slice(0, 6);
+
+      if (matches.length === 0) {
+        resultsEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.3);padding:6px;">No matches found</div>';
+        return;
+      }
+
+      // Check which contacts are already on this loan
+      var existingIds = getLoanBorrowers(fcContactId).map(function(b) { return b.crm_contact_id; });
+
+      var h = '';
+      matches.forEach(function(c) {
+        var already = existingIds.indexOf(c.id) >= 0;
+        h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);' + (already ? 'opacity:0.4;' : 'cursor:pointer;') + '"';
+        if (!already) h += ' onclick="abAddExisting(\'' + c.id + '\',\'' + (c.name||'').replace(/'/g,"\\'") + '\')"';
+        h += '>';
+        h += '<div><div style="font-size:12px;font-weight:600;">' + (c.name || 'Unnamed') + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.4);">' + (c.email || c.phone || '') + '</div></div>';
+        if (already) {
+          h += '<span style="font-size:9px;color:rgba(255,255,255,0.3);">Already on loan</span>';
+        } else {
+          h += '<span style="font-size:10px;color:#0ea5e9;"><i class="fas fa-plus"></i></span>';
+        }
+        h += '</div>';
+      });
+      resultsEl.innerHTML = h;
+    })
+    .catch(function() { resultsEl.innerHTML = ''; });
+}
+
+function abAddExisting(crmId, name) {
+  var role = document.getElementById('abRole').value;
+  fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'addBorrower', ae_id: fcContactId, crm_contact_id: crmId, role: role })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.success) {
+      abClose();
+      showToast(name + ' added as ' + role);
+      // Reload pipeline to get updated borrowers, then reopen face card
+      fetch(API_BASE + '/ae-loans-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'listActive', user_id: localStorage.getItem('agent_edge_user') || 'default' })
+      }).then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          pipelineLoans = data.loans || [];
+          pipelineBorrowers = data.borrowers || [];
+          renderPipeline();
+          openFaceCard(fcContactId);
+        }
+      });
+    } else {
+      showToast('Error: ' + (result.message || 'Unknown'));
+    }
+  })
+  .catch(function(err) { console.error(err); showToast('Error adding borrower'); });
+}
+
+function abCreateAndAdd() {
+  var name = document.getElementById('abNewName').value.trim();
+  if (!name) { showToast('Name is required'); return; }
+  var phone = document.getElementById('abNewPhone').value.trim();
+  var email = document.getElementById('abNewEmail').value.trim();
+  var role = document.getElementById('abRole').value;
+
+  // Create CRM contact first
+  fetch(API_BASE + '/crm-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', crm: { name: name, phone: phone, email: email, type: 'borrower' }})
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(crmResult) {
+    if (!crmResult.success || !crmResult.id) {
+      showToast('Error creating contact');
+      return;
+    }
+    // Add to the loan
+    return fetch(API_BASE + '/ae-loans-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'addBorrower', ae_id: fcContactId, crm_contact_id: crmResult.id, role: role })
+    }).then(function(r) { return r.json(); });
+  })
+  .then(function(result) {
+    if (result && result.success) {
+      abClose();
+      showToast(name + ' created & added as ' + role);
+      // Reload and reopen
+      fetch(API_BASE + '/ae-loans-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'listActive', user_id: localStorage.getItem('agent_edge_user') || 'default' })
+      }).then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          pipelineLoans = data.loans || [];
+          pipelineBorrowers = data.borrowers || [];
+          renderPipeline();
+          openFaceCard(fcContactId);
+        }
+      });
+      if (typeof loadCrm === 'function') loadCrm();
+    } else {
+      showToast('Error: ' + (result ? result.message : 'Unknown'));
+    }
+  })
+  .catch(function(err) { console.error(err); showToast('Error creating borrower'); });
+}
+
+function fcRemoveBorrower(borrowerLinkId, name) {
+  if (!confirm('Remove ' + (name || 'this borrower') + ' from this loan?')) return;
+  fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'removeBorrower', id: borrowerLinkId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(result) {
+    if (result.success) {
+      showToast((name || 'Borrower') + ' removed from loan');
+      // Reload and reopen
+      fetch(API_BASE + '/ae-loans-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'listActive', user_id: localStorage.getItem('agent_edge_user') || 'default' })
+      }).then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          pipelineLoans = data.loans || [];
+          pipelineBorrowers = data.borrowers || [];
+          renderPipeline();
+          openFaceCard(fcContactId);
+        }
+      });
+    } else {
+      showToast('Error: ' + (result.message || 'Unknown'));
+    }
+  })
+  .catch(function(err) { console.error(err); showToast('Error removing borrower'); });
+}
 function fcRenderTasks() {
   var el = document.getElementById('fcTasksList');
   if (fcTasks.length === 0) {
