@@ -160,7 +160,7 @@ body {
 .stat-card.green::after { background: linear-gradient(90deg, #22c55e, #22c55e80, transparent); box-shadow: 0 0 20px rgba(34,197,94,0.3); }
 .stat-card.purple::after { background: linear-gradient(90deg, var(--accent-purple), transparent); }
 .stat-card.orange::after { background: linear-gradient(90deg, #f59e0b, #f59e0b80, transparent); box-shadow: 0 0 20px rgba(245,158,11,0.3); }
-.stat-label { font-size: 11px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-family: 'Share Tech Mono', monospace; }
+.stat-label { font-size: 11px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; font-family: 'Share Tech Mono', monospace; }
 .stat-value { font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; margin: 6px 0 4px; background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .stat-change { font-size: 12px; color: #22c55e; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
 .stat-change.down { color: var(--accent-red); }
@@ -229,7 +229,7 @@ body {
 .crm-sm-btn:hover { background: var(--bg-hover); color: #fff; }
 .crm-sm-btn.green { border-color: rgba(34,197,94,0.3); color: var(--accent-green); }
 .crm-list-body { flex: 1; overflow-y: auto; }
-.crm-list-stat { padding: 8px 12px; font-size: 13px; color: rgba(255,255,255,0.5); border-bottom: 1px solid var(--border); font-weight: 600; }
+.crm-list-stat { padding: 8px 12px; font-size: 13px; color: rgba(255,255,255,0.65); border-bottom: 1px solid var(--border); font-weight: 600; }
 .crm-contact-item {
   display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer;
   border-bottom: 1px solid var(--border); border-left: 3px solid transparent;
@@ -260,7 +260,7 @@ body {
 .crm-detail-content { display: none; flex-direction: column; }
 .crm-detail-top { padding: 20px 24px; border-bottom: 1px solid var(--border); }
 .crm-detail-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-.crm-detail-meta { font-size: 13px; color: rgba(255,255,255,0.6); }
+.crm-detail-meta { font-size: 13px; color: rgba(255,255,255,0.75); }
 .crm-detail-actions { display: flex; gap: 8px; margin-top: 12px; }
 .crm-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); padding: 0 24px; }
 .crm-tab {
@@ -273,7 +273,7 @@ body {
 .crm-tab-content.active { display: block; }
 .crm-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 16px; }
 .crm-field label {
-  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6);
+  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.75);
   text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 5px;
 }
 .crm-field input, .crm-field select, .crm-field textarea {
@@ -302,11 +302,11 @@ body {
 .card-header-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .card-header-badges { display: flex; align-items: center; gap: 8px; }
 .card-name { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #fff; }
-.card-meta { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+.card-meta { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 4px; }
 .card-type-badge { font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 .card-fields { display: flex; gap: 12px; align-items: flex-end; padding: 0 28px; }
 .card-field { flex: 1; }
-.card-field label { display: block; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
+.card-field label { display: block; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.75); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 5px; }
 .card-field input, .card-field select { 
   width: 100%; padding: 10px 14px; border-radius: 8px; 
   background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); 
@@ -318,7 +318,7 @@ body {
 .card-field input[type="tel"], .crm-field input[type="tel"] { text-transform: none; }
 .card-action-btn { 
   padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); 
-  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); 
+  background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.75); 
   font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; 
 }
 .card-action-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
@@ -366,10 +366,10 @@ body {
 .cb-link-icon { font-size: 9px; opacity: 0.5; margin-right: 2px; }
 .coborrower-add {
   padding: 10px 18px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600;
-  background: transparent; border: 2px dashed rgba(255,255,255,0.15); color: rgba(255,255,255,0.4);
+  background: transparent; border: 2px dashed rgba(255,255,255,0.15); color: rgba(255,255,255,0.55);
   font-family: inherit; transition: all 0.15s;
 }
-.coborrower-add:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.6); }
+.coborrower-add:hover { border-color: rgba(255,255,255,0.45); color: rgba(255,255,255,0.75); }
 
 /* ACTIVITY TIMELINE */
 .activity-item {
@@ -482,11 +482,11 @@ body {
 
 /* MC Panels */
 .mc-panel { background: rgba(8,16,32,0.8); border: 1px solid rgba(59,130,246,0.12); border-radius: 8px; padding: 20px; position: relative; overflow: hidden; }
-.mc-panel::before, .mc-panel::after { content: ''; position: absolute; width: 20px; height: 20px; border-color: rgba(59,130,246,0.25); border-style: solid; pointer-events: none; }
+.mc-panel::before, .mc-panel::after { content: ''; position: absolute; width: 20px; height: 20px; border-color: rgba(59,130,246,0.4); border-style: solid; pointer-events: none; }
 .mc-panel::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; border-radius: 8px 0 0 0; }
 .mc-panel::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 8px 0; }
 .mc-panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(59,130,246,0.08); }
-.mc-panel-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.6); }
+.mc-panel-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.75); }
 .mc-blinker { width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 8px #3b82f6, 0 0 20px rgba(59,130,246,0.2); animation: mcBlink 2s ease-in-out infinite; }
 .mc-blinker.green { background: #22c55e; box-shadow: 0 0 8px #22c55e, 0 0 20px rgba(34,197,94,0.2); }
 @keyframes mcBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -495,7 +495,7 @@ body {
 
 /* Pipeline Rows */
 .mc-row { display: flex; align-items: center; gap: 0; padding: 3px 0; }
-.mc-row-label { width: 140px; flex-shrink: 0; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); text-align: right; padding-right: 14px; font-family: 'Share Tech Mono', monospace; }
+.mc-row-label { width: 140px; flex-shrink: 0; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.55); text-align: right; padding-right: 14px; font-family: 'Share Tech Mono', monospace; }
 .mc-row-track { flex: 1; height: 22px; position: relative; background: rgba(255,255,255,0.02); border-radius: 11px; overflow: hidden; }
 .mc-row-bar { position: absolute; top: 0; left: 0; bottom: 0; border-radius: 11px; transition: width 1s cubic-bezier(0.25,0.8,0.25,1); }
 .mc-row-bar.glow { animation: barPulse 3s ease-in-out infinite; }
@@ -515,32 +515,32 @@ body {
 .mc-donut-container svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .mc-donut-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
 .mc-donut-num { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; color: #fff; }
-.mc-donut-sub { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
+.mc-donut-sub { font-size: 9px; letter-spacing: 2px; color: rgba(255,255,255,0.45); margin-top: 2px; font-family: 'Share Tech Mono', monospace; }
 .mc-legend { width: 100%; padding: 0 8px; }
 .mc-legend-row { display: flex; align-items: center; gap: 10px; padding: 4px 0; }
 .mc-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.mc-legend-name { flex: 1; font-size: 12px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mc-legend-name { flex: 1; font-size: 12px; color: rgba(255,255,255,0.65); font-family: 'Share Tech Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mc-legend-val { font-size: 12px; font-weight: 700; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
-.mc-empty-msg { text-align: center; padding: 30px 0; color: rgba(59,130,246,0.25); font-size: 12px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace; }
+.mc-empty-msg { text-align: center; padding: 30px 0; color: rgba(59,130,246,0.4); font-size: 12px; letter-spacing: 2px; font-family: 'Share Tech Mono', monospace; }
 
 /* ===== ANALYTICS PAGE STYLES ===== */
 .mc-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .mc-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
 .mc-kpi { text-align: center; padding: 16px 10px; background: rgba(59,130,246,0.03); border: 1px solid rgba(59,130,246,0.06); border-radius: 6px; }
 .mc-kpi-value { font-family: 'Orbitron', sans-serif; font-size: 28px; font-weight: 900; margin-bottom: 4px; }
-.mc-kpi-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.3); font-family: 'Share Tech Mono', monospace; }
+.mc-kpi-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.45); font-family: 'Share Tech Mono', monospace; }
 
 /* Vertical bars */
 .mc-vbar-wrap { display: flex; align-items: flex-end; justify-content: space-around; height: 160px; padding: 0 10px; gap: 6px; }
 .mc-vbar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
 .mc-vbar { width: 100%; max-width: 50px; border-radius: 4px 4px 0 0; position: relative; transition: height 1s cubic-bezier(0.25,0.8,0.25,1); min-height: 2px; }
 .mc-vbar::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent); border-radius: 4px 4px 0 0; }
-.mc-vbar-label { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 6px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.mc-vbar-label { font-size: 10px; color: rgba(255,255,255,0.45); margin-top: 6px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 .mc-vbar-val { font-size: 11px; font-weight: 700; margin-bottom: 4px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 
 /* Horizontal bars */
 .mc-hbar-row { display: flex; align-items: center; gap: 0; padding: 4px 0; }
-.mc-hbar-label { width: 120px; flex-shrink: 0; font-size: 11px; color: rgba(255,255,255,0.4); text-align: right; padding-right: 12px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.mc-hbar-label { width: 120px; flex-shrink: 0; font-size: 11px; color: rgba(255,255,255,0.55); text-align: right; padding-right: 12px; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 .mc-hbar-track { flex: 1; height: 18px; background: rgba(255,255,255,0.02); border-radius: 9px; overflow: hidden; position: relative; }
 .mc-hbar-fill { height: 100%; border-radius: 9px; position: relative; transition: width 1s ease; }
 .mc-hbar-fill::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent); animation: barSweep 4s ease-in-out infinite; }
@@ -552,7 +552,7 @@ body {
 .mc-opp-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
 .mc-opp-body { flex: 1; min-width: 0; }
 .mc-opp-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); margin-bottom: 2px; font-family: 'Share Tech Mono', monospace; }
-.mc-opp-detail { font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
+.mc-opp-detail { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 0.5px; font-family: 'Share Tech Mono', monospace; }
 .mc-opp-tag { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 1px; flex-shrink: 0; font-family: 'Share Tech Mono', monospace; }
 
 /* Alert rows */
@@ -560,26 +560,26 @@ body {
 .mc-alert-icon { font-size: 16px; flex-shrink: 0; }
 .mc-alert-body { flex: 1; }
 .mc-alert-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); font-family: 'Share Tech Mono', monospace; }
-.mc-alert-sub { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; }
+.mc-alert-sub { font-size: 11px; color: rgba(255,255,255,0.65); font-family: 'Share Tech Mono', monospace; }
 .mc-alert-date { font-size: 12px; font-weight: 700; flex-shrink: 0; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 
 /* Analytics tabs */
 .ana-tabs { display: flex; gap: 2px; margin-bottom: 16px; }
-.ana-tab { padding: 8px 16px; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.3); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
-.ana-tab:hover { color: rgba(255,255,255,0.5); }
+.ana-tab { padding: 8px 16px; font-size: 11px; letter-spacing: 1.5px; color: rgba(255,255,255,0.45); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.ana-tab:hover { color: rgba(255,255,255,0.65); }
 .ana-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.3); }
 
 /* Query builder */
 .qb-section { margin-bottom: 18px; }
-.qb-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.3); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; }
+.qb-label { font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.45); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; }
 .qb-step { font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 900; background: rgba(59,130,246,0.15); color: #3b82f6; padding: 2px 8px; border-radius: 3px; letter-spacing: 1px; }
 .qb-types { display: flex; gap: 8px; flex-wrap: wrap; }
 .qb-type { padding: 10px 18px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 12px; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); transition: all 0.2s; display: flex; align-items: center; gap: 8px; font-family: 'Share Tech Mono', monospace; }
-.qb-type:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.qb-type:hover { border-color: rgba(59,130,246,0.35); color: rgba(255,255,255,0.75); }
 .qb-type.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.3); color: #3b82f6; text-shadow: 0 0 6px rgba(59,130,246,0.2); }
 .qb-fields { display: flex; gap: 6px; flex-wrap: wrap; }
-.qb-chip { padding: 6px 14px; border-radius: 20px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.35); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
-.qb-chip:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.5); }
+.qb-chip { padding: 6px 14px; border-radius: 20px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qb-chip:hover { border-color: rgba(59,130,246,0.35); color: rgba(255,255,255,0.6); }
 .qb-chip.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
 .qb-chip.active::before { content: '\2713  '; }
 .qb-dates { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -587,9 +587,9 @@ body {
 .qb-date-input:focus { border-color: rgba(59,130,246,0.3); }
 .qb-date-sep { color: rgba(255,255,255,0.2); font-size: 12px; }
 .qb-presets { display: flex; gap: 6px; }
-.qb-preset { padding: 6px 12px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.3); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
-.qb-preset:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.5); }
-.qb-preset.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.25); color: #3b82f6; }
+.qb-preset { padding: 6px 12px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.45); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qb-preset:hover { border-color: rgba(59,130,246,0.35); color: rgba(255,255,255,0.65); }
+.qb-preset.active { background: rgba(59,130,246,0.08); border-color: rgba(59,130,246,0.4); color: #3b82f6; }
 .qb-filters { display: flex; flex-direction: column; gap: 8px; }
 .qb-filter-row { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 6px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); flex-wrap: wrap; }
 .qb-filter-field { background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15); color: #3b82f6; padding: 5px 12px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; min-width: 80px; text-align: center; }
@@ -603,17 +603,17 @@ body {
 .qb-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
 .qb-run { padding: 10px 28px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; box-shadow: 0 0 20px rgba(59,130,246,0.2); transition: all 0.2s; }
 .qb-run:hover { box-shadow: 0 0 30px rgba(59,130,246,0.4); transform: translateY(-1px); }
-.qb-export { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.4); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1.5px; transition: all 0.2s; }
-.qb-export:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6); }
+.qb-export { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1.5px; transition: all 0.2s; }
+.qb-export:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.75); }
 .qb-result-count { margin-left: auto; font-size: 12px; color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 
 /* Results table */
 .mc-table-wrap { overflow-x: auto; border: 1px solid rgba(59,130,246,0.08); border-radius: 6px; }
 table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Share Tech Mono', monospace; }
 .mc-table thead { background: rgba(59,130,246,0.06); }
-.mc-table th { padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.4); font-weight: 700; white-space: nowrap; cursor: pointer; border-bottom: 1px solid rgba(59,130,246,0.1); }
-.mc-table th:hover { color: rgba(255,255,255,0.6); }
-.mc-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); color: rgba(255,255,255,0.6); white-space: nowrap; }
+.mc-table th { padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.55); font-weight: 700; white-space: nowrap; cursor: pointer; border-bottom: 1px solid rgba(59,130,246,0.1); }
+.mc-table th:hover { color: rgba(255,255,255,0.75); }
+.mc-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); color: rgba(255,255,255,0.75); white-space: nowrap; }
 .mc-table tbody tr { transition: all 0.15s; }
 .mc-table tbody tr:hover { background: rgba(59,130,246,0.04); }
 .mc-table tbody tr:nth-child(even) { background: rgba(255,255,255,0.008); }
@@ -630,8 +630,8 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
 /* Saved reports */
 .qb-saved { display: flex; gap: 8px; flex-wrap: wrap; }
 .qb-saved-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }
-.qb-saved-item:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
-.qb-saved-name { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.qb-saved-item:hover { border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.03); }
+.qb-saved-name { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 .qb-saved-badge { font-size: 9px; padding: 2px 6px; border-radius: 3px; background: rgba(59,130,246,0.1); color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
@@ -855,7 +855,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
   <div style="width:90%; max-width:340px; padding:44px 36px; border-radius:18px; background:rgba(255,255,255,0.05); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center;">
     <img src="agent-edge-logo.png" alt="Agent Edge" style="width:180px;height:auto;margin:0 auto 20px;display:block;">
     <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;color:#fff;">Mission Control</h2>
-    <p id="pinPrompt" style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:24px;">Enter your admin PIN to continue</p>
+    <p id="pinPrompt" style="font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:24px;">Enter your admin PIN to continue</p>
     <form onsubmit="verifyPin(event)">
       <input type="password" id="adminPinInput" maxlength="6" autocomplete="off" required placeholder="PIN"
         style="width:100%;padding:12px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;font-size:22px;letter-spacing:8px;text-align:center;background:rgba(255,255,255,0.04);color:#fff;box-sizing:border-box;font-family:inherit;">
@@ -970,6 +970,13 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
     </div>
   </div>
   <div class="content-area">
+    <!-- MC HEADER -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:8px;color:rgba(59,130,246,0.65);">MISSION CONTROL</div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:3px;font-family:'Share Tech Mono',monospace;">AGENT EDGE COMMAND CENTER</div>
+      <div style="width:200px;height:1px;margin:10px auto 0;background:linear-gradient(90deg,transparent,rgba(59,130,246,0.4),transparent);"></div>
+    </div>
+
     <!-- TICKER -->
     <div class="mc-ticker-wrap">
       <div class="mc-ticker-edge left"></div>
@@ -1103,7 +1110,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
           <div style="text-align:center;max-width:400px;">
             <img src="agent-edge-logo.png" alt="Agent Edge" style="width:320px;height:auto;opacity:0.25;margin-bottom:32px;">
             <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:rgba(255,255,255,0.7);margin-bottom:12px;">Client Database</div>
-            <div style="font-size:15px;color:rgba(255,255,255,0.4);line-height:1.6;">Select a contact from the list<br>or click <strong style="color:rgba(255,255,255,0.55);">+ New Contact</strong> to get started</div>
+            <div style="font-size:15px;color:rgba(255,255,255,0.55);line-height:1.6;">Select a contact from the list<br>or click <strong style="color:rgba(255,255,255,0.55);">+ New Contact</strong> to get started</div>
           </div>
         </div>
         <div class="crm-detail-content" id="crmDetailContent">
@@ -1113,7 +1120,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
               <div class="card-name" id="crmDName"></div>
               <div style="display:flex;align-items:center;gap:8px;">
                 <div id="cardPipelineBtn"></div>
-                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 12px;color:rgba(255,255,255,0.6);font-size:14px;" title="Close card"><i class="fas fa-times"></i></button>
+                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 12px;color:rgba(255,255,255,0.75);font-size:14px;" title="Close card"><i class="fas fa-times"></i></button>
               </div>
             </div>
             <!-- Row 2: Meta -->
@@ -1143,7 +1150,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
                   <div class="card-qualifying-label" id="cardQualifyingLabel">Qualifying Income</div>
                   <div class="card-qualifying-amount" id="cardTotalQualifying">$0.00</div>
                 </div>
-                <div class="card-qualifying-total" id="cardCombinedWrap" style="flex:1;display:none;background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.2);">
+                <div class="card-qualifying-total" id="cardCombinedWrap" style="flex:1;display:none;background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.35);">
                   <div class="card-qualifying-label" style="color:#5b9ef5;">Combined Loan Income</div>
                   <div class="card-qualifying-amount" style="color:#5b9ef5;" id="cardCombinedQualifying">$0.00</div>
                 </div>
@@ -1617,7 +1624,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
     <!-- Import Contacts -->
     <div style="max-width:700px;">
       <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">Import Contacts</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.5;">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
         <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
           <i class="fas fa-file-upload"></i> Upload Import File
@@ -1633,10 +1640,10 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
     <!-- Delete Contact -->
     <div style="max-width:700px;">
       <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;color:#ef4444;">Delete Contact</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;line-height:1.5;">Permanently remove a contact from your database. This cannot be undone. The contact will also be unlinked from any co-borrower relationships.</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Permanently remove a contact from your database. This cannot be undone. The contact will also be unlinked from any co-borrower relationships.</div>
       <div style="display:flex;gap:10px;align-items:flex-end;">
         <div style="flex:1;">
-          <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Search Contact</label>
+          <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Search Contact</label>
           <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
         </div>
       </div>
@@ -1697,7 +1704,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
     <div class="modal-title" id="pcmTitle">Add Contact</div>
     <!-- Borrowers on this loan (shown for CRM-linked contacts) -->
     <div id="pcmBorrowersWrap" style="display:none;margin-bottom:14px;">
-      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;display:block;">Borrowers on this Loan</label>
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.55);margin-bottom:6px;display:block;">Borrowers on this Loan</label>
       <div id="pcmBorrowersList" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
     </div>
     <div class="crm-field-grid">
@@ -1807,19 +1814,19 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
   <div class="modal-box" style="width:440px;">
     <div class="modal-title"><i class="fas fa-user-plus"></i> Add Borrower to Loan</div>
     <div style="margin-bottom:12px;">
-      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:4px;display:block;">Search Existing Contacts</label>
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.55);margin-bottom:4px;display:block;">Search Existing Contacts</label>
       <input type="text" id="abSearchInput" placeholder="Type a name..." style="width:100%;padding:10px 12px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:13px;" oninput="abSearchContacts()">
       <div id="abSearchResults" style="max-height:160px;overflow-y:auto;margin-top:6px;"></div>
     </div>
     <div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:12px;margin-top:4px;">
-      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:6px;display:block;">Or Create New Contact</label>
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.55);margin-bottom:6px;display:block;">Or Create New Contact</label>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <input type="text" id="abNewName" placeholder="Full Name" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
         <input type="text" id="abNewPhone" placeholder="Phone" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
         <input type="email" id="abNewEmail" placeholder="Email" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;grid-column:1/-1;">
       </div>
       <div style="margin-top:8px;">
-        <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:4px;display:block;">Role</label>
+        <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.55);margin-bottom:4px;display:block;">Role</label>
         <select id="abRole" style="padding:8px 10px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#eaf0f6;font-size:12px;">
           <option value="co-borrower">Co-Borrower</option>
           <option value="spouse">Spouse</option>
@@ -2387,7 +2394,7 @@ function renderProductionMetrics() {
     var h = vol > 0 ? Math.max(8, (vol / maxVol) * 140) : 2;
     var color = vol > 0 ? '#22c55e' : 'rgba(255,255,255,0.05)';
     var valText = vol > 0 ? '$' + Math.round(vol / 1000) + 'K' : '—';
-    var valColor = vol > 0 ? 'color:#22c55e;' : 'color:rgba(255,255,255,0.15);';
+    var valColor = vol > 0 ? 'color:#22c55e;' : 'color:rgba(255,255,255,0.25);';
     barsHtml += '<div class="mc-vbar-col"><div class="mc-vbar-val" style="' + valColor + '">' + valText + '</div>';
     barsHtml += '<div class="mc-vbar" style="height:' + h + 'px;background:linear-gradient(180deg,' + color + ',' + color + '40);box-shadow:0 0 12px ' + color + '30;"></div>';
     barsHtml += '<div class="mc-vbar-label">' + m + '</div></div>';
@@ -2643,7 +2650,7 @@ function renderStrikeRate() {
 var anaQbType = 'production';
 var anaQbFieldDefs = {
   production: ['BORROWER','LOAN AMOUNT','RATE','STRIKE RATE','LOAN TYPE','PROGRAM','STATUS','OUTCOME DATE','SOURCE','PROPERTY','AE ID','LENDER LOAN #'],
-  clients: ['NAME','PHONE','EMAIL','TYPE','SOURCE','BIRTHDAY','ADDRESS','CREATED'],
+  clients: ['NAME','PHONE','EMAIL','TYPE','SOURCE','BIRTHDAY','BIRTH MONTH','ADDRESS','CREATED'],
   pipeline: ['BORROWER','STAGE','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM','PROPERTY','DAYS IN STAGE','AE ID'],
   opportunities: ['BORROWER','FUNDED RATE','MARKET RATE','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT','FUNDED DATE','PRIORITY']
 };
@@ -2653,6 +2660,8 @@ function anaSelectType(el) {
   el.classList.add('active');
   anaQbType = el.getAttribute('data-type');
   anaInitFields();
+  document.getElementById('anaQbFilters').innerHTML = '';
+  anaFilterCount = 0;
 }
 
 function anaInitQueryBuilder() {
@@ -2665,8 +2674,8 @@ function anaInitQueryBuilder() {
 function anaInitFields() {
   var fields = anaQbFieldDefs[anaQbType] || [];
   var h = '';
-  fields.forEach(function(f, i) {
-    h += '<div class="qb-chip' + (i < 5 ? ' active' : '') + '" onclick="this.classList.toggle(\'active\')">' + f + '</div>';
+  fields.forEach(function(f) {
+    h += '<div class="qb-chip" onclick="this.classList.toggle(\'active\')">' + f + '</div>';
   });
   document.getElementById('anaQbFields').innerHTML = h;
 }
@@ -2686,13 +2695,21 @@ function anaSetDatePreset(preset, el) {
 }
 
 var anaFilterCount = 0;
+var anaQbFilterDefs = {
+  production: ['STATUS','LOAN AMOUNT','RATE','STRIKE RATE','LOAN TYPE','PROGRAM','SOURCE'],
+  clients: ['TYPE','SOURCE','BIRTH MONTH','NAME','EMAIL','PHONE'],
+  pipeline: ['STAGE','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM'],
+  opportunities: ['PRIORITY','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT']
+};
 function anaAddFilter() {
   anaFilterCount++;
   var id = 'anaFilter' + anaFilterCount;
+  var fields = anaQbFilterDefs[anaQbType] || ['STATUS'];
+  var opts = fields.map(function(f) { return '<option>' + f + '</option>'; }).join('');
   var row = document.createElement('div');
   row.className = 'qb-filter-row';
   row.id = id;
-  row.innerHTML = '<select class="qb-filter-select"><option>STATUS</option><option>LOAN AMOUNT</option><option>RATE</option><option>SOURCE</option><option>LOAN TYPE</option></select>' +
+  row.innerHTML = '<select class="qb-filter-select">' + opts + '</select>' +
     '<select class="qb-filter-select"><option>is</option><option>≥</option><option>≤</option><option>contains</option></select>' +
     '<input class="qb-filter-val" placeholder="Enter value...">' +
     '<button class="qb-filter-remove" onclick="document.getElementById(\'' + id + '\').remove()">✕</button>';
@@ -2720,9 +2737,18 @@ function anaRunReport() {
     });
   } else if (anaQbType === 'clients') {
     anaCrmAll.forEach(function(c) {
+      var bMonth = '—';
+      if (c.birthday) {
+        var parts = c.birthday.split('-');
+        if (parts.length >= 2) {
+          var monthNames = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+          var mi = parseInt(parts[1]) - 1;
+          if (mi >= 0 && mi < 12) bMonth = monthNames[mi];
+        }
+      }
       data.push({ 'NAME': (c.first_name || '') + ' ' + (c.last_name || ''), 'PHONE': c.phone || '—', 'EMAIL': c.email || '—',
         'TYPE': (c.type || '—').toUpperCase(), 'SOURCE': c.source || '—', 'BIRTHDAY': c.birthday || '—',
-        'ADDRESS': c.address || '—', 'CREATED': c.created_at ? c.created_at.split('T')[0] : '—' });
+        'BIRTH MONTH': bMonth, 'ADDRESS': c.address || '—', 'CREATED': c.created_at ? c.created_at.split('T')[0] : '—' });
     });
   } else if (anaQbType === 'pipeline') {
     pipelineLoans.forEach(function(l) {
@@ -3366,7 +3392,7 @@ function openFaceCard(aeId) {
     });
   }
   // Add borrower button
-  ch += '<div class="fc-borrower-chip" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.15);color:rgba(255,255,255,0.5);cursor:pointer;" onclick="fcOpenAddBorrower()">';
+  ch += '<div class="fc-borrower-chip" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.25);color:rgba(255,255,255,0.65);cursor:pointer;" onclick="fcOpenAddBorrower()">';
   ch += '<i class="fas fa-plus" style="font-size:10px;"></i> Add Borrower</div>';
 
   // Borrower management rows (remove actions for non-primary)
@@ -3377,7 +3403,7 @@ function openFaceCard(aeId) {
       if (b.role === 'primary') return;
       var roleLabel = b.role ? (b.role.charAt(0).toUpperCase() + b.role.slice(1).replace(/_/g, ' ')) : 'Co-Borrower';
       ch += '<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;">';
-      ch += '<div style="font-size:12px;"><i class="fas fa-user" style="font-size:10px;color:#a855f7;margin-right:6px;"></i>' + (b.name || 'Unnamed') + ' <span style="font-size:10px;color:rgba(255,255,255,0.4);">(' + roleLabel + ')</span></div>';
+      ch += '<div style="font-size:12px;"><i class="fas fa-user" style="font-size:10px;color:#a855f7;margin-right:6px;"></i>' + (b.name || 'Unnamed') + ' <span style="font-size:10px;color:rgba(255,255,255,0.55);">(' + roleLabel + ')</span></div>';
       ch += '<button onclick="fcRemoveBorrower(\'' + b.id + '\',\'' + (b.name||'').replace(/'/g,"\\'") + '\')" style="background:rgba(239,68,68,0.08);color:#ef4444;border:1px solid rgba(239,68,68,0.2);border-radius:5px;padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer;">Remove from Loan</button>';
       ch += '</div>';
     });
@@ -3570,7 +3596,7 @@ function abSearchContacts() {
       }).slice(0, 6);
 
       if (matches.length === 0) {
-        resultsEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.3);padding:6px;">No matches found</div>';
+        resultsEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.45);padding:6px;">No matches found</div>';
         return;
       }
 
@@ -3584,9 +3610,9 @@ function abSearchContacts() {
         if (!already) h += ' onclick="abAddExisting(\'' + c.id + '\',\'' + (c.name||'').replace(/'/g,"\\'") + '\')"';
         h += '>';
         h += '<div><div style="font-size:12px;font-weight:600;">' + (c.name || 'Unnamed') + '</div>';
-        h += '<div style="font-size:10px;color:rgba(255,255,255,0.4);">' + (c.email || c.phone || '') + '</div></div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.55);">' + (c.email || c.phone || '') + '</div></div>';
         if (already) {
-          h += '<span style="font-size:9px;color:rgba(255,255,255,0.3);">Already on loan</span>';
+          h += '<span style="font-size:9px;color:rgba(255,255,255,0.45);">Already on loan</span>';
         } else {
           h += '<span style="font-size:10px;color:#0ea5e9;"><i class="fas fa-plus"></i></span>';
         }
@@ -3993,7 +4019,7 @@ function crmRenderList() {
     var activeClass = c.id === crmCurrentId ? ' active' : '';
     var typeClass = c.type ? ' t-' + c.type : '';
     var badgeColors = { client: 'rgba(59,130,246,0.12);color:#3b82f6', borrower: 'rgba(14,165,233,0.12);color:#0ea5e9', past_client: 'rgba(34,197,94,0.12);color:#22c55e', realtor: 'rgba(34,197,94,0.12);color:#22c55e', title: 'rgba(245,158,11,0.12);color:#f59e0b', appraiser: 'rgba(168,85,247,0.12);color:#a855f7', contractor: 'rgba(239,68,68,0.12);color:#ef4444', vendor: 'rgba(20,184,166,0.12);color:#14b8a6' };
-    var badgeStyle = badgeColors[c.type] || 'rgba(255,255,255,0.06);color:rgba(255,255,255,0.4)';
+    var badgeStyle = badgeColors[c.type] || 'rgba(255,255,255,0.06);color:rgba(255,255,255,0.55)';
 
     var badgeLabels = { client:'Client', borrower:'Borrower', past_client:'Past Client', realtor:'Realtor', title:'Title', appraiser:'Appraiser', contractor:'Contractor', vendor:'Vendor', other:'Other' };
     html += '<div class="crm-contact-item' + typeClass + activeClass + '" onclick="crmSelectContact(\'' + c.id + '\')">' +
@@ -4162,7 +4188,7 @@ function searchDeleteContacts() {
       (c.phone || '').includes(q);
   }).slice(0, 10);
 
-  if (matches.length === 0) { el.innerHTML = '<div style="padding:8px;font-size:12px;color:rgba(255,255,255,0.4);">No contacts found</div>'; return; }
+  if (matches.length === 0) { el.innerHTML = '<div style="padding:8px;font-size:12px;color:rgba(255,255,255,0.55);">No contacts found</div>'; return; }
 
   var h = '';
   matches.forEach(function(c) {
@@ -4170,7 +4196,7 @@ function searchDeleteContacts() {
     var tColor = typeColors[c.type] || '#888';
     h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;margin-bottom:4px;background:rgba(255,255,255,0.03);">';
     h += '<div><div style="font-size:13px;font-weight:600;color:#e2e8f0;">' + (c.name || 'Unnamed') + '</div>';
-    h += '<div style="font-size:11px;color:rgba(255,255,255,0.4);">' + (c.email || c.phone || '') + ' · <span style="color:' + tColor + ';">' + (c.type || 'other') + '</span></div></div>';
+    h += '<div style="font-size:11px;color:rgba(255,255,255,0.55);">' + (c.email || c.phone || '') + ' · <span style="color:' + tColor + ';">' + (c.type || 'other') + '</span></div></div>';
     h += '<button class="card-action-btn danger" style="font-size:11px;padding:6px 12px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);color:#ef4444;" onclick="confirmDeleteContact(\'' + c.id + '\',\'' + (c.name || '').replace(/'/g, "\\'") + '\')"><i class="fas fa-trash"></i> Delete</button>';
     h += '</div>';
   });
