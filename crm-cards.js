@@ -793,9 +793,9 @@ function renderAssetTabs(){
 
   // Wire change tracking
   borrowerAssets.forEach(function(a,i){
-    var inst=document.getElementById('asset_institution_'+i);
-    var typ=document.getElementById('asset_type_'+i);
-    var bal=document.getElementById('asset_balance_'+i);
+    var inst=document.getElementById('cf_asset_institution_'+i);
+    var typ=document.getElementById('cf_asset_type_'+i);
+    var bal=document.getElementById('cf_asset_balance_'+i);
     if(inst){
       inst.addEventListener('input',function(){ a.institution=this.value; crmDirty=true; });
       inst.addEventListener('blur',function(){ renderAssetTabs(); });
