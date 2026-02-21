@@ -2054,6 +2054,11 @@ function crmSaveContact(){
   }
 
   data.type = saveType;
+  // Debug: log assets state at save time
+  console.log('=== ASSET DEBUG ===');
+  console.log('borrowerAssets:', JSON.stringify(borrowerAssets));
+  console.log('data.assets:', JSON.stringify(data.assets));
+  console.log('crmCurrentType:', crmCurrentType);
   // Ensure composite name is built from parts
   if(!data.name) data.name = [data.first_name, data.middle_initial ? data.middle_initial + '.' : '', data.last_name].filter(Boolean).join(' ');
   console.log('Data name:', data.name);
