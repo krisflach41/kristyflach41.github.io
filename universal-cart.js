@@ -22,7 +22,8 @@ class UniversalCart {
     return data ? JSON.parse(data) : {
       marketing: [],
       advisory: {},
-      websites: []
+      websites: [],
+      cobrand: { enabled: false, layout: 'left' }
     };
   }
   
@@ -103,12 +104,23 @@ class UniversalCart {
     }
   }
   
+  // Co-branding methods
+  setCobrand(enabled, layout) {
+    this.cart.cobrand = { enabled: !!enabled, layout: layout || 'left' };
+    this.save();
+  }
+  
+  getCobrand() {
+    return this.cart.cobrand || { enabled: false, layout: 'left' };
+  }
+  
   // Clear entire cart
   clear() {
     this.cart = {
       marketing: [],
       advisory: {},
-      websites: []
+      websites: [],
+      cobrand: { enabled: false, layout: 'left' }
     };
     localStorage.removeItem(CART_KEY);
     this.updateBadge();
