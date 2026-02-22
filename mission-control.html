@@ -3044,9 +3044,9 @@ function ppBuildReportOrders(){
   var reportOrders=allOrders.filter(function(o){
     var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
     str=str.toLowerCase();
-    return str.indexOf('advisory')>=0||str.indexOf('report')>=0||str.indexOf('amortization')>=0||str.indexOf('snapshot')>=0||str.indexOf('comparison')>=0||str.indexOf('qualification')>=0;
+    // Only match orders that contain advisory reports — NOT flyers/marketing
+    return str.indexOf('advisory')>=0||str.indexOf('amortization')>=0||str.indexOf('bid')>=0||str.indexOf('buyrent')>=0||str.indexOf('costwaiting')>=0||str.indexOf('appreciation')>=0||str.indexOf('investment')>=0||str.indexOf('reportcard')>=0;
   });
-  if(reportOrders.length===0&&allOrders.length>0){reportOrders=allOrders;}
   var h='';var pendingCount=0;
   reportOrders.forEach(function(o){
     var sc=(o.status||'').toLowerCase()==='complete'?'#22c55e':(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
