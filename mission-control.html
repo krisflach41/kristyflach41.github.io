@@ -646,8 +646,8 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 13px; font-f
 
 /* Custom tooltip */
 .qr-card { position: relative; }
-.qr-card .qr-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 260px; padding: 14px 16px; background: #0f1d32; border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 15px rgba(59,130,246,0.1); z-index: 100; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; }
-.qr-card .qr-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-top-color: rgba(59,130,246,0.3); }
+.qr-card .qr-tip { visibility: hidden; opacity: 0; position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 260px; padding: 14px 16px; background: #0f1d32; border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 15px rgba(59,130,246,0.1); z-index: 100; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; }
+.qr-card .qr-tip::after { content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-bottom-color: rgba(59,130,246,0.3); }
 .qr-card:hover .qr-tip { visibility: visible; opacity: 1; }
 .qr-tip-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #3b82f6; margin-bottom: 6px; }
 .qr-tip-text { font-family: 'Share Tech Mono', monospace; font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.75); }
