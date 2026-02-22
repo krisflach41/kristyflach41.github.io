@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mission Control 1 - Agent Edge</title>
+<title>Mission Control - Agent Edge</title>
 <script src="auth.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -2964,7 +2964,7 @@ function ppParseOrderItems(raw){
     var parts=[];
     var lineItems=[];
     var reportIcons={amortization:'📋',bid:'📊',buyrent:'🏠',costwaiting:'⏰',appreciation:'📈',investment:'💰',reportcard:'📝'};
-    var reportNames={amortization:'Amortization Report',bid:'Bid Over Ask',buyrent:'Buy vs Rent',costwaiting:'Cost of Waiting',appreciation:'Appreciation Report',investment:'Investment Property',reportcard:'Report Card'};
+    var reportNames={amortization:'Amortization Report',bid:'Bid Over Ask',buyrent:'Buy vs Rent',costwaiting:'Cost of Waiting',appreciation:'Appreciation Report',investment:'Investment Property',reportcard:'Neighborhood Blueprint'};
     if(obj.advisory){
       Object.keys(obj.advisory).forEach(function(k){
         var r=obj.advisory[k];
@@ -3240,7 +3240,17 @@ function ppGenerateLineItem(item,order){
   } else if(item.type==='investment'){
     showToast('Investment Property generator coming soon');
   } else if(item.type==='reportcard'){
-    showToast('Report Card generator coming soon');
+    var p=[];
+    if(data.address)p.push('zip='+encodeURIComponent(data.address.replace(/[^0-9]/g,'').slice(-5)));
+    if(data.address)p.push('address='+encodeURIComponent(data.address));
+    if(order.partnerName)p.push('clientName='+encodeURIComponent(order.partnerName));
+    if(order.cobrandStatus==='Co-branded'){
+      p.push('cobrand=true');
+      if(order.partnerName)p.push('realtorName='+encodeURIComponent(order.partnerName));
+      if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
+      if(order.cobrandLayout)p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout));
+    }
+    window.open('neighborhood-blueprint.html'+(p.length?'?'+p.join('&'):''),'_blank');
   } else {
     showToast('Generator for '+item.name+' coming soon');
   }
