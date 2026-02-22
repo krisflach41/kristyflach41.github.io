@@ -1059,9 +1059,9 @@ function generateReport() {
     // Check if opened from Mission Control (has URL params from an order)
     var fromOrder = new URLSearchParams(window.location.search).has('loan') || new URLSearchParams(window.location.search).has('cobrand');
     if (fromOrder) {
-      navHTML += '<a href="mission-control.html">← Back to Mission Control</a>';
+      navHTML += '<a href="mission-control.html#reports">← Back to Reports</a>';
     }
-    navHTML += '<a href="portal.html">← Partner Portal</a>';
+    navHTML += '<a href="mission-control.html#reports">← Partner Portal</a>';
     navHTML += '<button onclick="editReport()">✏️ Edit Report</button>';
     navHTML += '<button class="primary" onclick="window.print()">📄 Export PDF</button>';
     navEl.innerHTML = navHTML;
