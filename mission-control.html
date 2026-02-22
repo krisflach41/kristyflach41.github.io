@@ -2878,9 +2878,11 @@ var ppActFilterPartner='';
 function ppInit(el){if(el)el.textContent='--';}
 
 function ppBuildDashboard(){
+  if(!ordersLoaded){loadOrders();setTimeout(ppBuildDashboard,1500);return;}
   var e=document.getElementById('ppKpiPartners');if(e)e.textContent=ppPartners.length;
-  var e2=document.getElementById('ppKpiOrders');if(e2)e2.textContent='8';
-  var e3=document.getElementById('ppKpiDownloads');if(e3)e3.textContent='34';
+  var newOrders=allOrders.filter(function(o){return o.status!=='Complete';}).length;
+  var e2=document.getElementById('ppKpiOrders');if(e2)e2.textContent=newOrders||allOrders.length;
+  var e3=document.getElementById('ppKpiDownloads');if(e3)e3.textContent=allOrders.length;
   var maxO=ppPartners[0].orders,h='';
   ppPartners.forEach(function(p,i){
     var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
@@ -2908,20 +2910,42 @@ function ppBuildOrderRow(name,partner,meta,status,statusColor,email){
 }
 
 function ppBuildReportOrders(){
+  if(!ordersLoaded){loadOrders();setTimeout(ppBuildReportOrders,1500);return;}
+  var reportOrders=allOrders.filter(function(o){
+    var items=(o.items||'').toLowerCase();
+    return items.indexOf('report')>=0||items.indexOf('advisory')>=0||items.indexOf('snapshot')>=0||items.indexOf('amortization')>=0||items.indexOf('comparison')>=0||items.indexOf('qualification')>=0;
+  });
+  if(reportOrders.length===0){reportOrders=allOrders;}
   var h='';
-  h+=ppBuildOrderRow('Market Snapshot','Jessica Rivera','RE/MAX Premier · Feb 23, 2:15 PM','NEW','#ef4444','jrivera@remax.com');
-  h+=ppBuildOrderRow('Rate Comparison','Amanda Lopez','Berkshire Hathaway · Feb 21, 4:30 PM','IN PROGRESS','#f59e0b','alopez@bhhs.com');
-  h+=ppBuildOrderRow('Amortization Schedule','Tom Petersen','Century 21 · Feb 18, 9:05 AM','COMPLETE','#22c55e','tpetersen@c21.com');
+  var pendingCount=0;
+  reportOrders.forEach(function(o){
+    var sc=o.status==='Complete'?'#22c55e':o.status==='In Progress'?'#f59e0b':'#ef4444';
+    var sl=o.status==='Complete'?'COMPLETE':o.status==='In Progress'?'IN PROGRESS':'NEW';
+    if(o.status!=='Complete')pendingCount++;
+    h+=ppBuildOrderRow(o.items||'Order',o.name||'Unknown',((o.brokerage||'')+(o.timestamp?' · '+o.timestamp:'')),sl,sc,o.email||'');
+  });
+  if(h==='')h='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;font-size:13px;">NO ACTIVE ORDERS</div>';
   document.getElementById('ppReportOrders').innerHTML=h;
-  document.getElementById('ppReportOrderCount').textContent='3 PENDING';
+  document.getElementById('ppReportOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
 }
 
 function ppBuildFlyerOrders(){
+  if(!ordersLoaded){loadOrders();setTimeout(ppBuildFlyerOrders,1500);return;}
+  var flyerOrders=allOrders.filter(function(o){
+    var items=(o.items||'').toLowerCase();
+    return items.indexOf('flyer')>=0||items.indexOf('marketing')>=0||items.indexOf('open house')>=0||items.indexOf('listed')>=0;
+  });
   var h='';
-  h+=ppBuildOrderRow('Open House Flyer','Mike Brooks','Keller Williams · 742 Oak St · Feb 23','NEW','#ef4444','mbrooks@kw.com');
-  h+=ppBuildOrderRow('Just Listed','Sarah Kim','eXp Realty · 1205 Maple Dr · Feb 19','COMPLETE','#22c55e','skim@exp.com');
+  var pendingCount=0;
+  flyerOrders.forEach(function(o){
+    var sc=o.status==='Complete'?'#22c55e':o.status==='In Progress'?'#f59e0b':'#ef4444';
+    var sl=o.status==='Complete'?'COMPLETE':o.status==='In Progress'?'IN PROGRESS':'NEW';
+    if(o.status!=='Complete')pendingCount++;
+    h+=ppBuildOrderRow(o.items||'Order',o.name||'Unknown',((o.brokerage||'')+(o.timestamp?' · '+o.timestamp:'')),sl,sc,o.email||'');
+  });
+  if(h==='')h='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;font-size:13px;">NO FLYER ORDERS</div>';
   document.getElementById('ppFlyerOrders').innerHTML=h;
-  document.getElementById('ppFlyerOrderCount').textContent='2 PENDING';
+  document.getElementById('ppFlyerOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
 }
 
 function ppEmailPartner(email){showToast('Opening email to '+email);}
