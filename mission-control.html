@@ -3114,13 +3114,13 @@ function ppViewOrder(orderId){
 
   // Select all
   if(items.length>1){
-    h+='<div class="pp-od-select-all" onclick="ppToggleAllItems()"><input type="checkbox" id="ppSelectAll"><label for="ppSelectAll">SELECT ALL</label></div>';
+    h+='<div class="pp-od-select-all" onclick="ppToggleAllItems()"><input type="checkbox" id="ppSelectAll" onclick="event.stopPropagation();ppToggleAllItems();"><label for="ppSelectAll" onclick="event.preventDefault();">SELECT ALL</label></div>';
   }
 
   // Line items
   items.forEach(function(item,i){
     h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
-    h+='<input type="checkbox" class="pp-od-cb" checked>';
+    h+='<input type="checkbox" class="pp-od-cb" checked onclick="event.stopPropagation();">';
     h+='<div class="pp-od-item-icon">'+item.icon+'</div>';
     h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+'</div>';
     h+='<div class="pp-od-item-detail">'+item.detail+'</div></div>';
@@ -3293,11 +3293,19 @@ function ppBuildReportOrders(){
 function ppBuildFlyerOrders(){
   if(!ordersLoaded){loadOrders();setTimeout(ppBuildFlyerOrders,1500);return;}
   var flyerOrders=allOrders.filter(function(o){
+    // Parse the actual cart data to check for real marketing items
+    try{
+      var items=o.items||o.cartJson||'';
+      var obj=typeof items==='object'?items:JSON.parse(typeof items==='string'?items:JSON.stringify(items));
+      if(obj.marketing&&Array.isArray(obj.marketing)&&obj.marketing.length>0)return true;
+    }catch(e){}
+    // Fallback string check for flyer-specific terms only
     var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
     str=str.toLowerCase();
-    var isFlyer=str.indexOf('flyer')>=0||str.indexOf('marketing')>=0||str.indexOf('open house')>=0||str.indexOf('listed')>=0;
+    return str.indexOf('flyer')>=0||str.indexOf('open house')>=0||str.indexOf('just listed')>=0||str.indexOf('just sold')>=0;
+  }).filter(function(o){
     var isActive=(o.status||'').toLowerCase()!=='complete';
-    return isFlyer&&isActive;
+    return isActive;
   });
   var h='';var pendingCount=flyerOrders.length;
   flyerOrders.forEach(function(o){
