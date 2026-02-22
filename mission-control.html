@@ -1375,7 +1375,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🏠</div><div class="pp-tpl-body"><div class="pp-tpl-name">Buyer Qualification</div><div class="pp-tpl-desc">Pre-approval summary, purchasing power, payment estimates</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">💰</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Comparison</div><div class="pp-tpl-desc">Side-by-side rate and payment comparisons</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">📈</div><div class="pp-tpl-body"><div class="pp-tpl-name">Neighborhood Stats</div><div class="pp-tpl-desc">Zip code data — schools, appreciation, demographics</div></div></div>
-          <div class="pp-tpl-card"><div class="pp-tpl-icon">📋</div><div class="pp-tpl-body"><div class="pp-tpl-name">Amortization Schedule</div><div class="pp-tpl-desc">Full payment schedule with principal/interest breakdown</div></div></div>
+          <div class="pp-tpl-card" onclick="window.open('amortization-report.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">📋</div><div class="pp-tpl-body"><div class="pp-tpl-name">Amortization Schedule</div><div class="pp-tpl-desc">Full payment schedule with principal/interest breakdown</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🔑</div><div class="pp-tpl-body"><div class="pp-tpl-name">Closing Cost Estimate</div><div class="pp-tpl-desc">Detailed closing costs by loan scenario</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
         </div>
       </div>
@@ -2943,19 +2943,36 @@ function ppGenerateOrder(orderId){
   var items=order.items||order.cartJson||'';
   var str=typeof items==='string'?items.toLowerCase():JSON.stringify(items).toLowerCase();
   if(str.indexOf('amortization')>=0){
-    var params='';
+    var p=[];
     try{
       var obj=typeof items==='object'?items:JSON.parse(typeof items==='string'?items:JSON.stringify(items));
       if(obj.advisory&&obj.advisory.amortization){
         var a=obj.advisory.amortization;
-        var p=[];
-        if(a.loan)p.push('loan='+a.loan);
-        if(a.rate)p.push('rate='+a.rate);
-        if(a.address)p.push('address='+encodeURIComponent(a.address));
-        if(a.purchase)p.push('type='+encodeURIComponent(a.purchase));
-        if(p.length>0)params='?'+p.join('&');
+        // Handle both array format (from market-intelligence) and object format
+        var data=Array.isArray(a)?a[0]:a;
+        if(data.loan)p.push('loan='+encodeURIComponent(data.loan));
+        if(data.rate)p.push('rate='+encodeURIComponent(data.rate));
+        if(data.address)p.push('address='+encodeURIComponent(data.address));
       }
     }catch(e){}
+    // Add realtor/order info
+    if(order.name)p.push('realtorName='+encodeURIComponent(order.name));
+    if(order.email)p.push('realtorEmail='+encodeURIComponent(order.email));
+    if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
+    // Co-branding flag from order
+    var brandVal=order.branding||'';
+    if(brandVal==='yes'||brandVal==='Co-branded'||brandVal==='left'||brandVal==='right'){
+      p.push('cobrand=true');
+      if(brandVal==='left'||brandVal==='right')p.push('cobrandLayout='+brandVal);
+    }
+    // Notes might contain client name
+    if(order.notes){
+      var noteStr=order.notes;
+      // Check if notes contains a client name hint
+      var clientMatch=noteStr.match(/client[:\s]+([^\n,;]+)/i);
+      if(clientMatch)p.push('clientName='+encodeURIComponent(clientMatch[1].trim()));
+    }
+    var params=p.length>0?'?'+p.join('&'):'';
     window.open('amortization-report.html'+params,'_blank');
   } else {
     showToast('Generator for this report type coming soon — Order: '+orderId);
