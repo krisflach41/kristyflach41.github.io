@@ -745,6 +745,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .pp-od-item-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
 .pp-od-item-detail { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pp-od-item-type { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.25); font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
+.pp-od-item.generated { opacity: 0.5; }
+.pp-od-item.generated input[type="checkbox"] { accent-color: #22c55e; pointer-events: none; }
+.pp-od-item.generated .pp-od-item-check-icon { color: #22c55e; font-size: 11px; margin-left: 4px; }
 .pp-od-notes { margin-top: 16px; padding: 12px 14px; border-radius: 8px; background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); }
 .pp-od-notes-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: #c9a84c; font-family: 'Share Tech Mono', monospace; margin-bottom: 4px; }
 .pp-od-notes-text { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
@@ -3118,11 +3121,18 @@ function ppViewOrder(orderId){
   }
 
   // Line items
+  var genItems=order.generatedItems||[];
   items.forEach(function(item,i){
-    h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
-    h+='<input type="checkbox" class="pp-od-cb" onclick="event.stopPropagation();ppUpdateSelCount();">';
+    var isGen=genItems.indexOf(i)>=0;
+    if(isGen){
+      h+='<div class="pp-od-item generated" data-index="'+i+'" data-type="'+item.type+'">';
+      h+='<input type="checkbox" class="pp-od-cb" checked disabled onclick="event.stopPropagation();">';
+    } else {
+      h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
+      h+='<input type="checkbox" class="pp-od-cb" onclick="event.stopPropagation();ppUpdateSelCount();">';
+    }
     h+='<div class="pp-od-item-icon">'+item.icon+'</div>';
-    h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+'</div>';
+    h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+(isGen?' <span class="pp-od-item-check-icon">✓</span>':'')+'</div>';
     h+='<div class="pp-od-item-detail">'+item.detail+'</div></div>';
     h+='<div class="pp-od-item-type">'+item.category+'</div></div>';
   });
@@ -3163,7 +3173,7 @@ function ppToggleItem(row){
 }
 
 function ppToggleAllItems(isChecked){
-  document.querySelectorAll('.pp-od-cb').forEach(function(cb){
+  document.querySelectorAll('.pp-od-cb:not(:disabled)').forEach(function(cb){
     cb.checked=isChecked;
     cb.closest('.pp-od-item').classList.toggle('checked',isChecked);
   });
@@ -3171,8 +3181,8 @@ function ppToggleAllItems(isChecked){
 }
 
 function ppUpdateSelCount(){
-  var total=document.querySelectorAll('.pp-od-cb').length;
-  var checked=document.querySelectorAll('.pp-od-cb:checked').length;
+  var total=document.querySelectorAll('.pp-od-cb:not(:disabled)').length;
+  var checked=document.querySelectorAll('.pp-od-cb:checked:not(:disabled)').length;
   var countEl=document.getElementById('ppOdCount');
   if(countEl)countEl.textContent=checked+' of '+total+' selected';
   var btn=document.getElementById('ppOdGenBtn');
@@ -3181,7 +3191,7 @@ function ppUpdateSelCount(){
     else{btn.classList.remove('disabled');btn.textContent='GENERATE '+(checked===total&&total>1?'ALL':checked>1?checked:'REPORT');}
   }
   var sa=document.getElementById('ppSelectAll');
-  if(sa)sa.checked=checked===total;
+  if(sa)sa.checked=total>0&&checked===total;
 }
 
 function ppGenerateSelected(orderId){
@@ -3189,8 +3199,12 @@ function ppGenerateSelected(orderId){
   if(!order)return;
   var parsed=ppParseOrderItems(order.items||order.cartJson);
   var items=parsed.lineItems;
-  var checkedEls=document.querySelectorAll('.pp-od-cb:checked');
+  // Only count non-generated, non-disabled checkboxes
+  var checkedEls=document.querySelectorAll('.pp-od-cb:checked:not(:disabled)');
   if(checkedEls.length===0){showToast('Select at least one item');return;}
+
+  var existingGen=order.generatedItems||[];
+  var newGen=existingGen.slice();
 
   checkedEls.forEach(function(cb){
     var row=cb.closest('.pp-od-item');
@@ -3198,9 +3212,21 @@ function ppGenerateSelected(orderId){
     var item=items[idx];
     if(!item)return;
     ppGenerateLineItem(item,order);
+    if(newGen.indexOf(idx)<0)newGen.push(idx);
   });
 
+  // Save generated items to backend
+  order.generatedItems=newGen;
+  fetch('https://agent-edge-backend.vercel.app/api/update-order',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,generated_items:newGen})
+  }).catch(function(e){console.error('Save generated items error:',e);});
+
   showToast('Generating '+checkedEls.length+' report'+(checkedEls.length>1?'s':'')+'...');
+  
+  // Refresh the panel to show updated state after a short delay
+  setTimeout(function(){ppViewOrder(orderId);},500);
 }
 
 function ppGenerateLineItem(item,order){
