@@ -2932,14 +2932,57 @@ function ppParseOrderItems(raw){
 }
 
 function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
-  var btnAction=status==='COMPLETE'?'':'onclick="ppGenerateOrder(\''+orderId+'\')"';
-  return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div><button class="pp-order-btn" '+btnAction+'>'+(status==='COMPLETE'?'DONE':'GENERATE')+'</button><button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button></div>';
+  var buttons='';
+  if(status==='COMPLETE'){
+    buttons='<button class="pp-order-btn" style="opacity:0.5;cursor:default;">DONE</button>';
+    buttons+='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:10px;">REGENERATE</button>';
+  } else if(status==='IN PROGRESS'){
+    buttons='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')">GENERATE</button>';
+    buttons+='<button class="pp-order-btn" onclick="ppCompleteOrder(\''+orderId+'\')" style="background:#22c55e;border-color:#22c55e;">✓ COMPLETE</button>';
+  } else {
+    buttons='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')">GENERATE</button>';
+  }
+  buttons+='<button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button>';
+  return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div>'+buttons+'</div>';
+}
+
+function ppUpdateOrderStatus(orderId,newStatus,callback){
+  fetch('https://agent-edge-backend.vercel.app/api/update-order',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,status:newStatus})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.success){
+      // Update local data
+      var order=allOrders.find(function(o){return o.orderId===orderId;});
+      if(order)order.status=newStatus;
+      if(callback)callback();
+    } else {
+      showToast('Status update failed');
+    }
+  }).catch(function(e){showToast('Status update error');});
+}
+
+function ppCompleteOrder(orderId){
+  ppUpdateOrderStatus(orderId,'complete',function(){
+    showToast('Order marked complete ✓');
+    ppBuildReportOrders();
+  });
 }
 
 function ppGenerateOrder(orderId){
   if(!orderId)return;
   var order=allOrders.find(function(o){return o.orderId===orderId;});
   if(!order){showToast('Order not found');return;}
+
+  // Update status to in progress if currently new
+  if((order.status||'').toLowerCase()==='new'){
+    ppUpdateOrderStatus(orderId,'in progress',function(){
+      ppBuildReportOrders();
+      ppBuildFlyerOrders();
+    });
+  }
+
   var items=order.items||order.cartJson||'';
   var str=typeof items==='string'?items.toLowerCase():JSON.stringify(items).toLowerCase();
   if(str.indexOf('amortization')>=0){
