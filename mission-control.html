@@ -683,6 +683,37 @@ select, select option { background: #0a1628; color: #fff; }
 .qb-date-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px 14px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 12px; outline: none; }
 .qb-date-input:focus { border-color: rgba(59,130,246,0.3); }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
+
+/* Partner Portal */
+.pp-tabs { display: flex; gap: 2px; margin-bottom: 18px; border-bottom: 1px solid rgba(59,130,246,0.1); }
+.pp-tab { padding: 12px 24px; font-size: 13px; letter-spacing: 2px; color: rgba(255,255,255,0.35); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.pp-tab:hover { color: rgba(255,255,255,0.55); }
+.pp-tab.active { color: #3b82f6; border-bottom-color: #3b82f6; text-shadow: 0 0 8px rgba(59,130,246,0.3); }
+
+.pp-tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.pp-tpl-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; }
+.pp-tpl-card:hover { border-color: rgba(59,130,246,0.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+.pp-tpl-icon { font-size: 28px; flex-shrink: 0; }
+.pp-tpl-body { flex: 1; min-width: 0; }
+.pp-tpl-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.75); margin-bottom: 3px; }
+.pp-tpl-desc { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.4; }
+.pp-tpl-tag { padding: 3px 8px; border-radius: 3px; font-size: 9px; font-weight: 700; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; align-self: flex-start; }
+
+.pp-order-row { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 8px; margin-bottom: 6px; background: rgba(255,255,255,0.01); border: 1px solid rgba(255,255,255,0.04); transition: all 0.2s; }
+.pp-order-row:hover { background: rgba(59,130,246,0.02); border-color: rgba(59,130,246,0.1); }
+.pp-order-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; animation: blink 2s ease-in-out infinite; }
+.pp-order-info { flex: 1; }
+.pp-order-name { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.8); }
+.pp-order-meta { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; margin-top: 2px; }
+.pp-order-tag { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
+.pp-order-btn { padding: 8px 18px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; transition: all 0.2s; flex-shrink: 0; }
+.pp-order-btn:hover { box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+.pp-email-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(34,197,94,0.25); color: #22c55e; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; transition: all 0.2s; flex-shrink: 0; }
+.pp-email-btn:hover { background: rgba(34,197,94,0.05); border-color: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.15); }
+
+.pp-pcard { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; min-width: 200px; flex: 1; }
+.pp-pcard:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
+.pp-pcard.active { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.06); box-shadow: 0 0 12px rgba(59,130,246,0.1); }
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
 .at-title { padding: 12px 14px 0; font-size: 12px; font-weight: 700; }
@@ -951,12 +982,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
     <div class="nav-section-label">Tools</div>
     <div class="nav-item" onclick="switchView('portal', this)">
       <span class="nav-icon"><i class="fas fa-handshake"></i></span> Partner Portal
-    </div>
-    <div class="nav-item" onclick="switchView('reports', this)">
-      <span class="nav-icon"><i class="fas fa-file-alt"></i></span> Report Generator
-    </div>
-    <div class="nav-item" onclick="switchView('flyers', this)">
-      <span class="nav-icon"><i class="fas fa-palette"></i></span> Flyer Studio
     </div>
     <div class="nav-item" onclick="switchView('email', this)">
       <span class="nav-icon"><i class="fas fa-envelope"></i></span> Email Center
@@ -1299,72 +1324,118 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Partner Portal</div><div class="topbar-subtitle">Manage realtor-facing tools and content</div></div>
-    </div>
-    <div class="topbar-right">
-      <a href="portal.html" target="_blank" class="topbar-btn"><i class="fas fa-external-link-alt"></i> Open Portal</a>
+      <div><div class="topbar-title">Partner Portal</div><div class="topbar-subtitle">Realtor Partnership Command Center</div></div>
     </div>
   </div>
-  <div class="content-area">
-    <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat-card green"><div class="stat-label">Active Partners</div><div class="stat-value" id="portalPartners">--</div></div>
-      <div class="stat-card blue"><div class="stat-label">Orders This Week</div><div class="stat-value" id="portalOrders">--</div></div>
-      <div class="stat-card purple"><div class="stat-label">Content Downloads</div><div class="stat-value" id="portalDownloads">--</div></div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- PP Tabs -->
+    <div class="pp-tabs">
+      <div class="pp-tab active" onclick="ppTab('dashboard',this)">DASHBOARD</div>
+      <div class="pp-tab" onclick="ppTab('reports',this)">REPORTS</div>
+      <div class="pp-tab" onclick="ppTab('flyers',this)">FLYERS</div>
+      <div class="pp-tab" onclick="ppTab('activity',this)">ACTIVITY</div>
+      <div class="pp-tab" onclick="ppTab('settings',this)">SETTINGS</div>
     </div>
-    <div class="placeholder-center" style="height:30%;">
-      <div class="placeholder-text">Portal management tools coming soon</div>
-      <div class="placeholder-sub">Use the "Open Portal" button to view the live partner portal</div>
+
+    <!-- ===== DASHBOARD TAB ===== -->
+    <div id="ppDashboard">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:Orbitron,sans-serif;font-size:32px;font-weight:900;color:#22c55e;text-shadow:0 0 15px rgba(34,197,94,0.3);" id="ppKpiPartners">--</div><div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;margin-top:4px;">ACTIVE PARTNERS</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:Orbitron,sans-serif;font-size:32px;font-weight:900;color:#3b82f6;text-shadow:0 0 15px rgba(59,130,246,0.3);" id="ppKpiOrders">--</div><div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;margin-top:4px;">ORDERS THIS WEEK</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:Orbitron,sans-serif;font-size:32px;font-weight:900;color:#a855f7;text-shadow:0 0 15px rgba(168,85,247,0.3);" id="ppKpiDownloads">--</div><div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;margin-top:4px;">DOWNLOADS THIS MONTH</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
+        <!-- Leaderboard -->
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">REALTOR LEADERBOARD</div><div class="mc-status">TOP 10</div></div>
+          <div id="ppLeaderboard"></div>
+        </div>
+        <div>
+          <!-- Top Reports -->
+          <div class="mc-panel">
+            <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOP REPORTS</div><div class="mc-status">THIS MONTH</div></div>
+            <div id="ppTopReports"></div>
+          </div>
+          <!-- Top Flyers -->
+          <div class="mc-panel">
+            <div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">TOP FLYERS</div><div class="mc-status">THIS MONTH</div></div>
+            <div id="ppTopFlyers"></div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- ===== REPORTS TAB ===== -->
+    <div id="ppReports" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppReportOrderCount">—</div></div><div id="ppReportOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">REPORT TEMPLATES</div><div class="mc-status">SELECT TO GENERATE</div></div>
+        <div class="pp-tpl-grid">
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">📊</div><div class="pp-tpl-body"><div class="pp-tpl-name">Market Snapshot</div><div class="pp-tpl-desc">Local market data, median prices, inventory, trends</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🏠</div><div class="pp-tpl-body"><div class="pp-tpl-name">Buyer Qualification</div><div class="pp-tpl-desc">Pre-approval summary, purchasing power, payment estimates</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">💰</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Comparison</div><div class="pp-tpl-desc">Side-by-side rate and payment comparisons</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">📈</div><div class="pp-tpl-body"><div class="pp-tpl-name">Neighborhood Stats</div><div class="pp-tpl-desc">Zip code data — schools, appreciation, demographics</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">📋</div><div class="pp-tpl-body"><div class="pp-tpl-name">Amortization Schedule</div><div class="pp-tpl-desc">Full payment schedule with principal/interest breakdown</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🔑</div><div class="pp-tpl-body"><div class="pp-tpl-name">Closing Cost Estimate</div><div class="pp-tpl-desc">Detailed closing costs by loan scenario</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FLYERS TAB ===== -->
+    <div id="ppFlyers" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
+        <div class="pp-tpl-grid">
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🏡</div><div class="pp-tpl-body"><div class="pp-tpl-name">Open House</div><div class="pp-tpl-desc">Professional open house flyer with co-branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🔥</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Listed</div><div class="pp-tpl-desc">New listing announcement with co-brand</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">📉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Drop Alert</div><div class="pp-tpl-desc">Announce rate drops with customizable data</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🎓</div><div class="pp-tpl-body"><div class="pp-tpl-name">First-Time Buyer Guide</div><div class="pp-tpl-desc">Educational one-pager for new buyers</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">✨</div><div class="pp-tpl-body"><div class="pp-tpl-name">Co-Branded Header</div><div class="pp-tpl-desc">Dual-branded header for emails and social</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🎉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Sold</div><div class="pp-tpl-desc">Celebrate closings — showcase partnership success</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ACTIVITY TAB ===== -->
+    <div id="ppActivity" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
+        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:Orbitron,sans-serif;font-size:24px;font-weight:900;color:#3b82f6;">27</div><div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;">REPORTS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:Orbitron,sans-serif;font-size:24px;font-weight:900;color:#a855f7;">19</div><div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;">FLYERS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:Orbitron,sans-serif;font-size:24px;font-weight:900;color:#22c55e;">42</div><div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;">SOCIAL POSTS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:Orbitron,sans-serif;font-size:24px;font-weight:900;color:#f59e0b;">88</div><div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;">TOTAL</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+          <input type="text" id="ppActSearch" placeholder="Search by name, action, or tool..." oninput="ppActFilter()" class="qb-filter-val" style="flex:1;font-size:13px;padding:8px 14px;">
+          <select id="ppActTypeFilter" onchange="ppActFilter()" class="qb-filter-select" style="font-size:12px;padding:8px 14px;">
+            <option value="">ALL ACTIONS</option><option value="report">REPORTS</option><option value="flyer">FLYERS</option><option value="tool">TOOLS</option><option value="social">SOCIAL</option><option value="login">LOGINS</option>
+          </select>
+        </div>
+        <div class="mc-table-wrap"><table class="mc-table" id="ppActTable"><thead><tr><th>PARTNER</th><th>ACTION</th><th>DETAIL</th><th>DATE / TIME</th><th>TIME SPENT</th></tr></thead><tbody id="ppActTableBody"></tbody></table></div>
+        <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;"></div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS TAB ===== -->
+    <div id="ppSettings" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">PARTNER ACCESS MANAGEMENT</div><div class="mc-status" id="ppSettingsCount">—</div></div>
+        <div id="ppSettingsTable"></div>
+        <div style="margin-top:16px;"><button class="topbar-btn primary" style="font-family:Orbitron,sans-serif;font-size:12px;letter-spacing:3px;padding:10px 24px;">+ INVITE PARTNER</button></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
-<!-- ========================================== -->
-<!-- REPORT GENERATOR VIEW -->
-<!-- ========================================== -->
-<div class="view-panel" id="view-reports">
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Report Generator</div><div class="topbar-subtitle">Generate branded market reports</div></div>
-    </div>
-    <div class="topbar-right">
-      <button class="topbar-btn primary">+ New Report</button>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="placeholder-center">
-      <div class="placeholder-icon"><i class="fas fa-file-alt"></i></div>
-      <div class="placeholder-text">Generate branded market reports for your clients and partners</div>
-      <div class="placeholder-sub">Select a template, customize data, and export as PDF</div>
-    </div>
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- FLYER STUDIO VIEW -->
-<!-- ========================================== -->
-<div class="view-panel" id="view-flyers">
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Flyer Studio</div><div class="topbar-subtitle">Design and manage co-branded marketing materials</div></div>
-    </div>
-    <div class="topbar-right">
-      <button class="topbar-btn primary">+ New Flyer</button>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="placeholder-center">
-      <div class="placeholder-icon"><i class="fas fa-palette"></i></div>
-      <div class="placeholder-text">Create co-branded flyers for your realtor partners</div>
-      <div class="placeholder-sub">Templates, custom branding, drag-and-drop editor</div>
-    </div>
-  </div>
-</div>
-
-<!-- ========================================== -->
-<!-- EMAIL CENTER VIEW -->
-<!-- ========================================== -->
+<!-- Report Generator and Flyer Studio are now inside Partner Portal -->
+<div class="view-panel" id="view-reports" style="display:none;"></div>
+<div class="view-panel" id="view-flyers" style="display:none;"></div>
 <div class="view-panel" id="view-email">
   <div class="topbar">
     <div class="topbar-left">
@@ -2096,6 +2167,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'orders' && !ordersLoaded) loadOrders();
   if (viewId === 'users' && !usersLoaded) loadUsers();
   if (viewId === 'analytics') loadAnalytics();
+  if (viewId === 'portal') loadPartnerPortal();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -2768,6 +2840,151 @@ function anaSaveQuickReport(){var name=prompt('Name this report:');if(!name)retu
 
 function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');if(!t)return;var csv='';t.querySelectorAll('tr').forEach(function(tr){if(tr.style.display==='none')return;var row=[];tr.querySelectorAll('th,td').forEach(function(cell){row.push('"'+cell.textContent.replace(/"/g,'""').replace(/Filter\.\.\./g,'')+'"');});csv+=row.join(',')+'\n';});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='agent-edge-report.csv';a.click();}
 
+
+// ===== PARTNER PORTAL =====
+function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();}
+
+var ppPartners=[
+  {name:'Jessica Rivera',brokerage:'RE/MAX Premier',email:'jrivera@remax.com',color:'#f472b6',orders:18,visits:24,lastLogin:'2 hrs ago',totalTime:'4h 32m'},
+  {name:'Mike Brooks',brokerage:'Keller Williams',email:'mbrooks@kw.com',color:'#3b82f6',orders:14,visits:18,lastLogin:'5 hrs ago',totalTime:'3h 15m'},
+  {name:'Sarah Kim',brokerage:'eXp Realty',email:'skim@exp.com',color:'#22c55e',orders:12,visits:15,lastLogin:'Yesterday',totalTime:'2h 48m'},
+  {name:'Amanda Lopez',brokerage:'Berkshire Hathaway',email:'alopez@bhhs.com',color:'#a855f7',orders:10,visits:12,lastLogin:'Yesterday',totalTime:'2h 10m'},
+  {name:'David Wu',brokerage:'Coldwell Banker',email:'dwu@cb.com',color:'#06b6d4',orders:9,visits:6,lastLogin:'4 days ago',totalTime:'0h 55m'},
+  {name:'Tom Petersen',brokerage:'Century 21',email:'tpetersen@c21.com',color:'#f59e0b',orders:7,visits:8,lastLogin:'3 days ago',totalTime:'1h 20m'},
+  {name:'Rachel Green',brokerage:'Compass',email:'rgreen@compass.com',color:'#ef4444',orders:6,visits:5,lastLogin:'5 days ago',totalTime:'0h 45m'},
+  {name:'Carlos Mendez',brokerage:'Howard Hanna',email:'cmendez@hh.com',color:'#34d399',orders:5,visits:4,lastLogin:'1 week ago',totalTime:'0h 30m'},
+  {name:'Lisa Park',brokerage:'Redfin',email:'lpark@redfin.com',color:'#818cf8',orders:4,visits:3,lastLogin:'1 week ago',totalTime:'0h 22m'},
+  {name:'James Wilson',brokerage:'Independent',email:'jwilson@gmail.com',color:'#fb923c',orders:3,visits:2,lastLogin:'2 weeks ago',totalTime:'0h 15m'}
+];
+var ppActivityLog=[
+  {partner:'Jessica Rivera',type:'report',detail:'Market Snapshot',date:'Feb 23, 2026 2:15 PM',time:'8 min'},
+  {partner:'Jessica Rivera',type:'tool',detail:'Market Pulse',date:'Feb 23, 2026 2:05 PM',time:'12 min'},
+  {partner:'Mike Brooks',type:'flyer',detail:'Open House Template',date:'Feb 23, 2026 11:30 AM',time:'5 min'},
+  {partner:'Mike Brooks',type:'tool',detail:'Amortization Calculator',date:'Feb 23, 2026 11:22 AM',time:'6 min'},
+  {partner:'Sarah Kim',type:'login',detail:'Portal Login',date:'Feb 22, 2026 3:45 PM',time:'22 min'},
+  {partner:'Sarah Kim',type:'social',detail:'Rate Drop Post - Instagram',date:'Feb 22, 2026 3:50 PM',time:'2 min'},
+  {partner:'Tom Petersen',type:'tool',detail:'Amortization Calculator',date:'Feb 22, 2026 10:15 AM',time:'9 min'},
+  {partner:'Amanda Lopez',type:'report',detail:'Rate Comparison',date:'Feb 21, 2026 4:30 PM',time:'6 min'},
+  {partner:'Amanda Lopez',type:'social',detail:'Just Listed Post',date:'Feb 21, 2026 4:10 PM',time:'2 min'},
+  {partner:'David Wu',type:'flyer',detail:'Just Listed',date:'Feb 20, 2026 1:00 PM',time:'4 min'},
+  {partner:'David Wu',type:'tool',detail:'Credit Score Simulator',date:'Feb 20, 2026 12:50 PM',time:'11 min'},
+  {partner:'Jessica Rivera',type:'report',detail:'Neighborhood Stats',date:'Feb 20, 2026 9:20 AM',time:'5 min'},
+  {partner:'Mike Brooks',type:'social',detail:'Homebuyer Tips - LinkedIn',date:'Feb 19, 2026 2:00 PM',time:'3 min'},
+  {partner:'Sarah Kim',type:'flyer',detail:'Rate Drop Alert',date:'Feb 19, 2026 11:00 AM',time:'6 min'},
+  {partner:'Tom Petersen',type:'report',detail:'Amortization Schedule',date:'Feb 18, 2026 9:05 AM',time:'4 min'}
+];
+var ppActFilterPartner='';
+
+function ppInit(el){if(el)el.textContent='--';}
+
+function ppBuildDashboard(){
+  var e=document.getElementById('ppKpiPartners');if(e)e.textContent=ppPartners.length;
+  var e2=document.getElementById('ppKpiOrders');if(e2)e2.textContent='8';
+  var e3=document.getElementById('ppKpiDownloads');if(e3)e3.textContent='34';
+  var maxO=ppPartners[0].orders,h='';
+  ppPartners.forEach(function(p,i){
+    var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
+    var ini=p.name.split(' ').map(function(w){return w[0];}).join('');
+    var pct=(p.orders/maxO)*100;
+    h+='<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;margin-bottom:3px;transition:all 0.2s;">';
+    h+='<div style="font-family:Orbitron,sans-serif;font-size:16px;font-weight:900;width:30px;text-align:center;color:'+(i<3?[\'#fbbf24\',\'#94a3b8\',\'#d97706\'][i]:'rgba(255,255,255,0.2)')+';">'+(i+1)+'</div>';
+    h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:'+p.color+'20;color:'+p.color+';">'+ini+'</div>';
+    h+='<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.8);font-family:Share Tech Mono,monospace;">'+p.name+'</div><div style="font-size:11px;color:rgba(255,255,255,0.3);">'+p.brokerage+'</div></div>';
+    h+='<div style="flex:1;height:6px;background:rgba(255,255,255,0.03);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+p.color+'30,'+p.color+');border-radius:3px;"></div></div>';
+    h+='<div style="text-align:right;"><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.orders+'</div><div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1px;font-family:Share Tech Mono,monospace;">ORDERS</div></div>';
+    h+='</div>';
+  });
+  var lb=document.getElementById('ppLeaderboard');if(lb)lb.innerHTML=h;
+  var topR=[{n:'Market Snapshot',c:14},{n:'Buyer Qualification',c:11},{n:'Rate Comparison',c:8},{n:'Neighborhood Stats',c:6},{n:'Amortization Schedule',c:4}];
+  var topF=[{n:'Open House',c:9},{n:'Just Listed',c:7},{n:'Rate Drop Alert',c:5},{n:'First-Time Buyer',c:4},{n:'Co-Branded Header',c:3}];
+  function top5(data){var h='';data.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.01);"><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:rgba(255,255,255,0.6);font-family:Share Tech Mono,monospace;flex:1;">'+d.n+'</div><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});return h;}
+  var tr=document.getElementById('ppTopReports');if(tr)tr.innerHTML=top5(topR);
+  var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=top5(topF);
+}
+
+function ppBuildOrderRow(name,partner,meta,status,statusColor,email){
+  return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+name+' — '+partner+'</div><div class="pp-order-meta">'+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div><button class="pp-order-btn">'+(status==='COMPLETE'?'DONE':'GENERATE')+'</button><button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button></div>';
+}
+
+function ppBuildReportOrders(){
+  var h='';
+  h+=ppBuildOrderRow('Market Snapshot','Jessica Rivera','RE/MAX Premier · Feb 23, 2:15 PM','NEW','#ef4444','jrivera@remax.com');
+  h+=ppBuildOrderRow('Rate Comparison','Amanda Lopez','Berkshire Hathaway · Feb 21, 4:30 PM','IN PROGRESS','#f59e0b','alopez@bhhs.com');
+  h+=ppBuildOrderRow('Amortization Schedule','Tom Petersen','Century 21 · Feb 18, 9:05 AM','COMPLETE','#22c55e','tpetersen@c21.com');
+  document.getElementById('ppReportOrders').innerHTML=h;
+  document.getElementById('ppReportOrderCount').textContent='3 PENDING';
+}
+
+function ppBuildFlyerOrders(){
+  var h='';
+  h+=ppBuildOrderRow('Open House Flyer','Mike Brooks','Keller Williams · 742 Oak St · Feb 23','NEW','#ef4444','mbrooks@kw.com');
+  h+=ppBuildOrderRow('Just Listed','Sarah Kim','eXp Realty · 1205 Maple Dr · Feb 19','COMPLETE','#22c55e','skim@exp.com');
+  document.getElementById('ppFlyerOrders').innerHTML=h;
+  document.getElementById('ppFlyerOrderCount').textContent='2 PENDING';
+}
+
+function ppEmailPartner(email){showToast('Opening email to '+email);}
+
+function ppBuildActivity(){
+  var h='';
+  ppPartners.forEach(function(p){
+    var ini=p.name.split(' ').map(function(w){return w[0];}).join('');
+    var isA=ppActFilterPartner===p.name;
+    h+='<div class="pp-pcard'+(isA?' active':'')+'" onclick="ppTogglePartner(\''+p.name+'\')">';
+    h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:'+p.color+'20;color:'+p.color+';flex-shrink:0;">'+ini+'</div>';
+    h+='<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);font-family:Share Tech Mono,monospace;">'+p.name+'</div><div style="font-size:10px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;">'+p.visits+' visits · Last: '+p.lastLogin+'</div></div>';
+    h+='<div style="text-align:right;"><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.totalTime+'</div><div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:1px;font-family:Share Tech Mono,monospace;">TIME</div></div>';
+    h+='</div>';
+  });
+  document.getElementById('ppPartnerCards').innerHTML=h;
+  var tools=[{n:'MARKET PULSE',c:24,cl:'#3b82f6'},{n:'AMORT CALC',c:18,cl:'#22c55e'},{n:'REPORT GEN',c:14,cl:'#a855f7'},{n:'FLYER STUDIO',c:10,cl:'#f472b6'},{n:'CREDIT SIM',c:6,cl:'#fbbf24'},{n:'SOCIAL',c:42,cl:'#06b6d4'}];
+  var mx=Math.max.apply(null,tools.map(function(t){return t.c;}));var th='';
+  tools.forEach(function(t){var pct=(t.c/mx)*100;th+='<div style="display:flex;align-items:center;gap:12px;padding:6px 0;"><div style="width:110px;font-size:11px;color:rgba(255,255,255,0.5);text-align:right;font-family:Share Tech Mono,monospace;">'+t.n+'</div><div style="flex:1;height:6px;background:rgba(255,255,255,0.03);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+t.cl+'30,'+t.cl+');border-radius:3px;"></div></div><div style="font-family:Orbitron,sans-serif;font-size:13px;font-weight:700;color:'+t.cl+';width:30px;text-align:right;">'+t.c+'</div></div>';});
+  document.getElementById('ppToolBars').innerHTML=th;
+  ppActFilter();
+}
+
+function ppTogglePartner(n){ppActFilterPartner=ppActFilterPartner===n?'':n;ppBuildActivity();}
+
+function ppActFilter(){
+  var s=(document.getElementById('ppActSearch')||{}).value||'';s=s.toLowerCase();
+  var tf=(document.getElementById('ppActTypeFilter')||{}).value||'';
+  var typeMap={report:'REPORT',flyer:'FLYER',tool:'TOOL',social:'SOCIAL',login:'LOGIN'};
+  var typeCls={report:'cell-tag funded',flyer:'cell-tag ct-active',tool:'cell-tag',social:'cell-tag',login:'cell-tag'};
+  var filtered=ppActivityLog.filter(function(a){
+    if(ppActFilterPartner&&a.partner!==ppActFilterPartner)return false;
+    if(tf&&a.type!==tf)return false;
+    if(s&&(a.partner+' '+a.type+' '+a.detail).toLowerCase().indexOf(s)<0)return false;
+    return true;
+  });
+  var h='';
+  filtered.forEach(function(a){
+    var p=ppPartners.find(function(x){return x.name===a.partner;});var cl=p?p.color:'#3b82f6';
+    h+='<tr><td style="font-weight:700;color:rgba(255,255,255,0.8);">'+a.partner+'</td>';
+    h+='<td><span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;background:'+cl+'18;color:'+cl+';">'+(typeMap[a.type]||a.type.toUpperCase())+'</span></td>';
+    h+='<td>'+a.detail+'</td><td style="color:rgba(255,255,255,0.4);">'+a.date+'</td><td style="color:'+cl+';font-weight:700;">'+a.time+'</td></tr>';
+  });
+  var tb=document.getElementById('ppActTableBody');if(tb)tb.innerHTML=h;
+  var ct=document.getElementById('ppActLogCount');if(ct)ct.textContent=filtered.length+' RECORDS';
+  var ft=document.getElementById('ppActFooter');if(ft)ft.innerHTML='SHOWING <span style="color:#3b82f6;font-weight:700;">'+filtered.length+'</span> OF '+ppActivityLog.length+' TOTAL';
+}
+
+function ppBuildSettings(){
+  var h='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:10px 16px;font-size:11px;color:rgba(255,255,255,0.35);letter-spacing:1.5px;font-family:Share Tech Mono,monospace;border-bottom:1px solid rgba(59,130,246,0.08);"><div>PARTNER</div><div>EMAIL</div><div>STATUS</div><div>ACTION</div></div>';
+  ppPartners.forEach(function(p){
+    var active=p.visits>5;
+    h+='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:13px;">';
+    h+='<div style="font-weight:700;color:rgba(255,255,255,0.75);">'+p.name+'</div>';
+    h+='<div style="color:rgba(255,255,255,0.4);font-family:Share Tech Mono,monospace;font-size:12px;">'+p.email+'</div>';
+    h+='<div><span style="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:Share Tech Mono,monospace;background:'+(active?'rgba(34,197,94,0.1)':'rgba(251,191,36,0.1)')+';color:'+(active?'#22c55e':'#fbbf24')+';">'+(active?'ACTIVE':'INACTIVE')+'</span></div>';
+    h+='<div><button style="padding:6px 14px;border-radius:4px;border:1px solid rgba(59,130,246,0.2);background:transparent;color:rgba(59,130,246,0.6);font-size:11px;cursor:pointer;font-family:Share Tech Mono,monospace;letter-spacing:1px;">RESET PW</button></div>';
+    h+='</div>';
+  });
+  document.getElementById('ppSettingsTable').innerHTML=h;
+  document.getElementById('ppSettingsCount').textContent=ppPartners.length+' PARTNERS';
+}
+
+function loadPartnerPortal(){ppBuildDashboard();}
 // ===== PIPELINE =====
 var pipelineLoaded = false;
 var pipelineLoans = []; // AE loan objects
