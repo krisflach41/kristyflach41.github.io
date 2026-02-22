@@ -326,6 +326,70 @@ body {
   margin-top: 2px;
 }
 
+/* ===== DISCLOSURES ===== */
+.rpt-disclosures {
+  background: #f8f9fa;
+  padding: 18px 50px 22px;
+  font-size: 8.5px;
+  color: #999;
+  line-height: 1.6;
+  text-align: center;
+  border-top: 1px solid #e8e8e8;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+.rpt-disc-logos {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.rpt-disc-logos span {
+  font-size: 8px;
+  font-weight: 700;
+  color: #bbb;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== REPORT NAV BUTTONS (hidden in print) ===== */
+.report-nav {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 16px auto;
+  max-width: 850px;
+}
+
+.report-nav a, .report-nav button {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: 0.15s;
+}
+
+.report-nav a:hover, .report-nav button:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.report-nav button.primary {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+
 .layout-picker-box {
   flex: 1;
   border: 2px solid rgba(255,255,255,0.1);
@@ -347,7 +411,7 @@ body {
 /* ===== PRINT ===== */
 @media print {
   body { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .generator-panel, .report-controls { display: none !important; }
+  .generator-panel, .report-controls, .report-nav { display: none !important; }
   .report-container { display: block !important; margin: 0; max-width: 100%; }
   .rpt-topbar, .rpt-footer, .rpt-cobrand, .rpt-disclosures, .rpt-savings { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .rpt-hero { padding: 24px 40px 20px; }
@@ -508,6 +572,9 @@ body {
     <button onclick="editReport()">← Edit</button>
     <button class="primary" onclick="window.print()">📄 Export PDF</button>
   </div>
+
+  <!-- Navigation below report (hidden in print) -->
+  <div class="report-nav" id="reportNav" style="display:none;"></div>
 
   <div class="report-page" id="reportPage">
     
@@ -986,6 +1053,22 @@ function generateReport() {
 
   document.getElementById('generatorPanel').style.display = 'none';
   document.getElementById('reportContainer').style.display = 'block';
+
+  // Show navigation bar below report
+  var navEl = document.getElementById('reportNav');
+  if (navEl) {
+    var navHTML = '';
+    // Check if opened from Mission Control (has URL params from an order)
+    var fromOrder = new URLSearchParams(window.location.search).has('loan') || new URLSearchParams(window.location.search).has('cobrand');
+    if (fromOrder) {
+      navHTML += '<a href="mission-control.html">← Back to Mission Control</a>';
+    }
+    navHTML += '<a href="portal.html">← Partner Portal</a>';
+    navHTML += '<button onclick="editReport()">✏️ Edit Report</button>';
+    navHTML += '<button class="primary" onclick="window.print()">📄 Export PDF</button>';
+    navEl.innerHTML = navHTML;
+    navEl.style.display = 'flex';
+  }
 }
 
 // ===== TABLE SWITCHING =====
