@@ -3114,13 +3114,13 @@ function ppViewOrder(orderId){
 
   // Select all
   if(items.length>1){
-    h+='<div class="pp-od-select-all" onclick="ppToggleAllItems()"><input type="checkbox" id="ppSelectAll" onclick="event.stopPropagation();ppToggleAllItems();"><label for="ppSelectAll" onclick="event.preventDefault();">SELECT ALL</label></div>';
+    h+='<div class="pp-od-select-all"><input type="checkbox" id="ppSelectAll" onchange="ppToggleAllItems(this.checked)"><label for="ppSelectAll" style="cursor:pointer;">SELECT ALL</label></div>';
   }
 
   // Line items
   items.forEach(function(item,i){
     h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
-    h+='<input type="checkbox" class="pp-od-cb" checked onclick="event.stopPropagation();">';
+    h+='<input type="checkbox" class="pp-od-cb" onclick="event.stopPropagation();ppUpdateSelCount();">';
     h+='<div class="pp-od-item-icon">'+item.icon+'</div>';
     h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+'</div>';
     h+='<div class="pp-od-item-detail">'+item.detail+'</div></div>';
@@ -3136,12 +3136,12 @@ function ppViewOrder(orderId){
 
   // Footer
   h+='<div class="pp-od-footer">';
-  h+='<div class="pp-od-count" id="ppOdCount">'+items.length+' of '+items.length+' selected</div>';
+  h+='<div class="pp-od-count" id="ppOdCount">0 of '+items.length+' selected</div>';
   h+='<button class="pp-od-btn cancel" onclick="ppCloseOrderPanel()">CLOSE</button>';
   if(sl!=='complete'){
     h+='<button class="pp-od-btn complete" onclick="ppCompleteOrder(\''+orderId+'\')">✓ COMPLETE</button>';
   }
-  h+='<button class="pp-od-btn generate" id="ppOdGenBtn" onclick="ppGenerateSelected(\''+orderId+'\')">GENERATE '+(items.length>1?'ALL':'REPORT')+'</button>';
+  h+='<button class="pp-od-btn generate disabled" id="ppOdGenBtn" onclick="ppGenerateSelected(\''+orderId+'\')">GENERATE SELECTED</button>';
   h+='</div>';
 
   document.getElementById('ppOrderPanel').innerHTML=h;
@@ -3162,12 +3162,10 @@ function ppToggleItem(row){
   ppUpdateSelCount();
 }
 
-function ppToggleAllItems(){
-  var sa=document.getElementById('ppSelectAll');
-  if(sa)sa.checked=!sa.checked;
+function ppToggleAllItems(isChecked){
   document.querySelectorAll('.pp-od-cb').forEach(function(cb){
-    cb.checked=sa?sa.checked:true;
-    cb.closest('.pp-od-item').classList.toggle('checked',cb.checked);
+    cb.checked=isChecked;
+    cb.closest('.pp-od-item').classList.toggle('checked',isChecked);
   });
   ppUpdateSelCount();
 }
