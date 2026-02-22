@@ -378,7 +378,7 @@ label {
       <h3>Branding Preference</h3>
       
       <label>
-        <input type="radio" name="branding" value="Co-branded" required>
+        <input type="radio" name="branding" value="Co-branded" required onchange="toggleLayoutPicker()">
         Co-branded (requires Total Expert setup)
         <span class="info-icon">i
           <span class="tooltip-box">
@@ -390,9 +390,36 @@ label {
       </label>
       
       <label>
-        <input type="radio" name="branding" value="Kristy-branded only">
+        <input type="radio" name="branding" value="Kristy-branded only" onchange="toggleLayoutPicker()">
         Kristy-branded only
       </label>
+
+      <!-- Layout Picker (shown when Co-branded selected) -->
+      <div id="layoutPickerSection" style="display:none; margin-top:16px; padding:16px; background:rgba(11,78,162,0.04); border-radius:12px;">
+        <div style="font-size:13px; font-weight:600; color:#0b1f3a; margin-bottom:10px;">Choose your co-brand layout:</div>
+        <div style="display:flex; gap:12px;">
+          <label style="flex:1; display:block; cursor:pointer;">
+            <input type="radio" name="cobrand_layout" value="left" checked style="display:none;">
+            <div id="layoutOptLeft" style="padding:14px; border-radius:10px; border:2px solid #0b4ea2; background:rgba(11,78,162,0.05); text-align:center;" onclick="pickCheckoutLayout('left')">
+              <div style="display:flex; justify-content:center; gap:8px; margin-bottom:6px;">
+                <div style="padding:6px 14px; background:rgba(25,118,210,0.12); border-radius:4px; font-size:10px; font-weight:700; color:#1976d2;">YOU</div>
+                <div style="padding:6px 14px; background:rgba(11,78,162,0.08); border-radius:4px; font-size:10px; font-weight:700; color:#0b4ea2;">KRISTY</div>
+              </div>
+              <div style="font-size:11px; font-weight:600; color:#0b4ea2;">Realtor Left</div>
+            </div>
+          </label>
+          <label style="flex:1; display:block; cursor:pointer;">
+            <input type="radio" name="cobrand_layout" value="right" style="display:none;">
+            <div id="layoutOptRight" style="padding:14px; border-radius:10px; border:2px solid #ddd; background:transparent; text-align:center;" onclick="pickCheckoutLayout('right')">
+              <div style="display:flex; justify-content:center; gap:8px; margin-bottom:6px;">
+                <div style="padding:6px 14px; background:rgba(11,78,162,0.08); border-radius:4px; font-size:10px; font-weight:700; color:#0b4ea2;">KRISTY</div>
+                <div style="padding:6px 14px; background:rgba(25,118,210,0.12); border-radius:4px; font-size:10px; font-weight:700; color:#1976d2;">YOU</div>
+              </div>
+              <div style="font-size:11px; font-weight:600; color:#999;">Realtor Right</div>
+            </div>
+          </label>
+        </div>
+      </div>
     </div>
     
     <div class="form-section">
@@ -429,6 +456,33 @@ label {
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
 <script>
+// Layout picker functions
+function toggleLayoutPicker() {
+  var cobrandRadio = document.querySelector('input[name="branding"][value="Co-branded"]');
+  var section = document.getElementById('layoutPickerSection');
+  if (section) section.style.display = cobrandRadio && cobrandRadio.checked ? 'block' : 'none';
+}
+
+function pickCheckoutLayout(side) {
+  var leftOpt = document.getElementById('layoutOptLeft');
+  var rightOpt = document.getElementById('layoutOptRight');
+  var leftRadio = document.querySelector('input[name="cobrand_layout"][value="left"]');
+  var rightRadio = document.querySelector('input[name="cobrand_layout"][value="right"]');
+  if (side === 'left') {
+    leftOpt.style.borderColor = '#0b4ea2'; leftOpt.style.background = 'rgba(11,78,162,0.05)';
+    leftOpt.querySelector('div:last-child').style.color = '#0b4ea2';
+    rightOpt.style.borderColor = '#ddd'; rightOpt.style.background = 'transparent';
+    rightOpt.querySelector('div:last-child').style.color = '#999';
+    if (leftRadio) leftRadio.checked = true;
+  } else {
+    rightOpt.style.borderColor = '#0b4ea2'; rightOpt.style.background = 'rgba(11,78,162,0.05)';
+    rightOpt.querySelector('div:last-child').style.color = '#0b4ea2';
+    leftOpt.style.borderColor = '#ddd'; leftOpt.style.background = 'transparent';
+    leftOpt.querySelector('div:last-child').style.color = '#999';
+    if (rightRadio) rightRadio.checked = true;
+  }
+}
+
 // trackActivity() is now provided by tracking.js (smart auto-detection)
 
 // Auto-fill user info from login session
@@ -618,11 +672,13 @@ if (form) {
     e.preventDefault();
     
     // Build complete order data
+    const cobrandLayout = form.cobrand_layout ? form.cobrand_layout.value : 'left';
     const orderData = {
       name: form.name.value,
       email: form.email.value,
       brokerage: form.brokerage.value,
       branding: form.branding.value,
+      cobrandLayout: form.branding.value === 'Co-branded' ? cobrandLayout : null,
       notes: form.notes.value,
       cart: cartData
     };
