@@ -2905,24 +2905,66 @@ function ppBuildDashboard(){
   var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=top5(topF);
 }
 
-function ppBuildOrderRow(name,partner,meta,status,statusColor,email){
-  return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+name+' — '+partner+'</div><div class="pp-order-meta">'+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div><button class="pp-order-btn">'+(status==='COMPLETE'?'DONE':'GENERATE')+'</button><button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button></div>';
+function ppParseOrderItems(raw){
+  if(!raw)return{title:'Order',details:''};
+  var str=typeof raw==='string'?raw:JSON.stringify(raw);
+  try{
+    var obj=typeof raw==='object'?raw:JSON.parse(str);
+    var parts=[];
+    if(obj.advisory){
+      Object.keys(obj.advisory).forEach(function(k){
+        var r=obj.advisory[k];var info=k.charAt(0).toUpperCase()+k.slice(1)+' Report';
+        var dets=[];
+        if(r.loan)dets.push('$'+Number(r.loan).toLocaleString());
+        if(r.rate)dets.push(r.rate+'%');
+        if(r.purchase)dets.push(r.purchase);
+        if(r.address)dets.push(r.address);
+        if(dets.length>0)info+=' — '+dets.join(', ');
+        parts.push(info);
+      });
+    }
+    if(obj.marketing&&obj.marketing.length>0){obj.marketing.forEach(function(m){parts.push(m);});}
+    if(obj.websites&&obj.websites.length>0){parts.push(obj.websites.length+' Website(s)');}
+    if(parts.length>0)return{title:parts[0],details:parts.slice(1).join(' · ')};
+  }catch(e){}
+  var clean=str.replace(/[{}"[\]]/g,'').replace(/,/g,', ').substring(0,80);
+  return{title:clean||'Order',details:''};
+}
+
+function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
+  var btnAction=status==='COMPLETE'?'':'onclick="ppGenerateOrder(\''+orderId+'\')"';
+  return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div><button class="pp-order-btn" '+btnAction+'>'+(status==='COMPLETE'?'DONE':'GENERATE')+'</button><button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button></div>';
+}
+
+function ppGenerateOrder(orderId){
+  if(!orderId)return;
+  showToast('Opening generator for order '+orderId+'...');
+  // TODO: open actual report/flyer generator pre-filled with order data
+}
+
+function ppEmailPartner(email,subject){
+  if(!email)return;
+  var sub=encodeURIComponent('Your '+(subject||'order')+' is ready!');
+  var body=encodeURIComponent('Hi,\n\nYour order is complete and attached. Please let me know if you have any questions.\n\nBest regards');
+  window.open('mailto:'+email+'?subject='+sub+'&body='+body);
 }
 
 function ppBuildReportOrders(){
   if(!ordersLoaded){loadOrders();setTimeout(ppBuildReportOrders,1500);return;}
   var reportOrders=allOrders.filter(function(o){
-    var items=(o.items||'').toLowerCase();
-    return items.indexOf('report')>=0||items.indexOf('advisory')>=0||items.indexOf('snapshot')>=0||items.indexOf('amortization')>=0||items.indexOf('comparison')>=0||items.indexOf('qualification')>=0;
+    var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
+    str=str.toLowerCase();
+    return str.indexOf('advisory')>=0||str.indexOf('report')>=0||str.indexOf('amortization')>=0||str.indexOf('snapshot')>=0||str.indexOf('comparison')>=0||str.indexOf('qualification')>=0;
   });
-  if(reportOrders.length===0){reportOrders=allOrders;}
-  var h='';
-  var pendingCount=0;
+  if(reportOrders.length===0&&allOrders.length>0){reportOrders=allOrders;}
+  var h='';var pendingCount=0;
   reportOrders.forEach(function(o){
-    var sc=o.status==='Complete'?'#22c55e':o.status==='In Progress'?'#f59e0b':'#ef4444';
-    var sl=o.status==='Complete'?'COMPLETE':o.status==='In Progress'?'IN PROGRESS':'NEW';
-    if(o.status!=='Complete')pendingCount++;
-    h+=ppBuildOrderRow(o.items||'Order',o.name||'Unknown',((o.brokerage||'')+(o.timestamp?' · '+o.timestamp:'')),sl,sc,o.email||'');
+    var sc=(o.status||'').toLowerCase()==='complete'?'#22c55e':(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
+    var sl=(o.status||'').toLowerCase()==='complete'?'COMPLETE':(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
+    if(sl!=='COMPLETE')pendingCount++;
+    var parsed=ppParseOrderItems(o.items||o.cartJson);
+    var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+    h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
   });
   if(h==='')h='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;font-size:13px;">NO ACTIVE ORDERS</div>';
   document.getElementById('ppReportOrders').innerHTML=h;
@@ -2932,23 +2974,23 @@ function ppBuildReportOrders(){
 function ppBuildFlyerOrders(){
   if(!ordersLoaded){loadOrders();setTimeout(ppBuildFlyerOrders,1500);return;}
   var flyerOrders=allOrders.filter(function(o){
-    var items=(o.items||'').toLowerCase();
-    return items.indexOf('flyer')>=0||items.indexOf('marketing')>=0||items.indexOf('open house')>=0||items.indexOf('listed')>=0;
+    var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
+    str=str.toLowerCase();
+    return str.indexOf('flyer')>=0||str.indexOf('marketing')>=0||str.indexOf('open house')>=0||str.indexOf('listed')>=0;
   });
-  var h='';
-  var pendingCount=0;
+  var h='';var pendingCount=0;
   flyerOrders.forEach(function(o){
-    var sc=o.status==='Complete'?'#22c55e':o.status==='In Progress'?'#f59e0b':'#ef4444';
-    var sl=o.status==='Complete'?'COMPLETE':o.status==='In Progress'?'IN PROGRESS':'NEW';
-    if(o.status!=='Complete')pendingCount++;
-    h+=ppBuildOrderRow(o.items||'Order',o.name||'Unknown',((o.brokerage||'')+(o.timestamp?' · '+o.timestamp:'')),sl,sc,o.email||'');
+    var sc=(o.status||'').toLowerCase()==='complete'?'#22c55e':(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
+    var sl=(o.status||'').toLowerCase()==='complete'?'COMPLETE':(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
+    if(sl!=='COMPLETE')pendingCount++;
+    var parsed=ppParseOrderItems(o.items||o.cartJson);
+    var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+    h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
   });
   if(h==='')h='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;font-size:13px;">NO FLYER ORDERS</div>';
   document.getElementById('ppFlyerOrders').innerHTML=h;
   document.getElementById('ppFlyerOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
 }
-
-function ppEmailPartner(email){showToast('Opening email to '+email);}
 
 function ppBuildActivity(){
   var h='';
