@@ -2959,11 +2959,10 @@ function ppGenerateOrder(orderId){
     if(order.name)p.push('realtorName='+encodeURIComponent(order.name));
     if(order.email)p.push('realtorEmail='+encodeURIComponent(order.email));
     if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
-    // Co-branding flag from order
-    var brandVal=order.branding||'';
-    if(brandVal==='yes'||brandVal==='Co-branded'||brandVal==='left'||brandVal==='right'){
+    // Co-branding flag and layout from order
+    if(order.branding==='Co-branded'){
       p.push('cobrand=true');
-      if(brandVal==='left'||brandVal==='right')p.push('cobrandLayout='+brandVal);
+      p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout||'left'));
     }
     // Notes might contain client name
     if(order.notes){
