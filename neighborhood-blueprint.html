@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neighborhood Blueprint</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07090e;
+  --surface: #0d1117;
+  --surface-raised: #131920;
+  --border: rgba(255,255,255,0.05);
+  --border-gold: rgba(186,163,112,0.18);
+  --gold: #baa370;
+  --gold-bright: #d4bc7c;
+  --gold-dim: rgba(186,163,112,0.4);
+  --green: #5ebc8a;
+  --green-bg: rgba(94,188,138,0.06);
+  --red: #d97373;
+  --red-bg: rgba(217,115,115,0.06);
+  --blue: #6ba3d6;
+  --blue-bg: rgba(107,163,214,0.06);
+  --purple: #9b8ec4;
+  --amber: #d4a953;
+  --text: #e8e4dc;
+  --text-mid: rgba(232,228,220,0.6);
+  --text-dim: rgba(232,228,220,0.3);
+  --text-faint: rgba(232,228,220,0.15);
+  --navy: #0a1628;
+  --navy-mid: #0f2035;
+  --blue-btn: #3b82f6;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== GENERATOR PANEL ===== */
+.gen-panel {
+  max-width: 560px;
+  margin: 30px auto;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 28px;
+}
+.gen-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.gen-sub { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 20px; }
+.gen-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.gen-field { display: flex; flex-direction: column; gap: 3px; }
+.gen-field.full { grid-column: 1 / -1; }
+.gen-field label {
+  font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.gen-field input, .gen-field select {
+  padding: 8px 10px; border-radius: 7px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  color: #fff; font-size: 13px; font-family: inherit;
+}
+.gen-field select option { background: #0f2035; color: #fff; }
+.gen-field input:focus, .gen-field select:focus { outline: none; border-color: rgba(59,130,246,0.4); }
+.gen-field input::placeholder { color: rgba(255,255,255,0.2); }
+.gen-section {
+  font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25);
+  text-transform: uppercase; letter-spacing: 1px;
+  margin: 16px 0 6px; grid-column: 1 / -1;
+  padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
+}
+.gen-actions { display: flex; gap: 8px; margin-top: 18px; }
+.gen-btn {
+  padding: 10px 20px; border-radius: 8px; border: none;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.15s;
+}
+.gen-btn.primary { background: var(--blue-btn); color: #fff; flex: 1; }
+.gen-btn.primary:hover { background: #2563eb; }
+.gen-btn.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.gen-check { display: flex; align-items: center; gap: 8px; grid-column: 1 / -1; }
+.gen-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--blue-btn); }
+.gen-check label { font-size: 12px; color: rgba(255,255,255,0.5); cursor: pointer; }
+.cobrand-fields { display: none; grid-column: 1 / -1; }
+.cobrand-fields.show { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.layout-row { grid-column: 1 / -1; display: flex; gap: 8px; }
+.layout-opt {
+  flex: 1; padding: 8px; border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.02);
+  cursor: pointer; text-align: center; font-size: 10px; color: rgba(255,255,255,0.3); transition: 0.15s;
+}
+.layout-opt.active { border-color: var(--blue-btn); background: rgba(59,130,246,0.08); color: var(--blue-btn); }
+.gen-loading {
+  display: none; text-align: center; padding: 20px;
+  font-size: 13px; color: rgba(255,255,255,0.5);
+}
+.gen-loading.show { display: block; }
+.gen-error {
+  display: none; text-align: center; padding: 10px;
+  font-size: 12px; color: var(--red); margin-top: 10px;
+}
+.gen-error.show { display: block; }
+
+/* ===== REPORT ===== */
+#reportContainer { display: none; }
+
+.report {
+  max-width: 880px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+/* ===== PROPERTY HEADER ===== */
+.prop-header {
+  background: var(--surface-raised);
+  border-bottom: 1px solid var(--border);
+  padding: 24px 52px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.prop-map {
+  width: 160px;
+  height: 100px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+
+.prop-map img { width: 100%; height: 100%; object-fit: cover; }
+
+.prop-address {
+  flex: 1;
+}
+
+.prop-address-line {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prop-address-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.prop-insights {
+  background: rgba(186,163,112,0.06);
+  border: 1px solid var(--border-gold);
+  border-radius: 4px;
+  padding: 14px 18px;
+  flex-shrink: 0;
+}
+
+.prop-insights-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.prop-insight-row {
+  font-size: 11px;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.prop-insight-row strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ===== HERO ===== */
+.hero {
+  padding: 48px 52px 44px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 52px; right: 52px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+}
+
+.hero-brand {
+  font-size: 8.5px; font-weight: 600; letter-spacing: 5px;
+  color: var(--gold); text-transform: uppercase; margin-bottom: 14px;
+}
+
+.hero-location {
+  font-family: 'Playfair Display', serif;
+  font-size: 42px; font-weight: 700; line-height: 1.05; letter-spacing: -0.5px;
+}
+
+.hero-sub {
+  font-size: 13px; color: var(--text-dim); margin-top: 6px; letter-spacing: 0.5px; font-weight: 300;
+}
+
+.hero-divider { width: 40px; height: 1px; background: var(--gold); margin: 26px 0 22px; }
+
+.hero-kpis { display: grid; grid-template-columns: repeat(4, 1fr); }
+
+.hero-kpi { padding: 0 20px; border-right: 1px solid var(--border); }
+.hero-kpi:first-child { padding-left: 0; }
+.hero-kpi:last-child { border-right: none; }
+
+.hero-kpi-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; font-weight: 700; line-height: 1;
+}
+
+.hero-kpi-label {
+  font-size: 9px; font-weight: 500; letter-spacing: 1.5px;
+  color: var(--text-dim); text-transform: uppercase; margin-top: 4px;
+}
+
+/* ===== SECTIONS ===== */
+.sect { padding: 36px 52px; border-bottom: 1px solid var(--border); }
+
+.sect-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; }
+
+.sect-num {
+  font-size: 9px; font-weight: 600; letter-spacing: 2px; color: var(--gold); flex-shrink: 0;
+}
+
+.sect-title {
+  font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600;
+}
+
+.sect-rule { flex: 1; height: 1px; background: var(--border); margin-left: 8px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 18px 20px;
+}
+
+.card-label {
+  font-size: 8.5px; font-weight: 600; letter-spacing: 2px;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px;
+}
+
+/* ===== FORECAST ===== */
+.forecast-grid { display: grid; grid-template-columns: 1fr 240px; gap: 16px; }
+
+.forecast-main {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 24px;
+}
+
+.forecast-headline { font-size: 11px; color: var(--text-dim); margin-bottom: 2px; }
+
+.forecast-big { display: flex; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+
+.forecast-big-num {
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; color: var(--green);
+}
+
+.forecast-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 2px;
+  background: var(--green-bg); color: var(--green); font-size: 12px; font-weight: 600;
+}
+
+.forecast-range { font-size: 12px; color: var(--text-dim); margin-bottom: 18px; }
+.forecast-range strong { color: var(--text-mid); }
+
+.chart-wrap { width: 100%; height: 165px; }
+.chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
+
+.rate-stack { display: flex; flex-direction: column; gap: 8px; }
+
+.rate-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 16px 18px;
+}
+
+.rate-period { font-size: 10px; font-weight: 500; color: var(--text-dim); margin-bottom: 3px; }
+
+.rate-value {
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; line-height: 1;
+}
+
+.rate-unit { font-size: 14px; color: var(--text-dim); font-weight: 400; }
+.rate-sub { font-size: 9px; color: var(--text-dim); margin-top: 2px; }
+
+/* ===== SUPPLY ===== */
+.supply-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
+
+.supply-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 16px 18px;
+}
+
+.supply-val {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; line-height: 1;
+}
+
+.supply-lbl {
+  font-size: 8.5px; font-weight: 500; letter-spacing: 1.5px;
+  color: var(--text-dim); text-transform: uppercase; margin-top: 4px;
+}
+
+.supply-note { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+
+.construct-wrap {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 20px;
+}
+
+.construct-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.construct-row:last-child { margin-bottom: 0; }
+
+.construct-label { width: 100px; font-size: 11px; color: var(--text-mid); flex-shrink: 0; }
+
+.construct-track {
+  flex: 1; height: 18px; background: rgba(255,255,255,0.02); border-radius: 1px; overflow: hidden;
+}
+
+.construct-fill {
+  height: 100%; border-radius: 1px; display: flex; align-items: center;
+  padding-left: 8px; font-size: 10px; font-weight: 600; color: var(--text); min-width: 30px;
+}
+
+/* ===== DEMOGRAPHICS ===== */
+.demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.demo-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 22px;
+}
+
+.demo-panel-title {
+  font-size: 8.5px; font-weight: 600; letter-spacing: 2px;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px;
+}
+
+.age-row { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; }
+.age-row:last-child { margin-bottom: 0; }
+
+.age-label { width: 42px; text-align: right; font-size: 11px; font-weight: 500; color: var(--text-dim); flex-shrink: 0; }
+
+.age-track { flex: 1; height: 20px; background: rgba(255,255,255,0.02); border-radius: 1px; overflow: hidden; }
+
+.age-fill {
+  height: 100%; border-radius: 1px; display: flex; align-items: center;
+  justify-content: flex-end; padding-right: 8px; font-size: 10px; font-weight: 600; color: var(--text); min-width: 25px;
+}
+
+.age-count { width: 42px; font-size: 11px; color: var(--text-dim); flex-shrink: 0; }
+
+.donut-area { display: flex; align-items: center; gap: 20px; }
+.donut-svg { width: 120px; height: 120px; flex-shrink: 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 10px; }
+.legend-item { display: flex; align-items: center; gap: 8px; }
+.legend-dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
+.legend-text { font-size: 11px; color: var(--text-mid); }
+.legend-text strong { color: var(--text); font-size: 16px; display: block; line-height: 1.2; }
+.legend-divider { height: 1px; background: var(--border); margin: 2px 0; }
+.legend-highlight { font-size: 10px; color: var(--text-dim); }
+.legend-highlight strong { color: var(--green); font-size: 15px; display: block; }
+
+/* ===== AFFORDABILITY ===== */
+.afford-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.afford-panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 22px;
+}
+
+.afford-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid var(--border);
+}
+.afford-row:last-child { border-bottom: none; }
+.afford-label { font-size: 12px; color: var(--text-mid); }
+.afford-val { font-size: 13px; font-weight: 600; }
+
+.gauge-center { display: flex; flex-direction: column; align-items: center; margin-bottom: 14px; }
+.gauge-svg { width: 150px; height: 105px; }
+.gauge-title { font-size: 8.5px; font-weight: 600; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-top: 2px; }
+.gauge-explain { font-size: 10px; color: var(--text-dim); text-align: center; margin-top: 4px; line-height: 1.4; max-width: 200px; }
+
+.afford-chart-label { font-size: 8.5px; font-weight: 600; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 4px; }
+.afford-chart { width: 100%; height: 100px; margin-top: 6px; }
+.afford-chart svg { width: 100%; height: 100%; overflow: visible; }
+
+/* ===== EMPLOYMENT ===== */
+.employ-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+/* ===== FOOTER ===== */
+.footer-standard {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 24px 52px; display: flex; align-items: center; justify-content: space-between;
+}
+
+.footer-cobrand {
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 20px 52px; display: flex; align-items: center; justify-content: center; gap: 40px;
+}
+
+.footer-person { display: flex; align-items: center; gap: 12px; }
+
+.footer-headshot {
+  width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+  border: 1px solid var(--border-gold);
+}
+
+.footer-initials {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1px solid var(--border-gold); background: var(--surface-raised);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--gold);
+}
+
+.footer-name { font-size: 13px; font-weight: 600; }
+.footer-credentials { font-size: 10px; color: var(--text-dim); line-height: 1.6; }
+.footer-divider { width: 1px; height: 50px; background: var(--border); }
+.footer-logos { display: flex; align-items: center; gap: 12px; }
+.footer-logo { height: 28px; opacity: 0.7; }
+
+.footer-company-bar {
+  background: var(--bg); padding: 12px 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid var(--border);
+}
+.footer-company-name { font-size: 10px; font-weight: 600; color: var(--text-mid); }
+.footer-company-sub { font-size: 9px; color: var(--text-dim); }
+
+.disclosures {
+  padding: 12px 52px; background: var(--bg); border-top: 1px solid var(--border);
+  font-size: 7.5px; color: var(--text-faint); line-height: 1.7; text-align: center;
+}
+
+/* ===== NAV BAR ===== */
+.report-nav {
+  display: none; max-width: 880px; margin: 0 auto;
+  padding: 14px 52px; background: var(--surface); border: 1px solid var(--border);
+  border-top: none;
+}
+
+.report-nav a {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none;
+}
+
+.report-nav a:hover { text-decoration: underline; }
+
+.up { color: var(--green); }
+.down { color: var(--red); }
+
+/* ===== PRINT ===== */
+@media print {
+  body { background: #fff; color: #1a1a2e; }
+  .gen-panel, .report-nav { display: none !important; }
+  .report { border: none; }
+  .hero, .sect, .prop-header, .footer-standard, .footer-cobrand, .footer-company-bar { background: #fff; }
+  .hero-location, .hero-kpi-value, .supply-val, .rate-value, .forecast-big-num { color: #1a1a2e; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== GENERATOR FORM ===== -->
+<div class="gen-panel" id="generatorPanel">
+  <div class="gen-title">Neighborhood Blueprint</div>
+  <div class="gen-sub">Generate a detailed real estate market report for any US zip code</div>
+
+  <div class="gen-grid">
+    <div class="gen-field">
+      <label>Zip Code *</label>
+      <input type="text" id="inp_zip" maxlength="5" placeholder="43085" inputmode="numeric">
+    </div>
+    <div class="gen-field">
+      <label>Client Name</label>
+      <input type="text" id="inp_clientName" placeholder="Homebuyer">
+    </div>
+    <div class="gen-field full">
+      <label>Property Address (optional)</label>
+      <input type="text" id="inp_address" placeholder="123 Main St, Westerville, OH 43085">
+    </div>
+
+    <div class="gen-section">Co-branding</div>
+    <div class="gen-check">
+      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()">
+      <label for="inp_cobrand">Co-brand with Realtor</label>
+    </div>
+    <div class="cobrand-fields" id="cobrandFields">
+      <div class="gen-field"><label>Realtor Name</label><input type="text" id="inp_realtorName" placeholder="Jane Smith"></div>
+      <div class="gen-field"><label>Brokerage</label><input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams"></div>
+      <div class="gen-field"><label>Phone</label><input type="text" id="inp_realtorPhone" placeholder="(555) 555-5555"></div>
+      <div class="gen-field"><label>Email</label><input type="text" id="inp_realtorEmail" placeholder="jane@kw.com"></div>
+      <div class="layout-row">
+        <div class="layout-opt active" id="layoutLeft" onclick="pickLayout('left')">← Realtor Left</div>
+        <div class="layout-opt" id="layoutRight" onclick="pickLayout('right')">Realtor Right →</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gen-actions">
+    <button class="gen-btn primary" id="btnGenerate" onclick="generateReport()">Generate Report</button>
+  </div>
+  <div class="gen-loading" id="genLoading">Pulling market data for this area...</div>
+  <div class="gen-error" id="genError"></div>
+</div>
+
+<!-- ===== REPORT ===== -->
+<div id="reportContainer">
+<div class="report" id="reportBody">
+
+  <!-- Property Header (shown when address is provided) -->
+  <div id="rptPropHeader" class="prop-header" style="display:none;">
+    <div class="prop-map" id="rptMap"></div>
+    <div class="prop-address">
+      <div class="prop-address-line" id="rptAddressLine"></div>
+      <div class="prop-address-sub" id="rptAddressSub"></div>
+    </div>
+    <div class="prop-insights" id="rptInsights"></div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-brand">Neighborhood Blueprint</div>
+    <div class="hero-location" id="rptLocation"></div>
+    <div class="hero-sub" id="rptSub"></div>
+    <div class="hero-divider"></div>
+    <div class="hero-kpis">
+      <div class="hero-kpi"><div class="hero-kpi-value" id="kpiHomeValue"></div><div class="hero-kpi-label">Median Home Value</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-value" id="kpiIncome"></div><div class="hero-kpi-label">Median Income</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-value" id="kpiListings"></div><div class="hero-kpi-label">Active Listings</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-value" id="kpiPop"></div><div class="hero-kpi-label">Population</div></div>
+    </div>
+  </div>
+
+  <!-- 01: Forecasted Appreciation -->
+  <div class="sect">
+    <div class="sect-head">
+      <div class="sect-num">01</div>
+      <div class="sect-title">Forecasted Appreciation</div>
+      <div class="sect-rule"></div>
+    </div>
+    <div class="forecast-grid">
+      <div class="forecast-main">
+        <div class="forecast-headline" id="fcHeadline"></div>
+        <div class="forecast-big">
+          <div class="forecast-big-num" id="fcGain"></div>
+          <div class="forecast-badge" id="fcBadge"></div>
+        </div>
+        <div class="forecast-range" id="fcRange"></div>
+        <div class="chart-wrap"><svg id="fcChart" viewBox="0 0 440 155"></svg></div>
+      </div>
+      <div class="rate-stack" id="rateStack"></div>
+    </div>
+  </div>
+
+  <!-- 02: Supply & Demand -->
+  <div class="sect">
+    <div class="sect-head">
+      <div class="sect-num">02</div>
+      <div class="sect-title">Supply & Demand</div>
+      <div class="sect-rule"></div>
+    </div>
+    <div class="supply-row" id="supplyRow"></div>
+    <div class="construct-wrap" id="constructWrap"></div>
+  </div>
+
+  <!-- 03: Demographics & Housing -->
+  <div class="sect">
+    <div class="sect-head">
+      <div class="sect-num">03</div>
+      <div class="sect-title">Demographics & Housing</div>
+      <div class="sect-rule"></div>
+    </div>
+    <div class="demo-grid">
+      <div class="demo-panel" id="agePanelEl"></div>
+      <div class="demo-panel" id="donutPanelEl"></div>
+    </div>
+  </div>
+
+  <!-- 04: Affordability -->
+  <div class="sect">
+    <div class="sect-head">
+      <div class="sect-num">04</div>
+      <div class="sect-title">Affordability</div>
+      <div class="sect-rule"></div>
+    </div>
+    <div class="afford-grid">
+      <div class="afford-panel" id="affordLeft"></div>
+      <div class="afford-panel" id="affordRight"></div>
+    </div>
+  </div>
+
+  <!-- 05: Employment -->
+  <div class="sect">
+    <div class="sect-head">
+      <div class="sect-num">05</div>
+      <div class="sect-title">Employment</div>
+      <div class="sect-rule"></div>
+    </div>
+    <div class="employ-row" id="employRow"></div>
+  </div>
+
+  <!-- Footer -->
+  <div id="rptFooter"></div>
+  <div id="rptCobrand"></div>
+  <div class="disclosures" id="rptDisclosures"></div>
+</div>
+<div class="report-nav" id="reportNav">
+  <a href="mission-control.html#reports">← Back to Partner Portal</a>
+</div>
+</div>
+
+<script>
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+var cobrandLayout = 'left';
+var reportData = null;
+
+// ===== HELPERS =====
+function fmtMoney(n) {
+  if (n == null) return '—';
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n).toLocaleString();
+  return '$' + n;
+}
+function fmtK(n) {
+  if (n == null) return '—';
+  if (n >= 1000) return (n / 1000).toFixed(1).replace('.0', '') + 'K';
+  return n.toLocaleString();
+}
+function fmtNum(n) { return n != null ? n.toLocaleString() : '—'; }
+function fmtPct(n) { return n != null ? n.toFixed(2) + '%' : '—'; }
+
+// ===== COBRAND TOGGLE =====
+function toggleCobrand() {
+  var show = document.getElementById('inp_cobrand').checked;
+  document.getElementById('cobrandFields').className = show ? 'cobrand-fields show' : 'cobrand-fields';
+}
+function pickLayout(side) {
+  cobrandLayout = side;
+  document.getElementById('layoutLeft').className = 'layout-opt' + (side === 'left' ? ' active' : '');
+  document.getElementById('layoutRight').className = 'layout-opt' + (side === 'right' ? ' active' : '');
+}
+
+// ===== GENERATE =====
+function generateReport() {
+  var zip = document.getElementById('inp_zip').value.trim();
+  if (!/^\d{5}$/.test(zip)) { alert('Please enter a valid 5-digit zip code'); return; }
+
+  var btn = document.getElementById('btnGenerate');
+  var loading = document.getElementById('genLoading');
+  var error = document.getElementById('genError');
+  btn.disabled = true;
+  loading.className = 'gen-loading show';
+  error.className = 'gen-error';
+
+  fetch(API_BASE + '/report-card?zip=' + zip)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      reportData = data;
+      renderReport(data);
+      document.getElementById('generatorPanel').style.display = 'none';
+      document.getElementById('reportContainer').style.display = 'block';
+
+      var fromOrder = new URLSearchParams(window.location.search).has('zip');
+      if (fromOrder) document.getElementById('reportNav').style.display = 'block';
+    })
+    .catch(function(err) {
+      error.textContent = 'Error fetching data: ' + err.message;
+      error.className = 'gen-error show';
+    })
+    .finally(function() {
+      btn.disabled = false;
+      loading.className = 'gen-loading';
+    });
+}
+
+// ===== RENDER =====
+function renderReport(d) {
+  var zip = d.zip || '';
+  var clientName = document.getElementById('inp_clientName').value.trim() || 'Homebuyer';
+  var address = document.getElementById('inp_address').value.trim();
+
+  // City name from address or generic
+  var cityState = address ? address.split(',').slice(1).join(',').trim() : (d.state || 'OH');
+  var cityName = address ? address.split(',')[1]?.trim() || '' : '';
+
+  // Property header
+  if (address) {
+    document.getElementById('rptPropHeader').style.display = 'flex';
+    document.getElementById('rptAddressLine').textContent = address.split(',')[0];
+    document.getElementById('rptAddressSub').textContent = address.split(',').slice(1).join(',').trim();
+
+    // Static map
+    var mapURL = 'https://maps.googleapis.com/maps/api/staticmap?center=' + encodeURIComponent(address) +
+      '&zoom=15&size=320x200&scale=2&maptype=roadmap&markers=color:red|' + encodeURIComponent(address) +
+      '&key=AIzaSyDummyKey'; // placeholder - works without key at low volume
+    document.getElementById('rptMap').innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;"><span style="font-size:24px;">📍</span></div>';
+
+    // Key insights
+    var insights = '<div class="prop-insights-title">Key Insights for ' + zip + '</div>';
+    insights += '<div class="prop-insight-row">Median Price: <strong>' + fmtMoney(d.medianHomeValue) + '</strong></div>';
+    if (d.medianDom != null) insights += '<div class="prop-insight-row">Median Days on Market: <strong>' + d.medianDom + '</strong></div>';
+    insights += '<div class="prop-insight-row">Active Listings: <strong>' + (d.activeListings || '—') + '</strong></div>';
+    if (d.appreciation) insights += '<div class="prop-insight-row">1-Yr Appreciation: <strong class="up">+' + d.appreciation.oneYear + '%</strong></div>';
+    document.getElementById('rptInsights').innerHTML = insights;
+  }
+
+  // Hero
+  document.getElementById('rptLocation').textContent = 'Prepared for ' + clientName;
+  document.getElementById('rptSub').textContent = 'ZIP ' + zip + ' · ' + d.state + ' · Census Data ' + (d.censusYear || '2023');
+  document.getElementById('kpiHomeValue').textContent = fmtMoney(d.medianHomeValue);
+  document.getElementById('kpiIncome').textContent = fmtMoney(d.medianIncome);
+  document.getElementById('kpiListings').textContent = d.activeListings != null ? fmtNum(d.activeListings) : '—';
+  document.getElementById('kpiPop').textContent = fmtNum(d.population);
+
+  // 01: Forecast
+  renderForecast(d);
+
+  // 02: Supply
+  renderSupply(d);
+
+  // 03: Demographics
+  renderDemographics(d);
+
+  // 04: Affordability
+  renderAffordability(d);
+
+  // 05: Employment
+  renderEmployment(d);
+
+  // Footer
+  renderFooter();
+
+  // Disclosures
+  document.getElementById('rptDisclosures').textContent =
+    'Data sources: U.S. Census Bureau American Community Survey (' + (d.censusYear || '2023') + '), Federal Housing Finance Agency House Price Index, Realtor.com®. ' +
+    'All data is believed to be accurate but is not guaranteed. Market conditions change frequently. ' +
+    'Appreciation forecasts are based on historical trends and do not guarantee future results. ' +
+    'This report is for informational purposes only and does not constitute financial advice or a commitment to lend. ' +
+    'Equal Housing Lender. © Paramount Residential Mortgage Group, Inc. NMLS# 75243.';
+}
+
+// ===== 01: FORECAST =====
+function renderForecast(d) {
+  var price = d.medianHomeValue || 300000;
+  var rate = d.appreciation ? d.appreciation.forecastAnnualRate : 5;
+  var values = [price];
+  for (var i = 1; i <= 5; i++) values.push(Math.round(price * Math.pow(1 + rate / 100, i)));
+  var gain = values[5] - values[0];
+  var gainPct = ((gain / values[0]) * 100).toFixed(1);
+
+  document.getElementById('fcHeadline').textContent = 'Cumulative 5-year gain in ' + (d.zip || '');
+  document.getElementById('fcGain').textContent = fmtMoney(gain);
+  document.getElementById('fcBadge').textContent = '+' + gainPct + '% total';
+  document.getElementById('fcRange').innerHTML = '<strong>' + fmtMoney(values[0]) + '</strong> today → <strong>' + fmtMoney(values[5]) + '</strong> projected in 5 years';
+
+  // Chart
+  var svg = document.getElementById('fcChart');
+  var maxV = values[5], minV = values[0];
+  var range = maxV - minV || 1;
+  var pts = values.map(function(v, i) {
+    var x = i * 88;
+    var y = 130 - ((v - minV) / range) * 120;
+    return { x: x, y: y, v: v };
+  });
+
+  var polyline = pts.map(function(p) { return p.x + ',' + p.y; }).join(' ');
+  var area = polyline + ' 440,140 0,140';
+
+  var h = '';
+  // Grid
+  for (var g = 20; g <= 120; g += 40) h += '<line x1="0" y1="' + g + '" x2="440" y2="' + g + '" stroke="rgba(255,255,255,0.03)"/>';
+  // Area
+  h += '<defs><linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5ebc8a" stop-opacity="0.12"/><stop offset="100%" stop-color="#5ebc8a" stop-opacity="0"/></linearGradient></defs>';
+  h += '<path d="M' + pts[0].x + ',' + pts[0].y + ' ' + pts.map(function(p) { return 'L' + p.x + ',' + p.y; }).join(' ') + ' L440,140 L0,140Z" fill="url(#fg)"/>';
+  // Line
+  h += '<polyline points="' + polyline + '" fill="none" stroke="#5ebc8a" stroke-width="2" stroke-linejoin="round"/>';
+  // Points, values, percents
+  var labels = ['Today', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
+  pts.forEach(function(p, i) {
+    h += '<circle cx="' + p.x + '" cy="' + p.y + '" r="3.5" fill="#5ebc8a"/>';
+    var vLabel = p.v >= 1000000 ? '$' + (p.v / 1000000).toFixed(2) + 'M' : '$' + Math.round(p.v / 1000) + 'K';
+    h += '<text x="' + Math.max(0, p.x - 10) + '" y="' + (p.y - 10) + '" font-size="9" font-weight="600" fill="#e8e4dc" font-family="DM Sans">' + vLabel + '</text>';
+    if (i > 0) {
+      var cumPct = (((p.v - values[0]) / values[0]) * 100).toFixed(1);
+      h += '<text x="' + (p.x - 14) + '" y="' + (p.y + 14) + '" font-size="8" fill="#5ebc8a" font-family="DM Sans">+' + cumPct + '%</text>';
+    }
+    h += '<text x="' + Math.max(0, p.x - 5) + '" y="152" font-size="9" fill="rgba(232,228,220,0.25)" font-family="DM Sans">' + labels[i] + '</text>';
+  });
+  svg.innerHTML = h;
+
+  // Rate cards
+  var rates = [];
+  if (d.appreciation) {
+    if (d.appreciation.oneYear != null) rates.push({ period: '1-Year Historical', value: d.appreciation.oneYear, sub: 'Annual appreciation' });
+    if (d.appreciation.fiveYear != null) rates.push({ period: '5-Year Average', value: d.appreciation.fiveYear, sub: 'Per year, compounded' });
+    if (d.appreciation.tenYear != null) rates.push({ period: '10-Year Average', value: d.appreciation.tenYear, sub: 'Per year, compounded' });
+  }
+  document.getElementById('rateStack').innerHTML = rates.map(function(r) {
+    return '<div class="rate-card"><div class="rate-period">' + r.period + '</div>' +
+      '<div class="rate-value">' + r.value.toFixed(2) + '<span class="rate-unit">%</span></div>' +
+      '<div class="rate-sub">' + r.sub + '</div></div>';
+  }).join('');
+}
+
+// ===== 02: SUPPLY =====
+function renderSupply(d) {
+  var cards = [];
+  cards.push({ val: fmtNum(d.activeListings), lbl: 'Active Listings', note: 'In ZIP ' + d.zip });
+  if (d.housingSupply) {
+    cards.push({ val: fmtNum(d.housingSupply.totalUnits), lbl: 'Total Housing Units' });
+    cards.push({ val: fmtNum(d.housingSupply.vacant), lbl: 'Vacant Units', note: d.housingSupply.vacancyRate + '% vacancy' });
+  }
+  cards.push({ val: fmtMoney(d.medianRent), lbl: 'Median Rent', note: '/month' });
+  if (d.medianDom != null) cards.push({ val: d.medianDom + ' days', lbl: 'Median DOM' });
+  if (d.medianListPrice) cards.push({ val: fmtMoney(d.medianListPrice), lbl: 'Median List Price' });
+
+  document.getElementById('supplyRow').innerHTML = cards.map(function(c) {
+    return '<div class="supply-card"><div class="supply-val">' + c.val + '</div>' +
+      '<div class="supply-lbl">' + c.lbl + '</div>' +
+      (c.note ? '<div class="supply-note">' + c.note + '</div>' : '') + '</div>';
+  }).join('');
+
+  // Construction bars
+  if (d.housingSupply) {
+    var hs = d.housingSupply;
+    var maxB = Math.max(hs.builtRecent, hs.built2010s, hs.built2000s, 1);
+    var h = '<div class="card-label">NEW CONSTRUCTION IN ZIP ' + d.zip + '</div>';
+    var bars = [
+      { label: 'Built 2020+', value: hs.builtRecent, color: 'rgba(94,188,138,0.4)' },
+      { label: 'Built 2010–2019', value: hs.built2010s, color: 'rgba(107,163,214,0.4)' },
+      { label: 'Built 2000–2009', value: hs.built2000s, color: 'rgba(186,163,112,0.4)' }
+    ];
+    bars.forEach(function(b) {
+      var pct = Math.max(5, (b.value / maxB) * 100);
+      h += '<div class="construct-row"><div class="construct-label">' + b.label + '</div>' +
+        '<div class="construct-track"><div class="construct-fill" style="width:' + pct + '%;background:' + b.color + ';">' + fmtNum(b.value) + '</div></div></div>';
+    });
+    document.getElementById('constructWrap').innerHTML = h;
+  }
+}
+
+// ===== 03: DEMOGRAPHICS =====
+function renderDemographics(d) {
+  // Age bars
+  var ageEl = document.getElementById('agePanelEl');
+  var h = '<div class="demo-panel-title">POPULATION BY AGE</div>';
+  if (d.demographics) {
+    var groups = [
+      { label: '18–26', key: '18-26', color: 'rgba(155,142,196,0.35)' },
+      { label: '27–35', key: '27-35', color: 'rgba(107,163,214,0.4)' },
+      { label: '36–44', key: '36-44', color: 'rgba(94,188,138,0.4)' },
+      { label: '45–54', key: '45-54', color: 'rgba(186,163,112,0.4)' },
+      { label: '55+', key: '55+', color: 'rgba(217,115,115,0.35)' }
+    ];
+    var total = 0;
+    groups.forEach(function(g) { total += d.demographics[g.key] || 0; });
+    var maxVal = 0;
+    groups.forEach(function(g) { if ((d.demographics[g.key] || 0) > maxVal) maxVal = d.demographics[g.key]; });
+    groups.forEach(function(g) {
+      var val = d.demographics[g.key] || 0;
+      var pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+      var barW = maxVal > 0 ? Math.max(8, (val / maxVal) * 100) : 8;
+      h += '<div class="age-row"><div class="age-label">' + g.label + '</div>' +
+        '<div class="age-track"><div class="age-fill" style="width:' + barW + '%;background:' + g.color + ';">' + pct + '%</div></div>' +
+        '<div class="age-count">' + fmtK(val) + '</div></div>';
+    });
+    h += '<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);">' +
+      '<div style="font-size:10px;color:var(--text-dim);">Total Population</div>' +
+      '<div style="font-family:Playfair Display,serif;font-size:20px;font-weight:700;">' + fmtNum(d.population) + '</div></div>';
+  }
+  ageEl.innerHTML = h;
+
+  // Donut
+  var donutEl = document.getElementById('donutPanelEl');
+  var ownerPct = d.ownerPct || 50;
+  var renterPct = d.renterPct || 50;
+  var totalHH = d.totalHousing || 0;
+  var ownerDash = Math.round(ownerPct * 3.14);
+  var renterDash = Math.round(renterPct * 3.14);
+  var renterAfford = d.renterAffordPct || 0;
+  var renterAffordCount = Math.round((d.renterOccupied || 0) * renterAfford / 100);
+
+  var dh = '<div class="demo-panel-title">HOMEOWNERS vs RENTERS</div>';
+  dh += '<div class="donut-area">';
+  dh += '<svg class="donut-svg" viewBox="0 0 120 120">';
+  dh += '<circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="15"/>';
+  dh += '<circle cx="60" cy="60" r="48" fill="none" stroke="#5ebc8a" stroke-width="15" stroke-dasharray="' + ownerDash + ' ' + (314 - ownerDash) + '" stroke-dashoffset="75"/>';
+  dh += '<circle cx="60" cy="60" r="48" fill="none" stroke="#6ba3d6" stroke-width="15" stroke-dasharray="' + renterDash + ' ' + (314 - renterDash) + '" stroke-dashoffset="' + (75 - ownerDash) + '"/>';
+  dh += '<text x="60" y="56" text-anchor="middle" font-family="Playfair Display" font-size="18" font-weight="700" fill="#e8e4dc">' + fmtK(totalHH) + '</text>';
+  dh += '<text x="60" y="70" text-anchor="middle" font-size="7" fill="rgba(232,228,220,0.3)" letter-spacing="1.5" font-family="DM Sans" font-weight="600">HOUSEHOLDS</text>';
+  dh += '</svg>';
+  dh += '<div class="donut-legend">';
+  dh += '<div class="legend-item"><div class="legend-dot" style="background:#5ebc8a;"></div><div class="legend-text"><strong>' + ownerPct + '%</strong>Homeowners · ' + fmtNum(d.ownerOccupied) + '</div></div>';
+  dh += '<div class="legend-item"><div class="legend-dot" style="background:#6ba3d6;"></div><div class="legend-text"><strong>' + renterPct + '%</strong>Renters · ' + fmtNum(d.renterOccupied) + '</div></div>';
+  dh += '<div class="legend-divider"></div>';
+  dh += '<div class="legend-highlight">Renters who can afford to buy<strong>~' + renterAfford + '% (~' + fmtNum(renterAffordCount) + ')</strong></div>';
+  dh += '</div></div>';
+  donutEl.innerHTML = dh;
+}
+
+// ===== 04: AFFORDABILITY =====
+function renderAffordability(d) {
+  var leftEl = document.getElementById('affordLeft');
+  var rightEl = document.getElementById('affordRight');
+  var idx = d.affordabilityIndex || 0;
+  var localInc = d.medianIncome || 0;
+  var natInc = d.nationalMedianIncome || 75149;
+  var incDiff = natInc > 0 ? (((localInc - natInc) / natInc) * 100).toFixed(1) : 0;
+  var priceToIncome = localInc > 0 ? (d.medianHomeValue / localInc).toFixed(1) : '—';
+
+  // Gauge
+  var gaugePercent = Math.min(100, Math.max(0, (idx / 200) * 100));
+  var dashOffset = Math.round(204 * (1 - gaugePercent / 100));
+
+  var lh = '<div class="gauge-center">';
+  lh += '<svg class="gauge-svg" viewBox="0 0 160 105"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d97373"/><stop offset="35%" stop-color="#d4a953"/><stop offset="65%" stop-color="#5ebc8a"/><stop offset="100%" stop-color="#5ebc8a"/></linearGradient></defs>';
+  lh += '<path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="14" stroke-linecap="round"/>';
+  lh += '<path d="M 15 90 A 65 65 0 0 1 145 90" fill="none" stroke="url(#gg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="204" stroke-dashoffset="' + dashOffset + '"/>';
+  lh += '<text x="80" y="78" text-anchor="middle" font-family="Playfair Display" font-size="36" font-weight="700" fill="#e8e4dc">' + idx + '</text></svg>';
+  lh += '<div class="gauge-title">Affordability Index</div>';
+  lh += '<div class="gauge-explain">Above 100 = the median household<br>can afford the median home</div></div>';
+
+  lh += '<div class="afford-row"><div class="afford-label">Median Income</div><div class="afford-val">' + fmtMoney(localInc) + '</div></div>';
+  lh += '<div class="afford-row"><div class="afford-label">National Median</div><div class="afford-val" style="color:var(--text-dim);">' + fmtMoney(natInc) + '</div></div>';
+  lh += '<div class="afford-row"><div class="afford-label">Local vs National</div><div class="afford-val ' + (incDiff >= 0 ? 'up' : 'down') + '">' + (incDiff >= 0 ? '+' : '') + incDiff + '%</div></div>';
+  lh += '<div class="afford-row"><div class="afford-label">Price-to-Income</div><div class="afford-val">' + priceToIncome + '×</div></div>';
+  leftEl.innerHTML = lh;
+
+  // Right: affordability history chart
+  var rh = '<div class="afford-chart-label">AFFORDABILITY INDEX OVER TIME</div>';
+  rh += '<div style="font-size:10px;color:var(--text-dim);margin-bottom:10px;">Declining = homes becoming less affordable</div>';
+
+  if (d.affordabilityHistory && d.affordabilityHistory.length > 1) {
+    var pts = d.affordabilityHistory;
+    var maxIdx = 0, minIdx = 9999;
+    pts.forEach(function(p) { if (p.index > maxIdx) maxIdx = p.index; if (p.index < minIdx) minIdx = p.index; });
+    var range = maxIdx - minIdx || 1;
+    var svgW = 300, svgH = 85;
+    var coords = pts.map(function(p, i) {
+      var x = (i / (pts.length - 1)) * svgW;
+      var y = svgH - ((p.index - minIdx) / range) * (svgH - 10);
+      return { x: x, y: y, idx: p.index, date: p.date };
+    });
+    var polyline = coords.map(function(c) { return c.x + ',' + c.y; }).join(' ');
+
+    rh += '<div class="afford-chart"><svg viewBox="0 0 320 95">';
+    // 100 baseline
+    var y100 = svgH - ((100 - minIdx) / range) * (svgH - 10);
+    if (y100 > 0 && y100 < svgH) {
+      rh += '<line x1="0" y1="' + y100 + '" x2="' + svgW + '" y2="' + y100 + '" stroke="rgba(232,228,220,0.08)" stroke-dasharray="4,3"/>';
+      rh += '<text x="' + (svgW + 4) + '" y="' + (y100 + 3) + '" font-size="8" fill="rgba(232,228,220,0.2)" font-family="DM Sans">100</text>';
+    }
+    // Area
+    rh += '<defs><linearGradient id="ah" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#d4a953" stop-opacity="0.12"/><stop offset="100%" stop-color="#d4a953" stop-opacity="0"/></linearGradient></defs>';
+    rh += '<path d="M' + coords[0].x + ',' + coords[0].y + ' ' + coords.map(function(c) { return 'L' + c.x + ',' + c.y; }).join(' ') + ' L' + svgW + ',' + svgH + ' L0,' + svgH + 'Z" fill="url(#ah)"/>';
+    rh += '<polyline points="' + polyline + '" fill="none" stroke="#d4a953" stroke-width="1.5"/>';
+    // Key dots
+    var first = coords[0], mid = coords[Math.floor(coords.length / 2)], last = coords[coords.length - 1];
+    [first, mid, last].forEach(function(c) {
+      rh += '<circle cx="' + c.x + '" cy="' + c.y + '" r="2.5" fill="#d4a953"/>';
+      rh += '<text x="' + Math.max(0, c.x - 5) + '" y="' + (c.y - 6) + '" font-size="8" font-weight="600" fill="#d4a953" font-family="DM Sans">' + c.idx + '</text>';
+    });
+    // Year labels
+    rh += '<text x="0" y="' + (svgH + 10) + '" font-size="8" fill="rgba(232,228,220,0.2)" font-family="DM Sans">\'' + first.date.substring(2, 4) + '</text>';
+    rh += '<text x="' + (svgW - 12) + '" y="' + (svgH + 10) + '" font-size="8" fill="rgba(232,228,220,0.2)" font-family="DM Sans">\'' + last.date.substring(2, 4) + '</text>';
+    rh += '</svg></div>';
+  }
+
+  rh += '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">';
+  rh += '<div class="afford-row"><div class="afford-label">Median Home Value</div><div class="afford-val">' + fmtMoney(d.medianHomeValue) + '</div></div>';
+  rh += '<div class="afford-row"><div class="afford-label">Median Monthly Rent</div><div class="afford-val">' + fmtMoney(d.medianRent) + '</div></div>';
+  rh += '</div>';
+  rightEl.innerHTML = rh;
+}
+
+// ===== 05: EMPLOYMENT =====
+function renderEmployment(d) {
+  var el = document.getElementById('employRow');
+  if (!d.employment) { el.innerHTML = ''; return; }
+  var e = d.employment;
+  el.innerHTML =
+    '<div class="supply-card"><div class="supply-val">' + fmtNum(e.laborForce) + '</div><div class="supply-lbl">Labor Force</div><div class="supply-note">Civilian, age 16+</div></div>' +
+    '<div class="supply-card"><div class="supply-val up">' + e.unemploymentRate + '%</div><div class="supply-lbl">Unemployment Rate</div><div class="supply-note">ZIP ' + d.zip + '</div></div>' +
+    '<div class="supply-card"><div class="supply-val">' + fmtNum(e.unemployed) + '</div><div class="supply-lbl">Unemployed</div><div class="supply-note">Actively seeking</div></div>';
+}
+
+// ===== FOOTER =====
+function renderFooter() {
+  var kristyInfo = {
+    initials: 'KF', name: 'Kristy Flach',
+    title: 'Loan Officer · NMLS# 2632259',
+    contact: 'Cell: (206) 313-5883', email: 'kflach@prmg.net', web: 'kflach.myprmg.net',
+    headshot: 'hero-headshot.jpg'
+  };
+  var companyInfo = { name: 'Paramount Residential Mortgage Group', detail: 'NMLS# 75243 · Equal Housing Lender' };
+
+  var isCobrand = document.getElementById('inp_cobrand') && document.getElementById('inp_cobrand').checked;
+  var footerEl = document.getElementById('rptFooter');
+
+  function buildPerson(person, isRealtor) {
+    var img;
+    if (person.headshot) {
+      img = '<img src="' + person.headshot + '" class="footer-headshot" alt="' + person.name + '">';
+    } else {
+      img = '<div class="footer-initials">' + person.initials + '</div>';
+    }
+    var creds = person.title || '';
+    if (person.contact) creds += '<br>' + person.contact;
+    if (person.email) creds += '<br>' + person.email;
+    if (person.web) creds += ' · ' + person.web;
+    return '<div class="footer-person">' + img + '<div><div class="footer-name">' + person.name + '</div><div class="footer-credentials">' + creds + '</div></div></div>';
+  }
+
+  if (isCobrand) {
+    var rName = (document.getElementById('inp_realtorName')?.value.trim()) || 'Realtor';
+    var rBrok = document.getElementById('inp_realtorBrokerage')?.value.trim() || '';
+    var rPhone = document.getElementById('inp_realtorPhone')?.value.trim() || '';
+    var rEmail = document.getElementById('inp_realtorEmail')?.value.trim() || '';
+    var rInitials = rName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
+    var realtorInfo = { initials: rInitials, name: rName, title: rBrok, contact: rPhone, email: rEmail, web: '', headshot: '' };
+
+    var left, right, leftIsR;
+    if (cobrandLayout === 'left') { left = realtorInfo; right = kristyInfo; leftIsR = true; }
+    else { left = kristyInfo; right = realtorInfo; leftIsR = false; }
+
+    footerEl.innerHTML =
+      '<div class="footer-cobrand">' + buildPerson(left, leftIsR) + '<div class="footer-divider"></div>' + buildPerson(right, !leftIsR) + '</div>' +
+      '<div class="footer-company-bar"><div><div class="footer-company-name">' + companyInfo.name + '</div><div class="footer-company-sub">' + companyInfo.detail + '</div></div>' +
+      '<div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px;" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px;" alt="Equal Housing"></div></div>';
+  } else {
+    footerEl.innerHTML =
+      '<div class="footer-standard"><div class="footer-person"><img src="' + kristyInfo.headshot + '" class="footer-headshot" alt="Kristy Flach">' +
+      '<div><div class="footer-name">' + kristyInfo.name + '</div><div class="footer-credentials">' + kristyInfo.title + '<br>' + kristyInfo.contact + '<br>' + kristyInfo.email + ' · ' + kristyInfo.web + '</div></div></div>' +
+      '<div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px;" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px;" alt="Equal Housing"></div></div>';
+  }
+}
+
+// ===== URL PARAMETER PRE-FILL =====
+(function prefillFromURL() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.toString() === '') return;
+
+  var zip = params.get('zip') || '';
+  if (zip) document.getElementById('inp_zip').value = zip;
+
+  var clientName = params.get('clientName') || params.get('client') || '';
+  if (clientName) document.getElementById('inp_clientName').value = decodeURIComponent(clientName);
+
+  var address = params.get('address') || '';
+  if (address) document.getElementById('inp_address').value = decodeURIComponent(address);
+
+  // Co-branding
+  var cobrand = params.get('cobrand') || '';
+  if (cobrand === 'true' || cobrand === 'yes' || cobrand === 'Co-branded') {
+    var cb = document.getElementById('inp_cobrand');
+    if (cb) { cb.checked = true; toggleCobrand(); }
+
+    var rName = params.get('realtorName') || '';
+    var rBrok = params.get('realtorBrokerage') || params.get('brokerage') || '';
+    var rPhone = params.get('realtorPhone') || '';
+    var rEmail = params.get('realtorEmail') || '';
+
+    if (rName) document.getElementById('inp_realtorName').value = decodeURIComponent(rName);
+    if (rBrok) document.getElementById('inp_realtorBrokerage').value = decodeURIComponent(rBrok);
+    if (rPhone) document.getElementById('inp_realtorPhone').value = decodeURIComponent(rPhone);
+    if (rEmail) document.getElementById('inp_realtorEmail').value = decodeURIComponent(rEmail);
+
+    var layout = params.get('cobrandLayout') || 'left';
+    pickLayout(layout);
+  }
+
+  // Auto-generate
+  if (zip && /^\d{5}$/.test(zip)) {
+    setTimeout(function() { generateReport(); }, 200);
+  }
+})();
+</script>
+</body>
+</html>
