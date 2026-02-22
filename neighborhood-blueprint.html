@@ -698,11 +698,25 @@ function renderReport(d) {
     document.getElementById('rptAddressLine').textContent = address.split(',')[0];
     document.getElementById('rptAddressSub').textContent = address.split(',').slice(1).join(',').trim();
 
-    // Static map
-    var mapURL = 'https://maps.googleapis.com/maps/api/staticmap?center=' + encodeURIComponent(address) +
-      '&zoom=15&size=320x200&scale=2&maptype=roadmap&markers=color:red|' + encodeURIComponent(address) +
-      '&key=AIzaSyDummyKey'; // placeholder - works without key at low volume
-    document.getElementById('rptMap').innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;"><span style="font-size:24px;">📍</span></div>';
+    // OpenStreetMap static map via nominatim geocoding
+    var mapDiv = document.getElementById('rptMap');
+    var encAddr = encodeURIComponent(address);
+    // Use OSM static map tile centered on address
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encAddr + '&limit=1')
+      .then(function(r) { return r.json(); })
+      .then(function(results) {
+        if (results && results.length > 0) {
+          var lat = results[0].lat;
+          var lon = results[0].lon;
+          var tileUrl = 'https://staticmap.openstreetmap.de/staticmap.php?center=' + lat + ',' + lon + '&zoom=15&size=320x200&markers=' + lat + ',' + lon + ',red-pushpin';
+          mapDiv.innerHTML = '<img src="' + tileUrl + '" style="width:100%;height:100%;object-fit:cover;" alt="Map">';
+        } else {
+          mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
+        }
+      })
+      .catch(function() {
+        mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
+      });
 
     // Key insights
     var insights = '<div class="prop-insights-title">Key Insights for ' + zip + '</div>';
@@ -832,12 +846,18 @@ function renderSupply(d) {
   // Construction bars
   if (d.housingSupply) {
     var hs = d.housingSupply;
-    var maxB = Math.max(hs.builtRecent, hs.built2010s, hs.built2000s, 1);
-    var h = '<div class="card-label">NEW CONSTRUCTION IN ZIP ' + d.zip + '</div>';
+    // Use county data if available (more accurate), otherwise zip
+    var useCounty = hs.countyBuiltRecent && hs.countyBuiltRecent > 0;
+    var br = useCounty ? hs.countyBuiltRecent : hs.builtRecent;
+    var b10 = useCounty ? hs.countyBuilt2010s : hs.built2010s;
+    var b00 = useCounty ? hs.countyBuilt2000s : hs.built2000s;
+    var geoLabel = useCounty ? (hs.countyName ? hs.countyName + ' County' : 'County') : ('ZIP ' + d.zip);
+    var maxB = Math.max(br, b10, b00, 1);
+    var h = '<div class="card-label">NEW CONSTRUCTION — ' + geoLabel.toUpperCase() + '</div>';
     var bars = [
-      { label: 'Built 2020+', value: hs.builtRecent, color: 'rgba(94,188,138,0.4)' },
-      { label: 'Built 2010–2019', value: hs.built2010s, color: 'rgba(107,163,214,0.4)' },
-      { label: 'Built 2000–2009', value: hs.built2000s, color: 'rgba(186,163,112,0.4)' }
+      { label: 'Built 2020+', value: br, color: 'rgba(94,188,138,0.4)' },
+      { label: 'Built 2010–2019', value: b10, color: 'rgba(107,163,214,0.4)' },
+      { label: 'Built 2000–2009', value: b00, color: 'rgba(186,163,112,0.4)' }
     ];
     bars.forEach(function(b) {
       var pct = Math.max(5, (b.value / maxB) * 100);
