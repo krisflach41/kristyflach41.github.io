@@ -2938,15 +2938,46 @@ function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
 
 function ppGenerateOrder(orderId){
   if(!orderId)return;
-  showToast('Opening generator for order '+orderId+'...');
-  // TODO: open actual report/flyer generator pre-filled with order data
+  var order=allOrders.find(function(o){return o.orderId===orderId;});
+  if(!order){showToast('Order not found');return;}
+  var items=order.items||order.cartJson||'';
+  var str=typeof items==='string'?items.toLowerCase():JSON.stringify(items).toLowerCase();
+  if(str.indexOf('amortization')>=0){
+    var params='';
+    try{
+      var obj=typeof items==='object'?items:JSON.parse(typeof items==='string'?items:JSON.stringify(items));
+      if(obj.advisory&&obj.advisory.amortization){
+        var a=obj.advisory.amortization;
+        var p=[];
+        if(a.loan)p.push('loan='+a.loan);
+        if(a.rate)p.push('rate='+a.rate);
+        if(a.address)p.push('address='+encodeURIComponent(a.address));
+        if(a.purchase)p.push('type='+encodeURIComponent(a.purchase));
+        if(p.length>0)params='?'+p.join('&');
+      }
+    }catch(e){}
+    window.open('amortization-report.html'+params,'_blank');
+  } else {
+    showToast('Generator for this report type coming soon — Order: '+orderId);
+  }
 }
 
 function ppEmailPartner(email,subject){
-  if(!email)return;
-  var sub=encodeURIComponent('Your '+(subject||'order')+' is ready!');
-  var body=encodeURIComponent('Hi,\n\nYour order is complete and attached. Please let me know if you have any questions.\n\nBest regards');
-  window.open('mailto:'+email+'?subject='+sub+'&body='+body);
+  if(!email){showToast('No email address for this partner');return;}
+  var sub=subject||'order';
+  showToast('Sending email to '+email+'...');
+  fetch('https://agent-edge-backend.vercel.app/api/send-email',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      to:email,
+      subject:'Your '+sub+' is ready!',
+      body:'<p>Hi,</p><p>Great news — your <strong>'+sub+'</strong> is complete and ready for you!</p><p>If you have any questions or need any changes, just let me know. I\'m always happy to help.</p><p>Looking forward to working together!</p>'
+    })
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.success){showToast('Email sent to '+email+' ✓');}
+    else{showToast('Email failed: '+(d.message||'Unknown error'));}
+  }).catch(function(e){showToast('Email error: '+e.toString());});
 }
 
 function ppBuildReportOrders(){
