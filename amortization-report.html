@@ -186,7 +186,7 @@ body {
 .rpt-footer {
   background: #f8f9fa;
   padding: 30px 50px;
-  border-top: 3px solid #9CB5A0;
+  border-top: 3px solid #002F6C;
 }
 
 .footer-standard {
@@ -199,91 +199,131 @@ body {
 .footer-your-info {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   flex: 1;
 }
 
 .footer-headshot {
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #002F6C;
+  border: 2.5px solid #002F6C;
+  flex-shrink: 0;
+}
+
+.footer-initials {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #002F6C, #0b4ea2);
+  color: #fff;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .footer-details {
-  line-height: 1.6;
+  line-height: 1.5;
 }
 
 .footer-name {
   font-family: 'Playfair Display', serif;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #002F6C;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .footer-credentials {
   font-size: 11px;
-  color: #666;
+  color: #555;
+  line-height: 1.5;
 }
 
 .footer-logos {
   display: flex;
   gap: 15px;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .footer-logo {
-  height: 50px;
+  height: 45px;
   width: auto;
   object-fit: contain;
 }
 
+/* Co-brand layout */
 .footer-cobrand {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 40px;
+  gap: 0;
 }
 
 .footer-person {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 14px;
   flex: 1;
+  padding: 0 20px;
 }
 
-.footer-person.realtor .footer-headshot {
-  border-color: #1976d2;
+.footer-person:first-child {
+  padding-left: 0;
+}
+
+.footer-person:last-child {
+  padding-right: 0;
 }
 
 .footer-divider {
-  width: 2px;
-  height: 80px;
-  background: linear-gradient(to bottom, transparent, #ddd 20%, #ddd 80%, transparent);
+  width: 1.5px;
+  height: 65px;
+  background: linear-gradient(to bottom, transparent, #ccc 15%, #ccc 85%, transparent);
   flex-shrink: 0;
 }
 
-.footer-company-logos {
+.footer-company-bar {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #e0e0e0;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: space-between;
   align-items: center;
 }
 
-.footer-company-logos .footer-logo {
-  height: 40px;
+.footer-company-bar .footer-company-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #002F6C;
 }
 
-.footer-disclaimer {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 1px solid #ddd;
-  font-size: 9px;
-  color: #999;
-  line-height: 1.5;
-  text-align: center;
+.footer-company-bar .footer-company-sub {
+  font-size: 10px;
+  color: #888;
+}
+
+.footer-company-right {
+  text-align: right;
+}
+
+.footer-company-right .footer-company-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #002F6C;
+}
+
+.footer-company-right .footer-company-sub {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
 }
 
 .layout-picker-box {
@@ -566,19 +606,7 @@ body {
     </div>
 
     <!-- FOOTER -->
-    <div class="rpt-footer" id="rptFooter">
-      <div class="rpt-footer-left" id="rptFooterLeft">
-        <div class="rpt-headshot-placeholder" id="rptFooterLeftImg">KF</div>
-        <div>
-          <div class="rpt-lo-name" id="rptFooterLeftName">Kristy Flach</div>
-          <div class="rpt-lo-detail" id="rptFooterLeftDetail">NMLS# 2632259<br>Cell: (206) 313-5883<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="85eee3e9e4e6edc5f5f7e8e2abebe0f1">[email&#160;protected]</a> · kflach.myprmg.net</div>
-        </div>
-      </div>
-      <div class="rpt-footer-right" id="rptFooterRight">
-        <div class="rpt-company-name" id="rptFooterRightName">Paramount Residential Mortgage Group</div>
-        <div class="rpt-company-sub" id="rptFooterRightDetail">NMLS# 75243 · Equal Housing Lender</div>
-      </div>
-    </div>
+    <div class="rpt-footer" id="rptFooter"></div>
 
     <div class="rpt-cobrand" id="rptCobrand" style="display:none;"></div>
 
@@ -855,17 +883,42 @@ function generateReport() {
   document.getElementById('rptCta').style.display = showCta ? 'block' : 'none';
 
   // Co-brand footer
-  var kristyLeft = {
+  var kristyInfo = {
     initials: 'KF',
     name: 'Kristy Flach',
-    detail: 'NMLS# 2632259<br>Cell: (206) 313-5883<br>kflach@prmg.net · kflach.myprmg.net'
+    title: 'Loan Officer · NMLS# 2632259',
+    contact: 'Cell: (206) 313-5883',
+    email: 'kflach@prmg.net',
+    web: 'kflach.myprmg.net',
+    headshot: 'hero-headshot.jpg'
   };
-  var companyRight = {
+  var companyInfo = {
     name: 'Paramount Residential Mortgage Group',
     detail: 'NMLS# 75243 · Equal Housing Lender'
   };
 
-  if (document.getElementById('inp_cobrand') && document.getElementById('inp_cobrand').checked) {
+  var footerEl = document.getElementById('rptFooter');
+  var cobrandEl = document.getElementById('rptCobrand');
+  var isCobrand = document.getElementById('inp_cobrand') && document.getElementById('inp_cobrand').checked;
+
+  function buildPersonHTML(person, isRealtor) {
+    var imgHTML;
+    if (person.headshot) {
+      imgHTML = '<img src="' + person.headshot + '" class="footer-headshot" alt="' + person.name + '">';
+    } else {
+      var borderColor = isRealtor ? '#1976d2' : '#002F6C';
+      imgHTML = '<div class="footer-initials" style="border-color:' + borderColor + ';">' + person.initials + '</div>';
+    }
+    var creds = person.title || '';
+    if (person.contact) creds += '<br>' + person.contact;
+    if (person.email) creds += '<br>' + person.email;
+    if (person.web) creds += ' · ' + person.web;
+    return '<div class="footer-person">' + imgHTML +
+      '<div class="footer-details"><div class="footer-name">' + person.name + '</div>' +
+      '<div class="footer-credentials">' + creds + '</div></div></div>';
+  }
+
+  if (isCobrand) {
     var rNameEl = document.getElementById('inp_realtorName');
     var rBrokEl = document.getElementById('inp_realtorBrokerage');
     var rPhoneEl = document.getElementById('inp_realtorPhone');
@@ -875,47 +928,56 @@ function generateReport() {
     var rPhone = rPhoneEl ? rPhoneEl.value.trim() : '';
     var rEmail = rEmailEl ? rEmailEl.value.trim() : '';
     var rInitials = rName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
-    var rDetail = [rBrok, rPhone, rEmail].filter(Boolean).join(' · ');
 
-    var realtorBlock = {
+    var realtorInfo = {
       initials: rInitials,
       name: rName,
-      detail: rDetail
+      title: rBrok,
+      contact: rPhone,
+      email: rEmail,
+      web: '',
+      headshot: ''
     };
 
-    var leftPerson, rightPerson;
+    var leftPerson, rightPerson, leftIsRealtor;
     if (cobrandLayout === 'left') {
-      // Realtor left, Kristy right
-      leftPerson = realtorBlock;
-      rightPerson = kristyLeft;
+      leftPerson = realtorInfo; rightPerson = kristyInfo; leftIsRealtor = true;
     } else {
-      // Kristy left, Realtor right
-      leftPerson = kristyLeft;
-      rightPerson = realtorBlock;
+      leftPerson = kristyInfo; rightPerson = realtorInfo; leftIsRealtor = false;
     }
 
-    document.getElementById('rptFooterLeftImg').textContent = leftPerson.initials;
-    document.getElementById('rptFooterLeftName').textContent = leftPerson.name;
-    document.getElementById('rptFooterLeftDetail').innerHTML = leftPerson.detail;
-    document.getElementById('rptFooterRightName').textContent = rightPerson.name;
-    document.getElementById('rptFooterRightDetail').innerHTML = rightPerson.detail;
-
-    // Show the company line below as a subtle cobrand bar
-    document.getElementById('rptCobrand').style.display = 'flex';
-    document.getElementById('rptCobrand').innerHTML =
-      '<div style="flex:1;">' +
-        '<div class="rpt-cobrand-tag">Presented by</div>' +
-        '<div class="rpt-company-name">Paramount Residential Mortgage Group</div>' +
-        '<div class="rpt-company-sub">NMLS# 75243 · Equal Housing Lender</div>' +
+    footerEl.innerHTML =
+      '<div class="footer-cobrand">' +
+        buildPersonHTML(leftPerson, leftIsRealtor) +
+        '<div class="footer-divider"></div>' +
+        buildPersonHTML(rightPerson, !leftIsRealtor) +
+      '</div>' +
+      '<div class="footer-company-bar">' +
+        '<div><div class="footer-company-name">' + companyInfo.name + '</div>' +
+        '<div class="footer-company-sub">' + companyInfo.detail + '</div></div>' +
+        '<div class="footer-logos">' +
+          '<img src="PRMG-Logo.png" class="footer-logo" alt="PRMG">' +
+          '<img src="equal-housing-logo.png" class="footer-logo" style="height:30px;" alt="Equal Housing">' +
+        '</div>' +
       '</div>';
+    cobrandEl.style.display = 'none';
   } else {
-    // No co-brand - standard footer
-    document.getElementById('rptFooterLeftImg').textContent = 'KF';
-    document.getElementById('rptFooterLeftName').textContent = kristyLeft.name;
-    document.getElementById('rptFooterLeftDetail').innerHTML = kristyLeft.detail;
-    document.getElementById('rptFooterRightName').textContent = companyRight.name;
-    document.getElementById('rptFooterRightDetail').innerHTML = companyRight.detail;
-    document.getElementById('rptCobrand').style.display = 'none';
+    // Standard footer — Kristy only
+    footerEl.innerHTML =
+      '<div class="footer-standard">' +
+        '<div class="footer-your-info">' +
+          '<img src="' + kristyInfo.headshot + '" class="footer-headshot" alt="Kristy Flach">' +
+          '<div class="footer-details">' +
+            '<div class="footer-name">' + kristyInfo.name + '</div>' +
+            '<div class="footer-credentials">' + kristyInfo.title + '<br>' + kristyInfo.contact + '<br>' + kristyInfo.email + ' · ' + kristyInfo.web + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="footer-company-right">' +
+          '<div class="footer-company-name">' + companyInfo.name + '</div>' +
+          '<div class="footer-company-sub">' + companyInfo.detail + '</div>' +
+        '</div>' +
+      '</div>';
+    cobrandEl.style.display = 'none';
   }
 
   // Table & Chart
