@@ -711,6 +711,64 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .pp-email-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(34,197,94,0.25); color: #22c55e; font-size: 11px; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; transition: all 0.2s; flex-shrink: 0; }
 .pp-email-btn:hover { background: rgba(34,197,94,0.05); border-color: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.15); }
 
+/* ===== ORDER DETAIL PANEL ===== */
+.pp-order-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 9998; display: none; }
+.pp-order-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 92%; max-width: 680px; max-height: 85vh; overflow-y: auto; background: #0f1923; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 0; z-index: 9999; display: none; box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04); }
+.pp-order-panel::-webkit-scrollbar { width: 6px; }
+.pp-order-panel::-webkit-scrollbar-track { background: transparent; }
+.pp-order-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 3px; }
+.pp-od-header { padding: 26px 28px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); position: sticky; top: 0; background: #0f1923; z-index: 2; }
+.pp-od-topline { display: flex; justify-content: space-between; align-items: flex-start; }
+.pp-od-title { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 2px; }
+.pp-od-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.35); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
+.pp-od-close:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); }
+.pp-od-sub { font-size: 12px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; margin-top: 4px; }
+.pp-od-meta { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+.pp-od-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 5px; font-size: 10px; font-weight: 600; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.5px; }
+.pp-od-chip.partner { background: rgba(59,130,246,0.08); color: #3b82f6; border: 1px solid rgba(59,130,246,0.15); }
+.pp-od-chip.cobrand-yes { background: rgba(34,197,94,0.08); color: #22c55e; border: 1px solid rgba(34,197,94,0.15); }
+.pp-od-chip.cobrand-no { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.06); }
+.pp-od-chip.date { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.06); }
+.pp-od-chip.status { border: 1px solid; }
+.pp-od-body { padding: 20px 28px; }
+.pp-od-section-label { font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.25); letter-spacing: 2px; margin-bottom: 12px; }
+.pp-od-select-all { display: flex; align-items: center; gap: 10px; padding: 10px 14px; margin-bottom: 10px; border-radius: 6px; background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.1); cursor: pointer; transition: 0.15s; }
+.pp-od-select-all:hover { border-color: rgba(59,130,246,0.25); }
+.pp-od-select-all input[type="checkbox"] { width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer; }
+.pp-od-select-all label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.5); letter-spacing: 1.5px; font-family: 'Share Tech Mono', monospace; cursor: pointer; flex: 1; }
+.pp-od-item { display: flex; align-items: center; gap: 12px; padding: 14px; margin-bottom: 5px; border-radius: 8px; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.04); transition: all 0.15s; cursor: pointer; }
+.pp-od-item:hover { background: rgba(59,130,246,0.03); border-color: rgba(59,130,246,0.12); }
+.pp-od-item.checked { background: rgba(59,130,246,0.05); border-color: rgba(59,130,246,0.2); }
+.pp-od-item input[type="checkbox"] { width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer; flex-shrink: 0; }
+.pp-od-item-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: rgba(59,130,246,0.1); }
+.pp-od-item-info { flex: 1; min-width: 0; }
+.pp-od-item-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.8); }
+.pp-od-item-detail { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pp-od-item-type { font-size: 9px; font-weight: 700; letter-spacing: 1px; color: rgba(255,255,255,0.25); font-family: 'Share Tech Mono', monospace; flex-shrink: 0; }
+.pp-od-notes { margin-top: 16px; padding: 12px 14px; border-radius: 8px; background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); }
+.pp-od-notes-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: #c9a84c; font-family: 'Share Tech Mono', monospace; margin-bottom: 4px; }
+.pp-od-notes-text { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.5; }
+.pp-od-footer { padding: 18px 28px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; gap: 10px; align-items: center; position: sticky; bottom: 0; background: #0f1923; z-index: 2; }
+.pp-od-count { flex: 1; font-size: 12px; color: rgba(255,255,255,0.3); font-family: 'Share Tech Mono', monospace; }
+.pp-od-btn { padding: 10px 22px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; border: none; transition: all 0.2s; }
+.pp-od-btn.generate { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; }
+.pp-od-btn.generate:hover { box-shadow: 0 0 20px rgba(59,130,246,0.3); }
+.pp-od-btn.generate.disabled { opacity: 0.25; cursor: not-allowed; box-shadow: none; }
+.pp-od-btn.complete { background: #22c55e; color: #fff; }
+.pp-od-btn.complete:hover { box-shadow: 0 0 20px rgba(34,197,94,0.3); }
+.pp-od-btn.cancel { background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.35); }
+.pp-od-btn.cancel:hover { border-color: rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+/* Order History table */
+.pp-history-table { width: 100%; border-collapse: collapse; }
+.pp-history-table th { font-family: 'Share Tech Mono', monospace; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.3); letter-spacing: 1.5px; text-align: left; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.pp-history-table td { font-size: 12px; color: rgba(255,255,255,0.6); padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.pp-history-table tr:hover td { background: rgba(59,130,246,0.02); }
+.pp-history-table .status-badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 9px; font-weight: 700; letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
+.pp-history-filter { display: flex; gap: 8px; margin-bottom: 16px; }
+.pp-history-filter button { padding: 6px 14px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); color: rgba(255,255,255,0.4); font-size: 11px; font-family: 'Share Tech Mono', monospace; cursor: pointer; transition: 0.15s; }
+.pp-history-filter button:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
+.pp-history-filter button.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
+
 .pp-pcard { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.015); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; min-width: 200px; flex: 1; }
 .pp-pcard:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
 .pp-pcard.active { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.06); box-shadow: 0 0 12px rgba(59,130,246,0.1); }
@@ -1336,6 +1394,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <div class="pp-tab" onclick="ppTab('flyers',this)">FLYERS</div>
       <div class="pp-tab" onclick="ppTab('activity',this)">ACTIVITY</div>
       <div class="pp-tab" onclick="ppTab('settings',this)">SETTINGS</div>
+      <div class="pp-tab" onclick="ppTab('history',this)">ORDER HISTORY</div>
     </div>
 
     <!-- ===== DASHBOARD TAB ===== -->
@@ -1430,11 +1489,28 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       </div>
     </div>
 
+    <!-- ===== ORDER HISTORY TAB ===== -->
+    <div id="ppHistory" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ORDER HISTORY</div><div class="mc-status" id="ppHistoryCount">—</div></div>
+        <div class="pp-history-filter" id="ppHistoryFilter">
+          <button class="active" onclick="ppFilterHistory('all',this)">ALL</button>
+          <button onclick="ppFilterHistory('complete',this)">COMPLETE</button>
+          <button onclick="ppFilterHistory('in progress',this)">IN PROGRESS</button>
+          <button onclick="ppFilterHistory('new',this)">NEW</button>
+        </div>
+        <div id="ppHistoryTable"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <!-- Report Generator and Flyer Studio are now inside Partner Portal -->
 <div class="view-panel" id="view-reports" style="display:none;"></div>
+
+<!-- ===== ORDER DETAIL OVERLAY & PANEL ===== -->
+<div class="pp-order-overlay" id="ppOrderOverlay" onclick="ppCloseOrderPanel()"></div>
+<div class="pp-order-panel" id="ppOrderPanel"></div>
 <div class="view-panel" id="view-flyers" style="display:none;"></div>
 <div class="view-panel" id="view-email">
   <div class="topbar">
@@ -2842,7 +2918,7 @@ function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');i
 
 
 // ===== PARTNER PORTAL =====
-function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();}
+function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();if(tab==='history')ppBuildOrderHistory('all');}
 
 var ppPartners=[
   {name:'Jessica Rivera',brokerage:'RE/MAX Premier',email:'jrivera@remax.com',color:'#f472b6',orders:18,visits:24,lastLogin:'2 hrs ago',totalTime:'4h 32m'},
@@ -2906,41 +2982,59 @@ function ppBuildDashboard(){
 }
 
 function ppParseOrderItems(raw){
-  if(!raw)return{title:'Order',details:''};
+  if(!raw)return{title:'Order',details:'',lineItems:[]};
   var str=typeof raw==='string'?raw:JSON.stringify(raw);
   try{
     var obj=typeof raw==='object'?raw:JSON.parse(str);
     var parts=[];
+    var lineItems=[];
+    var reportIcons={amortization:'📋',bid:'📊',buyrent:'🏠',costwaiting:'⏰',appreciation:'📈',investment:'💰',reportcard:'📝'};
+    var reportNames={amortization:'Amortization Report',bid:'Bid Over Ask',buyrent:'Buy vs Rent',costwaiting:'Cost of Waiting',appreciation:'Appreciation Report',investment:'Investment Property',reportcard:'Report Card'};
     if(obj.advisory){
       Object.keys(obj.advisory).forEach(function(k){
-        var r=obj.advisory[k];var info=k.charAt(0).toUpperCase()+k.slice(1)+' Report';
-        var dets=[];
-        if(r.loan)dets.push('$'+Number(r.loan).toLocaleString());
-        if(r.rate)dets.push(r.rate+'%');
-        if(r.purchase)dets.push(r.purchase);
-        if(r.address)dets.push(r.address);
-        if(dets.length>0)info+=' — '+dets.join(', ');
-        parts.push(info);
+        var r=obj.advisory[k];
+        var items=Array.isArray(r)?r:[r];
+        items.forEach(function(item,idx){
+          var name=reportNames[k]||(k.charAt(0).toUpperCase()+k.slice(1)+' Report');
+          var icon=reportIcons[k]||'📋';
+          var dets=[];
+          if(item.address)dets.push(item.address);
+          if(item.loan)dets.push('$'+Number(String(item.loan).replace(/[^0-9.]/g,'')|| 0).toLocaleString());
+          if(item.rate)dets.push(item.rate+'%');
+          if(item.purchase)dets.push(item.purchase);
+          if(item.list)dets.push('List: $'+Number(String(item.list).replace(/[^0-9.]/g,'')||0).toLocaleString());
+          if(item.offer)dets.push('Offer: $'+Number(String(item.offer).replace(/[^0-9.]/g,'')||0).toLocaleString());
+          lineItems.push({type:k,name:name,icon:icon,detail:dets.join(' · '),data:item,category:'ADVISORY'});
+          parts.push(name+(dets.length>0?' — '+dets.join(', '):''));
+        });
       });
     }
-    if(obj.marketing&&obj.marketing.length>0){obj.marketing.forEach(function(m){parts.push(m);});}
-    if(obj.websites&&obj.websites.length>0){parts.push(obj.websites.length+' Website(s)');}
-    if(parts.length>0)return{title:parts[0],details:parts.slice(1).join(' · ')};
+    if(obj.marketing&&obj.marketing.length>0){
+      obj.marketing.forEach(function(m){
+        lineItems.push({type:'flyer',name:m,icon:'🎨',detail:'Marketing flyer',data:{name:m},category:'MARKETING'});
+        parts.push(m);
+      });
+    }
+    if(obj.websites&&obj.websites.length>0){
+      obj.websites.forEach(function(w){
+        lineItems.push({type:'website',name:w,icon:'🌐',detail:'Website',data:{name:w},category:'WEBSITE'});
+      });
+      parts.push(obj.websites.length+' Website(s)');
+    }
+    var totalItems=lineItems.length;
+    var title=totalItems>1?totalItems+' Items':parts[0]||'Order';
+    return{title:title,details:totalItems>1?parts.slice(0,2).join(' · '):'',lineItems:lineItems};
   }catch(e){}
   var clean=str.replace(/[{}"[\]]/g,'').replace(/,/g,', ').substring(0,80);
-  return{title:clean||'Order',details:''};
+  return{title:clean||'Order',details:'',lineItems:[]};
 }
 
 function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
   var buttons='';
   if(status==='COMPLETE'){
-    buttons='<button class="pp-order-btn" style="opacity:0.5;cursor:default;">DONE</button>';
-    buttons+='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:10px;">REGENERATE</button>';
-  } else if(status==='IN PROGRESS'){
-    buttons='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')">GENERATE</button>';
-    buttons+='<button class="pp-order-btn" onclick="ppCompleteOrder(\''+orderId+'\')" style="background:#22c55e;border-color:#22c55e;">✓ COMPLETE</button>';
+    buttons='<button class="pp-order-btn" onclick="ppViewOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);">VIEW ORDER</button>';
   } else {
-    buttons='<button class="pp-order-btn" onclick="ppGenerateOrder(\''+orderId+'\')">GENERATE</button>';
+    buttons='<button class="pp-order-btn" onclick="ppViewOrder(\''+orderId+'\')">VIEW ORDER</button>';
   }
   buttons+='<button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button>';
   return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div>'+buttons+'</div>';
@@ -2953,7 +3047,6 @@ function ppUpdateOrderStatus(orderId,newStatus,callback){
     body:JSON.stringify({orderId:orderId,status:newStatus})
   }).then(function(r){return r.json();}).then(function(d){
     if(d.success){
-      // Update local data
       var order=allOrders.find(function(o){return o.orderId===orderId;});
       if(order)order.status=newStatus;
       if(callback)callback();
@@ -2966,58 +3059,194 @@ function ppUpdateOrderStatus(orderId,newStatus,callback){
 function ppCompleteOrder(orderId){
   ppUpdateOrderStatus(orderId,'complete',function(){
     showToast('Order marked complete ✓');
+    ppCloseOrderPanel();
     ppBuildReportOrders();
+    ppBuildFlyerOrders();
   });
 }
 
-function ppGenerateOrder(orderId){
-  if(!orderId)return;
+// ===== VIEW ORDER PANEL =====
+var currentViewOrderId=null;
+
+function ppViewOrder(orderId){
   var order=allOrders.find(function(o){return o.orderId===orderId;});
   if(!order){showToast('Order not found');return;}
+  currentViewOrderId=orderId;
 
-  // Update status to in progress if currently new
+  // Update status to in progress if new
   if((order.status||'').toLowerCase()==='new'){
     ppUpdateOrderStatus(orderId,'in progress',function(){
       ppBuildReportOrders();
       ppBuildFlyerOrders();
     });
+    order.status='in progress';
   }
 
-  var items=order.items||order.cartJson||'';
-  var str=typeof items==='string'?items.toLowerCase():JSON.stringify(items).toLowerCase();
-  if(str.indexOf('amortization')>=0){
-    var p=[];
-    try{
-      var obj=typeof items==='object'?items:JSON.parse(typeof items==='string'?items:JSON.stringify(items));
-      if(obj.advisory&&obj.advisory.amortization){
-        var a=obj.advisory.amortization;
-        // Handle both array format (from market-intelligence) and object format
-        var data=Array.isArray(a)?a[0]:a;
-        if(data.loan)p.push('loan='+encodeURIComponent(data.loan));
-        if(data.rate)p.push('rate='+encodeURIComponent(data.rate));
-        if(data.address)p.push('address='+encodeURIComponent(data.address));
-      }
-    }catch(e){}
-    // Add realtor/order info
-    if(order.name)p.push('realtorName='+encodeURIComponent(order.name));
-    if(order.email)p.push('realtorEmail='+encodeURIComponent(order.email));
-    if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
-    // Co-branding flag and layout from order
-    if(order.branding==='Co-branded'){
-      p.push('cobrand=true');
-      p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout||'left'));
-    }
-    // Notes might contain client name
-    if(order.notes){
-      var noteStr=order.notes;
-      // Check if notes contains a client name hint
-      var clientMatch=noteStr.match(/client[:\s]+([^\n,;]+)/i);
-      if(clientMatch)p.push('clientName='+encodeURIComponent(clientMatch[1].trim()));
-    }
-    var params=p.length>0?'?'+p.join('&'):'';
-    window.open('amortization-report.html'+params,'_blank');
+  var parsed=ppParseOrderItems(order.items||order.cartJson);
+  var items=parsed.lineItems;
+  var ts=order.timestamp?new Date(order.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
+  var sl=(order.status||'').toLowerCase();
+  var statusLabel=sl==='complete'?'COMPLETE':sl==='in progress'?'IN PROGRESS':'NEW';
+  var statusColor=sl==='complete'?'#22c55e':sl==='in progress'?'#f59e0b':'#ef4444';
+
+  var cobrandChip='';
+  if(order.branding==='Co-branded'){
+    cobrandChip='<div class="pp-od-chip cobrand-yes"><i class="fas fa-check" style="font-size:8px;"></i> CO-BRANDED · '+(order.cobrandLayout||'LEFT').toUpperCase()+'</div>';
   } else {
-    showToast('Generator for this report type coming soon — Order: '+orderId);
+    cobrandChip='<div class="pp-od-chip cobrand-no">KRISTY BRANDED</div>';
+  }
+
+  var h='';
+  // Header
+  h+='<div class="pp-od-header"><div class="pp-od-topline"><div><div class="pp-od-title">ORDER '+orderId+'</div>';
+  h+='<div class="pp-od-sub">'+(order.name||'Unknown')+' · '+(order.brokerage||'')+'</div></div>';
+  h+='<button class="pp-od-close" onclick="ppCloseOrderPanel()">✕</button></div>';
+  h+='<div class="pp-od-meta">';
+  h+='<div class="pp-od-chip partner"><i class="fas fa-user" style="font-size:8px;"></i> '+(order.name||'Unknown')+'</div>';
+  h+=cobrandChip;
+  if(ts)h+='<div class="pp-od-chip date"><i class="fas fa-clock" style="font-size:8px;"></i> '+ts+'</div>';
+  h+='<div class="pp-od-chip status" style="background:'+statusColor+'12;color:'+statusColor+';border-color:'+statusColor+'30;">'+statusLabel+'</div>';
+  h+='</div></div>';
+
+  // Body
+  h+='<div class="pp-od-body">';
+  h+='<div class="pp-od-section-label">LINE ITEMS · '+items.length+' '+(items.length===1?'ITEM':'ITEMS')+'</div>';
+
+  // Select all
+  if(items.length>1){
+    h+='<div class="pp-od-select-all" onclick="ppToggleAllItems()"><input type="checkbox" id="ppSelectAll"><label for="ppSelectAll">SELECT ALL</label></div>';
+  }
+
+  // Line items
+  items.forEach(function(item,i){
+    h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
+    h+='<input type="checkbox" class="pp-od-cb" checked>';
+    h+='<div class="pp-od-item-icon">'+item.icon+'</div>';
+    h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+'</div>';
+    h+='<div class="pp-od-item-detail">'+item.detail+'</div></div>';
+    h+='<div class="pp-od-item-type">'+item.category+'</div></div>';
+  });
+
+  // Notes
+  if(order.notes){
+    h+='<div class="pp-od-notes"><div class="pp-od-notes-label">NOTES FROM PARTNER</div>';
+    h+='<div class="pp-od-notes-text">'+order.notes.replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div></div>';
+  }
+  h+='</div>';
+
+  // Footer
+  h+='<div class="pp-od-footer">';
+  h+='<div class="pp-od-count" id="ppOdCount">'+items.length+' of '+items.length+' selected</div>';
+  h+='<button class="pp-od-btn cancel" onclick="ppCloseOrderPanel()">CLOSE</button>';
+  if(sl!=='complete'){
+    h+='<button class="pp-od-btn complete" onclick="ppCompleteOrder(\''+orderId+'\')">✓ COMPLETE</button>';
+  }
+  h+='<button class="pp-od-btn generate" id="ppOdGenBtn" onclick="ppGenerateSelected(\''+orderId+'\')">GENERATE '+(items.length>1?'ALL':'REPORT')+'</button>';
+  h+='</div>';
+
+  document.getElementById('ppOrderPanel').innerHTML=h;
+  document.getElementById('ppOrderOverlay').style.display='block';
+  document.getElementById('ppOrderPanel').style.display='block';
+}
+
+function ppCloseOrderPanel(){
+  document.getElementById('ppOrderOverlay').style.display='none';
+  document.getElementById('ppOrderPanel').style.display='none';
+  currentViewOrderId=null;
+}
+
+function ppToggleItem(row){
+  var cb=row.querySelector('.pp-od-cb');
+  cb.checked=!cb.checked;
+  row.classList.toggle('checked',cb.checked);
+  ppUpdateSelCount();
+}
+
+function ppToggleAllItems(){
+  var sa=document.getElementById('ppSelectAll');
+  if(sa)sa.checked=!sa.checked;
+  document.querySelectorAll('.pp-od-cb').forEach(function(cb){
+    cb.checked=sa?sa.checked:true;
+    cb.closest('.pp-od-item').classList.toggle('checked',cb.checked);
+  });
+  ppUpdateSelCount();
+}
+
+function ppUpdateSelCount(){
+  var total=document.querySelectorAll('.pp-od-cb').length;
+  var checked=document.querySelectorAll('.pp-od-cb:checked').length;
+  var countEl=document.getElementById('ppOdCount');
+  if(countEl)countEl.textContent=checked+' of '+total+' selected';
+  var btn=document.getElementById('ppOdGenBtn');
+  if(btn){
+    if(checked===0){btn.classList.add('disabled');btn.textContent='GENERATE SELECTED';}
+    else{btn.classList.remove('disabled');btn.textContent='GENERATE '+(checked===total&&total>1?'ALL':checked>1?checked:'REPORT');}
+  }
+  var sa=document.getElementById('ppSelectAll');
+  if(sa)sa.checked=checked===total;
+}
+
+function ppGenerateSelected(orderId){
+  var order=allOrders.find(function(o){return o.orderId===orderId;});
+  if(!order)return;
+  var parsed=ppParseOrderItems(order.items||order.cartJson);
+  var items=parsed.lineItems;
+  var checkedEls=document.querySelectorAll('.pp-od-cb:checked');
+  if(checkedEls.length===0){showToast('Select at least one item');return;}
+
+  checkedEls.forEach(function(cb){
+    var row=cb.closest('.pp-od-item');
+    var idx=parseInt(row.getAttribute('data-index'));
+    var item=items[idx];
+    if(!item)return;
+    ppGenerateLineItem(item,order);
+  });
+
+  showToast('Generating '+checkedEls.length+' report'+(checkedEls.length>1?'s':'')+'...');
+}
+
+function ppGenerateLineItem(item,order){
+  var p=[];
+  // Common order params
+  if(order.name)p.push('realtorName='+encodeURIComponent(order.name));
+  if(order.email)p.push('realtorEmail='+encodeURIComponent(order.email));
+  if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
+  if(order.branding==='Co-branded'){
+    p.push('cobrand=true');
+    p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout||'left'));
+  }
+  if(order.notes){
+    var clientMatch=order.notes.match(/client[:\s]+([^\n,;]+)/i);
+    if(clientMatch)p.push('clientName='+encodeURIComponent(clientMatch[1].trim()));
+  }
+
+  // Item-specific params
+  var data=item.data||{};
+  if(item.type==='amortization'){
+    if(data.loan)p.push('loan='+encodeURIComponent(data.loan));
+    if(data.rate)p.push('rate='+encodeURIComponent(data.rate));
+    if(data.address)p.push('address='+encodeURIComponent(data.address));
+    window.open('amortization-report.html?'+p.join('&'),'_blank');
+  } else if(item.type==='bid'){
+    if(data.address)p.push('address='+encodeURIComponent(data.address));
+    if(data.list)p.push('list='+encodeURIComponent(data.list));
+    if(data.offer)p.push('offer='+encodeURIComponent(data.offer));
+    // Future: window.open('bid-over-ask-report.html?'+p.join('&'),'_blank');
+    showToast('Bid Over Ask generator coming soon');
+  } else if(item.type==='buyrent'){
+    showToast('Buy vs Rent generator coming soon');
+  } else if(item.type==='costwaiting'){
+    showToast('Cost of Waiting generator coming soon');
+  } else if(item.type==='appreciation'){
+    if(data.purchase)p.push('purchase='+encodeURIComponent(data.purchase));
+    if(data.loan)p.push('loan='+encodeURIComponent(data.loan));
+    showToast('Appreciation generator coming soon');
+  } else if(item.type==='investment'){
+    showToast('Investment Property generator coming soon');
+  } else if(item.type==='reportcard'){
+    showToast('Report Card generator coming soon');
+  } else {
+    showToast('Generator for '+item.name+' coming soon');
   }
 }
 
@@ -3044,14 +3273,14 @@ function ppBuildReportOrders(){
   var reportOrders=allOrders.filter(function(o){
     var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
     str=str.toLowerCase();
-    // Only match orders that contain advisory reports — NOT flyers/marketing
-    return str.indexOf('advisory')>=0||str.indexOf('amortization')>=0||str.indexOf('bid')>=0||str.indexOf('buyrent')>=0||str.indexOf('costwaiting')>=0||str.indexOf('appreciation')>=0||str.indexOf('investment')>=0||str.indexOf('reportcard')>=0;
+    var isReport=str.indexOf('advisory')>=0||str.indexOf('amortization')>=0||str.indexOf('bid')>=0||str.indexOf('buyrent')>=0||str.indexOf('costwaiting')>=0||str.indexOf('appreciation')>=0||str.indexOf('investment')>=0||str.indexOf('reportcard')>=0;
+    var isActive=(o.status||'').toLowerCase()!=='complete';
+    return isReport&&isActive;
   });
-  var h='';var pendingCount=0;
+  var h='';var pendingCount=reportOrders.length;
   reportOrders.forEach(function(o){
-    var sc=(o.status||'').toLowerCase()==='complete'?'#22c55e':(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
-    var sl=(o.status||'').toLowerCase()==='complete'?'COMPLETE':(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
-    if(sl!=='COMPLETE')pendingCount++;
+    var sc=(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
+    var sl=(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
     var parsed=ppParseOrderItems(o.items||o.cartJson);
     var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
     h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
@@ -3066,13 +3295,14 @@ function ppBuildFlyerOrders(){
   var flyerOrders=allOrders.filter(function(o){
     var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
     str=str.toLowerCase();
-    return str.indexOf('flyer')>=0||str.indexOf('marketing')>=0||str.indexOf('open house')>=0||str.indexOf('listed')>=0;
+    var isFlyer=str.indexOf('flyer')>=0||str.indexOf('marketing')>=0||str.indexOf('open house')>=0||str.indexOf('listed')>=0;
+    var isActive=(o.status||'').toLowerCase()!=='complete';
+    return isFlyer&&isActive;
   });
-  var h='';var pendingCount=0;
+  var h='';var pendingCount=flyerOrders.length;
   flyerOrders.forEach(function(o){
-    var sc=(o.status||'').toLowerCase()==='complete'?'#22c55e':(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
-    var sl=(o.status||'').toLowerCase()==='complete'?'COMPLETE':(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
-    if(sl!=='COMPLETE')pendingCount++;
+    var sc=(o.status||'').toLowerCase()==='in progress'?'#f59e0b':'#ef4444';
+    var sl=(o.status||'').toLowerCase()==='in progress'?'IN PROGRESS':'NEW';
     var parsed=ppParseOrderItems(o.items||o.cartJson);
     var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
     h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
@@ -3080,6 +3310,52 @@ function ppBuildFlyerOrders(){
   if(h==='')h='<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;font-size:13px;">NO FLYER ORDERS</div>';
   document.getElementById('ppFlyerOrders').innerHTML=h;
   document.getElementById('ppFlyerOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
+}
+
+// ===== ORDER HISTORY =====
+var ppHistoryFilterVal='all';
+
+function ppFilterHistory(filter,btn){
+  ppHistoryFilterVal=filter;
+  document.querySelectorAll('.pp-history-filter button').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  ppBuildOrderHistory(filter);
+}
+
+function ppBuildOrderHistory(filter){
+  if(!ordersLoaded){loadOrders();setTimeout(function(){ppBuildOrderHistory(filter);},1500);return;}
+  filter=filter||ppHistoryFilterVal||'all';
+  var orders=allOrders.filter(function(o){
+    if(filter==='all')return true;
+    return(o.status||'').toLowerCase()===filter.toLowerCase();
+  });
+  // Sort newest first
+  orders.sort(function(a,b){return new Date(b.timestamp||0)-new Date(a.timestamp||0);});
+
+  var h='<table class="pp-history-table"><thead><tr><th>ORDER ID</th><th>PARTNER</th><th>BROKERAGE</th><th>ITEMS</th><th>CO-BRAND</th><th>DATE</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>';
+  orders.forEach(function(o){
+    var parsed=ppParseOrderItems(o.items||o.cartJson);
+    var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    var sl=(o.status||'').toLowerCase();
+    var statusLabel=sl==='complete'?'COMPLETE':sl==='in progress'?'IN PROGRESS':'NEW';
+    var statusColor=sl==='complete'?'#22c55e':sl==='in progress'?'#f59e0b':'#ef4444';
+    var cobrand=o.branding==='Co-branded'?'Yes · '+(o.cobrandLayout||'left').toUpperCase():'No';
+    var itemSummary=parsed.lineItems.length+' item'+(parsed.lineItems.length!==1?'s':'');
+    h+='<tr>';
+    h+='<td style="font-family:Share Tech Mono,monospace;font-size:11px;color:rgba(255,255,255,0.5);">'+o.orderId+'</td>';
+    h+='<td style="font-weight:600;color:rgba(255,255,255,0.75);">'+(o.name||'Unknown')+'</td>';
+    h+='<td>'+(o.brokerage||'—')+'</td>';
+    h+='<td>'+itemSummary+'</td>';
+    h+='<td>'+cobrand+'</td>';
+    h+='<td style="font-family:Share Tech Mono,monospace;">'+ts+'</td>';
+    h+='<td><span class="status-badge" style="background:'+statusColor+'15;color:'+statusColor+';">'+statusLabel+'</span></td>';
+    h+='<td><button class="pp-order-btn" onclick="ppViewOrder(\''+o.orderId+'\')" style="padding:5px 12px;font-size:9px;letter-spacing:1px;">VIEW</button></td>';
+    h+='</tr>';
+  });
+  h+='</tbody></table>';
+  if(orders.length===0)h='<div style="padding:30px;text-align:center;color:rgba(255,255,255,0.3);font-family:Share Tech Mono,monospace;">NO ORDERS FOUND</div>';
+  document.getElementById('ppHistoryTable').innerHTML=h;
+  document.getElementById('ppHistoryCount').textContent=orders.length+' ORDER'+(orders.length!==1?'S':'');
 }
 
 function ppBuildActivity(){
