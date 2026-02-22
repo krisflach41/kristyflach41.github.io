@@ -644,6 +644,14 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 13px; font-f
 .qr-name { font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; line-height: 1.3; }
 .qr-card.active .qr-name { color: #3b82f6; }
 
+/* Custom tooltip */
+.qr-card { position: relative; }
+.qr-card .qr-tip { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); width: 260px; padding: 14px 16px; background: #0f1d32; border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 15px rgba(59,130,246,0.1); z-index: 100; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; }
+.qr-card .qr-tip::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 8px solid transparent; border-top-color: rgba(59,130,246,0.3); }
+.qr-card:hover .qr-tip { visibility: visible; opacity: 1; }
+.qr-tip-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #3b82f6; margin-bottom: 6px; }
+.qr-tip-text { font-family: 'Share Tech Mono', monospace; font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.75); }
+
 /* Month picker */
 .qr-months { display: flex; gap: 4px; flex-wrap: wrap; }
 .qr-month { padding: 8px 16px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
@@ -1538,16 +1546,16 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
           <div class="mc-status">SELECT A REPORT</div>
         </div>
         <div class="qr-grid" id="qrGrid">
-          <div class="qr-card" onclick="qrSelect('production',this)" title="Funded loans by time period — volume, rates, loan types, and totals"><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
-          <div class="qr-card" onclick="qrSelect('refi',this)" title="Past clients whose funded rate is above current market — potential refinance opportunities with estimated monthly savings"><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
-          <div class="qr-card" onclick="qrSelect('strike',this)" title="Clients with rates above market — shows the spread between their rate and current market rate"><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
-          <div class="qr-card" onclick="qrSelect('sources',this)" title="Where your contacts come from and how many from each source actually funded — shows pull-through rate"><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
-          <div class="qr-card" onclick="qrSelect('realtor',this)" title="Track which tools your realtor partners are using in the portal and how often they visit"><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
-          <div class="qr-card" onclick="qrSelect('birthdays',this)" title="CRM contacts with birthdays in the selected month — includes contact type, phone, and email for easy outreach"><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
-          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)" title="Purchase loans that closed in the selected month — great for sending anniversary cards and checking in on past clients"><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
-          <div class="qr-card" onclick="qrSelect('anniv-refi',this)" title="Refinance loans that closed in the selected month — anniversary touchpoint opportunities"><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
-          <div class="qr-card" onclick="qrSelect('age',this)" title="How many days each loan took from AE ID creation to final decision — helps identify bottlenecks in your process"><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
-          <div class="qr-card" onclick="qrSelect('fallout',this)" title="Loans that were withdrawn, suspended, or denied — track fallout patterns to improve your pipeline"><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
+          <div class="qr-card" onclick="qrSelect('production',this)"><div class="qr-tip"><div class="qr-tip-title">MONTHLY PRODUCTION</div><div class="qr-tip-text">Funded loans by time period — volume, rates, loan types, and totals.</div></div><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
+          <div class="qr-card" onclick="qrSelect('refi',this)"><div class="qr-tip"><div class="qr-tip-title">REFI CANDIDATES</div><div class="qr-tip-text">Past clients whose funded rate is above current market — shows potential monthly savings.</div></div><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
+          <div class="qr-card" onclick="qrSelect('strike',this)"><div class="qr-tip"><div class="qr-tip-title">STRIKE RATE</div><div class="qr-tip-text">Clients with rates above market — shows the spread between their rate and current market.</div></div><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
+          <div class="qr-card" onclick="qrSelect('sources',this)"><div class="qr-tip"><div class="qr-tip-title">SOURCE BREAKDOWN</div><div class="qr-tip-text">Where your contacts come from and how many from each source actually funded. Shows pull-through rate.</div></div><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
+          <div class="qr-card" onclick="qrSelect('realtor',this)"><div class="qr-tip"><div class="qr-tip-title">REALTOR TRACKING</div><div class="qr-tip-text">Track which tools your realtor partners use in the portal and how often they log in.</div></div><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
+          <div class="qr-card" onclick="qrSelect('birthdays',this)"><div class="qr-tip"><div class="qr-tip-title">BIRTHDAYS</div><div class="qr-tip-text">CRM contacts with birthdays in the selected month — includes contact type, phone, and email for easy outreach.</div></div><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)"><div class="qr-tip"><div class="qr-tip-title">PURCHASE ANNIVERSARIES</div><div class="qr-tip-text">Purchase loans that closed in the selected month — great for sending anniversary cards to past clients.</div></div><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-refi',this)"><div class="qr-tip"><div class="qr-tip-title">REFI ANNIVERSARIES</div><div class="qr-tip-text">Refinance loans that closed in the selected month — anniversary touchpoint opportunities.</div></div><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
+          <div class="qr-card" onclick="qrSelect('age',this)"><div class="qr-tip"><div class="qr-tip-title">AGE OF LOAN</div><div class="qr-tip-text">How many days each loan took from AE ID creation to final decision — helps identify bottlenecks.</div></div><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
+          <div class="qr-card" onclick="qrSelect('fallout',this)"><div class="qr-tip"><div class="qr-tip-title">FALLOUT REPORT</div><div class="qr-tip-text">Loans that were withdrawn, suspended, or denied — track fallout patterns to improve your pipeline.</div></div><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
         </div>
         <div id="qrUserSaved"></div>
       </div>
