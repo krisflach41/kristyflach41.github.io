@@ -486,7 +486,7 @@ body {
 .mc-panel::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; border-radius: 8px 0 0 0; }
 .mc-panel::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-radius: 0 0 8px 0; }
 .mc-panel-head { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding-bottom: 10px; border-bottom: 1px solid rgba(59,130,246,0.08); }
-.mc-panel-title { font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.75); }
+.mc-panel-title { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.75); }
 .mc-blinker { width: 6px; height: 6px; border-radius: 50%; background: #3b82f6; box-shadow: 0 0 8px #3b82f6, 0 0 20px rgba(59,130,246,0.2); animation: mcBlink 2s ease-in-out infinite; }
 .mc-blinker.green { background: #22c55e; box-shadow: 0 0 8px #22c55e, 0 0 20px rgba(34,197,94,0.2); }
 @keyframes mcBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -601,17 +601,17 @@ body {
 .qb-add-filter { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; cursor: pointer; background: transparent; border: 1px dashed rgba(59,130,246,0.15); color: rgba(59,130,246,0.4); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1px; transition: all 0.2s; margin-top: 4px; }
 .qb-add-filter:hover { border-color: rgba(59,130,246,0.3); color: #3b82f6; }
 .qb-actions { display: flex; gap: 10px; align-items: center; margin-top: 8px; flex-wrap: wrap; }
-.qb-run { padding: 10px 28px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; box-shadow: 0 0 20px rgba(59,130,246,0.2); transition: all 0.2s; }
+.qb-run { padding: 12px 32px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #fff; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; box-shadow: 0 0 20px rgba(59,130,246,0.2); transition: all 0.2s; }
 .qb-run:hover { box-shadow: 0 0 30px rgba(59,130,246,0.4); transform: translateY(-1px); }
-.qb-export { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); font-family: 'Share Tech Mono', monospace; font-size: 11px; letter-spacing: 1.5px; transition: all 0.2s; }
+.qb-export { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.55); font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: 1.5px; transition: all 0.2s; }
 .qb-export:hover { border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.75); }
 .qb-result-count { margin-left: auto; font-size: 12px; color: rgba(59,130,246,0.5); letter-spacing: 1px; font-family: 'Share Tech Mono', monospace; }
 
 /* Results table */
 .mc-table-wrap { overflow-x: auto; border: 1px solid rgba(59,130,246,0.08); border-radius: 6px; }
-table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: 'Share Tech Mono', monospace; }
+table.mc-table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: 'Share Tech Mono', monospace; }
 .mc-table thead { background: rgba(59,130,246,0.06); }
-.mc-table th { padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.55); font-weight: 700; white-space: nowrap; cursor: pointer; border-bottom: 1px solid rgba(59,130,246,0.1); }
+.mc-table th { padding: 12px 14px; text-align: left; font-size: 12px; letter-spacing: 2px; color: rgba(255,255,255,0.55); font-weight: 700; white-space: nowrap; cursor: pointer; border-bottom: 1px solid rgba(59,130,246,0.1); }
 .mc-table th:hover { color: rgba(255,255,255,0.75); }
 .mc-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.03); color: rgba(255,255,255,0.75); white-space: nowrap; }
 .mc-table tbody tr { transition: all 0.15s; }
@@ -636,23 +636,23 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
 
 /* Quick Report Cards */
 .qr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.qr-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 8px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; text-align: center; }
+.qr-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 10px; border-radius: 8px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); transition: all 0.2s; text-align: center; }
 .qr-card:hover { border-color: rgba(59,130,246,0.2); background: rgba(59,130,246,0.03); }
 .qr-card.active { border-color: rgba(59,130,246,0.4); background: rgba(59,130,246,0.08); box-shadow: 0 0 15px rgba(59,130,246,0.1); }
 .qr-card.user-saved { border-style: dashed; }
-.qr-icon { font-size: 20px; }
-.qr-name { font-size: 10px; letter-spacing: 1px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; line-height: 1.3; }
+.qr-icon { font-size: 26px; }
+.qr-name { font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.5); font-family: 'Share Tech Mono', monospace; line-height: 1.3; }
 .qr-card.active .qr-name { color: #3b82f6; }
 
 /* Month picker */
 .qr-months { display: flex; gap: 4px; flex-wrap: wrap; }
-.qr-month { padding: 6px 12px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qr-month { padding: 8px 16px; border-radius: 4px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
 .qr-month:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
 .qr-month.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
 
 /* Period picker */
 .qr-periods { display: flex; gap: 6px; flex-wrap: wrap; }
-.qr-period { padding: 8px 16px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
+.qr-period { padding: 10px 20px; border-radius: 6px; cursor: pointer; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); font-size: 13px; letter-spacing: 1px; color: rgba(255,255,255,0.4); transition: all 0.2s; font-family: 'Share Tech Mono', monospace; }
 .qr-period:hover { border-color: rgba(59,130,246,0.2); color: rgba(255,255,255,0.6); }
 .qr-period.active { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: #3b82f6; }
 
@@ -663,9 +663,18 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
 
 /* Column filter */
 .mc-table th .col-filter { display: block; margin-top: 4px; }
-.mc-table th .col-filter input, .mc-table th .col-filter select { background: rgba(0,0,0,0.3); border: 1px solid rgba(59,130,246,0.15); color: #fff; padding: 3px 6px; border-radius: 3px; font-size: 10px; font-family: 'Share Tech Mono', monospace; width: 100%; outline: none; }
+.mc-table th .col-filter input, .mc-table th .col-filter select { background: rgba(0,0,0,0.3); border: 1px solid rgba(59,130,246,0.15); color: #fff; padding: 4px 8px; border-radius: 3px; font-size: 12px; font-family: 'Share Tech Mono', monospace; width: 100%; outline: none; }
 .mc-table th .col-filter input:focus, .mc-table th .col-filter select:focus { border-color: rgba(59,130,246,0.4); }
 .mc-table th .col-filter select { appearance: auto; }
+
+/* Dark dropdowns globally */
+select, select option { background: #0a1628; color: #fff; }
+.qb-filter-select { background: #0a1628 !important; color: #fff !important; border: 1px solid rgba(59,130,246,0.15); padding: 6px 10px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 12px; outline: none; }
+.qb-filter-select:focus { border-color: rgba(59,130,246,0.4); }
+.qb-filter-select option { background: #0a1628; color: #fff; }
+.qb-date-input { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px 14px; border-radius: 4px; font-family: 'Share Tech Mono', monospace; font-size: 12px; outline: none; }
+.qb-date-input:focus { border-color: rgba(59,130,246,0.3); }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
 .at-title { padding: 12px 14px 0; font-size: 12px; font-weight: 700; }
@@ -1529,16 +1538,16 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
           <div class="mc-status">SELECT A REPORT</div>
         </div>
         <div class="qr-grid" id="qrGrid">
-          <div class="qr-card" onclick="qrSelect('production',this)"><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
-          <div class="qr-card" onclick="qrSelect('refi',this)"><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
-          <div class="qr-card" onclick="qrSelect('strike',this)"><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
-          <div class="qr-card" onclick="qrSelect('sources',this)"><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
-          <div class="qr-card" onclick="qrSelect('realtor',this)"><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
-          <div class="qr-card" onclick="qrSelect('birthdays',this)"><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
-          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)"><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
-          <div class="qr-card" onclick="qrSelect('anniv-refi',this)"><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
-          <div class="qr-card" onclick="qrSelect('age',this)"><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
-          <div class="qr-card" onclick="qrSelect('fallout',this)"><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
+          <div class="qr-card" onclick="qrSelect('production',this)" title="Funded loans by time period — volume, rates, loan types, and totals"><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
+          <div class="qr-card" onclick="qrSelect('refi',this)" title="Past clients whose funded rate is above current market — potential refinance opportunities with estimated monthly savings"><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
+          <div class="qr-card" onclick="qrSelect('strike',this)" title="Clients with rates above market — shows the spread between their rate and current market rate"><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
+          <div class="qr-card" onclick="qrSelect('sources',this)" title="Where your contacts come from and how many from each source actually funded — shows pull-through rate"><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
+          <div class="qr-card" onclick="qrSelect('realtor',this)" title="Track which tools your realtor partners are using in the portal and how often they visit"><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
+          <div class="qr-card" onclick="qrSelect('birthdays',this)" title="CRM contacts with birthdays in the selected month — includes contact type, phone, and email for easy outreach"><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)" title="Purchase loans that closed in the selected month — great for sending anniversary cards and checking in on past clients"><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-refi',this)" title="Refinance loans that closed in the selected month — anniversary touchpoint opportunities"><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
+          <div class="qr-card" onclick="qrSelect('age',this)" title="How many days each loan took from AE ID creation to final decision — helps identify bottlenecks in your process"><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
+          <div class="qr-card" onclick="qrSelect('fallout',this)" title="Loans that were withdrawn, suspended, or denied — track fallout patterns to improve your pipeline"><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
         </div>
         <div id="qrUserSaved"></div>
       </div>
@@ -1580,7 +1589,7 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 12px; font-f
           <div class="mc-status" id="anaResultsStatus">—</div>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
-          <input type="text" class="qb-filter-val" id="anaSearchBox" placeholder="Search results..." oninput="anaFilterResults()" style="max-width:300px;">
+          <input type="text" class="qb-filter-val" id="anaSearchBox" placeholder="Search results..." oninput="anaFilterResults()" style="max-width:300px;font-size:13px;padding:8px 14px;">
           <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
           <button class="qb-export" onclick="anaSaveQuickReport()">⭐ SAVE AS QUICK REPORT</button>
           <div style="margin-left:auto;font-size:12px;color:rgba(59,130,246,0.5);letter-spacing:1px;font-family:'Share Tech Mono',monospace;" id="anaResultCount2"></div>
@@ -2687,32 +2696,35 @@ function qrBuildConfig(type){
   var title=document.getElementById('qrConfigTitle'),body=document.getElementById('qrConfigBody');
   var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   var cm=new Date().getMonth();
-  var mp='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT MONTH</div><div class="qr-months">';
+  var now=new Date(),yStr=now.getFullYear()+'-01-01',tStr=now.toISOString().split('T')[0];
+  var mp='<div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT MONTH</div><div class="qr-months">';
   months.forEach(function(m,i){mp+='<div class="qr-month'+(i===cm?' active':'')+'" onclick="qrPickMonth(this,'+i+')">'+m+'</div>';});mp+='</div>';
-  var pp='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT PERIOD</div><div class="qr-periods"><div class="qr-period" onclick="qrPickPeriod(this,\'mtd\')">THIS MONTH</div><div class="qr-period" onclick="qrPickPeriod(this,\'qtd\')">THIS QUARTER</div><div class="qr-period active" onclick="qrPickPeriod(this,\'ytd\')">YEAR TO DATE</div><div class="qr-period" onclick="qrPickPeriod(this,\'12mo\')">LAST 12 MONTHS</div><div class="qr-period" onclick="qrPickPeriod(this,\'all\')">ALL TIME</div></div>';
+  var datePickers='<div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;"><span style="font-size:13px;color:rgba(255,255,255,0.5);font-family:Share Tech Mono,monospace;">OR CUSTOM RANGE:</span><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:rgba(255,255,255,0.3);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div>';
+  var pp='<div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">SELECT PERIOD</div><div class="qr-periods"><div class="qr-period" onclick="qrPickPeriod(this,\'mtd\')">THIS MONTH</div><div class="qr-period" onclick="qrPickPeriod(this,\'qtd\')">THIS QUARTER</div><div class="qr-period active" onclick="qrPickPeriod(this,\'ytd\')">YEAR TO DATE</div><div class="qr-period" onclick="qrPickPeriod(this,\'12mo\')">LAST 12 MONTHS</div><div class="qr-period" onclick="qrPickPeriod(this,\'all\')">ALL TIME</div><div class="qr-period" onclick="qrPickPeriod(this,\'custom\')">CUSTOM</div></div><div id="qrCustomDateWrap" style="display:none;margin-top:10px;"><div style="display:flex;align-items:center;gap:10px;"><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:rgba(255,255,255,0.3);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div></div>';
+  var mktInput='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:13px;color:rgba(255,255,255,0.6);font-family:Share Tech Mono,monospace;">MARKET RATE:</span><input type="number" step="0.001" value="6.375" id="qrMktRate" style="background:rgba(255,255,255,0.03);border:1px solid rgba(59,130,246,0.2);color:#3b82f6;font-family:Orbitron,sans-serif;font-size:16px;font-weight:700;padding:6px 12px;border-radius:4px;width:100px;outline:none;text-align:center;" onfocus="this.style.borderColor=\'rgba(59,130,246,0.5)\'" onblur="this.style.borderColor=\'rgba(59,130,246,0.2)\'"><span style="font-size:13px;color:rgba(255,255,255,0.6);font-family:Share Tech Mono,monospace;">%</span><span style="font-size:12px;color:rgba(255,255,255,0.35);font-family:Share Tech Mono,monospace;margin-left:8px;">EDIT TO MATCH YOUR PRICING</span></div>';
   qrCurrentConfig={};
   if(type==='birthdays'){title.textContent='BIRTHDAYS';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='anniv-purchase'){title.textContent='PURCHASE CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='anniv-refi'){title.textContent='REFI CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='production'){title.textContent='MONTHLY PRODUCTION';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
   else if(type==='sources'){title.textContent='SOURCE BREAKDOWN';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
-  else if(type==='refi'){title.textContent='REFI CANDIDATES';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">MARKET RATE: <span style="color:#3b82f6;font-weight:700;">6.375%</span> — ALL CLIENTS ABOVE MARKET</div>';}
-  else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">MARKET RATE: <span style="color:#3b82f6;font-weight:700;">6.375%</span> — ALL CLIENTS ABOVE MARKET</div>';}
-  else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
-  else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
-  else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;font-family:Share Tech Mono,monospace;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
-  else if(type.startsWith('user_')){var s=qrUserReports.find(function(r){return r.id===type;});if(s){title.textContent=s.name.toUpperCase();body.innerHTML='<div style="font-size:11px;color:rgba(255,255,255,0.5);">SAVED REPORT — CLICK RUN</div>';qrCurrentConfig=JSON.parse(JSON.stringify(s.config));}}
+  else if(type==='refi'){title.textContent='REFI CANDIDATES';body.innerHTML=mktInput+'<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:8px;font-family:Share Tech Mono,monospace;">SHOWS ALL FUNDED CLIENTS WITH RATES ABOVE YOUR MARKET RATE</div>';}
+  else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML=mktInput+'<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:8px;font-family:Share Tech Mono,monospace;">SHOWS SPREAD BETWEEN CLIENT RATES AND CURRENT MARKET</div>';}
+  else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:8px;letter-spacing:1px;font-family:Share Tech Mono,monospace;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:13px;color:rgba(255,255,255,0.6);letter-spacing:1px;font-family:Share Tech Mono,monospace;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
+  else if(type.startsWith('user_')){var s=qrUserReports.find(function(r){return r.id===type;});if(s){title.textContent=s.name.toUpperCase();body.innerHTML='<div style="font-size:13px;color:rgba(255,255,255,0.6);">SAVED REPORT — CLICK RUN</div>';qrCurrentConfig=JSON.parse(JSON.stringify(s.config));}}
 }
 
 function qrPickMonth(el,m){el.parentElement.querySelectorAll('.qr-month').forEach(function(e){e.classList.remove('active');});el.classList.add('active');qrCurrentConfig.month=m;}
-function qrPickPeriod(el,p){el.parentElement.querySelectorAll('.qr-period').forEach(function(e){e.classList.remove('active');});el.classList.add('active');qrCurrentConfig.period=p;}
+function qrPickPeriod(el,p){el.parentElement.querySelectorAll('.qr-period').forEach(function(e){e.classList.remove('active');});el.classList.add('active');qrCurrentConfig.period=p;var cw=document.getElementById('qrCustomDateWrap');if(cw)cw.style.display=p==='custom'?'block':'none';}
 
-function qrGetDateRange(p){var n=new Date(),to=n.toISOString().split('T')[0],fr='2020-01-01';if(p==='mtd')fr=new Date(n.getFullYear(),n.getMonth(),1).toISOString().split('T')[0];else if(p==='qtd'){var q=Math.floor(n.getMonth()/3)*3;fr=new Date(n.getFullYear(),q,1).toISOString().split('T')[0];}else if(p==='ytd')fr=n.getFullYear()+'-01-01';else if(p==='12mo')fr=new Date(n.getFullYear()-1,n.getMonth(),n.getDate()).toISOString().split('T')[0];return{from:fr,to:to};}
+function qrGetDateRange(p){var n=new Date(),to=n.toISOString().split('T')[0],fr='2020-01-01';if(p==='mtd')fr=new Date(n.getFullYear(),n.getMonth(),1).toISOString().split('T')[0];else if(p==='qtd'){var q=Math.floor(n.getMonth()/3)*3;fr=new Date(n.getFullYear(),q,1).toISOString().split('T')[0];}else if(p==='ytd')fr=n.getFullYear()+'-01-01';else if(p==='12mo')fr=new Date(n.getFullYear()-1,n.getMonth(),n.getDate()).toISOString().split('T')[0];else if(p==='custom'){var f=document.getElementById('qrDateFrom'),t=document.getElementById('qrDateTo');if(f&&f.value)fr=f.value;if(t&&t.value)to=t.value;}return{from:fr,to:to};}
 
 function qrNames(h){var n=[];if(h.borrowers&&Array.isArray(h.borrowers))h.borrowers.forEach(function(b){if(b.name)n.push(b.name);});return n.join(' & ')||'—';}
 
 function qrRunReport(){
-  var type=qrCurrentType,data=[],cols=[],mk=6.375;
+  var type=qrCurrentType,data=[],cols=[];var mkEl=document.getElementById('qrMktRate');var mk=mkEl?parseFloat(mkEl.value)||6.375:6.375;
   if(type==='birthdays'){cols=['NAME','TYPE','BIRTHDAY','PHONE','EMAIL'];var m=qrCurrentConfig.month;anaCrmAll.forEach(function(c){if(!c.birthday)return;var p=c.birthday.split('-');if(p.length>=2&&parseInt(p[1])-1===m)data.push({'NAME':(c.first_name||'')+' '+(c.last_name||''),'TYPE':(c.type||'—').toUpperCase(),'BIRTHDAY':c.birthday,'PHONE':c.phone||'—','EMAIL':c.email||'—'});});}
   else if(type==='anniv-purchase'||type==='anniv-refi'){cols=['BORROWER','CLOSE DATE','YEARS','LOAN AMOUNT','RATE','LOAN TYPE'];var m=qrCurrentConfig.month;anaLoanHistory.forEach(function(h){if(h.outcome!=='funded'||!h.outcome_date)return;var od=new Date(h.outcome_date);if(od.getMonth()!==m)return;var tt=(h.transaction_type||'').toLowerCase();if(type==='anniv-purchase'&&tt&&tt.indexOf('purch')<0)return;if(type==='anniv-refi'&&tt&&tt.indexOf('refi')<0)return;data.push({'BORROWER':qrNames(h),'CLOSE DATE':h.outcome_date,'YEARS':new Date().getFullYear()-od.getFullYear(),'LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'RATE':h.interest_rate?parseFloat(h.interest_rate).toFixed(3)+'%':'—','LOAN TYPE':h.transaction_type||'—'});});}
   else if(type==='production'){cols=['BORROWER','LOAN AMOUNT','RATE','LOAN TYPE','PROGRAM','CLOSE DATE','AE ID'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(h.outcome!=='funded')return;if(h.outcome_date&&(h.outcome_date<r.from||h.outcome_date>r.to))return;data.push({'BORROWER':qrNames(h),'LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'RATE':h.interest_rate?parseFloat(h.interest_rate).toFixed(3)+'%':'—','LOAN TYPE':h.transaction_type||'—','PROGRAM':h.loan_program||'—','CLOSE DATE':h.outcome_date||'—','AE ID':h.ae_id||'—',_amt:parseFloat(h.loan_amount)||0,_rate:parseFloat(h.interest_rate)||0});});}
