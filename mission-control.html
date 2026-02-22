@@ -3449,7 +3449,17 @@ function ppBuildSettings(){
   document.getElementById('ppSettingsCount').textContent=ppPartners.length+' PARTNERS';
 }
 
-function loadPartnerPortal(){ppBuildDashboard();}
+function loadPartnerPortal(){
+  // Check URL hash for direct tab navigation
+  var hash=(window.location.hash||'').replace('#','').toLowerCase();
+  var validTabs=['dashboard','reports','flyers','activity','settings','history'];
+  if(hash&&validTabs.indexOf(hash)>=0){
+    var tabEl=document.querySelectorAll('.pp-tab')[validTabs.indexOf(hash)];
+    if(tabEl)ppTab(hash,tabEl);
+  } else {
+    ppBuildDashboard();
+  }
+}
 // ===== PIPELINE =====
 var pipelineLoaded = false;
 var pipelineLoans = []; // AE loan objects
