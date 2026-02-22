@@ -180,7 +180,7 @@ class UniversalCart {
       appreciation: 'Appreciation',
       investment: 'Investment Property',
       amortization: 'Mortgage Amortization',
-      reportcard: 'Real Estate Report Card'
+      reportcard: 'Neighborhood Blueprint'
     };
     return names[reportType] || reportType;
   }
