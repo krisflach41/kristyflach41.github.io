@@ -1032,10 +1032,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <span class="nav-icon"><i class="fas fa-address-book"></i></span> Client Database
       <span class="nav-badge" id="navCrmCount">0</span>
     </div>
-    <div class="nav-item" onclick="switchView('orders', this)">
-      <span class="nav-icon"><i class="fas fa-clipboard-list"></i></span> Order Queue
-      <span class="nav-badge orange" id="navOrderCount">0</span>
-    </div>
     <div class="nav-item" onclick="switchView('webinars', this)">
       <span class="nav-icon"><i class="fas fa-video"></i></span> Webinars
     </div>
@@ -1332,30 +1328,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 <!-- ========================================== -->
 <!-- ORDER QUEUE VIEW -->
 <!-- ========================================== -->
-<div class="view-panel" id="view-orders">
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div>
-        <div class="topbar-title">Order Queue</div>
-        <div class="topbar-subtitle" id="ordersSubtitle">Loading...</div>
-      </div>
-    </div>
-    <div class="topbar-right">
-      <button class="topbar-btn" onclick="loadOrders()"><i class="fas fa-arrow-left"></i> Refresh</button>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="order-filter-tabs" id="orderFilterTabs">
-      <div class="order-filter-tab active" onclick="filterOrders('all', this)">All <strong id="oCountAll">0</strong></div>
-      <div class="order-filter-tab" onclick="filterOrders('New', this)">New <strong id="oCountNew">0</strong></div>
-      <div class="order-filter-tab" onclick="filterOrders('In Progress', this)">In Progress <strong id="oCountIP">0</strong></div>
-      <div class="order-filter-tab" onclick="filterOrders('Complete', this)">Complete <strong id="oCountDone">0</strong></div>
-    </div>
-    <div id="ordersContainer"></div>
-  </div>
-</div>
-
 <!-- ========================================== -->
 <!-- WEBINARS VIEW -->
 <!-- ========================================== -->
@@ -4825,10 +4797,9 @@ function confirmDeleteContact(id, name) {
   .catch(function() { showToast('Delete failed'); });
 }
 
-// ===== ORDER QUEUE =====
+// ===== ORDER LOADING =====
 var ordersLoaded = false;
 var allOrders = [];
-var orderFilter = 'all';
 
 function loadOrders() {
   fetch('https://agent-edge-backend.vercel.app/api/get-orders', {
@@ -4840,73 +4811,19 @@ function loadOrders() {
       if (data.success && data.orders) {
         allOrders = data.orders;
         ordersLoaded = true;
-        renderOrders();
+        // Update dashboard order count if element exists
+        var dashEl = document.getElementById('dashOrders');
+        if (dashEl) dashEl.textContent = allOrders.filter(function(o) { return (o.status || '').toLowerCase() !== 'complete'; }).length;
       } else {
         allOrders = [];
-        renderOrders();
+        ordersLoaded = true;
       }
     })
     .catch(function(err) { 
       console.error('Orders load error:', err); 
       allOrders = [];
-      renderOrders();
+      ordersLoaded = true;
     });
-}
-
-function renderOrders() {
-  var filtered = orderFilter === 'all' ? allOrders : allOrders.filter(function(o) { return o.status === orderFilter; });
-  var newCount = allOrders.filter(function(o) { return o.status === 'New'; }).length;
-  var ipCount = allOrders.filter(function(o) { return o.status === 'In Progress'; }).length;
-  var doneCount = allOrders.filter(function(o) { return o.status === 'Complete'; }).length;
-
-  document.getElementById('oCountAll').textContent = allOrders.length;
-  document.getElementById('oCountNew').textContent = newCount;
-  document.getElementById('oCountIP').textContent = ipCount;
-  document.getElementById('oCountDone').textContent = doneCount;
-  document.getElementById('navOrderCount').textContent = newCount;
-  document.getElementById('ordersSubtitle').textContent = allOrders.length + ' total  -  ' + newCount + ' new';
-  document.getElementById('dashOrders').textContent = newCount;
-
-  if (filtered.length === 0) {
-    document.getElementById('ordersContainer').innerHTML = '<div class="placeholder-center" style="height:40%;"><div class="placeholder-icon"><i class="fas fa-search"></i></div><div class="placeholder-text">No ' + (orderFilter === 'all' ? '' : orderFilter.toLowerCase() + ' ') + 'orders</div></div>';
-    return;
-  }
-
-  var html = '';
-  filtered.forEach(function(order) {
-    var statusClass = order.status === 'New' ? 'status-new' : order.status === 'In Progress' ? 'status-inprogress' : 'status-complete';
-    var itemsHtml = '';
-    if (order.items) order.items.split(' | ').forEach(function(item) { itemsHtml += '<span class="order-item-tag">' + item.trim() + '</span>'; });
-
-    html += '<div class="order-card">' +
-      '<div class="order-header"><span class="order-id">' + order.orderId + '</span><span class="order-time">' + order.timestamp + '</span></div>' +
-      '<div class="order-client-name">' + order.name + (order.branding ? ' <span style="font-size:10px;color:var(--accent-purple);">(' + order.branding + ')</span>' : '') + '</div>' +
-      '<div class="order-client-meta">' + order.email + '  -  ' + order.brokerage + '</div>' +
-      '<div class="order-items-row">' + itemsHtml + '</div>' +
-      (order.notes ? '<div class="order-notes-box">"' + order.notes + '"</div>' : '') +
-      '<div class="order-footer"><span class="status-badge ' + statusClass + '">' + order.status + '</span>' +
-      '<select class="order-status-select" onchange="updateOrderStatus(\'' + order.orderId + '\', this.value)">' +
-      '<option value="New"' + (order.status === 'New' ? ' selected' : '') + '>New</option>' +
-      '<option value="In Progress"' + (order.status === 'In Progress' ? ' selected' : '') + '>In Progress</option>' +
-      '<option value="Complete"' + (order.status === 'Complete' ? ' selected' : '') + '>Complete</option>' +
-      '</select></div></div>';
-  });
-  document.getElementById('ordersContainer').innerHTML = html;
-}
-
-function filterOrders(filter, el) {
-  orderFilter = filter;
-  document.querySelectorAll('.order-filter-tab').forEach(function(t) { t.classList.remove('active'); });
-  el.classList.add('active');
-  renderOrders();
-}
-
-function updateOrderStatus(orderId, newStatus) {
-  var order = allOrders.find(function(o) { return o.orderId === orderId; });
-  if (order) {
-    order.status = newStatus;
-    renderOrders();
-  }
 }
 
 // ===== USER MANAGEMENT =====
