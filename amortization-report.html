@@ -388,52 +388,12 @@ body {
     </div>
 
     <div class="gen-section">Co-Branding (Optional)</div>
-        <div class="gen-section">Co-Branding (Optional)</div>
     
     <div class="gen-check">
-      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrandFields()">
+      <input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()">
       <label for="inp_cobrand">Include Realtor Co-Branding</label>
     </div>
 
-    <div id="cobrandFields" style="display:none; grid-column: 1 / -1;">
-      
-      <div style="margin: 15px 0 20px;">
-        <div style="font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Select Layout</div>
-        <div style="display: flex; gap: 12px;">
-          
-          <div class="layout-picker-box" id="layoutLeft" onclick="selectCobrandLayout('left')">
-            <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Left</div>
-            <div style="display: flex; gap: 8px;">
-              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
-              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
-            </div>
-          </div>
-          
-          <div class="layout-picker-box" id="layoutRight" onclick="selectCobrandLayout('right')">
-            <div style="text-align: center; font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; text-transform: uppercase;">Realtor Right</div>
-            <div style="display: flex; gap: 8px;">
-              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(76,175,80,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #4caf50;">YOU</div>
-              <div style="flex: 1; text-align: center; padding: 10px; background: rgba(33,150,243,0.15); border-radius: 4px; font-size: 9px; font-weight: 600; color: #2196f3;">REALTOR</div>
-            </div>
-          </div>
-          
-        </div>
-      </div>
-
-      <div id="cobrandRealtorInfo" style="grid-column: 1 / -1; padding: 12px; background: rgba(76,175,80,0.08); border-radius: 6px; border: 1px solid rgba(76,175,80,0.2);">
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
-          <img id="cobrandHeadshot" src="hero-headshot.jpg" style="width: 50px; height: 50px; border-radius: 50%; border: 2px solid rgba(76,175,80,0.4); object-fit: cover;">
-          <div>
-            <div id="cobrandName" style="font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px;">Loading realtor info...</div>
-            <div id="cobrandBrokerage" style="font-size: 10px; color: rgba(255,255,255,0.5);"></div>
-          </div>
-        </div>
-        <div style="font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.6;">
-          <div id="cobrandLicense"></div>
-          <div id="cobrandContact"></div>
-        </div>
-      </div>
-    </div>
     <div id="cobrandFields" style="display:none; grid-column:1/-1;">
       <!-- LAYOUT PICKER -->
       <div style="margin-bottom:14px;">
@@ -642,6 +602,87 @@ function toggleCobrand() {
   document.getElementById('cobrandFields').style.display = document.getElementById('inp_cobrand').checked ? 'block' : 'none';
 }
 
+/* ===== URL PARAMETER PRE-FILL ===== */
+(function prefillFromURL() {
+  var params = new URLSearchParams(window.location.search);
+  if (params.toString() === '') return;
+
+  // Client name
+  var clientName = params.get('clientName') || params.get('client') || '';
+  if (clientName) document.getElementById('inp_clientName').value = decodeURIComponent(clientName);
+
+  // Loan amount
+  var loan = params.get('loan') || params.get('loanAmount') || '';
+  if (loan) {
+    var loanNum = parseFloat(loan.replace(/[^0-9.]/g, ''));
+    if (loanNum) document.getElementById('inp_loanAmount').value = Math.round(loanNum).toLocaleString();
+  }
+
+  // Interest rate
+  var rate = params.get('rate') || '';
+  if (rate) document.getElementById('inp_rate').value = rate.replace('%', '');
+
+  // APR
+  var apr = params.get('apr') || '';
+  if (apr) document.getElementById('inp_apr').value = apr.replace('%', '');
+
+  // Term
+  var term = params.get('term') || '';
+  if (term) {
+    var termSel = document.getElementById('inp_term');
+    var termVal = term.replace(/[^0-9]/g, '');
+    for (var i = 0; i < termSel.options.length; i++) {
+      if (termSel.options[i].value === termVal) { termSel.selectedIndex = i; break; }
+    }
+  }
+
+  // Extra monthly
+  var extraMonthly = params.get('extraMonthly') || '';
+  if (extraMonthly) document.getElementById('inp_extraMonthly').value = parseFloat(extraMonthly.replace(/[^0-9.]/g, '')).toLocaleString();
+
+  // Extra annual
+  var extraAnnual = params.get('extraAnnual') || '';
+  if (extraAnnual) document.getElementById('inp_extraAnnual').value = parseFloat(extraAnnual.replace(/[^0-9.]/g, '')).toLocaleString();
+
+  // Frequency
+  var freq = params.get('frequency') || '';
+  if (freq === 'biweekly') document.getElementById('inp_frequency').value = 'biweekly';
+
+  // Co-branding
+  var cobrand = params.get('cobrand') || '';
+  if (cobrand === 'true' || cobrand === 'yes' || cobrand === 'Co-branded') {
+    var cb = document.getElementById('inp_cobrand');
+    if (cb) { cb.checked = true; toggleCobrand(); }
+
+    // Realtor info from order
+    var rName = params.get('realtorName') || '';
+    var rBrokerage = params.get('realtorBrokerage') || params.get('brokerage') || '';
+    var rPhone = params.get('realtorPhone') || '';
+    var rEmail = params.get('realtorEmail') || '';
+
+    if (rName) { var el = document.getElementById('inp_realtorName'); if (el) el.value = decodeURIComponent(rName); }
+    if (rBrokerage) { var el = document.getElementById('inp_realtorBrokerage'); if (el) el.value = decodeURIComponent(rBrokerage); }
+    if (rPhone) { var el = document.getElementById('inp_realtorPhone'); if (el) el.value = decodeURIComponent(rPhone); }
+    if (rEmail) { var el = document.getElementById('inp_realtorEmail'); if (el) el.value = decodeURIComponent(rEmail); }
+
+    // Layout
+    var layout = params.get('cobrandLayout') || 'left';
+    if (typeof pickLayout === 'function') pickLayout(layout);
+  }
+
+  // Purchase type (address context)
+  var address = params.get('address') || '';
+  // We don't have an address field on amortization but good to capture for notes
+
+  // Auto-generate if we have enough data
+  var hasLoan = loan && parseFloat(loan.replace(/[^0-9.]/g, '')) >= 1000;
+  var hasRate = rate && parseFloat(rate.replace('%', '')) > 0;
+  if (hasLoan && hasRate) {
+    // Small delay to ensure DOM is ready
+    setTimeout(function() { generateReport(); }, 200);
+  }
+})();
+
 var cobrandLayout = 'left'; // realtor on left by default
 
 function pickLayout(side) {
@@ -809,7 +850,8 @@ function generateReport() {
   }
 
   // CTA - show when no acceleration and checkbox is on
-  var showCta = !hasAcceleration && document.getElementById('inp_cta').checked;
+  var ctaEl = document.getElementById('inp_cta');
+  var showCta = !hasAcceleration && ctaEl && ctaEl.checked;
   document.getElementById('rptCta').style.display = showCta ? 'block' : 'none';
 
   // Co-brand footer
