@@ -865,11 +865,15 @@ function generateReport() {
     detail: 'NMLS# 75243 · Equal Housing Lender'
   };
 
-  if (document.getElementById('inp_cobrand').checked) {
-    var rName = document.getElementById('inp_realtorName').value.trim() || 'Realtor';
-    var rBrok = document.getElementById('inp_realtorBrokerage').value.trim();
-    var rPhone = document.getElementById('inp_realtorPhone').value.trim();
-    var rEmail = document.getElementById('inp_realtorEmail').value.trim();
+  if (document.getElementById('inp_cobrand') && document.getElementById('inp_cobrand').checked) {
+    var rNameEl = document.getElementById('inp_realtorName');
+    var rBrokEl = document.getElementById('inp_realtorBrokerage');
+    var rPhoneEl = document.getElementById('inp_realtorPhone');
+    var rEmailEl = document.getElementById('inp_realtorEmail');
+    var rName = (rNameEl ? rNameEl.value.trim() : '') || 'Realtor';
+    var rBrok = rBrokEl ? rBrokEl.value.trim() : '';
+    var rPhone = rPhoneEl ? rPhoneEl.value.trim() : '';
+    var rEmail = rEmailEl ? rEmailEl.value.trim() : '';
     var rInitials = rName.split(' ').map(function(w) { return w[0]; }).join('').toUpperCase().substring(0, 2);
     var rDetail = [rBrok, rPhone, rEmail].filter(Boolean).join(' · ');
 
@@ -1093,9 +1097,12 @@ function editReport() {
   // 3. TRACK REPORT GENERATION
   var originalGenerateReport = window.generateReport;
   window.generateReport = function() {
-    var loanAmount = document.getElementById('loanAmount').value;
-    var interestRate = document.getElementById('interestRate').value;
-    var loanTerm = document.getElementById('loanTerm').value;
+    var loanEl = document.getElementById('inp_loanAmount');
+    var rateEl = document.getElementById('inp_rate');
+    var termEl = document.getElementById('inp_term');
+    var loanAmount = loanEl ? loanEl.value : '';
+    var interestRate = rateEl ? rateEl.value : '';
+    var loanTerm = termEl ? termEl.value : '';
     
     trackEvent('report_generated', 'Amortization Report', 
       'Generated report: $' + loanAmount + ' @ ' + interestRate + '% for ' + loanTerm + ' years');
