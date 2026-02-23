@@ -543,7 +543,6 @@ body {
   <!-- 01: Forecasted Appreciation -->
   <div class="sect">
     <div class="sect-head">
-      <div class="sect-num">01</div>
       <div class="sect-title">Forecasted Appreciation</div>
       <div class="sect-rule"></div>
     </div>
@@ -564,7 +563,7 @@ body {
   <!-- 02: Supply & Demand -->
   <div class="sect">
     <div class="sect-head">
-      <div class="sect-num">02</div>
+      
       <div class="sect-title">Supply & Demand</div>
       <div class="sect-rule"></div>
     </div>
@@ -575,7 +574,7 @@ body {
   <!-- 03: Demographics & Housing -->
   <div class="sect">
     <div class="sect-head">
-      <div class="sect-num">03</div>
+      
       <div class="sect-title">Demographics & Housing</div>
       <div class="sect-rule"></div>
     </div>
@@ -588,7 +587,7 @@ body {
   <!-- 04: Affordability -->
   <div class="sect">
     <div class="sect-head">
-      <div class="sect-num">04</div>
+      
       <div class="sect-title">Affordability</div>
       <div class="sect-rule"></div>
     </div>
@@ -601,7 +600,7 @@ body {
   <!-- 05: Employment -->
   <div class="sect">
     <div class="sect-head">
-      <div class="sect-num">05</div>
+      
       <div class="sect-title">Employment</div>
       <div class="sect-rule"></div>
     </div>
@@ -698,18 +697,31 @@ function renderReport(d) {
     document.getElementById('rptAddressLine').textContent = address.split(',')[0];
     document.getElementById('rptAddressSub').textContent = address.split(',').slice(1).join(',').trim();
 
-    // OpenStreetMap static map via nominatim geocoding
+    // Map via OpenStreetMap tiles
     var mapDiv = document.getElementById('rptMap');
     var encAddr = encodeURIComponent(address);
-    // Use OSM static map tile centered on address
-    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encAddr + '&limit=1')
+    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encAddr + '&limit=1', {headers:{'User-Agent':'AgentEdge/1.0'}})
       .then(function(r) { return r.json(); })
       .then(function(results) {
         if (results && results.length > 0) {
-          var lat = results[0].lat;
-          var lon = results[0].lon;
-          var tileUrl = 'https://staticmap.openstreetmap.de/staticmap.php?center=' + lat + ',' + lon + '&zoom=15&size=320x200&markers=' + lat + ',' + lon + ',red-pushpin';
-          mapDiv.innerHTML = '<img src="' + tileUrl + '" style="width:100%;height:100%;object-fit:cover;" alt="Map">';
+          var lat = parseFloat(results[0].lat);
+          var lon = parseFloat(results[0].lon);
+          // Use OSM tile directly as background with pin overlay
+          var zoom = 15;
+          var n = Math.pow(2, zoom);
+          var xtile = Math.floor((lon + 180) / 360 * n);
+          var ytile = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n);
+          // Build a 2x2 tile grid for better coverage
+          var tileBase = 'https://tile.openstreetmap.org/' + zoom + '/';
+          mapDiv.innerHTML = '<div style="width:100%;height:100%;position:relative;overflow:hidden;background:#1a1a2e;">' +
+            '<div style="display:grid;grid-template-columns:1fr 1fr;width:512px;height:512px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);filter:brightness(0.7) saturate(0.5);">' +
+            '<img src="' + tileBase + xtile + '/' + ytile + '.png" style="width:256px;height:256px;">' +
+            '<img src="' + tileBase + (xtile+1) + '/' + ytile + '.png" style="width:256px;height:256px;">' +
+            '<img src="' + tileBase + xtile + '/' + (ytile+1) + '.png" style="width:256px;height:256px;">' +
+            '<img src="' + tileBase + (xtile+1) + '/' + (ytile+1) + '.png" style="width:256px;height:256px;">' +
+            '</div>' +
+            '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;z-index:2;text-shadow:0 2px 4px rgba(0,0,0,0.5);">📍</div>' +
+            '</div>';
         } else {
           mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
         }
@@ -728,8 +740,21 @@ function renderReport(d) {
   }
 
   // Hero
-  document.getElementById('rptLocation').textContent = 'Prepared for ' + clientName;
-  document.getElementById('rptSub').textContent = 'ZIP ' + zip + ' · ' + d.state + ' · Census Data ' + (d.censusYear || '2023');
+  // Try to derive city name from address
+  var cityDisplay = '';
+  if (address) {
+    var parts = address.split(',');
+    if (parts.length >= 2) cityDisplay = parts[1].trim().replace(/\s+\d{5}.*/, '');
+  }
+  if (!cityDisplay) cityDisplay = 'ZIP ' + zip;
+
+  var subParts = ['ZIP ' + zip];
+  if (d.state) subParts.push(d.state);
+  subParts.push('Census Data ' + (d.censusYear || '2023'));
+  if (clientName !== 'Homebuyer') subParts.unshift('Prepared for ' + clientName);
+
+  document.getElementById('rptLocation').textContent = cityDisplay + ', ' + (d.state || '');
+  document.getElementById('rptSub').textContent = subParts.join(' · ');
   document.getElementById('kpiHomeValue').textContent = fmtMoney(d.medianHomeValue);
   document.getElementById('kpiIncome').textContent = fmtMoney(d.medianIncome);
   document.getElementById('kpiListings').textContent = d.activeListings != null ? fmtNum(d.activeListings) : '—';
@@ -1098,9 +1123,11 @@ function renderFooter() {
     pickLayout(layout);
   }
 
-  // Auto-generate
+  // Auto-generate — if coming from order, hide form immediately
   if (zip && /^\d{5}$/.test(zip)) {
-    setTimeout(function() { generateReport(); }, 200);
+    document.getElementById('generatorPanel').style.display = 'none';
+    document.getElementById('reportContainer').style.display = 'block';
+    setTimeout(function() { generateReport(); }, 100);
   }
 })();
 </script>
