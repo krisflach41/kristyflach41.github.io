@@ -687,9 +687,12 @@ function renderReport(d) {
   var clientName = document.getElementById('inp_clientName').value.trim() || 'Homebuyer';
   var address = document.getElementById('inp_address').value.trim();
 
-  // City name from address or generic
-  var cityState = address ? address.split(',').slice(1).join(',').trim() : (d.state || 'OH');
-  var cityName = address ? address.split(',')[1]?.trim() || '' : '';
+  // City name — use Geocodio data first, then parse from address, then fallback
+  var cityFromAPI = d.location ? d.location.city : '';
+  var countyFromAPI = d.location ? d.location.county : '';
+  var stateFromAPI = d.location ? d.location.state : (d.state || '');
+  var latFromAPI = d.location ? d.location.latitude : null;
+  var lonFromAPI = d.location ? d.location.longitude : null;
 
   // Property header
   if (address) {
@@ -697,63 +700,45 @@ function renderReport(d) {
     document.getElementById('rptAddressLine').textContent = address.split(',')[0];
     document.getElementById('rptAddressSub').textContent = address.split(',').slice(1).join(',').trim();
 
-    // Map via OpenStreetMap tiles
+    // Map using Geocodio lat/lon (or parsed from address via Geocodio)
     var mapDiv = document.getElementById('rptMap');
-    var encAddr = encodeURIComponent(address);
-    fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encAddr + '&limit=1', {headers:{'User-Agent':'AgentEdge/1.0'}})
-      .then(function(r) { return r.json(); })
-      .then(function(results) {
-        if (results && results.length > 0) {
-          var lat = parseFloat(results[0].lat);
-          var lon = parseFloat(results[0].lon);
-          // Use OSM tile directly as background with pin overlay
-          var zoom = 15;
-          var n = Math.pow(2, zoom);
-          var xtile = Math.floor((lon + 180) / 360 * n);
-          var ytile = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n);
-          // Build a 2x2 tile grid for better coverage
-          var tileBase = 'https://tile.openstreetmap.org/' + zoom + '/';
-          mapDiv.innerHTML = '<div style="width:100%;height:100%;position:relative;overflow:hidden;background:#1a1a2e;">' +
-            '<div style="display:grid;grid-template-columns:1fr 1fr;width:512px;height:512px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);filter:brightness(0.7) saturate(0.5);">' +
-            '<img src="' + tileBase + xtile + '/' + ytile + '.png" style="width:256px;height:256px;">' +
-            '<img src="' + tileBase + (xtile+1) + '/' + ytile + '.png" style="width:256px;height:256px;">' +
-            '<img src="' + tileBase + xtile + '/' + (ytile+1) + '.png" style="width:256px;height:256px;">' +
-            '<img src="' + tileBase + (xtile+1) + '/' + (ytile+1) + '.png" style="width:256px;height:256px;">' +
-            '</div>' +
-            '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;z-index:2;text-shadow:0 2px 4px rgba(0,0,0,0.5);">📍</div>' +
-            '</div>';
-        } else {
-          mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
-        }
-      })
-      .catch(function() {
-        mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
-      });
+    var lat = latFromAPI;
+    var lon = lonFromAPI;
 
-    // Key insights
+    if (lat && lon) {
+      renderMapTiles(mapDiv, lat, lon);
+    } else {
+      mapDiv.innerHTML = '<div style="width:100%;height:100%;background:var(--surface-raised);display:flex;align-items:center;justify-content:center;font-size:24px;">📍</div>';
+    }
+
+    // Key insights — always show DOM now
     var insights = '<div class="prop-insights-title">Key Insights for ' + zip + '</div>';
     insights += '<div class="prop-insight-row">Median Price: <strong>' + fmtMoney(d.medianHomeValue) + '</strong></div>';
-    if (d.medianDom != null) insights += '<div class="prop-insight-row">Median Days on Market: <strong>' + d.medianDom + '</strong></div>';
-    insights += '<div class="prop-insight-row">Active Listings: <strong>' + (d.activeListings || '—') + '</strong></div>';
-    if (d.appreciation) insights += '<div class="prop-insight-row">1-Yr Appreciation: <strong class="up">+' + d.appreciation.oneYear + '%</strong></div>';
+    insights += '<div class="prop-insight-row">Median Days on Market: <strong>' + (d.medianDom != null ? d.medianDom : '—') + '</strong></div>';
+    insights += '<div class="prop-insight-row">Active Listings: <strong>' + (d.activeListings != null ? fmtNum(d.activeListings) : '—') + '</strong></div>';
+    if (d.appreciation && d.appreciation.oneYear != null) {
+      var appVal = d.appreciation.oneYear;
+      var appClass = appVal >= 0 ? 'up' : 'down';
+      insights += '<div class="prop-insight-row">1-Yr Appreciation: <strong class="' + appClass + '">' + (appVal >= 0 ? '+' : '') + appVal + '%</strong></div>';
+    }
     document.getElementById('rptInsights').innerHTML = insights;
   }
 
-  // Hero
-  // Try to derive city name from address
-  var cityDisplay = '';
-  if (address) {
+  // Hero — use Geocodio city, not parsed address
+  var cityDisplay = cityFromAPI || '';
+  if (!cityDisplay && address) {
     var parts = address.split(',');
     if (parts.length >= 2) cityDisplay = parts[1].trim().replace(/\s+\d{5}.*/, '');
   }
   if (!cityDisplay) cityDisplay = 'ZIP ' + zip;
 
   var subParts = ['ZIP ' + zip];
-  if (d.state) subParts.push(d.state);
+  if (countyFromAPI) subParts.push(countyFromAPI);
+  if (stateFromAPI) subParts.push(stateFromAPI);
   subParts.push('Census Data ' + (d.censusYear || '2023'));
   if (clientName !== 'Homebuyer') subParts.unshift('Prepared for ' + clientName);
 
-  document.getElementById('rptLocation').textContent = cityDisplay + ', ' + (d.state || '');
+  document.getElementById('rptLocation').textContent = cityDisplay + ', ' + (stateFromAPI || d.state || '');
   document.getElementById('rptSub').textContent = subParts.join(' · ');
   document.getElementById('kpiHomeValue').textContent = fmtMoney(d.medianHomeValue);
   document.getElementById('kpiIncome').textContent = fmtMoney(d.medianIncome);
@@ -778,13 +763,42 @@ function renderReport(d) {
   // Footer
   renderFooter();
 
-  // Disclosures
+  // Disclosures — now lists all data sources
+  var sources = d.dataSources || {};
+  var srcList = [
+    sources.demographics || ('U.S. Census Bureau ACS (' + (d.censusYear || '2023') + ')'),
+    sources.appreciation || 'FHFA House Price Index',
+    sources.listings || 'Realtor.com®',
+    sources.permits || '',
+    sources.employment || '',
+    sources.rents || '',
+    sources.geocoding || ''
+  ].filter(function(s) { return s && s !== 'Not available'; });
+
   document.getElementById('rptDisclosures').textContent =
-    'Data sources: U.S. Census Bureau American Community Survey (' + (d.censusYear || '2023') + '), Federal Housing Finance Agency House Price Index, Realtor.com®. ' +
+    'Data sources: ' + srcList.join('; ') + '. ' +
     'All data is believed to be accurate but is not guaranteed. Market conditions change frequently. ' +
     'Appreciation forecasts are based on historical trends and do not guarantee future results. ' +
     'This report is for informational purposes only and does not constitute financial advice or a commitment to lend. ' +
     'Equal Housing Lender. © Paramount Residential Mortgage Group, Inc. NMLS# 75243.';
+}
+
+// ===== MAP TILE RENDERER (uses lat/lon from Geocodio) =====
+function renderMapTiles(mapDiv, lat, lon) {
+  var zoom = 15;
+  var n = Math.pow(2, zoom);
+  var xtile = Math.floor((lon + 180) / 360 * n);
+  var ytile = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * n);
+  var tileBase = 'https://tile.openstreetmap.org/' + zoom + '/';
+  mapDiv.innerHTML = '<div style="width:100%;height:100%;position:relative;overflow:hidden;background:#1a1a2e;">' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;width:512px;height:512px;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);filter:brightness(0.7) saturate(0.5);">' +
+    '<img src="' + tileBase + xtile + '/' + ytile + '.png" style="width:256px;height:256px;" onerror="this.style.background=\'#1a1a2e\'">' +
+    '<img src="' + tileBase + (xtile+1) + '/' + ytile + '.png" style="width:256px;height:256px;" onerror="this.style.background=\'#1a1a2e\'">' +
+    '<img src="' + tileBase + xtile + '/' + (ytile+1) + '.png" style="width:256px;height:256px;" onerror="this.style.background=\'#1a1a2e\'">' +
+    '<img src="' + tileBase + (xtile+1) + '/' + (ytile+1) + '.png" style="width:256px;height:256px;" onerror="this.style.background=\'#1a1a2e\'">' +
+    '</div>' +
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);font-size:28px;z-index:2;text-shadow:0 2px 4px rgba(0,0,0,0.5);">📍</div>' +
+    '</div>';
 }
 
 // ===== 01: FORECAST =====
@@ -858,9 +872,9 @@ function renderSupply(d) {
     cards.push({ val: fmtNum(d.housingSupply.totalUnits), lbl: 'Total Housing Units' });
     cards.push({ val: fmtNum(d.housingSupply.vacant), lbl: 'Vacant Units', note: d.housingSupply.vacancyRate + '% vacancy' });
   }
-  cards.push({ val: fmtMoney(d.medianRent), lbl: 'Median Rent', note: '/month' });
-  if (d.medianDom != null) cards.push({ val: d.medianDom + ' days', lbl: 'Median DOM' });
+  if (d.medianDom != null) cards.push({ val: d.medianDom + ' days', lbl: 'Median DOM', note: 'Days on market' });
   if (d.medianListPrice) cards.push({ val: fmtMoney(d.medianListPrice), lbl: 'Median List Price' });
+  cards.push({ val: fmtMoney(d.medianRent), lbl: 'Median Rent', note: '/month (Census)' });
 
   document.getElementById('supplyRow').innerHTML = cards.map(function(c) {
     return '<div class="supply-card"><div class="supply-val">' + c.val + '</div>' +
@@ -868,29 +882,61 @@ function renderSupply(d) {
       (c.note ? '<div class="supply-note">' + c.note + '</div>' : '') + '</div>';
   }).join('');
 
-  // Construction bars
-  if (d.housingSupply) {
-    var hs = d.housingSupply;
-    // Use county data if available (more accurate), otherwise zip
-    var useCounty = hs.countyBuiltRecent && hs.countyBuiltRecent > 0;
-    var br = useCounty ? hs.countyBuiltRecent : hs.builtRecent;
-    var b10 = useCounty ? hs.countyBuilt2010s : hs.built2010s;
-    var b00 = useCounty ? hs.countyBuilt2000s : hs.built2000s;
-    var geoLabel = useCounty ? (hs.countyName ? hs.countyName + ' County' : 'County') : ('ZIP ' + d.zip);
+  // Construction bars — use HUD building permits (actual permits issued)
+  var constructEl = document.getElementById('constructWrap');
+  var h = '';
+
+  if (d.buildingPermits) {
+    var bp = d.buildingPermits;
+    var geoLabel = bp.countyName ? bp.countyName : 'County';
+    var br = bp.since2020 || 0;
+    var b10 = bp.period2010s || 0;
+    var b00 = bp.period2000s || 0;
     var maxB = Math.max(br, b10, b00, 1);
-    var h = '<div class="card-label">NEW CONSTRUCTION — ' + geoLabel.toUpperCase() + '</div>';
+
+    h += '<div class="card-label">BUILDING PERMITS ISSUED — ' + geoLabel.toUpperCase() + '</div>';
+    h += '<div style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">Source: Census Bureau Building Permits Survey (actual permits, not estimates)</div>';
     var bars = [
-      { label: 'Built 2020+', value: br, color: 'rgba(94,188,138,0.4)' },
-      { label: 'Built 2010–2019', value: b10, color: 'rgba(107,163,214,0.4)' },
-      { label: 'Built 2000–2009', value: b00, color: 'rgba(186,163,112,0.4)' }
+      { label: '2020–Present', value: br, color: 'rgba(94,188,138,0.4)' },
+      { label: '2010–2019', value: b10, color: 'rgba(107,163,214,0.4)' },
+      { label: '2000–2009', value: b00, color: 'rgba(186,163,112,0.4)' }
     ];
     bars.forEach(function(b) {
       var pct = Math.max(5, (b.value / maxB) * 100);
       h += '<div class="construct-row"><div class="construct-label">' + b.label + '</div>' +
         '<div class="construct-track"><div class="construct-fill" style="width:' + pct + '%;background:' + b.color + ';">' + fmtNum(b.value) + '</div></div></div>';
     });
-    document.getElementById('constructWrap').innerHTML = h;
+
+    // Latest year detail
+    if (bp.latestYear && bp.latestTotal) {
+      h += '<div style="margin-top:8px;font-size:10px;color:var(--text-dim);">Latest year (' + bp.latestYear + '): ' + fmtNum(bp.latestTotal) + ' permits issued</div>';
+    }
   }
+
+  // HUD Fair Market Rents by bedroom count
+  if (d.fairMarketRents) {
+    var fmr = d.fairMarketRents;
+    h += '<div class="card-label" style="margin-top:18px;">FAIR MARKET RENTS BY BEDROOM — ' + (fmr.metroName || 'METRO AREA').toUpperCase() + '</div>';
+    h += '<div style="font-size:10px;color:var(--text-dim);margin-bottom:8px;">Source: HUD FY' + (fmr.year || '') + (fmr.isZipLevel ? ' (zip-level)' : ' (metro-level)') + '</div>';
+    var rents = [
+      { label: 'Studio', value: fmr.efficiency },
+      { label: '1 Bed', value: fmr.oneBed },
+      { label: '2 Bed', value: fmr.twoBed },
+      { label: '3 Bed', value: fmr.threeBed },
+      { label: '4 Bed', value: fmr.fourBed }
+    ];
+    var maxRent = 1;
+    rents.forEach(function(r) { if (r.value && r.value > maxRent) maxRent = r.value; });
+    rents.forEach(function(r) {
+      if (r.value) {
+        var pct = Math.max(5, (r.value / maxRent) * 100);
+        h += '<div class="construct-row"><div class="construct-label">' + r.label + '</div>' +
+          '<div class="construct-track"><div class="construct-fill" style="width:' + pct + '%;background:rgba(155,142,196,0.35);">' + fmtMoney(r.value) + '/mo</div></div></div>';
+      }
+    });
+  }
+
+  constructEl.innerHTML = h;
 }
 
 // ===== 03: DEMOGRAPHICS =====
@@ -1030,12 +1076,53 @@ function renderAffordability(d) {
 // ===== 05: EMPLOYMENT =====
 function renderEmployment(d) {
   var el = document.getElementById('employRow');
-  if (!d.employment) { el.innerHTML = ''; return; }
+  if (!d.employment) { el.innerHTML = '<div style="color:var(--text-dim);font-size:11px;">Employment data unavailable</div>'; return; }
   var e = d.employment;
-  el.innerHTML =
-    '<div class="supply-card"><div class="supply-val">' + fmtNum(e.laborForce) + '</div><div class="supply-lbl">Labor Force</div><div class="supply-note">Civilian, age 16+</div></div>' +
-    '<div class="supply-card"><div class="supply-val up">' + e.unemploymentRate + '%</div><div class="supply-lbl">Unemployment Rate</div><div class="supply-note">ZIP ' + d.zip + '</div></div>' +
-    '<div class="supply-card"><div class="supply-val">' + fmtNum(e.unemployed) + '</div><div class="supply-lbl">Unemployed</div><div class="supply-note">Actively seeking</div></div>';
+  var geoLabel = e.countyName ? e.countyName : ('ZIP ' + d.zip);
+  var sourceNote = e._source || '';
+  var isMonthly = sourceNote.indexOf('BLS') >= 0;
+  var dateNote = isMonthly && e.latestMonth ? e.latestMonth + ' ' + e.latestYear : 'Annual estimate';
+
+  var h = '';
+  h += '<div class="supply-card"><div class="supply-val">' + fmtNum(e.laborForce) + '</div><div class="supply-lbl">Labor Force</div><div class="supply-note">' + geoLabel + '</div></div>';
+  h += '<div class="supply-card"><div class="supply-val">' + (e.unemploymentRate != null ? e.unemploymentRate + '%' : '—') + '</div><div class="supply-lbl">Unemployment Rate</div><div class="supply-note">' + dateNote + '</div></div>';
+  h += '<div class="supply-card"><div class="supply-val">' + fmtNum(e.unemployed) + '</div><div class="supply-lbl">Unemployed</div><div class="supply-note">Actively seeking</div></div>';
+
+  // Monthly trend mini-chart (BLS data)
+  if (e.monthlyTrend && e.monthlyTrend.length > 2) {
+    var pts = e.monthlyTrend;
+    var maxRate = 0, minRate = 999;
+    pts.forEach(function(p) { if (p.rate > maxRate) maxRate = p.rate; if (p.rate < minRate) minRate = p.rate; });
+    var range = maxRate - minRate || 0.5;
+    var svgW = 200, svgH = 50;
+    var coords = pts.map(function(p, i) {
+      var x = (i / (pts.length - 1)) * svgW;
+      var y = svgH - 5 - ((p.rate - minRate) / range) * (svgH - 10);
+      return { x: x, y: y, rate: p.rate, month: p.month };
+    });
+    var polyline = coords.map(function(c) { return c.x + ',' + c.y; }).join(' ');
+
+    h += '<div class="supply-card" style="min-width:220px;flex:1.5;">';
+    h += '<div class="supply-lbl" style="margin-bottom:4px;">12-MONTH UNEMPLOYMENT TREND</div>';
+    h += '<div style="font-size:9px;color:var(--text-dim);margin-bottom:4px;">Source: BLS LAUS (monthly, county-level)</div>';
+    h += '<svg viewBox="0 0 ' + svgW + ' ' + (svgH + 12) + '" style="width:100%;max-height:65px;">';
+    // Area fill
+    h += '<defs><linearGradient id="empG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#6ba3d6" stop-opacity="0.15"/><stop offset="100%" stop-color="#6ba3d6" stop-opacity="0"/></linearGradient></defs>';
+    h += '<path d="M' + coords[0].x + ',' + coords[0].y + ' ' + coords.map(function(c) { return 'L' + c.x + ',' + c.y; }).join(' ') + ' L' + svgW + ',' + svgH + ' L0,' + svgH + 'Z" fill="url(#empG)"/>';
+    h += '<polyline points="' + polyline + '" fill="none" stroke="#6ba3d6" stroke-width="1.5"/>';
+    // Endpoints
+    var first = coords[0], last = coords[coords.length - 1];
+    h += '<circle cx="' + first.x + '" cy="' + first.y + '" r="2" fill="#6ba3d6"/>';
+    h += '<circle cx="' + last.x + '" cy="' + last.y + '" r="2.5" fill="#6ba3d6"/>';
+    h += '<text x="' + first.x + '" y="' + (first.y - 4) + '" font-size="7" fill="#6ba3d6" font-family="DM Sans">' + first.rate + '%</text>';
+    h += '<text x="' + (last.x - 18) + '" y="' + (last.y - 4) + '" font-size="7" font-weight="600" fill="#6ba3d6" font-family="DM Sans">' + last.rate + '%</text>';
+    // Month labels
+    h += '<text x="0" y="' + (svgH + 10) + '" font-size="7" fill="rgba(232,228,220,0.2)" font-family="DM Sans">' + first.month.substring(0, 3) + '</text>';
+    h += '<text x="' + (svgW - 16) + '" y="' + (svgH + 10) + '" font-size="7" fill="rgba(232,228,220,0.2)" font-family="DM Sans">' + last.month.substring(0, 3) + '</text>';
+    h += '</svg></div>';
+  }
+
+  el.innerHTML = h;
 }
 
 // ===== FOOTER =====
