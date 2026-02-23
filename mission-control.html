@@ -3240,16 +3240,8 @@ function ppGenerateLineItem(item,order){
   } else if(item.type==='investment'){
     showToast('Investment Property generator coming soon');
   } else if(item.type==='reportcard'){
-    var p=[];
     if(data.address)p.push('zip='+encodeURIComponent(data.address.replace(/[^0-9]/g,'').slice(-5)));
     if(data.address)p.push('address='+encodeURIComponent(data.address));
-    if(order.partnerName)p.push('clientName='+encodeURIComponent(order.partnerName));
-    if(order.cobrandStatus==='Co-branded'){
-      p.push('cobrand=true');
-      if(order.partnerName)p.push('realtorName='+encodeURIComponent(order.partnerName));
-      if(order.brokerage)p.push('realtorBrokerage='+encodeURIComponent(order.brokerage));
-      if(order.cobrandLayout)p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout));
-    }
     window.open('neighborhood-blueprint.html'+(p.length?'?'+p.join('&'):''),'_blank');
   } else {
     showToast('Generator for '+item.name+' coming soon');
