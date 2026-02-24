@@ -390,8 +390,8 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 </div>
 
 <div class="flyer-card" data-report="buyrent">
-<img src="Buy-vs-Rent.png" alt="Buy vs Rent">
-<h3>Buy vs Rent</h3>
+<img src="Buy-vs-Rent.png" alt="Rent to Wealth">
+<h3>Rent to Wealth</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
@@ -636,7 +636,7 @@ function openPanel(type, mode = "new") {
   // Set panel title
   panelTitle.innerText =
     type === "bid" ? "Bid Over Ask" :
-    type === "buyrent" ? "Buy vs Rent" :
+    type === "buyrent" ? "Rent to Wealth" :
     type === "costwaiting" ? "Cost of Waiting" :
     type === "amortization" ? "Mortgage Amortization" :
     type === "appreciation" ? "Appreciation" :
@@ -833,7 +833,7 @@ function addToKit() {
   if (activeReport === "buyrent") {
     const missing = valid.some(p => !(p.purchase || "").trim());
     if (missing) {
-      alert("Buy vs Rent requires Purchase Price for each property.");
+      alert("Rent to Wealth requires Purchase Price for each property.");
       return;
     }
   }
@@ -916,7 +916,7 @@ function renderKit() {
     
     const displayName =
       r === "bid" ? "Bid Over Ask" :
-      r === "buyrent" ? "Buy vs Rent" :
+      r === "buyrent" ? "Rent to Wealth" :
       r === "costwaiting" ? "Cost of Waiting" :
       r === "appreciation" ? "Appreciation" :
       r === "investment" ? "Investment Property Analysis" :
