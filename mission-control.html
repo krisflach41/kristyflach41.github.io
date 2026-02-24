@@ -1409,6 +1409,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
           <div class="pp-tpl-card" onclick="window.open('buy-vs-rent.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">💎</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rent to Wealth</div><div class="pp-tpl-desc">Own vs Rent: The Wealth Advantage — equity, appreciation, and total wealth comparison</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
           <div class="pp-tpl-card" onclick="window.open('worth-the-premium.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">🏆</div><div class="pp-tpl-body"><div class="pp-tpl-name">Worth the Premium</div><div class="pp-tpl-desc">Why paying above asking is still a winning investment — break-even timeline and 5-year projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
           <div class="pp-tpl-card" onclick="window.open('wealth-in-motion.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">📈</div><div class="pp-tpl-body"><div class="pp-tpl-name">Wealth in Motion</div><div class="pp-tpl-desc">Your home is already building your future — 10-year appreciation projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+          <div class="pp-tpl-card" onclick="window.open('owner-to-investor.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">🏢</div><div class="pp-tpl-body"><div class="pp-tpl-name">Owner to Investor</div><div class="pp-tpl-desc">Full investment property analysis — cash flow, ROI, and 10-year wealth projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
           <div class="pp-tpl-card" onclick="window.open('amortization-report.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">☕</div><div class="pp-tpl-body"><div class="pp-tpl-name">Payoff Accelerator</div><div class="pp-tpl-desc">See how a cup of coffee can shorten your mortgage and save you thousands</div></div></div>
           <div class="pp-tpl-card" onclick="window.open('wealth-starts-now.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">⏰</div><div class="pp-tpl-body"><div class="pp-tpl-name">Your Wealth Starts Now</div><div class="pp-tpl-desc">Why buying today beats waiting — rate scenarios, refi math, and wealth comparison</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
         </div>
@@ -2963,8 +2964,8 @@ function ppParseOrderItems(raw){
     var obj=typeof raw==='object'?raw:JSON.parse(str);
     var parts=[];
     var lineItems=[];
-    var reportIcons={amortization:'☕',bid:'📊',buyrent:'🏠',costwaiting:'⏰',appreciation:'📈',investment:'💰',reportcard:'📝'};
-    var reportNames={amortization:'Payoff Accelerator',bid:'Worth the Premium',buyrent:'Rent to Wealth',costwaiting:'Your Wealth Starts Now',appreciation:'Wealth in Motion',investment:'Investment Property',reportcard:'Neighborhood Blueprint'};
+    var reportIcons={amortization:'☕',bid:'📊',buyrent:'🏠',costwaiting:'⏰',appreciation:'📈',investment:'🏢',reportcard:'📝'};
+    var reportNames={amortization:'Payoff Accelerator',bid:'Worth the Premium',buyrent:'Rent to Wealth',costwaiting:'Your Wealth Starts Now',appreciation:'Wealth in Motion',investment:'Owner to Investor',reportcard:'Neighborhood Blueprint'};
     if(obj.advisory){
       Object.keys(obj.advisory).forEach(function(k){
         var r=obj.advisory[k];
@@ -3240,7 +3241,12 @@ function ppGenerateLineItem(item,order){
     if(data.name)ap.push('clientName='+encodeURIComponent(data.name));
     window.open('wealth-in-motion.html'+(ap.length?'?'+ap.join('&'):''),'_blank');
   } else if(item.type==='investment'){
-    showToast('Investment Property generator coming soon');
+    var ip=[];
+    if(data.address)ip.push('address='+encodeURIComponent(data.address));
+    if(data.purchase)ip.push('price='+encodeURIComponent(data.purchase));
+    if(data.name)ip.push('clientName='+encodeURIComponent(data.name));
+    if(data.rent)ip.push('rent='+encodeURIComponent(data.rent));
+    window.open('owner-to-investor.html'+(ip.length?'?'+ip.join('&'):''),'_blank');
   } else if(item.type==='reportcard'){
     var p=[];
     if(data.address)p.push('zip='+encodeURIComponent(data.address.replace(/[^0-9]/g,'').slice(-5)));
