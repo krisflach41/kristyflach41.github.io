@@ -78,7 +78,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .cashflow-detail{font-size:11px;color:var(--text-dim);margin-top:4px}
 .wealth-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
 .wealth-card{text-align:center;padding:24px 16px;border-radius:10px;background:var(--surface-raised);border:1px solid var(--border)}
-.wealth-card-icon{font-size:24px;margin-bottom:10px}
+.wealth-card-icon{margin-bottom:10px;display:flex;justify-content:center}
+.wealth-card-icon svg{width:32px;height:32px}
 .wealth-card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:8px}
 .wealth-card-value{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green)}
 .wealth-card-detail{font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4}
@@ -245,8 +246,9 @@ async function generateReport(){
   var monthlyMaint=(price*maintPct/100)/12;
   var monthlyVacancy=monthlyRent*vacancyPct/100;
   var monthlyMgmt=monthlyRent*mgmtPct/100;
-  var totalMonthlyExpense=monthlyPI+monthlyTax+monthlyInsurance+monthlyMaint+monthlyVacancy+monthlyMgmt+monthlyHoa+pmi;
-  var netMonthlyCashFlow=monthlyRent-totalMonthlyExpense;
+  var effectiveRent=monthlyRent-monthlyVacancy-monthlyMgmt;
+  var totalMonthlyExpense=monthlyPI+monthlyTax+monthlyInsurance+monthlyMaint+monthlyHoa+pmi;
+  var netMonthlyCashFlow=effectiveRent-totalMonthlyExpense;
   var totalInvestment=downAmt+closingCosts+renovation;
 
   // NOI and cap rate (year 1, no financing)
@@ -258,19 +260,20 @@ async function generateReport(){
   var years=[];var cumCashFlow=0;var cumRentalIncome=0;var cumExpenses=0;
   for(var y=1;y<=10;y++){
     var rentY=monthlyRent*Math.pow(1+rentIncrease/100,y-1)*12;
+    var vacY=rentY*vacancyPct/100;
+    var mgmtY=rentY*mgmtPct/100;
+    var effectiveRentY=rentY-vacY-mgmtY;
     var taxY=annualTax*Math.pow(1+taxIncrease/100,y-1);
     var insY=monthlyInsurance*12;
     var maintY=(price*Math.pow(1+apprRate/100,y-1))*maintPct/100;
-    var vacY=rentY*vacancyPct/100;
-    var mgmtY=rentY*mgmtPct/100;
     var hoaY=monthlyHoa*12;
     var pmiY=pmi*12;
     var piY=monthlyPI*12;
-    var totalExpY=piY+taxY+insY+maintY+vacY+mgmtY+hoaY+pmiY;
-    var netY=rentY-totalExpY;
-    cumCashFlow+=netY;cumRentalIncome+=rentY;cumExpenses+=totalExpY;
+    var totalExpY=piY+taxY+insY+maintY+hoaY+pmiY;
+    var netY=effectiveRentY-totalExpY;
+    cumCashFlow+=netY;cumRentalIncome+=effectiveRentY;cumExpenses+=totalExpY;
     var propVal=price*Math.pow(1+apprRate/100,y);
-    years.push({year:y,rent:Math.round(rentY),expenses:Math.round(totalExpY),net:Math.round(netY),cumCash:Math.round(cumCashFlow),propVal:Math.round(propVal)});
+    years.push({year:y,rent:Math.round(effectiveRentY),expenses:Math.round(totalExpY),net:Math.round(netY),cumCash:Math.round(cumCashFlow),propVal:Math.round(propVal)});
   }
 
   var yr10Val=price*Math.pow(1+apprRate/100,10);
@@ -293,13 +296,18 @@ async function generateReport(){
   document.getElementById('rptKpi').innerHTML='<div class="rpt-kpi-strip"><div class="rpt-kpi"><div class="rpt-kpi-label">Monthly Cash Flow</div><div class="rpt-kpi-value '+cfClass+'">'+(netMonthlyCashFlow>=0?'+':'')+fmtMoney(netMonthlyCashFlow)+'</div><div class="rpt-kpi-detail">after all expenses</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Cash-on-Cash Return</div><div class="rpt-kpi-value '+(cashOnCash>=0?'green':'red')+'">'+cashOnCash.toFixed(1)+'%</div><div class="rpt-kpi-detail">Year 1</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Cap Rate</div><div class="rpt-kpi-value gold">'+capRate.toFixed(1)+'%</div><div class="rpt-kpi-detail">net operating income / price</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">10-Year Total ROI</div><div class="rpt-kpi-value gold">'+Math.round(totalROI)+'%</div><div class="rpt-kpi-detail">'+avgAnnualROI.toFixed(1)+'% avg annual</div></div></div>';
 
   // MONTHLY SNAPSHOT
+  var incRows='';
+  incRows+='<div class="monthly-row"><span class="monthly-row-label">Gross Monthly Rent</span><span class="monthly-row-value green">'+fmtMoney(monthlyRent)+'</span></div>';
+  incRows+='<div class="monthly-row"><span class="monthly-row-label">Vacancy Reserve ('+vacancyPct+'%)</span><span class="monthly-row-value red">-'+fmtMoney(monthlyVacancy)+'</span></div>';
+  if(monthlyMgmt>0)incRows+='<div class="monthly-row"><span class="monthly-row-label">Property Mgmt ('+mgmtPct+'%)</span><span class="monthly-row-value red">-'+fmtMoney(monthlyMgmt)+'</span></div>';
+  incRows+='<div class="monthly-divider"></div>';
+  incRows+='<div class="monthly-total"><span>Effective Income</span><span class="green">'+fmtMoney(effectiveRent)+'</span></div>';
+
   var expRows='';
   expRows+='<div class="monthly-row"><span class="monthly-row-label">Mortgage (P&I)</span><span class="monthly-row-value">'+fmtMoney(monthlyPI)+'</span></div>';
   expRows+='<div class="monthly-row"><span class="monthly-row-label">Property Tax</span><span class="monthly-row-value">'+fmtMoney(monthlyTax)+'</span></div>';
   expRows+='<div class="monthly-row"><span class="monthly-row-label">Insurance</span><span class="monthly-row-value">'+fmtMoney(monthlyInsurance)+'</span></div>';
   expRows+='<div class="monthly-row"><span class="monthly-row-label">Maintenance</span><span class="monthly-row-value">'+fmtMoney(monthlyMaint)+'</span></div>';
-  expRows+='<div class="monthly-row"><span class="monthly-row-label">Vacancy Reserve ('+vacancyPct+'%)</span><span class="monthly-row-value">'+fmtMoney(monthlyVacancy)+'</span></div>';
-  if(monthlyMgmt>0)expRows+='<div class="monthly-row"><span class="monthly-row-label">Property Mgmt ('+mgmtPct+'%)</span><span class="monthly-row-value">'+fmtMoney(monthlyMgmt)+'</span></div>';
   if(monthlyHoa>0)expRows+='<div class="monthly-row"><span class="monthly-row-label">HOA / Association</span><span class="monthly-row-value">'+fmtMoney(monthlyHoa)+'</span></div>';
   if(pmi>0)expRows+='<div class="monthly-row"><span class="monthly-row-label">Mortgage Insurance</span><span class="monthly-row-value">'+fmtMoney(pmi)+'</span></div>';
 
@@ -307,14 +315,18 @@ async function generateReport(){
   if(closingCosts>0)investBreakdown+=' + Closing costs: '+fmtMoney(closingCosts);
   if(renovation>0)investBreakdown+=' + Renovation: '+fmtMoney(renovation);
 
-  document.getElementById('rptMonthly').innerHTML='<div class="rpt-section"><div class="rpt-section-title">The Monthly Snapshot</div><div class="rpt-section-intro">Here\'s what this property looks like month to month &mdash; income in, expenses out, cash in your pocket.</div><div class="monthly-grid"><div class="monthly-col"><div class="monthly-col-title income">Income</div><div class="monthly-row"><span class="monthly-row-label">Monthly Rent</span><span class="monthly-row-value green">'+fmtMoney(monthlyRent)+'</span></div></div><div class="monthly-col"><div class="monthly-col-title expense">Expenses</div>'+expRows+'<div class="monthly-divider"></div><div class="monthly-total"><span>Total Expenses</span><span class="red">'+fmtMoney(totalMonthlyExpense)+'</span></div></div></div><div class="cashflow-result '+(netMonthlyCashFlow>=0?'positive':'negative')+'"><div class="cashflow-label">Net Monthly Cash Flow</div><div class="cashflow-value '+(netMonthlyCashFlow>=0?'green':'red')+'">'+(netMonthlyCashFlow>=0?'+':'')+fmtMoney(netMonthlyCashFlow)+'</div><div class="cashflow-detail">'+fmtMoney(netMonthlyCashFlow*12)+' per year &middot; Total investment: '+fmtMoney(totalInvestment)+'</div><div style="font-size:10px;color:var(--text-dim);margin-top:4px">'+investBreakdown+'</div></div></div>';
+  document.getElementById('rptMonthly').innerHTML='<div class="rpt-section"><div class="rpt-section-title">The Monthly Snapshot</div><div class="rpt-section-intro">Here\'s what this property looks like month to month &mdash; income in, expenses out, cash in your pocket.</div><div class="monthly-grid"><div class="monthly-col"><div class="monthly-col-title income">Income</div>'+incRows+'</div><div class="monthly-col"><div class="monthly-col-title expense">Expenses</div>'+expRows+'<div class="monthly-divider"></div><div class="monthly-total"><span>Total Expenses</span><span class="red">'+fmtMoney(totalMonthlyExpense)+'</span></div></div></div><div class="cashflow-result '+(netMonthlyCashFlow>=0?'positive':'negative')+'"><div class="cashflow-label">Net Monthly Cash Flow</div><div class="cashflow-value '+(netMonthlyCashFlow>=0?'green':'red')+'">'+(netMonthlyCashFlow>=0?'+':'')+fmtMoney(netMonthlyCashFlow)+'</div><div class="cashflow-detail">'+fmtMoney(netMonthlyCashFlow*12)+' per year &middot; Total investment: '+fmtMoney(totalInvestment)+'</div><div style="font-size:10px;color:var(--text-dim);margin-top:4px">'+investBreakdown+'</div></div></div>';
 
   // WEALTH ENGINE
-  document.getElementById('rptWealth').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Your 10-Year Wealth Engine</div><div class="rpt-section-intro">Investment real estate builds wealth three ways simultaneously. Here\'s how each engine contributes to your total return.</div><div class="wealth-grid"><div class="wealth-card"><div class="wealth-card-icon">💰</div><div class="wealth-card-label">Net Rental Income</div><div class="wealth-card-value">'+fmtMoney(cumCashFlow)+'</div><div class="wealth-card-detail">10 years of cash flow<br>rent growing at '+rentIncrease+'%/year</div></div><div class="wealth-card"><div class="wealth-card-icon">📈</div><div class="wealth-card-label">Appreciation Gain</div><div class="wealth-card-value">'+fmtMoney(apprGain)+'</div><div class="wealth-card-detail">Home value growth<br>at '+apprRate.toFixed(2)+'% annually</div></div><div class="wealth-card"><div class="wealth-card-icon">🏦</div><div class="wealth-card-label">Equity Buildup</div><div class="wealth-card-value">'+fmtMoney(equityBuildup)+'</div><div class="wealth-card-detail">Principal paid down<br>by your tenant\'s rent</div></div></div><div class="wealth-total"><div class="wealth-total-card revenue"><div class="wealth-total-label">Gross Revenue</div><div class="wealth-total-value">'+fmtMoney(grossRevenue)+'</div><div class="wealth-total-detail">income + appreciation</div></div><div class="wealth-total-card profit"><div class="wealth-total-label">Net Profit</div><div class="wealth-total-value">'+fmtMoney(totalProfit)+'</div><div class="wealth-total-detail">after expenses &amp; selling costs</div></div><div class="wealth-total-card roi"><div class="wealth-total-label">Total ROI</div><div class="wealth-total-value">'+Math.round(totalROI)+'%</div><div class="wealth-total-detail">on '+fmtMoney(totalInvestment)+' invested</div></div></div></div>';
+  var svgCashFlow='<svg viewBox="0 0 32 32" fill="none" stroke="#5ebc8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><path d="M16 10v12M12 14c0-1.7 1.8-3 4-3s4 1.3 4 3-1.8 3-4 3-4 1.3-4 3 1.8 3 4 3 4-1.3 4-3"/></svg>';
+  var svgAppreciation='<svg viewBox="0 0 32 32" fill="none" stroke="#baa370" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 24 12 14 18 18 28 6"/><polyline points="22 6 28 6 28 12"/></svg>';
+  var svgEquity='<svg viewBox="0 0 32 32" fill="none" stroke="#6ba3d6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="20" height="14" rx="2"/><path d="M16 4l10 10H6z"/><rect x="13" y="20" width="6" height="8"/></svg>';
+
+  document.getElementById('rptWealth').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Your 10-Year Wealth Engine</div><div class="rpt-section-intro">Investment real estate builds wealth three ways simultaneously. Here\'s how each engine contributes to your total return.</div><div class="wealth-grid"><div class="wealth-card"><div class="wealth-card-icon">'+svgCashFlow+'</div><div class="wealth-card-label">Net Rental Income</div><div class="wealth-card-value">'+fmtMoney(cumCashFlow)+'</div><div class="wealth-card-detail">10 years of cash flow<br>rent growing at '+rentIncrease+'%/year</div></div><div class="wealth-card"><div class="wealth-card-icon">'+svgAppreciation+'</div><div class="wealth-card-label">Appreciation Gain</div><div class="wealth-card-value">'+fmtMoney(apprGain)+'</div><div class="wealth-card-detail">Home value growth<br>at '+apprRate.toFixed(2)+'% annually</div></div><div class="wealth-card"><div class="wealth-card-icon">'+svgEquity+'</div><div class="wealth-card-label">Equity Buildup</div><div class="wealth-card-value">'+fmtMoney(equityBuildup)+'</div><div class="wealth-card-detail">Principal paid down<br>by your tenant\'s rent</div></div></div><div class="wealth-total"><div class="wealth-total-card revenue"><div class="wealth-total-label">Gross Revenue</div><div class="wealth-total-value">'+fmtMoney(grossRevenue)+'</div><div class="wealth-total-detail">income + appreciation</div></div><div class="wealth-total-card profit"><div class="wealth-total-label">Net Profit</div><div class="wealth-total-value">'+fmtMoney(totalProfit)+'</div><div class="wealth-total-detail">after expenses &amp; selling costs</div></div><div class="wealth-total-card roi"><div class="wealth-total-label">Total ROI</div><div class="wealth-total-value">'+Math.round(totalROI)+'%</div><div class="wealth-total-detail">on '+fmtMoney(totalInvestment)+' invested</div></div></div></div>';
 
   // TABLE
   var trows='';years.forEach(function(d){trows+='<tr><td>Year '+d.year+'</td><td>'+fmtMoney(d.rent)+'</td><td>'+fmtMoney(d.expenses)+'</td><td class="'+(d.net>=0?'green':'red')+'">'+(d.net>=0?'+':'')+fmtMoney(d.net)+'</td><td>'+fmtMoney(d.propVal)+'</td><td class="green">+'+fmtMoney(d.cumCash)+'</td></tr>'});
-  document.getElementById('rptTable').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Year-by-Year Projection</div><table class="rpt-table"><thead><tr><th>Year</th><th>Rental Income</th><th>Total Expenses</th><th>Net Cash Flow</th><th>Property Value</th><th>Cumulative Cash</th></tr></thead><tbody>'+trows+'</tbody></table></div>';
+  document.getElementById('rptTable').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Year-by-Year Projection</div><table class="rpt-table"><thead><tr><th>Year</th><th>Effective Income</th><th>Total Expenses</th><th>Net Cash Flow</th><th>Property Value</th><th>Cumulative Cash</th></tr></thead><tbody>'+trows+'</tbody></table></div>';
 
   // CHART
   document.getElementById('rptChart').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Cash Flow Over Time</div><div class="rpt-section-intro">Watch your cash flow grow as rents increase while your mortgage stays fixed.</div><div class="chart-area"><canvas id="cashChart"></canvas></div></div>';
