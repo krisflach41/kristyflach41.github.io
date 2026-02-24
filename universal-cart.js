@@ -178,7 +178,7 @@ class UniversalCart {
       buyrent: 'Rent to Wealth',
       costwaiting: 'Your Wealth Starts Now',
       appreciation: 'Wealth in Motion',
-      investment: 'Investment Property',
+      investment: 'Owner to Investor',
       amortization: 'Payoff Accelerator',
       reportcard: 'Neighborhood Blueprint'
     };
