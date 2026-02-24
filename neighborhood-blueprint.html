@@ -927,7 +927,18 @@ function renderSupply(d) {
     cards.push({ val: fmtNum(d.housingSupply.totalUnits), lbl: 'Total Housing Units' });
     cards.push({ val: fmtNum(d.housingSupply.vacant), lbl: 'Vacant Units', note: d.housingSupply.vacancyRate + '% vacancy' });
   }
-  if (d.medianDom != null) cards.push({ val: d.medianDom + ' days', lbl: 'Median DOM', note: 'Days on market' });
+  if (d.medianDom != null) {
+    var domNote = d.medianDomSource || 'Days on market';
+    if (d.medianDomDate) {
+      var parts = d.medianDomDate.split('-');
+      var months = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      domNote = months[parseInt(parts[1])] + ' ' + parts[0];
+      if (d.medianDomYoyChange != null) {
+        domNote += ' · ' + (d.medianDomYoyChange > 0 ? '+' : '') + d.medianDomYoyChange + ' days YoY';
+      }
+    }
+    cards.push({ val: d.medianDom + ' days', lbl: 'Median Days on Market', note: domNote });
+  }
   if (d.medianListPrice) cards.push({ val: fmtMoney(d.medianListPrice), lbl: 'Median List Price' });
   cards.push({ val: fmtMoney(d.medianRent), lbl: 'Median Rent', note: '/month (Census)' });
 
