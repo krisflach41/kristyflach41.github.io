@@ -176,7 +176,7 @@ class UniversalCart {
     const names = {
       bid: 'Worth the Premium',
       buyrent: 'Rent to Wealth',
-      costwaiting: 'Cost of Waiting',
+      costwaiting: 'Your Wealth Starts Now',
       appreciation: 'Appreciation',
       investment: 'Investment Property',
       amortization: 'Mortgage Amortization',
