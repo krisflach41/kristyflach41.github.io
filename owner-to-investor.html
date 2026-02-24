@@ -5,10 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Owner to Investor</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#07090e;--surface:#0d1117;--surface-raised:#131920;--border:rgba(255,255,255,0.05);--border-gold:rgba(186,163,112,0.18);--gold:#baa370;--gold-dim:rgba(186,163,112,0.4);--green:#5ebc8a;--red:#d97373;--blue:#6ba3d6;--blue-btn:#3b82f6;--text:#e8e4dc;--text-mid:rgba(232,228,220,0.72);--text-dim:rgba(232,228,220,0.42);--text-faint:rgba(232,228,220,0.15)}
+:root{
+  --bg:#05080d;--surface:#0a0e16;--surface-raised:#0e1420;--surface-accent:#111828;
+  --border:rgba(255,255,255,0.05);--border-accent:rgba(186,163,112,0.12);
+  --gold:#c4ad7a;--gold-bright:#d4c08a;--gold-soft:rgba(196,173,122,0.5);--gold-glow:rgba(196,173,122,0.08);
+  --green:#72d49a;--green-soft:rgba(114,212,154,0.12);
+  --red:#d47272;--red-soft:rgba(212,114,114,0.1);
+  --blue-btn:#3b82f6;
+  --text:#e2ded4;--text-mid:rgba(226,222,212,0.6);--text-dim:rgba(226,222,212,0.3);--text-ghost:rgba(226,222,212,0.12);
+}
 body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Generator Panel (preserved) ── */
 .generator-panel{max-width:580px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
 .gen-title{font-size:18px;font-weight:700;margin-bottom:4px}.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
 .gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -36,108 +47,118 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .advanced-fields.open{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .layout-picker-box{flex:1;border:2px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;cursor:pointer;transition:0.2s}
 .layout-picker-box:hover{border-color:rgba(59,130,246,0.3)}.layout-picker-box.selected{border-color:rgba(59,130,246,0.6);background:rgba(59,130,246,0.08)}
-.report-container{display:none;max-width:1060px;margin:20px auto}
+
+/* ── Report Container & Nav ── */
+.report-container{display:none;max-width:1000px;margin:20px auto}
 .report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
 .report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
 .report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
 .report-nav button.primary{background:var(--blue-btn);border-color:var(--blue-btn);color:#fff}
-.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-gold)}
-.rpt-hero{padding:52px 64px 48px;border-bottom:1px solid var(--border);position:relative}
-.rpt-hero::after{content:'';position:absolute;bottom:0;left:64px;right:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
-.rpt-hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
-.rpt-hero-subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px;letter-spacing:0.5px}
-.rpt-hero-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text-mid);line-height:1.35;margin-bottom:6px}
-.rpt-hero-sub{font-size:13px;color:var(--text-dim);margin-bottom:20px}
-.rpt-hero-punchline{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:10px;line-height:1.3}
-.rpt-hero-headline{font-size:15px;color:var(--text-mid);line-height:1.6;max-width:820px}
-.rpt-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
-.rpt-kpi{padding:22px 24px;border-right:1px solid var(--border);text-align:center}.rpt-kpi:last-child{border-right:none}
-.rpt-kpi-label{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
-.rpt-kpi-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700}.rpt-kpi-value.green{color:var(--green)}.rpt-kpi-value.gold{color:var(--gold)}.rpt-kpi-value.red{color:var(--red)}
-.rpt-kpi-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
-.rpt-section{padding:40px 64px;border-bottom:1px solid var(--border)}
-.rpt-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;position:relative;padding-bottom:16px}
-.rpt-section-title::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-dim));border-radius:1px}
-.rpt-section-intro{font-size:13px;color:var(--text-mid);line-height:1.65;margin-top:14px;max-width:780px}
-.monthly-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px}
-.monthly-col{background:var(--surface-raised);border-radius:10px;padding:24px;border:1px solid var(--border)}
-.monthly-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.monthly-col-title.income{color:var(--green)}.monthly-col-title.expense{color:var(--red)}
-.monthly-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:13px}
-.monthly-row-label{color:var(--text-mid)}.monthly-row-value{font-weight:600;font-variant-numeric:tabular-nums}
-.monthly-row-value.green{color:var(--green)}.monthly-row-value.red{color:rgba(217,115,115,0.8)}
-.monthly-divider{height:1px;background:var(--border);margin:10px 0}
-.monthly-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 0;font-size:14px;font-weight:700}
-.monthly-total .green{color:var(--green)}.monthly-total .red{color:var(--red)}
-.cashflow-result{margin-top:24px;text-align:center;padding:28px;border-radius:10px}
-.cashflow-result.positive{background:linear-gradient(135deg,rgba(94,188,138,0.06) 0%,rgba(94,188,138,0.02) 100%);border:1px solid rgba(94,188,138,0.12)}
-.cashflow-result.negative{background:linear-gradient(135deg,rgba(217,115,115,0.06) 0%,rgba(217,115,115,0.02) 100%);border:1px solid rgba(217,115,115,0.12)}
-.cashflow-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px}
-.cashflow-value{font-family:'Playfair Display',serif;font-size:32px;font-weight:700}
-.cashflow-value.green{color:var(--green)}.cashflow-value.red{color:var(--red)}
-.cashflow-detail{font-size:11px;color:var(--text-dim);margin-top:4px}
-.wealth-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
-.wealth-card{text-align:center;padding:24px 16px;border-radius:10px;background:var(--surface-raised);border:1px solid var(--border)}
-.wealth-card-icon{margin-bottom:10px;display:flex;justify-content:center}
-.wealth-card-icon svg{width:32px;height:32px}
-.wealth-card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:8px}
-.wealth-card-value{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--green)}
-.wealth-card-detail{font-size:10px;color:var(--text-dim);margin-top:6px;line-height:1.4}
-.wealth-total{margin-top:20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-.wealth-total-card{text-align:center;padding:20px;border-radius:10px}
-.wealth-total-card.revenue{background:rgba(94,188,138,0.04);border:1px solid rgba(94,188,138,0.1)}
-.wealth-total-card.profit{background:rgba(186,163,112,0.06);border:1px solid rgba(186,163,112,0.12)}
-.wealth-total-card.roi{background:linear-gradient(135deg,rgba(186,163,112,0.08) 0%,rgba(94,188,138,0.06) 100%);border:1px solid rgba(186,163,112,0.15)}
-.wealth-total-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:6px}
-.wealth-total-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700}
-.wealth-total-card.revenue .wealth-total-value{color:var(--green)}
-.wealth-total-card.profit .wealth-total-value{color:var(--gold)}
-.wealth-total-card.roi .wealth-total-value{color:var(--gold)}
-.wealth-total-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
-.rpt-table{width:100%;border-collapse:collapse;margin-top:20px}
-.rpt-table thead th{padding:10px 12px;text-align:left;font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-gold);background:var(--surface-raised)}
-.rpt-table thead th:not(:first-child){text-align:right}
-.rpt-table tbody td{padding:10px 12px;font-size:12px;color:var(--text-mid);border-bottom:1px solid var(--border)}
-.rpt-table tbody td:first-child{font-weight:600;color:var(--text)}
-.rpt-table tbody td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
-.rpt-table tbody tr:hover{background:rgba(255,255,255,0.02)}
-.rpt-table tbody td.green{color:var(--green);font-weight:600}.rpt-table tbody td.red{color:var(--red);font-weight:600}
-.chart-area{width:100%;height:340px;margin-top:24px}
-.yr-timeline{margin-top:28px}
-.yr-row{display:grid;grid-template-columns:60px 1fr;gap:0;position:relative}
-.yr-marker{display:flex;flex-direction:column;align-items:center;padding-top:20px;position:relative}
-.yr-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--gold);background:var(--surface);z-index:1}
-.yr-dot.green{border-color:var(--green)}
-.yr-dot.red{border-color:var(--red)}
-.yr-line{width:1px;flex:1;background:linear-gradient(180deg,var(--border-gold),var(--border))}
-.yr-row:last-child .yr-line{display:none}
-.yr-label{font-size:10px;font-weight:700;color:var(--text-dim);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
-.yr-card{background:var(--surface-raised);border:1px solid var(--border);border-radius:10px;padding:18px 24px;margin-bottom:12px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px;transition:border-color 0.2s}
-.yr-card:hover{border-color:var(--border-gold)}
-.yr-card.milestone{border-color:var(--border-gold);background:linear-gradient(135deg,rgba(186,163,112,0.04) 0%,var(--surface-raised) 100%)}
-.yr-metric{display:flex;flex-direction:column;gap:2px}
-.yr-metric-label{font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px}
-.yr-metric-value{font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
-.yr-metric-value.green{color:var(--green)}.yr-metric-value.red{color:var(--red)}.yr-metric-value.gold{color:var(--gold)}
-.yr-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
-.yr-summary-card{text-align:center;padding:20px;border-radius:10px;background:linear-gradient(135deg,rgba(186,163,112,0.06) 0%,rgba(186,163,112,0.02) 100%);border:1px solid var(--border-gold)}
-.yr-summary-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:6px}
-.yr-summary-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold)}
-.yr-summary-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
-.chart-legend{display:flex;gap:24px;justify-content:center;margin-top:16px}
-.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-dim)}
-.chart-legend-dot{width:10px;height:10px;border-radius:2px}
-.supercharge{padding:32px 64px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(186,163,112,0.05) 0%,rgba(186,163,112,0.01) 100%)}
-.supercharge-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:12px}
-.supercharge-text{font-size:14px;color:var(--text-mid);line-height:1.7;max-width:780px}.supercharge-text strong{color:var(--text);font-weight:600}
-.philosophy-block{padding:32px 64px;border-bottom:1px solid var(--border);background:var(--surface-raised)}
-.philosophy-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--gold);margin-bottom:10px}
-.philosophy-text{font-size:13px;color:var(--text-mid);line-height:1.7;max-width:780px}
-.rpt-footer{background:var(--surface-raised);padding:28px 64px;border-top:1px solid var(--border)}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden}
+
+/* ═══════════════════════════════ */
+/* HERO                           */
+/* ═══════════════════════════════ */
+.hero{padding:72px 80px 64px;position:relative;background:linear-gradient(170deg,rgba(196,173,122,0.03) 0%,transparent 40%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--border-accent) 30%,var(--border-accent) 70%,transparent 95%)}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:40px}
+.hero-address{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:500;color:var(--text);line-height:1.2;margin-bottom:6px}
+.hero-meta{font-size:12px;color:var(--text-dim);margin-bottom:48px;letter-spacing:0.3px}
+.hero-verdict{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start}
+.verdict-number{text-align:right;padding-right:48px;border-right:1px solid var(--border-accent)}
+.verdict-amount{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:var(--gold-bright);line-height:1;letter-spacing:-1px}
+.verdict-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:8px}
+.verdict-thesis{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text-mid);line-height:1.7;padding-top:6px}
+.verdict-thesis strong{color:var(--text);font-weight:500}
+.verdict-thesis em{color:var(--gold);font-style:normal;font-weight:500}
+
+/* ═══════════════════════════════ */
+/* ASSUMPTIONS BAR                */
+/* ═══════════════════════════════ */
+.assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
+.assumption-item:first-child{padding-left:0}
+.assumption-item:last-child{border-right:none;padding-right:0}
+.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+
+/* ═══════════════════════════════ */
+/* SECTION SHARED                 */
+/* ═══════════════════════════════ */
+.rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:36px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:600px}
+
+/* ═══════════════════════════════ */
+/* MONTHLY ECONOMICS              */
+/* ═══════════════════════════════ */
+.monthly-layout{display:grid;grid-template-columns:1fr 200px;gap:0}
+.monthly-breakdown{padding-right:56px;border-right:1px solid var(--border)}
+.monthly-result{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:56px}
+.econ-group-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:24px}
+.econ-group-label:first-child{margin-top:0}
+.econ-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px}
+.econ-label{color:var(--text-mid)}.econ-value{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.econ-indent{padding-left:16px}.econ-indent .econ-label{font-size:12px;color:var(--text-dim)}.econ-indent .econ-value{font-size:12px;color:var(--text-dim)}
+.econ-line{height:1px;background:var(--border);margin:6px 0}.econ-line.gold{background:var(--border-accent);margin:10px 0}
+.econ-total .econ-label{font-weight:600;color:var(--text)}
+.result-big-number{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1}
+.result-big-number.positive{color:var(--green)}.result-big-number.negative{color:var(--red)}
+.result-big-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:10px;text-align:center}
+.result-big-detail{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:center}
+
+/* ═══════════════════════════════ */
+/* 10-YEAR TABLE                  */
+/* ═══════════════════════════════ */
+.projection-table{width:100%;border-collapse:collapse}
+.projection-table thead th{padding:12px 14px;text-align:right;font-size:8px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border-accent)}
+.projection-table thead th:first-child{text-align:left;padding-left:0}
+.projection-table tbody td{padding:11px 14px;font-size:13px;color:var(--text-mid);text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid rgba(255,255,255,0.02)}
+.projection-table tbody td:first-child{text-align:left;padding-left:0;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--text-dim)}
+.projection-table tbody tr:hover{background:rgba(255,255,255,0.015)}
+.projection-table tbody tr.yr-highlight{background:var(--gold-glow)}
+.projection-table tbody tr.yr-highlight td:first-child{color:var(--gold)}
+.projection-table tbody tr.yr-highlight td{border-bottom:1px solid var(--border-accent)}
+td.pos{color:var(--green)}td.neg{color:var(--red)}td.gold{color:var(--gold)}td.strong{font-weight:600}
+
+/* ═══════════════════════════════ */
+/* CHART                          */
+/* ═══════════════════════════════ */
+.chart-section{padding:56px 0 48px;border-bottom:1px solid var(--border)}
+.chart-section .section-head{padding:0 80px;margin-bottom:32px}
+.chart-wrap{width:100%;height:380px;padding:0 40px;position:relative}
+.chart-wrap canvas{width:100%!important;height:100%!important}
+.chart-key{display:flex;gap:32px;justify-content:center;margin-top:20px;padding:0 80px}
+.chart-key-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-dim)}
+.key-line{width:20px;height:2px;border-radius:1px}
+.key-line.dashed{background:repeating-linear-gradient(90deg,var(--red) 0,var(--red) 4px,transparent 4px,transparent 8px)}
+
+/* ═══════════════════════════════ */
+/* EXIT ANALYSIS                  */
+/* ═══════════════════════════════ */
+.exit-layout{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.exit-col:first-child{padding-right:48px;border-right:1px solid var(--border)}
+.exit-col:last-child{padding-left:48px}
+.exit-col-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px}
+
+/* ═══════════════════════════════ */
+/* BOTTOM LINE                    */
+/* ═══════════════════════════════ */
+.bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
+.bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
+.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
+.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+
+/* ═══════════════════════════════ */
+/* FOOTER                         */
+/* ═══════════════════════════════ */
+.rpt-footer{background:var(--surface-raised);padding:28px 80px;border-top:1px solid var(--border)}
 .footer-standard{display:flex;justify-content:space-between;align-items:center;gap:30px}
 .footer-your-info{display:flex;align-items:center;gap:16px;flex:1}
-.footer-headshot{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--border-gold);flex-shrink:0}
-.footer-initials{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border-gold);color:var(--gold);font-family:'Playfair Display',serif;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.footer-headshot{width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--border-accent);flex-shrink:0}
+.footer-initials{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border-accent);color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .footer-details{line-height:1.5}.footer-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
 .footer-credentials{font-size:10px;color:var(--text-dim);line-height:1.5}
 .footer-logos{display:flex;gap:15px;align-items:center;flex-shrink:0}.footer-logo{height:45px;width:auto;object-fit:contain}
@@ -147,35 +168,59 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .footer-company-bar{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
 .footer-company-bar .footer-company-name{font-size:10px;font-weight:600;color:var(--text-mid)}
 .footer-company-bar .footer-company-sub{font-size:9px;color:var(--text-dim)}
-.rpt-disclosures{background:var(--bg);padding:14px 64px;font-size:7.5px;color:var(--text-faint);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1060px;margin:0 auto}
+.footer-right{text-align:right}
+.footer-company{font-size:10px;font-weight:600;color:var(--text-dim)}
+.footer-license{font-size:8px;color:var(--text-ghost);margin-top:2px}
+.rpt-disclosures{background:var(--bg);padding:14px 80px;font-size:7.5px;color:var(--text-ghost);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
 .rpt-disc-logos{display:flex;justify-content:center;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.03)}
-.rpt-disc-logos span{font-size:8px;font-weight:700;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase}
-@media print{body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.generator-panel,.report-nav{display:none!important}.report-container{display:block!important;margin:0;max-width:100%}.rpt-hero{padding:24px 40px 20px}.rpt-section,.supercharge,.philosophy-block{padding:20px 40px}.rpt-kpi{padding:14px 16px}.rpt-kpi-value{font-size:16px}.rpt-footer{padding:18px 40px}.rpt-disclosures{padding:8px 40px 12px}.report-page,.rpt-footer,.rpt-disclosures,.supercharge,.philosophy-block{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{margin:0.25in;size:letter}}
+.rpt-disc-logos span{font-size:8px;font-weight:700;color:var(--text-ghost);letter-spacing:1px;text-transform:uppercase}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%}
+  .hero{padding:40px 48px 32px}
+  .rpt-section,.chart-section{padding:28px 48px}
+  .chart-section .section-head{padding:0}
+  .chart-wrap{padding:0;height:280px}
+  .chart-key{padding:0}
+  .assumptions-bar{padding:16px 48px}
+  .bottom-line .bl-cell{padding:24px 20px}
+  .bl-value{font-size:32px}
+  .rpt-footer{padding:18px 48px}
+  .rpt-disclosures{padding:8px 48px 12px}
+  .report-page,.rpt-footer,.rpt-disclosures,.bottom-line,.assumptions-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
 </style>
 <script src="tracking.js"></script><script src="feature-gate.js"></script>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- GENERATOR PANEL                           -->
+<!-- ══════════════════════════════════════════ -->
 <div class="generator-panel" id="generatorPanel">
   <div class="gen-title">Owner to Investor</div>
   <div class="gen-sub">Increasing Your Financial Freedom &mdash; full investment property analysis with cash flow, ROI, and 10-year projections</div>
   <div class="gen-grid">
     <div class="gen-section">Client Info</div>
-    <div class="gen-field full"><label>Client Name</label><input type="text" id="inp_clientName" placeholder="Mike Investor"></div>
+    <div class="gen-field full"><label>Client Name</label><input type="text" id="inp_clientName" placeholder="Client Name"></div>
     <div class="gen-section">Property Details</div>
-    <div class="gen-field full"><label>Property Address or ZIP Code</label><input type="text" id="inp_address" placeholder="123 Main St, Anytown, OH 45001"></div>
-    <div class="gen-field"><label>Purchase Price</label><input type="text" id="inp_price" placeholder="359,900" oninput="formatCurrency(this)"></div>
+    <div class="gen-field full"><label>Property Address or ZIP Code</label><input type="text" id="inp_address" placeholder="Property Address or ZIP Code"></div>
+    <div class="gen-field"><label>Purchase Price</label><input type="text" id="inp_price" placeholder="Purchase Price" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Down Payment %</label><input type="number" id="inp_downPct" value="20" min="0" max="100" step="0.5"></div>
     <div class="gen-section">Loan Details</div>
     <div class="gen-field"><label>Interest Rate %</label><input type="number" id="inp_rate" value="7.25" min="0" max="15" step="0.125"></div>
     <div class="gen-field"><label>Loan Term (Years)</label><input type="number" id="inp_term" value="30" min="10" max="30" step="5"></div>
-    <div class="gen-field"><label>Closing Costs</label><input type="text" id="inp_closing" placeholder="8,000" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Closing Costs</label><input type="text" id="inp_closing" placeholder="0" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Monthly PMI (if applicable)</label><input type="text" id="inp_pmi" placeholder="0" oninput="formatCurrency(this)"></div>
     <div class="gen-section">Rental Income</div>
-    <div class="gen-field"><label>Expected Monthly Rent</label><input type="text" id="inp_rent" placeholder="2,100" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Expected Monthly Rent</label><input type="text" id="inp_rent" placeholder="Expected Monthly Rent" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Annual Rent Increase %</label><input type="number" id="inp_rentIncrease" value="3" min="0" max="10" step="0.5"></div>
     <div class="gen-section">Expenses</div>
-    <div class="gen-field"><label>Annual Property Tax</label><input type="text" id="inp_tax" placeholder="3,576" oninput="formatCurrency(this)"></div>
-    <div class="gen-field"><label>Monthly Insurance</label><input type="text" id="inp_insurance" placeholder="125" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Annual Property Tax</label><input type="text" id="inp_tax" placeholder="Annual Property Tax" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Monthly Insurance</label><input type="text" id="inp_insurance" placeholder="Monthly Insurance" oninput="formatCurrency(this)"></div>
 
     <div class="advanced-toggle" id="advToggle" onclick="toggleAdvanced()"><span class="arrow">&#9654;</span>&nbsp; Advanced Options (smart defaults applied)</div>
     <div class="advanced-fields" id="advFields">
@@ -199,16 +244,31 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="gen-loading" id="genLoading"><span class="spinner"></span>Fetching live market data...</div>
   <div class="gen-actions"><button class="gen-btn primary" id="genBtn" onclick="generateReport()">Generate Report</button></div>
 </div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- REPORT OUTPUT                             -->
+<!-- ══════════════════════════════════════════ -->
 <div class="report-container" id="reportContainer">
   <div class="report-nav"><a href="mission-control.html#reports">&larr; Partner Portal</a><button onclick="editReport()">&#9998; Edit Report</button><button class="primary" onclick="window.print()">&#128196; Export PDF</button></div>
   <div class="report-page" id="reportPage">
-    <div id="rptHero"></div><div id="rptKpi"></div><div id="rptMonthly"></div><div id="rptWealth"></div><div id="rptTable"></div><div id="rptChart"></div><div id="rptSupercharge"></div><div id="rptPhilosophy"></div><div id="rptFooter" class="rpt-footer"></div><div id="rptDisc" class="rpt-disclosures"></div>
+    <div id="rptHero"></div>
+    <div id="rptAssumptions"></div>
+    <div id="rptMonthly"></div>
+    <div id="rptTable"></div>
+    <div id="rptChart"></div>
+    <div id="rptExit"></div>
+    <div id="rptBottomLine"></div>
+    <div id="rptFooter" class="rpt-footer"></div>
+    <div id="rptDisc" class="rpt-disclosures"></div>
   </div>
 </div>
+
 <script>
+/* ── Utilities ── */
 function formatCurrency(el){var v=el.value.replace(/[^0-9]/g,'');if(v)el.value=parseInt(v).toLocaleString()}
 function parseCurrency(s){return parseFloat((s||'0').replace(/[^0-9.]/g,''))||0}
-function fmtMoney(n){return (n<0?'-':'')+('$'+Math.abs(Math.round(n)).toLocaleString())}
+function fmtMoney(n){return (n<0?'−':'')+('$'+Math.abs(Math.round(n)).toLocaleString())}
+function fmtK(n){return (n<0?'−':'')+'$'+Math.abs(Math.round(n/1000)).toLocaleString()+'k'}
 function toggleCobrand(){document.getElementById('cobrandFields').style.display=document.getElementById('inp_cobrand').checked?'block':'none'}
 var cobrandLayout='left';
 function pickLayout(s){cobrandLayout=s;document.getElementById('layoutLeft').classList.toggle('selected',s==='left');document.getElementById('layoutRight').classList.toggle('selected',s==='right')}
@@ -227,6 +287,9 @@ function calcRemainingBalance(principal,annualRate,termYears,afterYears){
   return principal*Math.pow(1+r,p)-pmt*(Math.pow(1+r,p)-1)/r;
 }
 
+/* ══════════════════════════════════════════ */
+/* GENERATE REPORT                           */
+/* ══════════════════════════════════════════ */
 async function generateReport(){
   hideError();
   var clientName=document.getElementById('inp_clientName').value.trim()||'Valued Client';
@@ -262,7 +325,7 @@ async function generateReport(){
   var apprRate=3.5,stateName='',displayAddress=addressInput;
   if(apiData){if(apiData.appreciation)apprRate=apiData.appreciation.oneYear||apiData.appreciation.fiveYear||apiData.appreciation.forecastAnnualRate||3.5;if(apiData.location){stateName=apiData.location.stateName||apiData.location.state||'';if(apiData.location.formattedAddress)displayAddress=apiData.location.formattedAddress}}
 
-  // Core calcs
+  // ── Core calcs ──
   var downAmt=price*downPct/100;
   var loanAmt=price-downAmt;
   var monthlyPI=calcMortgage(loanAmt,rate,term);
@@ -275,13 +338,14 @@ async function generateReport(){
   var netMonthlyCashFlow=effectiveRent-totalMonthlyExpense;
   var totalInvestment=downAmt+closingCosts+renovation;
 
-  // NOI and cap rate (year 1, no financing)
+  // NOI and cap rate
   var annualNOI=(monthlyRent*12)-(annualTax+(monthlyInsurance*12)+(monthlyMaint*12)+(monthlyVacancy*12)+(monthlyMgmt*12)+(monthlyHoa*12));
   var capRate=price>0?(annualNOI/price*100):0;
   var cashOnCash=totalInvestment>0?((netMonthlyCashFlow*12)/totalInvestment*100):0;
 
-  // 10-year projection
+  // ── 10-year projection ──
   var years=[];var cumCashFlow=0;var cumRentalIncome=0;var cumExpenses=0;
+  var cumPI=0,cumTax=0,cumIns=0,cumMaint=0,cumHoa=0,cumPmi=0;
   for(var y=1;y<=10;y++){
     var rentY=monthlyRent*Math.pow(1+rentIncrease/100,y-1)*12;
     var vacY=rentY*vacancyPct/100;
@@ -296,6 +360,7 @@ async function generateReport(){
     var totalExpY=piY+taxY+insY+maintY+hoaY+pmiY;
     var netY=effectiveRentY-totalExpY;
     cumCashFlow+=netY;cumRentalIncome+=effectiveRentY;cumExpenses+=totalExpY;
+    cumPI+=piY;cumTax+=taxY;cumIns+=insY;cumMaint+=maintY;cumHoa+=hoaY;cumPmi+=pmiY;
     var propVal=price*Math.pow(1+apprRate/100,y);
     years.push({year:y,rent:Math.round(effectiveRentY),expenses:Math.round(totalExpY),net:Math.round(netY),cumCash:Math.round(cumCashFlow),propVal:Math.round(propVal)});
   }
@@ -304,187 +369,281 @@ async function generateReport(){
   var apprGain=yr10Val-price;
   var remainBal=calcRemainingBalance(loanAmt,rate,term,10);
   var equityBuildup=loanAmt-remainBal;
-  var grossRevenue=cumRentalIncome+apprGain;
   var sellCosts=yr10Val*sellCostPct/100;
+  var netSaleProceeds=yr10Val-remainBal-sellCosts;
   var totalProfit=cumCashFlow+apprGain+equityBuildup-sellCosts;
   var totalROI=totalInvestment>0?(totalProfit/totalInvestment*100):0;
-  var avgAnnualROI=Math.pow(1+totalROI/100,1/10)*100-100;
+  var avgAnnualROI=totalROI>-100?Math.pow(1+totalROI/100,1/10)*100-100:0;
 
   var today=new Date();var dateStr=today.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
 
-  // HERO
-  document.getElementById('rptHero').innerHTML='<div class="rpt-hero"><div class="rpt-hero-label">Owner to Investor</div><div class="rpt-hero-subtitle">Increasing Your Financial Freedom</div><div class="rpt-hero-title">'+displayAddress+'</div><div class="rpt-hero-sub">Prepared for '+clientName+' &middot; '+dateStr+'</div><div class="rpt-hero-punchline">This property could generate '+fmtMoney(totalProfit)+' in total profit over 10 years.</div><div class="rpt-hero-headline">That\'s a '+Math.round(totalROI)+'% return on your '+fmtMoney(totalInvestment)+' total investment &mdash; combining rental income, appreciation, and equity buildup.</div></div>';
+  // ── Smart Thesis ──
+  var thesis='';
+  var profitK=Math.round(totalProfit/1000);
+  var cfPositiveYear=0;
+  for(var i=0;i<years.length;i++){if(years[i].net>=0){cfPositiveYear=years[i].year;break}}
 
-  // KPI
-  var cfClass=netMonthlyCashFlow>=0?'green':'red';
-  document.getElementById('rptKpi').innerHTML='<div class="rpt-kpi-strip"><div class="rpt-kpi"><div class="rpt-kpi-label">Monthly Cash Flow</div><div class="rpt-kpi-value '+cfClass+'">'+(netMonthlyCashFlow>=0?'+':'')+fmtMoney(netMonthlyCashFlow)+'</div><div class="rpt-kpi-detail">after all expenses</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Cash-on-Cash Return</div><div class="rpt-kpi-value '+(cashOnCash>=0?'green':'red')+'">'+cashOnCash.toFixed(1)+'%</div><div class="rpt-kpi-detail">Year 1</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Cap Rate</div><div class="rpt-kpi-value gold">'+capRate.toFixed(1)+'%</div><div class="rpt-kpi-detail">net operating income / price</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">10-Year Total ROI</div><div class="rpt-kpi-value gold">'+Math.round(totalROI)+'%</div><div class="rpt-kpi-detail">'+avgAnnualROI.toFixed(1)+'% avg annual</div></div></div>';
+  if(netMonthlyCashFlow>=0){
+    // Scenario 1: Positive from day one
+    thesis='This property returns <em>'+Math.round(totalROI)+'% on invested capital</em> over a 10-year hold, with <strong>positive cash flow from month one</strong>. Your tenants pay down '+fmtMoney(equityBuildup)+' in principal while the asset appreciates '+fmtMoney(apprGain)+'. For every dollar you deploy, you get back $'+(totalROI/100+1).toFixed(2)+'.';
+  } else if(cfPositiveYear>0){
+    // Scenario 2: Negative early, turns positive
+    thesis='This property operates at a modest monthly deficit of '+fmtMoney(netMonthlyCashFlow)+' in year one, but <strong>rising rents overtake fixed costs by year '+cfPositiveYear+'</strong>. Over a 10-year hold, total profit reaches <em>'+fmtMoney(totalProfit)+'</em> &mdash; a '+Math.round(totalROI)+'% return on your invested capital.';
+  } else if(totalProfit>0){
+    // Scenario 3: Never cash flow positive, but appreciation carries it
+    thesis='This property requires '+fmtMoney(Math.abs(netMonthlyCashFlow))+'/month in carrying costs above rental income. That\'s the price of admission. The payoff: <em>'+fmtMoney(apprGain)+'</em> in appreciation and '+fmtMoney(equityBuildup)+' in tenant-paid equity over 10 years. Net profit after all costs: <strong>'+fmtMoney(totalProfit)+'</strong>.';
+  } else {
+    // Scenario 4: Doesn't pencil
+    thesis='At current assumptions, this property returns '+Math.round(totalROI)+'% over 10 years. <strong>The numbers improve meaningfully</strong> if purchase price decreases, rents increase, or interest rates come down. Adjust assumptions above to find the breakeven point.';
+  }
 
-  // MONTHLY SNAPSHOT
-  var incRows='';
-  incRows+='<div class="monthly-row"><span class="monthly-row-label">Gross Monthly Rent</span><span class="monthly-row-value green">'+fmtMoney(monthlyRent)+'</span></div>';
-  incRows+='<div class="monthly-row"><span class="monthly-row-label">Vacancy Reserve ('+vacancyPct+'%)</span><span class="monthly-row-value red">-'+fmtMoney(monthlyVacancy)+'</span></div>';
-  if(monthlyMgmt>0)incRows+='<div class="monthly-row"><span class="monthly-row-label">Property Mgmt ('+mgmtPct+'%)</span><span class="monthly-row-value red">-'+fmtMoney(monthlyMgmt)+'</span></div>';
-  incRows+='<div class="monthly-divider"></div>';
-  incRows+='<div class="monthly-total"><span>Effective Income</span><span class="green">'+fmtMoney(effectiveRent)+'</span></div>';
+  // ═══ HERO ═══
+  document.getElementById('rptHero').innerHTML='<div class="hero"><div class="hero-tag">Investment Property Analysis</div><div class="hero-address">'+displayAddress+'</div><div class="hero-meta">Prepared for '+clientName+' · '+dateStr+'</div><div class="hero-verdict"><div class="verdict-number"><div class="verdict-amount">'+fmtK(totalProfit)+'</div><div class="verdict-label">Total Profit</div></div><div class="verdict-thesis">'+thesis+'</div></div></div>';
 
-  var expRows='';
-  expRows+='<div class="monthly-row"><span class="monthly-row-label">Mortgage (P&I)</span><span class="monthly-row-value">'+fmtMoney(monthlyPI)+'</span></div>';
-  expRows+='<div class="monthly-row"><span class="monthly-row-label">Property Tax</span><span class="monthly-row-value">'+fmtMoney(monthlyTax)+'</span></div>';
-  expRows+='<div class="monthly-row"><span class="monthly-row-label">Insurance</span><span class="monthly-row-value">'+fmtMoney(monthlyInsurance)+'</span></div>';
-  expRows+='<div class="monthly-row"><span class="monthly-row-label">Maintenance</span><span class="monthly-row-value">'+fmtMoney(monthlyMaint)+'</span></div>';
-  if(monthlyHoa>0)expRows+='<div class="monthly-row"><span class="monthly-row-label">HOA / Association</span><span class="monthly-row-value">'+fmtMoney(monthlyHoa)+'</span></div>';
-  if(pmi>0)expRows+='<div class="monthly-row"><span class="monthly-row-label">Mortgage Insurance</span><span class="monthly-row-value">'+fmtMoney(pmi)+'</span></div>';
+  // ═══ ASSUMPTIONS BAR ═══
+  var assumptionsHTML='<div class="assumptions-bar">';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Purchase</div><div class="assumption-val">'+fmtMoney(price)+'</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Down / Loan</div><div class="assumption-val">'+downPct+'% / '+fmtMoney(loanAmt)+'</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Rate / Term</div><div class="assumption-val">'+rate+'% / '+term+'yr</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Rent</div><div class="assumption-val">'+fmtMoney(monthlyRent)+'/mo</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Rent Growth</div><div class="assumption-val">'+rentIncrease+'%/yr</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Appreciation</div><div class="assumption-val">'+apprRate.toFixed(2)+'% (FHFA)</div></div>';
+  assumptionsHTML+='<div class="assumption-item"><div class="assumption-key">Vacancy</div><div class="assumption-val">'+vacancyPct+'%</div></div>';
+  assumptionsHTML+='</div>';
+  document.getElementById('rptAssumptions').innerHTML=assumptionsHTML;
 
-  var investBreakdown='Down payment: '+fmtMoney(downAmt);
-  if(closingCosts>0)investBreakdown+=' + Closing costs: '+fmtMoney(closingCosts);
-  if(renovation>0)investBreakdown+=' + Renovation: '+fmtMoney(renovation);
+  // ═══ MONTHLY ECONOMICS ═══
+  var incomeRows='<div class="econ-group-label">Income</div>';
+  incomeRows+='<div class="econ-row"><span class="econ-label">Gross Rent</span><span class="econ-value">'+fmtMoney(monthlyRent)+'</span></div>';
+  incomeRows+='<div class="econ-row econ-indent"><span class="econ-label">Less vacancy ('+vacancyPct+'%)</span><span class="econ-value">−'+fmtMoney(monthlyVacancy)+'</span></div>';
+  if(monthlyMgmt>0) incomeRows+='<div class="econ-row econ-indent"><span class="econ-label">Less management ('+mgmtPct+'%)</span><span class="econ-value">−'+fmtMoney(monthlyMgmt)+'</span></div>';
+  incomeRows+='<div class="econ-line"></div>';
+  incomeRows+='<div class="econ-row econ-total"><span class="econ-label">Effective Income</span><span class="econ-value">'+fmtMoney(effectiveRent)+'</span></div>';
 
-  document.getElementById('rptMonthly').innerHTML='<div class="rpt-section"><div class="rpt-section-title">The Monthly Snapshot</div><div class="rpt-section-intro">Here\'s what this property looks like month to month &mdash; income in, expenses out, cash in your pocket.</div><div class="monthly-grid"><div class="monthly-col"><div class="monthly-col-title income">Income</div>'+incRows+'</div><div class="monthly-col"><div class="monthly-col-title expense">Expenses</div>'+expRows+'<div class="monthly-divider"></div><div class="monthly-total"><span>Total Expenses</span><span class="red">'+fmtMoney(totalMonthlyExpense)+'</span></div></div></div><div class="cashflow-result '+(netMonthlyCashFlow>=0?'positive':'negative')+'"><div class="cashflow-label">Net Monthly Cash Flow</div><div class="cashflow-value '+(netMonthlyCashFlow>=0?'green':'red')+'">'+(netMonthlyCashFlow>=0?'+':'')+fmtMoney(netMonthlyCashFlow)+'</div><div class="cashflow-detail">'+fmtMoney(netMonthlyCashFlow*12)+' per year &middot; Total investment: '+fmtMoney(totalInvestment)+'</div><div style="font-size:10px;color:var(--text-dim);margin-top:4px">'+investBreakdown+'</div></div></div>';
+  var expenseRows='<div class="econ-group-label">Expenses</div>';
+  expenseRows+='<div class="econ-row"><span class="econ-label">Mortgage (P&I)</span><span class="econ-value">'+fmtMoney(monthlyPI)+'</span></div>';
+  expenseRows+='<div class="econ-row"><span class="econ-label">Property Tax</span><span class="econ-value">'+fmtMoney(monthlyTax)+'</span></div>';
+  expenseRows+='<div class="econ-row"><span class="econ-label">Insurance</span><span class="econ-value">'+fmtMoney(monthlyInsurance)+'</span></div>';
+  expenseRows+='<div class="econ-row"><span class="econ-label">Maintenance</span><span class="econ-value">'+fmtMoney(monthlyMaint)+'</span></div>';
+  if(monthlyHoa>0) expenseRows+='<div class="econ-row"><span class="econ-label">HOA</span><span class="econ-value">'+fmtMoney(monthlyHoa)+'</span></div>';
+  if(pmi>0) expenseRows+='<div class="econ-row"><span class="econ-label">Mortgage Insurance</span><span class="econ-value">'+fmtMoney(pmi)+'</span></div>';
+  expenseRows+='<div class="econ-line"></div>';
+  expenseRows+='<div class="econ-row econ-total"><span class="econ-label">Total Expenses</span><span class="econ-value">'+fmtMoney(totalMonthlyExpense)+'</span></div>';
 
-  // WEALTH ENGINE
-  var svgCashFlow='<svg viewBox="0 0 32 32" fill="none" stroke="#5ebc8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><path d="M16 10v12M12 14c0-1.7 1.8-3 4-3s4 1.3 4 3-1.8 3-4 3-4 1.3-4 3 1.8 3 4 3 4-1.3 4-3"/></svg>';
-  var svgAppreciation='<svg viewBox="0 0 32 32" fill="none" stroke="#baa370" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 24 12 14 18 18 28 6"/><polyline points="22 6 28 6 28 12"/></svg>';
-  var svgEquity='<svg viewBox="0 0 32 32" fill="none" stroke="#6ba3d6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="20" height="14" rx="2"/><path d="M16 4l10 10H6z"/><rect x="13" y="20" width="6" height="8"/></svg>';
+  var cfClass=netMonthlyCashFlow>=0?'positive':'negative';
+  var cfSign=netMonthlyCashFlow>=0?'+':'';
 
-  document.getElementById('rptWealth').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Your 10-Year Wealth Engine</div><div class="rpt-section-intro">Investment real estate builds wealth three ways simultaneously. Here\'s how each engine contributes to your total return.</div><div class="wealth-grid"><div class="wealth-card"><div class="wealth-card-icon">'+svgCashFlow+'</div><div class="wealth-card-label">Net Rental Income</div><div class="wealth-card-value">'+fmtMoney(cumCashFlow)+'</div><div class="wealth-card-detail">10 years of cash flow<br>rent growing at '+rentIncrease+'%/year</div></div><div class="wealth-card"><div class="wealth-card-icon">'+svgAppreciation+'</div><div class="wealth-card-label">Appreciation Gain</div><div class="wealth-card-value">'+fmtMoney(apprGain)+'</div><div class="wealth-card-detail">Home value growth<br>at '+apprRate.toFixed(2)+'% annually</div></div><div class="wealth-card"><div class="wealth-card-icon">'+svgEquity+'</div><div class="wealth-card-label">Equity Buildup</div><div class="wealth-card-value">'+fmtMoney(equityBuildup)+'</div><div class="wealth-card-detail">Principal paid down<br>by your tenant\'s rent</div></div></div><div class="wealth-total"><div class="wealth-total-card revenue"><div class="wealth-total-label">Gross Revenue</div><div class="wealth-total-value">'+fmtMoney(grossRevenue)+'</div><div class="wealth-total-detail">income + appreciation</div></div><div class="wealth-total-card profit"><div class="wealth-total-label">Net Profit</div><div class="wealth-total-value">'+fmtMoney(totalProfit)+'</div><div class="wealth-total-detail">after expenses &amp; selling costs</div></div><div class="wealth-total-card roi"><div class="wealth-total-label">Total ROI</div><div class="wealth-total-value">'+Math.round(totalROI)+'%</div><div class="wealth-total-detail">on '+fmtMoney(totalInvestment)+' invested</div></div></div></div>';
+  document.getElementById('rptMonthly').innerHTML='<div class="rpt-section"><div class="section-head"><div class="section-title">Monthly Economics</div><div class="section-sub">What this property looks like on the first of every month.</div></div><div class="monthly-layout"><div class="monthly-breakdown">'+incomeRows+expenseRows+'</div><div class="monthly-result"><div class="result-big-number '+cfClass+'">'+cfSign+fmtMoney(netMonthlyCashFlow)+'</div><div class="result-big-label">Net Monthly Cash Flow</div><div class="result-big-detail">'+fmtMoney(netMonthlyCashFlow*12)+' / year</div></div></div></div>';
 
-  // TABLE - Premium Timeline
-  var milestones=[1,3,5,7,10];
-  var tlHTML='<div class="yr-timeline">';
-  years.forEach(function(d){
-    var isMilestone=milestones.indexOf(d.year)>=0;
-    var dotClass=d.net>=0?'green':'red';
-    if(isMilestone){
-      tlHTML+='<div class="yr-row"><div class="yr-marker"><div class="yr-label">Year '+d.year+'</div><div class="yr-dot '+dotClass+'"></div><div class="yr-line"></div></div>';
-      tlHTML+='<div class="yr-card milestone">';
-      tlHTML+='<div class="yr-metric"><div class="yr-metric-label">Effective Income</div><div class="yr-metric-value">'+fmtMoney(d.rent)+'</div></div>';
-      tlHTML+='<div class="yr-metric"><div class="yr-metric-label">Expenses</div><div class="yr-metric-value">'+fmtMoney(d.expenses)+'</div></div>';
-      tlHTML+='<div class="yr-metric"><div class="yr-metric-label">Net Cash Flow</div><div class="yr-metric-value '+(d.net>=0?'green':'red')+'">'+(d.net>=0?'+':'')+fmtMoney(d.net)+'</div></div>';
-      tlHTML+='<div class="yr-metric"><div class="yr-metric-label">Property Value</div><div class="yr-metric-value gold">'+fmtMoney(d.propVal)+'</div></div>';
-      tlHTML+='<div class="yr-metric"><div class="yr-metric-label">Cumulative</div><div class="yr-metric-value '+(d.cumCash>=0?'green':'red')+'">'+(d.cumCash>=0?'+':'')+fmtMoney(d.cumCash)+'</div></div>';
-      tlHTML+='</div></div>';
-    }
-  });
-  // Closing summary
-  var yr10=years[9];
-  tlHTML+='</div>';
-  tlHTML+='<div class="yr-summary">';
-  tlHTML+='<div class="yr-summary-card"><div class="yr-summary-label">Property Value at Year 10</div><div class="yr-summary-value">'+fmtMoney(yr10.propVal)+'</div><div class="yr-summary-detail">from '+fmtMoney(price)+' purchase</div></div>';
-  tlHTML+='<div class="yr-summary-card"><div class="yr-summary-label">Cumulative Cash Flow</div><div class="yr-summary-value">'+fmtMoney(yr10.cumCash)+'</div><div class="yr-summary-detail">10 years net income</div></div>';
-  tlHTML+='<div class="yr-summary-card"><div class="yr-summary-label">Cash Flow Positive</div><div class="yr-summary-value">';
-  var cfPositiveYear=0;for(var i=0;i<years.length;i++){if(years[i].net>=0){cfPositiveYear=years[i].year;break}}
-  if(cfPositiveYear>0)tlHTML+='Year '+cfPositiveYear;else tlHTML+='After Year 10';
-  tlHTML+='</div><div class="yr-summary-detail">when income exceeds expenses</div></div></div>';
+  // ═══ 10-YEAR TABLE ═══
+  var tableRows='';
+  for(var i=0;i<10;i++){
+    var d=years[i];
+    var isHighlight=(d.year===5||d.year===10);
+    var cfClass2=d.net>=0?'pos':'neg';
+    var cumClass=d.cumCash>=0?'pos':'neg';
+    var strong5=isHighlight?' strong':'';
+    tableRows+='<tr'+(isHighlight?' class="yr-highlight"':'')+'>';
+    tableRows+='<td>Year '+d.year+'</td>';
+    tableRows+='<td>'+fmtMoney(d.rent)+'</td>';
+    tableRows+='<td>'+fmtMoney(d.expenses)+'</td>';
+    tableRows+='<td class="'+cfClass2+strong5+'">'+(d.net>=0?'+':'')+fmtMoney(d.net)+'</td>';
+    tableRows+='<td class="'+cumClass+strong5+'">'+(d.cumCash>=0?'+':'')+fmtMoney(d.cumCash)+'</td>';
+    tableRows+='<td class="gold">'+fmtMoney(d.propVal)+'</td>';
+    tableRows+='</tr>';
+  }
+  document.getElementById('rptTable').innerHTML='<div class="rpt-section"><div class="section-head"><div class="section-title">10-Year Cash Flow Projection</div><div class="section-sub">Rent grows at '+rentIncrease+'% annually. Expenses reflect tax increases and maintenance tied to property value. Years 5 and 10 highlighted.</div></div><table class="projection-table"><thead><tr><th></th><th>Income</th><th>Expenses</th><th>Cash Flow</th><th>Cumulative</th><th>Property Value</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>';
 
-  document.getElementById('rptTable').innerHTML='<div class="rpt-section"><div class="rpt-section-title">Your Wealth Timeline</div><div class="rpt-section-intro">Key milestones in your investment journey. Watch how rising rents overtake fixed mortgage costs &mdash; the crossover point is where your property starts paying you.</div>'+tlHTML+'</div>';
+  // ═══ CHART ═══
+  document.getElementById('rptChart').innerHTML='<div class="chart-section"><div class="section-head"><div class="section-title">The Widening Gap</div><div class="section-sub">Your rent rises every year. Your mortgage never changes. The space between these lines is your growing profit.</div></div><div class="chart-wrap"><canvas id="cashChart"></canvas></div><div class="chart-key"><div class="chart-key-item"><div class="key-line" style="background:var(--green)"></div>Rental Income</div><div class="chart-key-item"><div class="key-line dashed"></div>Expenses</div><div class="chart-key-item"><div class="key-line" style="background:var(--gold);height:12px;width:12px;border-radius:50%"></div>Annual Profit</div></div></div>';
 
-  // CHART
-  document.getElementById('rptChart').innerHTML='<div class="rpt-section"><div class="rpt-section-title">The Crossover: When Your Property Pays You</div><div class="rpt-section-intro">This is the moment every investor watches for &mdash; when rental income surpasses expenses and your property becomes a cash-generating asset. The green line tells the story.</div><div class="chart-area"><canvas id="cashChart"></canvas></div><div class="chart-legend"><div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(94,188,138,0.35)"></div>Effective Income</div><div class="chart-legend-item"><div class="chart-legend-dot" style="background:rgba(217,115,115,0.3)"></div>Total Expenses</div><div class="chart-legend-item"><div class="chart-legend-dot" style="background:#5ebc8a;border-radius:50%"></div>Net Cash Flow</div></div></div>';
+  // ═══ EXIT ANALYSIS ═══
+  var exitLeft='<div class="exit-col-label">Sale Proceeds</div>';
+  exitLeft+='<div class="econ-row"><span class="econ-label">Property Value</span><span class="econ-value">'+fmtMoney(yr10Val)+'</span></div>';
+  exitLeft+='<div class="econ-row"><span class="econ-label">Remaining Mortgage</span><span class="econ-value" style="color:var(--text-dim)">−'+fmtMoney(remainBal)+'</span></div>';
+  exitLeft+='<div class="econ-row"><span class="econ-label">Cost to Sell ('+sellCostPct+'%)</span><span class="econ-value" style="color:var(--text-dim)">−'+fmtMoney(sellCosts)+'</span></div>';
+  exitLeft+='<div class="econ-line gold"></div>';
+  exitLeft+='<div class="econ-row econ-total"><span class="econ-label">Net Proceeds</span><span class="econ-value" style="color:var(--green);font-size:16px">'+fmtMoney(netSaleProceeds)+'</span></div>';
 
-  // CROSS-SELL
-  document.getElementById('rptSupercharge').innerHTML='<div class="supercharge"><div class="supercharge-title">See the full appreciation picture.</div><div class="supercharge-text">The <strong>Wealth in Motion</strong> report shows this property\'s complete 10-year appreciation trajectory with year-by-year projections. Ask your loan officer for the full breakdown.</div></div>';
+  var exitRight='<div class="exit-col-label">Where The Profit Comes From</div>';
+  exitRight+='<div class="econ-row"><span class="econ-label">10 Years Net Cash Flow</span><span class="econ-value">'+fmtMoney(cumCashFlow)+'</span></div>';
+  exitRight+='<div class="econ-row"><span class="econ-label">Appreciation Gain</span><span class="econ-value">'+fmtMoney(apprGain)+'</span></div>';
+  exitRight+='<div class="econ-row"><span class="econ-label">Equity Paid by Tenants</span><span class="econ-value">'+fmtMoney(equityBuildup)+'</span></div>';
+  exitRight+='<div class="econ-row"><span class="econ-label">Less Selling Costs</span><span class="econ-value" style="color:var(--text-dim)">−'+fmtMoney(sellCosts)+'</span></div>';
+  exitRight+='<div class="econ-line gold"></div>';
+  exitRight+='<div class="econ-row econ-total"><span class="econ-label">Total Profit</span><span class="econ-value" style="color:var(--gold);font-size:16px">'+fmtMoney(totalProfit)+'</span></div>';
+  exitRight+='<div class="econ-row econ-indent"><span class="econ-label">Capital deployed: '+fmtMoney(totalInvestment)+'</span><span class="econ-value"></span></div>';
 
-  // PHILOSOPHY
-  document.getElementById('rptPhilosophy').innerHTML='<div class="philosophy-block"><div class="philosophy-title">"Investment real estate isn\'t about timing the market &mdash; it\'s about time in the market."</div><div class="philosophy-text">Your property works for you 24/7. Rent builds cash flow. Appreciation builds wealth. And every mortgage payment your tenant makes puts equity in your pocket. That\'s the triple engine of real estate investing.</div></div>';
+  document.getElementById('rptExit').innerHTML='<div class="rpt-section"><div class="section-head"><div class="section-title">Exit Analysis &mdash; Year 10 Sale</div><div class="section-sub">What your position looks like if you sell at the end of year 10.</div></div><div class="exit-layout"><div class="exit-col">'+exitLeft+'</div><div class="exit-col">'+exitRight+'</div></div></div>';
 
+  // ═══ BOTTOM LINE ═══
+  var cfPosLabel='',cfPosDetail='';
+  if(netMonthlyCashFlow>=0){cfPosLabel='Day 1';cfPosDetail=fmtMoney(netMonthlyCashFlow)+'/mo from month one'}
+  else if(cfPositiveYear>0){cfPosLabel='Year '+cfPositiveYear;cfPosDetail='when income exceeds expenses'}
+  else{cfPosLabel='Post Y10';cfPosDetail='appreciation drives the return'}
+
+  document.getElementById('rptBottomLine').innerHTML='<div class="bottom-line"><div class="bl-cell"><div class="bl-label">Return on Capital</div><div class="bl-value">'+Math.round(totalROI)+'%</div><div class="bl-detail">on '+fmtMoney(totalInvestment)+' deployed</div></div><div class="bl-cell"><div class="bl-label">Avg Annual Return</div><div class="bl-value">'+avgAnnualROI.toFixed(1)+'%</div><div class="bl-detail">compounded over 10 years</div></div><div class="bl-cell"><div class="bl-label">Cash Flow Positive</div><div class="bl-value">'+cfPosLabel+'</div><div class="bl-detail">'+cfPosDetail+'</div></div></div>';
+
+  // ═══ FOOTER ═══
   buildFooter();
 
+  // ═══ DISCLOSURES ═══
   document.getElementById('rptDisc').innerHTML='Prepared '+dateStr+'. &copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243. All Rights Reserved. This analysis is for informational and educational purposes only. It is not mortgage advice, a commitment to lend, or a guarantee of investment returns. Projected values use FHFA appreciation rates and assumed rent growth; actual results will vary based on market conditions, property management, vacancy, maintenance, and other factors. Consult a financial advisor and tax professional before making investment decisions. Past performance does not guarantee future results.<div class="rpt-disc-logos"><span>MEMBER FDIC</span><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span></div>';
 
-  document.getElementById('generatorPanel').style.display='none';document.getElementById('reportContainer').style.display='block';
-  setTimeout(function(){drawCashChart(years)},100);
+  // Show report
+  document.getElementById('generatorPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+  setTimeout(function(){drawChart(years)},100);
 }
 
+/* ══════════════════════════════════════════ */
+/* FOOTER (preserved co-brand logic)         */
+/* ══════════════════════════════════════════ */
 function buildFooter(){
-  var f=document.getElementById('rptFooter');var k={name:'Kristy Flach',title:'Certified Mortgage Advisor \u00b7 NMLS# 2632259',contact:'Paramount Residential Mortgage Group',email:'kflach@prmg.net',web:'kflach.myprmg.net',phone:'(206) 313-5883',headshot:'hero-headshot.jpg'};
-  var isCobrand=document.getElementById('inp_cobrand').checked;var rn=document.getElementById('inp_realtorName').value.trim();
-  if(isCobrand&&rn){var ri={name:rn,title:document.getElementById('inp_realtorBrokerage').value.trim()||'',contact:document.getElementById('inp_realtorPhone').value.trim()||'',email:document.getElementById('inp_realtorEmail').value.trim()||''};function bP(p,isR){var img=isR?'<div class="footer-initials">'+p.name.split(' ').map(function(n){return n[0]}).join('')+'</div>':'<img src="'+k.headshot+'" class="footer-headshot" alt="'+p.name+'">';return '<div class="footer-person">'+img+'<div class="footer-details"><div class="footer-name">'+p.name+'</div><div class="footer-credentials">'+(p.title||'')+(p.contact?'<br>'+p.contact:'')+(p.email?'<br>'+p.email:'')+'</div></div></div>'}var lp,rp,lr;if(cobrandLayout==='left'){lp=ri;rp=k;lr=true}else{lp=k;rp=ri;lr=false}f.innerHTML='<div class="footer-cobrand">'+bP(lp,lr)+'<div class="footer-divider"></div>'+bP(rp,!lr)+'</div><div class="footer-company-bar"><div><div class="footer-company-name">Paramount Residential Mortgage Group</div><div class="footer-company-sub">NMLS# 75243 \u00b7 Equal Housing Lender</div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>'
-  }else{f.innerHTML='<div class="footer-standard"><div class="footer-your-info"><img src="'+k.headshot+'" class="footer-headshot" alt="Kristy Flach"><div class="footer-details"><div class="footer-name">'+k.name+'</div><div class="footer-credentials">'+k.title+'<br>'+k.contact+'<br>'+k.phone+' \u00b7 '+k.email+' \u00b7 '+k.web+'</div></div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>'}
+  var f=document.getElementById('rptFooter');
+  var k={name:'Kristy Flach',title:'Certified Mortgage Advisor · NMLS# 2632259',contact:'Paramount Residential Mortgage Group',email:'kflach@prmg.net',web:'kflach.myprmg.net',phone:'(206) 313-5883',headshot:'hero-headshot.jpg'};
+  var isCobrand=document.getElementById('inp_cobrand').checked;
+  var rn=document.getElementById('inp_realtorName').value.trim();
+  if(isCobrand&&rn){
+    var ri={name:rn,title:document.getElementById('inp_realtorBrokerage').value.trim()||'',contact:document.getElementById('inp_realtorPhone').value.trim()||'',email:document.getElementById('inp_realtorEmail').value.trim()||''};
+    function bP(p,isR){
+      var img=isR?'<div class="footer-initials">'+p.name.split(' ').map(function(n){return n[0]}).join('')+'</div>':'<img src="'+k.headshot+'" class="footer-headshot" alt="'+p.name+'">';
+      return '<div class="footer-person">'+img+'<div class="footer-details"><div class="footer-name">'+p.name+'</div><div class="footer-credentials">'+(p.title||'')+(p.contact?'<br>'+p.contact:'')+(p.email?'<br>'+p.email:'')+'</div></div></div>';
+    }
+    var lp,rp,lr;
+    if(cobrandLayout==='left'){lp=ri;rp=k;lr=true}else{lp=k;rp=ri;lr=false}
+    f.innerHTML='<div class="footer-cobrand">'+bP(lp,lr)+'<div class="footer-divider"></div>'+bP(rp,!lr)+'</div><div class="footer-company-bar"><div><div class="footer-company-name">Paramount Residential Mortgage Group</div><div class="footer-company-sub">NMLS# 75243 · Equal Housing Lender</div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  } else {
+    f.innerHTML='<div class="footer-standard"><div class="footer-your-info"><img src="'+k.headshot+'" class="footer-headshot" alt="Kristy Flach"><div class="footer-details"><div class="footer-name">'+k.name+'</div><div class="footer-credentials">'+k.title+'<br>'+k.contact+'<br>'+k.phone+' · '+k.email+' · '+k.web+'</div></div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  }
 }
 
-function drawCashChart(years){
-  var canvas=document.getElementById('cashChart');if(!canvas)return;var ctx=canvas.getContext('2d');var dpr=window.devicePixelRatio||1;var rect=canvas.getBoundingClientRect();canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;ctx.scale(dpr,dpr);var W=rect.width,H=rect.height;var padL=70,padR=40,padT=30,padB=45,cW=W-padL-padR,cH=H-padT-padB;
-  var maxVal=0;years.forEach(function(d){if(d.rent>maxVal)maxVal=d.rent;if(d.expenses>maxVal)maxVal=d.expenses});maxVal=maxVal*1.12;
-  var gap=cW/10;
-  function yP(v){return padT+cH-Math.max(0,(v/maxVal)*cH)}function xC(i){return padL+gap*i+gap/2}
+/* ══════════════════════════════════════════ */
+/* CHART — THE WIDENING GAP                  */
+/* ══════════════════════════════════════════ */
+function drawChart(years){
+  var canvas=document.getElementById('cashChart');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr;
+  canvas.height=rect.height*dpr;
+  ctx.scale(dpr,dpr);
+  var W=rect.width,H=rect.height;
+  var padL=56,padR=56,padT=40,padB=50;
+  var cW=W-padL-padR,cH=H-padT-padB;
+
+  var allVals=[];
+  years.forEach(function(d){allVals.push(d.rent,d.expenses)});
+  var minV=Math.floor(Math.min.apply(null,allVals)/5000)*5000-5000;
+  var maxV=Math.ceil(Math.max.apply(null,allVals)/5000)*5000+5000;
+  if(minV<0)minV=0;
+  var range=maxV-minV;
+
+  function y(v){return padT+cH-((v-minV)/range)*cH}
+  function x(i){return padL+(cW/9)*i}
 
   // Grid
-  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
-  var step=maxVal>50000?10000:maxVal>25000?5000:2500;
-  for(var v=0;v<=maxVal;v+=step){ctx.beginPath();ctx.moveTo(padL,yP(v));ctx.lineTo(W-padR,yP(v));ctx.stroke();ctx.fillStyle='rgba(232,228,220,0.25)';ctx.font='10px DM Sans';ctx.textAlign='right';ctx.fillText('$'+(v/1000).toFixed(0)+'k',padL-10,yP(v)+3)}
-  ctx.fillStyle='rgba(232,228,220,0.35)';ctx.font='11px DM Sans';ctx.textAlign='center';
-  for(var i=0;i<10;i++)ctx.fillText('Year '+(i+1),xC(i),H-14);
-
-  // Income area fill
-  ctx.beginPath();ctx.moveTo(xC(0),yP(years[0].rent));
-  for(var i=1;i<10;i++)ctx.lineTo(xC(i),yP(years[i].rent));
-  ctx.lineTo(xC(9),padT+cH);ctx.lineTo(xC(0),padT+cH);ctx.closePath();
-  var gI=ctx.createLinearGradient(0,padT,0,padT+cH);gI.addColorStop(0,'rgba(94,188,138,0.12)');gI.addColorStop(1,'rgba(94,188,138,0.02)');ctx.fillStyle=gI;ctx.fill();
-
-  // Expense area fill
-  ctx.beginPath();ctx.moveTo(xC(0),yP(years[0].expenses));
-  for(var i=1;i<10;i++)ctx.lineTo(xC(i),yP(years[i].expenses));
-  ctx.lineTo(xC(9),padT+cH);ctx.lineTo(xC(0),padT+cH);ctx.closePath();
-  var gE=ctx.createLinearGradient(0,padT,0,padT+cH);gE.addColorStop(0,'rgba(217,115,115,0.08)');gE.addColorStop(1,'rgba(217,115,115,0.01)');ctx.fillStyle=gE;ctx.fill();
-
-  // Income line
-  ctx.beginPath();ctx.strokeStyle='rgba(94,188,138,0.6)';ctx.lineWidth=2.5;
-  for(var i=0;i<10;i++){i===0?ctx.moveTo(xC(i),yP(years[i].rent)):ctx.lineTo(xC(i),yP(years[i].rent))}ctx.stroke();
-
-  // Expense line
-  ctx.beginPath();ctx.strokeStyle='rgba(217,115,115,0.5)';ctx.lineWidth=2;ctx.setLineDash([6,4]);
-  for(var i=0;i<10;i++){i===0?ctx.moveTo(xC(i),yP(years[i].expenses)):ctx.lineTo(xC(i),yP(years[i].expenses))}ctx.stroke();ctx.setLineDash([]);
-
-  // Find crossover point
-  var crossIdx=-1;
-  for(var i=1;i<10;i++){if(years[i].net>=0&&years[i-1].net<0){crossIdx=i;break}}
-
-  // Crossover annotation
-  if(crossIdx>=0){
-    var cx=xC(crossIdx),cy=yP(years[crossIdx].rent);
-    ctx.beginPath();ctx.strokeStyle='rgba(186,163,112,0.3)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-    ctx.moveTo(cx,padT);ctx.lineTo(cx,padT+cH);ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(186,163,112,0.9)';ctx.font='bold 11px DM Sans';ctx.textAlign='center';
-    ctx.fillText('CROSSOVER',cx,padT+12);
-    ctx.fillStyle='rgba(186,163,112,0.5)';ctx.font='10px DM Sans';
-    ctx.fillText('Year '+(crossIdx+1),cx,padT+24);
+  ctx.strokeStyle='rgba(255,255,255,0.03)';ctx.lineWidth=1;
+  ctx.fillStyle='rgba(226,222,212,0.18)';ctx.font='10px DM Sans';ctx.textAlign='right';
+  for(var v=minV;v<=maxV;v+=5000){
+    ctx.beginPath();ctx.moveTo(padL,y(v));ctx.lineTo(W-padR,y(v));ctx.stroke();
+    ctx.fillText('$'+(v/1000)+'k',padL-8,y(v)+3);
   }
 
-  // Net cash flow line (bold, on top)
-  ctx.beginPath();ctx.strokeStyle='#5ebc8a';ctx.lineWidth=3;
+  // Year labels
+  ctx.fillStyle='rgba(226,222,212,0.25)';ctx.font='11px DM Sans';ctx.textAlign='center';
+  for(var i=0;i<10;i++) ctx.fillText('Y'+(i+1),x(i),H-18);
+
+  // Gap fill between lines (gets more saturated as gap grows)
+  ctx.beginPath();
+  for(var i=0;i<10;i++){i===0?ctx.moveTo(x(i),y(years[i].rent)):ctx.lineTo(x(i),y(years[i].rent))}
+  for(var i=9;i>=0;i--) ctx.lineTo(x(i),y(years[i].expenses));
+  ctx.closePath();
+  var gFill=ctx.createLinearGradient(0,0,W,0);
+  gFill.addColorStop(0,'rgba(114,212,154,0.03)');
+  gFill.addColorStop(0.5,'rgba(114,212,154,0.08)');
+  gFill.addColorStop(1,'rgba(114,212,154,0.14)');
+  ctx.fillStyle=gFill;ctx.fill();
+
+  // Expense line — dashed
+  ctx.beginPath();ctx.strokeStyle='rgba(212,114,114,0.4)';ctx.lineWidth=1.5;ctx.setLineDash([5,4]);
+  for(var i=0;i<10;i++){i===0?ctx.moveTo(x(i),y(years[i].expenses)):ctx.lineTo(x(i),y(years[i].expenses))}
+  ctx.stroke();ctx.setLineDash([]);
+
+  // Income line — solid
+  ctx.beginPath();ctx.strokeStyle='rgba(114,212,154,0.65)';ctx.lineWidth=2.5;
+  for(var i=0;i<10;i++){i===0?ctx.moveTo(x(i),y(years[i].rent)):ctx.lineTo(x(i),y(years[i].rent))}
+  ctx.stroke();
+
+  // Profit markers (gold dots between lines)
   for(var i=0;i<10;i++){
-    var netVal=years[i].net;var y=netVal>=0?yP(netVal):yP(0);
-    i===0?ctx.moveTo(xC(i),y):ctx.lineTo(xC(i),y);
-  }ctx.stroke();
-
-  // Zero line
-  ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;
-  ctx.moveTo(padL,yP(0));ctx.lineTo(W-padR,yP(0));ctx.stroke();
-  ctx.fillStyle='rgba(232,228,220,0.2)';ctx.font='9px DM Sans';ctx.textAlign='right';
-  ctx.fillText('$0',padL-10,yP(0)+3);
-
-  // Dots on income line
-  for(var i=0;i<10;i++){var x=xC(i),y=yP(years[i].rent);ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fillStyle='rgba(94,188,138,0.6)';ctx.fill()}
-
-  // Dots on expense line
-  for(var i=0;i<10;i++){var x=xC(i),y=yP(years[i].expenses);ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='rgba(217,115,115,0.5)';ctx.fill()}
-
-  // Net cash flow dots (larger, prominent)
-  for(var i=0;i<10;i++){
-    var netVal=years[i].net;var x=xC(i),y=netVal>=0?yP(netVal):yP(0);
-    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=netVal>=0?'#5ebc8a':'#d97373';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    var midY=(y(years[i].rent)+y(years[i].expenses))/2;
+    ctx.beginPath();ctx.arc(x(i),midY,4,0,Math.PI*2);
+    ctx.fillStyle='rgba(196,173,122,0.7)';ctx.fill();
+    ctx.beginPath();ctx.arc(x(i),midY,1.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(5,8,13,0.8)';ctx.fill();
   }
 
-  // Value labels on net cash flow at key years
-  [0,4,9].forEach(function(i){
-    var netVal=years[i].net;var x=xC(i),y=netVal>=0?yP(netVal):yP(0);
-    ctx.fillStyle=netVal>=0?'rgba(94,188,138,0.9)':'rgba(217,115,115,0.9)';ctx.font='bold 11px DM Sans';ctx.textAlign='center';
-    ctx.fillText((netVal>=0?'+':'-')+'$'+(Math.abs(Math.round(netVal))/1000).toFixed(1)+'k',x,y-12);
-  });
+  // Income dots
+  for(var i=0;i<10;i++){
+    ctx.beginPath();ctx.arc(x(i),y(years[i].rent),3,0,Math.PI*2);
+    ctx.fillStyle='#72d49a';ctx.fill();
+  }
+  // Expense dots
+  for(var i=0;i<10;i++){
+    ctx.beginPath();ctx.arc(x(i),y(years[i].expenses),2.5,0,Math.PI*2);
+    ctx.fillStyle='rgba(212,114,114,0.5)';ctx.fill();
+  }
+
+  // Year 1 annotations
+  ctx.font='10px DM Sans';ctx.textAlign='right';
+  ctx.fillStyle='rgba(114,212,154,0.6)';
+  ctx.fillText('$'+(years[0].rent/1000).toFixed(1)+'k',x(0)-8,y(years[0].rent)-6);
+  ctx.fillStyle='rgba(212,114,114,0.45)';
+  ctx.fillText('$'+(years[0].expenses/1000).toFixed(1)+'k',x(0)-8,y(years[0].expenses)+14);
+
+  // Year 10 annotations
+  ctx.textAlign='left';
+  ctx.fillStyle='rgba(114,212,154,0.7)';
+  ctx.fillText('$'+(years[9].rent/1000).toFixed(1)+'k',x(9)+8,y(years[9].rent)-6);
+  ctx.fillStyle='rgba(212,114,114,0.5)';
+  ctx.fillText('$'+(years[9].expenses/1000).toFixed(1)+'k',x(9)+8,y(years[9].expenses)+14);
+
+  // Year 10 gap label
+  var gap10=years[9].rent-years[9].expenses;
+  var mid10=(y(years[9].rent)+y(years[9].expenses))/2;
+  ctx.fillStyle='rgba(196,173,122,0.8)';ctx.font='bold 12px DM Sans';
+  ctx.fillText('+$'+(gap10/1000).toFixed(1)+'k',x(9)+8,mid10+4);
+
+  // Bracket
+  ctx.beginPath();ctx.strokeStyle='rgba(196,173,122,0.2)';ctx.lineWidth=1;
+  ctx.moveTo(x(9)+4,y(years[9].rent)+2);ctx.lineTo(x(9)+4,y(years[9].expenses)-2);
+  ctx.stroke();
+
+  // Year 1 gap
+  var gap1=years[0].rent-years[0].expenses;
+  var mid1=(y(years[0].rent)+y(years[0].expenses))/2;
+  ctx.textAlign='right';
+  ctx.fillStyle='rgba(196,173,122,0.5)';ctx.font='10px DM Sans';
+  ctx.fillText((gap1>=0?'+':'')+('$'+(Math.abs(gap1)/1000).toFixed(1)+'k'),x(0)-8,mid1+4);
 }
 
-(function(){var p=new URLSearchParams(window.location.search);if(p.toString()==='')return;var cn=p.get('clientName')||p.get('client')||'';if(cn)document.getElementById('inp_clientName').value=decodeURIComponent(cn);var ad=p.get('address')||'';if(ad)document.getElementById('inp_address').value=decodeURIComponent(ad);var pr=p.get('price')||p.get('purchase')||'';if(pr){var n=parseFloat(pr.replace(/[^0-9.]/g,''));if(n)document.getElementById('inp_price').value=Math.round(n).toLocaleString()}var dp=p.get('downPct')||'';if(dp)document.getElementById('inp_downPct').value=dp;var rt=p.get('rent')||'';if(rt){var n2=parseFloat(rt.replace(/[^0-9.]/g,''));if(n2)document.getElementById('inp_rent').value=Math.round(n2).toLocaleString()}})();
+/* ── URL Param Pre-fill (preserved) ── */
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.toString()==='')return;
+  var cn=p.get('clientName')||p.get('client')||'';
+  if(cn)document.getElementById('inp_clientName').value=decodeURIComponent(cn);
+  var ad=p.get('address')||'';
+  if(ad)document.getElementById('inp_address').value=decodeURIComponent(ad);
+  var pr=p.get('price')||p.get('purchase')||'';
+  if(pr){var n=parseFloat(pr.replace(/[^0-9.]/g,''));if(n)document.getElementById('inp_price').value=Math.round(n).toLocaleString()}
+  var dp=p.get('downPct')||'';if(dp)document.getElementById('inp_downPct').value=dp;
+  var rt=p.get('rent')||'';
+  if(rt){var n2=parseFloat(rt.replace(/[^0-9.]/g,''));if(n2)document.getElementById('inp_rent').value=Math.round(n2).toLocaleString()}
+})();
 </script>
 </body>
 </html>
