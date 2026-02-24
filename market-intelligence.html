@@ -396,8 +396,8 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 </div>
 
 <div class="flyer-card" data-report="costwaiting">
-<img src="Cost-of-Waiting.png" alt="Cost of Waiting">
-<h3>Cost of Waiting</h3>
+<img src="Cost-of-Waiting.png" alt="Your Wealth Starts Now">
+<h3>Your Wealth Starts Now</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
@@ -637,7 +637,7 @@ function openPanel(type, mode = "new") {
   panelTitle.innerText =
     type === "bid" ? "Worth the Premium" :
     type === "buyrent" ? "Rent to Wealth" :
-    type === "costwaiting" ? "Cost of Waiting" :
+    type === "costwaiting" ? "Your Wealth Starts Now" :
     type === "amortization" ? "Mortgage Amortization" :
     type === "appreciation" ? "Appreciation" :
     type === "investment" ? "Investment Property" :
@@ -841,7 +841,7 @@ function addToKit() {
   if (activeReport === "costwaiting") {
     const missing = valid.some(p => !(p.purchase || "").trim());
     if (missing) {
-      alert("Cost of Waiting requires Purchase Price for each property.");
+      alert("Your Wealth Starts Now requires Purchase Price for each property.");
       return;
     }
   }
@@ -917,7 +917,7 @@ function renderKit() {
     const displayName =
       r === "bid" ? "Worth the Premium" :
       r === "buyrent" ? "Rent to Wealth" :
-      r === "costwaiting" ? "Cost of Waiting" :
+      r === "costwaiting" ? "Your Wealth Starts Now" :
       r === "appreciation" ? "Appreciation" :
       r === "investment" ? "Investment Property Analysis" :
       r === "amortization" ? "Mortgage Amortization" :
