@@ -402,8 +402,8 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 </div>
 
 <div class="flyer-card" data-report="investment">
-<img src="Investment-Property.png" alt="Investment Property">
-<h3>Investment Property</h3>
+<img src="Investment-Property.png" alt="Owner to Investor">
+<h3>Owner to Investor</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
@@ -640,7 +640,7 @@ function openPanel(type, mode = "new") {
     type === "costwaiting" ? "Your Wealth Starts Now" :
     type === "amortization" ? "Payoff Accelerator" :
     type === "appreciation" ? "Wealth in Motion" :
-    type === "investment" ? "Investment Property" :
+    type === "investment" ? "Owner to Investor" :
     "Neighborhood Blueprint";
 
   panelDesc.innerText = "";
@@ -801,7 +801,7 @@ ${activeReport === "investment" ? `
     line-height: 1.5;
     color: #0b1f3a;
   ">
-    <strong>Investment Property Analysis</strong><br><br>
+    <strong>Owner to Investor — Investment Property Analysis</strong><br><br>
     Investment property analysis involves multiple variables that materially affect results,
     including financing structure, rent assumptions, and holding strategy.
     <br><br>
@@ -919,7 +919,7 @@ function renderKit() {
       r === "buyrent" ? "Rent to Wealth" :
       r === "costwaiting" ? "Your Wealth Starts Now" :
       r === "appreciation" ? "Appreciation" :
-      r === "investment" ? "Investment Property Analysis" :
+      r === "investment" ? "Owner to Investor" :
       r === "amortization" ? "Payoff Accelerator" :
       "Neighborhood Blueprint";
     
