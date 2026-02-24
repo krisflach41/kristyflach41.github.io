@@ -248,7 +248,7 @@ async function generateReport(){
 
   if(apiData){
     if(apiData.appreciation){
-      if(apiData.appreciation.forecastAnnualRate)appreciationRate=apiData.appreciation.forecastAnnualRate;
+      appreciationRate=apiData.appreciation.oneYear||apiData.appreciation.fiveYear||apiData.appreciation.forecastAnnualRate||3.5;
       rate1yr=apiData.appreciation.oneYear;
       rate5yr=apiData.appreciation.fiveYear;
       rateLongTerm=apiData.appreciation.tenYear;
