@@ -174,7 +174,7 @@ class UniversalCart {
   
   getReportDisplayName(reportType) {
     const names = {
-      bid: 'Bid Over Ask',
+      bid: 'Worth the Premium',
       buyrent: 'Rent to Wealth',
       costwaiting: 'Cost of Waiting',
       appreciation: 'Appreciation',
