@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mortgage Amortization Report</title>
+<title>Payoff Accelerator</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
 
@@ -451,8 +451,8 @@ body {
 
 <!-- ===== INPUT FORM ===== -->
 <div class="generator-panel" id="generatorPanel">
-  <div class="gen-title">Mortgage Amortization Report</div>
-  <div class="gen-sub">Generate a branded amortization schedule with payoff comparison</div>
+  <div class="gen-title">Payoff Accelerator</div>
+  <div class="gen-sub">See how a cup of coffee can shorten your mortgage and save you thousands</div>
 
   <div class="gen-grid">
     <div class="gen-section">Client Info</div>
@@ -590,7 +590,7 @@ body {
     
 
     <div class="rpt-hero">
-      <div class="rpt-greeting" id="rptGreeting">Your Mortgage Amortization</div>
+      <div class="rpt-greeting" id="rptGreeting">Your Payoff Accelerator</div>
       <div class="rpt-greeting-sub" id="rptGreetingSub">Prepared for Susie Homebuyer · 30-Year Fixed</div>
     </div>
 
@@ -1233,7 +1233,7 @@ function editReport() {
         userName: userName,
         userEmail: userEmail,
         collection: 'Advisory Tools',
-        tool: tool || 'Amortization Report',
+        tool: tool || 'Payoff Accelerator',
         action: action,
         details: details || ''
       })
@@ -1243,12 +1243,12 @@ function editReport() {
   }
 
   // 1. TRACK PAGE VISIT
-  trackEvent('page_visit', 'Amortization Report', 'Opened amortization calculator');
+  trackEvent('page_visit', 'Payoff Accelerator', 'Opened amortization calculator');
 
   // 2. TRACK TIME SPENT
   window.addEventListener('beforeunload', function() {
     var timeSpent = Math.round((new Date() - pageLoadTime) / 1000);
-    trackEvent('time_spent', 'Amortization Report', timeSpent + ' seconds');
+    trackEvent('time_spent', 'Payoff Accelerator', timeSpent + ' seconds');
   });
 
   // 3. TRACK REPORT GENERATION
@@ -1261,7 +1261,7 @@ function editReport() {
     var interestRate = rateEl ? rateEl.value : '';
     var loanTerm = termEl ? termEl.value : '';
     
-    trackEvent('report_generated', 'Amortization Report', 
+    trackEvent('report_generated', 'Payoff Accelerator', 
       'Generated report: $' + loanAmount + ' @ ' + interestRate + '% for ' + loanTerm + ' years');
     
     return originalGenerateReport();
@@ -1271,14 +1271,14 @@ function editReport() {
   document.querySelectorAll('button').forEach(function(btn) {
     if (btn.textContent.includes('Download') || btn.textContent.includes('PDF')) {
       btn.addEventListener('click', function() {
-        trackEvent('download', 'Amortization Report', 'Downloaded PDF report');
+        trackEvent('download', 'Payoff Accelerator', 'Downloaded PDF report');
       });
     }
   });
 
   // 5. TRACK PRINT
   window.addEventListener('beforeprint', function() {
-    trackEvent('print', 'Amortization Report', 'Printed report');
+    trackEvent('print', 'Payoff Accelerator', 'Printed report');
   });
 
 })();
