@@ -141,7 +141,7 @@ body {
 #reportContainer { display: none; }
 
 .report {
-  max-width: 880px;
+  max-width: 1060px;
   margin: 0 auto;
   border-left: 1px solid var(--border);
   border-right: 1px solid var(--border);
@@ -151,7 +151,7 @@ body {
 .prop-header {
   background: var(--surface-raised);
   border-bottom: 1px solid var(--border);
-  padding: 24px 52px;
+  padding: 28px 64px;
   display: flex;
   align-items: center;
   gap: 24px;
@@ -215,7 +215,7 @@ body {
 
 /* ===== HERO ===== */
 .hero {
-  padding: 48px 52px 44px;
+  padding: 52px 64px 48px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   position: relative;
@@ -224,7 +224,7 @@ body {
 .hero::after {
   content: '';
   position: absolute;
-  bottom: 0; left: 52px; right: 52px;
+  bottom: 0; left: 64px; right: 64px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
 }
@@ -262,7 +262,7 @@ body {
 }
 
 /* ===== SECTIONS ===== */
-.sect { padding: 36px 52px; border-bottom: 1px solid var(--border); }
+.sect { padding: 40px 64px; border-bottom: 1px solid var(--border); }
 
 .sect-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 22px; }
 
@@ -430,12 +430,12 @@ body {
 /* ===== FOOTER ===== */
 .footer-standard {
   background: var(--surface); border-top: 1px solid var(--border);
-  padding: 24px 52px; display: flex; align-items: center; justify-content: space-between;
+  padding: 28px 64px; display: flex; align-items: center; justify-content: space-between;
 }
 
 .footer-cobrand {
   background: var(--surface); border-top: 1px solid var(--border);
-  padding: 20px 52px; display: flex; align-items: center; justify-content: center; gap: 40px;
+  padding: 20px 64px; display: flex; align-items: center; justify-content: center; gap: 40px;
 }
 
 .footer-person { display: flex; align-items: center; gap: 12px; }
@@ -459,7 +459,7 @@ body {
 .footer-logo { height: 28px; opacity: 0.7; }
 
 .footer-company-bar {
-  background: var(--bg); padding: 12px 52px;
+  background: var(--bg); padding: 12px 64px;
   display: flex; align-items: center; justify-content: space-between;
   border-top: 1px solid var(--border);
 }
@@ -467,13 +467,13 @@ body {
 .footer-company-sub { font-size: 9px; color: var(--text-dim); }
 
 .disclosures {
-  padding: 12px 52px; background: var(--bg); border-top: 1px solid var(--border);
+  padding: 14px 64px; background: var(--bg); border-top: 1px solid var(--border);
   font-size: 7.5px; color: var(--text-faint); line-height: 1.7; text-align: center;
 }
 
 /* ===== NAV BAR ===== */
 .report-nav {
-  display: none; max-width: 880px; margin: 0 auto;
+  display: none; max-width: 1060px; margin: 0 auto;
   padding: 14px 52px; background: var(--surface); border: 1px solid var(--border);
   border-top: none;
 }
@@ -703,7 +703,11 @@ function generateReport() {
   loading.className = 'gen-loading show';
   error.className = 'gen-error';
 
-  fetch(API_BASE + '/report-card?zip=' + zip)
+  var apiUrl = API_BASE + '/report-card?zip=' + zip;
+  var address = document.getElementById('inp_address').value.trim();
+  if (address) apiUrl += '&address=' + encodeURIComponent(address);
+
+  fetch(apiUrl)
     .then(function(r) { return r.json(); })
     .then(function(data) {
       reportData = data;
