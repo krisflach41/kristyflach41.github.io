@@ -143,6 +143,14 @@ td.pos{color:var(--green)}td.neg{color:var(--red)}td.gold{color:var(--gold)}td.s
 .exit-col-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px}
 
 /* ═══════════════════════════════ */
+/* TAX NOTE                       */
+/* ═══════════════════════════════ */
+.tax-note{padding:28px 80px;border-bottom:1px solid var(--border);background:var(--surface-raised)}
+.tax-note-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
+.tax-note-body{font-size:11px;color:var(--text-dim);line-height:1.7;max-width:720px}
+.tax-note-body strong{color:var(--gold);font-weight:600}
+
+/* ═══════════════════════════════ */
 /* BOTTOM LINE                    */
 /* ═══════════════════════════════ */
 .bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
@@ -257,6 +265,7 @@ td.pos{color:var(--green)}td.neg{color:var(--red)}td.gold{color:var(--gold)}td.s
     <div id="rptTable"></div>
     <div id="rptChart"></div>
     <div id="rptExit"></div>
+    <div id="rptTaxNote"></div>
     <div id="rptBottomLine"></div>
     <div id="rptFooter" class="rpt-footer"></div>
     <div id="rptDisc" class="rpt-disclosures"></div>
@@ -475,6 +484,12 @@ async function generateReport(){
   exitRight+='<div class="econ-row econ-indent"><span class="econ-label">Capital deployed: '+fmtMoney(totalInvestment)+'</span><span class="econ-value"></span></div>';
 
   document.getElementById('rptExit').innerHTML='<div class="rpt-section"><div class="section-head"><div class="section-title">Exit Analysis &mdash; Year 10 Sale</div><div class="section-sub">What your position looks like if you sell at the end of year 10.</div></div><div class="exit-layout"><div class="exit-col">'+exitLeft+'</div><div class="exit-col">'+exitRight+'</div></div></div>';
+
+  // ═══ TAX NOTE ═══
+  var landPct=20; // assume 20% land value
+  var improvementValue=price*(1-landPct/100);
+  var annualDepreciation=improvementValue/27.5;
+  document.getElementById('rptTaxNote').innerHTML='<div class="tax-note"><div class="tax-note-label">Note</div><div class="tax-note-body">These projections are conservative by design and do not include tax benefits available to investment property owners — including depreciation (est. <strong>'+fmtMoney(annualDepreciation)+'/year</strong>), mortgage interest deductions, or 1031 exchange strategies — all of which may significantly improve your effective return. Consult your tax advisor.</div></div>';
 
   // ═══ BOTTOM LINE ═══
   var cfPosLabel='',cfPosDetail='';
