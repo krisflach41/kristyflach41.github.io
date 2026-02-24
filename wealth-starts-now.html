@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Wealth Starts Now</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07090e;--surface:#0d1117;--surface-raised:#131920;--border:rgba(255,255,255,0.05);--border-gold:rgba(186,163,112,0.18);--gold:#baa370;--gold-dim:rgba(186,163,112,0.4);--green:#5ebc8a;--red:#d97373;--blue:#6ba3d6;--blue-btn:#3b82f6;--text:#e8e4dc;--text-mid:rgba(232,228,220,0.6);--text-dim:rgba(232,228,220,0.3);--text-faint:rgba(232,228,220,0.15)}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+.generator-panel{max-width:560px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}
+.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px;grid-column:1/-1;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.gen-hint{font-size:9px;color:rgba(255,255,255,0.2);grid-column:1/-1;margin-top:-4px}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}
+.gen-btn.primary:hover{background:#2563eb}
+.gen-btn:disabled{opacity:0.5;cursor:wait}
+.gen-check{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+.gen-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue-btn)}
+.gen-check label{font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer}
+.gen-error{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none}
+.gen-loading{display:none;text-align:center;margin-top:12px;color:var(--text-mid);font-size:13px}
+.gen-loading .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--blue-btn);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.layout-picker-box{flex:1;border:2px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;cursor:pointer;transition:0.2s}
+.layout-picker-box:hover{border-color:rgba(59,130,246,0.3)}
+.layout-picker-box.selected{border-color:rgba(59,130,246,0.6);background:rgba(59,130,246,0.08)}
+
+.report-container{display:none;max-width:1100px;margin:20px auto;padding:0 16px}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-nav button.primary{background:var(--blue-btn);border-color:var(--blue-btn);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-gold)}
+
+.rpt-hero{padding:52px 64px 48px;border-bottom:1px solid var(--border);position:relative}
+.rpt-hero::after{content:'';position:absolute;bottom:0;left:64px;right:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.rpt-hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.rpt-hero-subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px;letter-spacing:0.5px}
+.rpt-hero-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text-mid);line-height:1.35;margin-bottom:6px}
+.rpt-hero-sub{font-size:13px;color:var(--text-dim);margin-bottom:20px}
+.rpt-hero-punchline{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:10px;line-height:1.3}
+.rpt-hero-headline{font-size:15px;color:var(--text-mid);line-height:1.6;max-width:820px}
+
+.rpt-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+.rpt-kpi{padding:22px 24px;border-right:1px solid var(--border);text-align:center}
+.rpt-kpi:last-child{border-right:none}
+.rpt-kpi-label{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.rpt-kpi-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text)}
+.rpt-kpi-value.green{color:var(--green)}
+.rpt-kpi-value.red{color:var(--red)}
+.rpt-kpi-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+.rpt-section{padding:40px 64px;border-bottom:1px solid var(--border)}
+.rpt-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;position:relative;padding-bottom:16px}
+.rpt-section-title::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-dim));border-radius:1px}
+.rpt-section-intro{font-size:13px;color:var(--text-mid);line-height:1.65;margin-top:14px;max-width:780px}
+
+.cards-grid{display:grid;grid-template-columns:5fr 5fr 4fr;gap:16px;margin-top:28px;align-items:start}
+.sc{border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.sc.buy{border:1px solid rgba(94,188,138,0.2)}
+.sc.drop{border:1px solid rgba(107,163,214,0.15)}
+.sc.rise{border:1px solid rgba(217,115,115,0.12)}
+.sc-head{padding:16px 20px 14px;text-align:center}
+.sc.buy .sc-head{background:rgba(94,188,138,0.06)}
+.sc.drop .sc-head{background:rgba(107,163,214,0.05)}
+.sc.rise .sc-head{background:rgba(217,115,115,0.04)}
+.sc-tag{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px}
+.sc.buy .sc-tag{color:var(--green)}
+.sc.drop .sc-tag{color:var(--blue)}
+.sc.rise .sc-tag{color:var(--red)}
+.sc-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--text)}
+.sc-sub{font-size:10px;color:var(--text-dim);margin-top:2px}
+.sc-body{padding:16px 20px;flex:1}
+.sc-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.sc-row:last-child{border-bottom:none}
+.sc-row-label{color:var(--text-dim)}
+.sc-row-value{font-weight:600;color:var(--text)}
+.sc-row-value.green{color:var(--green)}
+.sc-row-value.red{color:var(--red)}
+.sc-row-value.blue{color:var(--blue)}
+.sc-pi{text-align:center;padding:16px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.sc-pi-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.sc.buy .sc-pi-label{color:var(--green)}
+.sc.drop .sc-pi-label{color:var(--blue)}
+.sc.rise .sc-pi-label{color:var(--red)}
+.sc-pi-value{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text)}
+.sc-pi-detail{font-size:10px;margin-top:2px}
+.sc-wealth{padding:14px 20px;text-align:center}
+.sc.buy .sc-wealth{background:rgba(94,188,138,0.06)}
+.sc.drop .sc-wealth,.sc.rise .sc-wealth{background:rgba(217,115,115,0.04)}
+.sc-wealth-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.sc.buy .sc-wealth-label{color:var(--green)}
+.sc.drop .sc-wealth-label,.sc.rise .sc-wealth-label{color:var(--red)}
+.sc-wealth-value{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
+.sc.buy .sc-wealth-value{color:var(--green)}
+.sc.drop .sc-wealth-value,.sc.rise .sc-wealth-value{color:var(--red)}
+.cards-note{font-size:10px;color:var(--text-faint);text-align:center;margin-top:16px;font-style:italic}
+
+.h2h{margin-top:28px;border-radius:10px;overflow:hidden;border:1px solid var(--border-gold)}
+.h2h-header{padding:18px 24px;background:linear-gradient(135deg,rgba(186,163,112,0.06) 0%,rgba(186,163,112,0.02) 100%);border-bottom:1px solid var(--border-gold);text-align:center}
+.h2h-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gold)}
+.h2h-sub{font-size:11px;color:var(--text-dim);margin-top:4px}
+.h2h-table{width:100%}
+.h2h-table thead th{padding:12px 20px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;border-bottom:1px solid var(--border-gold)}
+.h2h-table thead th:first-child{text-align:left;color:var(--text-dim);width:40%}
+.h2h-table thead th:nth-child(2){text-align:center;color:var(--green);background:rgba(94,188,138,0.03)}
+.h2h-table thead th:nth-child(3){text-align:center;color:var(--blue)}
+.h2h-table tbody td{padding:12px 20px;font-size:13px;border-bottom:1px solid var(--border)}
+.h2h-table tbody tr:last-child td{border-bottom:none}
+.h2h-table tbody td:first-child{color:var(--text-mid);font-size:12px}
+.h2h-table tbody td:nth-child(2){text-align:center;background:rgba(94,188,138,0.02)}
+.h2h-table tbody td:nth-child(3){text-align:center}
+.h2h-win{color:var(--green);font-weight:700}
+.h2h-lose{color:var(--red);font-weight:600}
+.h2h-neutral{color:var(--text-mid)}
+.h2h-check{display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:rgba(94,188,138,0.15);color:var(--green);font-size:10px;text-align:center;font-weight:700;margin-left:6px;vertical-align:middle}
+.h2h-footer{padding:16px 24px;background:rgba(94,188,138,0.04);border-top:1px solid rgba(94,188,138,0.1);text-align:center}
+.h2h-footer-text{font-size:13px;color:var(--green);font-weight:600;line-height:1.5}
+.h2h-footer-text strong{color:var(--text)}
+
+.appr-canvas{width:100%;height:240px;margin-top:24px}
+.appr-callout{text-align:center;margin-top:14px;font-size:13px;color:var(--text-mid);line-height:1.5}
+.appr-callout strong{color:var(--green)}
+
+.wealth-nugget{padding:32px 64px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(186,163,112,0.04) 0%,rgba(186,163,112,0.01) 100%)}
+.wealth-nugget-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;color:var(--gold);margin-bottom:16px}
+.wealth-nugget-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:center;margin-bottom:14px}
+.wealth-nugget-card{text-align:center;padding:20px;border-radius:8px}
+.wealth-nugget-card.home{background:rgba(94,188,138,0.06);border:1px solid rgba(94,188,138,0.1)}
+.wealth-nugget-card.savings{background:rgba(255,255,255,0.02);border:1px solid var(--border)}
+.wealth-nugget-card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:8px}
+.wealth-nugget-card-value{font-family:'Playfair Display',serif;font-size:24px;font-weight:700}
+.wealth-nugget-card.home .wealth-nugget-card-value{color:var(--green)}
+.wealth-nugget-card.savings .wealth-nugget-card-value{color:var(--text-mid)}
+.wealth-nugget-card-detail{font-size:10px;color:var(--text-dim);margin-top:4px;line-height:1.4}
+.wealth-nugget-vs{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--text-dim);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin:0 16px}
+.wealth-nugget-text{font-size:13px;color:var(--text-mid);line-height:1.6;text-align:center}
+.wealth-nugget-text strong{color:var(--text);font-weight:600}
+
+.philosophy-block{padding:32px 64px;border-bottom:1px solid var(--border);background:var(--surface-raised)}
+.philosophy-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--gold);margin-bottom:10px}
+.philosophy-text{font-size:13px;color:var(--text-mid);line-height:1.7;max-width:780px}
+.philosophy-text strong{color:var(--text);font-weight:600}
+
+.rpt-footer{background:var(--surface-raised);padding:28px 64px;border-top:1px solid var(--border)}
+.footer-standard{display:flex;justify-content:space-between;align-items:center;gap:30px}
+.footer-your-info{display:flex;align-items:center;gap:16px;flex:1}
+.footer-headshot{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--border-gold);flex-shrink:0}
+.footer-initials{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border-gold);color:var(--gold);font-family:'Playfair Display',serif;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.footer-details{line-height:1.5}
+.footer-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.footer-credentials{font-size:10px;color:var(--text-dim);line-height:1.5}
+.footer-logos{display:flex;gap:15px;align-items:center;flex-shrink:0}
+.footer-logo{height:45px;width:auto;object-fit:contain}
+.footer-cobrand{display:flex;align-items:center;gap:0}
+.footer-person{display:flex;align-items:center;gap:14px;flex:1;padding:0 20px}
+.footer-person:first-child{padding-left:0}
+.footer-person:last-child{padding-right:0}
+.footer-divider{width:1px;height:50px;background:var(--border);flex-shrink:0}
+.footer-company-bar{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.footer-company-bar .footer-company-name{font-size:10px;font-weight:600;color:var(--text-mid)}
+.footer-company-bar .footer-company-sub{font-size:9px;color:var(--text-dim)}
+.rpt-disclosures{background:var(--bg);padding:14px 64px;font-size:7.5px;color:var(--text-faint);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1100px;margin:0 auto}
+.rpt-disc-logos{display:flex;justify-content:center;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.03)}
+.rpt-disc-logos span{font-size:8px;font-weight:700;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%;padding:0}
+  .rpt-hero{padding:24px 40px 20px}
+  .rpt-section,.wealth-nugget,.philosophy-block{padding:20px 40px}
+  .rpt-kpi{padding:14px 16px}.rpt-kpi-value{font-size:16px}
+  .rpt-footer{padding:18px 40px}.rpt-disclosures{padding:8px 40px 12px}
+  .report-page,.rpt-footer,.rpt-disclosures,.wealth-nugget,.philosophy-block{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+
+<!-- GENERATOR FORM -->
+<div class="generator-panel" id="generatorPanel">
+  <div class="gen-title">Your Wealth Starts Now</div>
+  <div class="gen-sub">What Waiting Really Costs Your Financial Future — show clients why buying today beats waiting for rates to drop</div>
+  <div class="gen-grid">
+    <div class="gen-section">Client Info</div>
+    <div class="gen-field full"><label>Client Name</label><input type="text" id="inp_clientName" placeholder="Susie Homebuyer"></div>
+    <div class="gen-section">Property & Loan Details</div>
+    <div class="gen-field full"><label>Property Address or ZIP Code</label><input type="text" id="inp_address" placeholder="123 Main St, Anytown, OH 45001"></div>
+    <div class="gen-field"><label>Purchase Price</label><input type="text" id="inp_price" placeholder="359,900" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Down Payment %</label><input type="number" id="inp_downPct" value="10" min="0" max="100" step="0.5"></div>
+    <div class="gen-field"><label>Current Interest Rate %</label><input type="number" id="inp_rate" value="6.5" min="0" max="15" step="0.125"></div>
+    <div class="gen-field"><label>Loan Term (Years)</label><input type="number" id="inp_term" value="30" min="10" max="40"></div>
+    <div class="gen-section">Rate Scenarios</div>
+    <div class="gen-field"><label>Rate Increase Scenario (+%)</label><input type="number" id="inp_rateUp" value="1.0" min="0" max="5" step="0.25"></div>
+    <div class="gen-field"><label>Rate Decrease Scenario (-%)</label><input type="number" id="inp_rateDown" value="1.0" min="0" max="5" step="0.25"></div>
+    <div class="gen-hint">Default: +1% / -1%. Adjust to show any rate scenario.</div>
+    <div class="gen-section">Co-Branding (Optional)</div>
+    <div class="gen-check"><input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()"><label for="inp_cobrand">Include Realtor Co-Branding</label></div>
+    <div id="cobrandFields" style="display:none;grid-column:1/-1;">
+      <div style="margin-bottom:14px;"><label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Choose Layout</label>
+        <div style="display:flex;gap:10px;">
+          <div class="layout-picker-box selected" id="layoutLeft" onclick="pickLayout('left')" style="flex:1;text-align:center;"><div style="font-size:8px;font-weight:700;color:var(--blue-btn);">Realtor Left</div></div>
+          <div class="layout-picker-box" id="layoutRight" onclick="pickLayout('right')" style="flex:1;text-align:center;"><div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);">Realtor Right</div></div>
+        </div>
+      </div>
+      <div class="gen-grid" style="gap:10px;">
+        <div class="gen-field"><label>Realtor Name</label><input type="text" id="inp_realtorName" placeholder="Jane Agent"></div>
+        <div class="gen-field"><label>Brokerage</label><input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams"></div>
+        <div class="gen-field"><label>Realtor Phone</label><input type="text" id="inp_realtorPhone" placeholder="(555) 123-4567"></div>
+        <div class="gen-field"><label>Realtor Email</label><input type="text" id="inp_realtorEmail" placeholder="jane@kw.com"></div>
+      </div>
+    </div>
+  </div>
+  <div class="gen-error" id="genError"></div>
+  <div class="gen-loading" id="genLoading"><span class="spinner"></span>Fetching live market data...</div>
+  <div class="gen-actions"><button class="gen-btn primary" id="genBtn" onclick="generateReport()">Generate Report</button></div>
+</div>
+
+<!-- REPORT -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <a href="mission-control.html#reports">&larr; Partner Portal</a>
+    <button onclick="editReport()">&#9998; Edit Report</button>
+    <button class="primary" onclick="window.print()">&#128196; Export PDF</button>
+  </div>
+  <div class="report-page" id="reportPage">
+    <div id="rptHero"></div>
+    <div id="rptKpi"></div>
+    <div id="rptCards"></div>
+    <div id="rptChart"></div>
+    <div id="rptWealth"></div>
+    <div id="rptPhilosophy"></div>
+    <div id="rptFooter" class="rpt-footer"></div>
+    <div id="rptDisc" class="rpt-disclosures"></div>
+  </div>
+</div>
+
+<script>
+function formatCurrency(el){var v=el.value.replace(/[^0-9]/g,'');if(v)el.value=parseInt(v).toLocaleString()}
+function parseCurrency(s){return parseFloat((s||'0').replace(/[^0-9.]/g,''))||0}
+function fmtMoney(n){return '$'+Math.round(n).toLocaleString()}
+function calcPI(loan,rate,termYrs){var r=rate/100/12,n=termYrs*12;if(r===0)return loan/n;return loan*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1)}
+function toggleCobrand(){document.getElementById('cobrandFields').style.display=document.getElementById('inp_cobrand').checked?'block':'none'}
+var cobrandLayout='left';
+function pickLayout(s){cobrandLayout=s;document.getElementById('layoutLeft').classList.toggle('selected',s==='left');document.getElementById('layoutRight').classList.toggle('selected',s==='right')}
+function editReport(){document.getElementById('generatorPanel').style.display='block';document.getElementById('reportContainer').style.display='none'}
+function showError(m){var e=document.getElementById('genError');e.textContent=m;e.style.display='block'}
+function hideError(){document.getElementById('genError').style.display='none'}
+
+async function generateReport(){
+  hideError();
+  var clientName=document.getElementById('inp_clientName').value.trim()||'Valued Client';
+  var addressInput=document.getElementById('inp_address').value.trim();
+  var price=parseCurrency(document.getElementById('inp_price').value);
+  var downPct=parseFloat(document.getElementById('inp_downPct').value)||10;
+  var rate=parseFloat(document.getElementById('inp_rate').value)||6.5;
+  var term=parseInt(document.getElementById('inp_term').value)||30;
+  var rateUp=parseFloat(document.getElementById('inp_rateUp').value)||1;
+  var rateDown=parseFloat(document.getElementById('inp_rateDown').value)||1;
+
+  if(!addressInput){showError('Please enter a property address or ZIP code.');return}
+  if(price<10000){showError('Please enter a valid purchase price.');return}
+
+  var zipMatch=addressInput.match(/\b(\d{5})\b/);var zip=zipMatch?zipMatch[1]:'';
+  document.getElementById('genLoading').style.display='block';
+  document.getElementById('genBtn').disabled=true;
+
+  var apiData=null;
+  try{
+    var u='https://agent-edge-backend.vercel.app/api/buy-vs-rent?';
+    if(zip)u+='zip='+zip+'&';
+    u+='address='+encodeURIComponent(addressInput);
+    var r2=await fetch(u);if(r2.ok)apiData=await r2.json();
+  }catch(e){console.error('API:',e)}
+
+  document.getElementById('genLoading').style.display='none';
+  document.getElementById('genBtn').disabled=false;
+
+  var apprRate=3.5,stateName='',displayAddress=addressInput;
+  if(apiData){
+    if(apiData.appreciation)apprRate=apiData.appreciation.oneYear||apiData.appreciation.fiveYear||apiData.appreciation.forecastAnnualRate||3.5;
+    if(apiData.location){stateName=apiData.location.stateName||apiData.location.state||'';if(apiData.location.formattedAddress)displayAddress=apiData.location.formattedAddress}
+  }
+
+  // CALCULATIONS
+  var downAmt=price*downPct/100;
+  var loan=price-downAmt;
+  var pi=calcPI(loan,rate,term);
+
+  // 6-month appreciation
+  var price6=price*Math.pow(1+apprRate/100,0.5);
+  var apprGain6=price6-price;
+  var down6=price6*downPct/100;
+  var loan6=price6-down6;
+
+  // Equity built in 6 months (sum of principal portions)
+  var monthlyRate=rate/100/12;
+  var equity6=0;
+  var bal=loan;
+  for(var m=0;m<6;m++){var interest=bal*monthlyRate;var principal=pi-interest;equity6+=principal;bal-=principal}
+  var totalWealth6=Math.round(apprGain6)+Math.round(equity6);
+
+  // Rate scenarios
+  var rateRise=rate+rateUp;
+  var rateDrop=rate-rateDown;
+  var piRise=calcPI(loan6,rateRise,term);
+  var piDrop=calcPI(loan6,rateDrop,term);
+  var piDiff=Math.round(pi-piDrop);
+
+  // Refi math
+  var refiLoan=bal; // balance after 6 months
+  var refiPI=calcPI(refiLoan,rateDrop,term);
+  var refiCost=4000;
+  var savingsPerYr=4.5;
+  var savingsGain=Math.round(downAmt*savingsPerYr/100);
+  var apprGain1yr=Math.round(price*(apprRate/100));
+  var wealthMultiplier=Math.round(apprGain1yr/savingsGain*10)/10;
+
+  var today=new Date();
+  var dateStr=today.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  var ck='&#10003;';
+
+  // HERO
+  document.getElementById('rptHero').innerHTML=
+    '<div class="rpt-hero">'+
+    '<div class="rpt-hero-label">Your Wealth Starts Now</div>'+
+    '<div class="rpt-hero-subtitle">What Waiting Really Costs Your Financial Future</div>'+
+    '<div class="rpt-hero-title">'+displayAddress+'</div>'+
+    '<div class="rpt-hero-sub">Prepared for '+clientName+' &middot; '+dateStr+'</div>'+
+    '<div class="rpt-hero-punchline">Don\'t let '+fmtMoney(piDiff)+'/month keep you from your dream home &mdash; and '+fmtMoney(totalWealth6)+' in wealth.</div>'+
+    '<div class="rpt-hero-headline">The difference between buying today and waiting for rates to drop is smaller than you think. But the wealth you miss by waiting adds up fast. Let the numbers tell the story.</div>'+
+    '</div>';
+
+  // KPI
+  document.getElementById('rptKpi').innerHTML=
+    '<div class="rpt-kpi-strip">'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Today\'s Price</div><div class="rpt-kpi-value">'+fmtMoney(price)+'</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Price in 6 Months</div><div class="rpt-kpi-value red">'+fmtMoney(price6)+'</div><div class="rpt-kpi-detail">+'+fmtMoney(apprGain6)+' from appreciation</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Monthly P&I Today</div><div class="rpt-kpi-value green">'+fmtMoney(pi)+'</div><div class="rpt-kpi-detail">at '+rate.toFixed(2)+'%</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Payment Difference</div><div class="rpt-kpi-value">'+fmtMoney(piDiff)+'</div><div class="rpt-kpi-detail">vs waiting for lower rate</div></div>'+
+    '</div>';
+
+  // THREE CARDS + H2H
+  var cardsHTML=
+    '<div class="rpt-section">'+
+    '<div class="rpt-section-title">Three Scenarios. One Clear Answer.</div>'+
+    '<div class="rpt-section-intro">Rates can be difficult to predict. So here are all three possibilities. In every scenario, the home costs more if you wait &mdash; because appreciation doesn\'t wait for anyone.</div>'+
+    '<div class="cards-grid">'+
+    // Card 1: Buy Today
+    '<div class="sc buy"><div class="sc-head"><div class="sc-tag">'+ck+' Buy Today</div><div class="sc-title">'+fmtMoney(price)+'</div><div class="sc-sub">at '+rate.toFixed(2)+'% &middot; '+term+'-year fixed</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Down Payment ('+downPct+'%)</div><div class="sc-row-value">'+fmtMoney(downAmt)+'</div></div><div class="sc-row"><div class="sc-row-label">Loan Amount</div><div class="sc-row-value">'+fmtMoney(loan)+'</div></div><div class="sc-row"><div class="sc-row-label">Interest Rate</div><div class="sc-row-value">'+rate.toFixed(2)+'%</div></div></div>'+
+    '<div class="sc-pi"><div class="sc-pi-label">Monthly P&I</div><div class="sc-pi-value">'+fmtMoney(pi)+'</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Equity Built (6 mo)</div><div class="sc-row-value green">+'+fmtMoney(equity6)+'</div></div><div class="sc-row"><div class="sc-row-label">Appreciation (6 mo)</div><div class="sc-row-value green">+'+fmtMoney(apprGain6)+'</div></div></div>'+
+    '<div class="sc-wealth"><div class="sc-wealth-label">Wealth Built in 6 Months</div><div class="sc-wealth-value">+'+fmtMoney(totalWealth6)+'</div></div></div>'+
+    // Card 2: Wait, Rate Drops
+    '<div class="sc drop"><div class="sc-head"><div class="sc-tag">&#9660; Wait &mdash; Rate Drops</div><div class="sc-title">'+fmtMoney(price6)+'</div><div class="sc-sub">at '+rateDrop.toFixed(2)+'% &middot; 6 months later</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Down Payment ('+downPct+'%)</div><div class="sc-row-value red">'+fmtMoney(down6)+'</div></div><div class="sc-row"><div class="sc-row-label">Loan Amount</div><div class="sc-row-value red">'+fmtMoney(loan6)+'</div></div><div class="sc-row"><div class="sc-row-label">Interest Rate</div><div class="sc-row-value blue">'+rateDrop.toFixed(2)+'%</div></div></div>'+
+    '<div class="sc-pi"><div class="sc-pi-label">Monthly P&I</div><div class="sc-pi-value">'+fmtMoney(piDrop)+'</div><div class="sc-pi-detail" style="color:var(--blue)">'+fmtMoney(piDiff)+'/mo less than today</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Equity Built (6 mo)</div><div class="sc-row-value red">$0</div></div><div class="sc-row"><div class="sc-row-label">Appreciation (6 mo)</div><div class="sc-row-value red">$0</div></div></div>'+
+    '<div class="sc-wealth"><div class="sc-wealth-label">Wealth Built While Waiting</div><div class="sc-wealth-value">$0</div></div></div>'+
+    // Card 3: Wait, Rate Rises
+    '<div class="sc rise"><div class="sc-head"><div class="sc-tag">&#9650; Wait &mdash; Rate Rises</div><div class="sc-title">'+fmtMoney(price6)+'</div><div class="sc-sub">at '+rateRise.toFixed(2)+'% &middot; 6 months later</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Down Payment ('+downPct+'%)</div><div class="sc-row-value red">'+fmtMoney(down6)+'</div></div><div class="sc-row"><div class="sc-row-label">Loan Amount</div><div class="sc-row-value red">'+fmtMoney(loan6)+'</div></div><div class="sc-row"><div class="sc-row-label">Interest Rate</div><div class="sc-row-value red">'+rateRise.toFixed(2)+'%</div></div></div>'+
+    '<div class="sc-pi"><div class="sc-pi-label">Monthly P&I</div><div class="sc-pi-value">'+fmtMoney(piRise)+'</div><div class="sc-pi-detail" style="color:var(--red)">+'+fmtMoney(Math.round(piRise-pi))+'/mo more than today</div></div>'+
+    '<div class="sc-body"><div class="sc-row"><div class="sc-row-label">Equity Built (6 mo)</div><div class="sc-row-value red">$0</div></div><div class="sc-row"><div class="sc-row-label">Appreciation (6 mo)</div><div class="sc-row-value red">$0</div></div></div>'+
+    '<div class="sc-wealth"><div class="sc-wealth-label">Wealth Built While Waiting</div><div class="sc-wealth-value">$0</div></div></div>'+
+    '</div>'+ // end cards-grid
+    '<div class="cards-note">Payments reflect principal &amp; interest only. Property taxes, homeowners insurance, and HOA fees apply equally regardless of when you purchase.</div>'+
+    // H2H Table
+    '<div class="h2h"><div class="h2h-header"><div class="h2h-title">The Real Comparison: Buy Now + Refi vs. Wait for '+rateDrop.toFixed(2)+'%</div><div class="h2h-sub">Even if rates drop exactly like you\'re hoping &mdash; buying today and refinancing later still wins.</div></div>'+
+    '<table class="h2h-table"><thead><tr><th></th><th>Buy Now + Refi to '+rateDrop.toFixed(2)+'%</th><th>Wait 6 Months for '+rateDrop.toFixed(2)+'%</th></tr></thead><tbody>'+
+    '<tr><td>Monthly P&I</td><td><span class="h2h-win">'+fmtMoney(refiPI)+'</span><span class="h2h-check">'+ck+'</span></td><td><span class="h2h-neutral">'+fmtMoney(piDrop)+'</span></td></tr>'+
+    '<tr><td>Loan Amount</td><td><span class="h2h-win">'+fmtMoney(refiLoan)+'</span><span class="h2h-check">'+ck+'</span></td><td><span class="h2h-lose">'+fmtMoney(loan6)+'</span></td></tr>'+
+    '<tr><td>Cash to Close</td><td><span class="h2h-win">'+fmtMoney(downAmt)+'</span><span class="h2h-check">'+ck+'</span></td><td><span class="h2h-lose">'+fmtMoney(down6)+'</span></td></tr>'+
+    '<tr><td>Refinance Cost</td><td><span class="h2h-lose">'+fmtMoney(refiCost)+'</span></td><td><span class="h2h-neutral">$0</span><span class="h2h-check">'+ck+'</span></td></tr>'+
+    '<tr><td>Wealth Built (6 months)</td><td><span class="h2h-win">+'+fmtMoney(totalWealth6)+'</span><span class="h2h-check">'+ck+'</span></td><td><span class="h2h-lose">$0</span></td></tr>'+
+    '</tbody></table>'+
+    '<div class="h2h-footer"><div class="h2h-footer-text">Buy now + refi wins on <strong>4 out of 5 metrics</strong> &mdash; and the one it doesn\'t? You\'ve already built <strong>'+fmtMoney(totalWealth6)+' in wealth</strong> to cover a '+fmtMoney(refiCost)+' average cost to refi.</div></div></div>'+
+    '</div>';
+
+  document.getElementById('rptCards').innerHTML=cardsHTML;
+
+  // CHART
+  document.getElementById('rptChart').innerHTML=
+    '<div class="rpt-section"><div class="rpt-section-title">The Price Isn\'t Waiting for You</div><div class="rpt-section-intro">Based on the current 1-year appreciation rate for '+(stateName||'your area')+', here\'s how this home\'s price is projected to climb.</div>'+
+    '<canvas id="apprChart" class="appr-canvas" height="240"></canvas>'+
+    '<div class="appr-callout">In 6 months, the projected price rises by <strong>'+fmtMoney(apprGain6)+'</strong>. In 1 year, <strong>'+fmtMoney(apprGain1yr)+'</strong>. In 2 years, <strong>'+fmtMoney(Math.round(price*(Math.pow(1+apprRate/100,2)-1)))+'</strong>.</div></div>';
+
+  // WEALTH NUGGET
+  document.getElementById('rptWealth').innerHTML=
+    '<div class="wealth-nugget"><div class="wealth-nugget-title">While you wait, your down payment isn\'t working for you.</div>'+
+    '<div class="wealth-nugget-compare">'+
+    '<div class="wealth-nugget-card home"><div class="wealth-nugget-card-label">Your '+fmtMoney(downAmt)+' Buys This Home</div><div class="wealth-nugget-card-value">+'+fmtMoney(apprGain1yr)+'</div><div class="wealth-nugget-card-detail">First-year appreciation gain<br>on a '+fmtMoney(price)+' home</div></div>'+
+    '<div class="wealth-nugget-vs">VS</div>'+
+    '<div class="wealth-nugget-card savings"><div class="wealth-nugget-card-label">Your '+fmtMoney(downAmt)+' Sits in Savings</div><div class="wealth-nugget-card-value">+'+fmtMoney(savingsGain)+'</div><div class="wealth-nugget-card-detail">One year of interest<br>at '+savingsPerYr+'% APY</div></div>'+
+    '</div><div class="wealth-nugget-text">Your home works <strong>'+wealthMultiplier+'x harder</strong> than your savings account.</div></div>';
+
+  // PHILOSOPHY
+  document.getElementById('rptPhilosophy').innerHTML=
+    '<div class="philosophy-block"><div class="philosophy-title">"Your mortgage is a financial tool &mdash; and the clock is ticking."</div>'+
+    '<div class="philosophy-text">Every month you own a home, you build equity, capture appreciation, and move closer to financial independence. Every month you wait, those dollars work for someone else &mdash; or no one at all. The question isn\'t whether you can afford to buy. It\'s whether you can afford to wait.</div></div>';
+
+  // FOOTER
+  buildFooter();
+
+  // DISCLOSURES
+  document.getElementById('rptDisc').innerHTML=
+    'Prepared '+dateStr+'. &copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243. All Rights Reserved. This analysis is for informational and educational purposes only. It is not mortgage advice or a commitment to lend. Projected home values use FHFA House Price Index historical appreciation rates (state-level, 1-year) and are not guaranteed. Future interest rate scenarios are hypothetical and shown for comparison purposes only. Actual rates depend on market conditions and individual qualification. Average refinance cost of $4,000 is a national estimate; actual costs vary. Payments shown are principal and interest only. Property taxes, homeowners insurance, and HOA fees are not included as they apply regardless of purchase timing. Equity and appreciation calculations based on standard amortization and FHFA data. Savings account comparison assumes '+savingsPerYr+'% APY.'+
+    '<div class="rpt-disc-logos"><span>MEMBER FDIC</span><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span></div>';
+
+  // Show
+  document.getElementById('generatorPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+  setTimeout(function(){drawApprChart(price,apprRate)},100);
+}
+
+function buildFooter(){
+  var f=document.getElementById('rptFooter');
+  var k={name:'Kristy Flach',title:'Certified Mortgage Advisor · NMLS# 2632259',contact:'Paramount Residential Mortgage Group',email:'kflach@prmg.net',web:'kflach.myprmg.net',phone:'(206) 313-5883',headshot:'hero-headshot.jpg'};
+  var isCobrand=document.getElementById('inp_cobrand').checked;
+  var rn=document.getElementById('inp_realtorName').value.trim();
+  if(isCobrand&&rn){
+    var ri={name:rn,title:document.getElementById('inp_realtorBrokerage').value.trim()||'',contact:document.getElementById('inp_realtorPhone').value.trim()||'',email:document.getElementById('inp_realtorEmail').value.trim()||''};
+    function bP(p,isR){var img=isR?'<div class="footer-initials">'+p.name.split(' ').map(function(n){return n[0]}).join('')+'</div>':'<img src="'+k.headshot+'" class="footer-headshot" alt="'+p.name+'">';return '<div class="footer-person">'+img+'<div class="footer-details"><div class="footer-name">'+p.name+'</div><div class="footer-credentials">'+(p.title||'')+(p.contact?'<br>'+p.contact:'')+(p.email?'<br>'+p.email:'')+'</div></div></div>'}
+    var lp,rp,lr;if(cobrandLayout==='left'){lp=ri;rp=k;lr=true}else{lp=k;rp=ri;lr=false}
+    f.innerHTML='<div class="footer-cobrand">'+bP(lp,lr)+'<div class="footer-divider"></div>'+bP(rp,!lr)+'</div><div class="footer-company-bar"><div><div class="footer-company-name">Paramount Residential Mortgage Group</div><div class="footer-company-sub">NMLS# 75243 · Equal Housing Lender</div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  }else{
+    f.innerHTML='<div class="footer-standard"><div class="footer-your-info"><img src="'+k.headshot+'" class="footer-headshot" alt="Kristy Flach"><div class="footer-details"><div class="footer-name">'+k.name+'</div><div class="footer-credentials">'+k.title+'<br>'+k.contact+'<br>'+k.phone+' · '+k.email+' · '+k.web+'</div></div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  }
+}
+
+function drawApprChart(basePrice,apprRate){
+  var canvas=document.getElementById('apprChart');if(!canvas)return;
+  var ctx=canvas.getContext('2d');var dpr=window.devicePixelRatio||1;
+  var rect=canvas.getBoundingClientRect();canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  ctx.scale(dpr,dpr);var W=rect.width,H=rect.height;
+  var padL=70,padR=30,padT=20,padB=36,cW=W-padL-padR,cH=H-padT-padB;
+  var months=24,values=[];
+  for(var m=0;m<=months;m++)values.push(basePrice*Math.pow(1+apprRate/100,m/12));
+  var maxV=values[months]*1.04,minV=basePrice*0.97,range=maxV-minV;
+  function xP(m){return padL+(m/months)*cW}
+  function yP(v){return padT+cH-((v-minV)/range)*cH}
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  var step=range>200000?50000:range>100000?25000:range>50000?10000:5000;
+  for(var v=Math.ceil(minV/step)*step;v<=maxV;v+=step){ctx.beginPath();ctx.moveTo(padL,yP(v));ctx.lineTo(W-padR,yP(v));ctx.stroke();ctx.fillStyle='rgba(232,228,220,0.2)';ctx.font='10px DM Sans';ctx.textAlign='right';ctx.fillText('$'+(v/1000).toFixed(0)+'k',padL-8,yP(v)+3)}
+  ctx.fillStyle='rgba(232,228,220,0.25)';ctx.font='10px DM Sans';ctx.textAlign='center';
+  [{m:0,t:'Now'},{m:6,t:'6 mo'},{m:12,t:'1 yr'},{m:18,t:'18 mo'},{m:24,t:'2 yr'}].forEach(function(l){ctx.fillText(l.t,xP(l.m),H-12)});
+  ctx.beginPath();ctx.moveTo(xP(0),yP(values[0]));for(var m=1;m<=months;m++)ctx.lineTo(xP(m),yP(values[m]));ctx.lineTo(xP(months),padT+cH);ctx.lineTo(xP(0),padT+cH);ctx.closePath();ctx.fillStyle='rgba(94,188,138,0.06)';ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#5ebc8a';ctx.lineWidth=2.5;for(var m=0;m<=months;m++){m===0?ctx.moveTo(xP(m),yP(values[m])):ctx.lineTo(xP(m),yP(values[m]))}ctx.stroke();
+  [6,12].forEach(function(m){var x=xP(m),y=yP(values[m]);ctx.beginPath();ctx.strokeStyle='rgba(186,163,112,0.35)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.moveTo(x,padT);ctx.lineTo(x,padT+cH);ctx.stroke();ctx.setLineDash([]);ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='#baa370';ctx.fill();ctx.fillStyle='rgba(186,163,112,0.8)';ctx.font='bold 11px DM Sans';ctx.textAlign='center';ctx.fillText('$'+(Math.round(values[m])/1000).toFixed(0)+'k',x,y-14);ctx.font='10px DM Sans';ctx.fillStyle='#d97373';ctx.fillText('+$'+(Math.round(values[m]-basePrice)/1000).toFixed(1)+'k',x,y-2)});
+  ctx.beginPath();ctx.arc(xP(0),yP(values[0]),4,0,Math.PI*2);ctx.fillStyle='#5ebc8a';ctx.fill();ctx.fillStyle='rgba(232,228,220,0.5)';ctx.font='bold 11px DM Sans';ctx.textAlign='left';ctx.fillText('$'+(basePrice/1000).toFixed(0)+'k',xP(0)+8,yP(values[0])+4);ctx.fillStyle='#5ebc8a';ctx.fillText('$'+(Math.round(values[months])/1000).toFixed(0)+'k',xP(months)+8,yP(values[months])+4);
+}
+
+// URL pre-fill
+(function(){
+  var p=new URLSearchParams(window.location.search);if(p.toString()==='')return;
+  var cn=p.get('clientName')||p.get('client')||'';if(cn)document.getElementById('inp_clientName').value=decodeURIComponent(cn);
+  var ad=p.get('address')||'';if(ad)document.getElementById('inp_address').value=decodeURIComponent(ad);
+  var pr=p.get('price')||'';if(pr){var n=parseFloat(pr.replace(/[^0-9.]/g,''));if(n)document.getElementById('inp_price').value=Math.round(n).toLocaleString()}
+  var dp=p.get('downPct')||'';if(dp)document.getElementById('inp_downPct').value=dp;
+  var rt=p.get('rate')||'';if(rt)document.getElementById('inp_rate').value=rt;
+  var tm=p.get('term')||'';if(tm)document.getElementById('inp_term').value=tm;
+  var ru=p.get('rateUp')||'';if(ru)document.getElementById('inp_rateUp').value=ru;
+  var rd=p.get('rateDown')||'';if(rd)document.getElementById('inp_rateDown').value=rd;
+  var cb=p.get('cobrand')||'';
+  if(cb==='true'||cb==='yes'||cb==='Co-branded'){
+    var c=document.getElementById('inp_cobrand');if(c){c.checked=true;toggleCobrand()}
+    var rn=p.get('realtorName')||'';if(rn)document.getElementById('inp_realtorName').value=decodeURIComponent(rn);
+    var rb=p.get('realtorBrokerage')||p.get('brokerage')||'';if(rb)document.getElementById('inp_realtorBrokerage').value=decodeURIComponent(rb);
+    var rp2=p.get('realtorPhone')||'';if(rp2)document.getElementById('inp_realtorPhone').value=decodeURIComponent(rp2);
+    var re=p.get('realtorEmail')||'';if(re)document.getElementById('inp_realtorEmail').value=decodeURIComponent(re);
+    var ly=p.get('cobrandLayout')||'left';pickLayout(ly);
+  }
+  if(ad&&pr&&parseFloat(pr.replace(/[^0-9.]/g,''))>=10000)setTimeout(function(){generateReport()},200);
+})();
+</script>
+</body>
+</html>
