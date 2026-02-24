@@ -384,8 +384,8 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 <div class="flyer-grid">
 
 <div class="flyer-card" data-report="bid">
-<img src="Bid-Over-Ask.png" alt="Bid Over Ask">
-<h3>Bid Over Ask</h3>
+<img src="Bid-Over-Ask.png" alt="Worth the Premium">
+<h3>Worth the Premium</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
@@ -635,7 +635,7 @@ function openPanel(type, mode = "new") {
 
   // Set panel title
   panelTitle.innerText =
-    type === "bid" ? "Bid Over Ask" :
+    type === "bid" ? "Worth the Premium" :
     type === "buyrent" ? "Rent to Wealth" :
     type === "costwaiting" ? "Cost of Waiting" :
     type === "amortization" ? "Mortgage Amortization" :
@@ -825,7 +825,7 @@ function addToKit() {
   if (activeReport === "bid") {
     const missing = valid.some(p => !(p.list || "").trim() || !(p.offer || "").trim());
     if (missing) {
-      alert("Bid Over Ask requires List Price and Offer Price for each property.");
+      alert("Worth the Premium requires List Price and Offer Price for each property.");
       return;
     }
   }
@@ -915,7 +915,7 @@ function renderKit() {
     if (!Array.isArray(reportConfigs[r])) return;
     
     const displayName =
-      r === "bid" ? "Bid Over Ask" :
+      r === "bid" ? "Worth the Premium" :
       r === "buyrent" ? "Rent to Wealth" :
       r === "costwaiting" ? "Cost of Waiting" :
       r === "appreciation" ? "Appreciation" :
