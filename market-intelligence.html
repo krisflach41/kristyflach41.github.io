@@ -408,8 +408,8 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 </div>
 
 <div class="flyer-card" data-report="amortization">
-<img src="Mortgage-Amortization.png" alt="Mortgage Amortization">
-<h3>Mortgage Amortization</h3>
+<img src="Mortgage-Amortization.png" alt="Payoff Accelerator">
+<h3>Payoff Accelerator</h3>
 <button class="add-btn">Add to My Kit</button>
 </div>
 
@@ -638,7 +638,7 @@ function openPanel(type, mode = "new") {
     type === "bid" ? "Worth the Premium" :
     type === "buyrent" ? "Rent to Wealth" :
     type === "costwaiting" ? "Your Wealth Starts Now" :
-    type === "amortization" ? "Mortgage Amortization" :
+    type === "amortization" ? "Payoff Accelerator" :
     type === "appreciation" ? "Appreciation" :
     type === "investment" ? "Investment Property" :
     "Neighborhood Blueprint";
@@ -857,7 +857,7 @@ function addToKit() {
   if (activeReport === "amortization") {
     const missing = valid.some(p => !(p.loan || "").trim() || !(p.rate || "").trim());
     if (missing) {
-      alert("Amortization requires Loan Amount and Interest Rate for each entry.");
+      alert("Payoff Accelerator requires Loan Amount and Interest Rate for each entry.");
       return;
     }
   }
@@ -920,7 +920,7 @@ function renderKit() {
       r === "costwaiting" ? "Your Wealth Starts Now" :
       r === "appreciation" ? "Appreciation" :
       r === "investment" ? "Investment Property Analysis" :
-      r === "amortization" ? "Mortgage Amortization" :
+      r === "amortization" ? "Payoff Accelerator" :
       "Neighborhood Blueprint";
     
     kit.innerHTML += `
