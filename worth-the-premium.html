@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Worth the Premium</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07090e;--surface:#0d1117;--surface-raised:#131920;--border:rgba(255,255,255,0.05);--border-gold:rgba(186,163,112,0.18);--gold:#baa370;--gold-bright:#d4bc7c;--gold-dim:rgba(186,163,112,0.4);--green:#5ebc8a;--green-bg:rgba(94,188,138,0.06);--red:#d97373;--red-bg:rgba(217,115,115,0.06);--blue:#6ba3d6;--blue-btn:#3b82f6;--text:#e8e4dc;--text-mid:rgba(232,228,220,0.6);--text-dim:rgba(232,228,220,0.3);--text-faint:rgba(232,228,220,0.15)}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+.generator-panel{max-width:560px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}
+.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px;grid-column:1/-1;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}
+.gen-btn.primary:hover{background:#2563eb}
+.gen-btn:disabled{opacity:0.5;cursor:wait}
+.gen-check{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+.gen-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue-btn)}
+.gen-check label{font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer}
+.gen-error{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none}
+.gen-loading{display:none;text-align:center;margin-top:12px;color:var(--text-mid);font-size:13px}
+.gen-loading .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.1);border-top-color:var(--blue-btn);border-radius:50%;animation:spin .8s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+.layout-picker-box{flex:1;border:2px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;cursor:pointer;transition:0.2s}
+.layout-picker-box:hover{border-color:rgba(59,130,246,0.3)}
+.layout-picker-box.selected{border-color:rgba(59,130,246,0.6);background:rgba(59,130,246,0.08)}
+
+.report-container{display:none;max-width:1060px;margin:20px auto}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px;max-width:1060px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-nav button.primary{background:var(--blue-btn);border-color:var(--blue-btn);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-gold)}
+
+.rpt-hero{padding:52px 64px 48px;border-bottom:1px solid var(--border);position:relative}
+.rpt-hero::after{content:'';position:absolute;bottom:0;left:64px;right:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.rpt-hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.rpt-hero-subtitle{font-size:12px;color:var(--text-dim);margin-bottom:16px;letter-spacing:0.5px}
+.rpt-hero-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text-mid);line-height:1.35;margin-bottom:6px}
+.rpt-hero-sub{font-size:13px;color:var(--text-dim);margin-bottom:20px}
+.rpt-hero-punchline{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gold);margin-bottom:10px}
+.rpt-hero-headline{font-size:15px;color:var(--text-mid);line-height:1.6;max-width:820px}
+
+.rpt-kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+.rpt-kpi{padding:22px 24px;border-right:1px solid var(--border);text-align:center}
+.rpt-kpi:last-child{border-right:none}
+.rpt-kpi-label{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.rpt-kpi-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text)}
+.rpt-kpi-value.green{color:var(--green)}
+.rpt-kpi-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+.rpt-section{padding:40px 64px;border-bottom:1px solid var(--border)}
+.rpt-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;position:relative;padding-bottom:16px}
+.rpt-section-title::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-dim));border-radius:1px}
+.rpt-section-intro{font-size:13px;color:var(--text-mid);line-height:1.65;margin-top:14px;max-width:780px}
+
+.breakeven-canvas{width:100%;height:280px;margin-top:24px}
+.breakeven-callout{text-align:center;margin-top:16px;font-size:13px;color:var(--text-mid);line-height:1.5}
+.breakeven-callout strong{color:var(--green)}
+
+.projection-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+.proj-panel{border-radius:8px;padding:24px;border:1px solid var(--border)}
+.proj-panel.left{background:var(--surface-raised)}
+.proj-panel.right{background:rgba(94,188,138,0.04);border-color:rgba(94,188,138,0.1)}
+.proj-panel-title{font-size:10px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;text-align:center}
+.proj-panel-big{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;text-align:center;margin-bottom:4px}
+.proj-panel-big.green{color:var(--green)}
+.proj-panel-sub{font-size:11px;color:var(--text-dim);text-align:center;margin-bottom:16px}
+.proj-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.proj-row:last-child{border-bottom:none}
+.proj-row-label{color:var(--text-mid)}
+.proj-row-value{font-weight:600;color:var(--text)}
+
+.act-now{padding:32px 64px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(186,163,112,0.04) 0%,rgba(186,163,112,0.01) 100%)}
+.act-now-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--gold);margin-bottom:12px}
+.act-now-text{font-size:13px;color:var(--text-mid);line-height:1.7;max-width:800px}
+.act-now-text strong{color:var(--text);font-weight:600}
+.act-now-stat{display:inline-block;padding:6px 14px;border-radius:6px;background:rgba(186,163,112,0.08);border:1px solid rgba(186,163,112,0.15);font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin:12px 4px 12px 0}
+
+.philosophy-block{padding:32px 64px;border-bottom:1px solid var(--border);background:var(--surface-raised)}
+.philosophy-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;color:var(--gold);margin-bottom:10px}
+.philosophy-text{font-size:13px;color:var(--text-mid);line-height:1.7;max-width:780px}
+.philosophy-text strong{color:var(--text);font-weight:600}
+
+.rpt-table{width:100%;border-collapse:collapse}
+.rpt-table thead th{padding:10px 12px;text-align:left;font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-gold);background:var(--surface-raised)}
+.rpt-table thead th:not(:first-child){text-align:right}
+.rpt-table tbody td{padding:10px 12px;font-size:12px;color:var(--text-mid);border-bottom:1px solid var(--border)}
+.rpt-table tbody td:first-child{font-weight:600;color:var(--text)}
+.rpt-table tbody td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.rpt-table tbody tr:hover{background:rgba(255,255,255,0.02)}
+.rpt-table tbody td.positive{color:var(--green);font-weight:600}
+.rpt-table tbody td.negative{color:var(--red);font-weight:600}
+
+.rpt-footer{background:var(--surface-raised);padding:28px 64px;border-top:1px solid var(--border)}
+.footer-standard{display:flex;justify-content:space-between;align-items:center;gap:30px}
+.footer-your-info{display:flex;align-items:center;gap:16px;flex:1}
+.footer-headshot{width:64px;height:64px;border-radius:50%;object-fit:cover;border:1px solid var(--border-gold);flex-shrink:0}
+.footer-initials{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border-gold);color:var(--gold);font-family:'Playfair Display',serif;font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.footer-details{line-height:1.5}
+.footer-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+.footer-credentials{font-size:10px;color:var(--text-dim);line-height:1.5}
+.footer-logos{display:flex;gap:15px;align-items:center;flex-shrink:0}
+.footer-logo{height:45px;width:auto;object-fit:contain}
+.footer-cobrand{display:flex;align-items:center;gap:0}
+.footer-person{display:flex;align-items:center;gap:14px;flex:1;padding:0 20px}
+.footer-person:first-child{padding-left:0}
+.footer-person:last-child{padding-right:0}
+.footer-divider{width:1px;height:50px;background:var(--border);flex-shrink:0}
+.footer-company-bar{margin-top:16px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.footer-company-bar .footer-company-name{font-size:10px;font-weight:600;color:var(--text-mid)}
+.footer-company-bar .footer-company-sub{font-size:9px;color:var(--text-dim)}
+.rpt-disclosures{background:var(--bg);padding:14px 64px;font-size:7.5px;color:var(--text-faint);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1060px;margin:0 auto}
+.rpt-disc-logos{display:flex;justify-content:center;gap:24px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.03)}
+.rpt-disc-logos span{font-size:8px;font-weight:700;color:var(--text-faint);letter-spacing:1px;text-transform:uppercase}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%}
+  .rpt-footer,.rpt-disclosures,.act-now,.philosophy-block,.report-page{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .rpt-hero{padding:24px 40px 20px}
+  .rpt-section{padding:20px 40px}
+  .act-now,.philosophy-block{padding:20px 40px}
+  .rpt-kpi{padding:14px 16px}
+  .rpt-kpi-value{font-size:16px}
+  .rpt-footer{padding:18px 40px}
+  .rpt-disclosures{padding:8px 40px 12px}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+
+<div class="generator-panel" id="generatorPanel">
+  <div class="gen-title">Worth the Premium</div>
+  <div class="gen-sub">Why Paying Above Asking Is Still a Winning Investment — show clients how quickly appreciation covers their competitive bid</div>
+  <div class="gen-grid">
+    <div class="gen-section">Client Info</div>
+    <div class="gen-field full"><label>Client Name</label><input type="text" id="inp_clientName" placeholder="Susie Homebuyer"></div>
+    <div class="gen-section">Property Details</div>
+    <div class="gen-field full"><label>Property Address or ZIP Code</label><input type="text" id="inp_address" placeholder="123 Main St, Anytown, OH 45001"></div>
+    <div class="gen-field"><label>Asking Price</label><input type="text" id="inp_askingPrice" placeholder="359,900" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Amount Above Asking</label><input type="text" id="inp_aboveAsking" placeholder="10,000" oninput="formatCurrency(this)"></div>
+    <div class="gen-section">Co-Branding (Optional)</div>
+    <div class="gen-check"><input type="checkbox" id="inp_cobrand" onchange="toggleCobrand()"><label for="inp_cobrand">Include Realtor Co-Branding</label></div>
+    <div id="cobrandFields" style="display:none;grid-column:1/-1;">
+      <div style="margin-bottom:14px;">
+        <label style="font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">Choose Layout</label>
+        <div style="display:flex;gap:10px;">
+          <div class="layout-picker-box selected" id="layoutLeft" onclick="pickLayout('left')" style="flex:1;text-align:center;"><div style="font-size:8px;font-weight:700;color:var(--blue-btn);">Realtor Left</div></div>
+          <div class="layout-picker-box" id="layoutRight" onclick="pickLayout('right')" style="flex:1;text-align:center;"><div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.3);">Realtor Right</div></div>
+        </div>
+      </div>
+      <div class="gen-grid" style="gap:10px;">
+        <div class="gen-field"><label>Realtor Name</label><input type="text" id="inp_realtorName" placeholder="Jane Agent"></div>
+        <div class="gen-field"><label>Brokerage</label><input type="text" id="inp_realtorBrokerage" placeholder="Keller Williams"></div>
+        <div class="gen-field"><label>Realtor Phone</label><input type="text" id="inp_realtorPhone" placeholder="(555) 123-4567"></div>
+        <div class="gen-field"><label>Realtor Email</label><input type="text" id="inp_realtorEmail" placeholder="jane@kw.com"></div>
+      </div>
+    </div>
+  </div>
+  <div class="gen-error" id="genError"></div>
+  <div class="gen-loading" id="genLoading"><span class="spinner"></span>Fetching live market data...</div>
+  <div class="gen-actions"><button class="gen-btn primary" id="genBtn" onclick="generateReport()">Generate Report</button></div>
+</div>
+
+<div class="report-container" id="reportContainer">
+  <div class="report-nav" id="reportNav">
+    <a href="mission-control.html#reports">&larr; Partner Portal</a>
+    <button onclick="editReport()">&#9998; Edit Report</button>
+    <button class="primary" onclick="window.print()">&#128196; Export PDF</button>
+  </div>
+  <div class="report-page" id="reportPage">
+    <div id="rptHero"></div>
+    <div id="rptKpiStrip"></div>
+    <div id="rptBreakeven"></div>
+    <div id="rptProjection"></div>
+    <div id="rptActNow"></div>
+    <div id="rptPhilosophy"></div>
+    <div id="rptTable"></div>
+    <div class="rpt-footer" id="rptFooter"></div>
+    <div class="rpt-disclosures" id="rptDisclosures"></div>
+  </div>
+</div>
+
+<script>
+function formatCurrency(el){var v=el.value.replace(/[^0-9]/g,'');if(v)el.value=parseInt(v).toLocaleString()}
+function parseCurrency(s){return parseFloat((s||'0').replace(/[^0-9.]/g,''))||0}
+function fmtMoney(n){return '$'+Math.round(n).toLocaleString()}
+function toggleCobrand(){document.getElementById('cobrandFields').style.display=document.getElementById('inp_cobrand').checked?'block':'none'}
+var cobrandLayout='left';
+function pickLayout(s){cobrandLayout=s;var L=document.getElementById('layoutLeft'),R=document.getElementById('layoutRight');if(s==='left'){L.classList.add('selected');R.classList.remove('selected')}else{R.classList.add('selected');L.classList.remove('selected')}}
+function editReport(){document.getElementById('generatorPanel').style.display='block';document.getElementById('reportContainer').style.display='none'}
+function showError(m){var e=document.getElementById('genError');e.textContent=m;e.style.display='block'}
+function hideError(){document.getElementById('genError').style.display='none'}
+
+async function generateReport(){
+  hideError();
+  var clientName=document.getElementById('inp_clientName').value.trim()||'Valued Client';
+  var addressInput=document.getElementById('inp_address').value.trim();
+  var askingPrice=parseCurrency(document.getElementById('inp_askingPrice').value);
+  var aboveAsking=parseCurrency(document.getElementById('inp_aboveAsking').value);
+
+  if(!addressInput){showError('Please enter a property address or ZIP code.');return}
+  if(askingPrice<10000){showError('Please enter a valid asking price.');return}
+  if(aboveAsking<=0){showError('Please enter the amount above asking.');return}
+
+  var totalBid=askingPrice+aboveAsking;
+  var premiumPct=aboveAsking/askingPrice*100;
+  var zipMatch=addressInput.match(/\b(\d{5})\b/);
+  var zip=zipMatch?zipMatch[1]:'';
+
+  document.getElementById('genLoading').style.display='block';
+  document.getElementById('genBtn').disabled=true;
+
+  var apiData=null;
+  try{
+    var apiUrl='https://agent-edge-backend.vercel.app/api/buy-vs-rent?';
+    if(zip)apiUrl+='zip='+zip+'&';
+    apiUrl+='address='+encodeURIComponent(addressInput);
+    var resp=await fetch(apiUrl);
+    if(resp.ok)apiData=await resp.json();
+  }catch(e){console.error('API error:',e)}
+
+  document.getElementById('genLoading').style.display='none';
+  document.getElementById('genBtn').disabled=false;
+
+  var appreciationRate=3.5;
+  var rate1yr=null,rate5yr=null,rateLongTerm=null;
+  var stateName='',apprSource='FHFA House Price Index via FRED';
+  var displayAddress=addressInput;
+
+  if(apiData){
+    if(apiData.appreciation){
+      if(apiData.appreciation.forecastAnnualRate)appreciationRate=apiData.appreciation.forecastAnnualRate;
+      rate1yr=apiData.appreciation.oneYear;
+      rate5yr=apiData.appreciation.fiveYear;
+      rateLongTerm=apiData.appreciation.tenYear;
+    }
+    if(apiData.location){
+      stateName=apiData.location.stateName||apiData.location.state||'';
+      if(apiData.location.formattedAddress)displayAddress=apiData.location.formattedAddress;
+    }
+    if(apiData.appreciation&&apiData.appreciation._source)apprSource=apiData.appreciation._source;
+  }
+
+  // Break-even months
+  var breakEvenMonths=12*Math.log(totalBid/askingPrice)/Math.log(1+appreciationRate/100);
+  var breakEvenText='';
+  if(breakEvenMonths<1)breakEvenText='less than a month';
+  else if(breakEvenMonths<12)breakEvenText=breakEvenMonths.toFixed(1)+' months';
+  else breakEvenText=(breakEvenMonths/12).toFixed(1)+' years';
+
+  // Monthly appreciation dollars
+  var monthlyApprRate=Math.pow(1+appreciationRate/100,1/12)-1;
+  var monthlyValueGrowth=Math.round(askingPrice*monthlyApprRate);
+  var threeMonthCost=Math.round(askingPrice*(Math.pow(1+appreciationRate/100,3/12)-1));
+
+  // Year-by-year (0–5)
+  var yearData=[];
+  for(var y=0;y<=5;y++){
+    var hv=askingPrice*Math.pow(1+appreciationRate/100,y);
+    yearData.push({year:y,homeValue:Math.round(hv),gainVsAsking:Math.round(hv-askingPrice),gainVsBid:Math.round(hv-totalBid),gainPct:Math.round((hv-totalBid)/totalBid*10000)/100});
+  }
+  var yr5=yearData[5];
+
+  var today=new Date();
+  var dateStr=today.toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+
+  // HERO
+  document.getElementById('rptHero').innerHTML=
+    '<div class="rpt-hero">'+
+    '<div class="rpt-hero-label">Worth the Premium</div>'+
+    '<div class="rpt-hero-subtitle">Why Paying Above Asking Is Still a Winning Investment</div>'+
+    '<div class="rpt-hero-title">'+displayAddress+'</div>'+
+    '<div class="rpt-hero-sub">Prepared for '+clientName+' &middot; '+dateStr+'</div>'+
+    '<div class="rpt-hero-punchline">Your '+fmtMoney(aboveAsking)+' premium is recovered in just '+breakEvenText+'.</div>'+
+    '<div class="rpt-hero-headline">Based on current appreciation trends for '+(stateName||'your area')+', this home\'s value is projected to exceed your total bid in under '+Math.ceil(breakEvenMonths)+' months &mdash; and keep growing from there.</div>'+
+    '</div>';
+
+  // KPI STRIP
+  document.getElementById('rptKpiStrip').innerHTML=
+    '<div class="rpt-kpi-strip">'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Asking Price</div><div class="rpt-kpi-value">'+fmtMoney(askingPrice)+'</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Your Premium</div><div class="rpt-kpi-value">'+fmtMoney(aboveAsking)+'</div><div class="rpt-kpi-detail">'+premiumPct.toFixed(1)+'% above asking</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Your Total Bid</div><div class="rpt-kpi-value">'+fmtMoney(totalBid)+'</div></div>'+
+    '<div class="rpt-kpi"><div class="rpt-kpi-label">Recovery Timeline</div><div class="rpt-kpi-value green">'+breakEvenText+'</div><div class="rpt-kpi-detail">until value exceeds your bid</div></div>'+
+    '</div>';
+
+  // BREAK-EVEN SECTION
+  document.getElementById('rptBreakeven').innerHTML=
+    '<div class="rpt-section">'+
+    '<div class="rpt-section-title">How Quickly Your Premium Disappears</div>'+
+    '<div class="rpt-section-intro">The chart below shows your home\'s projected value over 5 years. The moment the line crosses above your total bid, your premium is fully recovered &mdash; and everything after that is pure gain.</div>'+
+    '<canvas id="breakevenChart" class="breakeven-canvas" height="280"></canvas>'+
+    '<div class="breakeven-callout">After just <strong>'+breakEvenText+'</strong>, your home\'s projected value exceeds what you paid. By Year 5, your '+fmtMoney(totalBid)+' investment is projected to be worth <strong>'+fmtMoney(yr5.homeValue)+'</strong> &mdash; a gain of <strong>'+fmtMoney(yr5.gainVsBid)+'</strong>.</div>'+
+    '</div>';
+
+  // 5-YEAR PROJECTION
+  document.getElementById('rptProjection').innerHTML=
+    '<div class="rpt-section">'+
+    '<div class="rpt-section-title">Your 5-Year Investment Outlook</div>'+
+    '<div class="projection-grid">'+
+      '<div class="proj-panel left">'+
+        '<div class="proj-panel-title">Your Bid Breakdown</div>'+
+        '<div class="proj-row"><div class="proj-row-label">Asking Price</div><div class="proj-row-value">'+fmtMoney(askingPrice)+'</div></div>'+
+        '<div class="proj-row"><div class="proj-row-label">Amount Above Asking</div><div class="proj-row-value">'+fmtMoney(aboveAsking)+'</div></div>'+
+        '<div class="proj-row"><div class="proj-row-label" style="font-weight:700;color:var(--text)">Total Bid</div><div class="proj-row-value" style="font-weight:700">'+fmtMoney(totalBid)+'</div></div>'+
+      '</div>'+
+      '<div class="proj-panel right">'+
+        '<div class="proj-panel-title">5-Year Projected Value</div>'+
+        '<div class="proj-panel-big green">'+fmtMoney(yr5.homeValue)+'</div>'+
+        '<div class="proj-panel-sub">Cumulative Gain: +'+fmtMoney(yr5.gainVsBid)+' (+'+yr5.gainPct.toFixed(1)+'%)</div>'+
+        '<div class="proj-row"><div class="proj-row-label">1-Year Rate</div><div class="proj-row-value">'+(rate1yr!==null?rate1yr.toFixed(2)+'%':'—')+'</div></div>'+
+        '<div class="proj-row"><div class="proj-row-label">5-Year Rate (Avg/Yr)</div><div class="proj-row-value">'+(rate5yr!==null?rate5yr.toFixed(2)+'%':appreciationRate.toFixed(2)+'%')+'</div></div>'+
+        '<div class="proj-row"><div class="proj-row-label">10-Year Historical (Avg/Yr)</div><div class="proj-row-value">'+(rateLongTerm!==null?rateLongTerm.toFixed(2)+'%':'—')+'</div></div>'+
+      '</div>'+
+    '</div>'+
+    '</div>';
+
+  // ACT NOW
+  document.getElementById('rptActNow').innerHTML=
+    '<div class="act-now">'+
+    '<div class="act-now-title">Every Month You Wait, the Math Changes</div>'+
+    '<div class="act-now-text">If this home appreciates at '+appreciationRate.toFixed(2)+'% per year, that\'s roughly <span class="act-now-stat">'+fmtMoney(monthlyValueGrowth)+'/month</span> in value growth. Waiting 3 months to find "the next one" could mean paying <strong>'+fmtMoney(threeMonthCost)+' more</strong> for a comparable home &mdash; or losing this one to another buyer who understood the math.<br><br>Your premium of '+fmtMoney(aboveAsking)+' is recovered in '+breakEvenText+'. The cost of walking away could be far greater.</div>'+
+    '</div>';
+
+  // PHILOSOPHY
+  document.getElementById('rptPhilosophy').innerHTML=
+    '<div class="philosophy-block">'+
+    '<div class="philosophy-title">"The best deal isn\'t the lowest price &mdash; it\'s the right home at the right time."</div>'+
+    '<div class="philosophy-text">In a competitive market, the winning bid isn\'t an overpayment &mdash; it\'s a <strong>strategic investment</strong>. The data shows your premium is recovered in months, while the wealth you build lasts decades. Your mortgage is a financial tool, not just a transaction. When you secure the right home at the right time, every dollar above asking is a dollar invested in your financial future.</div>'+
+    '</div>';
+
+  // YEAR-BY-YEAR TABLE
+  var rows='';
+  yearData.forEach(function(d){
+    if(d.year===0){
+      rows+='<tr><td>Purchase</td><td>'+fmtMoney(d.homeValue)+'</td><td>—</td><td class="negative">-'+fmtMoney(aboveAsking)+'</td><td class="negative">-'+premiumPct.toFixed(1)+'%</td></tr>';
+    }else{
+      rows+='<tr><td>Year '+d.year+'</td><td>'+fmtMoney(d.homeValue)+'</td><td class="positive">+'+fmtMoney(d.gainVsAsking)+'</td><td class="'+(d.gainVsBid>=0?'positive':'negative')+'">'+(d.gainVsBid>=0?'+':'-')+fmtMoney(Math.abs(d.gainVsBid))+'</td><td class="'+(d.gainPct>=0?'positive':'negative')+'">'+(d.gainPct>=0?'+':'')+d.gainPct.toFixed(1)+'%</td></tr>';
+    }
+  });
+
+  document.getElementById('rptTable').innerHTML=
+    '<div class="rpt-section">'+
+    '<div class="rpt-section-title">Year-by-Year Projection</div>'+
+    '<div style="margin-top:20px;overflow-x:auto;">'+
+    '<table class="rpt-table"><thead><tr><th>Year</th><th>Projected Value</th><th>Gain vs Asking</th><th>Gain vs Your Bid</th><th>Return on Bid</th></tr></thead>'+
+    '<tbody>'+rows+'</tbody></table></div></div>';
+
+  // FOOTER
+  buildFooter();
+
+  // DISCLOSURES
+  document.getElementById('rptDisclosures').innerHTML=
+    'Prepared '+dateStr+'. &copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243. All Rights Reserved. This analysis is for informational and educational purposes only. It is not mortgage advice or a commitment to lend. Projected home values use FHFA House Price Index historical appreciation rates (state-level, '+apprSource+') and are not guaranteed. Past appreciation does not guarantee future results. Actual market conditions, property-specific factors, and economic changes may affect home values. This report does not account for closing costs, renovation costs, or ongoing maintenance.'+
+    '<div class="rpt-disc-logos"><span>MEMBER FDIC</span><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span></div>';
+
+  // Show report
+  document.getElementById('generatorPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+
+  setTimeout(function(){drawBreakevenChart(askingPrice,totalBid,aboveAsking,appreciationRate,breakEvenMonths)},100);
+}
+
+function buildFooter(){
+  var f=document.getElementById('rptFooter');
+  var k={name:'Kristy Flach',title:'Certified Mortgage Advisor · NMLS# 2632259',contact:'Paramount Residential Mortgage Group',email:'kflach@prmg.net',web:'kflach.myprmg.net',phone:'(206) 313-5883',headshot:'hero-headshot.jpg'};
+  var isCobrand=document.getElementById('inp_cobrand').checked;
+  var rn=document.getElementById('inp_realtorName').value.trim();
+
+  if(isCobrand&&rn){
+    var ri={name:rn,title:document.getElementById('inp_realtorBrokerage').value.trim()||'',contact:document.getElementById('inp_realtorPhone').value.trim()||'',email:document.getElementById('inp_realtorEmail').value.trim()||''};
+    function bP(p,isR){
+      var img=isR?'<div class="footer-initials">'+p.name.split(' ').map(function(n){return n[0]}).join('')+'</div>':'<img src="'+k.headshot+'" class="footer-headshot" alt="'+p.name+'">';
+      return '<div class="footer-person">'+img+'<div class="footer-details"><div class="footer-name">'+p.name+'</div><div class="footer-credentials">'+(p.title||'')+(p.contact?'<br>'+p.contact:'')+(p.email?'<br>'+p.email:'')+'</div></div></div>';
+    }
+    var lp,rp,lr;
+    if(cobrandLayout==='left'){lp=ri;rp=k;lr=true}else{lp=k;rp=ri;lr=false}
+    f.innerHTML='<div class="footer-cobrand">'+bP(lp,lr)+'<div class="footer-divider"></div>'+bP(rp,!lr)+'</div><div class="footer-company-bar"><div><div class="footer-company-name">Paramount Residential Mortgage Group</div><div class="footer-company-sub">NMLS# 75243 · Equal Housing Lender</div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  }else{
+    f.innerHTML='<div class="footer-standard"><div class="footer-your-info"><img src="'+k.headshot+'" class="footer-headshot" alt="Kristy Flach"><div class="footer-details"><div class="footer-name">'+k.name+'</div><div class="footer-credentials">'+k.title+'<br>'+k.contact+'<br>'+k.phone+' · '+k.email+' · '+k.web+'</div></div></div><div class="footer-logos"><img src="PRMG-Logo.png" class="footer-logo" alt="PRMG"><img src="CMA Logo.png" class="footer-logo" style="height:35px" alt="CMA"><img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing"></div></div>';
+  }
+}
+
+function drawBreakevenChart(askingPrice,totalBid,aboveAsking,apprRate,breakEvenMonths){
+  var canvas=document.getElementById('breakevenChart');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var dpr=window.devicePixelRatio||1;
+  var rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr;canvas.height=rect.height*dpr;
+  ctx.scale(dpr,dpr);
+  var W=rect.width,H=rect.height;
+  var padL=70,padR=40,padT=30,padB=40;
+  var cW=W-padL-padR,cH=H-padT-padB;
+  var totalMonths=60;
+
+  // Generate data points
+  var values=[];
+  for(var m=0;m<=totalMonths;m++){
+    values.push(askingPrice*Math.pow(1+apprRate/100,m/12));
+  }
+  var maxVal=Math.max(values[totalMonths],totalBid)*1.08;
+  var minVal=Math.min(askingPrice-aboveAsking*0.5,totalBid-aboveAsking*2);
+  if(minVal>askingPrice*0.92)minVal=askingPrice*0.92;
+  var range=maxVal-minVal;
+
+  function xP(m){return padL+(m/totalMonths)*cW}
+  function yP(v){return padT+cH-((v-minVal)/range)*cH}
+
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,0.04)';ctx.lineWidth=1;
+  var step=range>200000?50000:range>100000?25000:range>50000?10000:5000;
+  for(var v=Math.ceil(minVal/step)*step;v<=maxVal;v+=step){
+    ctx.beginPath();ctx.moveTo(padL,yP(v));ctx.lineTo(W-padR,yP(v));ctx.stroke();
+    ctx.fillStyle='rgba(232,228,220,0.2)';ctx.font='10px DM Sans';ctx.textAlign='right';
+    ctx.fillText('$'+(v/1000).toFixed(0)+'k',padL-8,yP(v)+3);
+  }
+
+  // X labels
+  ctx.fillStyle='rgba(232,228,220,0.25)';ctx.font='10px DM Sans';ctx.textAlign='center';
+  for(var y=0;y<=5;y++){ctx.fillText(y===0?'Now':'Yr '+y,xP(y*12),H-12)}
+
+  // Total bid line (horizontal)
+  ctx.beginPath();ctx.strokeStyle='rgba(186,163,112,0.5)';ctx.lineWidth=1.5;ctx.setLineDash([6,4]);
+  ctx.moveTo(padL,yP(totalBid));ctx.lineTo(W-padR,yP(totalBid));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(186,163,112,0.7)';ctx.font='bold 10px DM Sans';ctx.textAlign='left';
+  ctx.fillText('Your Bid: '+fmtMoney(totalBid),padL+6,yP(totalBid)-8);
+
+  // Asking price line
+  ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+  ctx.moveTo(padL,yP(askingPrice));ctx.lineTo(W-padR,yP(askingPrice));ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='rgba(255,255,255,0.25)';ctx.font='10px DM Sans';
+  ctx.fillText('Asking: '+fmtMoney(askingPrice),padL+6,yP(askingPrice)-8);
+
+  // Fill below bid line red, above green
+  // Red zone (value < bid)
+  var beM=Math.min(Math.ceil(breakEvenMonths),totalMonths);
+  ctx.beginPath();
+  ctx.moveTo(xP(0),yP(values[0]));
+  for(var m=1;m<=beM;m++)ctx.lineTo(xP(m),yP(values[m]));
+  ctx.lineTo(xP(beM),yP(totalBid));
+  ctx.lineTo(xP(0),yP(totalBid));
+  ctx.closePath();
+  ctx.fillStyle='rgba(217,115,115,0.08)';ctx.fill();
+
+  // Green zone (value > bid)
+  if(beM<totalMonths){
+    ctx.beginPath();
+    ctx.moveTo(xP(beM),yP(totalBid));
+    for(var m=beM;m<=totalMonths;m++)ctx.lineTo(xP(m),yP(values[m]));
+    ctx.lineTo(xP(totalMonths),yP(totalBid));
+    ctx.closePath();
+    ctx.fillStyle='rgba(94,188,138,0.08)';ctx.fill();
+  }
+
+  // Home value line
+  ctx.beginPath();ctx.strokeStyle='#5ebc8a';ctx.lineWidth=2.5;
+  for(var m=0;m<=totalMonths;m++){m===0?ctx.moveTo(xP(m),yP(values[m])):ctx.lineTo(xP(m),yP(values[m]))}
+  ctx.stroke();
+
+  // Break-even marker
+  if(breakEvenMonths>0&&breakEvenMonths<=totalMonths){
+    var bx=xP(breakEvenMonths),by=yP(totalBid);
+    ctx.beginPath();ctx.strokeStyle='rgba(186,163,112,0.4)';ctx.lineWidth=1;ctx.setLineDash([4,4]);
+    ctx.moveTo(bx,padT);ctx.lineTo(bx,padT+cH);ctx.stroke();ctx.setLineDash([]);
+    ctx.beginPath();ctx.arc(bx,by,6,0,Math.PI*2);ctx.fillStyle='#baa370';ctx.fill();
+    ctx.fillStyle='rgba(186,163,112,0.9)';ctx.font='bold 11px DM Sans';ctx.textAlign='center';
+    ctx.fillText('Premium recovered',bx,padT-6);
+    ctx.font='10px DM Sans';ctx.fillText(breakEvenMonths.toFixed(1)+' months',bx,padT+10);
+  }
+
+  // Start dot
+  ctx.beginPath();ctx.arc(xP(0),yP(values[0]),4,0,Math.PI*2);ctx.fillStyle='#d97373';ctx.fill();
+
+  // End value label
+  ctx.fillStyle='#5ebc8a';ctx.font='bold 11px DM Sans';ctx.textAlign='left';
+  ctx.fillText(fmtMoney(values[totalMonths]),xP(totalMonths)+8,yP(values[totalMonths])+4);
+
+  // Legend
+  ctx.font='10px DM Sans';ctx.textAlign='right';
+  ctx.fillStyle='rgba(217,115,115,0.5)';ctx.fillRect(W-padR-170,padT+4,12,12);
+  ctx.fillStyle='rgba(232,228,220,0.4)';ctx.textAlign='left';ctx.fillText('Below your bid',W-padR-154,padT+14);
+  ctx.fillStyle='rgba(94,188,138,0.5)';ctx.fillRect(W-padR-170,padT+22,12,12);
+  ctx.fillStyle='rgba(232,228,220,0.4)';ctx.fillText('Above your bid (gain)',W-padR-154,padT+32);
+}
+
+// URL pre-fill
+(function(){
+  var p=new URLSearchParams(window.location.search);
+  if(p.toString()==='')return;
+  var cn=p.get('clientName')||p.get('client')||'';if(cn)document.getElementById('inp_clientName').value=decodeURIComponent(cn);
+  var ad=p.get('address')||'';if(ad)document.getElementById('inp_address').value=decodeURIComponent(ad);
+  var ap=p.get('askingPrice')||p.get('asking')||'';if(ap){var n=parseFloat(ap.replace(/[^0-9.]/g,''));if(n)document.getElementById('inp_askingPrice').value=Math.round(n).toLocaleString()}
+  var aa=p.get('aboveAsking')||p.get('above')||'';if(aa){var n=parseFloat(aa.replace(/[^0-9.]/g,''));if(n)document.getElementById('inp_aboveAsking').value=Math.round(n).toLocaleString()}
+  var cb=p.get('cobrand')||'';
+  if(cb==='true'||cb==='yes'||cb==='Co-branded'){
+    var c=document.getElementById('inp_cobrand');if(c){c.checked=true;toggleCobrand()}
+    var rn=p.get('realtorName')||'';if(rn)document.getElementById('inp_realtorName').value=decodeURIComponent(rn);
+    var rb=p.get('realtorBrokerage')||p.get('brokerage')||'';if(rb)document.getElementById('inp_realtorBrokerage').value=decodeURIComponent(rb);
+    var rp2=p.get('realtorPhone')||'';if(rp2)document.getElementById('inp_realtorPhone').value=decodeURIComponent(rp2);
+    var re=p.get('realtorEmail')||'';if(re)document.getElementById('inp_realtorEmail').value=decodeURIComponent(re);
+    var ly=p.get('cobrandLayout')||'left';pickLayout(ly);
+  }
+  if(ad&&ap&&aa&&parseFloat(ap.replace(/[^0-9.]/g,''))>=10000&&parseFloat(aa.replace(/[^0-9.]/g,''))>0){
+    setTimeout(function(){generateReport()},200);
+  }
+})();
+</script>
+</body>
+</html>
