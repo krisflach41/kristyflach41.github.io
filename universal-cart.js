@@ -177,7 +177,7 @@ class UniversalCart {
       bid: 'Worth the Premium',
       buyrent: 'Rent to Wealth',
       costwaiting: 'Your Wealth Starts Now',
-      appreciation: 'Appreciation',
+      appreciation: 'Wealth in Motion',
       investment: 'Investment Property',
       amortization: 'Payoff Accelerator',
       reportcard: 'Neighborhood Blueprint'
