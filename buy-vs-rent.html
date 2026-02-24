@@ -490,8 +490,9 @@ async function generateReport() {
   var displayAddress = addressInput;
 
   if (apiData) {
-    if (apiData.appreciation && apiData.appreciation.forecastAnnualRate) {
-      appreciationRate = apiData.appreciation.forecastAnnualRate;
+    if (apiData.appreciation) {
+      // Use 1-year rate (most current) first, fall back to 5-year average
+      appreciationRate = apiData.appreciation.oneYear || apiData.appreciation.fiveYear || apiData.appreciation.forecastAnnualRate || 3.5;
     }
     if (apiData.location) {
       stateName = apiData.location.stateName || apiData.location.state || '';
@@ -690,8 +691,8 @@ async function generateReport() {
       '<div class="rpt-section-title">Your Home\'s Projected Value</div>' +
       '<div class="rpt-section-intro">Based on historical appreciation data for ' + (stateName || 'your state') + ', your home is projected to grow in value year over year. This isn\'t speculation — it\'s based on the FHFA House Price Index, the same data used by federal regulators and economists.</div>' +
       '<div class="appreciation-ladder">' + apprHTML + '</div>' +
-      '<div class="appr-callout"><div class="appr-callout-big">+' + fmtMoney(totalAppreciationGain) + '</div><div class="appr-callout-text">Based on ' + appreciationRate.toFixed(2) + '% avg. annual appreciation for ' + (stateName || 'your area') + ', your ' + fmtMoney(purchasePrice) + ' home<br>could be worth ' + fmtMoney(yrLast.homeValue) + ' in ' + periodYears + ' years — that\'s ' + fmtMoney(totalAppreciationGain) + ' in appreciation gain.</div></div>' +
-      '<div class="appr-source">Source: ' + apprSource + ' — ' + (stateName || 'State') + ' 5-year annualized rate: ' + appreciationRate.toFixed(2) + '%</div>' +
+      '<div class="appr-callout"><div class="appr-callout-big">+' + fmtMoney(totalAppreciationGain) + '</div><div class="appr-callout-text">Based on ' + appreciationRate.toFixed(2) + '% current annual appreciation for ' + (stateName || 'your area') + ', your ' + fmtMoney(purchasePrice) + ' home<br>could be worth ' + fmtMoney(yrLast.homeValue) + ' in ' + periodYears + ' years — that\'s ' + fmtMoney(totalAppreciationGain) + ' in appreciation gain.</div></div>' +
+      '<div class="appr-source">Source: ' + apprSource + ' — ' + (stateName || 'State') + ' 1-year rate: ' + appreciationRate.toFixed(2) + '%</div>' +
     '</div>';
 
   // SECTION 5: SCOREBOARD
