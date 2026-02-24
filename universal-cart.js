@@ -179,7 +179,7 @@ class UniversalCart {
       costwaiting: 'Your Wealth Starts Now',
       appreciation: 'Appreciation',
       investment: 'Investment Property',
-      amortization: 'Mortgage Amortization',
+      amortization: 'Payoff Accelerator',
       reportcard: 'Neighborhood Blueprint'
     };
     return names[reportType] || reportType;
