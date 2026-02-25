@@ -60,41 +60,41 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
 .assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
 .assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
-.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
-.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+.assumption-key{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:14px;font-weight:600;color:var(--text-mid)}
 
 /* ── Sections ── */
 .rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
 .section-head{margin-bottom:36px}
 .section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
-.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:600px}
+.section-sub{font-size:14px;color:var(--text-dim);line-height:1.6;max-width:600px}
 
 /* ── Scenario Cards ── */
 .scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
 .scenario-card{padding:36px 32px;border-right:1px solid var(--border);position:relative}
 .scenario-card:last-child{border-right:none}
 
-.sc-tag{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.sc-tag{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
 .sc-tag.red{color:var(--red)}.sc-tag.gold{color:var(--gold)}.sc-tag.green{color:var(--green)}
 .sc-big{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;line-height:1;margin-bottom:6px}
 .sc-big.red{color:var(--red)}.sc-big.gold{color:var(--gold-bright)}.sc-big.green{color:var(--green)}
-.sc-sublabel{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px}
+.sc-sublabel{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px}
 .sc-rows{display:flex;flex-direction:column;gap:0}
-.sc-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.sc-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.03)}
 .sc-row:last-child{border-bottom:none}
 .sc-row-label{color:var(--text-dim)}.sc-row-val{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-mid)}
 .sc-row-val.green{color:var(--green)}.sc-row-val.red{color:var(--red)}.sc-row-val.gold{color:var(--gold)}
 .sc-net-row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0;margin-top:8px;border-top:1px solid var(--border-accent)}
-.sc-net-label{font-size:13px;font-weight:700;color:var(--text)}
-.sc-net-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;line-height:1}
+.sc-net-label{font-size:15px;font-weight:700;color:var(--text)}
+.sc-net-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1}
 
 /* ── Visual Bars ── */
 .visual-bar-section{padding:40px 80px;border-bottom:1px solid var(--border)}
 .vbar-row{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .vbar-row:last-child{margin-bottom:0}
-.vbar-label{font-size:11px;font-weight:600;color:var(--text-dim);width:140px;text-align:right;flex-shrink:0}
+.vbar-label{font-size:13px;font-weight:600;color:var(--text-dim);width:140px;text-align:right;flex-shrink:0}
 .vbar-track{flex:1;height:36px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;position:relative}
-.vbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:12px;font-weight:700;transition:width 0.6s ease}
+.vbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:14px;font-weight:700;transition:width 0.6s ease}
 .vbar-fill.red{background:linear-gradient(90deg,rgba(212,114,114,0.15),rgba(212,114,114,0.35));color:var(--red)}
 .vbar-fill.gold{background:linear-gradient(90deg,rgba(196,173,122,0.15),rgba(196,173,122,0.35));color:var(--gold)}
 .vbar-fill.green{background:linear-gradient(90deg,rgba(114,212,154,0.12),rgba(114,212,154,0.3));color:var(--green)}
@@ -113,32 +113,35 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .buyer-pay-cell{padding:28px;text-align:center;border-right:1px solid var(--border)}
 .buyer-pay-cell:last-child{border-right:none}
 .buyer-pay-cell.highlight{background:var(--green-soft)}
-.bp-tag{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
-.bp-amount{font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1}
-.bp-detail{font-size:10px;color:var(--text-dim);margin-top:4px}
-.bp-badge{font-size:11px;font-weight:600;margin-top:8px}
+.bp-tag{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.bp-amount{font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1}
+.bp-detail{font-size:12px;color:var(--text-dim);margin-top:4px}
+.bp-badge{font-size:13px;font-weight:600;margin-top:8px}
 
 /* ── Loan Reference Grid ── */
 .loan-ref-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
 .loan-ref-card{padding:24px 20px;border-right:1px solid var(--border);text-align:center}
 .loan-ref-card:last-child{border-right:none}
-.loan-ref-type{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.loan-ref-pct{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px}
-.loan-ref-detail{font-size:10px;color:var(--text-dim);line-height:1.5}
-.loan-ref-note{grid-column:1/-1;padding:16px 24px;font-size:11px;color:var(--text-dim);line-height:1.6;text-align:center;border-top:1px solid var(--border)}
+.loan-ref-type{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.loan-ref-pct{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px}
+.loan-ref-detail{font-size:12px;color:var(--text-dim);line-height:1.5}
+.loan-ref-note{grid-column:1/-1;padding:16px 24px;font-size:13px;color:var(--text-dim);line-height:1.6;text-align:center;border-top:1px solid var(--border)}
 .loan-ref-note strong{color:var(--gold)}
 
 /* ── Bottom Line ── */
 .bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
 .bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
-.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-label{font-size:11px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
 .bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
 .bl-value.green{color:var(--green)}
-.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+.bl-detail{font-size:13px;color:var(--text-mid);margin-top:8px}
 
 /* ── Disclosures ── */
-.rpt-disclosures{background:var(--bg);padding:18px 80px;font-size:8.5px;color:var(--text-ghost);line-height:1.8;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
-.rpt-disclosures strong{color:rgba(226,222,212,0.25)}
+.rpt-disclosures{background:var(--bg);padding:14px 80px;font-size:9px;color:var(--text-ghost);line-height:1.8;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
+
+/* ── Inline Disclaimer Callout ── */
+.disclaimer-callout{margin-top:0;padding:18px 28px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-dim);line-height:1.7}
+.disclaimer-callout strong{color:var(--text-mid)}
 
 @media print{
   body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -337,7 +340,9 @@ function generate(){
 
   // THREE SCENARIOS
   h+='<div class="rpt-section" style="padding-bottom:0"><div class="section-head"><div class="section-title">Three Paths Forward</div>';
-  h+='<div class="section-sub">How each strategy impacts what the seller walks away with. Commission is included; all other seller settlement costs (excise tax, capital gains, title, attorney fees, payoffs) are excluded.</div></div></div>';
+  h+='<div class="section-sub">How each strategy impacts what the seller walks away with.</div></div>';
+  h+='<div class="disclaimer-callout"><strong>Important:</strong> Net proceeds shown include commission only. This analysis does not include excise tax, capital gains tax, title insurance, transfer taxes, attorney fees, prorations, recording fees, HOA payoffs, mortgage payoff balance, or other settlement charges. Consult your closing attorney, title company, or settlement agent for a complete seller net sheet.</div>';
+  h+='</div>';
 
   h+='<div class="scenario-grid">';
 
@@ -440,9 +445,7 @@ function generate(){
 
   // RENDER
   $('reportPage').innerHTML=h;
-  $('rptDisclosures').innerHTML='This analysis is for educational and illustrative purposes only and does not constitute a settlement statement or net sheet. '+
-    '<strong>Net proceeds shown are before seller closing costs</strong> including but not limited to: excise tax, capital gains tax, title insurance, transfer taxes, '+
-    'attorney fees, prorations, recording fees, HOA payoffs, mortgage payoff balance, and other settlement charges. Consult your closing attorney, title company, or settlement agent for a complete seller net sheet. '+
+  $('rptDisclosures').innerHTML='This analysis is for educational and illustrative purposes only. '+
     'Rate buydown estimates assume 1 discount point (1% of loan amount) reduces the rate by approximately 0.25%. Actual costs and reductions vary by lender and market conditions. '+
     'Seller concession limits are governed by loan program guidelines (Fannie Mae, Freddie Mac, FHA, VA, USDA) and are subject to change. '+
     'NAR buyer qualification statistic is a general industry estimate. NMLS #2632259';
