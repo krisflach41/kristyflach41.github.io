@@ -1249,14 +1249,16 @@ function openGuide(reportKey) {
   // Get admin/lender name for personalization
   var lenderName = sessionStorage.getItem('agentEdgeLenderName') || '';
   var lenderRef = lenderName ? 'my lender ' + lenderName : 'my lender';
+  var firstName = lenderName ? lenderName.split(' ')[0] : '';
+  var pronounll = firstName ? firstName + ' will' : 'they\'ll';
   
   var pointsHTML = '';
   d.points.forEach(function(p) {
-    pointsHTML += '<li>' + p + '</li>';
+    pointsHTML += '<li>' + p.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll) + '</li>';
   });
   
   // Inject lender name into handoff
-  var handoff = d.handoff.replace(/my lender/g, lenderRef);
+  var handoff = d.handoff.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll);
   
   var card = document.getElementById('cheatsheetCard');
   card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
