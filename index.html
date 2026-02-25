@@ -1087,12 +1087,12 @@
 
     <!-- RATE TICKER - inside hero glass, near bottom -->
     <div style="position:absolute;bottom:24px;left:0;width:100%;overflow:hidden;background:#6e7f77;color:white;padding:10px 0;z-index:3;">
-      <div style="display:flex;animation:rateTicker 20s linear infinite;">
-        <div class="rate-ticker-line" style="display:flex;flex-shrink:0;gap:80px;padding-right:80px;">
-          <span>Loading rates...</span>
+      <div style="display:flex;width:200%;animation:rateTicker 18s linear infinite;">
+        <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
+          <span style="white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;">Loading rates...</span>
         </div>
-        <div class="rate-ticker-line" style="display:flex;flex-shrink:0;gap:80px;padding-right:80px;">
-          <span>Loading rates...</span>
+        <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
+          <span style="white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;">Loading rates...</span>
         </div>
       </div>
     </div>
@@ -1100,7 +1100,6 @@
 
   <style>
     @keyframes rateTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    .rate-ticker-line span { white-space: nowrap; font-weight: 500; font-size: 14px; letter-spacing: 0.3px; }
   </style>
   <script>
   (function() {
@@ -1109,12 +1108,13 @@
       .then(function(data) {
         if (!data.rates) return;
         var r = data.rates;
+        var spanStyle = 'white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;';
         var html = '';
-        if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
-        if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
-        if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
-        if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
-        if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
+        if (r['30year'])      html += '<span style="' + spanStyle + '">30-Year ' + r['30year'].toFixed(3) + '%</span>';
+        if (r['30yearFHA'])   html += '<span style="' + spanStyle + '">FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
+        if (r['30yearVA'])    html += '<span style="' + spanStyle + '">VA ' + r['30yearVA'].toFixed(3) + '%</span>';
+        if (r['30yearJumbo']) html += '<span style="' + spanStyle + '">Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
+        if (r['15year'])      html += '<span style="' + spanStyle + '">15-Year ' + r['15year'].toFixed(3) + '%</span>';
         document.querySelectorAll('.rate-ticker-line').forEach(function(el) { el.innerHTML = html; });
       })
       .catch(function(err) { console.error('Rate fetch error:', err); });
