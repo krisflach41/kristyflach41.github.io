@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buying Power · Financing Strategies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080d;--surface:#0a0e16;--surface-raised:#0e1420;--surface-accent:#111828;
+  --border:rgba(255,255,255,0.05);--border-accent:rgba(186,163,112,0.12);
+  --gold:#c4ad7a;--gold-bright:#d4c08a;--gold-soft:rgba(196,173,122,0.5);--gold-glow:rgba(196,173,122,0.08);
+  --green:#72d49a;--green-soft:rgba(114,212,154,0.12);
+  --red:#d47272;--red-soft:rgba(212,114,114,0.1);
+  --blue-btn:#3b82f6;
+  --text:#e2ded4;--text-mid:rgba(226,222,212,0.6);--text-dim:rgba(226,222,212,0.3);--text-ghost:rgba(226,222,212,0.12);
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Generator Panel ── */
+.generator-panel{max-width:580px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-hint{font-size:9px;color:rgba(255,255,255,0.2);grid-column:1/-1;margin-top:-4px}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}.gen-btn.primary:hover{background:#2563eb}
+
+/* ── Report ── */
+.report-container{display:none;max-width:1000px;margin:20px auto;padding:0 16px}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-accent)}
+
+/* ── Hero ── */
+.hero{padding:72px 80px 64px;position:relative;background:linear-gradient(170deg,rgba(196,173,122,0.03) 0%,transparent 40%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--border-accent) 30%,var(--border-accent) 70%,transparent 95%)}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.hero-verdict{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start}
+.verdict-number{text-align:right;padding-right:48px;border-right:1px solid var(--border-accent)}
+.verdict-amount{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:var(--gold-bright);line-height:1;letter-spacing:-1px}
+.verdict-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:8px}
+.verdict-thesis{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text-mid);line-height:1.7;padding-top:6px}
+.verdict-thesis strong{color:var(--text);font-weight:500}
+.verdict-thesis em{color:var(--gold);font-style:normal;font-weight:500}
+
+/* ── Assumptions Bar ── */
+.assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
+.assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
+.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+
+/* ── Sections ── */
+.rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:36px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:700px}
+
+/* ── Matrix Table ── */
+.matrix-table{width:100%;border-collapse:collapse;font-size:12px}
+.matrix-table thead th{padding:12px 10px;text-align:center;font-size:10px;font-weight:700;color:var(--text-mid);border-bottom:1px solid var(--border-accent)}
+.matrix-table thead th:first-child{text-align:left;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--text-dim)}
+.matrix-table thead th.rate-active{color:var(--gold)}
+.matrix-table tbody td{text-align:center;padding:10px;font-variant-numeric:tabular-nums;color:var(--text-dim);border-bottom:1px solid rgba(255,255,255,0.02);transition:background 0.15s}
+.matrix-table tbody td:first-child{text-align:left;font-weight:600;color:var(--text-dim)}
+.matrix-table tbody td:first-child.loan-active{color:var(--gold)}
+.matrix-table tbody td.cell-highlight{background:var(--gold-glow);color:var(--gold);font-weight:700;border-radius:0}
+.matrix-table tbody td.cell-exact{background:rgba(196,173,122,0.18);color:var(--gold-bright);font-weight:700}
+.matrix-table tbody tr:hover td{background:rgba(255,255,255,0.015)}
+.matrix-table tbody tr:hover td.cell-highlight{background:rgba(196,173,122,0.12)}
+.matrix-table tbody tr:hover td.cell-exact{background:rgba(196,173,122,0.22)}
+
+/* ── Matrix Nav ── */
+.matrix-nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.matrix-nav-btn{width:30px;height:30px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-dim);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:0.2s}
+.matrix-nav-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+.matrix-range{font-size:11px;color:var(--text-dim)}
+
+/* ── Bottom Line ── */
+.bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
+.bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
+.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
+.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+
+/* ── Disclosures ── */
+.rpt-disclosures{background:var(--bg);padding:14px 80px;font-size:8px;color:var(--text-ghost);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%;padding:0}
+  .hero{padding:24px 40px 20px}.rpt-section{padding:20px 40px}.assumptions-bar{padding:14px 40px}
+  .report-page,.hero,.rpt-section,.bottom-line,.assumptions-bar,.matrix-table tbody td.cell-highlight,.matrix-table tbody td.cell-exact{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .matrix-nav{display:none}
+  @page{margin:0.25in;size:letter landscape}
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+
+<!-- GENERATOR PANEL -->
+<div class="generator-panel" id="genPanel">
+  <div class="gen-title">Buying Power</div>
+  <div class="gen-sub">See how rate and price changes move the monthly payment — visual payment matrix across scenarios</div>
+  <div class="gen-grid">
+    <div class="gen-field full"><label>Client Name (Optional)</label><input type="text" id="inp_client" placeholder="Susie Homebuyer"></div>
+    <div class="gen-field"><label>Loan Amount</label><input type="text" id="inp_loan" placeholder="400,000" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Interest Rate %</label><input type="text" id="inp_rate" placeholder="6.75"></div>
+    <div class="gen-field"><label>APR % (Optional)</label><input type="text" id="inp_apr" placeholder="6.85"></div>
+    <div class="gen-field"><label>Term (Years)</label>
+      <select id="inp_term"><option value="30" selected>30</option><option value="25">25</option><option value="20">20</option><option value="15">15</option></select>
+    </div>
+    <div class="gen-hint">The matrix shows payments at ±3 rate steps (0.125% each) and ±3 loan amount steps around your baseline.</div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn primary" onclick="generateReport()">Generate Report</button></div>
+</div>
+
+<!-- REPORT -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <a href="#" onclick="document.getElementById('genPanel').style.display='block';document.getElementById('reportContainer').style.display='none';return false;">← Edit Inputs</a>
+    <button onclick="window.print()">🖨 Print / PDF</button>
+    <a href="financing-strategies.html">Back to Financing Strategies</a>
+  </div>
+
+  <div class="report-page">
+    <div class="hero">
+      <div class="hero-tag">Buying Power</div>
+      <div class="hero-verdict">
+        <div class="verdict-number">
+          <div class="verdict-amount" id="heroPayment">$0</div>
+          <div class="verdict-label">Monthly Payment</div>
+        </div>
+        <div class="verdict-thesis" id="heroThesis">—</div>
+      </div>
+    </div>
+
+    <div class="assumptions-bar" id="assumptionsBar"></div>
+
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Payment Matrix</div>
+        <div class="section-sub">Every cell shows the monthly P&I payment at that specific loan amount and rate combination. The highlighted cells represent payments within 0.5% of your baseline — these are your equivalent payment paths.</div>
+      </div>
+      <div class="matrix-nav">
+        <span class="matrix-nav-btn" onclick="shiftMatrix(-1)">◀</span>
+        <span class="matrix-range" id="matrixRange">—</span>
+        <span class="matrix-nav-btn" onclick="shiftMatrix(1)">▶</span>
+      </div>
+      <table class="matrix-table">
+        <thead id="matrixHead"></thead>
+        <tbody id="matrixBody"></tbody>
+      </table>
+    </div>
+
+    <div class="bottom-line" id="bottomLine"></div>
+  </div>
+
+  <div class="rpt-disclosures">
+    This calculator provides estimates for informational purposes only. Actual payments may vary based on lender terms, fees, taxes, insurance, and PMI.
+    This is not a commitment to lend. Consult a licensed loan officer for official loan estimates.
+  </div>
+</div>
+
+<script>
+var matrixOffset=0,baseLoan=0,baseRate=0,baseTerm=30;
+function formatCurrency(el){var raw=el.value.replace(/[^0-9]/g,'');if(raw)el.value=parseInt(raw).toLocaleString('en-US');}
+function parseMoney(s){return parseFloat((s||'').replace(/[^0-9.]/g,''))||0;}
+function fmtMoney(n){return'$'+Math.round(n).toLocaleString('en-US');}
+function fmtShort(n){if(n>=1000000)return'$'+(n/1000000).toFixed(1)+'M';if(n>=1000)return'$'+Math.round(n/1000)+'k';return'$'+n;}
+function calcPmt(loan,rate,term){if(loan<=0||rate<=0)return 0;var mr=rate/100/12,n=term*12;return loan*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1);}
+
+function generateReport(){
+  baseLoan=parseMoney(document.getElementById('inp_loan').value);
+  baseRate=parseFloat(document.getElementById('inp_rate').value)||0;
+  baseTerm=parseInt(document.getElementById('inp_term').value);
+  var apr=document.getElementById('inp_apr').value.trim();
+  var client=document.getElementById('inp_client').value.trim();
+  if(baseLoan<=0||baseRate<=0){alert('Please enter a loan amount and interest rate.');return;}
+
+  var pmt=calcPmt(baseLoan,baseRate,baseTerm);
+  var totalPaid=pmt*baseTerm*12;
+  var totalInt=totalPaid-baseLoan;
+  matrixOffset=0;
+
+  // Hero
+  document.getElementById('heroPayment').textContent=fmtMoney(pmt);
+  var who=client?'<strong>'+client+'</strong>, at':'At';
+  var aprStr=apr?' (<em>'+apr+'% APR</em>)':'';
+  document.getElementById('heroThesis').innerHTML=who+' a loan amount of <em>'+fmtMoney(baseLoan)+'</em> and a rate of <em>'+baseRate+'%</em>'+aprStr+', the monthly payment is <em>'+fmtMoney(pmt)+'</em>. The matrix below shows how that payment shifts across different rate and price scenarios — revealing the tradeoffs between waiting for rates and adjusting price.';
+
+  // Assumptions
+  document.getElementById('assumptionsBar').innerHTML=
+    '<div class="assumption-item"><div class="assumption-key">Loan Amount</div><div class="assumption-val">'+fmtMoney(baseLoan)+'</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Rate</div><div class="assumption-val">'+baseRate+'%</div></div>'+
+    (apr?'<div class="assumption-item"><div class="assumption-key">APR</div><div class="assumption-val">'+apr+'%</div></div>':'')+
+    '<div class="assumption-item"><div class="assumption-key">Term</div><div class="assumption-val">'+baseTerm+' yr</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Payment</div><div class="assumption-val">'+fmtMoney(pmt)+'</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Total Interest</div><div class="assumption-val">'+fmtMoney(totalInt)+'</div></div>';
+
+  buildMatrix();
+
+  // Bottom line
+  var halfRate=baseRate-0.5;if(halfRate<0.125)halfRate=0.125;
+  var pmtHalf=calcPmt(baseLoan,halfRate,baseTerm);
+  var savings=pmt-pmtHalf;
+  var moreHome=0;
+  // How much more home at -0.5% for same payment?
+  for(var guess=baseLoan;guess<baseLoan*2;guess+=1000){
+    if(calcPmt(guess,halfRate,baseTerm)>=pmt){moreHome=guess-baseLoan;break;}
+  }
+  document.getElementById('bottomLine').innerHTML=
+    '<div class="bl-cell"><div class="bl-label">Baseline Payment</div><div class="bl-value">'+fmtMoney(pmt)+'</div><div class="bl-detail">'+fmtMoney(baseLoan)+' at '+baseRate+'%</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">−0.5% Rate Savings</div><div class="bl-value">'+fmtMoney(savings)+'</div><div class="bl-detail">per month at '+halfRate.toFixed(3)+'%</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">Same Payment Buys</div><div class="bl-value">+'+fmtShort(moreHome)+'</div><div class="bl-detail">more home at '+halfRate.toFixed(3)+'%</div></div>';
+
+  document.getElementById('genPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+}
+
+function buildMatrix(){
+  var rateStep=0.125,colCount=7,centerCol=3;
+  var rates=[];
+  for(var c=0;c<colCount;c++){var r=baseRate+(c-centerCol+matrixOffset)*rateStep;rates.push(Math.round(r*1000)/1000);}
+
+  var loanStep=baseLoan>=500000?25000:baseLoan>=200000?15000:10000;
+  var rowCount=7,centerRow=3;
+  var loans=[];
+  for(var r2=0;r2<rowCount;r2++){var l=baseLoan+(r2-centerRow)*loanStep;if(l>0)loans.push(l);}
+
+  var head='<tr><th>Loan ↓ / Rate →</th>';
+  rates.forEach(function(rate,ci){
+    var isBase=Math.abs(rate-baseRate)<0.001;
+    head+='<th'+(isBase?' class="rate-active"':'')+'>'+rate.toFixed(3)+'%</th>';
+  });
+  head+='</tr>';
+  document.getElementById('matrixHead').innerHTML=head;
+
+  var basePmt=calcPmt(baseLoan,baseRate,baseTerm);
+  var body='';
+  loans.forEach(function(loan){
+    body+='<tr>';
+    var isBaseLoan=loan===baseLoan;
+    body+='<td'+(isBaseLoan?' class="loan-active"':'')+'>'+fmtShort(loan)+'</td>';
+    rates.forEach(function(rate){
+      var p=calcPmt(loan,rate,baseTerm);
+      var diff=Math.abs(p-basePmt);
+      var isExact=isBaseLoan&&Math.abs(rate-baseRate)<0.001;
+      var isHL=diff<basePmt*0.005;
+      var cls=isExact?'cell-exact':isHL?'cell-highlight':'';
+      body+='<td class="'+cls+'">'+fmtMoney(p)+'</td>';
+    });
+    body+='</tr>';
+  });
+  document.getElementById('matrixBody').innerHTML=body;
+  document.getElementById('matrixRange').textContent=rates[0].toFixed(3)+'% — '+rates[rates.length-1].toFixed(3)+'%';
+}
+
+function shiftMatrix(dir){matrixOffset+=dir;buildMatrix();}
+</script>
+</body>
+</html>
