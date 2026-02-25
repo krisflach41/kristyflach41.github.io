@@ -116,6 +116,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Store headshot flag for co-brand gating
         sessionStorage.setItem('agentEdgeHasHeadshot', data.hasHeadshot ? 'true' : 'false');
         
+        // Store lender/admin name for cheat sheets
+        if (data.lenderName) {
+          sessionStorage.setItem('agentEdgeLenderName', data.lenderName);
+        }
+        
         // Check if temp password — force password change
         if (data.tempPassword) {
           sessionStorage.setItem('agentEdgeTempPassword', 'true');
