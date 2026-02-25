@@ -654,22 +654,39 @@ h1 {
 
 <div class="rate-ticker">
   <div class="ticker-track">
-    <div class="ticker-line">
-      <span>30-Year 6.22%</span>
-      <span>FHA 6.076%</span>
-      <span>VA 5.825%</span>
-      <span>Jumbo 6.308%</span>
-      <span>15-Year 5.8%</span>
+    <div class="ticker-line" id="tickerLine1">
+      <span>Loading rates...</span>
     </div>
-    <div class="ticker-line">
-      <span>30-Year 6.22%</span>
-      <span>FHA 6.076%</span>
-      <span>VA 5.825%</span>
-      <span>Jumbo 6.308%</span>
-      <span>15-Year 5.8%</span>
+    <div class="ticker-line" id="tickerLine2">
+      <span>Loading rates...</span>
     </div>
   </div>
 </div>
+
+<script>
+// Live rate ticker from FRED/Optimal Blue OBMMI
+(function() {
+  fetch('https://agent-edge-backend.vercel.app/api/rates')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.rates) return;
+      var r = data.rates;
+      var html = '';
+      if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
+      if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
+      if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
+      if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
+      if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
+      if (data.asOf) html += '<span style="color:rgba(255,255,255,0.5);font-size:12px;">as of ' + data.asOf + '</span>';
+      document.getElementById('tickerLine1').innerHTML = html;
+      document.getElementById('tickerLine2').innerHTML = html;
+    })
+    .catch(function(err) {
+      console.error('Rate fetch error:', err);
+      // Fallback - keep loading message or could show last known
+    });
+})();
+</script>
 
 <div class="page-wrap">
 <section class="blog-section">
@@ -1001,21 +1018,7 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('load', function() {
   const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
   
-  // ===== UPDATE RATES TICKER =====
-  if (briefingData.rates && briefingData.rates['30year']) {
-    const tickerHTML = `
-      <span>30-Year ${briefingData.rates['30year']}</span>
-      <span>FHA ${briefingData.rates['30yearFHA']}</span>
-      <span>VA ${briefingData.rates['30yearVA']}</span>
-      <span>Jumbo ${briefingData.rates['30yearJumbo']}</span>
-      <span>15-Year ${briefingData.rates['15year']}</span>
-    `;
-    
-    // Update both ticker lines (they duplicate for smooth scroll)
-    document.querySelectorAll('.ticker-line').forEach(line => {
-      line.innerHTML = tickerHTML;
-    });
-  }
+  // ===== RATES TICKER NOW HANDLED BY LIVE API FETCH ABOVE =====
   
   // ===== UPDATE ECONOMIC CALENDAR =====
   if (briefingData.economicCalendar) {
