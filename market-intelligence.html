@@ -1246,10 +1246,17 @@ function openGuide(reportKey) {
   var d = guideData[reportKey];
   if (!d) return;
   
+  // Get admin/lender name for personalization
+  var lenderName = sessionStorage.getItem('agentEdgeLenderName') || '';
+  var lenderRef = lenderName ? 'my lender ' + lenderName : 'my lender';
+  
   var pointsHTML = '';
   d.points.forEach(function(p) {
     pointsHTML += '<li>' + p + '</li>';
   });
+  
+  // Inject lender name into handoff
+  var handoff = d.handoff.replace(/my lender/g, lenderRef);
   
   var card = document.getElementById('cheatsheetCard');
   card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
@@ -1263,7 +1270,7 @@ function openGuide(reportKey) {
     '<ul class="cs-bullets">' + pointsHTML + '</ul>' +
     '<div class="cs-handoff">' +
     '<div class="cs-handoff-label">The Handoff</div>' +
-    '<div class="cs-handoff-text">' + d.handoff + '</div>' +
+    '<div class="cs-handoff-text">' + handoff + '</div>' +
     '</div>';
   
   document.getElementById('cheatsheetOverlay').classList.add('active');
