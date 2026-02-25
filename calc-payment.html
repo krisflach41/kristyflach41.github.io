@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Calculator · Financing Strategies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080d;--surface:#0a0e16;--surface-raised:#0e1420;--surface-accent:#111828;
+  --border:rgba(255,255,255,0.05);--border-accent:rgba(186,163,112,0.12);
+  --gold:#c4ad7a;--gold-bright:#d4c08a;--gold-soft:rgba(196,173,122,0.5);--gold-glow:rgba(196,173,122,0.08);
+  --green:#72d49a;--green-soft:rgba(114,212,154,0.12);
+  --red:#d47272;--red-soft:rgba(212,114,114,0.1);
+  --blue-btn:#3b82f6;
+  --text:#e2ded4;--text-mid:rgba(226,222,212,0.6);--text-dim:rgba(226,222,212,0.3);--text-ghost:rgba(226,222,212,0.12);
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Generator Panel ── */
+.generator-panel{max-width:580px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}.gen-btn.primary:hover{background:#2563eb}
+
+/* ── Report ── */
+.report-container{display:none;max-width:1000px;margin:20px auto;padding:0 16px}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-accent)}
+
+/* ── Hero ── */
+.hero{padding:72px 80px 64px;position:relative;background:linear-gradient(170deg,rgba(196,173,122,0.03) 0%,transparent 40%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--border-accent) 30%,var(--border-accent) 70%,transparent 95%)}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.hero-verdict{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start}
+.verdict-number{text-align:right;padding-right:48px;border-right:1px solid var(--border-accent)}
+.verdict-amount{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:var(--gold-bright);line-height:1;letter-spacing:-1px}
+.verdict-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:8px}
+.verdict-thesis{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text-mid);line-height:1.7;padding-top:6px}
+.verdict-thesis strong{color:var(--text);font-weight:500}
+.verdict-thesis em{color:var(--gold);font-style:normal;font-weight:500}
+
+/* ── Assumptions Bar ── */
+.assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
+.assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
+.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+
+/* ── Sections ── */
+.rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:36px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:600px}
+
+/* ── Monthly Layout ── */
+.monthly-layout{display:grid;grid-template-columns:1fr 220px;gap:0}
+.monthly-breakdown{padding-right:56px;border-right:1px solid var(--border)}
+.monthly-result{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:56px}
+.econ-group-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:24px}
+.econ-group-label:first-child{margin-top:0}
+.econ-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px}
+.econ-label{color:var(--text-mid)}.econ-value{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.econ-line{height:1px;background:var(--border);margin:6px 0}.econ-line.gold{background:var(--border-accent);margin:10px 0}
+.result-big-number{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:300;line-height:1;color:var(--gold-bright)}
+.result-big-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:10px;text-align:center}
+.result-big-detail{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:center}
+
+/* ── Projection Table ── */
+.projection-table{width:100%;border-collapse:collapse}
+.projection-table thead th{padding:12px 14px;text-align:right;font-size:8px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border-accent)}
+.projection-table thead th:first-child{text-align:left;padding-left:0}
+.projection-table tbody td{padding:11px 14px;font-size:13px;color:var(--text-mid);text-align:right;font-variant-numeric:tabular-nums;border-bottom:1px solid rgba(255,255,255,0.02)}
+.projection-table tbody td:first-child{text-align:left;padding-left:0;font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--text-dim)}
+.projection-table tbody tr:hover{background:rgba(255,255,255,0.015)}
+.projection-table tbody tr.yr-highlight{background:var(--gold-glow)}
+.projection-table tbody tr.yr-highlight td:first-child{color:var(--gold)}
+.projection-table tbody tr.yr-highlight td{border-bottom:1px solid var(--border-accent)}
+
+/* ── Bottom Line ── */
+.bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
+.bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
+.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
+.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+
+/* ── Disclosures ── */
+.rpt-disclosures{background:var(--bg);padding:14px 80px;font-size:8px;color:var(--text-ghost);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%;padding:0}
+  .hero{padding:24px 40px 20px}.rpt-section{padding:20px 40px}.assumptions-bar{padding:14px 40px}
+  .report-page,.hero,.rpt-section,.bottom-line,.assumptions-bar{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+
+<!-- GENERATOR PANEL -->
+<div class="generator-panel" id="genPanel">
+  <div class="gen-title">Payment Calculator</div>
+  <div class="gen-sub">Quick monthly P&I estimates for any loan scenario</div>
+  <div class="gen-grid">
+    <div class="gen-field full"><label>Client Name (Optional)</label><input type="text" id="inp_client" placeholder="Susie Homebuyer"></div>
+    <div class="gen-field"><label>Loan Amount</label><input type="text" id="inp_loan" placeholder="400,000" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Interest Rate %</label><input type="text" id="inp_rate" placeholder="6.75"></div>
+    <div class="gen-field"><label>Term (Years)</label>
+      <select id="inp_term"><option value="30" selected>30</option><option value="25">25</option><option value="20">20</option><option value="15">15</option><option value="10">10</option></select>
+    </div>
+    <div class="gen-field"><label>Loan Type</label>
+      <select id="inp_type"><option value="fixed" selected>Fixed</option><option value="arm51">ARM 5/1</option><option value="arm71">ARM 7/1</option><option value="io">Interest Only</option></select>
+    </div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn primary" onclick="generateReport()">Generate Report</button></div>
+</div>
+
+<!-- REPORT -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <a href="#" onclick="document.getElementById('genPanel').style.display='block';document.getElementById('reportContainer').style.display='none';return false;">← Edit Inputs</a>
+    <button onclick="window.print()">🖨 Print / PDF</button>
+    <a href="financing-strategies.html">Back to Financing Strategies</a>
+  </div>
+
+  <div class="report-page">
+    <div class="hero">
+      <div class="hero-tag">Payment Calculator</div>
+      <div class="hero-verdict">
+        <div class="verdict-number">
+          <div class="verdict-amount" id="heroPayment">$0</div>
+          <div class="verdict-label">Monthly P&I</div>
+        </div>
+        <div class="verdict-thesis" id="heroThesis">—</div>
+      </div>
+    </div>
+
+    <div class="assumptions-bar" id="assumptionsBar"></div>
+
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Monthly Economics</div>
+        <div class="section-sub">How each dollar of your monthly payment is allocated between principal reduction and interest over the life of the loan.</div>
+      </div>
+      <div class="monthly-layout">
+        <div class="monthly-breakdown" id="monthlyBreakdown"></div>
+        <div class="monthly-result">
+          <div class="result-big-number" id="resultPI">$0</div>
+          <div class="result-big-label">Monthly Payment</div>
+          <div class="result-big-detail" id="resultDetail"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Amortization Schedule</div>
+        <div class="section-sub">Year-by-year breakdown showing how the loan balance is reduced over the full term.</div>
+      </div>
+      <table class="projection-table">
+        <thead><tr><th>Year</th><th>Annual Payment</th><th>Principal Paid</th><th>Interest Paid</th><th>Remaining Balance</th></tr></thead>
+        <tbody id="amortBody"></tbody>
+      </table>
+    </div>
+
+    <div class="bottom-line" id="bottomLine"></div>
+  </div>
+
+  <div class="rpt-disclosures">
+    This calculator provides estimates for informational purposes only. Actual payments may vary based on lender terms, fees, taxes, insurance, and PMI.
+    This is not a commitment to lend. Consult a licensed loan officer for official loan estimates.
+  </div>
+</div>
+
+<script>
+function formatCurrency(el){var raw=el.value.replace(/[^0-9]/g,'');if(raw)el.value=parseInt(raw).toLocaleString('en-US');}
+function parseMoney(s){return parseFloat((s||'').replace(/[^0-9.]/g,''))||0;}
+function fmtMoney(n){return'$'+Math.round(n).toLocaleString('en-US');}
+function calcPmt(loan,rate,term){if(loan<=0||rate<=0)return 0;var mr=rate/100/12,n=term*12;return loan*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1);}
+
+function generateReport(){
+  var loan=parseMoney(document.getElementById('inp_loan').value);
+  var rate=parseFloat(document.getElementById('inp_rate').value)||0;
+  var term=parseInt(document.getElementById('inp_term').value);
+  var type=document.getElementById('inp_type').value;
+  var client=document.getElementById('inp_client').value.trim();
+  if(loan<=0||rate<=0){alert('Please enter a loan amount and interest rate.');return;}
+
+  var mr=rate/100/12,totalN=term*12;
+  var pmt=type==='io'?loan*mr:calcPmt(loan,rate,term);
+  var totalPaid=pmt*totalN;
+  var totalInt=type==='io'?totalPaid:totalPaid-loan;
+
+  // Hero
+  document.getElementById('heroPayment').textContent=fmtMoney(pmt);
+  var who=client?'<strong>'+client+'</strong>, on':'On';
+  var typeLabel=type==='fixed'?'fixed-rate':type==='io'?'interest-only':type.replace('arm','ARM ').replace('51','5/1').replace('71','7/1');
+  if(type==='io'){
+    document.getElementById('heroThesis').innerHTML=who+' a <em>'+fmtMoney(loan)+'</em> interest-only loan at <em>'+rate+'%</em>, the monthly payment is <em>'+fmtMoney(pmt)+'</em>. No principal is reduced during the interest-only period — the full balance remains due at maturity.';
+  }else{
+    var pctInt=Math.round(totalInt/totalPaid*100);
+    document.getElementById('heroThesis').innerHTML=who+' a <em>'+fmtMoney(loan)+'</em> '+typeLabel+' loan at <em>'+rate+'%</em> over <em>'+term+' years</em>, each monthly payment of <em>'+fmtMoney(pmt)+'</em> steadily shifts from interest toward principal. Over the full term, <em>'+fmtMoney(totalInt)+'</em> goes to interest — <em>'+pctInt+'%</em> of total payments.';
+  }
+
+  // Assumptions
+  var tl=type==='fixed'?'Fixed':type==='io'?'Interest Only':type.toUpperCase().replace('ARM','ARM ').replace('51','5/1').replace('71','7/1');
+  document.getElementById('assumptionsBar').innerHTML=
+    '<div class="assumption-item"><div class="assumption-key">Loan Amount</div><div class="assumption-val">'+fmtMoney(loan)+'</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Rate</div><div class="assumption-val">'+rate+'%</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Term</div><div class="assumption-val">'+term+' yr</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Type</div><div class="assumption-val">'+tl+'</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Total Interest</div><div class="assumption-val">'+fmtMoney(totalInt)+'</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Total Paid</div><div class="assumption-val">'+fmtMoney(totalPaid)+'</div></div>';
+
+  // Monthly breakdown
+  var mo1Int=loan*mr,mo1Prin=type==='io'?0:pmt-mo1Int;
+  var bd='<div class="econ-group-label">Month 1</div>'+
+    '<div class="econ-row"><span class="econ-label">Principal</span><span class="econ-value">'+fmtMoney(mo1Prin)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Interest</span><span class="econ-value">'+fmtMoney(mo1Int)+'</span></div>'+
+    '<div class="econ-line gold"></div>'+
+    '<div class="econ-row"><span class="econ-label">Total</span><span class="econ-value" style="font-weight:700">'+fmtMoney(pmt)+'</span></div>';
+  if(type!=='io'){
+    var b=loan;for(var i=0;i<Math.floor(totalN/2);i++){b-=(pmt-b*mr);}
+    var midI=b*mr,midP=pmt-midI;
+    var b2=loan;for(var j=0;j<totalN-1;j++){b2-=(pmt-b2*mr);}
+    var finI=b2*mr,finP=pmt-finI;
+    bd+='<div class="econ-group-label" style="margin-top:28px">Year '+(Math.floor(term/2))+' (Midpoint)</div>'+
+      '<div class="econ-row"><span class="econ-label">Principal</span><span class="econ-value">'+fmtMoney(midP)+'</span></div>'+
+      '<div class="econ-row"><span class="econ-label">Interest</span><span class="econ-value">'+fmtMoney(midI)+'</span></div>'+
+      '<div class="econ-group-label" style="margin-top:28px">Final Month</div>'+
+      '<div class="econ-row"><span class="econ-label">Principal</span><span class="econ-value">'+fmtMoney(finP)+'</span></div>'+
+      '<div class="econ-row"><span class="econ-label">Interest</span><span class="econ-value">'+fmtMoney(finI)+'</span></div>';
+  }
+  document.getElementById('monthlyBreakdown').innerHTML=bd;
+  document.getElementById('resultPI').textContent=fmtMoney(pmt);
+  document.getElementById('resultDetail').textContent=fmtMoney(loan)+' · '+rate+'% · '+term+'yr';
+
+  // Amort table
+  var bal=loan,html='';
+  for(var y=1;y<=term;y++){
+    var yP=0,yI=0,yT=0;
+    for(var m=0;m<12;m++){var iP=bal*mr;var pP=type==='io'?0:pmt-iP;yI+=iP;yP+=pP;yT+=pmt;bal-=pP;if(bal<0)bal=0;}
+    var hl=y===5||y===10||y===term;
+    html+='<tr'+(hl?' class="yr-highlight"':'')+'><td>Year '+y+'</td><td>'+fmtMoney(yT)+'</td><td>'+fmtMoney(yP)+'</td><td>'+fmtMoney(yI)+'</td><td>'+fmtMoney(bal)+'</td></tr>';
+  }
+  document.getElementById('amortBody').innerHTML=html;
+
+  // Bottom line
+  var iPct=Math.round(totalInt/totalPaid*100);
+  document.getElementById('bottomLine').innerHTML=
+    '<div class="bl-cell"><div class="bl-label">Monthly Payment</div><div class="bl-value">'+fmtMoney(pmt)+'</div><div class="bl-detail">Principal & Interest</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">Total Interest</div><div class="bl-value">'+fmtMoney(totalInt)+'</div><div class="bl-detail">'+iPct+'% of total payments</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">Total Paid</div><div class="bl-value">'+fmtMoney(totalPaid)+'</div><div class="bl-detail">Over '+term+' years</div></div>';
+
+  document.getElementById('genPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+}
+</script>
+</body>
+</html>
