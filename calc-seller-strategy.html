@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Strategies · Decision Tools</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080d;--surface:#0a0e16;--surface-raised:#0e1420;--surface-accent:#111828;
+  --border:rgba(255,255,255,0.05);--border-accent:rgba(186,163,112,0.12);
+  --gold:#c4ad7a;--gold-bright:#d4c08a;--gold-soft:rgba(196,173,122,0.5);--gold-glow:rgba(196,173,122,0.08);
+  --green:#72d49a;--green-soft:rgba(114,212,154,0.12);
+  --red:#d47272;--red-soft:rgba(212,114,114,0.1);
+  --blue-btn:#3b82f6;
+  --text:#e2ded4;--text-mid:rgba(226,222,212,0.6);--text-dim:rgba(226,222,212,0.3);--text-ghost:rgba(226,222,212,0.12);
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Generator Panel ── */
+.generator-panel{max-width:580px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}.gen-btn.primary:hover{background:#2563eb}
+.gen-divider{grid-column:1/-1;height:1px;background:rgba(255,255,255,0.06);margin:6px 0}
+.gen-section-label{grid-column:1/-1;font-size:10px;font-weight:600;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:-4px}
+.limit-notice{margin-top:4px;padding:12px 16px;border-radius:8px;background:rgba(196,173,122,0.06);border:1px solid rgba(196,173,122,0.15);font-size:11px;color:var(--gold);line-height:1.6;grid-column:1/-1}
+.limit-notice strong{color:var(--gold-bright)}
+
+/* ── Report ── */
+.report-container{display:none;max-width:1000px;margin:20px auto;padding:0 16px}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-accent)}
+
+/* ── Hero ── */
+.hero{padding:72px 80px 64px;position:relative;background:linear-gradient(170deg,rgba(196,173,122,0.03) 0%,transparent 40%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--border-accent) 30%,var(--border-accent) 70%,transparent 95%)}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.hero-verdict{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start}
+.verdict-number{text-align:right;padding-right:48px;border-right:1px solid var(--border-accent)}
+.verdict-amount{font-family:'Cormorant Garamond',serif;font-size:56px;font-weight:300;color:var(--gold-bright);line-height:1;letter-spacing:-1px}
+.verdict-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:8px}
+.verdict-thesis{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text-mid);line-height:1.7;padding-top:6px}
+.verdict-thesis strong{color:var(--text);font-weight:500}
+.verdict-thesis em{color:var(--gold);font-style:normal;font-weight:500}
+
+/* ── Assumptions Bar ── */
+.assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
+.assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
+.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+
+/* ── Sections ── */
+.rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:36px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:600px}
+
+/* ── Scenario Cards ── */
+.scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.scenario-card{padding:36px 32px;border-right:1px solid var(--border);position:relative}
+.scenario-card:last-child{border-right:none}
+
+.sc-tag{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+.sc-tag.red{color:var(--red)}.sc-tag.gold{color:var(--gold)}.sc-tag.green{color:var(--green)}
+.sc-big{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:300;line-height:1;margin-bottom:6px}
+.sc-big.red{color:var(--red)}.sc-big.gold{color:var(--gold-bright)}.sc-big.green{color:var(--green)}
+.sc-sublabel{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px}
+.sc-rows{display:flex;flex-direction:column;gap:0}
+.sc-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.sc-row:last-child{border-bottom:none}
+.sc-row-label{color:var(--text-dim)}.sc-row-val{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-mid)}
+.sc-row-val.green{color:var(--green)}.sc-row-val.red{color:var(--red)}.sc-row-val.gold{color:var(--gold)}
+.sc-net-row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0;margin-top:8px;border-top:1px solid var(--border-accent)}
+.sc-net-label{font-size:13px;font-weight:700;color:var(--text)}
+.sc-net-val{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:400;line-height:1}
+
+/* ── Visual Bars ── */
+.visual-bar-section{padding:40px 80px;border-bottom:1px solid var(--border)}
+.vbar-row{display:flex;align-items:center;gap:16px;margin-bottom:16px}
+.vbar-row:last-child{margin-bottom:0}
+.vbar-label{font-size:11px;font-weight:600;color:var(--text-dim);width:140px;text-align:right;flex-shrink:0}
+.vbar-track{flex:1;height:36px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;position:relative}
+.vbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:12px;font-weight:700;transition:width 0.6s ease}
+.vbar-fill.red{background:linear-gradient(90deg,rgba(212,114,114,0.15),rgba(212,114,114,0.35));color:var(--red)}
+.vbar-fill.gold{background:linear-gradient(90deg,rgba(196,173,122,0.15),rgba(196,173,122,0.35));color:var(--gold)}
+.vbar-fill.green{background:linear-gradient(90deg,rgba(114,212,154,0.12),rgba(114,212,154,0.3));color:var(--green)}
+
+/* ── Narrative / Why This Matters ── */
+.narrative-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.narrative-stat{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);line-height:1.7;margin-bottom:28px;padding:24px 32px;border-left:2px solid var(--gold);background:var(--gold-glow);border-radius:0 8px 8px 0}
+.narrative-stat em{color:var(--gold);font-style:normal;font-weight:500}
+.narrative-body{font-size:14px;color:var(--text-mid);line-height:1.85;max-width:760px}
+.narrative-body p{margin-bottom:16px}
+.narrative-body p:last-child{margin-bottom:0}
+.narrative-closer{margin-top:32px;padding:20px 28px;border-radius:10px;background:linear-gradient(135deg,rgba(196,173,122,0.06),rgba(196,173,122,0.02));border:1px solid var(--border-accent);font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--gold-bright);line-height:1.6;text-align:center}
+
+/* ── Buyer Payment Cards ── */
+.buyer-pay-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.buyer-pay-cell{padding:28px;text-align:center;border-right:1px solid var(--border)}
+.buyer-pay-cell:last-child{border-right:none}
+.buyer-pay-cell.highlight{background:var(--green-soft)}
+.bp-tag{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.bp-amount{font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1}
+.bp-detail{font-size:10px;color:var(--text-dim);margin-top:4px}
+.bp-badge{font-size:11px;font-weight:600;margin-top:8px}
+
+/* ── Loan Reference Grid ── */
+.loan-ref-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.loan-ref-card{padding:24px 20px;border-right:1px solid var(--border);text-align:center}
+.loan-ref-card:last-child{border-right:none}
+.loan-ref-type{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.loan-ref-pct{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px}
+.loan-ref-detail{font-size:10px;color:var(--text-dim);line-height:1.5}
+.loan-ref-note{grid-column:1/-1;padding:16px 24px;font-size:11px;color:var(--text-dim);line-height:1.6;text-align:center;border-top:1px solid var(--border)}
+.loan-ref-note strong{color:var(--gold)}
+
+/* ── Bottom Line ── */
+.bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
+.bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
+.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
+.bl-value.green{color:var(--green)}
+.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+
+/* ── Disclosures ── */
+.rpt-disclosures{background:var(--bg);padding:18px 80px;font-size:8.5px;color:var(--text-ghost);line-height:1.8;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
+.rpt-disclosures strong{color:rgba(226,222,212,0.25)}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%;padding:0}
+  .hero{padding:24px 40px 20px}.rpt-section{padding:20px 40px}.assumptions-bar{padding:14px 40px}
+  .narrative-section{padding:20px 40px}.visual-bar-section{padding:20px 40px}
+  .report-page,.hero,.rpt-section,.bottom-line,.assumptions-bar,.scenario-card,.visual-bar-section,.narrative-section,.loan-ref-card,.buyer-pay-cell,.buyer-pay-cell.highlight{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════ -->
+<!--        GENERATOR PANEL        -->
+<!-- ══════════════════════════════ -->
+<div class="generator-panel" id="genPanel">
+  <div class="gen-title">Seller Strategies</div>
+  <div class="gen-sub">Compare price reductions vs. rate buydowns vs. closing cost credits — find the strategy that keeps more equity in the seller's pocket</div>
+  <div class="gen-grid">
+
+    <div class="gen-section-label">Listing Situation</div>
+    <div class="gen-field">
+      <label>Current List Price</label>
+      <input type="text" id="inListPrice" placeholder="$500,000" oninput="fmtMoney(this)" onchange="updateNotice()" value="$500,000">
+    </div>
+    <div class="gen-field">
+      <label>Proposed Price Reduction</label>
+      <input type="text" id="inPriceReduction" placeholder="$25,000" oninput="fmtMoney(this)" value="$25,000">
+    </div>
+    <div class="gen-field">
+      <label>Commission Rate (%)</label>
+      <input type="text" id="inCommission" placeholder="5.0" value="5.0">
+    </div>
+    <div class="gen-field">
+      <label>&nbsp;</label>
+      <div style="font-size:10px;color:rgba(255,255,255,0.3);line-height:1.5;padding-top:4px">Commission is included for accuracy. All other seller settlement costs are excluded.</div>
+    </div>
+
+    <div class="gen-divider"></div>
+
+    <div class="gen-section-label">Buyer's Loan Profile</div>
+    <div class="gen-field">
+      <label>Loan Type</label>
+      <select id="inLoanType" onchange="updateNotice()">
+        <option value="conv_low">Conventional (&lt;10% down)</option>
+        <option value="conv_mid" selected>Conventional (10-25% down)</option>
+        <option value="conv_high">Conventional (&gt;25% down)</option>
+        <option value="fha">FHA</option>
+        <option value="va">VA</option>
+        <option value="usda">USDA</option>
+      </select>
+    </div>
+    <div class="gen-field">
+      <label>Down Payment %</label>
+      <input type="text" id="inDownPmt" placeholder="10" value="10">
+    </div>
+    <div class="gen-field">
+      <label>Current Market Rate (%)</label>
+      <input type="text" id="inRate" placeholder="7.00" value="7.00">
+    </div>
+    <div class="gen-field">
+      <label>Loan Term</label>
+      <select id="inTerm">
+        <option value="15">15 Year Fixed</option>
+        <option value="30" selected>30 Year Fixed</option>
+      </select>
+    </div>
+    <div class="gen-field">
+      <label>Max Buydown Points</label>
+      <select id="inMaxPoints">
+        <option value="2">2 Points (≈ 0.50% reduction)</option>
+        <option value="3">3 Points (≈ 0.75% reduction)</option>
+        <option value="4" selected>4 Points (≈ 1.00% reduction)</option>
+      </select>
+    </div>
+    <div class="gen-field">
+      <label>Est. Buyer Closing Costs</label>
+      <input type="text" id="inBuyerClosing" placeholder="$12,000" oninput="fmtMoney(this)" value="$12,000">
+    </div>
+
+    <div id="limitNotice" class="limit-notice" style="display:none"></div>
+  </div>
+
+  <div class="gen-actions">
+    <button class="gen-btn primary" onclick="generate()">Generate Report</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ -->
+<!--         REPORT OUTPUT         -->
+<!-- ══════════════════════════════ -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <button onclick="document.getElementById('genPanel').style.display='block';document.getElementById('reportContainer').style.display='none';">✎ Edit Inputs</button>
+    <button onclick="window.print()">⎙ Print / PDF</button>
+  </div>
+  <div class="report-page" id="reportPage"></div>
+  <div class="rpt-disclosures" id="rptDisclosures"></div>
+</div>
+
+<script>
+function parseMoney(v){return parseFloat((v||'').replace(/[^0-9.-]/g,''))||0}
+function fmtMoney(el){var v=parseMoney(el.value);if(v)el.value='$'+v.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0})}
+function $(id){return document.getElementById(id)}
+function money(n){return '$'+Math.round(Math.abs(n)).toLocaleString('en-US')}
+function pct(n){return n.toFixed(2)+'%'}
+function calcPI(p,r,t){if(r<=0||p<=0)return 0;var mr=r/100/12,n=t*12;return p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1)}
+
+function getLimit(lt){
+  var m={conv_low:{p:3,l:'3%',f:'Conventional (<10% down)'},conv_mid:{p:6,l:'6%',f:'Conventional (10–25% down)'},conv_high:{p:9,l:'9%',f:'Conventional (>25% down)'},fha:{p:6,l:'6%',f:'FHA'},va:{p:4,l:'4%',f:'VA'},usda:{p:6,l:'6%',f:'USDA'}};
+  return m[lt]||m.conv_mid;
+}
+function ltName(lt){return lt.startsWith('conv')?'Conventional':lt.toUpperCase()}
+
+function updateNotice(){
+  var price=parseMoney($('inListPrice').value),lt=$('inLoanType').value,lim=getLimit(lt);
+  if(price>0){$('limitNotice').style.display='block';$('limitNotice').innerHTML='<strong>Seller Concession Limit:</strong> '+lim.f+' — '+lim.l+' of sale price = <strong>'+money(price*lim.p/100)+'</strong> maximum the seller can contribute toward buyer rate buydown, closing costs, and prepaid items.';}
+  else{$('limitNotice').style.display='none'}
+}
+updateNotice();
+
+function generate(){
+  var listPrice=parseMoney($('inListPrice').value);
+  var priceReduction=parseMoney($('inPriceReduction').value);
+  var commission=parseFloat($('inCommission').value)||5;
+  var loanType=$('inLoanType').value;
+  var downPct=parseFloat($('inDownPmt').value)||10;
+  var rate=parseFloat($('inRate').value)||7;
+  var term=parseInt($('inTerm').value)||30;
+  var maxPoints=parseInt($('inMaxPoints').value)||4;
+  var buyerClosing=parseMoney($('inBuyerClosing').value);
+  var lim=getLimit(loanType);
+  var maxConcession=listPrice*lim.p/100;
+
+  // ═══ A: PRICE REDUCTION ═══
+  var reducedPrice=listPrice-priceReduction;
+  var commA=reducedPrice*commission/100;
+  var netA=reducedPrice-commA;
+  var loanA=reducedPrice*(1-downPct/100);
+  var payA=calcPI(loanA,rate,term);
+
+  // ═══ B: SMART CONCESSIONS (buydown + closing) ═══
+  var loanB=listPrice*(1-downPct/100);
+  var maxRedux=maxPoints*0.25;
+  var buydownRate=Math.max(rate-maxRedux,2);
+  var actualRedux=rate-buydownRate;
+  var actualPts=actualRedux/0.25;
+  var ptsCost=actualPts*loanB/100;
+  var concessionUsed,closingCovered,ptsUsed,rateB;
+  var totalNeeded=ptsCost+buyerClosing;
+
+  if(totalNeeded<=maxConcession){concessionUsed=totalNeeded;closingCovered=buyerClosing;ptsUsed=actualPts;rateB=buydownRate;}
+  else if(ptsCost<=maxConcession){closingCovered=maxConcession-ptsCost;concessionUsed=maxConcession;ptsUsed=actualPts;rateB=buydownRate;}
+  else{ptsUsed=Math.floor((maxConcession/(loanB/100))*4)/4;var pc=ptsUsed*loanB/100;rateB=rate-(ptsUsed*0.25);closingCovered=Math.max(0,maxConcession-pc);concessionUsed=pc+closingCovered;}
+
+  var commB=listPrice*commission/100;
+  var netB=listPrice-commB-concessionUsed;
+  var payB=calcPI(loanB,rateB,term);
+  var ptsDollar=ptsUsed*loanB/100;
+
+  // ═══ C: CLOSING COSTS ONLY ═══
+  var closingOnly=Math.min(buyerClosing,maxConcession);
+  var commC=listPrice*commission/100;
+  var netC=listPrice-commC-closingOnly;
+  var payC=calcPI(loanB,rate,term);
+
+  // ═══ Comparisons ═══
+  var sellerSavings=netB-netA;
+  var buyerSaveMo=payA-payB;
+
+  // ═══ BUILD REPORT ═══
+  var h='';
+
+  // HERO
+  h+='<div class="hero"><div class="hero-tag">Seller Strategies</div><div class="hero-verdict">';
+  h+='<div class="verdict-number"><div class="verdict-amount">'+money(sellerSavings)+'</div><div class="verdict-label">More in Seller\'s Pocket</div></div>';
+  h+='<div class="verdict-thesis">';
+  if(sellerSavings>0){
+    h+='Instead of reducing the price by <strong>'+money(priceReduction)+'</strong>, the seller invests <strong>'+money(concessionUsed)+'</strong> in buyer concessions — keeping <em>'+money(sellerSavings)+' more</em> in net proceeds while making the home more attractive to a larger pool of qualified buyers.';
+  }else{
+    h+='In this scenario, the price reduction produces a comparable net outcome. However, the concession strategy still delivers <em>significant buyer benefits</em> — a lower monthly payment of <strong>'+money(payB)+'</strong> vs. <strong>'+money(payA)+'</strong> — which expands the buyer pool and may generate stronger offers.';
+  }
+  h+='</div></div></div>';
+
+  // ASSUMPTIONS
+  h+='<div class="assumptions-bar">';
+  h+='<div class="assumption-item"><div class="assumption-key">List Price</div><div class="assumption-val">'+money(listPrice)+'</div></div>';
+  h+='<div class="assumption-item"><div class="assumption-key">Loan Type</div><div class="assumption-val">'+ltName(loanType)+'</div></div>';
+  h+='<div class="assumption-item"><div class="assumption-key">Down Payment</div><div class="assumption-val">'+downPct+'%</div></div>';
+  h+='<div class="assumption-item"><div class="assumption-key">Market Rate</div><div class="assumption-val">'+pct(rate)+'</div></div>';
+  h+='<div class="assumption-item"><div class="assumption-key">Max Concession</div><div class="assumption-val">'+lim.l+' · '+money(maxConcession)+'</div></div>';
+  h+='<div class="assumption-item"><div class="assumption-key">Term</div><div class="assumption-val">'+term+' Yr Fixed</div></div>';
+  h+='</div>';
+
+  // THREE SCENARIOS
+  h+='<div class="rpt-section" style="padding-bottom:0"><div class="section-head"><div class="section-title">Three Paths Forward</div>';
+  h+='<div class="section-sub">How each strategy impacts what the seller walks away with. Commission is included; all other seller settlement costs (excise tax, capital gains, title, attorney fees, payoffs) are excluded.</div></div></div>';
+
+  h+='<div class="scenario-grid">';
+
+  // A
+  h+='<div class="scenario-card">';
+  h+='<div class="sc-tag red">Option A · Price Reduction</div>';
+  h+='<div class="sc-big red">−'+money(priceReduction)+'</div>';
+  h+='<div class="sc-sublabel">Off List Price</div>';
+  h+='<div class="sc-rows">';
+  h+='<div class="sc-row"><span class="sc-row-label">Sale Price</span><span class="sc-row-val">'+money(reducedPrice)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Commission ('+commission+'%)</span><span class="sc-row-val red">−'+money(commA)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Seller Concessions</span><span class="sc-row-val">$0</span></div>';
+  h+='</div>';
+  h+='<div class="sc-net-row"><span class="sc-net-label">Seller Net</span><span class="sc-net-val red">'+money(netA)+'</span></div>';
+  h+='</div>';
+
+  // B
+  h+='<div class="scenario-card">';
+  h+='<div class="sc-tag green">Option B · Smart Concessions</div>';
+  h+='<div class="sc-big green">'+money(concessionUsed)+'</div>';
+  h+='<div class="sc-sublabel">Invested in Buyer</div>';
+  h+='<div class="sc-rows">';
+  h+='<div class="sc-row"><span class="sc-row-label">Sale Price</span><span class="sc-row-val">'+money(listPrice)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Commission ('+commission+'%)</span><span class="sc-row-val red">−'+money(commB)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Rate Buydown ('+ptsUsed.toFixed(1)+' pts)</span><span class="sc-row-val red">−'+money(ptsDollar)+'</span></div>';
+  if(closingCovered>0){h+='<div class="sc-row"><span class="sc-row-label">Closing Cost Credit</span><span class="sc-row-val red">−'+money(closingCovered)+'</span></div>';}
+  h+='</div>';
+  h+='<div class="sc-net-row"><span class="sc-net-label">Seller Net</span><span class="sc-net-val green">'+money(netB)+'</span></div>';
+  h+='</div>';
+
+  // C
+  h+='<div class="scenario-card">';
+  h+='<div class="sc-tag gold">Option C · Closing Costs Only</div>';
+  h+='<div class="sc-big gold">'+money(closingOnly)+'</div>';
+  h+='<div class="sc-sublabel">Closing Credit to Buyer</div>';
+  h+='<div class="sc-rows">';
+  h+='<div class="sc-row"><span class="sc-row-label">Sale Price</span><span class="sc-row-val">'+money(listPrice)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Commission ('+commission+'%)</span><span class="sc-row-val red">−'+money(commC)+'</span></div>';
+  h+='<div class="sc-row"><span class="sc-row-label">Closing Cost Credit</span><span class="sc-row-val red">−'+money(closingOnly)+'</span></div>';
+  h+='</div>';
+  h+='<div class="sc-net-row"><span class="sc-net-label">Seller Net</span><span class="sc-net-val gold">'+money(netC)+'</span></div>';
+  h+='</div>';
+
+  h+='</div>';
+
+  // VISUAL BARS
+  h+='<div class="visual-bar-section">';
+  h+='<div class="section-head" style="margin-bottom:28px"><div class="section-title">Net Proceeds at a Glance</div>';
+  h+='<div class="section-sub">A visual comparison of what the seller walks away with under each strategy.</div></div>';
+  var maxBar=Math.max(netA,netB,netC);
+  h+='<div class="vbar-row"><div class="vbar-label">Price Reduction</div><div class="vbar-track"><div class="vbar-fill red" style="width:'+(netA/maxBar*100).toFixed(1)+'%">'+money(netA)+'</div></div></div>';
+  h+='<div class="vbar-row"><div class="vbar-label">Smart Concessions</div><div class="vbar-track"><div class="vbar-fill green" style="width:'+(netB/maxBar*100).toFixed(1)+'%">'+money(netB)+'</div></div></div>';
+  h+='<div class="vbar-row"><div class="vbar-label">Closing Costs Only</div><div class="vbar-track"><div class="vbar-fill gold" style="width:'+(netC/maxBar*100).toFixed(1)+'%">'+money(netC)+'</div></div></div>';
+  h+='</div>';
+
+  // WHY THIS MATTERS
+  h+='<div class="narrative-section">';
+  h+='<div class="section-head"><div class="section-title">Why This Matters</div></div>';
+  h+='<div class="narrative-stat">According to the National Association of Realtors, for every <em>1%</em> mortgage rates decrease, approximately <em>5 million</em> more Americans become qualified to purchase a home.</div>';
+  h+='<div class="narrative-body">';
+  h+='<p>When a seller buys down a buyer\'s interest rate, they aren\'t giving money away — they\'re investing in demand. A lower rate means a lower monthly payment, and a lower monthly payment means more buyers can qualify for your home at your asking price.</p>';
+  h+='<p>Regardless of why your home hasn\'t received the offer you\'re looking for, the question is the same: what\'s the smartest use of your money to change that? A price reduction is permanent — every dollar comes straight out of your equity and is recorded on public record, affecting comparable sales in your neighborhood. A rate buydown achieves the same or greater impact on the buyer\'s affordability for a fraction of the cost, and your sale price stays intact.</p>';
+  h+='<p>More qualified buyers means more showings. More showings means more offers. More offers means leverage — and leverage is how sellers protect their equity.</p>';
+  h+='</div>';
+  h+='<div class="narrative-closer">The goal isn\'t to give more away. The goal is to spend smarter so you keep more.</div>';
+  h+='</div>';
+
+  // WHAT THE BUYER SEES
+  h+='<div class="rpt-section" style="padding-bottom:0"><div class="section-head"><div class="section-title">What the Buyer Sees</div>';
+  h+='<div class="section-sub">The concession strategy doesn\'t just help the seller — it transforms the buyer\'s monthly payment, expanding who can afford your home.</div></div></div>';
+
+  h+='<div class="buyer-pay-grid">';
+  h+='<div class="buyer-pay-cell"><div class="bp-tag" style="color:var(--red)">A · Price Reduction</div><div class="bp-amount" style="color:var(--text-mid)">'+money(payA)+'</div><div class="bp-detail">per month at '+pct(rate)+'</div></div>';
+  h+='<div class="buyer-pay-cell highlight"><div class="bp-tag" style="color:var(--green)">B · Smart Concessions</div><div class="bp-amount" style="color:var(--green)">'+money(payB)+'</div><div class="bp-detail">per month at '+pct(rateB)+'</div>';
+  if(buyerSaveMo>0){h+='<div class="bp-badge" style="color:var(--green)">Saves '+money(buyerSaveMo)+'/mo</div>';}
+  h+='</div>';
+  h+='<div class="buyer-pay-cell"><div class="bp-tag" style="color:var(--gold)">C · Closing Costs Only</div><div class="bp-amount" style="color:var(--text-mid)">'+money(payC)+'</div><div class="bp-detail">per month at '+pct(rate)+'</div>';
+  if(closingOnly>0){h+='<div class="bp-badge" style="color:var(--gold)">'+money(closingOnly)+' closing covered</div>';}
+  h+='</div>';
+  h+='</div>';
+
+  // NOT ALL OFFERS ARE EQUAL
+  h+='<div class="rpt-section" style="padding-bottom:0"><div class="section-head"><div class="section-title">Not All Offers Are Equal</div>';
+  h+='<div class="section-sub">The buyer\'s loan type determines how much the seller can contribute in concessions. When evaluating competing offers, this limit can be a deciding factor.</div></div></div>';
+
+  h+='<div class="loan-ref-grid">';
+  h+='<div class="loan-ref-card"><div class="loan-ref-type">Conventional</div><div class="loan-ref-pct">3–9%</div><div class="loan-ref-detail">&lt;10% down: 3%<br>10–25% down: 6%<br>&gt;25% down: 9%</div></div>';
+  h+='<div class="loan-ref-card"><div class="loan-ref-type">FHA</div><div class="loan-ref-pct">6%</div><div class="loan-ref-detail">All FHA loans<br>regardless of<br>down payment</div></div>';
+  h+='<div class="loan-ref-card"><div class="loan-ref-type">VA</div><div class="loan-ref-pct">4%</div><div class="loan-ref-detail">Plus customary<br>closing costs<br>(uncapped)</div></div>';
+  h+='<div class="loan-ref-card"><div class="loan-ref-type">USDA</div><div class="loan-ref-pct">6%</div><div class="loan-ref-detail">Based on loan<br>amount, not<br>sale price</div></div>';
+  h+='<div class="loan-ref-note"><strong>Why this matters:</strong> An FHA offer at your asking price with a 6% concession limit may net you more than a conventional offer with only 3%. The loan type shapes how much room you have to deploy this strategy.</div>';
+  h+='</div>';
+
+  // BOTTOM LINE
+  h+='<div class="bottom-line">';
+  h+='<div class="bl-cell"><div class="bl-label">Seller Keeps More</div><div class="bl-value'+(sellerSavings>0?' green':'')+'">'+money(sellerSavings)+'</div><div class="bl-detail">with smart concessions vs. price drop</div></div>';
+  h+='<div class="bl-cell"><div class="bl-label">Buyer Saves</div><div class="bl-value green">'+money(buyerSaveMo)+'</div><div class="bl-detail">per month on their payment</div></div>';
+  h+='<div class="bl-cell"><div class="bl-label">Concession Used</div><div class="bl-value">'+money(concessionUsed)+'</div><div class="bl-detail">of '+money(maxConcession)+' max allowed</div></div>';
+  h+='</div>';
+
+  // RENDER
+  $('reportPage').innerHTML=h;
+  $('rptDisclosures').innerHTML='This analysis is for educational and illustrative purposes only and does not constitute a settlement statement or net sheet. '+
+    '<strong>Net proceeds shown are before seller closing costs</strong> including but not limited to: excise tax, capital gains tax, title insurance, transfer taxes, '+
+    'attorney fees, prorations, recording fees, HOA payoffs, mortgage payoff balance, and other settlement charges. Consult your closing attorney, title company, or settlement agent for a complete seller net sheet. '+
+    'Rate buydown estimates assume 1 discount point (1% of loan amount) reduces the rate by approximately 0.25%. Actual costs and reductions vary by lender and market conditions. '+
+    'Seller concession limits are governed by loan program guidelines (Fannie Mae, Freddie Mac, FHA, VA, USDA) and are subject to change. '+
+    'NAR buyer qualification statistic is a general industry estimate. NMLS #2632259';
+
+  $('genPanel').style.display='none';
+  $('reportContainer').style.display='block';
+  window.scrollTo(0,0);
+}
+</script>
+</body>
+</html>
