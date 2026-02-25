@@ -1086,6 +1086,40 @@
     </div>
   </section>
 
+  <!-- ===== RATE TICKER ===== -->
+  <div style="width:100%;overflow:hidden;background:#6e7f77;color:white;padding:12px 0;">
+    <div style="display:flex;width:200%;animation:rateTicker 20s linear infinite;">
+      <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
+        <span>Loading rates...</span>
+      </div>
+      <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
+        <span>Loading rates...</span>
+      </div>
+    </div>
+  </div>
+  <style>
+    @keyframes rateTicker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    .rate-ticker-line span { margin-right: 100px; white-space: nowrap; font-weight: 500; font-size: 14px; letter-spacing: 0.3px; }
+  </style>
+  <script>
+  (function() {
+    fetch('https://agent-edge-backend.vercel.app/api/rates')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.rates) return;
+        var r = data.rates;
+        var html = '';
+        if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
+        if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
+        if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
+        if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
+        if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
+        document.querySelectorAll('.rate-ticker-line').forEach(function(el) { el.innerHTML = html; });
+      })
+      .catch(function(err) { console.error('Rate fetch error:', err); });
+  })();
+  </script>
+
   <!-- ===== FEATURE LINKS STRIP ===== -->
   <section class="feature-strip">
     <div class="feature-inner">
