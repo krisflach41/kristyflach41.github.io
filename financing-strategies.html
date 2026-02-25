@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financing Strategies · Agent Edge</title>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+
+<style>
+
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 650px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== GRID ===== */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+}
+
+/* ===== CARD ===== */
+.tool-card {
+  text-align: center;
+}
+
+.tool-card .thumb-area {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.tool-card .thumb-area:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.tool-card .thumb-area img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Placeholder for tools without thumbnails yet */
+.tool-card .thumb-placeholder {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #0a1628 0%, #162d4a 50%, #1a3a5c 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.tool-card .thumb-placeholder:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.thumb-placeholder .tool-icon {
+  font-size: 36px;
+  opacity: 0.8;
+}
+
+.thumb-placeholder .tool-label {
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ===== LAUNCH BUTTON ===== */
+.launch-btn {
+  margin-top: 8px;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid #0b4ea2;
+  background: #0b4ea2;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: 0.25s ease;
+  font-size: 13px;
+}
+
+.launch-btn:hover {
+  background: #093d85;
+  border-color: #093d85;
+}
+
+/* ===== GUIDE LINK ===== */
+.guide-link {
+  display: inline-block;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #6b7c93;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+}
+.guide-link:hover {
+  color: #0b4ea2;
+}
+.guide-link svg {
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
+  margin-right: 4px;
+  opacity: 0.6;
+}
+.guide-link:hover svg {
+  opacity: 1;
+}
+
+/* ===== CHEAT SHEET OVERLAY ===== */
+.cheatsheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 10001;
+  align-items: center;
+  justify-content: center;
+}
+.cheatsheet-overlay.active {
+  display: flex;
+}
+.cheatsheet-card {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 36px 40px 32px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  position: relative;
+}
+.cheatsheet-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: #555;
+  transition: background 0.2s;
+  border: none;
+}
+.cheatsheet-close:hover {
+  background: #e0e0e0;
+}
+.cs-report-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin-bottom: 4px;
+}
+.cs-tagline {
+  font-size: 13px;
+  color: #8a95a5;
+  margin-bottom: 24px;
+}
+.cs-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #0b4ea2;
+  margin-bottom: 6px;
+  margin-top: 20px;
+}
+.cs-section-label:first-of-type {
+  margin-top: 0;
+}
+.cs-text {
+  font-size: 14px;
+  color: #3a4a5c;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+.cs-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cs-bullets li {
+  font-size: 14px;
+  color: #3a4a5c;
+  line-height: 1.6;
+  padding: 4px 0 4px 20px;
+  position: relative;
+}
+.cs-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0b4ea2;
+  opacity: 0.25;
+}
+.cs-handoff {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: rgba(11,78,162,0.05);
+  border-left: 3px solid #0b4ea2;
+}
+.cs-handoff-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #0b4ea2;
+  margin-bottom: 6px;
+}
+.cs-handoff-text {
+  font-size: 13px;
+  color: #3a4a5c;
+  line-height: 1.6;
+  font-style: italic;
+}
+
+/* ===== NAV BUTTONS ===== */
+.back-btn {
+  display: inline-block;
+  margin-top: 50px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+/* ===== INFO STRIP ===== */
+.info-strip {
+  margin-top: 40px;
+  padding: 18px 24px;
+  border-radius: 12px;
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.08);
+  text-align: center;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.info-strip strong {
+  color: #0b1f3a;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 980px) {
+  .tool-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .tool-grid { grid-template-columns: 1fr; }
+  .gallery-card { padding: 40px 24px; }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-wrap">
+<section class="gallery-card">
+
+<h2 class="section-title">Financing Strategies</h2>
+<p class="section-subtitle">
+  Interactive calculators to help Realtors have confident financing conversations with clients — right on the spot.
+</p>
+
+<div class="tool-grid">
+
+  <div class="tool-card">
+    <a href="calc-payment.html">
+      <div class="thumb-placeholder">
+        <span class="tool-icon">💰</span>
+        <span class="tool-label">Calculator</span>
+      </div>
+    </a>
+    <h3>Payment Calculator</h3>
+    <a class="guide-link" onclick="openGuide('payment')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Realtor Guide</a>
+    <br>
+    <a href="calc-payment.html" class="launch-btn">Launch Tool →</a>
+  </div>
+
+  <div class="tool-card">
+    <a href="calc-buying-power.html">
+      <div class="thumb-placeholder">
+        <span class="tool-icon">📊</span>
+        <span class="tool-label">Calculator</span>
+      </div>
+    </a>
+    <h3>Buying Power</h3>
+    <a class="guide-link" onclick="openGuide('buyingpower')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Realtor Guide</a>
+    <br>
+    <a href="calc-buying-power.html" class="launch-btn">Launch Tool →</a>
+  </div>
+
+  <div class="tool-card">
+    <a href="calc-affordability.html">
+      <div class="thumb-placeholder">
+        <span class="tool-icon">🏠</span>
+        <span class="tool-label">Calculator</span>
+      </div>
+    </a>
+    <h3>Affordability Calculator</h3>
+    <a class="guide-link" onclick="openGuide('affordability')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Realtor Guide</a>
+    <br>
+    <a href="calc-affordability.html" class="launch-btn">Launch Tool →</a>
+  </div>
+
+</div>
+
+<div class="info-strip">
+  <strong>These are conversation tools, not final quotes.</strong><br>
+  For official loan estimates, pre-approvals, and program-specific details — connect your client with your lender.
+</div>
+
+<div style="text-align:center;">
+  <a href="advisory-collection.html" class="back-btn">
+    ← Back to Advisory Collection
+  </a>
+</div>
+
+</section>
+</div>
+
+<!-- Cheat Sheet Overlay -->
+<div class="cheatsheet-overlay" id="cheatsheetOverlay">
+  <div class="cheatsheet-card" id="cheatsheetCard"></div>
+</div>
+
+<a href="advisory-collection.html" class="return-main" style="right: 85px;">← Back to Advisory</a>
+<a href="portal.html" class="return-main">Return to Portal</a>
+
+<script>
+/* ===========================
+   REALTOR GUIDE / CHEAT SHEETS
+=========================== */
+var guideData = {
+  payment: {
+    name: 'Payment Calculator',
+    tagline: 'Quick monthly payment estimates for any loan scenario',
+    what: 'A simple mortgage payment calculator that shows monthly principal and interest for any loan amount, term, and rate. Includes Fixed, ARM, and Interest-Only options with a full amortization schedule.',
+    when: 'Your client asks "what would my payment be on a $400k house?" and you want to show them real numbers in 10 seconds — right from your phone or laptop.',
+    points: [
+      '"Let me show you what that payment actually looks like. I can pull it up right now."',
+      '"See — at today\'s rates on a $400k loan, you\'re looking at about $2,400 a month for principal and interest."',
+      '"Keep in mind this is just P&I. Your total payment will include taxes, insurance, and possibly PMI — my lender can give you the full picture."',
+      '"Want to see what happens if rates drop a quarter point? Watch — it saves you $65 a month. That\'s real money."'
+    ],
+    handoff: '"These are great ballpark numbers. Let me connect you with my lender — she\'ll factor in taxes, insurance, PMI, and any programs you might qualify for to give you the complete monthly picture."'
+  },
+  buyingpower: {
+    name: 'Buying Power',
+    tagline: 'See how rate and price changes move the monthly payment',
+    what: 'A visual payment matrix that shows your client how their monthly payment changes across different loan amounts and interest rates — all in one grid. The highlighted diagonal shows equivalent payments as conditions shift.',
+    when: 'Your client is rate-sensitive and keeps asking "should I wait for rates to drop?" or "what if I look at a cheaper house?" This tool lets you show them the tradeoffs instantly.',
+    points: [
+      '"Let me show you something powerful. This grid shows your payment at every combination of price and rate."',
+      '"See this diagonal? Every cell along it is roughly the same payment. So if rates drop from 7% to 6.5%, you could actually afford a more expensive home for the same monthly cost."',
+      '"This is why timing matters — and why waiting for the \'perfect\' rate isn\'t always the best strategy."',
+      '"You can also flip it: if you find a home that\'s $20k more than planned, I can show you exactly what rate you\'d need for it to still work."'
+    ],
+    handoff: '"This gives you a great visual of the landscape. My lender can take this a step further — she\'ll factor in your specific situation, any programs available, and lock in real numbers when you\'re ready."'
+  },
+  affordability: {
+    name: 'Affordability Calculator',
+    tagline: 'Find out how much home fits comfortably in the budget',
+    what: 'Takes income, debts, rate, and down payment to calculate a comfortable purchase price — with a full mortgage breakdown including taxes, insurance, and PMI. Shows budget ranges at different DTI levels so clients understand their flexibility.',
+    when: 'Your buyer doesn\'t know their price range yet, or they think they can\'t afford as much as they actually can. This tool gives them a concrete starting number.',
+    points: [
+      '"Before we start looking at homes, let\'s figure out your comfort zone. I can show you what fits your budget right now."',
+      '"Based on your income and what you told me about debts, you\'re looking at a home in the $300k–$350k range."',
+      '"That \'within budget\' range means you\'re comfortably under the standard debt ratios that lenders look at. No stress on the approval."',
+      '"And this is conservative — there may be programs that stretch your buying power even further. That\'s where my lender comes in."'
+    ],
+    handoff: '"This gives you a solid starting point. My lender will run a full pre-approval that accounts for your complete financial picture — credit, assets, programs you qualify for — and dial in your exact number."'
+  }
+};
+
+function openGuide(reportKey) {
+  var d = guideData[reportKey];
+  if (!d) return;
+  
+  var pointsHTML = '';
+  d.points.forEach(function(p) {
+    pointsHTML += '<li>' + p + '</li>';
+  });
+  
+  var card = document.getElementById('cheatsheetCard');
+  card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
+    '<div class="cs-report-name">' + d.name + '</div>' +
+    '<div class="cs-tagline">' + d.tagline + '</div>' +
+    '<div class="cs-section-label">What This Tool Does</div>' +
+    '<p class="cs-text">' + d.what + '</p>' +
+    '<div class="cs-section-label">When To Use It</div>' +
+    '<p class="cs-text">' + d.when + '</p>' +
+    '<div class="cs-section-label">Key Talking Points</div>' +
+    '<ul class="cs-bullets">' + pointsHTML + '</ul>' +
+    '<div class="cs-handoff">' +
+    '<div class="cs-handoff-label">The Handoff</div>' +
+    '<div class="cs-handoff-text">' + d.handoff + '</div>' +
+    '</div>';
+  
+  document.getElementById('cheatsheetOverlay').classList.add('active');
+}
+
+function closeGuide() {
+  document.getElementById('cheatsheetOverlay').classList.remove('active');
+}
+
+document.getElementById('cheatsheetOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeGuide();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeGuide();
+});
+</script>
+
+</body>
+</html>
