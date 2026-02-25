@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affordability Calculator · Financing Strategies</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05080d;--surface:#0a0e16;--surface-raised:#0e1420;--surface-accent:#111828;
+  --border:rgba(255,255,255,0.05);--border-accent:rgba(186,163,112,0.12);
+  --gold:#c4ad7a;--gold-bright:#d4c08a;--gold-soft:rgba(196,173,122,0.5);--gold-glow:rgba(196,173,122,0.08);
+  --green:#72d49a;--green-soft:rgba(114,212,154,0.12);
+  --red:#d47272;--red-soft:rgba(212,114,114,0.1);
+  --blue-btn:#3b82f6;
+  --text:#e2ded4;--text-mid:rgba(226,222,212,0.6);--text-dim:rgba(226,222,212,0.3);--text-ghost:rgba(226,222,212,0.12);
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Generator Panel ── */
+.generator-panel{max-width:580px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-field{display:flex;flex-direction:column;gap:3px}.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px;grid-column:1/-1;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.gen-hint{font-size:9px;color:rgba(255,255,255,0.2);grid-column:1/-1;margin-top:-4px}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}.gen-btn.primary:hover{background:#2563eb}
+
+/* ── Report ── */
+.report-container{display:none;max-width:1000px;margin:20px auto;padding:0 16px}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav a,.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s;text-decoration:none}
+.report-nav a:hover,.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-accent)}
+
+/* ── Hero ── */
+.hero{padding:72px 80px 64px;position:relative;background:linear-gradient(170deg,rgba(196,173,122,0.03) 0%,transparent 40%)}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 5%,var(--border-accent) 30%,var(--border-accent) 70%,transparent 95%)}
+.hero-tag{font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--gold);margin-bottom:20px}
+.hero-verdict{display:grid;grid-template-columns:280px 1fr;gap:48px;align-items:start}
+.verdict-number{text-align:right;padding-right:48px;border-right:1px solid var(--border-accent)}
+.verdict-amount{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:var(--gold-bright);line-height:1;letter-spacing:-1px}
+.verdict-amount.green{color:var(--green)}
+.verdict-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:8px}
+.verdict-dti-bar{margin-top:18px;height:6px;border-radius:3px;background:rgba(255,255,255,0.06);overflow:hidden}
+.verdict-dti-fill{height:100%;border-radius:3px;transition:width 0.4s,background 0.3s}
+.verdict-dti-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--text-ghost);margin-top:3px}
+.verdict-thesis{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:400;color:var(--text-mid);line-height:1.7;padding-top:6px}
+.verdict-thesis strong{color:var(--text);font-weight:500}
+.verdict-thesis em{color:var(--gold);font-style:normal;font-weight:500}
+
+/* ── Assumptions Bar ── */
+.assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
+.assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
+.assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
+.assumption-key{font-size:8px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:13px;font-weight:600;color:var(--text-mid)}
+
+/* ── Sections ── */
+.rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
+.section-head{margin-bottom:36px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:13px;color:var(--text-dim);line-height:1.6;max-width:600px}
+
+/* ── Monthly Layout ── */
+.monthly-layout{display:grid;grid-template-columns:1fr 220px;gap:0}
+.monthly-breakdown{padding-right:56px;border-right:1px solid var(--border)}
+.monthly-result{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-left:56px}
+.econ-group-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px;margin-top:24px}
+.econ-group-label:first-child{margin-top:0}
+.econ-row{display:flex;justify-content:space-between;align-items:baseline;padding:5px 0;font-size:13px}
+.econ-label{color:var(--text-mid)}.econ-value{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text)}
+.econ-line{height:1px;background:var(--border);margin:6px 0}.econ-line.gold{background:var(--border-accent);margin:10px 0}
+.econ-total .econ-label{font-weight:600;color:var(--text)}
+.result-big-number{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1;color:var(--gold-bright)}
+.result-big-label{font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-top:10px;text-align:center}
+.result-big-detail{font-size:11px;color:var(--text-dim);margin-top:4px;text-align:center}
+
+/* ── Budget Ranges Table ── */
+.range-table{width:100%;border-collapse:collapse}
+.range-table thead th{padding:12px 14px;text-align:left;font-size:8px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-dim);border-bottom:1px solid var(--border-accent)}
+.range-table tbody td{padding:12px 14px;font-size:13px;color:var(--text-mid);border-bottom:1px solid rgba(255,255,255,0.02)}
+.range-table tbody tr:hover{background:rgba(255,255,255,0.015)}
+.range-badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.5px}
+.badge-conservative{background:var(--green-soft);color:var(--green)}
+.badge-standard{background:var(--gold-glow);color:var(--gold)}
+.badge-aggressive{background:var(--red-soft);color:var(--red)}
+.td-strong{font-weight:700;color:var(--text)}
+
+/* ── Exit/Funds Layout ── */
+.exit-layout{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.exit-col{padding:0}
+.exit-col:first-child{padding-right:48px;border-right:1px solid var(--border)}
+.exit-col:last-child{padding-left:48px}
+.exit-col-label{font-size:8px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:16px}
+
+/* ── Bottom Line ── */
+.bottom-line{padding:0;background:linear-gradient(135deg,rgba(196,173,122,0.05) 0%,rgba(196,173,122,0.01) 60%,transparent 100%);border-bottom:1px solid var(--border-accent);display:grid;grid-template-columns:1fr 1fr 1fr}
+.bl-cell{padding:44px 36px;text-align:center;border-right:1px solid var(--border)}.bl-cell:last-child{border-right:none}
+.bl-label{font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px}
+.bl-value{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:400;color:var(--gold-bright);line-height:1}
+.bl-value.green{color:var(--green)}
+.bl-detail{font-size:11px;color:var(--text-mid);margin-top:8px}
+
+/* ── Disclosures ── */
+.rpt-disclosures{background:var(--bg);padding:14px 80px;font-size:8px;color:var(--text-ghost);line-height:1.7;text-align:center;border-top:1px solid var(--border);max-width:1000px;margin:0 auto}
+
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%;padding:0}
+  .hero{padding:24px 40px 20px}.rpt-section{padding:20px 40px}.assumptions-bar{padding:14px 40px}
+  .report-page,.hero,.rpt-section,.bottom-line,.assumptions-bar,.range-badge,.verdict-dti-fill{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+
+<!-- GENERATOR PANEL -->
+<div class="generator-panel" id="genPanel">
+  <div class="gen-title">Affordability Calculator</div>
+  <div class="gen-sub">Find out how much home fits comfortably in the budget — with full payment breakdown and DTI analysis</div>
+  <div class="gen-grid">
+    <div class="gen-field full"><label>Client Name (Optional)</label><input type="text" id="inp_client" placeholder="Susie Homebuyer"></div>
+    <div class="gen-section">Income & Debts</div>
+    <div class="gen-field"><label>Annual Household Income</label><input type="text" id="inp_income" placeholder="85,000" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Monthly Debt Obligations</label><input type="text" id="inp_debts" placeholder="400" oninput="formatCurrency(this)"></div>
+    <div class="gen-hint">Car payments, student loans, credit card minimums, etc.</div>
+    <div class="gen-section">Loan Details</div>
+    <div class="gen-field"><label>Interest Rate %</label><input type="text" id="inp_rate" placeholder="6.75"></div>
+    <div class="gen-field"><label>Term (Years)</label>
+      <select id="inp_term"><option value="30" selected>30</option><option value="20">20</option><option value="15">15</option></select>
+    </div>
+    <div class="gen-field"><label>Down Payment %</label>
+      <select id="inp_down"><option value="3">3%</option><option value="3.5">3.5%</option><option value="5" selected>5%</option><option value="10">10%</option><option value="15">15%</option><option value="20">20%</option><option value="25">25%</option></select>
+    </div>
+    <div class="gen-field"><label>Property Tax Rate %</label>
+      <select id="inp_tax"><option value="0.8">0.80%</option><option value="1.0">1.00%</option><option value="1.2" selected>1.20%</option><option value="1.5">1.50%</option><option value="1.8">1.80%</option><option value="2.0">2.00%</option><option value="2.5">2.50%</option></select>
+    </div>
+    <div class="gen-field"><label>DTI Target</label>
+      <select id="inp_dti"><option value="36">Conservative (36%)</option><option value="43" selected>Standard (43%)</option><option value="45">Aggressive (45%)</option><option value="50">Maximum (50%)</option></select>
+    </div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn primary" onclick="generateReport()">Generate Report</button></div>
+</div>
+
+<!-- REPORT -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <a href="#" onclick="document.getElementById('genPanel').style.display='block';document.getElementById('reportContainer').style.display='none';return false;">← Edit Inputs</a>
+    <button onclick="window.print()">🖨 Print / PDF</button>
+    <a href="financing-strategies.html">Back to Financing Strategies</a>
+  </div>
+
+  <div class="report-page">
+    <div class="hero">
+      <div class="hero-tag">Affordability Calculator</div>
+      <div class="hero-verdict">
+        <div class="verdict-number">
+          <div class="verdict-amount" id="heroAmount">$0</div>
+          <div class="verdict-label" id="heroLabel">Estimated Home Price</div>
+          <div class="verdict-dti-bar"><div class="verdict-dti-fill" id="dtiFill" style="width:0;background:var(--green)"></div></div>
+          <div class="verdict-dti-labels"><span>0%</span><span>36%</span><span>43%</span><span>50%</span></div>
+        </div>
+        <div class="verdict-thesis" id="heroThesis">—</div>
+      </div>
+    </div>
+
+    <div class="assumptions-bar" id="assumptionsBar"></div>
+
+    <!-- Payment Breakdown -->
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Mortgage Payment Breakdown</div>
+        <div class="section-sub">Complete monthly housing cost including principal, interest, taxes, insurance, and PMI.</div>
+      </div>
+      <div class="monthly-layout">
+        <div class="monthly-breakdown" id="paymentBreakdown"></div>
+        <div class="monthly-result">
+          <div class="result-big-number" id="resultTotal">$0</div>
+          <div class="result-big-label">Total Housing</div>
+          <div class="result-big-detail" id="resultDTI"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Budget Ranges -->
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Budget Ranges</div>
+        <div class="section-sub">How much home you can afford at different debt-to-income ratios. Lenders use DTI to evaluate risk.</div>
+      </div>
+      <table class="range-table">
+        <thead><tr><th></th><th>DTI Ratio</th><th>Home Price</th><th>Monthly Payment</th><th>Loan Amount</th></tr></thead>
+        <tbody id="rangesBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Funds Needed -->
+    <div class="rpt-section">
+      <div class="section-head">
+        <div class="section-title">Estimated Funds Needed</div>
+        <div class="section-sub">Cash required at closing based on your down payment and estimated closing costs.</div>
+      </div>
+      <div class="exit-layout">
+        <div class="exit-col">
+          <div class="exit-col-label">Cash to Close</div>
+          <div id="fundsBreakdown"></div>
+        </div>
+        <div class="exit-col">
+          <div class="exit-col-label">Loan Overview</div>
+          <div id="loanOverview"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-line" id="bottomLine"></div>
+  </div>
+
+  <div class="rpt-disclosures">
+    This calculator provides estimates for informational purposes only. Actual affordability depends on credit score, assets, employment history, and lender-specific guidelines.
+    Taxes, insurance, and PMI are estimates. This is not a commitment to lend. Consult a licensed loan officer for official pre-approval.
+  </div>
+</div>
+
+<script>
+function formatCurrency(el){var raw=el.value.replace(/[^0-9]/g,'');if(raw)el.value=parseInt(raw).toLocaleString('en-US');}
+function parseMoney(s){return parseFloat((s||'').replace(/[^0-9.]/g,''))||0;}
+function fmtMoney(n){return'$'+Math.round(n).toLocaleString('en-US');}
+function calcPmt(loan,rate,term){if(loan<=0||rate<=0)return 0;var mr=rate/100/12,n=term*12;return loan*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1);}
+
+function solveHomePrice(monthlyGross,debts,dtiPct,rate,term,downPct,taxPct){
+  var maxHousing=(monthlyGross*dtiPct/100)-debts;
+  if(maxHousing<=0)return{price:0};
+  var price=200000;
+  for(var i=0;i<60;i++){
+    var down=price*downPct/100,loan=price-down;
+    var pi=calcPmt(loan,rate,term);
+    var tax=(price*taxPct/100)/12;
+    var ins=(price*0.0035)/12;
+    var pmi=downPct<20?(loan*0.005)/12:0;
+    var total=pi+tax+ins+pmi;
+    var diff=maxHousing-total;
+    if(Math.abs(diff)<1)break;
+    price+=diff*0.6;if(price<0){price=0;break;}
+  }
+  var fd=price*downPct/100,fl=price-fd;
+  return{price:Math.round(price),loan:fl,down:fd,pi:calcPmt(fl,rate,term),tax:(price*taxPct/100)/12,ins:(price*0.0035)/12,pmi:downPct<20?(fl*0.005)/12:0};
+}
+
+function generateReport(){
+  var income=parseMoney(document.getElementById('inp_income').value);
+  var debts=parseMoney(document.getElementById('inp_debts').value);
+  var rate=parseFloat(document.getElementById('inp_rate').value)||0;
+  var term=parseInt(document.getElementById('inp_term').value);
+  var downPct=parseFloat(document.getElementById('inp_down').value);
+  var taxPct=parseFloat(document.getElementById('inp_tax').value);
+  var dtiTarget=parseInt(document.getElementById('inp_dti').value);
+  var client=document.getElementById('inp_client').value.trim();
+
+  if(income<=0||rate<=0){alert('Please enter income and interest rate.');return;}
+
+  var mg=income/12;
+  var r=solveHomePrice(mg,debts,dtiTarget,rate,term,downPct,taxPct);
+  if(r.price<=0){alert('Monthly debt obligations exceed the housing budget at this DTI level. Try reducing debts or increasing income.');return;}
+
+  var total=r.pi+r.tax+r.ins+r.pmi;
+  var actualDTI=((total+debts)/mg*100);
+
+  // Hero
+  document.getElementById('heroAmount').textContent=fmtMoney(r.price);
+  document.getElementById('heroAmount').className='verdict-amount'+(actualDTI<=43?' green':'');
+  var status=actualDTI<=36?'Comfortably within budget':actualDTI<=43?'Within standard guidelines':'Stretching — but possible';
+  document.getElementById('heroLabel').textContent=status;
+
+  var barPct=Math.min(actualDTI/50*100,100);
+  var barColor=actualDTI<=36?'var(--green)':actualDTI<=43?'var(--gold)':'var(--red)';
+  document.getElementById('dtiFill').style.width=barPct+'%';
+  document.getElementById('dtiFill').style.background=barColor;
+
+  var who=client?'<strong>'+client+'</strong>':'Based on your income';
+  document.getElementById('heroThesis').innerHTML=who+', with an annual household income of <em>'+fmtMoney(income)+'</em> and <em>'+fmtMoney(debts)+'/mo</em> in existing obligations, a home in the <em>'+fmtMoney(r.price)+'</em> range keeps the total debt-to-income ratio at <em>'+actualDTI.toFixed(1)+'%</em>. '+
+    (actualDTI<=36?'That\'s well below the 36% conservative threshold — strong position for approval and comfortable monthly payments.':
+     actualDTI<=43?'That\'s within the standard 43% guideline most lenders use — solid territory for conventional financing.':
+     'That\'s above standard guidelines. Programs exist at this level, but a lender consultation is important to confirm eligibility.');
+
+  // Assumptions
+  document.getElementById('assumptionsBar').innerHTML=
+    '<div class="assumption-item"><div class="assumption-key">Income</div><div class="assumption-val">'+fmtMoney(income)+'/yr</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Debts</div><div class="assumption-val">'+fmtMoney(debts)+'/mo</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Rate</div><div class="assumption-val">'+rate+'%</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Term</div><div class="assumption-val">'+term+' yr</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">Down</div><div class="assumption-val">'+downPct+'%</div></div>'+
+    '<div class="assumption-item"><div class="assumption-key">DTI</div><div class="assumption-val">'+actualDTI.toFixed(1)+'%</div></div>';
+
+  // Payment breakdown
+  var bd='<div class="econ-group-label">Housing Costs</div>'+
+    '<div class="econ-row"><span class="econ-label">Principal & Interest</span><span class="econ-value">'+fmtMoney(r.pi)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Property Tax</span><span class="econ-value">'+fmtMoney(r.tax)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Homeowner\'s Insurance</span><span class="econ-value">'+fmtMoney(r.ins)+'</span></div>';
+  if(downPct<20) bd+='<div class="econ-row"><span class="econ-label">PMI (est.)</span><span class="econ-value">'+fmtMoney(r.pmi)+'</span></div>';
+  bd+='<div class="econ-line gold"></div>'+
+    '<div class="econ-row econ-total"><span class="econ-label">Total Housing Payment</span><span class="econ-value" style="font-weight:700;color:var(--text)">'+fmtMoney(total)+'</span></div>'+
+    '<div class="econ-group-label" style="margin-top:28px">Full Picture</div>'+
+    '<div class="econ-row"><span class="econ-label">Housing Payment</span><span class="econ-value">'+fmtMoney(total)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Other Debts</span><span class="econ-value">'+fmtMoney(debts)+'</span></div>'+
+    '<div class="econ-line gold"></div>'+
+    '<div class="econ-row econ-total"><span class="econ-label">Total Monthly Obligations</span><span class="econ-value" style="font-weight:700;color:var(--text)">'+fmtMoney(total+debts)+'</span></div>';
+  document.getElementById('paymentBreakdown').innerHTML=bd;
+  document.getElementById('resultTotal').textContent=fmtMoney(total);
+  document.getElementById('resultDTI').textContent=actualDTI.toFixed(1)+'% DTI';
+
+  // Budget ranges
+  var ranges=[
+    {label:'Conservative',dti:36,cls:'badge-conservative'},
+    {label:'Standard',dti:43,cls:'badge-standard'},
+    {label:'Aggressive',dti:50,cls:'badge-aggressive'}
+  ];
+  var rHTML='';
+  ranges.forEach(function(rng){
+    var rr=solveHomePrice(mg,debts,rng.dti,rate,term,downPct,taxPct);
+    var rTotal=rr.pi+rr.tax+rr.ins+rr.pmi;
+    rHTML+='<tr><td><span class="range-badge '+rng.cls+'">'+rng.label+'</span></td>'+
+      '<td>'+rng.dti+'%</td>'+
+      '<td class="td-strong">'+fmtMoney(rr.price)+'</td>'+
+      '<td>'+fmtMoney(rTotal)+'/mo</td>'+
+      '<td>'+fmtMoney(rr.loan)+'</td></tr>';
+  });
+  document.getElementById('rangesBody').innerHTML=rHTML;
+
+  // Funds needed
+  var closing=r.price*0.03;
+  document.getElementById('fundsBreakdown').innerHTML=
+    '<div class="econ-row"><span class="econ-label">Down Payment ('+downPct+'%)</span><span class="econ-value">'+fmtMoney(r.down)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Closing Costs (est. 3%)</span><span class="econ-value">'+fmtMoney(closing)+'</span></div>'+
+    '<div class="econ-line gold"></div>'+
+    '<div class="econ-row econ-total"><span class="econ-label">Total Cash Needed</span><span class="econ-value" style="font-weight:700;color:var(--gold)">'+fmtMoney(r.down+closing)+'</span></div>';
+
+  document.getElementById('loanOverview').innerHTML=
+    '<div class="econ-row"><span class="econ-label">Home Price</span><span class="econ-value">'+fmtMoney(r.price)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Down Payment</span><span class="econ-value">'+fmtMoney(r.down)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Loan Amount</span><span class="econ-value">'+fmtMoney(r.loan)+'</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Rate</span><span class="econ-value">'+rate+'%</span></div>'+
+    '<div class="econ-row"><span class="econ-label">Term</span><span class="econ-value">'+term+' years</span></div>';
+
+  // Bottom line
+  document.getElementById('bottomLine').innerHTML=
+    '<div class="bl-cell"><div class="bl-label">Max Home Price</div><div class="bl-value'+(actualDTI<=43?' green':'')+'">'+fmtMoney(r.price)+'</div><div class="bl-detail">at '+actualDTI.toFixed(1)+'% DTI</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">Monthly Housing</div><div class="bl-value">'+fmtMoney(total)+'</div><div class="bl-detail">P&I + Tax + Ins'+(downPct<20?' + PMI':'')+'</div></div>'+
+    '<div class="bl-cell"><div class="bl-label">Cash to Close</div><div class="bl-value">'+fmtMoney(r.down+closing)+'</div><div class="bl-detail">'+downPct+'% down + 3% closing</div></div>';
+
+  document.getElementById('genPanel').style.display='none';
+  document.getElementById('reportContainer').style.display='block';
+}
+</script>
+</body>
+</html>
