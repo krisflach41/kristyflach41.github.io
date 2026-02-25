@@ -359,9 +359,8 @@ body {
 
   <div class="tool-card">
     <a href="calc-payment.html">
-      <div class="thumb-placeholder">
-        <span class="tool-icon">💰</span>
-        <span class="tool-label">Calculator</span>
+      <div class="thumb-area">
+        <img src="calc-payment.png" alt="Payment Calculator">
       </div>
     </a>
     <h3>Payment Calculator</h3>
@@ -372,9 +371,8 @@ body {
 
   <div class="tool-card">
     <a href="calc-buying-power.html">
-      <div class="thumb-placeholder">
-        <span class="tool-icon">📊</span>
-        <span class="tool-label">Calculator</span>
+      <div class="thumb-area">
+        <img src="calc-buying-power.png" alt="Buying Power">
       </div>
     </a>
     <h3>Buying Power</h3>
@@ -385,9 +383,8 @@ body {
 
   <div class="tool-card">
     <a href="calc-affordability.html">
-      <div class="thumb-placeholder">
-        <span class="tool-icon">🏠</span>
-        <span class="tool-label">Calculator</span>
+      <div class="thumb-area">
+        <img src="calc-affordability.png" alt="Affordability Calculator">
       </div>
     </a>
     <h3>Affordability Calculator</h3>
@@ -470,10 +467,17 @@ function openGuide(reportKey) {
   var d = guideData[reportKey];
   if (!d) return;
   
+  // Get admin/lender name for personalization
+  var lenderName = sessionStorage.getItem('agentEdgeLenderName') || '';
+  var lenderRef = lenderName ? 'my lender ' + lenderName : 'my lender';
+  
   var pointsHTML = '';
   d.points.forEach(function(p) {
     pointsHTML += '<li>' + p + '</li>';
   });
+  
+  // Inject lender name into handoff
+  var handoff = d.handoff.replace(/my lender/g, lenderRef);
   
   var card = document.getElementById('cheatsheetCard');
   card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
@@ -487,7 +491,7 @@ function openGuide(reportKey) {
     '<ul class="cs-bullets">' + pointsHTML + '</ul>' +
     '<div class="cs-handoff">' +
     '<div class="cs-handoff-label">The Handoff</div>' +
-    '<div class="cs-handoff-text">' + d.handoff + '</div>' +
+    '<div class="cs-handoff-text">' + handoff + '</div>' +
     '</div>';
   
   document.getElementById('cheatsheetOverlay').classList.add('active');
