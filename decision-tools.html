@@ -250,6 +250,162 @@ body {
   .tool-grid { grid-template-columns: 1fr; gap: 24px; }
 }
 
+/* ===== REPORT GUIDE LINK ===== */
+.guide-link {
+  display: inline-block;
+  margin-left: 14px;
+  font-size: 12px;
+  color: #6b7c93;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  vertical-align: middle;
+}
+.guide-link:hover {
+  color: #0b4ea2;
+}
+.guide-link svg {
+  width: 13px;
+  height: 13px;
+  vertical-align: -2px;
+  margin-right: 4px;
+  opacity: 0.6;
+}
+.guide-link:hover svg {
+  opacity: 1;
+}
+
+/* ===== CHEAT SHEET OVERLAY ===== */
+.cheatsheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 10001;
+  align-items: center;
+  justify-content: center;
+}
+.cheatsheet-overlay.active {
+  display: flex;
+}
+.cheatsheet-card {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 36px 40px 32px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+  position: relative;
+}
+.cheatsheet-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 30px;
+  height: 30px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+  color: #555;
+  transition: background 0.2s;
+  border: none;
+}
+.cheatsheet-close:hover {
+  background: #e0e0e0;
+}
+.cs-report-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin-bottom: 4px;
+}
+.cs-tagline {
+  font-size: 13px;
+  color: #8a95a5;
+  margin-bottom: 24px;
+}
+.cs-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #0b4ea2;
+  margin-bottom: 6px;
+  margin-top: 20px;
+}
+.cs-section-label:first-of-type {
+  margin-top: 0;
+}
+.cs-text {
+  font-size: 14px;
+  color: #3a4a5c;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+.cs-highlight {
+  background: rgba(11,78,162,0.06);
+  border-left: 3px solid #0b4ea2;
+  padding: 10px 14px;
+  border-radius: 0 8px 8px 0;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #0b1f3a;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.cs-bullets {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cs-bullets li {
+  font-size: 14px;
+  color: #3a4a5c;
+  line-height: 1.6;
+  padding: 4px 0 4px 20px;
+  position: relative;
+}
+.cs-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0b4ea2;
+  opacity: 0.25;
+}
+.cs-handoff {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 10px;
+  background: rgba(11,78,162,0.05);
+  border-left: 3px solid #0b4ea2;
+}
+.cs-handoff-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #0b4ea2;
+  margin-bottom: 6px;
+}
+.cs-handoff-text {
+  font-size: 13px;
+  color: #3a4a5c;
+  line-height: 1.6;
+  font-style: italic;
+}
+
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
@@ -294,27 +450,30 @@ body {
       </div>
     </div>
 
-    <!-- PLACEHOLDER: FUTURE TOOL -->
+    <!-- SELLER STRATEGIES -->
     <div class="tool-card">
-      <div class="tool-preview coming">
-        <div class="preview-icon">📊</div>
-        <span class="preview-badge coming">Coming Soon</span>
+      <div class="tool-preview live">
+        <div class="preview-icon">⚖️</div>
+        <span class="preview-badge live">Live Tool</span>
         <div class="preview-label">
-          <h3>Rate Scenario Planner</h3>
-          <p>Payment Comparison Tool</p>
+          <h3>Seller Strategies</h3>
+          <p>Price Drop vs. Smart Concessions</p>
         </div>
       </div>
       <div class="tool-body">
         <p>
-          Help clients visualize how different rate scenarios affect their monthly
-          payment, total cost, and buying power. Side-by-side comparisons made simple.
+          Compare alternative strategies for homes that need to sell fast or have been
+          aging on the market. Shows sellers how rate buydowns and closing cost credits
+          can outperform price reductions — keeping more equity in their pocket.
         </p>
         <div class="tool-features">
-          <span class="tool-feat-tag">Payment Calculator</span>
-          <span class="tool-feat-tag">Scenario Builder</span>
-          <span class="tool-feat-tag">Visual Output</span>
+          <span class="tool-feat-tag">3 Scenarios</span>
+          <span class="tool-feat-tag">Net Proceeds</span>
+          <span class="tool-feat-tag">Concession Limits</span>
+          <span class="tool-feat-tag">Loan Type Guide</span>
         </div>
-        <span class="tool-btn disabled">Coming Soon</span>
+        <a href="calc-seller-strategy.html" class="tool-btn">Launch Tool →</a>
+        <a class="guide-link" onclick="openGuide('seller')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Realtor Guide</a>
       </div>
     </div>
 
@@ -332,6 +491,74 @@ body {
 </div>
 
 <a href="portal.html" class="return-main">← Return to Portal</a>
+
+<!-- Cheat Sheet Overlay -->
+<div class="cheatsheet-overlay" id="cheatsheetOverlay">
+  <div class="cheatsheet-card" id="cheatsheetCard"></div>
+</div>
+
+<script>
+var guideData = {
+  seller: {
+    name: 'Seller Strategies',
+    tagline: 'Price Drop vs. Smart Concessions',
+    what: 'Compares alternative strategies for homes that need to sell fast or have been aging on the market. Instead of defaulting to a price reduction, this tool shows the seller — in black and white — how a rate buydown or closing cost credit can achieve the same result for less money. The seller keeps more equity, the buyer gets a better payment,',
+    whatHighlight: 'and you protect your full commission on the original list price.',
+    when: 'Your seller is getting anxious and the price reduction conversation is coming. Before they cut $10k\u2013$25k off the top, pull this report and show them a smarter path. Also use it when you\'re comparing offers \u2014 the buyer\'s loan type determines how much room you have to work this strategy.',
+    points: [
+      '"Before we drop the price, let me show you what that same money could do if we spent it differently."',
+      '"A price reduction comes straight out of your equity and goes on public record. A rate buydown achieves the same impact on the buyer\'s payment for a fraction of the cost."',
+      '"For every 1% rates go down, 5 million more people qualify to buy. We\'re not giving money away \u2014 we\'re investing in demand for your home."',
+      '"The loan type on the offer matters. An FHA buyer gives us more room to use this strategy than a conventional buyer putting 5% down."'
+    ],
+    handoff: '"Let me connect you with my lender \u2014 she\'ll run the exact numbers based on the offers we\'re seeing so we can figure out which strategy keeps the most money in your pocket."'
+  }
+};
+
+function openGuide(reportKey) {
+  var d = guideData[reportKey];
+  if (!d) return;
+
+  var lenderName = sessionStorage.getItem('agentEdgeLenderName') || '';
+  var lenderRef = lenderName ? lenderName : 'my lender';
+  var firstName = lenderName ? lenderName.split(' ')[0] : '';
+  var pronounll = firstName ? firstName + ' will' : "she'll";
+
+  var pointsHTML = '';
+  d.points.forEach(function(p) {
+    var txt = p.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll);
+    pointsHTML += '<li>' + txt + '</li>';
+  });
+
+  var handoffText = d.handoff.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll);
+
+  var card = document.getElementById('cheatsheetCard');
+  card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
+    '<div class="cs-report-name">' + d.name + '</div>' +
+    '<div class="cs-tagline">' + d.tagline + '</div>' +
+    '<div class="cs-section-label">What This Tool Does</div>' +
+    '<p class="cs-text">' + d.what + '</p>' +
+    '<div class="cs-highlight">' + d.whatHighlight + '</div>' +
+    '<div class="cs-section-label">When To Use It</div>' +
+    '<p class="cs-text">' + d.when + '</p>' +
+    '<div class="cs-section-label">Key Talking Points</div>' +
+    '<ul class="cs-bullets">' + pointsHTML + '</ul>' +
+    '<div class="cs-handoff">' +
+    '<div class="cs-handoff-label">The Handoff</div>' +
+    '<div class="cs-handoff-text">' + handoffText + '</div>' +
+    '</div>';
+
+  document.getElementById('cheatsheetOverlay').classList.add('active');
+}
+
+function closeGuide() {
+  document.getElementById('cheatsheetOverlay').classList.remove('active');
+}
+
+document.getElementById('cheatsheetOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeGuide();
+});
+</script>
 
 </body>
 </html>
