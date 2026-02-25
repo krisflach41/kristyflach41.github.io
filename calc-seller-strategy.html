@@ -60,14 +60,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .assumptions-bar{padding:24px 80px;background:var(--surface-raised);border-bottom:1px solid var(--border);display:flex;gap:0;overflow-x:auto}
 .assumption-item{flex:1;padding:0 20px;border-right:1px solid var(--border);text-align:center;white-space:nowrap}
 .assumption-item:first-child{padding-left:0}.assumption-item:last-child{border-right:none;padding-right:0}
-.assumption-key{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
-.assumption-val{font-size:14px;font-weight:600;color:var(--text-mid)}
+.assumption-key{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px}
+.assumption-val{font-size:15px;font-weight:600;color:var(--text-mid)}
 
 /* ── Sections ── */
 .rpt-section{padding:56px 80px;border-bottom:1px solid var(--border)}
 .section-head{margin-bottom:36px}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--text);margin-bottom:8px}
-.section-sub{font-size:14px;color:var(--text-dim);line-height:1.6;max-width:600px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--text);margin-bottom:8px}
+.section-sub{font-size:15px;color:var(--text-dim);line-height:1.6;max-width:680px}
 
 /* ── Scenario Cards ── */
 .scenario-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
@@ -80,52 +80,52 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .sc-big.red{color:var(--red)}.sc-big.gold{color:var(--gold-bright)}.sc-big.green{color:var(--green)}
 .sc-sublabel{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:24px}
 .sc-rows{display:flex;flex-direction:column;gap:0}
-.sc-row{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.03)}
+.sc-row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;font-size:15px;border-bottom:1px solid rgba(255,255,255,0.03)}
 .sc-row:last-child{border-bottom:none}
 .sc-row-label{color:var(--text-dim)}.sc-row-val{font-weight:600;font-variant-numeric:tabular-nums;color:var(--text-mid)}
 .sc-row-val.green{color:var(--green)}.sc-row-val.red{color:var(--red)}.sc-row-val.gold{color:var(--gold)}
 .sc-net-row{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 0;margin-top:8px;border-top:1px solid var(--border-accent)}
-.sc-net-label{font-size:15px;font-weight:700;color:var(--text)}
-.sc-net-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1}
+.sc-net-label{font-size:16px;font-weight:700;color:var(--text)}
+.sc-net-val{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;line-height:1}
 
 /* ── Visual Bars ── */
 .visual-bar-section{padding:40px 80px;border-bottom:1px solid var(--border)}
 .vbar-row{display:flex;align-items:center;gap:16px;margin-bottom:16px}
 .vbar-row:last-child{margin-bottom:0}
-.vbar-label{font-size:13px;font-weight:600;color:var(--text-dim);width:140px;text-align:right;flex-shrink:0}
-.vbar-track{flex:1;height:36px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;position:relative}
-.vbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:14px;font-weight:700;transition:width 0.6s ease}
+.vbar-label{font-size:14px;font-weight:600;color:var(--text-dim);width:160px;text-align:right;flex-shrink:0}
+.vbar-track{flex:1;height:40px;background:rgba(255,255,255,0.03);border-radius:6px;overflow:hidden;position:relative}
+.vbar-fill{height:100%;border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:14px;font-size:15px;font-weight:700;transition:width 0.6s ease}
 .vbar-fill.red{background:linear-gradient(90deg,rgba(212,114,114,0.15),rgba(212,114,114,0.35));color:var(--red)}
 .vbar-fill.gold{background:linear-gradient(90deg,rgba(196,173,122,0.15),rgba(196,173,122,0.35));color:var(--gold)}
 .vbar-fill.green{background:linear-gradient(90deg,rgba(114,212,154,0.12),rgba(114,212,154,0.3));color:var(--green)}
 
 /* ── Narrative / Why This Matters ── */
 .narrative-section{padding:56px 80px;border-bottom:1px solid var(--border)}
-.narrative-stat{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--text);line-height:1.7;margin-bottom:28px;padding:24px 32px;border-left:2px solid var(--gold);background:var(--gold-glow);border-radius:0 8px 8px 0}
+.narrative-stat{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:400;color:var(--text);line-height:1.7;margin-bottom:28px;padding:24px 32px;border-left:2px solid var(--gold);background:var(--gold-glow);border-radius:0 8px 8px 0}
 .narrative-stat em{color:var(--gold);font-style:normal;font-weight:500}
-.narrative-body{font-size:14px;color:var(--text-mid);line-height:1.85;max-width:760px}
-.narrative-body p{margin-bottom:16px}
+.narrative-body{font-size:15px;color:var(--text-mid);line-height:1.85;max-width:760px}
+.narrative-body p{margin-bottom:18px}
 .narrative-body p:last-child{margin-bottom:0}
-.narrative-closer{margin-top:32px;padding:20px 28px;border-radius:10px;background:linear-gradient(135deg,rgba(196,173,122,0.06),rgba(196,173,122,0.02));border:1px solid var(--border-accent);font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--gold-bright);line-height:1.6;text-align:center}
+.narrative-closer{margin-top:32px;padding:22px 28px;border-radius:10px;background:linear-gradient(135deg,rgba(196,173,122,0.06),rgba(196,173,122,0.02));border:1px solid var(--border-accent);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--gold-bright);line-height:1.6;text-align:center}
 
 /* ── Buyer Payment Cards ── */
 .buyer-pay-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
 .buyer-pay-cell{padding:28px;text-align:center;border-right:1px solid var(--border)}
 .buyer-pay-cell:last-child{border-right:none}
 .buyer-pay-cell.highlight{background:var(--green-soft)}
-.bp-tag{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
-.bp-amount{font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1}
-.bp-detail{font-size:12px;color:var(--text-dim);margin-top:4px}
-.bp-badge{font-size:13px;font-weight:600;margin-top:8px}
+.bp-tag{font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.bp-amount{font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1}
+.bp-detail{font-size:13px;color:var(--text-dim);margin-top:6px}
+.bp-badge{font-size:14px;font-weight:600;margin-top:10px}
 
 /* ── Loan Reference Grid ── */
 .loan-ref-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
-.loan-ref-card{padding:24px 20px;border-right:1px solid var(--border);text-align:center}
+.loan-ref-card{padding:28px 24px;border-right:1px solid var(--border);text-align:center}
 .loan-ref-card:last-child{border-right:none}
-.loan-ref-type{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.loan-ref-pct{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px}
-.loan-ref-detail{font-size:12px;color:var(--text-dim);line-height:1.5}
-.loan-ref-note{grid-column:1/-1;padding:16px 24px;font-size:13px;color:var(--text-dim);line-height:1.6;text-align:center;border-top:1px solid var(--border)}
+.loan-ref-type{font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.loan-ref-pct{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:400;color:var(--text);line-height:1;margin-bottom:8px}
+.loan-ref-detail{font-size:13px;color:var(--text-dim);line-height:1.6}
+.loan-ref-note{grid-column:1/-1;padding:18px 28px;font-size:14px;color:var(--text-dim);line-height:1.7;text-align:center;border-top:1px solid var(--border)}
 .loan-ref-note strong{color:var(--gold)}
 
 /* ── Bottom Line ── */
@@ -416,7 +416,7 @@ function generate(){
 
   h+='<div class="buyer-pay-grid">';
   h+='<div class="buyer-pay-cell"><div class="bp-tag" style="color:var(--red)">A · Price Reduction</div><div class="bp-amount" style="color:var(--text-mid)">'+money(payA)+'</div><div class="bp-detail">per month at '+pct(rate)+'</div></div>';
-  h+='<div class="buyer-pay-cell highlight"><div class="bp-tag" style="color:var(--green)">B · Smart Concessions</div><div class="bp-amount" style="color:var(--green)">'+money(payB)+'</div><div class="bp-detail">per month at '+pct(rateB)+'</div>';
+  h+='<div class="buyer-pay-cell"><div class="bp-tag" style="color:var(--green)">B · Smart Concessions</div><div class="bp-amount" style="color:var(--green)">'+money(payB)+'</div><div class="bp-detail">per month at '+pct(rateB)+'</div>';
   if(buyerSaveMo>0){h+='<div class="bp-badge" style="color:var(--green)">Saves '+money(buyerSaveMo)+'/mo</div>';}
   h+='</div>';
   h+='<div class="buyer-pay-cell"><div class="bp-tag" style="color:var(--gold)">C · Closing Costs Only</div><div class="bp-amount" style="color:var(--text-mid)">'+money(payC)+'</div><div class="bp-detail">per month at '+pct(rate)+'</div>';
