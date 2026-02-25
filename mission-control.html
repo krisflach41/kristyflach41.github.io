@@ -4723,17 +4723,30 @@ function handleCrmImport(input) {
           email: String(row['Email'] || row['email'] || '').trim(),
           phone: phone,
           type: type,
+          custom_type: String(row['Custom Type'] || row['custom_type'] || '').trim() || null,
           company: String(row['Company'] || row['Company / Brokerage'] || row['Brokerage'] || row['company'] || '').trim(),
           source: String(row['Source'] || row['source'] || 'import').trim(),
-          address: String(row['Street'] || row['street'] || '').trim(),
+          address: String(row['Street'] || row['street'] || row['Address'] || row['address'] || '').trim(),
           city: String(row['City'] || row['city'] || '').trim(),
           state: String(row['State'] || row['state'] || '').trim(),
           zip: String(row['Zip'] || row['zip'] || row['ZIP'] || '').trim(),
+          tags: String(row['Tags'] || row['tags'] || '').trim() || null,
+          notes: String(row['Notes'] || row['notes'] || '').trim(),
+          birthday: row['Birthday'] || row['birthday'] || null,
+          spouse_name: String(row['Spouse Name'] || row['Spouse'] || row['spouse_name'] || '').trim() || null,
+          kids: String(row['Kids'] || row['Children'] || row['kids'] || '').trim() || null,
+          employer: String(row['Employer'] || row['employer'] || '').trim() || null,
+          job_title: String(row['Job Title'] || row['job_title'] || row['Title'] || '').trim() || null,
+          realtor_name: String(row['Realtor Name'] || row['Realtor'] || row['realtor_name'] || '').trim() || null,
           license_number: String(row['License Number'] || row['license_number'] || '').trim(),
           own_rent: String(row['Own or Rent'] || row['own_rent'] || '').trim().toLowerCase(),
           monthly_payment: row['Monthly Payment'] || row['monthly_payment'] || '',
           marital_status: String(row['Marital Status'] || row['marital_status'] || '').trim().toLowerCase(),
-          notes: String(row['Notes'] || row['notes'] || '').trim()
+          website: String(row['Website'] || row['website'] || '').trim() || null,
+          facebook: String(row['Facebook'] || row['facebook'] || '').trim() || null,
+          instagram: String(row['Instagram'] || row['instagram'] || '').trim() || null,
+          linkedin: String(row['LinkedIn'] || row['linkedin'] || '').trim() || null,
+          tiktok: String(row['TikTok'] || row['tiktok'] || '').trim() || null
         };
 
         var p = fetch(API_BASE + '/crm-api', {
