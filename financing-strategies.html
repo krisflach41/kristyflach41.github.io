@@ -395,7 +395,7 @@ body {
 
 </div>
 
-<div class="info-strip">
+<div class="info-strip" id="infoStrip">
   <strong>These are conversation tools, not final quotes.</strong><br>
   For official loan estimates, pre-approvals, and program-specific details — connect your client with your lender.
 </div>
@@ -470,14 +470,17 @@ function openGuide(reportKey) {
   // Get admin/lender name for personalization
   var lenderName = sessionStorage.getItem('agentEdgeLenderName') || '';
   var lenderRef = lenderName ? 'my lender ' + lenderName : 'my lender';
+  var firstName = lenderName ? lenderName.split(' ')[0] : '';
+  var pronoun = firstName ? firstName : 'they';
+  var pronounll = firstName ? firstName + ' will' : 'they\'ll';
   
   var pointsHTML = '';
   d.points.forEach(function(p) {
-    pointsHTML += '<li>' + p + '</li>';
+    pointsHTML += '<li>' + p.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll) + '</li>';
   });
   
   // Inject lender name into handoff
-  var handoff = d.handoff.replace(/my lender/g, lenderRef);
+  var handoff = d.handoff.replace(/my lender/g, lenderRef).replace(/she'll/g, pronounll);
   
   var card = document.getElementById('cheatsheetCard');
   card.innerHTML = '<button class="cheatsheet-close" onclick="closeGuide()">&times;</button>' +
@@ -508,6 +511,17 @@ document.getElementById('cheatsheetOverlay').addEventListener('click', function(
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeGuide();
 });
+
+// Personalize info strip with lender name
+(function() {
+  var ln = sessionStorage.getItem('agentEdgeLenderName') || '';
+  if (ln) {
+    var strip = document.getElementById('infoStrip');
+    if (strip) {
+      strip.innerHTML = '<strong>These are conversation tools, not final quotes.</strong><br>For official loan estimates, pre-approvals, and program-specific details — connect your client with ' + ln + '.';
+    }
+  }
+})();
 </script>
 
 </body>
