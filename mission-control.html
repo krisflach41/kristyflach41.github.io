@@ -1740,17 +1740,299 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Daily Briefings</div><div class="topbar-subtitle">Your morning overview</div></div>
+      <div><div class="topbar-title">Briefing Command Center</div><div class="topbar-subtitle">Drop, paste, publish. Your realtors see it instantly.</div></div>
     </div>
   </div>
-  <div class="content-area">
-    <div class="placeholder-center">
-      <div class="placeholder-icon"><i class="fas fa-sun"></i></div>
-      <div class="placeholder-text">Your daily briefing with pipeline updates, rate changes, and action items</div>
-      <div class="placeholder-sub">Auto-generated each morning based on your data</div>
+  <div class="content-area" style="padding:24px;max-width:960px;">
+
+    <div id="briefingStatus" style="padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;text-align:center;margin-bottom:20px;display:none;"></div>
+
+    <!-- ===== ECONOMIC CALENDAR ===== -->
+    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+      <h3 style="margin:0 0 4px 0;font-size:18px;">📅 Economic Calendar</h3>
+      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Drop a screenshot of this week's calendar — Claude reads it and builds the portal display. You can also Ctrl+V to paste.</p>
+
+      <div id="calDropZone" style="border:2px dashed rgba(11,78,162,0.3);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.4);transition:all 0.25s;" onclick="document.getElementById('calFileInput').click()">
+        <input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">
+        <div id="calDropText" style="color:#888;font-size:14px;">Drop screenshot here or <span style="color:#0b4ea2;font-weight:600;text-decoration:underline;">click to browse</span></div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <button id="parseCalBtn" onclick="parseCalendar()" disabled style="padding:12px 24px;border:none;border-radius:10px;background:#0b4ea2;color:white;font-weight:600;font-size:14px;cursor:pointer;opacity:0.5;">Read Calendar</button>
+      </div>
+
+      <div id="calPreview" style="margin-top:16px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
+        <h4 id="calPreviewTitle" style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Preview — Calendar Data</h4>
+        <div id="calPreviewContent"></div>
+      </div>
     </div>
+
+    <!-- ===== MARKET SUMMARIES ===== -->
+    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+      <h3 style="margin:0 0 4px 0;font-size:18px;">📊 Market Summaries</h3>
+      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Paste the raw market update — Claude rewrites it into your Realtor Partner and Client-Friendly formats.</p>
+
+      <textarea id="rawMarketInput" style="width:100%;min-height:180px;padding:14px;border:1px solid rgba(11,78,162,0.2);border-radius:10px;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(255,255,255,0.6);box-sizing:border-box;resize:vertical;line-height:1.6;" placeholder="Paste the raw market update here (from your source)..."></textarea>
+
+      <div style="margin-top:14px;">
+        <button id="rewriteBtn" onclick="rewriteSummaries()" style="padding:12px 24px;border:none;border-radius:10px;background:#0b4ea2;color:white;font-weight:600;font-size:14px;cursor:pointer;">Rewrite Summaries</button>
+      </div>
+
+      <div id="mktPreview" style="margin-top:16px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
+        <h4 style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Realtor Partner Summary</h4>
+        <div id="mktPreviewContent" style="font-size:14px;line-height:1.7;color:#333;"></div>
+      </div>
+
+      <div id="clientPreview" style="margin-top:12px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
+        <h4 style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Client-Friendly Summary</h4>
+        <div id="clientPreviewContent" style="font-size:14px;line-height:1.7;color:#333;"></div>
+      </div>
+    </div>
+
+    <!-- ===== WEEK IN REVIEW ===== -->
+    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
+      <h3 style="margin:0 0 4px 0;font-size:18px;">📝 Week in Review</h3>
+      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Friday only — paste the weekly recap for the bottom bar on the portal.</p>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <input type="checkbox" id="wirToggle" style="width:20px;height:20px;cursor:pointer;">
+        <label for="wirToggle" style="font-weight:500;font-size:13px;color:#666;cursor:pointer;">Include Week in Review in this update</label>
+      </div>
+
+      <textarea id="wirInput" disabled style="width:100%;min-height:120px;padding:14px;border:1px solid rgba(11,78,162,0.2);border-radius:10px;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(255,255,255,0.6);box-sizing:border-box;resize:vertical;line-height:1.6;" placeholder="Paste the week in review summary here..."></textarea>
+    </div>
+
+    <!-- ===== PUBLISH ===== -->
+    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:18px;border:none;border-radius:12px;background:#27ae60;color:white;font-weight:600;font-size:17px;cursor:pointer;transition:all 0.25s;">
+      Publish to Portal
+    </button>
+
   </div>
 </div>
+
+<script>
+/* ===========================
+   BRIEFING COMMAND CENTER
+=========================== */
+(function() {
+  var calImageData = null;
+  var calMediaType = null;
+  var parsedCal = null;
+  var parsedWeekLabel = null;
+  var rewrittenMkt = null;
+  var rewrittenClient = null;
+
+  var API = 'https://agent-edge-backend.vercel.app/api';
+
+  // Wire WIR toggle
+  document.getElementById('wirToggle').addEventListener('change', function() {
+    document.getElementById('wirInput').disabled = !this.checked;
+  });
+
+  // Drop zone events
+  var dz = document.getElementById('calDropZone');
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = '#0b4ea2'; dz.style.background = 'rgba(11,78,162,0.08)'; });
+  dz.addEventListener('dragleave', function() { dz.style.borderColor = 'rgba(11,78,162,0.3)'; dz.style.background = 'rgba(255,255,255,0.4)'; });
+  dz.addEventListener('drop', function(e) {
+    e.preventDefault();
+    dz.style.borderColor = 'rgba(11,78,162,0.3)';
+    dz.style.background = 'rgba(255,255,255,0.4)';
+    var file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) handleCalImg(file);
+  });
+
+  // Ctrl+V paste support
+  document.addEventListener('paste', function(e) {
+    // Only handle if briefings panel is active
+    var panel = document.getElementById('view-briefings');
+    if (panel && panel.style.display !== 'none' && panel.classList.contains('active') || panel.offsetParent !== null) {
+      var items = e.clipboardData ? e.clipboardData.items : null;
+      if (!items) return;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.startsWith('image/')) {
+          e.preventDefault();
+          handleCalImg(items[i].getAsFile());
+          break;
+        }
+      }
+    }
+  });
+
+  // Make handleCalImg global so onclick works
+  window.handleCalImg = function(file) {
+    if (!file) return;
+    calMediaType = file.type;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var fullUrl = e.target.result;
+      calImageData = fullUrl.split(',')[1];
+      dz.style.borderColor = '#27ae60';
+      dz.style.borderStyle = 'solid';
+      dz.style.padding = '12px';
+      dz.innerHTML = '<img src="' + fullUrl + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;" alt="Calendar"><input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">';
+      var btn = document.getElementById('parseCalBtn');
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Parse calendar
+  window.parseCalendar = async function() {
+    if (!calImageData) return;
+    var btn = document.getElementById('parseCalBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Reading...';
+    briefStatus('Claude is reading your calendar screenshot...', 'loading');
+
+    try {
+      var resp = await fetch(API + '/parse-briefing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'parse_calendar', image: calImageData, mediaType: calMediaType })
+      });
+      var data = await resp.json();
+      if (!data.success) throw new Error(data.error || 'Failed to parse calendar');
+
+      parsedCal = data.portalCalendar;
+      parsedWeekLabel = data.weekLabel;
+      renderCalPreview(parsedCal, parsedWeekLabel);
+      briefStatus('Calendar parsed! Review below, then Publish when ready.', 'success');
+    } catch (err) {
+      briefStatus('Error: ' + err.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.innerHTML = 'Read Calendar';
+  };
+
+  function renderCalPreview(cal, label) {
+    var panel = document.getElementById('calPreview');
+    var content = document.getElementById('calPreviewContent');
+    if (label) document.getElementById('calPreviewTitle').textContent = 'Preview — ' + label;
+
+    var html = '';
+    cal.forEach(function(item) {
+      var abbr = item.day.substring(0, 3);
+      var hasMore = item.additionalEvents && item.additionalEvents.length > 0;
+      html += '<div style="display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);">';
+      html += '<span style="font-weight:700;color:#0b4ea2;min-width:36px;">' + abbr + '</span>';
+      html += '<span style="font-weight:600;">' + item.mainEvent + '</span>';
+      if (hasMore) html += '<span style="background:#0b4ea2;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-left:auto;flex-shrink:0;">+' + item.additionalEvents.length + '</span>';
+      html += '</div>';
+      if (hasMore) {
+        item.additionalEvents.forEach(function(evt) {
+          html += '<div style="color:#666;font-size:13px;padding-left:48px;padding-bottom:4px;">' + evt + '</div>';
+        });
+      }
+    });
+    content.innerHTML = html;
+    panel.style.display = 'block';
+  }
+
+  // Rewrite summaries
+  window.rewriteSummaries = async function() {
+    var raw = document.getElementById('rawMarketInput').value.trim();
+    if (!raw) { briefStatus('Paste market content first!', 'error'); return; }
+
+    var btn = document.getElementById('rewriteBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Writing...';
+    briefStatus('Claude is rewriting your summaries...', 'loading');
+
+    try {
+      var resp = await fetch(API + '/parse-briefing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'rewrite_summaries', rawContent: raw })
+      });
+      var data = await resp.json();
+      if (!data.success) throw new Error(data.error || 'Failed to rewrite');
+
+      rewrittenMkt = data.marketSummary;
+      rewrittenClient = data.clientFriendly;
+
+      document.getElementById('mktPreviewContent').innerHTML = fmtText(rewrittenMkt);
+      document.getElementById('clientPreviewContent').innerHTML = fmtText(rewrittenClient);
+      document.getElementById('mktPreview').style.display = 'block';
+      document.getElementById('clientPreview').style.display = 'block';
+      briefStatus('Summaries written! Review below, then Publish when ready.', 'success');
+    } catch (err) {
+      briefStatus('Error: ' + err.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Rewrite Summaries';
+  };
+
+  function fmtText(text) {
+    if (!text) return '';
+    return text.split(/\n\n+/).map(function(p) {
+      p = p.trim();
+      if (!p) return '';
+      if (p.match(/^(Market Open|What This Means|Looking Ahead|Bottom Line)/i)) {
+        var lines = p.split('\n');
+        return '<h4 style="margin:14px 0 4px;color:#0b1f3a;font-size:14px;">' + lines[0] + '</h4>' + (lines.length > 1 ? '<p style="margin:0 0 8px;font-size:14px;">' + lines.slice(1).join('<br>') + '</p>' : '');
+      }
+      return '<p style="margin:0 0 8px;font-size:14px;">' + p.replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+  }
+
+  // Publish
+  window.publishBriefing = async function() {
+    var btn = document.getElementById('publishBtn');
+    var hasCal = parsedCal && parsedCal.length > 0;
+    var hasMkt = rewrittenMkt || rewrittenClient;
+    var hasWir = document.getElementById('wirToggle').checked && document.getElementById('wirInput').value.trim();
+
+    if (!hasCal && !hasMkt && !hasWir) {
+      briefStatus('Nothing to publish! Parse a calendar or rewrite summaries first.', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Publishing...';
+    briefStatus('Saving to database...', 'loading');
+
+    try {
+      var payload = {};
+      if (hasCal) { payload.economicCalendar = parsedCal; if (parsedWeekLabel) payload.calendarWeek = parsedWeekLabel; }
+      if (rewrittenMkt) payload.marketSummary = rewrittenMkt;
+      if (rewrittenClient) payload.clientFriendly = rewrittenClient;
+      if (hasWir) payload.weekInReview = document.getElementById('wirInput').value.trim();
+
+      var resp = await fetch(API + '/briefing', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      var data = await resp.json();
+      if (!data.success) throw new Error(data.error || 'Publish failed');
+
+      briefStatus('Published! Your realtors can see the update now.', 'success');
+    } catch (err) {
+      briefStatus('Publish error: ' + err.message, 'error');
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = 'Publish to Portal';
+  };
+
+  function briefStatus(msg, type) {
+    var bar = document.getElementById('briefingStatus');
+    bar.textContent = msg;
+    bar.style.display = 'block';
+    if (type === 'success') { bar.style.background = 'rgba(46,204,113,0.12)'; bar.style.border = '1px solid rgba(46,204,113,0.3)'; bar.style.color = '#27ae60'; }
+    else if (type === 'error') { bar.style.background = 'rgba(192,57,43,0.1)'; bar.style.border = '1px solid rgba(192,57,43,0.3)'; bar.style.color = '#c0392b'; }
+    else { bar.style.background = 'rgba(11,78,162,0.08)'; bar.style.border = '1px solid rgba(11,78,162,0.2)'; bar.style.color = '#0b4ea2'; }
+    bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+})();
+</script>
+<style>
+@keyframes briefSpin { to { transform: rotate(360deg); } }
+</style>
 
 <!-- ========================================== -->
 <!-- USER MANAGEMENT VIEW -->
@@ -4723,30 +5005,17 @@ function handleCrmImport(input) {
           email: String(row['Email'] || row['email'] || '').trim(),
           phone: phone,
           type: type,
-          custom_type: String(row['Custom Type'] || row['custom_type'] || '').trim() || null,
           company: String(row['Company'] || row['Company / Brokerage'] || row['Brokerage'] || row['company'] || '').trim(),
           source: String(row['Source'] || row['source'] || 'import').trim(),
-          address: String(row['Street'] || row['street'] || row['Address'] || row['address'] || '').trim(),
+          address: String(row['Street'] || row['street'] || '').trim(),
           city: String(row['City'] || row['city'] || '').trim(),
           state: String(row['State'] || row['state'] || '').trim(),
           zip: String(row['Zip'] || row['zip'] || row['ZIP'] || '').trim(),
-          tags: String(row['Tags'] || row['tags'] || '').trim() || null,
-          notes: String(row['Notes'] || row['notes'] || '').trim(),
-          birthday: row['Birthday'] || row['birthday'] || null,
-          spouse_name: String(row['Spouse Name'] || row['Spouse'] || row['spouse_name'] || '').trim() || null,
-          kids: String(row['Kids'] || row['Children'] || row['kids'] || '').trim() || null,
-          employer: String(row['Employer'] || row['employer'] || '').trim() || null,
-          job_title: String(row['Job Title'] || row['job_title'] || row['Title'] || '').trim() || null,
-          realtor_name: String(row['Realtor Name'] || row['Realtor'] || row['realtor_name'] || '').trim() || null,
           license_number: String(row['License Number'] || row['license_number'] || '').trim(),
           own_rent: String(row['Own or Rent'] || row['own_rent'] || '').trim().toLowerCase(),
           monthly_payment: row['Monthly Payment'] || row['monthly_payment'] || '',
           marital_status: String(row['Marital Status'] || row['marital_status'] || '').trim().toLowerCase(),
-          website: String(row['Website'] || row['website'] || '').trim() || null,
-          facebook: String(row['Facebook'] || row['facebook'] || '').trim() || null,
-          instagram: String(row['Instagram'] || row['instagram'] || '').trim() || null,
-          linkedin: String(row['LinkedIn'] || row['linkedin'] || '').trim() || null,
-          tiktok: String(row['TikTok'] || row['tiktok'] || '').trim() || null
+          notes: String(row['Notes'] || row['notes'] || '').trim()
         };
 
         var p = fetch(API_BASE + '/crm-api', {
