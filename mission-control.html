@@ -96,6 +96,42 @@ body {
 .nav-badge.purple { background: rgba(168,85,247,0.15); color: var(--accent-purple); }
 .nav-badge.red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
 
+/* Scenario Alert Pulse */
+@keyframes alertPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+@keyframes navPulse {
+  0%, 100% { text-shadow: none; }
+  50% { text-shadow: 0 0 12px rgba(239,68,68,0.8), 0 0 24px rgba(239,68,68,0.4); }
+}
+.nav-item.has-hot-lead .nav-icon { animation: navPulse 1.5s ease infinite; }
+.nav-item.has-hot-lead { background: rgba(239,68,68,0.08); }
+
+/* Scenario Cards */
+.scenario-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-bottom: 10px; transition: all 0.2s; }
+.scenario-card:hover { border-color: rgba(255,255,255,0.15); }
+.scenario-card.hot { border-left: 3px solid #ef4444; }
+.scenario-card.intel { border-left: 3px solid #3b82f6; }
+.scenario-card.resolved { border-left: 3px solid #22c55e; opacity: 0.6; }
+.scenario-type-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 3px 8px; border-radius: 4px; }
+.scenario-type-badge.hot { background: rgba(239,68,68,0.15); color: #ef4444; }
+.scenario-type-badge.intel { background: rgba(59,130,246,0.15); color: #3b82f6; }
+.scenario-type-badge.resolved { background: rgba(34,197,94,0.15); color: #22c55e; }
+.scenario-meta { font-size: 11px; color: rgba(255,255,255,0.35); font-family: 'Share Tech Mono', monospace; margin-top: 4px; }
+.scenario-question { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.6; margin: 10px 0; }
+.scenario-notes-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #6e7f77; margin: 10px 0 4px; }
+.scenario-ai-response { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.6; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.scenario-ai-response.open { max-height: 2000px; }
+.scenario-toggle { font-size: 12px; color: #6e7f77; cursor: pointer; margin-top: 8px; font-weight: 600; }
+.scenario-toggle:hover { color: #8a9e94; }
+.scenario-actions { display: flex; gap: 8px; margin-top: 12px; }
+.scenario-action-btn { padding: 6px 14px; border-radius: 6px; border: none; font-size: 11px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s; }
+.scenario-action-btn.callback { background: rgba(34,197,94,0.15); color: #22c55e; }
+.scenario-action-btn.callback:hover { background: rgba(34,197,94,0.25); }
+.scenario-action-btn.dismiss { background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.35); }
+.scenario-action-btn.dismiss:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+
 /* SIDEBAR FOOTER */
 .sidebar-footer { padding: 10px 12px; border-top: 1px solid var(--border); }
 .sidebar-user { display: flex; align-items: center; gap: 9px; padding: 7px; border-radius: 8px; cursor: pointer; }
@@ -1052,6 +1088,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
     </div>
 
     <div class="nav-section-label">Insights</div>
+    <div class="nav-item" onclick="switchView('scenarios', this)">
+      <span class="nav-icon"><i class="fas fa-fire"></i></span> Scenarios
+      <span class="nav-badge red" id="scenarioNavBadge" style="display:none;">0</span>
+    </div>
     <div class="nav-item" onclick="switchView('analytics', this)">
       <span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Analytics
     </div>
@@ -1120,6 +1160,21 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       </div>
       <div class="mc-ticker-icon">◆</div>
       <div class="mc-ticker-edge right"></div>
+    </div>
+
+    <!-- SCENARIO DESK HOT LEADS -->
+    <div id="scenarioAlertBanner" style="display:none; margin-bottom:16px; animation: alertPulse 2s ease infinite;">
+      <div style="background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(245,158,11,0.1)); border:2px solid rgba(239,68,68,0.5); border-radius:10px; padding:16px 20px; cursor:pointer;" onclick="switchView('scenarios', document.querySelector('[onclick*=scenarios]'))">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="font-size:28px;">🚨</div>
+          <div style="flex:1;">
+            <div style="font-family:'Orbitron',sans-serif; font-size:12px; font-weight:700; color:#ef4444; letter-spacing:2px;">INCOMING SCENARIO</div>
+            <div style="font-size:14px; color:rgba(255,255,255,0.8); margin-top:2px;" id="scenarioAlertText">A realtor has submitted a scenario — click to review</div>
+          </div>
+          <div style="font-size:11px; color:rgba(255,255,255,0.4); font-family:'Share Tech Mono',monospace;" id="scenarioAlertTime"></div>
+          <div style="padding:6px 14px; border-radius:6px; background:rgba(239,68,68,0.2); color:#ef4444; font-size:11px; font-weight:700; letter-spacing:1px;">REVIEW NOW →</div>
+        </div>
+      </div>
     </div>
 
     <!-- STAT CARDS -->
@@ -2076,6 +2131,38 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <div class="placeholder-sub">API keys, email settings, branding, integrations</div>
     </div>
   </div>
+</div><!-- /view-settings -->
+
+<!-- ===== SCENARIOS VIEW ===== -->
+<div class="view-panel" id="view-scenarios">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Scenario Desk</div><div class="topbar-subtitle">Realtor Scenario Submissions & Guideline Searches</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadScenarios()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- Filter tabs -->
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="scenario-action-btn callback" style="padding:8px 16px;" id="filterHot" onclick="filterScenarios('hot')">🚨 Hot Leads <span id="filterHotCount"></span></button>
+      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(59,130,246,0.15); color:#3b82f6;" id="filterIntel" onclick="filterScenarios('intel')">🔍 Intel Feed <span id="filterIntelCount"></span></button>
+      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(34,197,94,0.15); color:#22c55e;" id="filterResolved" onclick="filterScenarios('resolved')">✅ Resolved <span id="filterResolvedCount"></span></button>
+      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5);" id="filterAll" onclick="filterScenarios('all')">All</button>
+    </div>
+
+    <!-- Scenario list -->
+    <div id="scenarioList">
+      <div style="text-align:center; padding:40px; color:rgba(255,255,255,0.3);">
+        <div style="font-size:36px; margin-bottom:12px;">🐾</div>
+        <div style="font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px;">LOADING SCENARIOS...</div>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 </div><!-- /main-content -->
@@ -2452,6 +2539,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'users' && !usersLoaded) loadUsers();
   if (viewId === 'analytics') loadAnalytics();
   if (viewId === 'portal') loadPartnerPortal();
+  if (viewId === 'scenarios') loadScenarios();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -5143,10 +5231,210 @@ function runProspectSearch() {
   showToast('Prospecting coming soon - will search: ' + q);
 }
 
+// ===== SCENARIO DESK =====
+var allScenarios = [];
+var currentFilter = 'hot';
+
+async function loadScenarios() {
+  try {
+    var resp = await fetch(API_BASE + '/scenario-desk');
+    var data = await resp.json();
+    allScenarios = data.scenarios || [];
+    updateScenarioNav();
+    renderScenarios();
+  } catch (err) {
+    console.error('Failed to load scenarios:', err);
+    document.getElementById('scenarioList').innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);"><div style="font-family:Share Tech Mono,monospace;font-size:12px;">FAILED TO LOAD SCENARIOS</div></div>';
+  }
+}
+
+function updateScenarioNav() {
+  var hotCount = allScenarios.filter(function(s) { return s.status === 'new' && s.type !== 'ask_gus'; }).length;
+  var intelCount = allScenarios.filter(function(s) { return s.type === 'ask_gus' && s.status === 'auto_resolved'; }).length;
+  var resolvedCount = allScenarios.filter(function(s) { return s.status === 'called_back' || s.status === 'closed'; }).length;
+
+  // Nav badge
+  var badge = document.getElementById('scenarioNavBadge');
+  if (hotCount > 0) {
+    badge.textContent = hotCount;
+    badge.style.display = '';
+    // Add pulse to nav item
+    var navItem = badge.closest('.nav-item');
+    if (navItem) navItem.classList.add('has-hot-lead');
+  } else {
+    badge.style.display = 'none';
+    var navItem2 = document.querySelector('.nav-item[onclick*="scenarios"]');
+    if (navItem2) navItem2.classList.remove('has-hot-lead');
+  }
+
+  // Dashboard alert banner
+  var banner = document.getElementById('scenarioAlertBanner');
+  if (hotCount > 0) {
+    var newest = allScenarios.filter(function(s) { return s.status === 'new' && s.type !== 'ask_gus'; })[0];
+    banner.style.display = 'block';
+    document.getElementById('scenarioAlertText').textContent =
+      hotCount === 1
+        ? (newest.realtor_name || 'A realtor') + ' submitted a scenario — click to review'
+        : hotCount + ' realtors have submitted scenarios — click to review';
+    if (newest) {
+      var ago = timeAgo(newest.created_at);
+      document.getElementById('scenarioAlertTime').textContent = ago;
+    }
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // Filter counts
+  document.getElementById('filterHotCount').textContent = hotCount ? '(' + hotCount + ')' : '';
+  document.getElementById('filterIntelCount').textContent = intelCount ? '(' + intelCount + ')' : '';
+  document.getElementById('filterResolvedCount').textContent = resolvedCount ? '(' + resolvedCount + ')' : '';
+}
+
+function filterScenarios(filter) {
+  currentFilter = filter;
+  renderScenarios();
+}
+
+function renderScenarios() {
+  var list = document.getElementById('scenarioList');
+  var filtered = allScenarios;
+
+  if (currentFilter === 'hot') {
+    filtered = allScenarios.filter(function(s) { return s.status === 'new' && s.type !== 'ask_gus'; });
+  } else if (currentFilter === 'intel') {
+    filtered = allScenarios.filter(function(s) { return s.type === 'ask_gus' && s.status === 'auto_resolved'; });
+  } else if (currentFilter === 'resolved') {
+    filtered = allScenarios.filter(function(s) { return s.status === 'called_back' || s.status === 'closed'; });
+  }
+
+  if (filtered.length === 0) {
+    var msg = currentFilter === 'hot' ? 'No hot leads right now — check back soon' : currentFilter === 'intel' ? 'No guideline searches yet' : 'No resolved scenarios';
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.25);"><div style="font-size:28px;margin-bottom:8px;">🐾</div><div style="font-size:13px;">' + msg + '</div></div>';
+    return;
+  }
+
+  var html = '';
+  filtered.forEach(function(s, idx) {
+    var isHot = s.status === 'new' && s.type !== 'ask_gus';
+    var isIntel = s.type === 'ask_gus' && s.status === 'auto_resolved';
+    var isResolved = s.status === 'called_back' || s.status === 'closed';
+    var cardClass = isHot ? 'hot' : isIntel ? 'intel' : 'resolved';
+    var badgeClass = cardClass;
+    var badgeText = isHot ? (s.type === 'forwarded_gus' ? '🐾 FORWARDED' : '🚨 REVIEW REQUEST') : isIntel ? '🔍 GUS GUS SEARCH' : '✅ RESOLVED';
+
+    var scenarioInfo = '';
+    if (s.scenario_data && s.scenario_data.scenario_types && s.scenario_data.scenario_types.length) {
+      var parts = [];
+      if (s.scenario_data.borrower && s.scenario_data.borrower.credit_score) parts.push('Credit: ' + s.scenario_data.borrower.credit_score);
+      if (s.scenario_data.borrower && s.scenario_data.borrower.employment) parts.push('Employment: ' + s.scenario_data.borrower.employment);
+      if (s.scenario_data.property && s.scenario_data.property.type) parts.push('Property: ' + s.scenario_data.property.type);
+      if (s.scenario_data.property && s.scenario_data.property.use) parts.push('Use: ' + s.scenario_data.property.use);
+      if (parts.length) scenarioInfo = '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin:6px 0;font-family:Share Tech Mono,monospace;">' + parts.join(' · ') + '</div>';
+    }
+
+    var realtorNotes = '';
+    if (s.type === 'forwarded_gus' && s.scenario_data && s.scenario_data.realtor_notes) {
+      realtorNotes = '<div class="scenario-notes-label">REALTOR NOTES</div><div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:8px;padding:8px 12px;background:rgba(110,127,119,0.08);border-radius:8px;">' + escHtml(s.scenario_data.realtor_notes) + '</div>';
+    }
+
+    var aiSection = '';
+    if (s.ai_response) {
+      aiSection = '<div class="scenario-notes-label">GUS GUS RESEARCH NOTES</div>' +
+        '<div class="scenario-ai-response" id="aiResp' + idx + '">' + formatScenarioAI(s.ai_response) + '</div>' +
+        '<div class="scenario-toggle" onclick="toggleAI(' + idx + ')">▸ Show research notes</div>';
+    }
+
+    var actions = '';
+    if (isHot) {
+      actions = '<div class="scenario-actions">' +
+        '<button class="scenario-action-btn callback" onclick="markScenario(\'' + s.id + '\',\'called_back\')">✓ Called Back</button>' +
+        '<button class="scenario-action-btn dismiss" onclick="markScenario(\'' + s.id + '\',\'closed\')">Dismiss</button>' +
+        '</div>';
+    }
+
+    html += '<div class="scenario-card ' + cardClass + '">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+        '<span class="scenario-type-badge ' + badgeClass + '">' + badgeText + '</span>' +
+        '<span class="scenario-meta">' + timeAgo(s.created_at) + '</span>' +
+      '</div>' +
+      '<div style="font-size:15px;font-weight:600;color:#fff;margin-top:8px;">' + escHtml(s.realtor_name || 'Unknown Realtor') + '</div>' +
+      '<div style="font-size:11px;color:rgba(255,255,255,0.3);">' + escHtml(s.realtor_email || '') + '</div>' +
+      scenarioInfo +
+      '<div class="scenario-question">' + escHtml(s.question || 'No details provided') + '</div>' +
+      realtorNotes +
+      aiSection +
+      actions +
+    '</div>';
+  });
+
+  list.innerHTML = html;
+}
+
+function toggleAI(idx) {
+  var el = document.getElementById('aiResp' + idx);
+  var toggle = el.nextElementSibling;
+  if (el.classList.contains('open')) {
+    el.classList.remove('open');
+    toggle.textContent = '▸ Show research notes';
+  } else {
+    el.classList.add('open');
+    toggle.textContent = '▾ Hide research notes';
+  }
+}
+
+function formatScenarioAI(text) {
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#6e7f77;">$1</strong>');
+  text = text.replace(/\n\n/g, '</p><p style="margin-top:8px;">');
+  text = text.replace(/\n/g, '<br>');
+  return '<p>' + text + '</p>';
+}
+
+function escHtml(str) {
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function timeAgo(dateStr) {
+  var now = new Date();
+  var then = new Date(dateStr);
+  var diff = Math.floor((now - then) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
+}
+
+async function markScenario(id, status) {
+  try {
+    var url = API_BASE.replace('/api', '') + '/api/scenario-desk';
+    // Use PATCH-like approach via POST with update action
+    await fetch(API_BASE + '/scenario-desk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'update_status', id: id, status: status })
+    });
+    // Update local data
+    allScenarios.forEach(function(s) {
+      if (s.id === id) {
+        s.status = status;
+        if (status === 'called_back') s.called_back_at = new Date().toISOString();
+      }
+    });
+    updateScenarioNav();
+    renderScenarios();
+    showToast(status === 'called_back' ? 'Marked as called back' : 'Scenario dismissed');
+  } catch (err) {
+    showToast('Failed to update');
+  }
+}
+
 // ===== INIT =====
 updateDashboard();
 // Preload orders count for dashboard
 loadOrders();
+// Check for scenario hot leads
+loadScenarios();
 </script>
 <script src="crm-cards.js?v=20260220b"></script>
 
