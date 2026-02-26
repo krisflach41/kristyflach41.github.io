@@ -632,6 +632,112 @@ body {
   color: #fff;
 }
 
+/* ===== FORWARD TO LO ===== */
+.forward-section {
+  margin-top: 20px;
+  text-align: center;
+}
+.forward-trigger-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: 1px solid rgba(110,127,119,0.35);
+  background: rgba(110,127,119,0.1);
+  color: #6e7f77;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.forward-trigger-btn:hover {
+  background: rgba(110,127,119,0.2);
+  border-color: #6e7f77;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.forward-expand {
+  display: none;
+  margin-top: 16px;
+  animation: fadeUp 0.3s ease;
+}
+.forward-expand.active {
+  display: block;
+}
+.forward-expand textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(110,127,119,0.25);
+  background: rgba(0,0,0,0.3);
+  color: #eaf0f6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.forward-expand textarea:focus {
+  outline: none;
+  border-color: rgba(110,127,119,0.6);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
+}
+.forward-expand textarea::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+.forward-send-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #6e7f77 0%, #556b62 100%);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 12px;
+}
+.forward-send-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(110,127,119,0.35);
+}
+.forward-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.forward-success {
+  display: none;
+  text-align: center;
+  padding: 20px;
+  animation: fadeUp 0.3s ease;
+}
+.forward-success.active {
+  display: block;
+}
+.forward-success .success-check {
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+.forward-success h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.forward-success p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
   .page-bg { padding: 24px 14px 60px; }
@@ -722,6 +828,24 @@ body {
           </div>
         </div>
         <div class="results-disclaimer" id="gusDisclaimer"></div>
+
+        <!-- Forward to LO -->
+        <div class="forward-section" id="forwardSection">
+          <button class="forward-trigger-btn" onclick="showForwardForm()">
+            📞 Send this to <span id="forwardLenderName">your loan officer</span>
+          </button>
+          <div class="forward-expand" id="forwardExpand">
+            <textarea id="forwardNotes" placeholder="Add any notes — what's your client's timeline? Anything else we should know before calling you back?"></textarea>
+            <button class="forward-send-btn" id="forwardSendBtn" onclick="forwardToLO()">
+              Send to <span id="forwardBtnName">LO</span> →
+            </button>
+          </div>
+          <div class="forward-success" id="forwardSuccess">
+            <div class="success-check">✅</div>
+            <h4>Sent!</h4>
+            <p><span id="forwardSuccessName">Your loan officer</span> has been flagged and will call you shortly.</p>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -952,6 +1076,54 @@ document.getElementById('reviewLenderName').textContent = lenderName;
 document.getElementById('successLenderName').textContent = lenderName;
 document.getElementById('gusDisclaimer').textContent =
   'These results reflect general published guidelines and may not account for recent changes, specialty programs, or portfolio options. For a real answer, submit this scenario to ' + lenderName + ' — there\'s almost always more to the story.';
+document.getElementById('forwardLenderName').textContent = lenderName;
+document.getElementById('forwardBtnName').textContent = lenderName.split(' ')[0] || 'LO';
+document.getElementById('forwardSuccessName').textContent = lenderName;
+
+// ===== FORWARD GUS RESPONSE TO LO =====
+function showForwardForm() {
+  document.getElementById('forwardExpand').classList.add('active');
+  document.querySelector('.forward-trigger-btn').style.display = 'none';
+  document.getElementById('forwardNotes').focus();
+}
+
+async function forwardToLO() {
+  var notes = document.getElementById('forwardNotes').value.trim();
+  var question = document.getElementById('gusQuestion').value.trim();
+  var gusResponse = document.getElementById('gusResponseText').innerText || '';
+
+  var btn = document.getElementById('forwardSendBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  // Track as hot lead
+  if (typeof trackActivity === 'function') {
+    trackActivity('Advisory', 'Scenario Desk', 'forward_to_lo', question.substring(0, 100));
+  }
+
+  try {
+    await fetch(API_BASE + '/scenario-desk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'forward_gus',
+        question: question,
+        gus_response: gusResponse,
+        realtor_notes: notes,
+        realtor_name: userName,
+        realtor_email: userEmail
+      })
+    });
+  } catch (err) {
+    console.error('Forward failed:', err);
+  }
+
+  // Show success regardless (don't block on API)
+  document.getElementById('forwardExpand').classList.remove('active');
+  document.getElementById('forwardSuccess').classList.add('active');
+  btn.disabled = false;
+  btn.textContent = 'Send →';
+}
 
 // ===== TAB SWITCHING =====
 function switchTab(tab) {
@@ -981,6 +1153,12 @@ async function askGusGus() {
   btn.disabled = true;
   document.getElementById('gusResults').classList.remove('active');
   document.getElementById('gusLoading').classList.add('active');
+
+  // Reset forward section
+  document.getElementById('forwardExpand').classList.remove('active');
+  document.getElementById('forwardSuccess').classList.remove('active');
+  document.querySelector('.forward-trigger-btn').style.display = '';
+  document.getElementById('forwardNotes').value = '';
 
   // Track this as engagement
   if (typeof trackActivity === 'function') {
