@@ -1740,299 +1740,249 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Briefing Command Center</div><div class="topbar-subtitle">Drop, paste, publish. Your realtors see it instantly.</div></div>
+      <div><div class="topbar-title">Briefing Command Center</div><div class="topbar-subtitle">Drop, paste, publish — your realtors see it instantly</div></div>
     </div>
   </div>
-  <div class="content-area" style="padding:24px;max-width:960px;">
+  <div class="content-area" style="padding:20px 24px;max-width:960px;">
 
-    <div id="briefingStatus" style="padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;text-align:center;margin-bottom:20px;display:none;"></div>
+    <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:'Share Tech Mono',monospace;letter-spacing:0.5px;"></div>
 
-    <!-- ===== ECONOMIC CALENDAR ===== -->
-    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
-      <h3 style="margin:0 0 4px 0;font-size:18px;">📅 Economic Calendar</h3>
-      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Drop a screenshot of this week's calendar — Claude reads it and builds the portal display. You can also Ctrl+V to paste.</p>
+    <!-- ECONOMIC CALENDAR -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker green"></div>
+        <div class="mc-panel-title">ECONOMIC CALENDAR</div>
+        <div class="mc-status" style="margin-left:auto;">DROP SCREENSHOT</div>
+      </div>
+      <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:14px;">Drop or Ctrl+V a screenshot of this week's calendar. Claude reads it and builds the portal display.</p>
 
-      <div id="calDropZone" style="border:2px dashed rgba(11,78,162,0.3);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;background:rgba(255,255,255,0.4);transition:all 0.25s;" onclick="document.getElementById('calFileInput').click()">
+      <div id="calDropZone" onclick="document.getElementById('calFileInput').click()" style="border:1px dashed rgba(59,130,246,0.3);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;background:rgba(59,130,246,0.03);transition:all 0.25s;">
         <input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">
-        <div id="calDropText" style="color:#888;font-size:14px;">Drop screenshot here or <span style="color:#0b4ea2;font-weight:600;text-decoration:underline;">click to browse</span></div>
+        <div id="calDropText" style="color:rgba(255,255,255,0.35);font-size:13px;font-family:'Share Tech Mono',monospace;">Drop image here or <span style="color:#3b82f6;text-decoration:underline;cursor:pointer;">browse</span></div>
       </div>
 
-      <div style="margin-top:14px;">
-        <button id="parseCalBtn" onclick="parseCalendar()" disabled style="padding:12px 24px;border:none;border-radius:10px;background:#0b4ea2;color:white;font-weight:600;font-size:14px;cursor:pointer;opacity:0.5;">Read Calendar</button>
+      <div style="margin-top:12px;">
+        <button id="parseCalBtn" onclick="parseCalendar()" disabled class="bc-btn" style="opacity:0.4;">Read Calendar</button>
       </div>
 
-      <div id="calPreview" style="margin-top:16px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
-        <h4 id="calPreviewTitle" style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Preview — Calendar Data</h4>
+      <div id="calPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.1);display:none;">
+        <div id="calPreviewTitle" style="font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:10px;">PREVIEW — CALENDAR DATA</div>
         <div id="calPreviewContent"></div>
       </div>
     </div>
 
-    <!-- ===== MARKET SUMMARIES ===== -->
-    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
-      <h3 style="margin:0 0 4px 0;font-size:18px;">📊 Market Summaries</h3>
-      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Paste the raw market update — Claude rewrites it into your Realtor Partner and Client-Friendly formats.</p>
+    <!-- MARKET SUMMARIES -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker"></div>
+        <div class="mc-panel-title">MARKET SUMMARIES</div>
+        <div class="mc-status" style="margin-left:auto;">PASTE RAW UPDATE</div>
+      </div>
+      <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:14px;">Paste the raw market update. Claude rewrites it into Realtor Partner and Client-Friendly formats.</p>
 
-      <textarea id="rawMarketInput" style="width:100%;min-height:180px;padding:14px;border:1px solid rgba(11,78,162,0.2);border-radius:10px;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(255,255,255,0.6);box-sizing:border-box;resize:vertical;line-height:1.6;" placeholder="Paste the raw market update here (from your source)..."></textarea>
+      <textarea id="rawMarketInput" class="bc-textarea" placeholder="Paste the raw market update here..."></textarea>
 
-      <div style="margin-top:14px;">
-        <button id="rewriteBtn" onclick="rewriteSummaries()" style="padding:12px 24px;border:none;border-radius:10px;background:#0b4ea2;color:white;font-weight:600;font-size:14px;cursor:pointer;">Rewrite Summaries</button>
+      <div style="margin-top:12px;">
+        <button id="rewriteBtn" onclick="rewriteSummaries()" class="bc-btn">Rewrite Summaries</button>
       </div>
 
-      <div id="mktPreview" style="margin-top:16px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
-        <h4 style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Realtor Partner Summary</h4>
-        <div id="mktPreviewContent" style="font-size:14px;line-height:1.7;color:#333;"></div>
+      <div id="mktPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.1);display:none;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(34,197,94,0.6);margin-bottom:10px;">REALTOR PARTNER SUMMARY</div>
+        <div id="mktPreviewContent" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);"></div>
       </div>
 
-      <div id="clientPreview" style="margin-top:12px;padding:18px;border-radius:12px;background:rgba(255,255,255,0.7);border:1px solid rgba(11,78,162,0.1);display:none;">
-        <h4 style="margin:0 0 10px 0;font-size:14px;color:#0b1f3a;">Client-Friendly Summary</h4>
-        <div id="clientPreviewContent" style="font-size:14px;line-height:1.7;color:#333;"></div>
+      <div id="clientPreview" style="margin-top:10px;padding:16px;border-radius:8px;background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.1);display:none;">
+        <div style="font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(168,85,247,0.6);margin-bottom:10px;">CLIENT-FRIENDLY SUMMARY</div>
+        <div id="clientPreviewContent" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);"></div>
       </div>
     </div>
 
-    <!-- ===== WEEK IN REVIEW ===== -->
-    <div style="background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 8px 30px rgba(0,0,0,0.06);">
-      <h3 style="margin:0 0 4px 0;font-size:18px;">📝 Week in Review</h3>
-      <p style="color:#666;font-size:13px;margin:0 0 16px 0;">Friday only — paste the weekly recap for the bottom bar on the portal.</p>
+    <!-- WEEK IN REVIEW -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+        <div class="mc-panel-title">WEEK IN REVIEW</div>
+        <div class="mc-status" style="margin-left:auto;color:#f59e0b;">FRIDAY ONLY</div>
+      </div>
+      <p style="color:rgba(255,255,255,0.4);font-size:12px;margin-bottom:14px;">Generate a weekly recap from this week's daily summaries, or paste your own.</p>
 
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
-        <input type="checkbox" id="wirToggle" style="width:20px;height:20px;cursor:pointer;">
-        <label for="wirToggle" style="font-weight:500;font-size:13px;color:#666;cursor:pointer;">Include Week in Review in this update</label>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <input type="checkbox" id="wirToggle" style="width:18px;height:18px;cursor:pointer;accent-color:#f59e0b;">
+        <label for="wirToggle" style="font-size:12px;color:rgba(255,255,255,0.45);cursor:pointer;">Include Week in Review in this update</label>
       </div>
 
-      <textarea id="wirInput" disabled style="width:100%;min-height:120px;padding:14px;border:1px solid rgba(11,78,162,0.2);border-radius:10px;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif;background:rgba(255,255,255,0.6);box-sizing:border-box;resize:vertical;line-height:1.6;" placeholder="Paste the week in review summary here..."></textarea>
+      <div style="margin-bottom:12px;">
+        <button id="generateWirBtn" onclick="generateWIR()" class="bc-btn" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.3);color:#f59e0b;" disabled>Generate from This Week</button>
+      </div>
+
+      <textarea id="wirInput" class="bc-textarea" style="min-height:120px;" placeholder="Week in review will appear here after generating, or paste your own..." disabled></textarea>
+
+      <div id="wirPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);display:none;">
+        <div id="wirPreviewLabel" style="font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(245,158,11,0.6);margin-bottom:10px;">WEEK IN REVIEW PREVIEW</div>
+        <div id="wirPreviewContent" style="font-size:13px;line-height:1.7;color:rgba(255,255,255,0.75);"></div>
+      </div>
     </div>
 
-    <!-- ===== PUBLISH ===== -->
-    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:18px;border:none;border-radius:12px;background:#27ae60;color:white;font-weight:600;font-size:17px;cursor:pointer;transition:all 0.25s;">
-      Publish to Portal
+    <!-- PUBLISH -->
+    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:16px;border:none;border-radius:8px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.1));border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all 0.25s;text-transform:uppercase;">
+      PUBLISH TO PORTAL
     </button>
 
   </div>
 </div>
 
-<script>
-/* ===========================
-   BRIEFING COMMAND CENTER
-=========================== */
-(function() {
-  var calImageData = null;
-  var calMediaType = null;
-  var parsedCal = null;
-  var parsedWeekLabel = null;
-  var rewrittenMkt = null;
-  var rewrittenClient = null;
+<style>
+.bc-btn { padding:10px 20px; border:1px solid rgba(59,130,246,0.3); border-radius:6px; background:rgba(59,130,246,0.12); color:#60a5fa; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s; }
+.bc-btn:hover:not(:disabled) { background:rgba(59,130,246,0.2); }
+.bc-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.bc-textarea { width:100%; min-height:160px; padding:14px; border:1px solid rgba(255,255,255,0.08); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; background:rgba(255,255,255,0.03); color:var(--text-primary); box-sizing:border-box; resize:vertical; line-height:1.6; transition:all 0.25s; }
+.bc-textarea:focus { outline:none; border-color:rgba(59,130,246,0.3); background:rgba(255,255,255,0.05); }
+.bc-textarea:disabled { opacity:0.4; }
+.bc-spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,0.2); border-top-color:currentColor; border-radius:50%; animation:briefSpin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
+@keyframes briefSpin { to { transform: rotate(360deg); } }
+</style>
 
+<script>
+(function() {
+  var calImageData = null, calMediaType = null, parsedCal = null, parsedWeekLabel = null;
+  var rewrittenMkt = null, rewrittenClient = null;
   var API = 'https://agent-edge-backend.vercel.app/api';
 
-  // Wire WIR toggle
   document.getElementById('wirToggle').addEventListener('change', function() {
-    document.getElementById('wirInput').disabled = !this.checked;
+    var on = this.checked;
+    document.getElementById('wirInput').disabled = !on;
+    document.getElementById('generateWirBtn').disabled = !on;
   });
 
-  // Drop zone events
   var dz = document.getElementById('calDropZone');
-  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = '#0b4ea2'; dz.style.background = 'rgba(11,78,162,0.08)'; });
-  dz.addEventListener('dragleave', function() { dz.style.borderColor = 'rgba(11,78,162,0.3)'; dz.style.background = 'rgba(255,255,255,0.4)'; });
-  dz.addEventListener('drop', function(e) {
-    e.preventDefault();
-    dz.style.borderColor = 'rgba(11,78,162,0.3)';
-    dz.style.background = 'rgba(255,255,255,0.4)';
-    var file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) handleCalImg(file);
-  });
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor='rgba(59,130,246,0.6)'; dz.style.background='rgba(59,130,246,0.08)'; });
+  dz.addEventListener('dragleave', function() { dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; });
+  dz.addEventListener('drop', function(e) { e.preventDefault(); dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; var f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) handleCalImg(f); });
 
-  // Ctrl+V paste support
   document.addEventListener('paste', function(e) {
-    // Only handle if briefings panel is active
-    var panel = document.getElementById('view-briefings');
-    if (panel && panel.style.display !== 'none' && panel.classList.contains('active') || panel.offsetParent !== null) {
-      var items = e.clipboardData ? e.clipboardData.items : null;
-      if (!items) return;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type.startsWith('image/')) {
-          e.preventDefault();
-          handleCalImg(items[i].getAsFile());
-          break;
-        }
-      }
-    }
+    var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
+    var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
+    for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { e.preventDefault(); handleCalImg(items[i].getAsFile()); break; } }
   });
 
-  // Make handleCalImg global so onclick works
   window.handleCalImg = function(file) {
-    if (!file) return;
-    calMediaType = file.type;
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var fullUrl = e.target.result;
-      calImageData = fullUrl.split(',')[1];
-      dz.style.borderColor = '#27ae60';
-      dz.style.borderStyle = 'solid';
-      dz.style.padding = '12px';
-      dz.innerHTML = '<img src="' + fullUrl + '" style="max-width:100%;border-radius:8px;display:block;margin:0 auto;" alt="Calendar"><input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">';
-      var btn = document.getElementById('parseCalBtn');
-      btn.disabled = false;
-      btn.style.opacity = '1';
+    if(!file) return; calMediaType=file.type;
+    var r=new FileReader();
+    r.onload=function(e) {
+      var url=e.target.result; calImageData=url.split(',')[1];
+      dz.style.borderColor='rgba(34,197,94,0.4)'; dz.style.borderStyle='solid'; dz.style.padding='10px';
+      dz.innerHTML='<img src="'+url+'" style="max-width:100%;border-radius:6px;display:block;margin:0 auto;"><input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">';
+      var btn=document.getElementById('parseCalBtn'); btn.disabled=false; btn.style.opacity='1';
     };
-    reader.readAsDataURL(file);
+    r.readAsDataURL(file);
   };
 
-  // Parse calendar
   window.parseCalendar = async function() {
-    if (!calImageData) return;
-    var btn = document.getElementById('parseCalBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Reading...';
-    briefStatus('Claude is reading your calendar screenshot...', 'loading');
-
+    if(!calImageData) return;
+    var btn=document.getElementById('parseCalBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Reading...';
+    briefStatus('Reading calendar screenshot...','loading');
     try {
-      var resp = await fetch(API + '/parse-briefing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'parse_calendar', image: calImageData, mediaType: calMediaType })
-      });
-      var data = await resp.json();
-      if (!data.success) throw new Error(data.error || 'Failed to parse calendar');
-
-      parsedCal = data.portalCalendar;
-      parsedWeekLabel = data.weekLabel;
-      renderCalPreview(parsedCal, parsedWeekLabel);
-      briefStatus('Calendar parsed! Review below, then Publish when ready.', 'success');
-    } catch (err) {
-      briefStatus('Error: ' + err.message, 'error');
-    }
-
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.innerHTML = 'Read Calendar';
+      var resp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'parse_calendar',image:calImageData,mediaType:calMediaType})});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Failed');
+      parsedCal=data.portalCalendar; parsedWeekLabel=data.weekLabel;
+      renderCalPreview(parsedCal,parsedWeekLabel);
+      briefStatus('Calendar parsed — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=false; btn.style.opacity='1'; btn.innerHTML='Read Calendar';
   };
 
-  function renderCalPreview(cal, label) {
-    var panel = document.getElementById('calPreview');
-    var content = document.getElementById('calPreviewContent');
-    if (label) document.getElementById('calPreviewTitle').textContent = 'Preview — ' + label;
-
-    var html = '';
+  function renderCalPreview(cal,label) {
+    var panel=document.getElementById('calPreview'), content=document.getElementById('calPreviewContent');
+    if(label) document.getElementById('calPreviewTitle').textContent=label.toUpperCase();
+    var html='';
     cal.forEach(function(item) {
-      var abbr = item.day.substring(0, 3);
-      var hasMore = item.additionalEvents && item.additionalEvents.length > 0;
-      html += '<div style="display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.06);">';
-      html += '<span style="font-weight:700;color:#0b4ea2;min-width:36px;">' + abbr + '</span>';
-      html += '<span style="font-weight:600;">' + item.mainEvent + '</span>';
-      if (hasMore) html += '<span style="background:#0b4ea2;color:white;border-radius:50%;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-left:auto;flex-shrink:0;">+' + item.additionalEvents.length + '</span>';
-      html += '</div>';
-      if (hasMore) {
-        item.additionalEvents.forEach(function(evt) {
-          html += '<div style="color:#666;font-size:13px;padding-left:48px;padding-bottom:4px;">' + evt + '</div>';
-        });
-      }
+      var abbr=item.day.substring(0,3), hasMore=item.additionalEvents&&item.additionalEvents.length>0;
+      html+='<div style="display:flex;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);">';
+      html+='<span style="font-weight:700;color:#3b82f6;min-width:32px;font-size:13px;">'+abbr+'</span>';
+      html+='<span style="font-weight:500;color:rgba(255,255,255,0.8);font-size:13px;">'+item.mainEvent+'</span>';
+      if(hasMore) html+='<span style="background:#3b82f6;color:white;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-left:auto;flex-shrink:0;">+'+item.additionalEvents.length+'</span>';
+      html+='</div>';
+      if(hasMore) { item.additionalEvents.forEach(function(evt) { html+='<div style="color:rgba(255,255,255,0.35);font-size:12px;padding-left:44px;padding-bottom:3px;">'+evt+'</div>'; }); }
     });
-    content.innerHTML = html;
-    panel.style.display = 'block';
+    content.innerHTML=html; panel.style.display='block';
   }
 
-  // Rewrite summaries
   window.rewriteSummaries = async function() {
-    var raw = document.getElementById('rawMarketInput').value.trim();
-    if (!raw) { briefStatus('Paste market content first!', 'error'); return; }
-
-    var btn = document.getElementById('rewriteBtn');
-    btn.disabled = true;
-    btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Writing...';
-    briefStatus('Claude is rewriting your summaries...', 'loading');
-
+    var raw=document.getElementById('rawMarketInput').value.trim();
+    if(!raw){briefStatus('Paste market content first.','error');return;}
+    var btn=document.getElementById('rewriteBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Writing...';
+    briefStatus('Rewriting summaries...','loading');
     try {
-      var resp = await fetch(API + '/parse-briefing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'rewrite_summaries', rawContent: raw })
-      });
-      var data = await resp.json();
-      if (!data.success) throw new Error(data.error || 'Failed to rewrite');
-
-      rewrittenMkt = data.marketSummary;
-      rewrittenClient = data.clientFriendly;
-
-      document.getElementById('mktPreviewContent').innerHTML = fmtText(rewrittenMkt);
-      document.getElementById('clientPreviewContent').innerHTML = fmtText(rewrittenClient);
-      document.getElementById('mktPreview').style.display = 'block';
-      document.getElementById('clientPreview').style.display = 'block';
-      briefStatus('Summaries written! Review below, then Publish when ready.', 'success');
-    } catch (err) {
-      briefStatus('Error: ' + err.message, 'error');
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = 'Rewrite Summaries';
+      var resp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'rewrite_summaries',rawContent:raw})});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Failed');
+      rewrittenMkt=data.marketSummary; rewrittenClient=data.clientFriendly;
+      document.getElementById('mktPreviewContent').innerHTML=fmtText(rewrittenMkt);
+      document.getElementById('clientPreviewContent').innerHTML=fmtText(rewrittenClient);
+      document.getElementById('mktPreview').style.display='block';
+      document.getElementById('clientPreview').style.display='block';
+      briefStatus('Summaries ready — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=false; btn.innerHTML='Rewrite Summaries';
   };
 
   function fmtText(text) {
-    if (!text) return '';
+    if(!text) return '';
     return text.split(/\n\n+/).map(function(p) {
-      p = p.trim();
-      if (!p) return '';
-      if (p.match(/^(Market Open|What This Means|Looking Ahead|Bottom Line)/i)) {
-        var lines = p.split('\n');
-        return '<h4 style="margin:14px 0 4px;color:#0b1f3a;font-size:14px;">' + lines[0] + '</h4>' + (lines.length > 1 ? '<p style="margin:0 0 8px;font-size:14px;">' + lines.slice(1).join('<br>') + '</p>' : '');
+      p=p.trim(); if(!p) return '';
+      if(p.match(/^(Market Open|What This Means|Looking Ahead|Bottom Line)/i)) {
+        var lines=p.split('\n');
+        return '<div style="font-weight:600;color:rgba(255,255,255,0.9);margin:12px 0 4px;">'+lines[0]+'</div>'+(lines.length>1?'<div>'+lines.slice(1).join('<br>')+'</div>':'');
       }
-      return '<p style="margin:0 0 8px;font-size:14px;">' + p.replace(/\n/g, '<br>') + '</p>';
+      return '<div style="margin-bottom:8px;">'+p.replace(/\n/g,'<br>')+'</div>';
     }).join('');
   }
 
-  // Publish
-  window.publishBriefing = async function() {
-    var btn = document.getElementById('publishBtn');
-    var hasCal = parsedCal && parsedCal.length > 0;
-    var hasMkt = rewrittenMkt || rewrittenClient;
-    var hasWir = document.getElementById('wirToggle').checked && document.getElementById('wirInput').value.trim();
-
-    if (!hasCal && !hasMkt && !hasWir) {
-      briefStatus('Nothing to publish! Parse a calendar or rewrite summaries first.', 'error');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.innerHTML = '<span style="display:inline-block;width:18px;height:18px;border:2.5px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:briefSpin 0.7s linear infinite;vertical-align:middle;"></span> Publishing...';
-    briefStatus('Saving to database...', 'loading');
-
+  window.generateWIR = async function() {
+    var btn=document.getElementById('generateWirBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Generating...';
+    briefStatus('Pulling this week\'s summaries and generating recap...','loading');
     try {
-      var payload = {};
-      if (hasCal) { payload.economicCalendar = parsedCal; if (parsedWeekLabel) payload.calendarWeek = parsedWeekLabel; }
-      if (rewrittenMkt) payload.marketSummary = rewrittenMkt;
-      if (rewrittenClient) payload.clientFriendly = rewrittenClient;
-      if (hasWir) payload.weekInReview = document.getElementById('wirInput').value.trim();
-
-      var resp = await fetch(API + '/briefing', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      var data = await resp.json();
-      if (!data.success) throw new Error(data.error || 'Publish failed');
-
-      briefStatus('Published! Your realtors can see the update now.', 'success');
-    } catch (err) {
-      briefStatus('Publish error: ' + err.message, 'error');
-    }
-
-    btn.disabled = false;
-    btn.innerHTML = 'Publish to Portal';
+      var histResp=await fetch(API+'/briefing?action=history');
+      var histData=await histResp.json();
+      if(!histData.days||histData.days.length===0) throw new Error('No daily summaries found for this week. Publish some summaries first.');
+      var wirResp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'generate_wir',dailySummaries:histData.days,weekStart:histData.weekStart,weekEnd:histData.weekEnd})});
+      var wirData=await wirResp.json(); if(!wirData.success) throw new Error(wirData.error||'WIR generation failed');
+      document.getElementById('wirInput').value=wirData.weekInReview;
+      document.getElementById('wirPreviewLabel').textContent=(wirData.weekEndingLabel||'WEEK IN REVIEW').toUpperCase();
+      document.getElementById('wirPreviewContent').innerHTML='<div style="margin-bottom:6px;font-weight:600;color:rgba(245,158,11,0.8);">'+(wirData.weekEndingLabel||'')+'</div>'+fmtText(wirData.weekInReview);
+      document.getElementById('wirPreview').style.display='block';
+      briefStatus('Week in Review generated — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=!document.getElementById('wirToggle').checked; btn.innerHTML='Generate from This Week';
   };
 
-  function briefStatus(msg, type) {
-    var bar = document.getElementById('briefingStatus');
-    bar.textContent = msg;
-    bar.style.display = 'block';
-    if (type === 'success') { bar.style.background = 'rgba(46,204,113,0.12)'; bar.style.border = '1px solid rgba(46,204,113,0.3)'; bar.style.color = '#27ae60'; }
-    else if (type === 'error') { bar.style.background = 'rgba(192,57,43,0.1)'; bar.style.border = '1px solid rgba(192,57,43,0.3)'; bar.style.color = '#c0392b'; }
-    else { bar.style.background = 'rgba(11,78,162,0.08)'; bar.style.border = '1px solid rgba(11,78,162,0.2)'; bar.style.color = '#0b4ea2'; }
-    bar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  window.publishBriefing = async function() {
+    var btn=document.getElementById('publishBtn');
+    var hasCal=parsedCal&&parsedCal.length>0, hasMkt=rewrittenMkt||rewrittenClient;
+    var hasWir=document.getElementById('wirToggle').checked&&document.getElementById('wirInput').value.trim();
+    if(!hasCal&&!hasMkt&&!hasWir){briefStatus('Nothing to publish.','error');return;}
+    btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span> PUBLISHING...';
+    briefStatus('Saving to database...','loading');
+    try {
+      var payload={};
+      if(hasCal){payload.economicCalendar=parsedCal; if(parsedWeekLabel) payload.calendarWeek=parsedWeekLabel;}
+      if(rewrittenMkt) payload.marketSummary=rewrittenMkt;
+      if(rewrittenClient) payload.clientFriendly=rewrittenClient;
+      if(hasWir) payload.weekInReview=document.getElementById('wirInput').value.trim();
+      var resp=await fetch(API+'/briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Publish failed');
+      briefStatus('PUBLISHED — your realtors can see the update now.','success');
+    } catch(err) { briefStatus('Publish error: '+err.message,'error'); }
+    btn.disabled=false; btn.innerHTML='PUBLISH TO PORTAL';
+  };
+
+  function briefStatus(msg,type) {
+    var bar=document.getElementById('briefingStatus'); bar.textContent=msg; bar.style.display='block';
+    if(type==='success'){bar.style.background='rgba(34,197,94,0.08)';bar.style.border='1px solid rgba(34,197,94,0.2)';bar.style.color='#22c55e';}
+    else if(type==='error'){bar.style.background='rgba(239,68,68,0.08)';bar.style.border='1px solid rgba(239,68,68,0.2)';bar.style.color='#ef4444';}
+    else{bar.style.background='rgba(59,130,246,0.06)';bar.style.border='1px solid rgba(59,130,246,0.15)';bar.style.color='#60a5fa';}
   }
 })();
 </script>
-<style>
-@keyframes briefSpin { to { transform: rotate(360deg); } }
-</style>
 
 <!-- ========================================== -->
 <!-- USER MANAGEMENT VIEW -->
