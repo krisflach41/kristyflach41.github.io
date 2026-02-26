@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scenario Desk · Agent Edge</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ===== RESET & BASE ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  margin: 0; padding: 0;
+  background: #070e1a;
+  color: #eaf0f6;
+  min-height: 100vh;
+}
+
+/* ===== DARK LUXURY BACKGROUND ===== */
+.page-bg {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(110,127,119,0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 100%, rgba(110,127,119,0.08) 0%, transparent 50%),
+    linear-gradient(180deg, #070e1a 0%, #0c1829 50%, #070e1a 100%);
+  padding: 40px 20px 80px;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ===== HEADER ===== */
+.desk-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.desk-header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 38px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.desk-header p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+  max-width: 550px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== TAB NAVIGATION ===== */
+.desk-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 36px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 14px;
+  padding: 5px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.desk-tab {
+  flex: 1;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.desk-tab:hover {
+  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.04);
+}
+.desk-tab.active {
+  background: rgba(110,127,119,0.25);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(110,127,119,0.2);
+}
+.desk-tab .tab-icon {
+  font-size: 18px;
+}
+
+/* ===== PANELS ===== */
+.desk-panel {
+  display: none;
+}
+.desk-panel.active {
+  display: block;
+}
+
+/* ===== ASK GUS GUS PANEL ===== */
+.gus-container {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.gus-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #6e7f77, transparent);
+}
+
+/* Gus Gus intro */
+.gus-intro {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+.gus-photo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(110,127,119,0.4);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  flex-shrink: 0;
+}
+.gus-intro-text h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+.gus-intro-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.5;
+}
+
+/* Search input area */
+.gus-search-area {
+  position: relative;
+  margin-bottom: 16px;
+}
+.gus-search-area textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  border: 1px solid rgba(110,127,119,0.25);
+  background: rgba(0,0,0,0.3);
+  color: #eaf0f6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.3s;
+}
+.gus-search-area textarea:focus {
+  outline: none;
+  border-color: rgba(110,127,119,0.6);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
+}
+.gus-search-area textarea::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+/* Fetch button */
+.gus-fetch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 32px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #6e7f77 0%, #556b62 100%);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  letter-spacing: 0.3px;
+}
+.gus-fetch-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(110,127,119,0.35);
+}
+.gus-fetch-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.gus-fetch-btn .paw {
+  font-size: 20px;
+}
+
+/* Example questions */
+.gus-examples {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.gus-examples-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 10px;
+}
+.gus-example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gus-chip {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(110,127,119,0.2);
+  background: rgba(110,127,119,0.06);
+  color: rgba(255,255,255,0.55);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gus-chip:hover {
+  background: rgba(110,127,119,0.15);
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(110,127,119,0.4);
+}
+
+/* ===== RESULTS AREA ===== */
+.gus-results {
+  display: none;
+  margin-top: 30px;
+  animation: fadeUp 0.4s ease;
+}
+.gus-results.active {
+  display: block;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.results-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.results-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  background: rgba(110,127,119,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.results-header img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(110,127,119,0.3);
+}
+.results-header-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #6e7f77;
+}
+.results-body {
+  padding: 24px;
+}
+.results-body .program-section {
+  margin-bottom: 20px;
+}
+.results-body .program-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #6e7f77;
+  margin-bottom: 6px;
+}
+.results-body .program-detail {
+  font-size: 14px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.7;
+}
+.results-body .response-text {
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+/* Disclaimer */
+.results-disclaimer {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: rgba(110,127,119,0.06);
+  border-left: 3px solid rgba(110,127,119,0.4);
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.6;
+}
+
+/* Loading state */
+.gus-loading {
+  display: none;
+  text-align: center;
+  padding: 40px;
+}
+.gus-loading.active {
+  display: block;
+}
+.gus-loading .loading-text {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 12px;
+}
+.gus-loading .paw-bounce {
+  font-size: 36px;
+  display: inline-block;
+  animation: pawBounce 0.8s ease infinite;
+}
+@keyframes pawBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ===== REQUEST A REVIEW PANEL ===== */
+.review-container {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.review-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #6e7f77, transparent);
+}
+.review-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.review-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.review-header p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+}
+
+/* Scenario type toggle */
+.scenario-type-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 28px;
+  justify-content: center;
+}
+.type-toggle {
+  padding: 12px 28px;
+  border-radius: 12px;
+  border: 1px solid rgba(110,127,119,0.25);
+  background: rgba(0,0,0,0.2);
+  color: rgba(255,255,255,0.5);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.type-toggle:hover {
+  border-color: rgba(110,127,119,0.5);
+  color: rgba(255,255,255,0.8);
+}
+.type-toggle.active {
+  background: rgba(110,127,119,0.2);
+  border-color: #6e7f77;
+  color: #fff;
+}
+.type-toggle .toggle-icon {
+  font-size: 20px;
+}
+
+/* Dynamic form sections */
+.form-section {
+  display: none;
+  animation: fadeUp 0.3s ease;
+}
+.form-section.active {
+  display: block;
+}
+
+.form-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6e7f77;
+  margin-bottom: 16px;
+  margin-top: 8px;
+}
+
+/* Form fields */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.form-group.full {
+  grid-column: 1 / -1;
+}
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.3px;
+}
+.form-select,
+.form-input {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.3);
+  color: #eaf0f6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.form-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e7f77' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.form-select:focus,
+.form-input:focus {
+  outline: none;
+  border-color: rgba(110,127,119,0.5);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.08);
+}
+.form-select option {
+  background: #0c1829;
+  color: #eaf0f6;
+}
+
+/* Multi-select checkboxes */
+.multi-check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2px;
+}
+.multi-check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+}
+.multi-check:hover {
+  border-color: rgba(110,127,119,0.3);
+  color: rgba(255,255,255,0.7);
+}
+.multi-check.selected {
+  background: rgba(110,127,119,0.15);
+  border-color: #6e7f77;
+  color: #fff;
+}
+.multi-check input {
+  display: none;
+}
+
+/* Credit event follow-up */
+.followup-field {
+  display: none;
+  margin-top: 12px;
+}
+.followup-field.active {
+  display: block;
+}
+
+/* Full story textarea */
+.full-story textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.3);
+  color: #eaf0f6;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.full-story textarea:focus {
+  outline: none;
+  border-color: rgba(110,127,119,0.5);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.08);
+}
+.full-story textarea::placeholder {
+  color: rgba(255,255,255,0.2);
+}
+
+/* Always-visible fields */
+.always-fields {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Submit button */
+.review-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 36px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #6e7f77 0%, #556b62 100%);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  margin-top: 24px;
+}
+.review-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(110,127,119,0.35);
+}
+.review-submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Success message */
+.review-success {
+  display: none;
+  text-align: center;
+  padding: 40px 20px;
+  animation: fadeUp 0.4s ease;
+}
+.review-success.active {
+  display: block;
+}
+.review-success .success-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.review-success h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.review-success p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+/* ===== BACK / NAV ===== */
+.back-row {
+  text-align: center;
+  margin-top: 40px;
+}
+.back-link {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  text-decoration: none;
+  color: rgba(255,255,255,0.5);
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+.back-link:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .page-bg { padding: 24px 14px 60px; }
+  .desk-header h1 { font-size: 28px; }
+  .gus-container, .review-container { padding: 24px 18px; }
+  .gus-intro { flex-direction: column; text-align: center; }
+  .form-row { grid-template-columns: 1fr; }
+  .scenario-type-row { flex-direction: column; }
+  .gus-example-chips { flex-direction: column; }
+}
+
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+
+<body>
+<div class="page-bg">
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="desk-header">
+    <h1>Scenario Desk</h1>
+    <p>Got a unique borrower or property situation? Search lending guidelines instantly or submit a scenario for expert review.</p>
+  </div>
+
+  <!-- TAB NAV -->
+  <div class="desk-tabs">
+    <button class="desk-tab active" onclick="switchTab('gus')">
+      <span class="tab-icon">🐾</span> Ask Gus Gus
+    </button>
+    <button class="desk-tab" onclick="switchTab('review')">
+      <span class="tab-icon">📋</span> Request a Review
+    </button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- ASK GUS GUS PANEL -->
+  <!-- ============================================ -->
+  <div class="desk-panel active" id="panelGus">
+    <div class="gus-container">
+
+      <!-- Gus intro -->
+      <div class="gus-intro">
+        <img src="gus.JPG" alt="Gus Gus" class="gus-photo">
+        <div class="gus-intro-text">
+          <h2>Ask Gus Gus</h2>
+          <p>Type your lending scenario question in plain English. Gus Gus will search published guidelines from Fannie Mae, Freddie Mac, FHA, VA, and USDA to find what might work.</p>
+        </div>
+      </div>
+
+      <!-- Search input -->
+      <div class="gus-search-area">
+        <textarea id="gusQuestion" placeholder="Example: Can my client buy a house with well water and a septic system? They have a 640 credit score and are self-employed..."></textarea>
+      </div>
+
+      <!-- Fetch button -->
+      <button class="gus-fetch-btn" id="gusFetchBtn" onclick="askGusGus()">
+        <span class="paw">🐾</span> Gus Gus, Fetch!
+      </button>
+
+      <!-- Example chips -->
+      <div class="gus-examples">
+        <div class="gus-examples-label">Try asking</div>
+        <div class="gus-example-chips">
+          <div class="gus-chip" onclick="useExample(this)">What programs allow a cistern as a water source?</div>
+          <div class="gus-chip" onclick="useExample(this)">Can a borrower with a bankruptcy 2 years ago get an FHA loan?</div>
+          <div class="gus-chip" onclick="useExample(this)">What are the requirements for financing a manufactured home?</div>
+          <div class="gus-chip" onclick="useExample(this)">Can my client buy a 2-unit property with 5% down?</div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div class="gus-loading" id="gusLoading">
+        <div class="paw-bounce">🐾</div>
+        <div class="loading-text">Gus Gus is fetching guidelines...</div>
+      </div>
+
+      <!-- Results -->
+      <div class="gus-results" id="gusResults">
+        <div class="results-card">
+          <div class="results-header">
+            <img src="gus.JPG" alt="Gus Gus">
+            <div class="results-header-text">Gus Gus found something</div>
+          </div>
+          <div class="results-body">
+            <div class="response-text" id="gusResponseText"></div>
+          </div>
+        </div>
+        <div class="results-disclaimer" id="gusDisclaimer"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- REQUEST A REVIEW PANEL -->
+  <!-- ============================================ -->
+  <div class="desk-panel" id="panelReview">
+    <div class="review-container">
+
+      <div class="review-header">
+        <h2>Request a Review</h2>
+        <p>Submit your scenario and <span id="reviewLenderName">your loan officer</span> will call you back with answers.</p>
+      </div>
+
+      <!-- Scenario type toggles -->
+      <div class="scenario-type-row">
+        <button class="type-toggle" id="togBorrower" onclick="toggleScenarioType('borrower')">
+          <span class="toggle-icon">👤</span> Borrower Question
+        </button>
+        <button class="type-toggle" id="togProperty" onclick="toggleScenarioType('property')">
+          <span class="toggle-icon">🏠</span> Property Question
+        </button>
+      </div>
+
+      <!-- BORROWER FIELDS -->
+      <div class="form-section" id="borrowerFields">
+        <div class="form-section-title">Borrower Details</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Credit Score Range</label>
+            <select class="form-select" id="creditScore">
+              <option value="">Select...</option>
+              <option value="740+">740+</option>
+              <option value="700-739">700–739</option>
+              <option value="660-699">660–699</option>
+              <option value="620-659">620–659</option>
+              <option value="580-619">580–619</option>
+              <option value="below-580">Below 580</option>
+              <option value="unknown">Unknown</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Employment Type</label>
+            <select class="form-select" id="employment">
+              <option value="">Select...</option>
+              <option value="w2">W-2 Employee</option>
+              <option value="self-employed">Self-Employed</option>
+              <option value="1099">1099 Contractor</option>
+              <option value="retired">Retired</option>
+              <option value="multiple">Multiple Income Sources</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First-Time Homebuyer?</label>
+            <select class="form-select" id="firstTime">
+              <option value="">Select...</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+              <option value="not-sure">Not Sure</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Any Credit Events?</label>
+            <div class="multi-check-group" id="creditEvents">
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="none"> None
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="bankruptcy"> Bankruptcy
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="foreclosure"> Foreclosure
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="short-sale"> Short Sale
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="late-payments"> Late Payments
+              </label>
+            </div>
+          </div>
+        </div>
+        <!-- Credit event follow-up -->
+        <div class="followup-field" id="eventTimeFollowup">
+          <div class="form-group">
+            <label class="form-label">How Long Ago?</label>
+            <select class="form-select" id="eventTimeframe">
+              <option value="">Select...</option>
+              <option value="less-than-1">Less than 1 year</option>
+              <option value="1-2">1–2 years</option>
+              <option value="2-4">2–4 years</option>
+              <option value="4-7">4–7 years</option>
+              <option value="7+">7+ years</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROPERTY FIELDS -->
+      <div class="form-section" id="propertyFields">
+        <div class="form-section-title">Property Details</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Property Type</label>
+            <select class="form-select" id="propType">
+              <option value="">Select...</option>
+              <option value="single-family">Single Family</option>
+              <option value="condo">Condo</option>
+              <option value="townhome">Townhome</option>
+              <option value="2-4-unit">2–4 Unit</option>
+              <option value="manufactured">Manufactured / Mobile</option>
+              <option value="mixed-use">Mixed Use</option>
+              <option value="land">Land / Lot</option>
+              <option value="non-standard">Non-Standard Construction</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Intended Use</label>
+            <select class="form-select" id="propUse">
+              <option value="">Select...</option>
+              <option value="primary">Primary Residence</option>
+              <option value="second-home">Second Home</option>
+              <option value="investment">Investment Property</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label class="form-label">Anything Unusual?</label>
+            <div class="multi-check-group" id="propFlags">
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="none"> None
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="well-water"> Well Water
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="cistern"> Cistern
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="septic"> Septic
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="acreage"> Large Acreage (10+)</option>
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="rural"> Rural Location
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="flood-zone"> Flood Zone
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="needs-repair"> Needs Repair
+              </label>
+              <label class="multi-check" onclick="toggleCheck(this)">
+                <input type="checkbox" value="non-standard"> Non-Standard Build
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALWAYS VISIBLE FIELDS -->
+      <div class="always-fields">
+        <div class="form-section-title">Additional Details</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Target Purchase Price (optional)</label>
+            <input type="text" class="form-input" id="purchasePrice" placeholder="e.g. $350,000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Down Payment Estimate</label>
+            <select class="form-select" id="downPayment">
+              <option value="">Select...</option>
+              <option value="0%">0%</option>
+              <option value="3-5%">3–5%</option>
+              <option value="5-10%">5–10%</option>
+              <option value="10-20%">10–20%</option>
+              <option value="20%+">20%+</option>
+              <option value="not-sure">Not Sure</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full full-story">
+            <label class="form-label">Tell Us the Full Story</label>
+            <textarea id="fullStory" placeholder="Give us the full picture — anything that would help evaluate this scenario. The more detail, the better prepared we'll be when we call you back."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button class="review-submit-btn" id="reviewSubmitBtn" onclick="submitReview()">
+        Submit Scenario →
+      </button>
+
+      <!-- Success state -->
+      <div class="review-success" id="reviewSuccess">
+        <div class="success-icon">✅</div>
+        <h3>Scenario Received</h3>
+        <p><span id="successLenderName">Your loan officer</span> has been notified and will call you shortly to discuss this scenario. Expect a call within the next few hours.</p>
+        <button class="review-submit-btn" style="margin-top:20px;" onclick="resetReview()">Submit Another Scenario</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- BACK LINK -->
+  <div class="back-row">
+    <a href="decision-tools.html" class="back-link">← Back to Decision Tools</a>
+  </div>
+
+</div>
+</div>
+
+<script>
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+var lenderName = sessionStorage.getItem('agentEdgeLenderName') || 'your loan officer';
+var userName = sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeName') || '';
+var userEmail = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser') || '';
+
+// Set lender name in dynamic spots
+document.getElementById('reviewLenderName').textContent = lenderName;
+document.getElementById('successLenderName').textContent = lenderName;
+document.getElementById('gusDisclaimer').textContent =
+  'These results reflect general published guidelines and may not account for recent changes, specialty programs, or portfolio options. For a real answer, submit this scenario to ' + lenderName + ' — there\'s almost always more to the story.';
+
+// ===== TAB SWITCHING =====
+function switchTab(tab) {
+  document.querySelectorAll('.desk-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.desk-panel').forEach(function(p) { p.classList.remove('active'); });
+
+  if (tab === 'gus') {
+    document.querySelectorAll('.desk-tab')[0].classList.add('active');
+    document.getElementById('panelGus').classList.add('active');
+  } else {
+    document.querySelectorAll('.desk-tab')[1].classList.add('active');
+    document.getElementById('panelReview').classList.add('active');
+  }
+}
+
+// ===== ASK GUS GUS =====
+function useExample(chip) {
+  document.getElementById('gusQuestion').value = chip.textContent;
+  document.getElementById('gusQuestion').focus();
+}
+
+async function askGusGus() {
+  var question = document.getElementById('gusQuestion').value.trim();
+  if (!question) return;
+
+  var btn = document.getElementById('gusFetchBtn');
+  btn.disabled = true;
+  document.getElementById('gusResults').classList.remove('active');
+  document.getElementById('gusLoading').classList.add('active');
+
+  // Track this as engagement
+  if (typeof trackActivity === 'function') {
+    trackActivity('Advisory', 'Scenario Desk', 'ask_gus_gus', question.substring(0, 100));
+  }
+
+  try {
+    var resp = await fetch(API_BASE + '/scenario-desk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'ask_gus',
+        question: question,
+        realtor_name: userName,
+        realtor_email: userEmail
+      })
+    });
+    var data = await resp.json();
+
+    if (data.error) {
+      document.getElementById('gusResponseText').textContent = 'Sorry, Gus Gus ran into an issue: ' + data.error;
+    } else {
+      document.getElementById('gusResponseText').innerHTML = formatGusResponse(data.response || data.answer || '');
+    }
+  } catch (err) {
+    document.getElementById('gusResponseText').textContent = 'Gus Gus had trouble fetching results. Please try again.';
+  }
+
+  document.getElementById('gusLoading').classList.remove('active');
+  document.getElementById('gusResults').classList.add('active');
+  btn.disabled = false;
+}
+
+function formatGusResponse(text) {
+  // Convert **bold** to <strong>
+  text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  // Convert line breaks to <br>
+  text = text.replace(/\n\n/g, '</p><p style="margin-top:12px;">');
+  text = text.replace(/\n/g, '<br>');
+  // Wrap in paragraph
+  return '<p>' + text + '</p>';
+}
+
+// ===== SCENARIO TYPE TOGGLES =====
+function toggleScenarioType(type) {
+  var btn = document.getElementById(type === 'borrower' ? 'togBorrower' : 'togProperty');
+  var section = document.getElementById(type === 'borrower' ? 'borrowerFields' : 'propertyFields');
+
+  btn.classList.toggle('active');
+  section.classList.toggle('active');
+}
+
+// ===== MULTI-CHECK TOGGLES =====
+function toggleCheck(label) {
+  var cb = label.querySelector('input');
+  cb.checked = !cb.checked;
+  label.classList.toggle('selected', cb.checked);
+
+  // If "None" is selected, deselect others in same group
+  if (cb.value === 'none' && cb.checked) {
+    var siblings = label.parentElement.querySelectorAll('.multi-check');
+    siblings.forEach(function(s) {
+      if (s !== label) {
+        s.classList.remove('selected');
+        s.querySelector('input').checked = false;
+      }
+    });
+  } else if (cb.value !== 'none' && cb.checked) {
+    // Deselect "None" if another option is picked
+    var noneLabel = label.parentElement.querySelector('input[value="none"]');
+    if (noneLabel) {
+      noneLabel.checked = false;
+      noneLabel.parentElement.classList.remove('selected');
+    }
+  }
+
+  // Show/hide credit event timeframe
+  if (label.closest('#creditEvents')) {
+    var hasEvent = false;
+    document.querySelectorAll('#creditEvents input').forEach(function(inp) {
+      if (inp.checked && inp.value !== 'none') hasEvent = true;
+    });
+    document.getElementById('eventTimeFollowup').classList.toggle('active', hasEvent);
+  }
+}
+
+// ===== SUBMIT REVIEW =====
+async function submitReview() {
+  var fullStory = document.getElementById('fullStory').value.trim();
+  if (!fullStory) {
+    alert('Please tell us the full story so we can be prepared when we call you back.');
+    return;
+  }
+
+  var btn = document.getElementById('reviewSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  // Gather form data
+  var scenario = {
+    action: 'submit_review',
+    realtor_name: userName,
+    realtor_email: userEmail,
+    scenario_types: [],
+    borrower: {},
+    property: {},
+    purchase_price: document.getElementById('purchasePrice').value.trim(),
+    down_payment: document.getElementById('downPayment').value,
+    full_story: fullStory
+  };
+
+  // Borrower data
+  if (document.getElementById('togBorrower').classList.contains('active')) {
+    scenario.scenario_types.push('borrower');
+    scenario.borrower = {
+      credit_score: document.getElementById('creditScore').value,
+      employment: document.getElementById('employment').value,
+      first_time: document.getElementById('firstTime').value,
+      credit_events: getCheckedValues('creditEvents'),
+      event_timeframe: document.getElementById('eventTimeframe').value
+    };
+  }
+
+  // Property data
+  if (document.getElementById('togProperty').classList.contains('active')) {
+    scenario.scenario_types.push('property');
+    scenario.property = {
+      type: document.getElementById('propType').value,
+      use: document.getElementById('propUse').value,
+      flags: getCheckedValues('propFlags')
+    };
+  }
+
+  // Track as hot lead engagement
+  if (typeof trackActivity === 'function') {
+    trackActivity('Advisory', 'Scenario Desk', 'submit_review', fullStory.substring(0, 100));
+  }
+
+  try {
+    var resp = await fetch(API_BASE + '/scenario-desk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(scenario)
+    });
+    var data = await resp.json();
+
+    // Show success
+    document.querySelector('.review-container .review-header').style.display = 'none';
+    document.querySelector('.scenario-type-row').style.display = 'none';
+    document.getElementById('borrowerFields').style.display = 'none';
+    document.getElementById('propertyFields').style.display = 'none';
+    document.querySelector('.always-fields').style.display = 'none';
+    document.getElementById('reviewSubmitBtn').style.display = 'none';
+    document.getElementById('reviewSuccess').classList.add('active');
+  } catch (err) {
+    alert('Something went wrong. Please try again.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Scenario →';
+  }
+}
+
+function getCheckedValues(groupId) {
+  var vals = [];
+  document.querySelectorAll('#' + groupId + ' input:checked').forEach(function(cb) {
+    vals.push(cb.value);
+  });
+  return vals;
+}
+
+function resetReview() {
+  document.querySelector('.review-container .review-header').style.display = '';
+  document.querySelector('.scenario-type-row').style.display = '';
+  document.querySelector('.always-fields').style.display = '';
+  document.getElementById('reviewSubmitBtn').style.display = '';
+  document.getElementById('reviewSubmitBtn').disabled = false;
+  document.getElementById('reviewSubmitBtn').textContent = 'Submit Scenario →';
+  document.getElementById('reviewSuccess').classList.remove('active');
+
+  // Reset form
+  document.querySelectorAll('.form-select').forEach(function(s) { s.selectedIndex = 0; });
+  document.querySelectorAll('.multi-check').forEach(function(m) { m.classList.remove('selected'); m.querySelector('input').checked = false; });
+  document.querySelectorAll('textarea').forEach(function(t) { t.value = ''; });
+  document.querySelectorAll('.type-toggle').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.form-section').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('eventTimeFollowup').classList.remove('active');
+  document.getElementById('purchasePrice').value = '';
+}
+</script>
+
+</body>
+</html>
