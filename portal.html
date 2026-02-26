@@ -78,7 +78,7 @@ h1 {
 .date-bar {
   width: 100%;
   padding: 0 50px;
-  margin-left: 80px;
+  text-align: left;
   font-size: 22px;
   font-weight: 800;
   color: #0b1f3a;
@@ -654,39 +654,22 @@ h1 {
 
 <div class="rate-ticker">
   <div class="ticker-track">
-    <div class="ticker-line" id="tickerLine1">
-      <span>Loading rates...</span>
+    <div class="ticker-line">
+      <span>30-Year 6.22%</span>
+      <span>FHA 6.076%</span>
+      <span>VA 5.825%</span>
+      <span>Jumbo 6.308%</span>
+      <span>15-Year 5.8%</span>
     </div>
-    <div class="ticker-line" id="tickerLine2">
-      <span>Loading rates...</span>
+    <div class="ticker-line">
+      <span>30-Year 6.22%</span>
+      <span>FHA 6.076%</span>
+      <span>VA 5.825%</span>
+      <span>Jumbo 6.308%</span>
+      <span>15-Year 5.8%</span>
     </div>
   </div>
 </div>
-
-<script>
-// Live rate ticker from FRED/Optimal Blue OBMMI
-(function() {
-  fetch('https://agent-edge-backend.vercel.app/api/rates')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data.rates) return;
-      var r = data.rates;
-      var html = '';
-      if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
-      if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
-      if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
-      if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
-      if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
-      if (data.asOf) html += '<span style="color:rgba(255,255,255,0.5);font-size:12px;">as of ' + data.asOf + '</span>';
-      document.getElementById('tickerLine1').innerHTML = html;
-      document.getElementById('tickerLine2').innerHTML = html;
-    })
-    .catch(function(err) {
-      console.error('Rate fetch error:', err);
-      // Fallback - keep loading message or could show last known
-    });
-})();
-</script>
 
 <div class="page-wrap">
 <section class="blog-section">
@@ -1014,101 +997,100 @@ document.addEventListener('keydown', (e) => {
 
 
 <script>
-// Load briefing data on page load
+// Load briefing data from Supabase on page load
 window.addEventListener('load', function() {
-  const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
+  fetch('https://agent-edge-backend.vercel.app/api/briefing')
+    .then(function(r) { return r.json(); })
+    .then(function(briefingData) {
+      if (!briefingData || briefingData.error) {
+        console.log('No briefing data available');
+        return;
+      }
   
-  // ===== RATES TICKER NOW HANDLED BY LIVE API FETCH ABOVE =====
-  
-  // ===== UPDATE ECONOMIC CALENDAR =====
-  if (briefingData.economicCalendar) {
-    const eventCard = document.querySelector('.event-card');
-    if (eventCard && Array.isArray(briefingData.economicCalendar)) {
-      let calendarHTML = `
-        <div class="events-header">
-          <div class="events-week">THIS WEEK</div>
-          <div class="events-title">Market-Moving Events</div>
-        </div>
-      `;
+      // ===== UPDATE ECONOMIC CALENDAR =====
+      if (briefingData.economicCalendar && Array.isArray(briefingData.economicCalendar)) {
+        var eventCard = document.querySelector('.event-card');
+        if (eventCard) {
+          var weekLabel = briefingData.calendarWeek || 'THIS WEEK';
+          var calendarHTML = '<div class="events-header">' +
+            '<div class="events-week">' + weekLabel + '</div>' +
+            '<div class="events-title">Market-Moving Events</div>' +
+          '</div>';
+          
+          briefingData.economicCalendar.forEach(function(event) {
+            var dayAbbrev = event.day.substring(0, 3);
+            var hasMore = event.additionalEvents && event.additionalEvents.length > 0;
+            var moreText = hasMore ? '<span class="more">+' + event.additionalEvents.length + '</span>' : '';
+            
+            calendarHTML += '<div class="event-row"' + (hasMore ? ' onclick="toggleDetails(this)"' : '') + '>' +
+              '<div class="event-main">' +
+                '<span class="day">' + dayAbbrev + '</span>' +
+                '<span class="headline">' + event.mainEvent + '</span>' +
+                moreText +
+              '</div>' +
+              (hasMore ? '<div class="event-details">' +
+                event.additionalEvents.map(function(e) { return '<div>' + e + '</div>'; }).join('') +
+              '</div>' : '') +
+            '</div>';
+          });
+          
+          eventCard.innerHTML = calendarHTML;
+        }
+      }
       
-      briefingData.economicCalendar.forEach(event => {
-        const dayAbbrev = event.day.substring(0, 3); // Mon, Tue, Wed, etc.
-        const hasMore = event.additionalEvents && event.additionalEvents.length > 0;
-        const moreText = hasMore ? `<span class="more">+${event.additionalEvents.length}</span>` : '';
-        
-        calendarHTML += `
-          <div class="event-row" ${hasMore ? 'onclick="toggleDetails(this)"' : ''}>
-            <div class="event-main">
-              <span class="day">${dayAbbrev}</span>
-              <span class="headline">${event.mainEvent}</span>
-              ${moreText}
-            </div>
-            ${hasMore ? `
-              <div class="event-details">
-                ${event.additionalEvents.map(e => `<div>${e}</div>`).join('')}
-              </div>
-            ` : ''}
-          </div>
-        `;
-      });
+      // ===== UPDATE MARKET SUMMARY PREVIEW =====
+      if (briefingData.marketSummary) {
+        var marketCard = document.querySelectorAll('.blog-card')[1];
+        if (marketCard) {
+          var summaryDiv = marketCard.querySelector('.summary-text');
+          if (summaryDiv) {
+            var preview = briefingData.marketSummary.substring(0, 300) + '...';
+            summaryDiv.innerHTML = '<p>' + preview + '</p>';
+          }
+        }
+      }
       
-      eventCard.innerHTML = calendarHTML;
-    }
-  }
-  
-  // ===== UPDATE MARKET SUMMARY PREVIEW =====
-  if (briefingData.marketSummary) {
-    // Find the Market Summary card (second blog-card)
-    const marketCard = document.querySelectorAll('.blog-card')[1];
-    if (marketCard) {
-      const summaryDiv = marketCard.querySelector('.summary-text');
-      if (summaryDiv) {
-        // Get first 300 characters
-        const preview = briefingData.marketSummary.substring(0, 300) + '...';
-        summaryDiv.innerHTML = `<p>${preview}</p>`;
+      // ===== UPDATE CLIENT-FRIENDLY PREVIEW =====
+      if (briefingData.clientFriendly) {
+        var clientCard = document.querySelectorAll('.blog-card')[2];
+        if (clientCard) {
+          var cSummaryDiv = clientCard.querySelector('.summary-text');
+          if (cSummaryDiv) {
+            var cPreview = briefingData.clientFriendly.substring(0, 400) + '...';
+            cSummaryDiv.innerHTML = '<p>' + cPreview + '</p>';
+          }
+        }
       }
-    }
-  }
-  
-  // ===== UPDATE CLIENT-FRIENDLY PREVIEW =====
-  if (briefingData.clientFriendly) {
-    // Find the Client-Friendly card (third blog-card)
-    const clientCard = document.querySelectorAll('.blog-card')[2];
-    if (clientCard) {
-      const summaryDiv = clientCard.querySelector('.summary-text');
-      if (summaryDiv) {
-        // Get first 400 characters
-        const preview = briefingData.clientFriendly.substring(0, 400) + '...';
-        summaryDiv.innerHTML = `<p>${preview}</p>`;
+      
+      // ===== UPDATE WEEK IN REVIEW =====
+      if (briefingData.weekInReview) {
+        var weekCard = document.querySelector('.week-review-card');
+        if (weekCard) {
+          var weekP = weekCard.querySelector('p');
+          if (weekP) {
+            weekP.textContent = briefingData.weekInReview;
+          }
+        }
       }
-    }
-  }
-  
-  // ===== UPDATE WEEK IN REVIEW =====
-  if (briefingData.weekInReview) {
-    const weekCard = document.querySelector('.week-review-card');
-    if (weekCard) {
-      const weekP = weekCard.querySelector('p');
-      if (weekP) {
-        weekP.textContent = briefingData.weekInReview;
+      
+      // ===== UPDATE LAST UPDATED TIME =====
+      if (briefingData.lastUpdated) {
+        var lastUpdated = new Date(briefingData.lastUpdated);
+        var briefDate = document.getElementById('briefDate');
+        if (briefDate) {
+          briefDate.textContent = lastUpdated.toLocaleDateString('en-US', { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric' 
+          });
+        }
       }
-    }
-  }
-  
-  // ===== UPDATE LAST UPDATED TIME =====
-  if (briefingData.lastUpdated) {
-    const lastUpdated = new Date(briefingData.lastUpdated);
-    const briefDate = document.getElementById('briefDate');
-    if (briefDate) {
-      briefDate.textContent = lastUpdated.toLocaleDateString('en-US', { 
-        month: 'long', 
-        day: 'numeric', 
-        year: 'numeric' 
-      });
-    }
-  }
-  
-  console.log('Briefing data loaded:', briefingData); // DEBUG
+      
+      console.log('Briefing data loaded from Supabase:', briefingData);
+    })
+    .catch(function(err) {
+      console.error('Failed to load briefing data:', err);
+    });
 });
 </script>
 <!-- Admin Access - Bottom Left (admin only) -->
