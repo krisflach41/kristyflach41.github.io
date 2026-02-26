@@ -48,6 +48,22 @@ p {
   margin-bottom: 18px;
   font-size: 15px;
 }
+/* ===== SECTION HEADINGS ===== */
+.section-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6e7f77;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #6e7f77;
+}
+.section-label:first-child {
+  margin-top: 0;
+}
 /* ===== BACK LINK BUTTON ===== */
 .back-link {
   display: inline-block;
@@ -55,7 +71,7 @@ p {
   text-decoration: none;
   font-weight: 600;
   color: white;
-  background: #0b4ea2;
+  background: #6e7f77;
   padding: 8px 16px;
   border-radius: 20px;
 }
@@ -124,11 +140,43 @@ function formatTextToHTML(text) {
     section = section.trim();
     if (!section) return;
     
-    if (section.match(/^[A-Z\s&–—]+$/) || section.match(/^[A-Z][a-zA-Z\s&]+:/)) {
-      html += '<h2>' + section.replace(/:$/, '') + '</h2>';
-    } else {
-      html += '<p>' + section.replace(/\n/g, '<br>') + '</p>';
+    // Detect section headings like "Market Open:", "Economic Data:", "What This Means:", etc.
+    var headingMatch = section.match(/^(Market Open|Economic Data|Housing & Rates|Housing and Rates|What This Means|What It Means|Bottom Line|Key Data|Rate Outlook)[:\s—–-]*(.*)/is);
+    if (headingMatch) {
+      html += '<div class="section-label">' + headingMatch[1] + '</div>';
+      var body = headingMatch[2] ? headingMatch[2].trim() : '';
+      if (body) {
+        html += '<p>' + body.replace(/\n/g, '<br>') + '</p>';
+      }
+      return;
     }
+    
+    // Detect all-caps headings
+    if (section.match(/^[A-Z\s&–—:]+$/) && section.length < 60) {
+      html += '<div class="section-label">' + section.replace(/:$/, '') + '</div>';
+      return;
+    }
+    
+    // Handle bullet points
+    if (section.indexOf('•') !== -1 || section.indexOf('- ') === 0 || section.indexOf('\n- ') !== -1 || section.indexOf('* ') === 0 || section.indexOf('\n* ') !== -1) {
+      var lines = section.split('\n');
+      var listItems = '';
+      var preamble = '';
+      lines.forEach(function(line) {
+        line = line.trim();
+        if (line.match(/^[•\-\*]\s+/)) {
+          listItems += '<li>' + line.replace(/^[•\-\*]\s+/, '') + '</li>';
+        } else if (line) {
+          preamble += line + ' ';
+        }
+      });
+      if (preamble.trim()) html += '<p>' + preamble.trim() + '</p>';
+      if (listItems) html += '<ul style="margin:0 0 18px 20px;line-height:1.8;">' + listItems + '</ul>';
+      return;
+    }
+    
+    // Regular paragraph
+    html += '<p>' + section.replace(/\n/g, '<br>') + '</p>';
   });
   
   return html;
