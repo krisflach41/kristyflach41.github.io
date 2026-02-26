@@ -78,54 +78,56 @@ p {
 </div>
 
 <script>
-// Load briefing data
+// Load briefing data from Supabase
 window.addEventListener('load', function() {
-  const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
-  
-  // Update date
-  if (briefingData.lastUpdated) {
-    const date = new Date(briefingData.lastUpdated);
-    document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+  fetch('https://agent-edge-backend.vercel.app/api/briefing')
+    .then(function(r) { return r.json(); })
+    .then(function(briefingData) {
+      // Update date
+      if (briefingData.lastUpdated) {
+        var date = new Date(briefingData.lastUpdated);
+        document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      } else {
+        document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+      
+      // Load market summary content
+      var contentDiv = document.getElementById('marketContent');
+      
+      if (briefingData.marketSummary) {
+        var formatted = formatTextToHTML(briefingData.marketSummary);
+        contentDiv.innerHTML = formatted;
+      } else {
+        contentDiv.innerHTML = '<p>No market summary available. Please update from the admin page.</p>';
+      }
+    })
+    .catch(function(err) {
+      console.error('Failed to load briefing:', err);
+      document.getElementById('marketContent').innerHTML = '<p>Unable to load market summary. Please try again later.</p>';
     });
-  } else {
-    document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  }
-  
-  // Load market summary content
-  const contentDiv = document.getElementById('marketContent');
-  
-  if (briefingData.marketSummary) {
-    // Convert plain text to HTML with paragraphs
-    const formatted = formatTextToHTML(briefingData.marketSummary);
-    contentDiv.innerHTML = formatted;
-  } else {
-    contentDiv.innerHTML = '<p>No market summary available. Please update from the admin page.</p>';
-  }
 });
 
 // Helper function to format text into HTML
 function formatTextToHTML(text) {
-  // Split by double line breaks for paragraphs
-  let sections = text.split(/\n\n+/);
-  let html = '';
+  var sections = text.split(/\n\n+/);
+  var html = '';
   
-  sections.forEach(section => {
+  sections.forEach(function(section) {
     section = section.trim();
     if (!section) return;
     
-    // Check if it's a heading (all caps or starts with capital words followed by colon)
     if (section.match(/^[A-Z\s&–—]+$/) || section.match(/^[A-Z][a-zA-Z\s&]+:/)) {
-      html += `<h2>${section.replace(/:$/, '')}</h2>`;
+      html += '<h2>' + section.replace(/:$/, '') + '</h2>';
     } else {
-      // Regular paragraph
-      html += `<p>${section.replace(/\n/g, '<br>')}</p>`;
+      html += '<p>' + section.replace(/\n/g, '<br>') + '</p>';
     }
   });
   
