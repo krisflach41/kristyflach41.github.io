@@ -1035,6 +1035,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .cal-event.warning { background:rgba(245,158,11,0.2); color:#f59e0b; border-left:2px solid #f59e0b; }
 .cal-event.info { background:rgba(59,130,246,0.2); color:#3b82f6; border-left:2px solid #3b82f6; }
 .cal-event.neutral { background:rgba(110,127,119,0.15); color:#6e7f77; border-left:2px solid #6e7f77; }
+.cal-day.refi-cutoff { background:rgba(168,85,247,0.06); }
+.cal-day.refi-cutoff::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#a855f7,rgba(168,85,247,0.2)); }
+.cal-refi-tag { font-size:9px; font-weight:700; letter-spacing:0.5px; padding:2px 5px; border-radius:3px; background:rgba(168,85,247,0.2); color:#a855f7; border-left:2px solid #a855f7; margin-bottom:2px; }
 .cal-upcoming-row { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--border); }
 .cal-upcoming-row:last-child { border-bottom:none; }
 .cal-upcoming-dot { width:8px; height:8px; border-radius:3px; flex-shrink:0; }
@@ -1307,6 +1310,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Closing / Final CD</div>
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> CTC / Conditional</div>
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span> EMD / Appraisal / Inspection</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#a855f7;display:inline-block;"></span> Last Refi Signing (Rescission Cutoff)</div>
     </div>
 
     <!-- Calendar grid -->
@@ -5606,6 +5610,33 @@ var CAL_DATE_CONFIG = {
   date_inspection:   { label: 'Inspection', cls: 'info', priority: 7 }
 };
 
+// Rescission calculation: 3 business days after signing (exclude Sundays & federal holidays)
+function calcRescissionEnd(signDateStr) {
+  var d = new Date(signDateStr + 'T00:00:00');
+  var bizDays = 0;
+  while (bizDays < 3) {
+    d.setDate(d.getDate() + 1);
+    if (isTRIDBusinessDay(d)) bizDays++;
+  }
+  return d;
+}
+
+function getRefiCutoffDate(year, month) {
+  // Find the last day you can sign a refi and have rescission clear within the same month
+  var lastDay = new Date(year, month + 1, 0); // last day of month
+  var lastDayNum = lastDay.getDate();
+  // Work backwards from last day of month
+  for (var day = lastDayNum; day >= 1; day--) {
+    var signDate = year + '-' + String(month + 1).padStart(2,'0') + '-' + String(day).padStart(2,'0');
+    var rescEnd = calcRescissionEnd(signDate);
+    // Does rescission end within this same month?
+    if (rescEnd.getFullYear() === year && rescEnd.getMonth() === month) {
+      return signDate;
+    }
+  }
+  return null;
+}
+
 function calPrevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
 function calNextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); }
 function calToday() { var n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); renderCalendar(); }
@@ -5665,6 +5696,22 @@ function renderCalendar() {
   var today = new Date(); today.setHours(0,0,0,0);
   var todayStr = today.toISOString().slice(0,10);
 
+  // Calculate refi cutoff for visible months
+  var refiCutoffs = {};
+  // Current month
+  var cutoff = getRefiCutoffDate(calYear, calMonth);
+  if (cutoff) refiCutoffs[cutoff] = true;
+  // Prev month (may show in grid)
+  var pm = calMonth === 0 ? 11 : calMonth - 1;
+  var py = calMonth === 0 ? calYear - 1 : calYear;
+  var cutoffPrev = getRefiCutoffDate(py, pm);
+  if (cutoffPrev) refiCutoffs[cutoffPrev] = true;
+  // Next month (may show in grid)
+  var nm = calMonth === 11 ? 0 : calMonth + 1;
+  var ny = calMonth === 11 ? calYear + 1 : calYear;
+  var cutoffNext = getRefiCutoffDate(ny, nm);
+  if (cutoffNext) refiCutoffs[cutoffNext] = true;
+
   // Build calendar grid
   var firstDay = new Date(calYear, calMonth, 1);
   var startDow = firstDay.getDay(); // 0=Sun
@@ -5704,10 +5751,16 @@ function renderCalendar() {
     }
 
     var isToday = dateStr === todayStr;
-    var cls = 'cal-day' + (isOutside ? ' outside' : '') + (isToday ? ' today' : '');
+    var isRefiCutoff = refiCutoffs[dateStr] || false;
+    var cls = 'cal-day' + (isOutside ? ' outside' : '') + (isToday ? ' today' : '') + (isRefiCutoff ? ' refi-cutoff' : '');
 
     html += '<div class="' + cls + '">';
     html += '<div class="cal-day-num">' + displayNum + '</div>';
+
+    // Refi cutoff tag
+    if (isRefiCutoff && !isOutside) {
+      html += '<div class="cal-refi-tag">REFI CUTOFF</div>';
+    }
 
     // Render events for this date
     var dayEvents = events[dateStr] || [];
