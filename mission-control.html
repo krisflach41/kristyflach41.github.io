@@ -2204,7 +2204,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
         <div class="fc-field"><div class="fc-lbl">Role</div>
-          <select id="tm_role"><option value="processor">Processor</option><option value="underwriter">Underwriter</option><option value="closer">Closer</option><option value="title">Title Company</option><option value="insurance">Insurance Agent</option><option value="appraiser">Appraiser</option><option value="assistant">Loan Assistant</option><option value="other">Other</option></select>
+          <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
         </div>
         <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
         <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
@@ -5177,8 +5177,12 @@ function saveFaceCard() {
 // ===== TEAM ROSTER (SUPABASE) =====
 var editingTeamIdx = -1;
 
+function getLoggedInUserId() {
+  return localStorage.getItem('agent_edge_user') || 'default';
+}
+
 function loadTeamRoster() {
-  fetch(API_BASE + '/api/ae-loans-api?action=get_team&user_id=' + currentUserId)
+  fetch(API_BASE + '/api/ae-loans-api?action=get_team&user_id=' + getLoggedInUserId())
     .then(function(r) { return r.json(); })
     .then(function(data) {
       loTeamMembers = data.team || [];
@@ -5199,7 +5203,7 @@ function renderTeamRoster() {
   }
   var h = '';
   loTeamMembers.forEach(function(tm, i) {
-    var roleLabels = { processor:'Processor', underwriter:'Underwriter', closer:'Closer', title:'Title Company', insurance:'Insurance Agent', appraiser:'Appraiser', assistant:'Loan Assistant', other:'Other' };
+    var roleLabels = { lo:'Loan Officer', loa:'LOA', processor:'Processor' };
     h += '<div class="team-card">';
     h += '<div style="width:36px;height:36px;border-radius:8px;background:rgba(168,85,247,0.12);display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="color:#a855f7;font-size:14px;"></i></div>';
     h += '<div class="team-card-info">';
@@ -5219,7 +5223,7 @@ function openTeamMemberForm() {
   editingTeamIdx = -1;
   document.getElementById('teamFormTitle').textContent = 'Add Team Member';
   document.getElementById('tm_name').value = '';
-  document.getElementById('tm_role').value = 'processor';
+  document.getElementById('tm_role').value = 'loa';
   document.getElementById('tm_email').value = '';
   document.getElementById('tm_phone').value = '';
   document.getElementById('teamMemberForm').style.display = 'block';
@@ -5232,7 +5236,7 @@ function editTeamMember(idx) {
   editingTeamIdx = idx;
   document.getElementById('teamFormTitle').textContent = 'Edit Team Member';
   document.getElementById('tm_name').value = tm.name || '';
-  document.getElementById('tm_role').value = tm.role || 'other';
+  document.getElementById('tm_role').value = tm.role || 'loa';
   document.getElementById('tm_email').value = tm.email || '';
   document.getElementById('tm_phone').value = tm.phone || '';
   document.getElementById('teamMemberForm').style.display = 'block';
@@ -5260,7 +5264,7 @@ function saveTeamMember() {
   fetch(API_BASE + '/api/ae-loans-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save_team_member', user_id: currentUserId, member: tm })
+    body: JSON.stringify({ action: 'save_team_member', user_id: getLoggedInUserId(), member: tm })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
@@ -5269,7 +5273,7 @@ function saveTeamMember() {
       loadTeamRoster();
       showToast(editingTeamIdx >= 0 ? 'Team member updated' : 'Team member added', 'success');
     } else {
-      showToast('Save failed: ' + (data.error || 'Unknown'), 'error');
+      showToast('Save failed: ' + (data.error || data.message || 'Unknown'), 'error');
     }
   })
   .catch(function(err) {
@@ -6044,7 +6048,7 @@ function saveAlertSettings() {
   fetch(API_BASE + '/api/profile', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: currentUserId, ...settings })
+    body: JSON.stringify({ user_id: getLoggedInUserId(), ...settings })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
