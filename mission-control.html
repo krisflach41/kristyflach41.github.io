@@ -1020,16 +1020,16 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 /* Calendar */
 .cal-grid { width:100%; }
 .cal-header-row { display:grid; grid-template-columns:repeat(7,1fr); }
-.cal-header-cell { padding:10px 0; text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; color:var(--text-muted); background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border); }
+.cal-header-cell { padding:10px 0; text-align:center; font-family:'Orbitron',sans-serif; font-size:11px; letter-spacing:2px; color:var(--text-muted); background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border); }
 .cal-week { display:grid; grid-template-columns:repeat(7,1fr); }
-.cal-day { min-height:100px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); padding:6px; position:relative; transition:background 0.15s; }
+.cal-day { min-height:110px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); padding:6px; position:relative; transition:background 0.15s; }
 .cal-day:nth-child(7n) { border-right:none; }
 .cal-day:hover { background:rgba(255,255,255,0.02); }
 .cal-day.outside { opacity:0.25; }
 .cal-day.today { background:rgba(59,130,246,0.06); }
-.cal-day-num { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text-secondary); margin-bottom:4px; }
+.cal-day-num { font-family:'Share Tech Mono',monospace; font-size:14px; color:var(--text-secondary); margin-bottom:4px; }
 .cal-day.today .cal-day-num { color:#3b82f6; font-weight:700; }
-.cal-event { font-size:10px; padding:2px 5px; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; transition:opacity 0.15s; line-height:1.4; }
+.cal-event { font-size:12px; padding:3px 6px; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; transition:opacity 0.15s; line-height:1.4; }
 .cal-event:hover { opacity:0.8; }
 .cal-event.critical { background:rgba(239,68,68,0.2); color:#ef4444; border-left:2px solid #ef4444; }
 .cal-event.warning { background:rgba(245,158,11,0.2); color:#f59e0b; border-left:2px solid #f59e0b; }
@@ -1037,14 +1037,39 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .cal-event.neutral { background:rgba(110,127,119,0.15); color:#6e7f77; border-left:2px solid #6e7f77; }
 .cal-day.refi-cutoff { background:rgba(168,85,247,0.06); }
 .cal-day.refi-cutoff::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#a855f7,rgba(168,85,247,0.2)); }
-.cal-refi-tag { font-size:9px; font-weight:700; letter-spacing:0.5px; padding:2px 5px; border-radius:3px; background:rgba(168,85,247,0.2); color:#a855f7; border-left:2px solid #a855f7; margin-bottom:2px; }
+.cal-refi-tag { font-size:10px; font-weight:700; letter-spacing:0.5px; padding:3px 6px; border-radius:3px; background:rgba(168,85,247,0.2); color:#a855f7; border-left:2px solid #a855f7; margin-bottom:2px; }
 .cal-upcoming-row { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--border); }
 .cal-upcoming-row:last-child { border-bottom:none; }
 .cal-upcoming-dot { width:8px; height:8px; border-radius:3px; flex-shrink:0; }
-.cal-upcoming-date { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text-muted); width:90px; flex-shrink:0; }
-.cal-upcoming-label { font-size:13px; color:var(--text-primary); flex:1; }
-.cal-upcoming-loan { font-size:11px; color:var(--text-muted); }
+.cal-upcoming-date { font-family:'Share Tech Mono',monospace; font-size:13px; color:var(--text-muted); width:100px; flex-shrink:0; }
+.cal-upcoming-label { font-size:14px; color:var(--text-primary); flex:1; }
+.cal-upcoming-loan { font-size:12px; color:var(--text-muted); }
 .cal-upcoming-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+
+/* Alert rows */
+.alert-row { display:flex; align-items:center; gap:12px; padding:12px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.15s; }
+.alert-row:hover { background:rgba(255,255,255,0.02); }
+.alert-row:last-child { border-bottom:none; }
+.alert-icon { font-size:18px; flex-shrink:0; }
+.alert-body { flex:1; }
+.alert-title { font-size:14px; color:var(--text-primary); }
+.alert-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.alert-badge { font-size:11px; font-weight:700; padding:3px 10px; border-radius:5px; white-space:nowrap; }
+.alert-badge.critical { background:rgba(239,68,68,0.15); color:#ef4444; }
+.alert-badge.high { background:rgba(245,158,11,0.15); color:#f59e0b; }
+.alert-badge.medium { background:rgba(59,130,246,0.15); color:#3b82f6; }
+.alert-badge.normal { background:rgba(255,255,255,0.05); color:var(--text-muted); }
+
+/* SMS toggle slider */
+.sms-slider::before { position:absolute; content:''; height:20px; width:20px; left:3px; bottom:3px; background:rgba(255,255,255,0.6); border-radius:50%; transition:0.3s; }
+input:checked + .sms-slider { background:rgba(34,197,94,0.5); }
+input:checked + .sms-slider::before { transform:translateX(22px); background:#22c55e; }
+
+/* SMS date toggle row */
+.sms-date-toggle { display:flex; align-items:center; gap:12px; padding:8px 0; }
+.sms-date-toggle input { width:16px; height:16px; cursor:pointer; }
+.sms-date-toggle label { font-size:14px; color:var(--text-primary); cursor:pointer; flex:1; }
+.sms-date-toggle .sms-default { font-size:11px; color:rgba(34,197,94,0.7); font-weight:600; }
 
 /* Team roster */
 .team-card {
@@ -1211,6 +1236,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
           <div style="font-size:11px; color:rgba(255,255,255,0.4); font-family:'Share Tech Mono',monospace;" id="scenarioAlertTime"></div>
           <div style="padding:6px 14px; border-radius:6px; background:rgba(239,68,68,0.2); color:#ef4444; font-size:11px; font-weight:700; letter-spacing:1px;">REVIEW NOW →</div>
         </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE ALERTS -->
+    <div id="dashAlertPanel" style="display:none; margin-bottom:16px;">
+      <div class="mc-panel" style="border-color:rgba(239,68,68,0.3);">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
+          <div class="mc-panel-title">PIPELINE ALERTS</div>
+          <div class="mc-status" id="dashAlertCount">0 ALERTS</div>
+        </div>
+        <div id="dashAlertList" style="max-height:280px;overflow-y:auto;"></div>
       </div>
     </div>
 
@@ -2215,13 +2252,83 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">Settings</div><div class="topbar-subtitle">Configuration and preferences</div></div>
     </div>
-  </div>
-  <div class="content-area">
-    <div class="placeholder-center">
-      <div class="placeholder-icon"><i class="fas fa-cog"></i></div>
-      <div class="placeholder-text">System settings and configuration</div>
-      <div class="placeholder-sub">API keys, email settings, branding, integrations</div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" onclick="saveAlertSettings()"><i class="fas fa-save"></i> Save Settings</button>
     </div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- SMS ALERTS -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">SMS Alerts</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:20px;line-height:1.5;">Get text message alerts for upcoming pipeline deadlines. Critical dates like Final CD and Clear to Close are monitored by default.</div>
+
+      <!-- Enable SMS -->
+      <div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;">
+        <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
+          <input type="checkbox" id="settingSmsEnabled" style="opacity:0;width:0;height:0;" onchange="toggleSmsSection()">
+          <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.1);border-radius:26px;transition:0.3s;" class="sms-slider"></span>
+        </label>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-primary);">Enable SMS Alerts</div>
+          <div style="font-size:12px;color:var(--text-muted);">Receive text messages for critical pipeline dates</div>
+        </div>
+      </div>
+
+      <!-- SMS Details (shown when enabled) -->
+      <div id="smsSettingsDetail" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Mobile Number</label>
+            <input type="tel" id="settingAlertPhone" placeholder="(555) 123-4567" style="width:100%;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:#f0f4f8;font-size:15px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Test SMS</label>
+            <button class="topbar-btn" onclick="sendTestSms()" style="margin-top:2px;height:44px;font-size:14px;"><i class="fas fa-paper-plane"></i> Send Test Message</button>
+            <div id="testSmsResult" style="font-size:12px;margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <!-- Alert Schedule -->
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Alert Schedule</div>
+        <div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <input type="checkbox" id="settingMorningAlert" checked style="width:16px;height:16px;cursor:pointer;">
+            <div>
+              <div style="font-size:14px;color:var(--text-primary);">Morning Briefing</div>
+              <div style="font-size:12px;color:var(--text-muted);">Daily summary of all upcoming dates — sent at 7:00 AM</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="checkbox" id="settingNoonEscalation" checked style="width:16px;height:16px;cursor:pointer;">
+            <div>
+              <div style="font-size:14px;color:var(--text-primary);">Noon Escalation</div>
+              <div style="font-size:12px;color:var(--text-muted);">If a same-day critical date hasn't been confirmed by noon — escalation text sent</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Which dates trigger SMS -->
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">SMS Alert Triggers</div>
+        <div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Choose which dates send SMS alerts. Dashboard alerts always show for all dates.</div>
+          <div id="smsDateToggles"></div>
+        </div>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+
+    <!-- FUTURE: API keys, email settings, branding -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">Integrations</div>
+      <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:20px;line-height:1.5;">API keys, email settings, branding, and other integrations.</div>
+      <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;border:1px dashed var(--border);border-radius:10px;">
+        <i class="fas fa-plug" style="font-size:24px;margin-bottom:8px;display:block;opacity:0.3;"></i>
+        Coming soon — Resend email, Google Calendar sync, Zapier webhooks
+      </div>
+    </div>
+
   </div>
 </div><!-- /view-settings -->
 
@@ -2633,6 +2740,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'portal') loadPartnerPortal();
   if (viewId === 'scenarios') loadScenarios();
   if (viewId === 'calendar') renderCalendar();
+  if (viewId === 'settings') initSettingsView();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -3898,6 +4006,7 @@ function loadPipeline() {
       pipelineLoaded = true;
       renderPipeline();
       updateDashboard();
+      loadDashAlerts();
     })
     .catch(function(err) {
       console.error('Pipeline load error:', err);
@@ -5594,6 +5703,222 @@ async function markScenario(id, status) {
   } catch (err) {
     showToast('Failed to update');
   }
+}
+
+// ===== PIPELINE ALERTS =====
+var currentAlerts = [];
+
+function loadDashAlerts() {
+  if (!pipelineLoaded) {
+    setTimeout(loadDashAlerts, 500);
+    return;
+  }
+  // Client-side alert check (same logic as backend, but for immediate display)
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var todayStr = today.toISOString().slice(0, 10);
+  var alerts = [];
+
+  var ALERT_CFG = {
+    date_closing:     { label: 'Closing', warnings: [7, 3, 1, 0] },
+    date_final_cd:    { label: 'Final CD', warnings: [5, 2, 1, 0], escalate: true },
+    date_ctc:         { label: 'Clear to Close', warnings: [5, 2, 1, 0], escalate: true },
+    date_conditional: { label: 'Conditional Approval', warnings: [5, 2, 1, 0] },
+    date_emd:         { label: 'EMD Due', warnings: [3, 1, 0] },
+    date_appraisal:   { label: 'Appraisal', warnings: [5, 2, 0] },
+    date_inspection:  { label: 'Inspection', warnings: [5, 2, 0] }
+  };
+
+  pipelineLoans.forEach(function(loan) {
+    if (loan.pipeline_stage === 'closed' || loan.pipeline_stage === 'archived' || loan.pipeline_stage === 'funded') return;
+    var loanName = getLoanDisplayName(loan);
+
+    Object.keys(ALERT_CFG).forEach(function(col) {
+      var val = loan[col];
+      if (!val) return;
+      var cfg = ALERT_CFG[col];
+      var dateObj = new Date(val + 'T00:00:00');
+      var daysOut = Math.round((dateObj - today) / 86400000);
+      if (daysOut < 0 || daysOut > Math.max.apply(null, cfg.warnings)) return;
+
+      var confirmed = loan['confirmed_' + col.replace('date_', '')] || false;
+      if (confirmed && daysOut > 0) return;
+
+      if (cfg.warnings.indexOf(daysOut) === -1) return;
+
+      var priority = 'normal';
+      if (daysOut === 0) priority = 'critical';
+      else if (daysOut <= 2) priority = 'high';
+      else if (daysOut <= 5) priority = 'medium';
+
+      var icon = '📋';
+      if (daysOut === 0) icon = '⚠️';
+      if (daysOut === 0 && !confirmed && cfg.escalate) icon = '🚨';
+
+      var msg = '';
+      if (daysOut === 0) msg = cfg.label + ' is due TODAY';
+      else if (daysOut === 1) msg = cfg.label + ' is due TOMORROW';
+      else msg = cfg.label + ' in ' + daysOut + ' days';
+
+      alerts.push({
+        icon: icon,
+        loanName: loanName,
+        message: msg,
+        daysOut: daysOut,
+        priority: priority,
+        aeId: loan.ae_id,
+        dateLabel: cfg.label,
+        dateValue: val,
+        confirmed: confirmed
+      });
+    });
+  });
+
+  alerts.sort(function(a, b) {
+    if (a.daysOut !== b.daysOut) return a.daysOut - b.daysOut;
+    var p = { critical: 0, high: 1, medium: 2, normal: 3 };
+    return (p[a.priority] || 3) - (p[b.priority] || 3);
+  });
+
+  currentAlerts = alerts;
+  renderDashAlerts();
+}
+
+function renderDashAlerts() {
+  var panel = document.getElementById('dashAlertPanel');
+  var list = document.getElementById('dashAlertList');
+  var count = document.getElementById('dashAlertCount');
+  if (!panel || !list) return;
+
+  if (currentAlerts.length === 0) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+  count.textContent = currentAlerts.length + ' ALERT' + (currentAlerts.length > 1 ? 'S' : '');
+
+  var html = '';
+  currentAlerts.forEach(function(a) {
+    var badgeLabel = a.daysOut === 0 ? 'TODAY' : a.daysOut === 1 ? 'TOMORROW' : a.daysOut + ' DAYS';
+    html += '<div class="alert-row" onclick="calEventClick(\'' + a.aeId + '\')">';
+    html += '<div class="alert-icon">' + a.icon + '</div>';
+    html += '<div class="alert-body">';
+    html += '<div class="alert-title">' + a.loanName + '</div>';
+    html += '<div class="alert-sub">' + a.message + '</div>';
+    html += '</div>';
+    html += '<span class="alert-badge ' + a.priority + '">' + badgeLabel + '</span>';
+    html += '</div>';
+  });
+
+  list.innerHTML = html;
+}
+
+// ===== SETTINGS — SMS ALERTS =====
+function toggleSmsSection() {
+  var cb = document.getElementById('settingSmsEnabled');
+  var detail = document.getElementById('smsSettingsDetail');
+  if (detail) detail.style.display = cb && cb.checked ? 'block' : 'none';
+}
+
+function renderSmsDateToggles() {
+  var container = document.getElementById('smsDateToggles');
+  if (!container) return;
+  var dates = [
+    { key: 'closing', label: 'Closing', def: false },
+    { key: 'final_cd', label: 'Final CD', def: true },
+    { key: 'ctc', label: 'Clear to Close', def: true },
+    { key: 'conditional', label: 'Conditional Approval', def: false },
+    { key: 'emd', label: 'EMD Due', def: false },
+    { key: 'appraisal', label: 'Appraisal', def: false },
+    { key: 'inspection', label: 'Inspection', def: false }
+  ];
+  var html = '';
+  dates.forEach(function(d) {
+    html += '<div class="sms-date-toggle">';
+    html += '<input type="checkbox" id="smsToggle_' + d.key + '"' + (d.def ? ' checked' : '') + '>';
+    html += '<label for="smsToggle_' + d.key + '">' + d.label + '</label>';
+    if (d.def) html += '<span class="sms-default">ON by default</span>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+function sendTestSms() {
+  var phone = document.getElementById('settingAlertPhone');
+  var result = document.getElementById('testSmsResult');
+  if (!phone || !phone.value) {
+    if (result) { result.style.color = '#ef4444'; result.textContent = 'Enter your phone number first'; }
+    return;
+  }
+  if (result) { result.style.color = 'var(--text-muted)'; result.textContent = 'Sending...'; }
+
+  fetch(API_BASE + '/api/send-sms', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      to: phone.value,
+      message: '✅ Agent Edge SMS Test — Your alerts are working! Pipeline dates will be monitored and you\'ll receive texts for critical deadlines.'
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      result.style.color = '#22c55e';
+      result.textContent = '✓ Test message sent!';
+    } else {
+      result.style.color = '#ef4444';
+      result.textContent = 'Failed: ' + (data.error || 'Unknown error');
+    }
+  })
+  .catch(function(err) {
+    result.style.color = '#ef4444';
+    result.textContent = 'Error: ' + err.message;
+  });
+}
+
+function saveAlertSettings() {
+  // Save to Supabase user profile
+  var smsEnabled = document.getElementById('settingSmsEnabled')?.checked || false;
+  var phone = document.getElementById('settingAlertPhone')?.value || '';
+  var morningAlert = document.getElementById('settingMorningAlert')?.checked || false;
+  var noonEscalation = document.getElementById('settingNoonEscalation')?.checked || false;
+
+  var datePrefs = {};
+  ['closing','final_cd','ctc','conditional','emd','appraisal','inspection'].forEach(function(k) {
+    var cb = document.getElementById('smsToggle_' + k);
+    datePrefs[k] = cb ? cb.checked : false;
+  });
+
+  var settings = {
+    alert_sms_enabled: smsEnabled,
+    alert_phone: phone,
+    alert_morning: morningAlert,
+    alert_noon_escalation: noonEscalation,
+    alert_date_prefs: JSON.stringify(datePrefs)
+  };
+
+  fetch(API_BASE + '/api/profile', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUserId, ...settings })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success || data.user) {
+      showToast('Settings saved!', 'success');
+    } else {
+      showToast('Save failed', 'error');
+    }
+  })
+  .catch(function(err) {
+    showToast('Error saving: ' + err.message, 'error');
+  });
+}
+
+function initSettingsView() {
+  renderSmsDateToggles();
+  toggleSmsSection();
 }
 
 // ===== CALENDAR =====
