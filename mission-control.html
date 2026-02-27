@@ -5182,7 +5182,7 @@ function getLoggedInUserId() {
 }
 
 function loadTeamRoster() {
-  fetch(API_BASE + '/api/ae-loans-api?action=get_team&user_id=' + getLoggedInUserId())
+  fetch(API_BASE + '/ae-loans-api?action=get_team&user_id=' + getLoggedInUserId())
     .then(function(r) { return r.json(); })
     .then(function(data) {
       loTeamMembers = data.team || [];
@@ -5261,7 +5261,7 @@ function saveTeamMember() {
     tm.id = loTeamMembers[editingTeamIdx].id;
   }
 
-  fetch(API_BASE + '/api/ae-loans-api', {
+  fetch(API_BASE + '/ae-loans-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'save_team_member', user_id: getLoggedInUserId(), member: tm })
@@ -5285,7 +5285,7 @@ function deleteTeamMember(idx) {
   if (!confirm('Remove ' + loTeamMembers[idx].name + ' from your team?')) return;
   var memberId = loTeamMembers[idx].id;
 
-  fetch(API_BASE + '/api/ae-loans-api', {
+  fetch(API_BASE + '/ae-loans-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'delete_team_member', member_id: memberId })
@@ -6000,7 +6000,7 @@ function sendTestSms() {
   }
   if (result) { result.style.color = 'var(--text-muted)'; result.textContent = 'Sending...'; }
 
-  fetch(API_BASE + '/api/send-sms', {
+  fetch(API_BASE + '/send-sms', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -6045,7 +6045,7 @@ function saveAlertSettings() {
     alert_date_prefs: JSON.stringify(datePrefs)
   };
 
-  fetch(API_BASE + '/api/profile', {
+  fetch(API_BASE + '/profile', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ user_id: getLoggedInUserId(), ...settings })
