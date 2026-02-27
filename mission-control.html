@@ -964,6 +964,11 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .fc-date-overdue { background:rgba(239,68,68,0.15); color:#ef4444; }
 .fc-date-today { background:rgba(59,130,246,0.15); color:#3b82f6; }
 .fc-date-soon { background:rgba(34,197,94,0.15); color:#22c55e; }
+.fc-date-confirm { display:flex; align-items:center; cursor:pointer; margin-left:4px; }
+.fc-date-confirm input { display:none; }
+.fc-confirm-check { width:22px; height:22px; border-radius:5px; border:1px solid rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent; transition:all 0.2s; background:rgba(0,0,0,0.2); }
+.fc-date-confirm:hover .fc-confirm-check { border-color:rgba(34,197,94,0.5); color:rgba(34,197,94,0.3); }
+.fc-date-confirm.done .fc-confirm-check { background:rgba(34,197,94,0.2); border-color:#22c55e; color:#22c55e; }
 .fc-date-past { background:rgba(255,255,255,0.05); color:var(--text-muted); }
 
 .fc-task-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
@@ -4245,13 +4250,14 @@ var fcTasks = [];
 var loTeamMembers = []; // LO's team roster
 
 var FC_DATES = [
-  { key: 'mutual', label: 'Mutual Acceptance' },
-  { key: 'emd', label: 'EMD Due' },
-  { key: 'appraisal', label: 'Appraisal' },
-  { key: 'inspection', label: 'Inspection' },
-  { key: 'conditional', label: 'Conditional Approval' },
-  { key: 'finalApproval', label: 'Final Approval' },
-  { key: 'closing', label: 'Closing' }
+  { key: 'mutual', label: 'Mutual Acceptance', alertable: false },
+  { key: 'emd', label: 'EMD Due', alertable: true, alertDefault: false },
+  { key: 'appraisal', label: 'Appraisal', alertable: true, alertDefault: false },
+  { key: 'inspection', label: 'Inspection', alertable: true, alertDefault: false },
+  { key: 'conditional', label: 'Conditional Approval', alertable: true, alertDefault: false },
+  { key: 'ctc', label: 'Clear to Close', alertable: true, alertDefault: true },
+  { key: 'finalCD', label: 'Final CD', auto: true, alertable: true, alertDefault: true },
+  { key: 'closing', label: 'Closing', alertable: true, alertDefault: false }
 ];
 
 function openFaceCard(aeId) {
@@ -4328,13 +4334,25 @@ function openFaceCard(aeId) {
   FC_DATES.forEach(function(d) {
     var dateKey = 'date_' + d.key;
     // Map face card key names to ae_loans column names
-    if (d.key === 'finalApproval') dateKey = 'date_final_approval';
+    if (d.key === 'ctc') dateKey = 'date_ctc';
+    if (d.key === 'finalCD') dateKey = 'date_final_cd';
     var val = loan[dateKey] || '';
+    // Auto-calculate Final CD from closing date
+    if (d.key === 'finalCD' && !val && loan.date_closing) {
+      val = calcFinalCDDate(loan.date_closing, loan.transaction_type, loan.occupancy);
+      loan.date_final_cd = val;
+    }
     var badge = fcDateBadge(val);
+    var autoTag = (d.auto && val) ? '<span style="font-size:9px;color:#6e7f77;margin-left:6px;letter-spacing:1px;">AUTO</span>' : '';
     dh += '<div class="fc-date-row">';
-    dh += '<div class="fc-date-label">' + d.label + '</div>';
-    dh += '<div class="fc-date-input"><input type="date" id="fcd_' + d.key + '" value="' + val + '" onchange="fcRefreshDateBadge(\'' + d.key + '\')"></div>';
+    dh += '<div class="fc-date-label">' + d.label + autoTag + '</div>';
+    dh += '<div class="fc-date-input"><input type="date" id="fcd_' + d.key + '" value="' + val + '" onchange="' + (d.key === 'closing' ? 'fcOnClosingChange()' : 'fcRefreshDateBadge(\'' + d.key + '\')') + '"></div>';
     dh += '<span class="fc-date-badge ' + badge.cls + '" id="fcd_' + d.key + '_b">' + badge.txt + '</span>';
+    // Confirmed toggle for alertable dates
+    if (d.alertable && val) {
+      var confirmed = loan['confirmed_' + d.key] || false;
+      dh += '<label class="fc-date-confirm' + (confirmed ? ' done' : '') + '" title="Mark as confirmed"><input type="checkbox" id="fcc_' + d.key + '"' + (confirmed ? ' checked' : '') + ' onchange="fcToggleConfirm(\'' + d.key + '\')"><span class="fc-confirm-check">✓</span></label>';
+    }
     dh += '</div>';
   });
   document.getElementById('fcDatesContainer').innerHTML = dh;
@@ -4436,6 +4454,56 @@ function fcOpenZillow() {
   return false;
 }
 
+// ===== FINAL CD AUTO-CALCULATE =====
+// TRID Rule: CD must be received 3 business days before consummation
+// Business day = all calendar days except Sundays and federal holidays (Saturdays count)
+var FEDERAL_HOLIDAYS_2025_2027 = [
+  '2025-01-01','2025-01-20','2025-02-17','2025-05-26','2025-06-19','2025-07-04','2025-09-01','2025-10-13','2025-11-11','2025-11-27','2025-12-25',
+  '2026-01-01','2026-01-19','2026-02-16','2026-05-25','2026-06-19','2026-07-03','2026-07-04','2026-09-07','2026-10-12','2026-11-11','2026-11-26','2026-12-25',
+  '2027-01-01','2027-01-18','2027-02-15','2027-05-31','2027-06-18','2027-06-19','2027-07-05','2027-09-06','2027-10-11','2027-11-11','2027-11-25','2027-12-24','2027-12-25'
+];
+
+function isTRIDBusinessDay(date) {
+  var day = date.getDay(); // 0=Sun
+  if (day === 0) return false; // Sunday
+  var iso = date.toISOString().slice(0,10);
+  if (FEDERAL_HOLIDAYS_2025_2027.indexOf(iso) !== -1) return false;
+  return true;
+}
+
+function calcFinalCDDate(closingDateStr, transactionType, occupancy) {
+  if (!closingDateStr) return '';
+  var closing = new Date(closingDateStr + 'T00:00:00');
+  // Count back 3 TRID business days from closing
+  var bizDays = 0;
+  var d = new Date(closing);
+  while (bizDays < 3) {
+    d.setDate(d.getDate() - 1);
+    if (isTRIDBusinessDay(d)) bizDays++;
+  }
+  // d is now the latest date CD must be RECEIVED
+  var y = d.getFullYear();
+  var m = String(d.getMonth() + 1).padStart(2, '0');
+  var day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+// Auto-recalculate Final CD when closing date changes
+function fcOnClosingChange() {
+  var closingInput = document.getElementById('fcd_closing');
+  var cdInput = document.getElementById('fcd_finalCD');
+  if (!closingInput || !cdInput) return;
+  var closingVal = closingInput.value;
+  if (closingVal) {
+    var txType = document.getElementById('fc_transactionType') ? document.getElementById('fc_transactionType').value : '';
+    var occ = document.getElementById('fc_occupancy') ? document.getElementById('fc_occupancy').value : '';
+    var autoCD = calcFinalCDDate(closingVal, txType, occ);
+    cdInput.value = autoCD;
+    fcRefreshDateBadge('finalCD');
+  }
+  fcRefreshDateBadge('closing');
+}
+
 function fcDateBadge(val) {
   if (!val) return { cls: '', txt: '' };
   var today = new Date(); today.setHours(0,0,0,0);
@@ -4454,6 +4522,16 @@ function fcRefreshDateBadge(key) {
   var b = fcDateBadge(input.value);
   badge.className = 'fc-date-badge ' + b.cls;
   badge.textContent = b.txt;
+}
+
+function fcToggleConfirm(key) {
+  var cb = document.getElementById('fcc_' + key);
+  if (!cb) return;
+  var label = cb.closest('.fc-date-confirm');
+  if (label) label.classList.toggle('done', cb.checked);
+  // Store on loan object
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === fcContactId; });
+  if (loan) loan['confirmed_' + key] = cb.checked;
 }
 
 function fcOpenCrm() {
@@ -4728,7 +4806,7 @@ function saveFaceCard() {
   loan.loan_amount = String(fcParseMoney(document.getElementById('fc_loanAmount').value) || '');
 
   // Collect dates
-  var dateMap = { mutual: 'date_mutual', emd: 'date_emd', appraisal: 'date_appraisal', inspection: 'date_inspection', conditional: 'date_conditional', finalApproval: 'date_final_approval', closing: 'date_closing' };
+  var dateMap = { mutual: 'date_mutual', emd: 'date_emd', appraisal: 'date_appraisal', inspection: 'date_inspection', conditional: 'date_conditional', ctc: 'date_ctc', finalCD: 'date_final_cd', closing: 'date_closing' };
   FC_DATES.forEach(function(d) {
     var input = document.getElementById('fcd_' + d.key);
     var col = dateMap[d.key] || ('date_' + d.key);
@@ -4763,7 +4841,8 @@ function saveFaceCard() {
       date_appraisal: loan.date_appraisal,
       date_inspection: loan.date_inspection,
       date_conditional: loan.date_conditional,
-      date_final_approval: loan.date_final_approval,
+      date_ctc: loan.date_ctc,
+      date_final_cd: loan.date_final_cd,
       date_closing: loan.date_closing
     })
   }).then(function() {
