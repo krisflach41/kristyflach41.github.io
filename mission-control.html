@@ -985,8 +985,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .fc-task-due { font-size:12px; color:var(--text-muted); white-space:nowrap; }
 .fc-task-del { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px; padding:4px 6px; }
 .fc-task-del:hover { color:var(--accent-red); }
-.fc-create-task-btn { background:none; border:none; color:rgba(59,130,246,0.6); cursor:pointer; font-size:14px; padding:2px 6px; transition:color 0.15s; }
-.fc-create-task-btn:hover { color:#3b82f6; }
+.fc-create-task-btn { background:rgba(59,130,246,0.12); border:1px solid rgba(59,130,246,0.3); color:#3b82f6; cursor:pointer; font-size:11px; font-weight:600; padding:3px 8px; border-radius:5px; transition:all 0.15s; font-family:inherit; white-space:nowrap; }
+.fc-create-task-btn:hover { background:rgba(59,130,246,0.25); border-color:#3b82f6; }
+.fc-create-task-btn i { margin-right:3px; }
 .fc-task-linked { color:rgba(34,197,94,0.5); font-size:14px; padding:2px 6px; }
 .fc-task-linked-tag { font-size:9px; color:rgba(59,130,246,0.4); margin-left:6px; }
 .fc-task-bell { background:none; border:none; cursor:pointer; font-size:13px; padding:4px 6px; transition:color 0.15s; }
@@ -4462,8 +4463,8 @@ var FC_DATES = [
   { key: 'conditional', label: 'Conditional Approval', alertable: true, alertDefault: false, taskName: 'Initial Approval Deadline' },
   { key: 'ctc', label: 'Clear to Close', alertable: true, alertDefault: true, taskName: 'Clear to Close Received' },
   { key: 'finalCD', label: 'Final CD', auto: true, alertable: true, alertDefault: true, taskName: 'Final CD Shipped' },
-  { key: 'contractExp', label: 'Contract Expiration', alertable: true, alertDefault: true, taskName: 'Contract Expiration' },
-  { key: 'closing', label: 'Closing', alertable: true, alertDefault: false, taskName: 'Closing Scheduled' }
+  { key: 'closing', label: 'Closing', alertable: true, alertDefault: false, taskName: 'Closing Scheduled' },
+  { key: 'contractExp', label: 'Contract Expiration', alertable: true, alertDefault: true, taskName: 'Contract Expiration' }
 ];
 
 function openFaceCard(aeId) {
@@ -4559,13 +4560,15 @@ function openFaceCard(aeId) {
     dh += '<div class="fc-date-input"><input type="date" id="fcd_' + d.key + '" value="' + val + '" onchange="' + (d.key === 'closing' ? 'fcOnClosingChange()' : 'fcRefreshDateBadge(\'' + d.key + '\')') + '"></div>';
     dh += '<span class="fc-date-badge ' + badge.cls + '" id="fcd_' + d.key + '_b">' + badge.txt + '</span>';
     // Create Task button for alertable dates with a value
-    if (d.alertable && d.taskName && val) {
+    if (d.alertable && d.taskName) {
       var hasTask = fcTasks.some(function(t) { return t.fromDate === d.key; });
-      if (!hasTask) {
-        dh += '<button class="fc-create-task-btn" onclick="fcCreateTaskFromDate(\'' + d.key + '\')" title="Create task: ' + d.taskName + '"><i class="fas fa-plus-circle"></i></button>';
-      } else {
+      dh += '<span id="fcd_' + d.key + '_task">';
+      if (val && !hasTask) {
+        dh += '<button class="fc-create-task-btn" onclick="fcCreateTaskFromDate(\'' + d.key + '\')" title="Create task: ' + d.taskName + '"><i class="fas fa-plus-circle"></i> Task</button>';
+      } else if (val && hasTask) {
         dh += '<span class="fc-task-linked" title="Task created"><i class="fas fa-check-circle"></i></span>';
       }
+      dh += '</span>';
     }
     dh += '</div>';
   });
@@ -4735,6 +4738,7 @@ function fcRefreshDateBadge(key) {
   var b = fcDateBadge(input.value);
   badge.className = 'fc-date-badge ' + b.cls;
   badge.textContent = b.txt;
+  refreshDateCreateButtons();
 }
 
 function fcToggleConfirm(key) {
@@ -4982,30 +4986,19 @@ function fcCreateTaskFromDate(dateKey) {
 }
 
 function refreshDateCreateButtons() {
-  // Update the create-task / linked indicators on key date rows
   FC_DATES.forEach(function(d) {
     if (!d.alertable || !d.taskName) return;
+    var container = document.getElementById('fcd_' + d.key + '_task');
+    if (!container) return;
     var dateInput = document.getElementById('fcd_' + d.key);
-    if (!dateInput || !dateInput.value) return;
-    var row = dateInput.closest('.fc-date-row');
-    if (!row) return;
-    // Remove existing button/indicator
-    var existing = row.querySelector('.fc-create-task-btn, .fc-task-linked');
-    if (existing) existing.remove();
+    var val = dateInput ? dateInput.value : '';
     var hasTask = fcTasks.some(function(t) { return t.fromDate === d.key; });
-    if (!hasTask) {
-      var btn = document.createElement('button');
-      btn.className = 'fc-create-task-btn';
-      btn.title = 'Create task: ' + d.taskName;
-      btn.innerHTML = '<i class="fas fa-plus-circle"></i>';
-      btn.onclick = function() { fcCreateTaskFromDate(d.key); };
-      row.appendChild(btn);
+    if (val && !hasTask) {
+      container.innerHTML = '<button class="fc-create-task-btn" onclick="fcCreateTaskFromDate(\'' + d.key + '\')" title="Create task: ' + d.taskName + '"><i class="fas fa-plus-circle"></i> Task</button>';
+    } else if (val && hasTask) {
+      container.innerHTML = '<span class="fc-task-linked" title="Task created"><i class="fas fa-check-circle"></i></span>';
     } else {
-      var indicator = document.createElement('span');
-      indicator.className = 'fc-task-linked';
-      indicator.title = 'Task created';
-      indicator.innerHTML = '<i class="fas fa-check-circle"></i>';
-      row.appendChild(indicator);
+      container.innerHTML = '';
     }
   });
 }
