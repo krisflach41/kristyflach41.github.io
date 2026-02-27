@@ -985,6 +985,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .fc-task-due { font-size:12px; color:var(--text-muted); white-space:nowrap; }
 .fc-task-del { background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:12px; padding:4px 6px; }
 .fc-task-del:hover { color:var(--accent-red); }
+.fc-create-task-btn { background:none; border:none; color:rgba(59,130,246,0.6); cursor:pointer; font-size:14px; padding:2px 6px; transition:color 0.15s; }
+.fc-create-task-btn:hover { color:#3b82f6; }
+.fc-task-linked { color:rgba(34,197,94,0.5); font-size:14px; padding:2px 6px; }
+.fc-task-linked-tag { font-size:9px; color:rgba(59,130,246,0.4); margin-left:6px; }
+.fc-task-bell { background:none; border:none; cursor:pointer; font-size:13px; padding:4px 6px; transition:color 0.15s; }
+.fc-task-bell.on { color:#f59e0b; }
+.fc-task-bell.off { color:rgba(255,255,255,0.15); }
+.fc-task-bell:hover { color:#f59e0b; }
 .fc-add-task-btn {
   background:none; border:1px dashed var(--border-light); border-radius:6px;
   color:var(--text-muted); padding:10px; font-size:13px; cursor:pointer;
@@ -4448,13 +4456,14 @@ var loTeamMembers = []; // LO's team roster
 
 var FC_DATES = [
   { key: 'mutual', label: 'Mutual Acceptance', alertable: false },
-  { key: 'emd', label: 'EMD Due', alertable: true, alertDefault: false },
-  { key: 'appraisal', label: 'Appraisal', alertable: true, alertDefault: false },
-  { key: 'inspection', label: 'Inspection', alertable: true, alertDefault: false },
-  { key: 'conditional', label: 'Conditional Approval', alertable: true, alertDefault: false },
-  { key: 'ctc', label: 'Clear to Close', alertable: true, alertDefault: true },
-  { key: 'finalCD', label: 'Final CD', auto: true, alertable: true, alertDefault: true },
-  { key: 'closing', label: 'Closing', alertable: true, alertDefault: false }
+  { key: 'emd', label: 'EMD Due', alertable: true, alertDefault: false, taskName: 'Earnest Money Deposited' },
+  { key: 'appraisal', label: 'Appraisal', alertable: true, alertDefault: false, taskName: 'Appraisal Completed' },
+  { key: 'inspection', label: 'Inspection', alertable: true, alertDefault: false, taskName: 'Inspection Waiver Deadline' },
+  { key: 'conditional', label: 'Conditional Approval', alertable: true, alertDefault: false, taskName: 'Initial Approval Deadline' },
+  { key: 'ctc', label: 'Clear to Close', alertable: true, alertDefault: true, taskName: 'Clear to Close Received' },
+  { key: 'finalCD', label: 'Final CD', auto: true, alertable: true, alertDefault: true, taskName: 'Final CD Shipped' },
+  { key: 'contractExp', label: 'Contract Expiration', alertable: true, alertDefault: true, taskName: 'Contract Expiration' },
+  { key: 'closing', label: 'Closing', alertable: true, alertDefault: false, taskName: 'Closing Scheduled' }
 ];
 
 function openFaceCard(aeId) {
@@ -4526,6 +4535,9 @@ function openFaceCard(aeId) {
   document.getElementById('fcCrmBtn').style.display = crmId ? '' : 'none';
   document.getElementById('fcCrmBtn').dataset.crmId = crmId || '';
 
+  // Tasks — load before dates so create-task buttons know what's linked
+  fcTasks = loan._tasks ? JSON.parse(JSON.stringify(loan._tasks)) : [];
+
   // Key dates
   var dh = '';
   FC_DATES.forEach(function(d) {
@@ -4533,6 +4545,7 @@ function openFaceCard(aeId) {
     // Map face card key names to ae_loans column names
     if (d.key === 'ctc') dateKey = 'date_ctc';
     if (d.key === 'finalCD') dateKey = 'date_final_cd';
+    if (d.key === 'contractExp') dateKey = 'date_contract_exp';
     var val = loan[dateKey] || '';
     // Auto-calculate Final CD from closing date
     if (d.key === 'finalCD' && !val && loan.date_closing) {
@@ -4545,17 +4558,20 @@ function openFaceCard(aeId) {
     dh += '<div class="fc-date-label">' + d.label + autoTag + '</div>';
     dh += '<div class="fc-date-input"><input type="date" id="fcd_' + d.key + '" value="' + val + '" onchange="' + (d.key === 'closing' ? 'fcOnClosingChange()' : 'fcRefreshDateBadge(\'' + d.key + '\')') + '"></div>';
     dh += '<span class="fc-date-badge ' + badge.cls + '" id="fcd_' + d.key + '_b">' + badge.txt + '</span>';
-    // Confirmed toggle for alertable dates
-    if (d.alertable && val) {
-      var confirmed = loan['confirmed_' + d.key] || false;
-      dh += '<label class="fc-date-confirm' + (confirmed ? ' done' : '') + '" title="Mark as confirmed"><input type="checkbox" id="fcc_' + d.key + '"' + (confirmed ? ' checked' : '') + ' onchange="fcToggleConfirm(\'' + d.key + '\')"><span class="fc-confirm-check">✓</span></label>';
+    // Create Task button for alertable dates with a value
+    if (d.alertable && d.taskName && val) {
+      var hasTask = fcTasks.some(function(t) { return t.fromDate === d.key; });
+      if (!hasTask) {
+        dh += '<button class="fc-create-task-btn" onclick="fcCreateTaskFromDate(\'' + d.key + '\')" title="Create task: ' + d.taskName + '"><i class="fas fa-plus-circle"></i></button>';
+      } else {
+        dh += '<span class="fc-task-linked" title="Task created"><i class="fas fa-check-circle"></i></span>';
+      }
     }
     dh += '</div>';
   });
   document.getElementById('fcDatesContainer').innerHTML = dh;
 
-  // Tasks — stored on the loan for now
-  fcTasks = loan._tasks ? JSON.parse(JSON.stringify(loan._tasks)) : [];
+  // Render tasks
   fcRenderTasks();
   document.getElementById('fcTaskForm').style.display = 'none';
 
@@ -4915,7 +4931,7 @@ function fcRemoveBorrower(borrowerLinkId, name) {
 function fcRenderTasks() {
   var el = document.getElementById('fcTasksList');
   if (fcTasks.length === 0) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:8px 0;">No tasks yet. Click "+ Add Task" to get started.</div>';
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No tasks yet. Create tasks from Key Dates above or click "+ Add Task" below.</div>';
     return;
   }
   var h = '';
@@ -4923,14 +4939,75 @@ function fcRenderTasks() {
     var done = t.done ? ' done' : '';
     var assignee = t.assignee ? '<span class="fc-task-assignee">' + t.assignee + '</span>' : '';
     var due = t.due ? '<span class="fc-task-due">' + t.due + '</span>' : '';
+    var bellOn = t.alarm !== false; // default ON for auto-created with alertDefault, OFF for manual
+    var bellCls = bellOn ? 'fc-task-bell on' : 'fc-task-bell off';
+    var fromTag = t.fromDate ? '<span class="fc-task-linked-tag"><i class="fas fa-link"></i></span>' : '';
     h += '<div class="fc-task-row">';
     h += '<div class="fc-task-chk' + done + '" onclick="fcToggleTask(' + i + ')">' + (t.done ? '<i class="fas fa-check"></i>' : '') + '</div>';
-    h += '<div class="fc-task-name' + done + '">' + (t.title || 'Untitled') + '</div>';
+    h += '<div class="fc-task-name' + done + '">' + (t.title || 'Untitled') + fromTag + '</div>';
     h += assignee + due;
+    h += '<button class="' + bellCls + '" onclick="fcToggleAlarm(' + i + ')" title="' + (bellOn ? 'Alarm ON — click to turn off' : 'Alarm OFF — click to turn on') + '"><i class="fas fa-bell' + (bellOn ? '' : '-slash') + '"></i></button>';
     h += '<button class="fc-task-del" onclick="fcDeleteTask(' + i + ')"><i class="fas fa-trash-alt"></i></button>';
     h += '</div>';
   });
   el.innerHTML = h;
+  // Re-render dates to update create-task button state
+  refreshDateCreateButtons();
+}
+
+function fcToggleAlarm(idx) {
+  if (fcTasks[idx]) {
+    fcTasks[idx].alarm = fcTasks[idx].alarm === false ? true : false;
+    fcRenderTasks();
+  }
+}
+
+function fcCreateTaskFromDate(dateKey) {
+  var dateConfig = FC_DATES.find(function(d) { return d.key === dateKey; });
+  if (!dateConfig) return;
+  var dateInput = document.getElementById('fcd_' + dateKey);
+  var dateVal = dateInput ? dateInput.value : '';
+
+  fcTasks.push({
+    id: 'task-' + Date.now(),
+    title: dateConfig.taskName,
+    assignee: '',
+    due: dateVal,
+    done: false,
+    alarm: dateConfig.alertDefault, // CTC, Final CD, Contract Exp = true
+    fromDate: dateKey // links this task back to the key date
+  });
+  fcRenderTasks();
+  showToast('Task created: ' + dateConfig.taskName, 'success');
+}
+
+function refreshDateCreateButtons() {
+  // Update the create-task / linked indicators on key date rows
+  FC_DATES.forEach(function(d) {
+    if (!d.alertable || !d.taskName) return;
+    var dateInput = document.getElementById('fcd_' + d.key);
+    if (!dateInput || !dateInput.value) return;
+    var row = dateInput.closest('.fc-date-row');
+    if (!row) return;
+    // Remove existing button/indicator
+    var existing = row.querySelector('.fc-create-task-btn, .fc-task-linked');
+    if (existing) existing.remove();
+    var hasTask = fcTasks.some(function(t) { return t.fromDate === d.key; });
+    if (!hasTask) {
+      var btn = document.createElement('button');
+      btn.className = 'fc-create-task-btn';
+      btn.title = 'Create task: ' + d.taskName;
+      btn.innerHTML = '<i class="fas fa-plus-circle"></i>';
+      btn.onclick = function() { fcCreateTaskFromDate(d.key); };
+      row.appendChild(btn);
+    } else {
+      var indicator = document.createElement('span');
+      indicator.className = 'fc-task-linked';
+      indicator.title = 'Task created';
+      indicator.innerHTML = '<i class="fas fa-check-circle"></i>';
+      row.appendChild(indicator);
+    }
+  });
 }
 
 function fcToggleTask(idx) {
@@ -5003,7 +5080,7 @@ function saveFaceCard() {
   loan.loan_amount = String(fcParseMoney(document.getElementById('fc_loanAmount').value) || '');
 
   // Collect dates
-  var dateMap = { mutual: 'date_mutual', emd: 'date_emd', appraisal: 'date_appraisal', inspection: 'date_inspection', conditional: 'date_conditional', ctc: 'date_ctc', finalCD: 'date_final_cd', closing: 'date_closing' };
+  var dateMap = { mutual: 'date_mutual', emd: 'date_emd', appraisal: 'date_appraisal', inspection: 'date_inspection', conditional: 'date_conditional', ctc: 'date_ctc', finalCD: 'date_final_cd', contractExp: 'date_contract_exp', closing: 'date_closing' };
   FC_DATES.forEach(function(d) {
     var input = document.getElementById('fcd_' + d.key);
     var col = dateMap[d.key] || ('date_' + d.key);
@@ -5040,6 +5117,7 @@ function saveFaceCard() {
       date_conditional: loan.date_conditional,
       date_ctc: loan.date_ctc,
       date_final_cd: loan.date_final_cd,
+      date_contract_exp: loan.date_contract_exp,
       date_closing: loan.date_closing
     })
   }).then(function() {
@@ -5713,38 +5791,22 @@ function loadDashAlerts() {
     setTimeout(loadDashAlerts, 500);
     return;
   }
-  // Client-side alert check (same logic as backend, but for immediate display)
   var today = new Date();
   today.setHours(0, 0, 0, 0);
-  var todayStr = today.toISOString().slice(0, 10);
   var alerts = [];
-
-  var ALERT_CFG = {
-    date_closing:     { label: 'Closing', warnings: [7, 3, 1, 0] },
-    date_final_cd:    { label: 'Final CD', warnings: [5, 2, 1, 0], escalate: true },
-    date_ctc:         { label: 'Clear to Close', warnings: [5, 2, 1, 0], escalate: true },
-    date_conditional: { label: 'Conditional Approval', warnings: [5, 2, 1, 0] },
-    date_emd:         { label: 'EMD Due', warnings: [3, 1, 0] },
-    date_appraisal:   { label: 'Appraisal', warnings: [5, 2, 0] },
-    date_inspection:  { label: 'Inspection', warnings: [5, 2, 0] }
-  };
 
   pipelineLoans.forEach(function(loan) {
     if (loan.pipeline_stage === 'closed' || loan.pipeline_stage === 'archived' || loan.pipeline_stage === 'funded') return;
     var loanName = getLoanDisplayName(loan);
+    var tasks = loan._tasks || [];
 
-    Object.keys(ALERT_CFG).forEach(function(col) {
-      var val = loan[col];
-      if (!val) return;
-      var cfg = ALERT_CFG[col];
-      var dateObj = new Date(val + 'T00:00:00');
+    tasks.forEach(function(t) {
+      if (!t.due || t.done) return;
+      if (t.alarm === false) return; // alarm off, skip
+
+      var dateObj = new Date(t.due + 'T00:00:00');
       var daysOut = Math.round((dateObj - today) / 86400000);
-      if (daysOut < 0 || daysOut > Math.max.apply(null, cfg.warnings)) return;
-
-      var confirmed = loan['confirmed_' + col.replace('date_', '')] || false;
-      if (confirmed && daysOut > 0) return;
-
-      if (cfg.warnings.indexOf(daysOut) === -1) return;
+      if (daysOut < 0 || daysOut > 7) return;
 
       var priority = 'normal';
       if (daysOut === 0) priority = 'critical';
@@ -5752,13 +5814,13 @@ function loadDashAlerts() {
       else if (daysOut <= 5) priority = 'medium';
 
       var icon = '📋';
-      if (daysOut === 0) icon = '⚠️';
-      if (daysOut === 0 && !confirmed && cfg.escalate) icon = '🚨';
+      if (daysOut === 0) icon = '🚨';
+      else if (daysOut <= 2) icon = '⚠️';
 
       var msg = '';
-      if (daysOut === 0) msg = cfg.label + ' is due TODAY';
-      else if (daysOut === 1) msg = cfg.label + ' is due TOMORROW';
-      else msg = cfg.label + ' in ' + daysOut + ' days';
+      if (daysOut === 0) msg = t.title + ' is due TODAY';
+      else if (daysOut === 1) msg = t.title + ' is due TOMORROW';
+      else msg = t.title + ' in ' + daysOut + ' days';
 
       alerts.push({
         icon: icon,
@@ -5767,9 +5829,8 @@ function loadDashAlerts() {
         daysOut: daysOut,
         priority: priority,
         aeId: loan.ae_id,
-        dateLabel: cfg.label,
-        dateValue: val,
-        confirmed: confirmed
+        taskTitle: t.title,
+        assignee: t.assignee || 'Unassigned'
       });
     });
   });
@@ -5928,11 +5989,12 @@ var calMonth = new Date().getMonth(); // 0-indexed
 var CAL_DATE_CONFIG = {
   date_closing:      { label: 'Closing', cls: 'critical', priority: 1 },
   date_final_cd:     { label: 'Final CD', cls: 'critical', priority: 2 },
-  date_ctc:          { label: 'CTC', cls: 'warning', priority: 3 },
-  date_conditional:  { label: 'Conditional', cls: 'warning', priority: 4 },
-  date_emd:          { label: 'EMD', cls: 'info', priority: 5 },
-  date_appraisal:    { label: 'Appraisal', cls: 'info', priority: 6 },
-  date_inspection:   { label: 'Inspection', cls: 'info', priority: 7 }
+  date_contract_exp: { label: 'Contract Exp', cls: 'critical', priority: 3 },
+  date_ctc:          { label: 'CTC', cls: 'warning', priority: 4 },
+  date_conditional:  { label: 'Conditional', cls: 'warning', priority: 5 },
+  date_emd:          { label: 'EMD', cls: 'info', priority: 6 },
+  date_appraisal:    { label: 'Appraisal', cls: 'info', priority: 7 },
+  date_inspection:   { label: 'Inspection', cls: 'info', priority: 8 }
 };
 
 // Rescission calculation: 3 business days after signing (exclude Sundays & federal holidays)
