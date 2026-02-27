@@ -1017,6 +1017,32 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .lh-card-outcome { font-weight:700; font-size:10px; text-transform:uppercase; }
 .lh-card-date { font-size:10px; color:var(--text-muted); }
 
+/* Calendar */
+.cal-grid { width:100%; }
+.cal-header-row { display:grid; grid-template-columns:repeat(7,1fr); }
+.cal-header-cell { padding:10px 0; text-align:center; font-family:'Orbitron',sans-serif; font-size:9px; letter-spacing:2px; color:var(--text-muted); background:rgba(255,255,255,0.02); border-bottom:1px solid var(--border); }
+.cal-week { display:grid; grid-template-columns:repeat(7,1fr); }
+.cal-day { min-height:100px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); padding:6px; position:relative; transition:background 0.15s; }
+.cal-day:nth-child(7n) { border-right:none; }
+.cal-day:hover { background:rgba(255,255,255,0.02); }
+.cal-day.outside { opacity:0.25; }
+.cal-day.today { background:rgba(59,130,246,0.06); }
+.cal-day-num { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text-secondary); margin-bottom:4px; }
+.cal-day.today .cal-day-num { color:#3b82f6; font-weight:700; }
+.cal-event { font-size:10px; padding:2px 5px; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; transition:opacity 0.15s; line-height:1.4; }
+.cal-event:hover { opacity:0.8; }
+.cal-event.critical { background:rgba(239,68,68,0.2); color:#ef4444; border-left:2px solid #ef4444; }
+.cal-event.warning { background:rgba(245,158,11,0.2); color:#f59e0b; border-left:2px solid #f59e0b; }
+.cal-event.info { background:rgba(59,130,246,0.2); color:#3b82f6; border-left:2px solid #3b82f6; }
+.cal-event.neutral { background:rgba(110,127,119,0.15); color:#6e7f77; border-left:2px solid #6e7f77; }
+.cal-upcoming-row { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--border); }
+.cal-upcoming-row:last-child { border-bottom:none; }
+.cal-upcoming-dot { width:8px; height:8px; border-radius:3px; flex-shrink:0; }
+.cal-upcoming-date { font-family:'Share Tech Mono',monospace; font-size:12px; color:var(--text-muted); width:90px; flex-shrink:0; }
+.cal-upcoming-label { font-size:13px; color:var(--text-primary); flex:1; }
+.cal-upcoming-loan { font-size:11px; color:var(--text-muted); }
+.cal-upcoming-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
+
 /* Team roster */
 .team-card {
   background:var(--bg-card); border:1px solid var(--border); border-radius:8px;
@@ -1068,6 +1094,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
     <div class="nav-item" onclick="switchView('pipeline', this)">
       <span class="nav-icon"><i class="fas fa-funnel-dollar"></i></span> Pipeline
       <span class="nav-badge green" id="navPipelineCount">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('calendar', this)">
+      <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Calendar
     </div>
     <div class="nav-item" onclick="switchView('crm', this)">
       <span class="nav-icon"><i class="fas fa-address-book"></i></span> Client Database
@@ -1252,6 +1281,61 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   </div>
   <div class="content-area" style="overflow-y:auto;padding:12px;">
     <div class="pipeline-board" id="pipelineBoard"></div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CALENDAR VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-calendar">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Calendar</div><div class="topbar-subtitle">Pipeline Dates & Deadlines</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="calPrevMonth()"><i class="fas fa-chevron-left"></i></button>
+      <span style="font-family:'Orbitron',sans-serif;font-size:14px;letter-spacing:2px;color:var(--text-primary);min-width:180px;text-align:center;" id="calMonthLabel">---</span>
+      <button class="topbar-btn" onclick="calNextMonth()"><i class="fas fa-chevron-right"></i></button>
+      <button class="topbar-btn" onclick="calToday()" style="margin-left:8px;"><i class="fas fa-crosshairs"></i> Today</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- Legend -->
+    <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Closing / Final CD</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> CTC / Conditional</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span> EMD / Appraisal / Inspection</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#6e7f77;display:inline-block;"></span> Mutual Acceptance</div>
+    </div>
+
+    <!-- Calendar grid -->
+    <div class="mc-panel" style="padding:0;overflow:hidden;">
+      <div class="cal-grid">
+        <div class="cal-header-row">
+          <div class="cal-header-cell">SUN</div>
+          <div class="cal-header-cell">MON</div>
+          <div class="cal-header-cell">TUE</div>
+          <div class="cal-header-cell">WED</div>
+          <div class="cal-header-cell">THU</div>
+          <div class="cal-header-cell">FRI</div>
+          <div class="cal-header-cell">SAT</div>
+        </div>
+        <div id="calBody"></div>
+      </div>
+    </div>
+
+    <!-- Upcoming deadlines list -->
+    <div class="mc-panel" style="margin-top:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
+        <div class="mc-panel-title">UPCOMING DEADLINES</div>
+        <div class="mc-status">NEXT 14 DAYS</div>
+      </div>
+      <div id="calUpcoming" style="padding:4px 0;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -2545,6 +2629,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'analytics') loadAnalytics();
   if (viewId === 'portal') loadPartnerPortal();
   if (viewId === 'scenarios') loadScenarios();
+  if (viewId === 'calendar') renderCalendar();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -5506,6 +5591,197 @@ async function markScenario(id, status) {
   } catch (err) {
     showToast('Failed to update');
   }
+}
+
+// ===== CALENDAR =====
+var calYear = new Date().getFullYear();
+var calMonth = new Date().getMonth(); // 0-indexed
+
+var CAL_DATE_CONFIG = {
+  date_closing:      { label: 'Closing', cls: 'critical', priority: 1 },
+  date_final_cd:     { label: 'Final CD', cls: 'critical', priority: 2 },
+  date_ctc:          { label: 'CTC', cls: 'warning', priority: 3 },
+  date_conditional:  { label: 'Conditional', cls: 'warning', priority: 4 },
+  date_emd:          { label: 'EMD', cls: 'info', priority: 5 },
+  date_appraisal:    { label: 'Appraisal', cls: 'info', priority: 6 },
+  date_inspection:   { label: 'Inspection', cls: 'info', priority: 7 },
+  date_mutual:       { label: 'MA', cls: 'neutral', priority: 8 }
+};
+
+function calPrevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
+function calNextMonth() { calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCalendar(); }
+function calToday() { var n = new Date(); calYear = n.getFullYear(); calMonth = n.getMonth(); renderCalendar(); }
+
+function getLoanDisplayName(loan) {
+  // Try to get a short borrower name
+  if (loan._borrowers && loan._borrowers.length) {
+    var primary = loan._borrowers.find(function(b) { return b.role === 'primary'; }) || loan._borrowers[0];
+    if (primary && primary.name) {
+      var parts = primary.name.split(' ');
+      return parts.length > 1 ? parts[parts.length - 1] : parts[0];
+    }
+  }
+  if (loan.subject_street) return loan.subject_street.substring(0, 15);
+  return loan.ae_id.substring(0, 8);
+}
+
+function gatherCalendarEvents() {
+  var events = {}; // keyed by YYYY-MM-DD
+  pipelineLoans.forEach(function(loan) {
+    if (loan.pipeline_stage === 'closed' || loan.pipeline_stage === 'archived') return;
+    var loanName = getLoanDisplayName(loan);
+    Object.keys(CAL_DATE_CONFIG).forEach(function(col) {
+      var val = loan[col];
+      if (!val) return;
+      var cfg = CAL_DATE_CONFIG[col];
+      if (!events[val]) events[val] = [];
+      events[val].push({
+        label: cfg.label,
+        loanName: loanName,
+        cls: cfg.cls,
+        priority: cfg.priority,
+        aeId: loan.ae_id,
+        col: col
+      });
+    });
+  });
+  // Sort events within each day by priority
+  Object.keys(events).forEach(function(d) {
+    events[d].sort(function(a, b) { return a.priority - b.priority; });
+  });
+  return events;
+}
+
+function renderCalendar() {
+  // Ensure pipeline data is loaded
+  if (!pipelineLoaded) {
+    loadPipeline();
+    setTimeout(renderCalendar, 500);
+    return;
+  }
+
+  var months = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+  document.getElementById('calMonthLabel').textContent = months[calMonth] + ' ' + calYear;
+
+  var events = gatherCalendarEvents();
+  var today = new Date(); today.setHours(0,0,0,0);
+  var todayStr = today.toISOString().slice(0,10);
+
+  // Build calendar grid
+  var firstDay = new Date(calYear, calMonth, 1);
+  var startDow = firstDay.getDay(); // 0=Sun
+  var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  var prevMonthDays = new Date(calYear, calMonth, 0).getDate();
+
+  var html = '';
+  var dayNum = 1;
+  var nextNum = 1;
+  var totalCells = Math.ceil((startDow + daysInMonth) / 7) * 7;
+
+  for (var i = 0; i < totalCells; i++) {
+    if (i % 7 === 0) html += '<div class="cal-week">';
+
+    var isOutside = false;
+    var displayNum;
+    var dateStr;
+
+    if (i < startDow) {
+      // Previous month
+      displayNum = prevMonthDays - startDow + i + 1;
+      var pm = calMonth === 0 ? 11 : calMonth - 1;
+      var py = calMonth === 0 ? calYear - 1 : calYear;
+      dateStr = py + '-' + String(pm + 1).padStart(2,'0') + '-' + String(displayNum).padStart(2,'0');
+      isOutside = true;
+    } else if (dayNum > daysInMonth) {
+      // Next month
+      displayNum = nextNum++;
+      var nm = calMonth === 11 ? 0 : calMonth + 1;
+      var ny = calMonth === 11 ? calYear + 1 : calYear;
+      dateStr = ny + '-' + String(nm + 1).padStart(2,'0') + '-' + String(displayNum).padStart(2,'0');
+      isOutside = true;
+    } else {
+      displayNum = dayNum;
+      dateStr = calYear + '-' + String(calMonth + 1).padStart(2,'0') + '-' + String(dayNum).padStart(2,'0');
+      dayNum++;
+    }
+
+    var isToday = dateStr === todayStr;
+    var cls = 'cal-day' + (isOutside ? ' outside' : '') + (isToday ? ' today' : '');
+
+    html += '<div class="' + cls + '">';
+    html += '<div class="cal-day-num">' + displayNum + '</div>';
+
+    // Render events for this date
+    var dayEvents = events[dateStr] || [];
+    var maxShow = 3;
+    dayEvents.slice(0, maxShow).forEach(function(ev) {
+      html += '<div class="cal-event ' + ev.cls + '" onclick="calEventClick(\'' + ev.aeId + '\')" title="' + ev.loanName + ' — ' + ev.label + '">';
+      html += ev.label + ' · ' + ev.loanName;
+      html += '</div>';
+    });
+    if (dayEvents.length > maxShow) {
+      html += '<div style="font-size:9px;color:var(--text-muted);padding:1px 5px;">+' + (dayEvents.length - maxShow) + ' more</div>';
+    }
+
+    html += '</div>';
+    if (i % 7 === 6) html += '</div>';
+  }
+
+  document.getElementById('calBody').innerHTML = html;
+
+  // Render upcoming deadlines
+  renderUpcoming(events, todayStr);
+}
+
+function renderUpcoming(events, todayStr) {
+  var upcoming = [];
+  var today = new Date(todayStr + 'T00:00:00');
+
+  Object.keys(events).forEach(function(dateStr) {
+    var d = new Date(dateStr + 'T00:00:00');
+    var diff = Math.round((d - today) / 86400000);
+    if (diff >= 0 && diff <= 14) {
+      events[dateStr].forEach(function(ev) {
+        upcoming.push({ date: dateStr, diff: diff, label: ev.label, loanName: ev.loanName, cls: ev.cls, aeId: ev.aeId, priority: ev.priority });
+      });
+    }
+  });
+
+  upcoming.sort(function(a, b) { return a.diff === b.diff ? a.priority - b.priority : a.diff - b.diff; });
+
+  var container = document.getElementById('calUpcoming');
+  if (upcoming.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:13px;">No deadlines in the next 14 days</div>';
+    return;
+  }
+
+  var html = '';
+  upcoming.forEach(function(u) {
+    var d = new Date(u.date + 'T00:00:00');
+    var days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var dateLabel = days[d.getDay()] + ', ' + months[d.getMonth()] + ' ' + d.getDate();
+    var diffLabel = u.diff === 0 ? 'TODAY' : u.diff === 1 ? 'TOMORROW' : u.diff + ' days';
+    var dotColor = u.cls === 'critical' ? '#ef4444' : u.cls === 'warning' ? '#f59e0b' : u.cls === 'info' ? '#3b82f6' : '#6e7f77';
+    var badgeBg = u.diff === 0 ? 'rgba(239,68,68,0.15)' : u.diff <= 3 ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)';
+    var badgeColor = u.diff === 0 ? '#ef4444' : u.diff <= 3 ? '#f59e0b' : 'var(--text-muted)';
+
+    html += '<div class="cal-upcoming-row" onclick="calEventClick(\'' + u.aeId + '\')" style="cursor:pointer;">';
+    html += '<span class="cal-upcoming-dot" style="background:' + dotColor + ';"></span>';
+    html += '<span class="cal-upcoming-date">' + dateLabel + '</span>';
+    html += '<span class="cal-upcoming-label">' + u.label + '</span>';
+    html += '<span class="cal-upcoming-loan">' + u.loanName + '</span>';
+    html += '<span class="cal-upcoming-badge" style="background:' + badgeBg + ';color:' + badgeColor + ';">' + diffLabel + '</span>';
+    html += '</div>';
+  });
+
+  container.innerHTML = html;
+}
+
+function calEventClick(aeId) {
+  // Navigate to pipeline and open the face card
+  switchView('pipeline', document.querySelector('.nav-item[onclick*="pipeline"]'));
+  setTimeout(function() { openFaceCard(aeId); }, 300);
 }
 
 // ===== INIT =====
