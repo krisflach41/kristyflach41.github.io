@@ -5174,13 +5174,20 @@ function saveFaceCard() {
   }).catch(function(err) { console.error('Face card save error:', err); });
 }
 
-// ===== TEAM ROSTER =====
+// ===== TEAM ROSTER (SUPABASE) =====
 var editingTeamIdx = -1;
 
 function loadTeamRoster() {
-  var saved = localStorage.getItem('lo_team_members');
-  loTeamMembers = saved ? JSON.parse(saved) : [];
-  renderTeamRoster();
+  fetch(API_BASE + '/api/ae-loans-api?action=get_team&user_id=' + currentUserId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      loTeamMembers = data.team || [];
+      renderTeamRoster();
+    })
+    .catch(function() {
+      loTeamMembers = [];
+      renderTeamRoster();
+    });
 }
 
 function renderTeamRoster() {
@@ -5245,23 +5252,50 @@ function saveTeamMember() {
     email: document.getElementById('tm_email').value.trim(),
     phone: document.getElementById('tm_phone').value.trim()
   };
+
   if (editingTeamIdx >= 0) {
-    loTeamMembers[editingTeamIdx] = tm;
-  } else {
-    loTeamMembers.push(tm);
+    tm.id = loTeamMembers[editingTeamIdx].id;
   }
-  localStorage.setItem('lo_team_members', JSON.stringify(loTeamMembers));
-  closeTeamMemberForm();
-  renderTeamRoster();
-  showToast(editingTeamIdx >= 0 ? 'Team member updated' : 'Team member added');
+
+  fetch(API_BASE + '/api/ae-loans-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_team_member', user_id: currentUserId, member: tm })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      closeTeamMemberForm();
+      loadTeamRoster();
+      showToast(editingTeamIdx >= 0 ? 'Team member updated' : 'Team member added', 'success');
+    } else {
+      showToast('Save failed: ' + (data.error || 'Unknown'), 'error');
+    }
+  })
+  .catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
 }
 
 function deleteTeamMember(idx) {
   if (!confirm('Remove ' + loTeamMembers[idx].name + ' from your team?')) return;
-  loTeamMembers.splice(idx, 1);
-  localStorage.setItem('lo_team_members', JSON.stringify(loTeamMembers));
-  renderTeamRoster();
-  showToast('Team member removed');
+  var memberId = loTeamMembers[idx].id;
+
+  fetch(API_BASE + '/api/ae-loans-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_team_member', member_id: memberId })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      loadTeamRoster();
+      showToast('Team member removed', 'success');
+    }
+  })
+  .catch(function(err) {
+    showToast('Error: ' + err.message, 'error');
+  });
 }
 
 // ===== CRM (SUPABASE) =====
