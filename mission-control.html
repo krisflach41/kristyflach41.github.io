@@ -1307,7 +1307,6 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Closing / Final CD</div>
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> CTC / Conditional</div>
       <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span> EMD / Appraisal / Inspection</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#6e7f77;display:inline-block;"></span> Mutual Acceptance</div>
     </div>
 
     <!-- Calendar grid -->
@@ -5604,8 +5603,7 @@ var CAL_DATE_CONFIG = {
   date_conditional:  { label: 'Conditional', cls: 'warning', priority: 4 },
   date_emd:          { label: 'EMD', cls: 'info', priority: 5 },
   date_appraisal:    { label: 'Appraisal', cls: 'info', priority: 6 },
-  date_inspection:   { label: 'Inspection', cls: 'info', priority: 7 },
-  date_mutual:       { label: 'MA', cls: 'neutral', priority: 8 }
+  date_inspection:   { label: 'Inspection', cls: 'info', priority: 7 }
 };
 
 function calPrevMonth() { calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; } renderCalendar(); }
