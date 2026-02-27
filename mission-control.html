@@ -994,6 +994,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .fc-task-bell.on { color:#f59e0b; }
 .fc-task-bell.off { color:rgba(255,255,255,0.15); }
 .fc-task-bell:hover { color:#f59e0b; }
+.fc-task-edit { padding:10px 0; border-bottom:1px solid var(--border); }
 .fc-add-task-btn {
   background:none; border:1px dashed var(--border-light); border-radius:6px;
   color:var(--text-muted); padding:10px; font-size:13px; cursor:pointer;
@@ -4941,22 +4942,76 @@ function fcRenderTasks() {
   var h = '';
   fcTasks.forEach(function(t, i) {
     var done = t.done ? ' done' : '';
-    var assignee = t.assignee ? '<span class="fc-task-assignee">' + t.assignee + '</span>' : '';
+    var assignee = t.assignee ? '<span class="fc-task-assignee">' + t.assignee + '</span>' : '<span class="fc-task-assignee" style="opacity:0.3;">Unassigned</span>';
     var due = t.due ? '<span class="fc-task-due">' + t.due + '</span>' : '';
-    var bellOn = t.alarm !== false; // default ON for auto-created with alertDefault, OFF for manual
+    var bellOn = t.alarm !== false;
     var bellCls = bellOn ? 'fc-task-bell on' : 'fc-task-bell off';
     var fromTag = t.fromDate ? '<span class="fc-task-linked-tag"><i class="fas fa-link"></i></span>' : '';
-    h += '<div class="fc-task-row">';
+
+    // Task row
+    h += '<div class="fc-task-row" id="fcTaskRow_' + i + '">';
     h += '<div class="fc-task-chk' + done + '" onclick="fcToggleTask(' + i + ')">' + (t.done ? '<i class="fas fa-check"></i>' : '') + '</div>';
-    h += '<div class="fc-task-name' + done + '">' + (t.title || 'Untitled') + fromTag + '</div>';
+    h += '<div class="fc-task-name' + done + '" onclick="fcEditTask(' + i + ')" style="cursor:pointer;">' + (t.title || 'Untitled') + fromTag + '</div>';
     h += assignee + due;
-    h += '<button class="' + bellCls + '" onclick="fcToggleAlarm(' + i + ')" title="' + (bellOn ? 'Alarm ON — click to turn off' : 'Alarm OFF — click to turn on') + '"><i class="fas fa-bell' + (bellOn ? '' : '-slash') + '"></i></button>';
+    h += '<button class="' + bellCls + '" onclick="fcToggleAlarm(' + i + ')" title="' + (bellOn ? 'Alarm ON' : 'Alarm OFF') + '"><i class="fas fa-bell' + (bellOn ? '' : '-slash') + '"></i></button>';
     h += '<button class="fc-task-del" onclick="fcDeleteTask(' + i + ')"><i class="fas fa-trash-alt"></i></button>';
     h += '</div>';
+
+    // Hidden edit form
+    h += '<div class="fc-task-edit" id="fcTaskEdit_' + i + '" style="display:none;">';
+    h += '<div class="fc-task-form">';
+    h += '<div class="fc-field fc-task-form-full"><div class="fc-lbl">Task Name</div><input id="fcte_title_' + i + '" value="' + (t.title || '').replace(/"/g, '&quot;') + '"></div>';
+    h += '<div class="fc-field"><div class="fc-lbl">Assign To</div><select id="fcte_assignee_' + i + '">' + fcBuildTeamOptions(t.assignee) + '</select></div>';
+    h += '<div class="fc-field"><div class="fc-lbl">Due Date</div><input type="date" id="fcte_due_' + i + '" value="' + (t.due || '') + '"></div>';
+    h += '<div style="grid-column:1/-1;display:flex;gap:6px;margin-top:4px;">';
+    h += '<button class="topbar-btn" style="font-size:11px;" onclick="fcCloseEditTask(' + i + ')">Cancel</button>';
+    h += '<button class="topbar-btn primary" style="font-size:11px;" onclick="fcSaveEditTask(' + i + ')"><i class="fas fa-save"></i> Save</button>';
+    h += '</div>';
+    h += '</div></div>';
   });
   el.innerHTML = h;
-  // Re-render dates to update create-task button state
   refreshDateCreateButtons();
+}
+
+function fcBuildTeamOptions(current) {
+  var opts = '<option value="">-- Unassigned --</option>';
+  loTeamMembers.forEach(function(tm) {
+    var label = tm.name + ' (' + (tm.role || '') + ')';
+    var sel = (current === tm.name) ? ' selected' : '';
+    opts += '<option value="' + tm.name + '"' + sel + '>' + label + '</option>';
+  });
+  return opts;
+}
+
+function fcEditTask(idx) {
+  // Close any other open edit forms
+  fcTasks.forEach(function(t, i) {
+    var editEl = document.getElementById('fcTaskEdit_' + i);
+    var rowEl = document.getElementById('fcTaskRow_' + i);
+    if (editEl) editEl.style.display = 'none';
+    if (rowEl) rowEl.style.display = '';
+  });
+  // Open this one
+  var editEl = document.getElementById('fcTaskEdit_' + idx);
+  var rowEl = document.getElementById('fcTaskRow_' + idx);
+  if (editEl) editEl.style.display = 'block';
+  if (rowEl) rowEl.style.display = 'none';
+}
+
+function fcCloseEditTask(idx) {
+  var editEl = document.getElementById('fcTaskEdit_' + idx);
+  var rowEl = document.getElementById('fcTaskRow_' + idx);
+  if (editEl) editEl.style.display = 'none';
+  if (rowEl) rowEl.style.display = '';
+}
+
+function fcSaveEditTask(idx) {
+  if (!fcTasks[idx]) return;
+  fcTasks[idx].title = document.getElementById('fcte_title_' + idx).value.trim() || fcTasks[idx].title;
+  fcTasks[idx].assignee = document.getElementById('fcte_assignee_' + idx).value || '';
+  fcTasks[idx].due = document.getElementById('fcte_due_' + idx).value || '';
+  fcRenderTasks();
+  showToast('Task updated', 'success');
 }
 
 function fcToggleAlarm(idx) {
