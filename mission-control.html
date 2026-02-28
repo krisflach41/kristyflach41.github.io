@@ -4537,8 +4537,12 @@ function openFaceCard(aeId) {
   document.getElementById('fcCrmBtn').style.display = crmId ? '' : 'none';
   document.getElementById('fcCrmBtn').dataset.crmId = crmId || '';
 
-  // Tasks — load before dates so create-task buttons know what's linked
-  fcTasks = loan._tasks ? JSON.parse(JSON.stringify(loan._tasks)) : [];
+  // Tasks — load from Supabase before dates so create-task buttons know what's linked
+  fcTasks = [];
+  fcLoadTasksFromSupabase(fcContactId, function() {
+    // Re-render date create buttons after tasks load
+    refreshDateCreateButtons();
+  });
 
   // Key dates
   var dh = '';
@@ -4740,6 +4744,26 @@ function fcRefreshDateBadge(key) {
   badge.className = 'fc-date-badge ' + b.cls;
   badge.textContent = b.txt;
   refreshDateCreateButtons();
+  // Auto-save this date to Supabase
+  fcAutoSaveDate(key, input.value);
+}
+
+function fcAutoSaveDate(key, val) {
+  if (!fcContactId) return;
+  var dateMap = { mutual:'date_mutual', emd:'date_emd', appraisal:'date_appraisal', inspection:'date_inspection', conditional:'date_conditional', ctc:'date_ctc', finalCD:'date_final_cd', contractExp:'date_contract_exp', closing:'date_closing' };
+  var col = dateMap[key] || ('date_' + key);
+  var payload = { action: 'updateLoan', ae_id: fcContactId };
+  payload[col] = val || '';
+  // Also update local loan object
+  var loan = pipelineLoans.find(function(l) { return l.ae_id === fcContactId; });
+  if (loan) loan[col] = val || '';
+
+  fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function() {
+    renderPipeline();
+  }).catch(function(err) { console.error('Auto-save date error:', err); });
 }
 
 function fcToggleConfirm(key) {
@@ -4973,6 +4997,46 @@ function fcRenderTasks() {
   refreshDateCreateButtons();
 }
 
+function fcLoadTasksFromSupabase(aeId, callback) {
+  fetch(API_BASE + '/ae-loans-api?action=get_tasks&ae_id=' + aeId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      fcTasks = (data.tasks || []).map(function(t) {
+        return { db_id: t.id, id: t.task_id, title: t.title, assignee: t.assignee || '', due: t.due || '', done: t.done || false, alarm: t.alarm || false, fromDate: t.from_date || '' };
+      });
+      fcRenderTasks();
+      if (callback) callback();
+    })
+    .catch(function() {
+      fcTasks = [];
+      fcRenderTasks();
+      if (callback) callback();
+    });
+}
+
+function fcSaveTaskToSupabase(task) {
+  if (!fcContactId) return;
+  return fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_task', ae_id: fcContactId, task: task })
+  }).then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success && data.task && !task.db_id) {
+      // Assign the db_id back to the local task
+      var local = fcTasks.find(function(t) { return t.id === task.id; });
+      if (local) local.db_id = data.task.id;
+    }
+    return data;
+  });
+}
+
+function fcDeleteTaskFromSupabase(dbId) {
+  return fetch(API_BASE + '/ae-loans-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_task', db_id: dbId })
+  }).then(function(r) { return r.json(); });
+}
+
 function fcBuildTeamOptions(current) {
   var opts = '<option value="">-- Unassigned --</option>';
   loTeamMembers.forEach(function(tm) {
@@ -4984,14 +5048,12 @@ function fcBuildTeamOptions(current) {
 }
 
 function fcEditTask(idx) {
-  // Close any other open edit forms
   fcTasks.forEach(function(t, i) {
     var editEl = document.getElementById('fcTaskEdit_' + i);
     var rowEl = document.getElementById('fcTaskRow_' + i);
     if (editEl) editEl.style.display = 'none';
     if (rowEl) rowEl.style.display = '';
   });
-  // Open this one
   var editEl = document.getElementById('fcTaskEdit_' + idx);
   var rowEl = document.getElementById('fcTaskRow_' + idx);
   if (editEl) editEl.style.display = 'block';
@@ -5010,13 +5072,15 @@ function fcSaveEditTask(idx) {
   fcTasks[idx].title = document.getElementById('fcte_title_' + idx).value.trim() || fcTasks[idx].title;
   fcTasks[idx].assignee = document.getElementById('fcte_assignee_' + idx).value || '';
   fcTasks[idx].due = document.getElementById('fcte_due_' + idx).value || '';
+  fcSaveTaskToSupabase(fcTasks[idx]);
   fcRenderTasks();
   showToast('Task updated', 'success');
 }
 
 function fcToggleAlarm(idx) {
   if (fcTasks[idx]) {
-    fcTasks[idx].alarm = fcTasks[idx].alarm === false ? true : false;
+    fcTasks[idx].alarm = !fcTasks[idx].alarm;
+    fcSaveTaskToSupabase(fcTasks[idx]);
     fcRenderTasks();
   }
 }
@@ -5027,15 +5091,17 @@ function fcCreateTaskFromDate(dateKey) {
   var dateInput = document.getElementById('fcd_' + dateKey);
   var dateVal = dateInput ? dateInput.value : '';
 
-  fcTasks.push({
+  var newTask = {
     id: 'task-' + Date.now(),
     title: dateConfig.taskName,
     assignee: '',
     due: dateVal,
     done: false,
-    alarm: dateConfig.alertDefault, // CTC, Final CD, Contract Exp = true
-    fromDate: dateKey // links this task back to the key date
-  });
+    alarm: dateConfig.alertDefault,
+    fromDate: dateKey
+  };
+  fcTasks.push(newTask);
+  fcSaveTaskToSupabase(newTask);
   fcRenderTasks();
   showToast('Task created: ' + dateConfig.taskName, 'success');
 }
@@ -5061,18 +5127,22 @@ function refreshDateCreateButtons() {
 function fcToggleTask(idx) {
   if (fcTasks[idx]) {
     fcTasks[idx].done = !fcTasks[idx].done;
+    fcSaveTaskToSupabase(fcTasks[idx]);
     fcRenderTasks();
   }
 }
 
 function fcDeleteTask(idx) {
+  var task = fcTasks[idx];
+  if (task && task.db_id) {
+    fcDeleteTaskFromSupabase(task.db_id);
+  }
   fcTasks.splice(idx, 1);
   fcRenderTasks();
 }
 
 function fcShowTaskForm() {
   var el = document.getElementById('fcTaskForm');
-  // Build team member options
   var teamOpts = '<option value="">-- Unassigned --</option>';
   loTeamMembers.forEach(function(tm) {
     var label = tm.name + ' (' + (tm.role || '') + ')';
@@ -5098,15 +5168,19 @@ function fcHideTaskForm() {
 function fcSaveTask() {
   var title = document.getElementById('fctf_title').value.trim();
   if (!title) { showToast('Task name required'); return; }
-  fcTasks.push({
+  var newTask = {
     id: 'task-' + Date.now(),
     title: title,
     assignee: document.getElementById('fctf_assignee').value || '',
     due: document.getElementById('fctf_due').value || '',
-    done: false
-  });
+    done: false,
+    alarm: false
+  };
+  fcTasks.push(newTask);
+  fcSaveTaskToSupabase(newTask);
   fcHideTaskForm();
   fcRenderTasks();
+  showToast('Task added', 'success');
 }
 
 function saveFaceCard() {
@@ -5135,8 +5209,7 @@ function saveFaceCard() {
     if (input) loan[col] = input.value || '';
   });
 
-  // Tasks — store locally on the loan object for now
-  loan._tasks = fcTasks;
+  // Tasks are saved to Supabase independently (ae_loan_tasks table)
 
   // Update display
   document.getElementById('fcLoanNumDisplay').textContent = loan.lender_loan_number ? 'Loan #' + loan.lender_loan_number : loan.ae_id;
