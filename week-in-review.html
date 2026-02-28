@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="refresh" content="600">
+<title>Week in Review</title>
+<style>
+/* ===== BACKGROUND MATCHES PORTAL ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+/* ===== CENTERED CONTENT WIDTH ===== */
+.page-wrap {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+/* ===== FROSTED GLASS CONTAINER ===== */
+.brief-card {
+  border-radius: 22px;
+  padding: 60px 50px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+/* ===== TYPOGRAPHY ===== */
+h1 {
+  font-size: 36px;
+  margin-bottom: 25px;
+}
+h2 {
+  margin-top: 35px;
+  font-size: 20px;
+}
+p {
+  line-height: 1.7;
+  margin-bottom: 18px;
+  font-size: 15px;
+}
+/* ===== SECTION HEADINGS ===== */
+.section-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6e7f77;
+  margin-top: 28px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #6e7f77;
+}
+.section-label:first-child {
+  margin-top: 0;
+}
+/* ===== BACK LINK BUTTON ===== */
+.back-link {
+  display: inline-block;
+  margin-top: 40px;
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+  background: #6e7f77;
+  padding: 8px 16px;
+  border-radius: 20px;
+}
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+<body>
+<div class="page-wrap">
+  <div class="brief-card">
+    <h1>Week in Review – <span id="weekLabel">Loading...</span></h1>
+    
+    <!-- DYNAMIC CONTENT LOADED FROM SUPABASE -->
+    <div id="wirContent">
+      <p>Loading week in review...</p>
+    </div>
+    
+    <a href="portal.html" class="back-link">← Back to Agent Edge Portal</a>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', function() {
+  fetch('https://agent-edge-backend.vercel.app/api/briefing')
+    .then(function(r) { return r.json(); })
+    .then(function(briefingData) {
+      // Update week label
+      if (briefingData.weekEndingLabel) {
+        document.getElementById('weekLabel').textContent = briefingData.weekEndingLabel.replace('Week Ending ', '');
+      } else {
+        document.getElementById('weekLabel').textContent = '';
+      }
+      
+      // Load week in review content
+      var contentDiv = document.getElementById('wirContent');
+      
+      if (briefingData.weekInReview) {
+        var formatted = formatTextToHTML(briefingData.weekInReview);
+        contentDiv.innerHTML = formatted;
+      } else {
+        contentDiv.innerHTML = '<p>No week in review available yet. Check back Friday.</p>';
+      }
+    })
+    .catch(function(err) {
+      console.error('Failed to load briefing:', err);
+      document.getElementById('wirContent').innerHTML = '<p>Unable to load week in review. Please try again later.</p>';
+    });
+});
+
+function formatTextToHTML(text) {
+  var sections = text.split(/\n\n+/);
+  var html = '';
+  
+  sections.forEach(function(section) {
+    section = section.trim();
+    if (!section) return;
+    
+    // Detect section headings
+    var headingMatch = section.match(/^(Rate & Bond Recap|Rate and Bond Recap|Economic Highlights|Housing & Market Impact|Housing and Market Impact|Week Ahead|Key Takeaways|Market Overview|Bottom Line)[:\s—–-]*(.*)/is);
+    if (headingMatch) {
+      html += '<div class="section-label">' + headingMatch[1] + '</div>';
+      var body = headingMatch[2] ? headingMatch[2].trim() : '';
+      if (body) {
+        html += '<p>' + body.replace(/\n/g, '<br>') + '</p>';
+      }
+      return;
+    }
+    
+    // Detect ALL CAPS headings
+    if (section.match(/^[A-Z\s&–—:]+$/) && section.length < 60) {
+      html += '<div class="section-label">' + section.replace(/:$/, '') + '</div>';
+      return;
+    }
+    
+    // Handle bullet points
+    if (section.indexOf('•') !== -1 || section.indexOf('- ') === 0 || section.indexOf('\n- ') !== -1 || section.indexOf('* ') === 0 || section.indexOf('\n* ') !== -1) {
+      var lines = section.split('\n');
+      var listItems = '';
+      var preamble = '';
+      lines.forEach(function(line) {
+        line = line.trim();
+        if (line.match(/^[•\-\*]\s+/)) {
+          listItems += '<li>' + line.replace(/^[•\-\*]\s+/, '') + '</li>';
+        } else if (line) {
+          preamble += line + ' ';
+        }
+      });
+      if (preamble.trim()) html += '<p>' + preamble.trim() + '</p>';
+      if (listItems) html += '<ul style="margin:0 0 18px 20px;line-height:1.8;">' + listItems + '</ul>';
+      return;
+    }
+    
+    // Regular paragraph
+    html += '<p>' + section.replace(/\n/g, '<br>') + '</p>';
+  });
+  
+  return html;
+}
+</script>
+</body>
+</html>
