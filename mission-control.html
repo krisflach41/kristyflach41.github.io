@@ -2208,6 +2208,15 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </div>
         <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
         <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
+        <div class="fc-field" style="grid-column:1/-1;">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;">
+            <input type="checkbox" id="tm_sms_opt_in" style="width:16px;height:16px;accent-color:#22c55e;">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text-main);">Send SMS Alerts</div>
+              <div style="font-size:10px;color:var(--text-muted);">Receive text alerts when assigned tasks have upcoming deadlines</div>
+            </div>
+          </label>
+        </div>
       </div>
       <div style="display:flex;gap:8px;margin-top:12px;">
         <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
@@ -5277,10 +5286,11 @@ function renderTeamRoster() {
   var h = '';
   loTeamMembers.forEach(function(tm, i) {
     var roleLabels = { lo:'Loan Officer', loa:'LOA', processor:'Processor' };
+    var smsBadge = tm.sms_opt_in ? '<span style="font-size:9px;background:rgba(34,197,94,0.15);color:#22c55e;padding:2px 6px;border-radius:4px;margin-left:6px;">SMS ON</span>' : '';
     h += '<div class="team-card">';
     h += '<div style="width:36px;height:36px;border-radius:8px;background:rgba(168,85,247,0.12);display:flex;align-items:center;justify-content:center;"><i class="fas fa-user" style="color:#a855f7;font-size:14px;"></i></div>';
     h += '<div class="team-card-info">';
-    h += '<div class="team-card-name">' + (tm.name || 'Unnamed') + '</div>';
+    h += '<div class="team-card-name">' + (tm.name || 'Unnamed') + smsBadge + '</div>';
     h += '<div class="team-card-role">' + (roleLabels[tm.role] || tm.role || '') + '</div>';
     h += '<div class="team-card-contact">' + [tm.email, tm.phone].filter(Boolean).join(' · ') + '</div>';
     h += '</div>';
@@ -5299,6 +5309,7 @@ function openTeamMemberForm() {
   document.getElementById('tm_role').value = 'loa';
   document.getElementById('tm_email').value = '';
   document.getElementById('tm_phone').value = '';
+  document.getElementById('tm_sms_opt_in').checked = false;
   document.getElementById('teamMemberForm').style.display = 'block';
   document.getElementById('tm_name').focus();
 }
@@ -5312,6 +5323,7 @@ function editTeamMember(idx) {
   document.getElementById('tm_role').value = tm.role || 'loa';
   document.getElementById('tm_email').value = tm.email || '';
   document.getElementById('tm_phone').value = tm.phone || '';
+  document.getElementById('tm_sms_opt_in').checked = tm.sms_opt_in || false;
   document.getElementById('teamMemberForm').style.display = 'block';
 }
 
@@ -5327,7 +5339,8 @@ function saveTeamMember() {
     name: name,
     role: document.getElementById('tm_role').value,
     email: document.getElementById('tm_email').value.trim(),
-    phone: document.getElementById('tm_phone').value.trim()
+    phone: document.getElementById('tm_phone').value.trim(),
+    sms_opt_in: document.getElementById('tm_sms_opt_in').checked
   };
 
   if (editingTeamIdx >= 0) {
