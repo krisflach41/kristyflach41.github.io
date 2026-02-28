@@ -803,10 +803,11 @@ h1 {
 
   <div class="week-review-card">
     <span class="blog-category">Week In Review</span>
-    <h3>Week Ending February 7, 2026</h3>
-    <p>
-      Major reports, trend direction, and recent rate behavior will appear here on Fridays.
-    </p>
+    <h3 id="wirHeading">Week Ending February 7, 2026</h3>
+    <div class="summary-text" id="wirPreview">
+      <p>Major reports, trend direction, and recent rate behavior will appear here on Fridays.</p>
+    </div>
+    <a href="week-in-review.html" class="read-more-btn" style="display:inline-block;margin-top:16px;">Read Full Review →</a>
   </div>
 
 </section>
@@ -1089,12 +1090,26 @@ window.addEventListener('load', function() {
       
       // ===== UPDATE WEEK IN REVIEW =====
       if (briefingData.weekInReview) {
-        var weekCard = document.querySelector('.week-review-card');
-        if (weekCard) {
-          var weekP = weekCard.querySelector('p');
-          if (weekP) {
-            weekP.textContent = briefingData.weekInReview;
+        var wirHeading = document.getElementById('wirHeading');
+        if (wirHeading && briefingData.weekEndingLabel) {
+          wirHeading.textContent = briefingData.weekEndingLabel;
+        }
+        var wirPreview = document.getElementById('wirPreview');
+        if (wirPreview) {
+          // Show first section as preview
+          var firstParagraph = briefingData.weekInReview.split(/\n\n+/);
+          var previewText = '';
+          for (var wi = 0; wi < firstParagraph.length && previewText.length < 350; wi++) {
+            var chunk = firstParagraph[wi].trim();
+            if (!chunk) continue;
+            // Skip all-caps headings for preview
+            if (chunk.match(/^[A-Z\s&–—:]+$/) && chunk.length < 60) continue;
+            // Strip leading heading label if present
+            chunk = chunk.replace(/^(Rate & Bond Recap|Rate and Bond Recap|Economic Highlights|Housing & Market Impact|Housing and Market Impact|Week Ahead|Key Takeaways|Market Overview|Bottom Line)[:\s—–-]*/i, '');
+            if (chunk) { previewText += chunk + ' '; }
           }
+          if (previewText.length > 350) previewText = previewText.substring(0, 350) + '...';
+          wirPreview.innerHTML = '<p>' + previewText.trim() + '</p>';
         }
       }
       
