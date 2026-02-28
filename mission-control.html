@@ -2208,19 +2208,11 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </div>
         <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
         <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
-        <div class="fc-field" style="grid-column:1/-1;">
-          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;">
-            <input type="checkbox" id="tm_sms_opt_in" style="width:16px;height:16px;accent-color:#22c55e;">
-            <div>
-              <div style="font-size:12px;font-weight:600;color:var(--text-main);">Send SMS Alerts</div>
-              <div style="font-size:10px;color:var(--text-muted);">Receive text alerts when assigned tasks have upcoming deadlines</div>
-            </div>
-          </label>
-        </div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
+      <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
         <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
         <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
+        <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:#f59e0b;text-decoration:none;">Manage SMS Alerts →</a></span>
       </div>
     </div>
     <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
@@ -2282,6 +2274,14 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">SMS Alerts</div>
       <div style="font-size:14px;color:rgba(255,255,255,0.55);margin-bottom:20px;line-height:1.5;">Get text message alerts for upcoming pipeline deadlines. Critical dates like Final CD and Clear to Close are monitored by default.</div>
 
+      <!-- Person Selector -->
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Managing Alerts For</label>
+        <select id="smsPersonSelect" onchange="switchSmsPerson()" style="width:100%;max-width:320px;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,0.06);border:1px solid var(--border);color:#f0f4f8;font-size:14px;font-family:inherit;">
+          <option value="self">Myself (Loan Officer)</option>
+        </select>
+      </div>
+
       <!-- Enable SMS -->
       <div style="display:flex;align-items:center;gap:14px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:16px;">
         <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
@@ -2290,7 +2290,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </label>
         <div>
           <div style="font-size:15px;font-weight:600;color:var(--text-primary);">Enable SMS Alerts</div>
-          <div style="font-size:12px;color:var(--text-muted);">Receive text messages for critical pipeline dates</div>
+          <div style="font-size:12px;color:var(--text-muted);" id="smsEnableDesc">Receive text messages for critical pipeline dates</div>
         </div>
       </div>
 
@@ -2308,21 +2308,23 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           </div>
         </div>
 
-        <!-- Alert Schedule -->
-        <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Alert Schedule</div>
-        <div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <input type="checkbox" id="settingMorningAlert" checked style="width:16px;height:16px;cursor:pointer;">
-            <div>
-              <div style="font-size:14px;color:var(--text-primary);">Morning Briefing</div>
-              <div style="font-size:12px;color:var(--text-muted);">Daily summary of all upcoming dates — sent at 7:00 AM</div>
+        <!-- Alert Schedule (LO only) -->
+        <div id="smsScheduleSection">
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Alert Schedule</div>
+          <div style="padding:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <input type="checkbox" id="settingMorningAlert" checked style="width:16px;height:16px;cursor:pointer;">
+              <div>
+                <div style="font-size:14px;color:var(--text-primary);">Morning Briefing</div>
+                <div style="font-size:12px;color:var(--text-muted);">Daily summary of all upcoming dates — sent at 7:00 AM</div>
+              </div>
             </div>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;">
-            <input type="checkbox" id="settingNoonEscalation" checked style="width:16px;height:16px;cursor:pointer;">
-            <div>
-              <div style="font-size:14px;color:var(--text-primary);">Noon Escalation</div>
-              <div style="font-size:12px;color:var(--text-muted);">If a same-day critical date hasn't been confirmed by noon — escalation text sent</div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <input type="checkbox" id="settingNoonEscalation" checked style="width:16px;height:16px;cursor:pointer;">
+              <div>
+                <div style="font-size:14px;color:var(--text-primary);">Noon Escalation</div>
+                <div style="font-size:12px;color:var(--text-muted);">If a same-day critical date hasn't been confirmed by noon — escalation text sent</div>
+              </div>
             </div>
           </div>
         </div>
@@ -2333,6 +2335,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Choose which dates send SMS alerts. Dashboard alerts always show for all dates.</div>
           <div id="smsDateToggles"></div>
         </div>
+
+        <!-- Save button -->
+        <button class="topbar-btn primary" onclick="saveCurrentPersonSms()" style="font-size:13px;padding:10px 20px;"><i class="fas fa-save"></i> Save SMS Settings</button>
+        <span id="smsSaveResult" style="font-size:12px;margin-left:10px;"></span>
       </div>
     </div>
 
@@ -5309,7 +5315,7 @@ function openTeamMemberForm() {
   document.getElementById('tm_role').value = 'loa';
   document.getElementById('tm_email').value = '';
   document.getElementById('tm_phone').value = '';
-  document.getElementById('tm_sms_opt_in').checked = false;
+  document.getElementById('tmSmsLink').style.display = 'none';
   document.getElementById('teamMemberForm').style.display = 'block';
   document.getElementById('tm_name').focus();
 }
@@ -5323,7 +5329,7 @@ function editTeamMember(idx) {
   document.getElementById('tm_role').value = tm.role || 'loa';
   document.getElementById('tm_email').value = tm.email || '';
   document.getElementById('tm_phone').value = tm.phone || '';
-  document.getElementById('tm_sms_opt_in').checked = tm.sms_opt_in || false;
+  document.getElementById('tmSmsLink').style.display = 'inline';
   document.getElementById('teamMemberForm').style.display = 'block';
 }
 
@@ -5339,8 +5345,7 @@ function saveTeamMember() {
     name: name,
     role: document.getElementById('tm_role').value,
     email: document.getElementById('tm_email').value.trim(),
-    phone: document.getElementById('tm_phone').value.trim(),
-    sms_opt_in: document.getElementById('tm_sms_opt_in').checked
+    phone: document.getElementById('tm_phone').value.trim()
   };
 
   if (editingTeamIdx >= 0) {
@@ -6048,13 +6053,60 @@ function renderDashAlerts() {
 }
 
 // ===== SETTINGS — SMS ALERTS =====
+var smsCurrentPerson = 'self'; // 'self' or team member db id
+
 function toggleSmsSection() {
   var cb = document.getElementById('settingSmsEnabled');
   var detail = document.getElementById('smsSettingsDetail');
   if (detail) detail.style.display = cb && cb.checked ? 'block' : 'none';
 }
 
-function renderSmsDateToggles() {
+function buildSmsPersonDropdown() {
+  var sel = document.getElementById('smsPersonSelect');
+  if (!sel) return;
+  var html = '<option value="self">Myself (Loan Officer)</option>';
+  loTeamMembers.forEach(function(tm) {
+    var roleLabels = { lo:'LO', loa:'LOA', processor:'Processor' };
+    html += '<option value="' + tm.id + '">' + tm.name + ' (' + (roleLabels[tm.role] || tm.role) + ')</option>';
+  });
+  sel.innerHTML = html;
+  sel.value = smsCurrentPerson;
+}
+
+function switchSmsPerson() {
+  var sel = document.getElementById('smsPersonSelect');
+  smsCurrentPerson = sel ? sel.value : 'self';
+  loadSmsSettingsForPerson(smsCurrentPerson);
+}
+
+function loadSmsSettingsForPerson(personId) {
+  var scheduleSection = document.getElementById('smsScheduleSection');
+
+  if (personId === 'self') {
+    // LO — show schedule section, load from user profile
+    if (scheduleSection) scheduleSection.style.display = 'block';
+    document.getElementById('smsEnableDesc').textContent = 'Receive text messages for critical pipeline dates';
+    // TODO: Load saved prefs from Supabase user profile
+    // For now, just reset to defaults
+    document.getElementById('settingSmsEnabled').checked = false;
+    document.getElementById('settingAlertPhone').value = '';
+    toggleSmsSection();
+    renderSmsDateToggles('self');
+  } else {
+    // Team member — hide schedule (LO controls that), show their per-date toggles
+    if (scheduleSection) scheduleSection.style.display = 'none';
+    var tm = loTeamMembers.find(function(t) { return String(t.id) === String(personId); });
+    if (tm) {
+      document.getElementById('smsEnableDesc').textContent = 'Send text alerts to ' + tm.name + ' for their assigned tasks';
+      document.getElementById('settingSmsEnabled').checked = tm.sms_opt_in || false;
+      document.getElementById('settingAlertPhone').value = tm.phone || '';
+      toggleSmsSection();
+      renderSmsDateToggles(personId);
+    }
+  }
+}
+
+function renderSmsDateToggles(personId) {
   var container = document.getElementById('smsDateToggles');
   if (!container) return;
   var dates = [
@@ -6066,12 +6118,23 @@ function renderSmsDateToggles() {
     { key: 'appraisal', label: 'Appraisal', def: false },
     { key: 'inspection', label: 'Inspection', def: false }
   ];
+
+  // Load saved prefs if available
+  var savedPrefs = null;
+  if (personId && personId !== 'self') {
+    var tm = loTeamMembers.find(function(t) { return String(t.id) === String(personId); });
+    if (tm && tm.alert_date_prefs) {
+      try { savedPrefs = typeof tm.alert_date_prefs === 'string' ? JSON.parse(tm.alert_date_prefs) : tm.alert_date_prefs; } catch(e) {}
+    }
+  }
+
   var html = '';
   dates.forEach(function(d) {
+    var checked = savedPrefs ? (savedPrefs[d.key] || false) : d.def;
     html += '<div class="sms-date-toggle">';
-    html += '<input type="checkbox" id="smsToggle_' + d.key + '"' + (d.def ? ' checked' : '') + '>';
+    html += '<input type="checkbox" id="smsToggle_' + d.key + '"' + (checked ? ' checked' : '') + '>';
     html += '<label for="smsToggle_' + d.key + '">' + d.label + '</label>';
-    if (d.def) html += '<span class="sms-default">ON by default</span>';
+    if (d.def && !savedPrefs) html += '<span class="sms-default">ON by default</span>';
     html += '</div>';
   });
   container.innerHTML = html;
@@ -6081,8 +6144,13 @@ function sendTestSms() {
   var phone = document.getElementById('settingAlertPhone');
   var result = document.getElementById('testSmsResult');
   if (!phone || !phone.value) {
-    if (result) { result.style.color = '#ef4444'; result.textContent = 'Enter your phone number first'; }
+    if (result) { result.style.color = '#ef4444'; result.textContent = 'Enter a phone number first'; }
     return;
+  }
+  var personName = 'You';
+  if (smsCurrentPerson !== 'self') {
+    var tm = loTeamMembers.find(function(t) { return String(t.id) === String(smsCurrentPerson); });
+    if (tm) personName = tm.name;
   }
   if (result) { result.style.color = 'var(--text-muted)'; result.textContent = 'Sending...'; }
 
@@ -6091,7 +6159,7 @@ function sendTestSms() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       to: phone.value,
-      message: '✅ Agent Edge SMS Test — Your alerts are working! Pipeline dates will be monitored and you\'ll receive texts for critical deadlines.'
+      message: '✅ Agent Edge SMS Test — Alerts are working for ' + personName + '! Pipeline dates will be monitored and texts sent for critical deadlines.'
     })
   })
   .then(function(r) { return r.json(); })
@@ -6101,7 +6169,7 @@ function sendTestSms() {
       result.textContent = '✓ Test message sent!';
     } else {
       result.style.color = '#ef4444';
-      result.textContent = 'Failed: ' + (data.error || 'Unknown error');
+      result.textContent = 'Failed: ' + (data.error || 'SMS failed');
     }
   })
   .catch(function(err) {
@@ -6110,12 +6178,10 @@ function sendTestSms() {
   });
 }
 
-function saveAlertSettings() {
-  // Save to Supabase user profile
+function saveCurrentPersonSms() {
+  var resultEl = document.getElementById('smsSaveResult');
   var smsEnabled = document.getElementById('settingSmsEnabled')?.checked || false;
   var phone = document.getElementById('settingAlertPhone')?.value || '';
-  var morningAlert = document.getElementById('settingMorningAlert')?.checked || false;
-  var noonEscalation = document.getElementById('settingNoonEscalation')?.checked || false;
 
   var datePrefs = {};
   ['closing','final_cd','ctc','conditional','emd','appraisal','inspection'].forEach(function(k) {
@@ -6123,35 +6189,100 @@ function saveAlertSettings() {
     datePrefs[k] = cb ? cb.checked : false;
   });
 
-  var settings = {
-    alert_sms_enabled: smsEnabled,
-    alert_phone: phone,
-    alert_morning: morningAlert,
-    alert_noon_escalation: noonEscalation,
-    alert_date_prefs: JSON.stringify(datePrefs)
-  };
+  if (smsCurrentPerson === 'self') {
+    // Save LO settings to user profile
+    var morningAlert = document.getElementById('settingMorningAlert')?.checked || false;
+    var noonEscalation = document.getElementById('settingNoonEscalation')?.checked || false;
+    var settings = {
+      alert_sms_enabled: smsEnabled,
+      alert_phone: phone,
+      alert_morning: morningAlert,
+      alert_noon_escalation: noonEscalation,
+      alert_date_prefs: JSON.stringify(datePrefs)
+    };
 
-  fetch(API_BASE + '/profile', {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_id: getLoggedInUserId(), ...settings })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.success || data.user) {
-      showToast('Settings saved!', 'success');
-    } else {
-      showToast('Save failed', 'error');
+    fetch(API_BASE + '/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: getLoggedInUserId(), ...settings })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success || data.user) {
+        if (resultEl) { resultEl.style.color = '#22c55e'; resultEl.textContent = '✓ Saved!'; }
+        showToast('Your SMS settings saved!', 'success');
+      } else {
+        if (resultEl) { resultEl.style.color = '#ef4444'; resultEl.textContent = 'Save failed'; }
+      }
+      setTimeout(function() { if (resultEl) resultEl.textContent = ''; }, 3000);
+    })
+    .catch(function(err) {
+      if (resultEl) { resultEl.style.color = '#ef4444'; resultEl.textContent = 'Error'; }
+    });
+  } else {
+    // Save team member SMS settings
+    var tm = loTeamMembers.find(function(t) { return String(t.id) === String(smsCurrentPerson); });
+    if (!tm) return;
+
+    var memberUpdate = {
+      id: tm.id,
+      name: tm.name,
+      role: tm.role,
+      email: tm.email,
+      phone: phone,
+      sms_opt_in: smsEnabled,
+      alert_date_prefs: JSON.stringify(datePrefs)
+    };
+
+    fetch(API_BASE + '/ae-loans-api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'save_team_member', user_id: getLoggedInUserId(), member: memberUpdate })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        // Update local copy
+        tm.sms_opt_in = smsEnabled;
+        tm.phone = phone;
+        tm.alert_date_prefs = datePrefs;
+        if (resultEl) { resultEl.style.color = '#22c55e'; resultEl.textContent = '✓ Saved for ' + tm.name + '!'; }
+        showToast('SMS settings saved for ' + tm.name, 'success');
+        renderTeamRoster();
+      } else {
+        if (resultEl) { resultEl.style.color = '#ef4444'; resultEl.textContent = 'Save failed'; }
+      }
+      setTimeout(function() { if (resultEl) resultEl.textContent = ''; }, 3000);
+    })
+    .catch(function(err) {
+      if (resultEl) { resultEl.style.color = '#ef4444'; resultEl.textContent = 'Error'; }
+    });
+  }
+}
+
+function goToSmsSettings() {
+  closeTeamMemberForm();
+  switchView('settings', document.querySelector('.nav-item[onclick*="settings"]'));
+  // Small delay to let Settings render, then scroll to SMS section
+  setTimeout(function() {
+    var sel = document.getElementById('smsPersonSelect');
+    if (sel && editingTeamIdx >= 0 && loTeamMembers[editingTeamIdx]) {
+      sel.value = String(loTeamMembers[editingTeamIdx].id);
+      switchSmsPerson();
     }
-  })
-  .catch(function(err) {
-    showToast('Error saving: ' + err.message, 'error');
-  });
+  }, 300);
+}
+
+function saveAlertSettings() {
+  saveCurrentPersonSms();
 }
 
 function initSettingsView() {
-  renderSmsDateToggles();
-  toggleSmsSection();
+  buildSmsPersonDropdown();
+  smsCurrentPerson = 'self';
+  var sel = document.getElementById('smsPersonSelect');
+  if (sel) sel.value = 'self';
+  loadSmsSettingsForPerson('self');
 }
 
 // ===== CALENDAR =====
