@@ -273,6 +273,7 @@ loginForm.addEventListener('submit', async function(e) {
       sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
     }
     sessionStorage.setItem('agentEdgeHasHeadshot', data.hasHeadshot ? 'true' : 'false');
+    sessionStorage.setItem('agentEdgeLoUserId', data.loUserId || 'default');
 
     // Check if temp password
     if (data.tempPassword) {
