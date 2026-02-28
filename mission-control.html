@@ -1580,6 +1580,11 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div id="ppLeaderboard"></div>
         </div>
         <div>
+          <!-- Currently Online -->
+          <div class="mc-panel" id="ppOnlinePanel">
+            <div class="mc-panel-head"><div class="mc-blinker green" style="animation:blink 1.5s infinite;"></div><div class="mc-panel-title">ONLINE NOW</div><div class="mc-status" id="ppOnlineCount">—</div></div>
+            <div id="ppOnlineList" style="max-height:160px;overflow-y:auto;"></div>
+          </div>
           <!-- Top Reports -->
           <div class="mc-panel">
             <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOP REPORTS</div><div class="mc-status">THIS MONTH</div></div>
@@ -3501,6 +3506,57 @@ function ppBuildDashboard(){
   function top5(data){var h='';data.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(255,255,255,0.01);"><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:rgba(255,255,255,0.6);font-family:Share Tech Mono,monospace;flex:1;">'+d.n+'</div><div style="font-family:Orbitron,sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});return h;}
   var tr=document.getElementById('ppTopReports');if(tr)tr.innerHTML=top5(topR);
   var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=top5(topF);
+  // Load who's online
+  ppLoadOnlineUsers();
+}
+
+function ppLoadOnlineUsers() {
+  var loId = localStorage.getItem('agent_edge_user') || 'default';
+  fetch(API_BASE + '/track?action=online&lo_user_id=' + loId)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var countEl = document.getElementById('ppOnlineCount');
+      var listEl = document.getElementById('ppOnlineList');
+      if (!countEl || !listEl) return;
+
+      var online = data.online || [];
+      countEl.textContent = online.length;
+
+      if (online.length === 0) {
+        listEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px 0;text-align:center;">No realtors online right now</div>';
+        return;
+      }
+
+      var h = '';
+      online.forEach(function(u) {
+        var initials = (u.user_name || u.user_email || '?').split(' ').map(function(w) { return w[0]; }).join('').substring(0, 2).toUpperCase();
+        var ago = ppTimeAgo(u.last_active);
+        var pageName = u.last_page || 'Portal';
+
+        h += '<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:6px;margin-bottom:2px;">';
+        h += '<div style="position:relative;width:28px;height:28px;border-radius:50%;background:rgba(34,197,94,0.12);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#22c55e;">' + initials;
+        h += '<div style="position:absolute;bottom:-1px;right:-1px;width:8px;height:8px;border-radius:50%;background:#22c55e;border:2px solid var(--bg-card);"></div>';
+        h += '</div>';
+        h += '<div style="flex:1;min-width:0;">';
+        h += '<div style="font-size:12px;font-weight:600;color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (u.user_name || u.user_email) + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + pageName + ' · ' + ago + '</div>';
+        h += '</div>';
+        h += '</div>';
+      });
+      listEl.innerHTML = h;
+    })
+    .catch(function() {
+      var listEl = document.getElementById('ppOnlineList');
+      if (listEl) listEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px 0;text-align:center;">—</div>';
+    });
+}
+
+function ppTimeAgo(ts) {
+  if (!ts) return '';
+  var diff = Math.round((Date.now() - new Date(ts).getTime()) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  return Math.floor(diff / 3600) + 'h ago';
 }
 
 function ppParseOrderItems(raw){
