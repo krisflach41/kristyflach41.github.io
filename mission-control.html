@@ -1705,19 +1705,77 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 
     <!-- DASHBOARD -->
     <div id="emDashboard">
-      <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+      <div class="dash-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
         <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value" id="emStatSent">--</div></div>
         <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value" id="emStatOpen">--</div></div>
         <div class="stat-card orange"><div class="stat-label">Active Campaigns</div><div class="stat-value" id="emStatCampaigns">--</div></div>
+        <div class="stat-card" style="border-left:3px solid #a855f7;"><div class="stat-label">Total Enrolled</div><div class="stat-value" id="emStatEnrolled">--</div></div>
       </div>
+
+      <!-- Upcoming Sends -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title">UPCOMING SENDS (next 7 days)</div></div>
+        <div id="emUpcomingSends" style="padding:8px 0;"></div>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <!-- Campaign Performance -->
         <div class="mc-panel">
-          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVE DRIPS</div></div>
-          <div id="emActiveDrips" style="padding:8px 0;"></div>
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">CAMPAIGN PERFORMANCE</div></div>
+          <div id="emCampaignPerf" style="padding:8px 0;"></div>
         </div>
+        <!-- Recent Activity -->
         <div class="mc-panel">
-          <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">RECENT SENDS</div></div>
+          <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">RECENT ACTIVITY</div></div>
           <div id="emRecentSends" style="padding:8px 0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGN DETAIL VIEW -->
+    <div id="emCampaignDetail" style="display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <button class="topbar-btn" onclick="emCloseCampaignDetail()" style="font-size:11px;"><i class="fas fa-arrow-left"></i> Back</button>
+        <div style="flex:1;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);" id="emDetailName"></div>
+          <div style="font-size:11px;color:var(--text-muted);" id="emDetailMeta"></div>
+        </div>
+        <span id="emDetailStatus" style="font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;"></span>
+        <button class="topbar-btn" id="emDetailToggleBtn" onclick="emDetailToggle()" style="font-size:11px;"></button>
+        <button class="topbar-btn" onclick="emDetailEdit()" style="font-size:11px;"><i class="fas fa-edit"></i> Edit</button>
+      </div>
+
+      <!-- Email Timeline -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">EMAIL SEQUENCE</div></div>
+        <div id="emDetailTimeline" style="padding:12px;"></div>
+      </div>
+
+      <!-- Enrollments -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div><div class="mc-panel-title">ENROLLED CONTACTS</div>
+          <div style="margin-left:auto;"><button class="topbar-btn primary" onclick="emOpenEnrollModal()" style="font-size:10px;padding:4px 10px;"><i class="fas fa-user-plus"></i> Add People</button></div>
+        </div>
+        <div id="emDetailEnrollments" style="padding:8px 0;"></div>
+      </div>
+
+      <!-- Enroll Modal -->
+      <div id="emEnrollOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:550px;max-height:70vh;overflow-y:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:700;"><i class="fas fa-user-plus" style="color:#3b82f6;"></i> Enroll Contacts</div>
+            <button class="topbar-btn" onclick="emCloseEnrollModal()" style="font-size:11px;">✕</button>
+          </div>
+          <div class="fc-field" style="margin-bottom:12px;">
+            <div class="fc-lbl">Search your contacts</div>
+            <input id="emEnrollSearch" placeholder="Type a name or email..." oninput="emFilterEnrollList()">
+          </div>
+          <div id="emEnrollList" style="max-height:300px;overflow-y:auto;margin-bottom:12px;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="emEnrollCount" style="font-size:11px;color:var(--text-muted);">0 selected</div>
+            <button class="topbar-btn primary" onclick="emBulkEnroll()"><i class="fas fa-check"></i> Enroll Selected</button>
+          </div>
         </div>
       </div>
     </div>
@@ -5979,14 +6037,18 @@ function emTab(tab, el) {
 
 function loadEmailCenter() {
   if (emLoaded) { emLoadDashboard(); return; }
+  emLoadTemplates(); // preload for step renderer
   emLoadDashboard();
   emLoaded = true;
 }
 
 function emLoadDashboard() {
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+
+  // Stats
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'email_stats', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+    body: JSON.stringify({ action: 'email_stats', lo_user_id: loUser })
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (data.success) {
       document.getElementById('emStatSent').textContent = data.stats.sent_this_month || 0;
@@ -5994,35 +6056,76 @@ function emLoadDashboard() {
     }
   }).catch(function() {});
 
+  // Campaigns + performance
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'list_campaigns', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+    body: JSON.stringify({ action: 'list_campaigns', lo_user_id: loUser })
   }).then(function(r) { return r.json(); }).then(function(data) {
     emCampaigns = data.campaigns || [];
     var active = emCampaigns.filter(function(c) { return c.status === 'active'; });
     document.getElementById('emStatCampaigns').textContent = active.length;
 
-    var el = document.getElementById('emActiveDrips');
+    // Campaign performance panel
+    var el = document.getElementById('emCampaignPerf');
     if (active.length === 0) {
-      el.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No active campaigns</div>';
+      el.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No active campaigns. Go to Campaigns to activate one.</div>';
     } else {
       var h = '';
       active.forEach(function(c) {
-        var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive', anniversary:'Anniversary', rate_drop:'Rate Drop' };
-        h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;margin-bottom:3px;">';
+        var stepCount = c.steps ? c.steps.length : 0;
+        h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;margin-bottom:3px;cursor:pointer;" onclick="emOpenCampaignDetail(' + c.id + ')" onmouseover="this.style.background=\'rgba(255,255,255,0.03)\'" onmouseout="this.style.background=\'none\'">';
         h += '<div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>';
         h += '<div style="flex:1;font-size:12px;color:rgba(255,255,255,0.7);">' + c.name + '</div>';
-        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + (trigLabels[c.trigger_type] || c.trigger_type) + '</div>';
-        h += '<div style="font-size:10px;color:rgba(59,130,246,0.6);">' + (c.steps ? c.steps.length : 0) + ' steps</div>';
+        h += '<div style="font-size:10px;color:rgba(59,130,246,0.6);">' + stepCount + ' emails</div>';
+        h += '<i class="fas fa-chevron-right" style="font-size:9px;color:rgba(255,255,255,0.15);"></i>';
         h += '</div>';
       });
       el.innerHTML = h;
     }
   }).catch(function() {});
 
+  // Upcoming sends
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'email_history', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', limit: 5 })
+    body: JSON.stringify({ action: 'upcoming_sends', lo_user_id: loUser })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var el = document.getElementById('emUpcomingSends');
+    var upcoming = data.upcoming || [];
+    if (upcoming.length === 0) {
+      el.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No upcoming sends in the next 7 days</div>';
+    } else {
+      var h = '';
+      upcoming.forEach(function(u) {
+        var d = new Date(u.next_send_at);
+        var now = new Date();
+        var diffDays = Math.ceil((d - now) / 86400000);
+        var when = diffDays <= 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : 'In ' + diffDays + ' days';
+        h += '<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;">';
+        h += '<div style="font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(249,115,22,0.12);color:#f97316;font-weight:600;min-width:70px;text-align:center;">' + when + '</div>';
+        h += '<div style="flex:1;min-width:0;">';
+        h += '<div style="font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Email ' + (u.current_step + 1) + ' → ' + (u.contact_name || u.contact_email) + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + (u.campaign_name || 'Campaign') + '</div>';
+        h += '</div>';
+        h += '</div>';
+      });
+      el.innerHTML = h;
+    }
+  }).catch(function() {
+    document.getElementById('emUpcomingSends').innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No upcoming sends</div>';
+  });
+
+  // Total enrolled
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'total_enrolled', lo_user_id: loUser })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    document.getElementById('emStatEnrolled').textContent = data.total || 0;
+  }).catch(function() { document.getElementById('emStatEnrolled').textContent = '0'; });
+
+  // Recent activity
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'email_history', lo_user_id: loUser, limit: 10 })
   }).then(function(r) { return r.json(); }).then(function(data) {
     var el = document.getElementById('emRecentSends');
     var emails = data.emails || [];
@@ -6033,10 +6136,12 @@ function emLoadDashboard() {
       emails.forEach(function(e) {
         var d = new Date(e.sent_at);
         var dateStr = (d.getMonth()+1) + '/' + d.getDate();
+        var statusIcon = e.status === 'sent' ? '📤' : e.status === 'opened' ? '👀' : e.status === 'clicked' ? '🖱️' : e.status === 'bounced' ? '⚠️' : '❌';
         h += '<div style="display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:6px;margin-bottom:2px;">';
+        h += '<div style="font-size:12px;">' + statusIcon + '</div>';
         h += '<div style="flex:1;min-width:0;">';
         h += '<div style="font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + e.subject + '</div>';
-        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">To: ' + e.to_email + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">To: ' + (e.to_name || e.to_email) + '</div>';
         h += '</div>';
         h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + dateStr + '</div>';
         h += '</div>';
@@ -6044,6 +6149,272 @@ function emLoadDashboard() {
       el.innerHTML = h;
     }
   }).catch(function() {});
+}
+
+// ===== CAMPAIGN DETAIL VIEW =====
+var emDetailCampaignId = null;
+var emDetailData = null;
+
+function emOpenCampaignDetail(id) {
+  emDetailCampaignId = id;
+  document.getElementById('emCampaigns').style.display = 'none';
+  document.getElementById('emCampaignDetail').style.display = 'block';
+  emLoadCampaignDetail(id);
+}
+
+function emCloseCampaignDetail() {
+  document.getElementById('emCampaignDetail').style.display = 'none';
+  document.getElementById('emCampaigns').style.display = 'block';
+  emLoadCampaigns();
+}
+
+function emLoadCampaignDetail(id) {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_campaign', campaign_id: id })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (!data.success) return;
+    emDetailData = data.campaign;
+    var c = data.campaign;
+    var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
+
+    document.getElementById('emDetailName').textContent = c.name;
+    document.getElementById('emDetailMeta').textContent = (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + (c.steps || []).length + ' emails · ' + (c.description || '');
+
+    var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'rgba(255,255,255,0.3)';
+    var statusEl = document.getElementById('emDetailStatus');
+    statusEl.textContent = c.status.charAt(0).toUpperCase() + c.status.slice(1);
+    statusEl.style.background = statusColor + '20';
+    statusEl.style.color = statusColor;
+
+    var toggleBtn = document.getElementById('emDetailToggleBtn');
+    if (c.status === 'active') {
+      toggleBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+      toggleBtn.onclick = function() { emToggleCampaign(c.id, 'paused'); setTimeout(function() { emLoadCampaignDetail(c.id); }, 500); };
+    } else {
+      toggleBtn.innerHTML = '<i class="fas fa-play"></i> Activate';
+      toggleBtn.onclick = function() { emToggleCampaign(c.id, 'active'); setTimeout(function() { emLoadCampaignDetail(c.id); }, 500); };
+    }
+
+    // Email timeline
+    var timelineEl = document.getElementById('emDetailTimeline');
+    var steps = c.steps || [];
+    if (steps.length === 0) {
+      timelineEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:16px;">No emails in this campaign yet.</div>';
+    } else {
+      var th = '';
+      var cumulativeDays = 0;
+      steps.forEach(function(s, i) {
+        cumulativeDays += (s.delay_days || 0);
+        var tpl = emTemplates.find(function(t) { return t.id === s.template_id; });
+        var subject = s.subject_override || (tpl ? tpl.subject : 'Untitled');
+        var dayLabel = i === 0 ? (s.delay_days === 0 ? 'Immediately' : 'Day ' + s.delay_days) : 'Day ' + cumulativeDays;
+
+        th += '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px;">';
+        // Timeline connector
+        th += '<div style="display:flex;flex-direction:column;align-items:center;">';
+        th += '<div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3b82f6;">' + (i+1) + '</div>';
+        if (i < steps.length - 1) th += '<div style="width:2px;height:100%;min-height:40px;background:rgba(59,130,246,0.1);"></div>';
+        th += '</div>';
+        // Content
+        th += '<div style="flex:1;padding:4px 0 16px;" id="emStepDetail_' + i + '">';
+        th += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
+        th += '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;font-weight:600;">' + dayLabel + '</span>';
+        if (s.delay_days > 0 && i > 0) th += '<span style="font-size:9px;color:rgba(255,255,255,0.2);">(' + s.delay_days + ' days after previous)</span>';
+        th += '</div>';
+        th += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">' + subject.replace(/\{\{first_name\}\}/g, '{{first_name}}') + '</div>';
+        th += '<div style="font-size:10px;color:var(--text-muted);">' + (tpl ? tpl.name : 'Custom') + '</div>';
+        th += '<button class="topbar-btn" style="font-size:10px;padding:3px 8px;margin-top:6px;" onclick="emToggleEmailPreview(' + i + ')"><i class="fas fa-eye"></i> Preview</button>';
+        th += '<div id="emEmailPreview_' + i + '" style="display:none;margin-top:8px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6;"></div>';
+        th += '</div></div>';
+      });
+      timelineEl.innerHTML = th;
+
+      // Pre-load preview content
+      steps.forEach(function(s, i) {
+        var tpl = emTemplates.find(function(t) { return t.id === s.template_id; });
+        if (tpl) {
+          var previewEl = document.getElementById('emEmailPreview_' + i);
+          if (previewEl) previewEl.innerHTML = tpl.body_html.replace(/\{\{first_name\}\}/g, '<span style="color:#3b82f6;">Jane</span>').replace(/\{\{name\}\}/g, '<span style="color:#3b82f6;">Jane Smith</span>');
+        }
+      });
+    }
+
+    // Enrollments
+    var enrollEl = document.getElementById('emDetailEnrollments');
+    var enrollments = c.enrollments || [];
+    if (enrollments.length === 0) {
+      enrollEl.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:16px;text-align:center;">No contacts enrolled yet. Click "Add People" to get started.</div>';
+    } else {
+      var totalSteps = steps.length;
+      var eh = '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;gap:8px;padding:6px 12px;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-bottom:4px;"><div>Contact</div><div>Progress</div><div>Next Send</div><div>Status</div><div></div></div>';
+      enrollments.forEach(function(e) {
+        var progress = e.current_step + ' of ' + totalSteps;
+        var progressPct = totalSteps > 0 ? Math.round((e.current_step / totalSteps) * 100) : 0;
+        var nextSend = e.next_send_at ? emFormatDate(e.next_send_at) : '—';
+        var statusColor = e.status === 'active' ? '#22c55e' : e.status === 'completed' ? '#3b82f6' : e.status === 'paused' ? '#f59e0b' : 'rgba(255,255,255,0.3)';
+
+        eh += '<div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 80px;gap:8px;padding:8px 12px;border-radius:6px;font-size:12px;align-items:center;">';
+        eh += '<div style="color:rgba(255,255,255,0.7);">' + (e.contact_name || e.contact_email) + '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + e.contact_email + '</div></div>';
+        eh += '<div><div style="display:flex;align-items:center;gap:6px;"><div style="flex:1;height:4px;background:rgba(255,255,255,0.06);border-radius:2px;"><div style="width:' + progressPct + '%;height:100%;background:#3b82f6;border-radius:2px;"></div></div><span style="font-size:10px;color:rgba(255,255,255,0.4);">' + progress + '</span></div></div>';
+        eh += '<div style="font-size:11px;color:rgba(255,255,255,0.4);">' + nextSend + '</div>';
+        eh += '<div><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';">' + e.status + '</span></div>';
+        eh += '<div>';
+        if (e.status === 'active') {
+          eh += '<button class="topbar-btn" style="font-size:9px;padding:2px 6px;" onclick="emPauseEnrollment(' + e.id + ')"><i class="fas fa-pause"></i></button> ';
+        } else if (e.status === 'paused') {
+          eh += '<button class="topbar-btn" style="font-size:9px;padding:2px 6px;" onclick="emResumeEnrollment(' + e.id + ')"><i class="fas fa-play"></i></button> ';
+        }
+        eh += '<button class="topbar-btn danger" style="font-size:9px;padding:2px 6px;" onclick="emRemoveEnrollment(' + e.id + ')"><i class="fas fa-times"></i></button>';
+        eh += '</div></div>';
+      });
+      enrollEl.innerHTML = eh;
+    }
+  });
+}
+
+function emToggleEmailPreview(idx) {
+  var el = document.getElementById('emEmailPreview_' + idx);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function emDetailEdit() {
+  if (!emDetailData) return;
+  emCloseCampaignDetail();
+  emEditCampaign(emDetailData.id);
+}
+
+function emDetailToggle() {
+  if (!emDetailData) return;
+  var newStatus = emDetailData.status === 'active' ? 'paused' : 'active';
+  emToggleCampaign(emDetailData.id, newStatus);
+  setTimeout(function() { emLoadCampaignDetail(emDetailData.id); }, 500);
+}
+
+function emFormatDate(dateStr) {
+  var d = new Date(dateStr);
+  var now = new Date();
+  var diffDays = Math.ceil((d - now) / 86400000);
+  if (diffDays <= 0) return 'Today';
+  if (diffDays === 1) return 'Tomorrow';
+  return (d.getMonth()+1) + '/' + d.getDate();
+}
+
+// ===== ENROLLMENT MANAGEMENT =====
+var emEnrollContacts = [];
+var emEnrollSelected = [];
+
+function emOpenEnrollModal() {
+  document.getElementById('emEnrollOverlay').style.display = 'flex';
+  emEnrollSelected = [];
+  document.getElementById('emEnrollCount').textContent = '0 selected';
+  document.getElementById('emEnrollSearch').value = '';
+  // Load CRM contacts
+  fetch(API_BASE + '/crm-contacts?lo_user_id=' + encodeURIComponent(localStorage.getItem('agent_edge_user') || 'default'))
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    emEnrollContacts = data.contacts || data || [];
+    emRenderEnrollList();
+  }).catch(function() {
+    document.getElementById('emEnrollList').innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;">Could not load contacts</div>';
+  });
+}
+
+function emCloseEnrollModal() {
+  document.getElementById('emEnrollOverlay').style.display = 'none';
+}
+
+function emRenderEnrollList() {
+  var search = (document.getElementById('emEnrollSearch').value || '').toLowerCase();
+  var filtered = emEnrollContacts.filter(function(c) {
+    var name = ((c.first_name || '') + ' ' + (c.last_name || '') + ' ' + (c.email || '')).toLowerCase();
+    return name.indexOf(search) !== -1;
+  });
+
+  var el = document.getElementById('emEnrollList');
+  if (filtered.length === 0) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;">No contacts found</div>';
+    return;
+  }
+
+  // Check who's already enrolled
+  var existingEmails = {};
+  if (emDetailData && emDetailData.enrollments) {
+    emDetailData.enrollments.forEach(function(e) { existingEmails[e.contact_email.toLowerCase()] = true; });
+  }
+
+  var h = '';
+  filtered.slice(0, 50).forEach(function(c) {
+    var email = (c.email || '').toLowerCase();
+    var name = ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || email;
+    var alreadyEnrolled = existingEmails[email];
+    var isSelected = emEnrollSelected.indexOf(email) !== -1;
+
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;' + (alreadyEnrolled ? 'opacity:0.4;' : 'cursor:pointer;') + '" ';
+    if (!alreadyEnrolled) {
+      h += 'onclick="emToggleEnrollSelect(\'' + email.replace(/'/g, "\\'") + '\',\'' + name.replace(/'/g, "\\'") + '\')" onmouseover="this.style.background=\'rgba(255,255,255,0.03)\'" onmouseout="this.style.background=\'none\'"';
+    }
+    h += '>';
+    h += '<div style="width:20px;height:20px;border-radius:4px;border:2px solid ' + (isSelected ? '#3b82f6' : 'rgba(255,255,255,0.15)') + ';background:' + (isSelected ? '#3b82f6' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0;">';
+    if (isSelected) h += '<i class="fas fa-check" style="font-size:10px;color:white;"></i>';
+    if (alreadyEnrolled) h += '<i class="fas fa-minus" style="font-size:10px;color:rgba(255,255,255,0.3);"></i>';
+    h += '</div>';
+    h += '<div style="flex:1;"><div style="font-size:12px;color:rgba(255,255,255,0.7);">' + name + '</div><div style="font-size:10px;color:rgba(255,255,255,0.3);">' + email + '</div></div>';
+    if (alreadyEnrolled) h += '<span style="font-size:9px;color:rgba(255,255,255,0.3);">Already enrolled</span>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function emFilterEnrollList() { emRenderEnrollList(); }
+
+function emToggleEnrollSelect(email, name) {
+  var idx = emEnrollSelected.findIndex(function(s) { return s.email === email; });
+  if (idx >= 0) {
+    emEnrollSelected.splice(idx, 1);
+  } else {
+    emEnrollSelected.push({ email: email, name: name });
+  }
+  document.getElementById('emEnrollCount').textContent = emEnrollSelected.length + ' selected';
+  emRenderEnrollList();
+}
+
+function emBulkEnroll() {
+  if (emEnrollSelected.length === 0 || !emDetailCampaignId) { showToast('Select at least one contact'); return; }
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+  var promises = emEnrollSelected.map(function(s) {
+    return fetch(API_BASE + '/email-center', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'enroll', campaign_id: emDetailCampaignId, contact_email: s.email, contact_name: s.name, lo_user_id: loUser })
+    });
+  });
+  Promise.all(promises).then(function() {
+    emCloseEnrollModal();
+    emLoadCampaignDetail(emDetailCampaignId);
+    showToast(emEnrollSelected.length + ' contact(s) enrolled!', 'success');
+  });
+}
+
+function emPauseEnrollment(id) {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'unenroll', enrollment_id: id })
+  }).then(function() { emLoadCampaignDetail(emDetailCampaignId); showToast('Enrollment paused'); });
+}
+
+function emResumeEnrollment(id) {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'resume_enrollment', enrollment_id: id })
+  }).then(function() { emLoadCampaignDetail(emDetailCampaignId); showToast('Enrollment resumed', 'success'); });
+}
+
+function emRemoveEnrollment(id) {
+  if (!confirm('Remove this contact from the campaign?')) return;
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'remove_enrollment', enrollment_id: id })
+  }).then(function() { emLoadCampaignDetail(emDetailCampaignId); showToast('Contact removed'); });
 }
 
 // ===== CAMPAIGNS =====
@@ -6072,8 +6443,8 @@ function emRenderCampaignList() {
 
     h += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
     h += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
-    h += '<div style="flex:1;">';
-    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + '</div>';
+    h += '<div style="flex:1;cursor:pointer;" onclick="emOpenCampaignDetail(' + c.id + ')">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + ' <i class="fas fa-chevron-right" style="font-size:10px;opacity:0.3;"></i></div>';
     h += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + stepCount + ' email' + (stepCount !== 1 ? 's' : '') + (c.description ? ' · ' + c.description : '') + '</div>';
     h += '</div>';
     h += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
