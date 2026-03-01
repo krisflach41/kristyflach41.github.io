@@ -168,6 +168,7 @@ body {
 .topbar-btn.primary { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
 .topbar-btn.primary:hover { background: #2563eb; }
 .topbar-btn.danger { border-color: rgba(239,68,68,0.2); color: var(--accent-red); }
+.topbar-btn.em-tab.active { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); color: #3b82f6; }
 .topbar-btn.danger:hover { background: rgba(239,68,68,0.1); }
 .topbar-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .topbar-search {
@@ -1694,10 +1695,9 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div><div class="topbar-title">Email Center</div><div class="topbar-subtitle">Campaigns, templates & send history</div></div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn" onclick="emTab('dashboard',this)">Dashboard</button>
-      <button class="topbar-btn" onclick="emTab('campaigns',this)">Campaigns</button>
-      <button class="topbar-btn" onclick="emTab('templates',this)">Templates</button>
-      <button class="topbar-btn" onclick="emTab('history',this)">History</button>
+      <button class="topbar-btn em-tab active" id="emTabDashboard" onclick="emTab('dashboard')">Dashboard</button>
+      <button class="topbar-btn em-tab" id="emTabCampaigns" onclick="emTab('campaigns')">Campaigns</button>
+      <button class="topbar-btn em-tab" id="emTabTemplates" onclick="emTab('templates')">Templates</button>
       <button class="topbar-btn primary" onclick="emOpenCompose()">+ Compose</button>
     </div>
   </div>
@@ -1903,12 +1903,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </div>
         <input type="hidden" id="emTplEditId" value="">
       </div>
-    </div>
-
-    <!-- HISTORY -->
-    <div id="emHistory" style="display:none;">
-      <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">Send History</div>
-      <div id="emHistoryList"></div>
     </div>
 
     <!-- COMPOSE (modal overlay) -->
@@ -4550,6 +4544,13 @@ function saveFundedContact() {
       var label = outcome.charAt(0).toUpperCase() + outcome.slice(1);
       showToast('<i class="fas ' + (toastIcons[outcome] || 'fa-check') + '" style="color:' + (toastColors[outcome] || '#fff') + ';"></i> ' + fundingContactName + ' — ' + label + '! Saved to history.');
       if (typeof loadCrm === 'function') loadCrm();
+      
+      // Auto-enroll in drip campaigns based on outcome
+      if (outcome === 'funded' && loan.borrower_email) {
+        emAutoEnroll('loan_funded', loan.borrower_email, (loan.borrower_first || '') + ' ' + (loan.borrower_last || ''));
+        // Also trigger anniversary enrollment
+        emAutoEnroll('anniversary', loan.borrower_email, (loan.borrower_first || '') + ' ' + (loan.borrower_last || ''));
+      }
     } else {
       showToast('Error: ' + (result.message || 'Unknown error'));
     }
@@ -6023,16 +6024,20 @@ var emCampaigns = [];
 var emEditSteps = [];
 var emLoaded = false;
 
-function emTab(tab, el) {
-  ['emDashboard','emCampaigns','emTemplates','emHistory'].forEach(function(id) {
+function emTab(tab) {
+  ['emDashboard','emCampaigns','emCampaignDetail','emTemplates'].forEach(function(id) {
     var e = document.getElementById(id); if (e) e.style.display = 'none';
   });
-  var map = { dashboard:'emDashboard', campaigns:'emCampaigns', templates:'emTemplates', history:'emHistory' };
+  ['emTabDashboard','emTabCampaigns','emTabTemplates'].forEach(function(id) {
+    var e = document.getElementById(id); if (e) e.classList.remove('active');
+  });
+  var map = { dashboard:'emDashboard', campaigns:'emCampaigns', templates:'emTemplates' };
+  var tabMap = { dashboard:'emTabDashboard', campaigns:'emTabCampaigns', templates:'emTabTemplates' };
   var t = document.getElementById(map[tab]); if (t) t.style.display = 'block';
+  var tb = document.getElementById(tabMap[tab]); if (tb) tb.classList.add('active');
   if (tab === 'dashboard') emLoadDashboard();
   if (tab === 'campaigns') emLoadCampaigns();
   if (tab === 'templates') emLoadTemplates();
-  if (tab === 'history') emLoadHistory();
 }
 
 function loadEmailCenter() {
@@ -6717,31 +6722,20 @@ function emAiGenerate() {
 }
 
 // ===== HISTORY =====
-function emLoadHistory() {
-  fetch(API_BASE + '/email-center', {
+// ===== AUTO-ENROLLMENT UTILITY =====
+function emAutoEnroll(trigger, email, name) {
+  if (!email) return;
+  fetch(API_BASE + '/auto-enroll', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'email_history', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', limit: 50 })
+    body: JSON.stringify({
+      trigger: trigger,
+      contact_email: email,
+      contact_name: name || '',
+      lo_user_id: localStorage.getItem('agent_edge_user') || 'default'
+    })
   }).then(function(r) { return r.json(); }).then(function(data) {
-    var el = document.getElementById('emHistoryList');
-    var emails = data.emails || [];
-    if (emails.length === 0) {
-      el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;">No emails sent yet</div>';
-      return;
-    }
-    var h = '<div style="display:grid;grid-template-columns:2fr 3fr 1fr 1fr;gap:8px;padding:8px 12px;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-bottom:4px;"><div>To</div><div>Subject</div><div>Status</div><div>Date</div></div>';
-    emails.forEach(function(e) {
-      var d = new Date(e.sent_at);
-      var dateStr = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
-      var statusColor = e.status === 'sent' ? '#3b82f6' : e.status === 'opened' ? '#22c55e' : e.status === 'failed' ? '#ef4444' : 'rgba(255,255,255,0.3)';
-      h += '<div style="display:grid;grid-template-columns:2fr 3fr 1fr 1fr;gap:8px;padding:8px 12px;border-radius:6px;margin-bottom:2px;font-size:12px;">';
-      h += '<div style="color:rgba(255,255,255,0.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (e.to_name || e.to_email) + '</div>';
-      h += '<div style="color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + e.subject + '</div>';
-      h += '<div><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';">' + e.status + '</span></div>';
-      h += '<div style="color:rgba(255,255,255,0.3);font-size:11px;">' + dateStr + '</div>';
-      h += '</div>';
-    });
-    el.innerHTML = h;
-  });
+    if (data.enrolled > 0) console.log('Auto-enrolled ' + email + ' in ' + data.enrolled + ' campaign(s) for trigger: ' + trigger);
+  }).catch(function() {});
 }
 
 // ===== COMPOSE =====
