@@ -46,6 +46,22 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .arm-fields,.buydown-fields{display:none;grid-column:1/-1}
 .arm-fields.visible,.buydown-fields.visible{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 
+/* Expandable fee panels */
+.fee-row{display:flex;align-items:center;gap:6px}
+.fee-expand-btn{width:24px;height:24px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fee-expand-btn:hover{background:rgba(255,255,255,0.08);color:#fff}
+.fee-detail-panel{display:none;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:12px;margin-top:6px;grid-column:1/-1}
+.fee-detail-panel.open{display:block}
+.fee-line{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.fee-line input{flex:1;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#fff;font-size:12px;font-family:inherit}
+.fee-line input:first-child{flex:2}
+.fee-line .remove-fee{color:rgba(255,255,255,0.15);cursor:pointer;font-size:10px}.fee-line .remove-fee:hover{color:var(--red)}
+.add-fee-btn{font-size:10px;color:rgba(59,130,246,0.7);cursor:pointer;margin-top:4px;font-weight:600}.add-fee-btn:hover{color:#3b82f6}
+.template-bar{display:flex;gap:8px;align-items:center;grid-column:1/-1;margin-bottom:4px}
+.template-select{flex:1;padding:7px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:12px;font-family:inherit}
+.template-select option{background:#0f2035}
+.template-btn{padding:6px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}.template-btn:hover{color:#fff;background:rgba(255,255,255,0.08)}
+
 /* ===== REPORT OUTPUT ===== */
 .report-container{display:none;max-width:1200px;margin:20px auto}
 .report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
@@ -141,7 +157,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
   <div class="gen-grid" id="borrowerInfo">
     <div class="gen-section">Borrower & Property</div>
     <div class="gen-field"><label>Borrower Name</label><input id="inp_borrower" placeholder="Jane Smith"></div>
-    <div class="gen-field"><label>Property Address</label><input id="inp_address" placeholder="123 Main St, Anytown, OH 43210"></div>
+    <div class="gen-field"><label>Property Address</label><input id="inp_address" placeholder="123 Main St, Anytown, OH 43210" onblur="onAddressBlur()"></div>
     <div class="gen-field"><label>Purchase Price / Property Value</label><input id="inp_price" placeholder="$400,000" oninput="formatCurrency(this);recalcAllScenarios()"></div>
     <div class="gen-field"><label>Transaction Type</label>
       <select id="inp_transType"><option value="purchase">Purchase</option><option value="refi">Refinance</option><option value="cashout">Cash-Out Refinance</option></select>
@@ -151,7 +167,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="gen-field"><label>Annual Property Taxes</label><input id="inp_taxes" placeholder="$4,200" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Annual Homeowners Insurance</label><input id="inp_insurance" placeholder="$1,800" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Annual HOA (optional)</label><input id="inp_hoa" placeholder="$0" oninput="formatCurrency(this)"></div>
-    <div class="gen-field"><label>Appreciation Rate (for projections)</label><input id="inp_appr" placeholder="3.0" value="3.0"></div>
+    <div class="gen-field"><label>Appreciation Rate (for projections)</label><input id="inp_appr" placeholder="3.0" value="3.0"><div class="gen-hint" id="apprHint">Default 3%. Auto-updates from FHFA data when address is entered.</div></div>
   </div>
 
   <!-- SCENARIO TABS -->
@@ -200,8 +216,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ===== LIVE SOFR FETCH =====
 function fetchSofrRate() {
-  // FRED API - uses existing FRED_API_KEY from Vercel
-  // We'll try fetching, but fall back to default if blocked
   try {
     fetch('https://agent-edge-backend.vercel.app/api/sofr-rate')
       .then(function(r) { return r.json(); })
@@ -209,6 +223,107 @@ function fetchSofrRate() {
         if (data.rate) currentSofrRate = parseFloat(data.rate);
       }).catch(function() {});
   } catch(e) {}
+}
+
+// ===== EXPANDABLE FEE PANELS =====
+function toggleFeePanel(id) {
+  var panel = document.getElementById(id);
+  if (panel) panel.classList.toggle('open');
+}
+
+function addFeeLine(containerId, prefix) {
+  var c = document.getElementById(containerId);
+  if (!c) return;
+  var div = document.createElement('div');
+  div.className = 'fee-line';
+  div.innerHTML = '<input placeholder="Fee name" onchange="rollUpFees(\'' + prefix + '\')"><input placeholder="$0" oninput="formatCurrency(this);rollUpFees(\'' + prefix + '\')"><span class="remove-fee" onclick="this.parentElement.remove();rollUpFees(\'' + prefix + '\')"><i class="fas fa-times"></i></span>';
+  c.appendChild(div);
+}
+
+function rollUpFees(prefix) {
+  var containerId = prefix === 'other' ? 'otherFeeLines' : 'tpFeeLines';
+  var totalId = prefix === 'other' ? 'sc_otherFees' : 'sc_thirdParty';
+  var lines = document.getElementById(containerId);
+  if (!lines) return;
+  var total = 0;
+  lines.querySelectorAll('.fee-line').forEach(function(row) {
+    var amtInput = row.querySelectorAll('input')[1];
+    if (amtInput) total += parseCurrency(amtInput.value);
+  });
+  var el = document.getElementById(totalId);
+  if (el) el.value = total > 0 ? fmtMoney(total) : '';
+}
+
+function collectFeeItems(containerId) {
+  var c = document.getElementById(containerId);
+  if (!c) return [];
+  var items = [];
+  c.querySelectorAll('.fee-line').forEach(function(row) {
+    var inputs = row.querySelectorAll('input');
+    if (inputs.length >= 2) items.push({name:inputs[0].value, amt:inputs[1].value});
+  });
+  return items;
+}
+
+// ===== FEE TEMPLATES =====
+function saveFeeTemplate() {
+  var name = prompt('Template name (e.g. "Standard Conv Fees"):');
+  if (!name) return;
+  saveCurrentScenario();
+  var s = scenarios[activeScenario];
+  var templates = JSON.parse(localStorage.getItem('ae_fee_templates') || '[]');
+  templates.push({
+    name: name, origFee: s.origFee, points: s.points,
+    otherLenderFees: s.otherLenderFees, thirdPartyFees: s.thirdPartyFees,
+    prepaidDays: s.prepaidDays,
+    otherFeeItems: s.otherFeeItems, tpFeeItems: s.tpFeeItems
+  });
+  localStorage.setItem('ae_fee_templates', JSON.stringify(templates));
+  alert('Template "' + name + '" saved!');
+  renderScenarioForm(activeScenario);
+}
+
+function loadFeeTemplate() {
+  var sel = document.getElementById('feeTemplateSelect');
+  var idx = parseInt(sel.value);
+  if (isNaN(idx)) return;
+  var templates = JSON.parse(localStorage.getItem('ae_fee_templates') || '[]');
+  var t = templates[idx];
+  if (!t) return;
+  var s = scenarios[activeScenario];
+  s.origFee = t.origFee || ''; s.points = t.points || '0';
+  s.otherLenderFees = t.otherLenderFees || ''; s.thirdPartyFees = t.thirdPartyFees || '';
+  s.prepaidDays = t.prepaidDays || '15';
+  s.otherFeeItems = t.otherFeeItems || null; s.tpFeeItems = t.tpFeeItems || null;
+  renderScenarioForm(activeScenario);
+}
+
+// ===== APPRECIATION AUTO-PULL =====
+var ZIP_STATE = {'01':'MA','02':'MA','03':'NH','04':'ME','05':'VT','06':'CT','07':'NJ','08':'NJ','10':'NY','11':'NY','12':'NY','13':'NY','14':'NY','15':'PA','16':'PA','17':'PA','18':'PA','19':'PA','20':'DC','21':'MD','22':'VA','23':'VA','24':'VA','25':'WV','26':'WV','27':'NC','28':'NC','29':'SC','30':'GA','31':'GA','32':'FL','33':'FL','34':'FL','35':'AL','36':'AL','37':'TN','38':'TN','39':'MS','40':'KY','41':'KY','42':'KY','43':'OH','44':'OH','45':'OH','46':'IN','47':'IN','48':'MI','49':'MI','50':'IA','51':'IA','52':'IA','53':'WI','54':'WI','55':'MN','56':'MT','57':'SD','58':'ND','59':'MT','60':'IL','61':'IL','62':'IL','63':'MO','64':'MO','65':'MO','66':'KS','67':'KS','68':'NE','69':'NE','70':'LA','71':'LA','72':'AR','73':'OK','74':'OK','75':'TX','76':'TX','77':'TX','78':'TX','79':'TX','80':'CO','81':'CO','82':'WY','83':'ID','84':'UT','85':'AZ','86':'AZ','87':'NM','88':'NM','89':'NV','90':'CA','91':'CA','92':'CA','93':'CA','94':'CA','95':'CA','96':'HI','97':'OR','98':'WA','99':'WA'};
+
+function onAddressBlur() {
+  var addr = document.getElementById('inp_address').value.trim();
+  if (!addr || addr.length < 5) return;
+  var stateMatch = addr.match(/,\s*([A-Z]{2})\s*\d{0,5}/i) || addr.match(/\b([A-Z]{2})\s*$/i);
+  var stateCode = null;
+  if (stateMatch) { stateCode = stateMatch[1].toUpperCase(); }
+  else {
+    var zipMatch = addr.match(/\b(\d{5})\b/);
+    if (zipMatch) stateCode = ZIP_STATE[zipMatch[1].substring(0,2)] || null;
+  }
+  if (stateCode) {
+    try {
+      fetch('https://agent-edge-backend.vercel.app/api/appreciation-rate?state=' + stateCode)
+        .then(function(r){return r.json()})
+        .then(function(d){
+          if (d.rate) {
+            document.getElementById('inp_appr').value = d.rate;
+            document.getElementById('apprHint').textContent = 'Auto-filled: ' + d.rate + '% from FHFA data (' + stateCode + '). You can override.';
+            document.getElementById('apprHint').style.color = 'rgba(94,188,138,0.6)';
+          }
+        }).catch(function(){});
+    } catch(e){}
+  }
 }
 
 // ===== CURRENCY FORMATTING =====
@@ -316,6 +431,8 @@ function saveCurrentScenario() {
   s.otherLenderFees = (document.getElementById('sc_otherFees') || {}).value || '';
   s.thirdPartyFees = (document.getElementById('sc_thirdParty') || {}).value || '';
   s.prepaidDays = (document.getElementById('sc_prepaidDays') || {}).value || '15';
+  s.otherFeeItems = collectFeeItems('otherFeeLines');
+  s.tpFeeItems = collectFeeItems('tpFeeLines');
   s.pmiMonthly = (document.getElementById('sc_pmi') || {}).value || '';
   s.pmiDropLtv = (document.getElementById('sc_pmiDrop') || {}).value || '78';
   s.financeMip = (document.getElementById('sc_financeMip') || {}).checked || false;
@@ -340,24 +457,50 @@ function renderScenarioForm(idx) {
   var h = '<div class="scenario-panel active" style="border-left:3px solid ' + color + ';padding-left:16px;margin-top:10px;">';
   h += '<div class="gen-grid">';
 
-  h += '<div class="gen-field"><label>Scenario Label</label><input id="sc_label" value="' + s.label + '" onchange="scenarios[' + idx + '].label=this.value;renderScenarioTabs()"></div>';
+  h += '<div class="gen-field"><label>Scenario Name</label><input id="sc_label" value="' + s.label + '" placeholder="e.g. 30yr Fixed" onchange="scenarios[' + idx + '].label=this.value;renderScenarioTabs()"></div>';
   h += '<div class="gen-field"><label>Loan Program</label><select id="sc_program" onchange="onProgramChange()"><option value="conventional"' + (s.program==='conventional'?' selected':'') + '>Conventional</option><option value="fha"' + (s.program==='fha'?' selected':'') + '>FHA</option><option value="va"' + (s.program==='va'?' selected':'') + '>VA</option><option value="usda"' + (s.program==='usda'?' selected':'') + '>USDA</option><option value="jumbo"' + (s.program==='jumbo'?' selected':'') + '>Jumbo</option></select></div>';
 
   h += '<div class="gen-field"><label>Loan Type</label><select id="sc_loanType" onchange="onLoanTypeChange()"><option value="fixed"' + (s.loanType==='fixed'?' selected':'') + '>Fixed Rate</option><option value="arm_3_1"' + (s.loanType==='arm_3_1'?' selected':'') + '>3/1 ARM</option><option value="arm_5_1"' + (s.loanType==='arm_5_1'?' selected':'') + '>5/1 ARM</option><option value="arm_7_1"' + (s.loanType==='arm_7_1'?' selected':'') + '>7/1 ARM</option><option value="arm_10_1"' + (s.loanType==='arm_10_1'?' selected':'') + '>10/1 ARM</option></select></div>';
   h += '<div class="gen-field"><label>Loan Term (years)</label><select id="sc_term"><option value="30"' + (s.term===30?' selected':'') + '>30</option><option value="25"' + (s.term===25?' selected':'') + '>25</option><option value="20"' + (s.term===20?' selected':'') + '>20</option><option value="15"' + (s.term===15?' selected':'') + '>15</option><option value="10"' + (s.term===10?' selected':'') + '>10</option></select></div>';
 
   h += '<div class="gen-field"><label>Interest Rate (%)</label><input id="sc_rate" value="' + s.rate + '" placeholder="6.500" oninput="recalcScenario()"></div>';
-  h += '<div class="gen-field"><label>Loan Amount</label><input id="sc_loanAmt" value="' + s.loanAmount + '" placeholder="auto from price - down" oninput="formatCurrency(this);calcFromLoanAmt()"></div>';
 
+  // Down payment BEFORE loan amount — natural order
   h += '<div class="gen-field"><label>Down Payment %</label><input id="sc_downPct" value="' + s.downPct + '" placeholder="5" oninput="calcFromDownPct()"></div>';
   h += '<div class="gen-field"><label>Down Payment $</label><input id="sc_downAmt" value="' + s.downAmt + '" placeholder="$20,000" oninput="formatCurrency(this);calcFromDownAmt()"></div>';
+  h += '<div class="gen-field full"><label>Loan Amount</label><input id="sc_loanAmt" value="' + s.loanAmount + '" placeholder="Auto-calculates from Price minus Down Payment" oninput="formatCurrency(this);calcFromLoanAmt()"></div>';
 
   // Fees
-  h += '<div class="gen-section">Fees & Costs</div>';
+  h += '<div class="gen-section">Fees &amp; Costs</div>';
+
+  // Fee template bar
+  h += '<div class="template-bar">';
+  h += '<select class="template-select" id="feeTemplateSelect"><option value="">— Load Fee Template —</option>';
+  (JSON.parse(localStorage.getItem("ae_fee_templates")||"[]")).forEach(function(t,i){h+='<option value="'+i+'">'+t.name+'</option>';});
+  h += '</select>';
+  h += '<button class="template-btn" onclick="loadFeeTemplate()"><i class="fas fa-download" style="margin-right:3px;"></i> Load</button>';
+  h += '<button class="template-btn" onclick="saveFeeTemplate()"><i class="fas fa-save" style="margin-right:3px;"></i> Save Current</button>';
+  h += '</div>';
+
   h += '<div class="gen-field"><label>Discount Points (%)</label><input id="sc_points" value="' + s.points + '" placeholder="0.000"></div>';
   h += '<div class="gen-field"><label>Origination Fee</label><input id="sc_origFee" value="' + s.origFee + '" placeholder="$1,500" oninput="formatCurrency(this)"></div>';
-  h += '<div class="gen-field"><label>Other Lender Fees</label><input id="sc_otherFees" value="' + s.otherLenderFees + '" placeholder="$800" oninput="formatCurrency(this)"></div>';
-  h += '<div class="gen-field"><label>Third Party Fees (title, appraisal)</label><input id="sc_thirdParty" value="' + s.thirdPartyFees + '" placeholder="$3,500" oninput="formatCurrency(this)"></div>';
+
+  // Other Lender Fees — expandable
+  h += '<div class="gen-field full"><label>Other Lender Fees</label>';
+  h += '<div class="fee-row"><input id="sc_otherFees" value="' + s.otherLenderFees + '" placeholder="$0 — click list to itemize" readonly style="cursor:pointer;flex:1" onclick="toggleFeePanel(\'otherFeePanel\')"><button class="fee-expand-btn" onclick="toggleFeePanel(\'otherFeePanel\')" title="Itemize fees"><i class="fas fa-list"></i></button></div>';
+  h += '<div class="fee-detail-panel" id="otherFeePanel"><div id="otherFeeLines">';
+  var otherItems = s.otherFeeItems || [{name:"Processing Fee",amt:""},{name:"Underwriting Fee",amt:""},{name:"Admin Fee",amt:""},{name:"Flood Cert",amt:""}];
+  otherItems.forEach(function(f){h+='<div class="fee-line"><input placeholder="Fee name" value="'+(f.name||"")+'" onchange="rollUpFees(\'other\')"><input placeholder="$0" value="'+(f.amt||"")+'" oninput="formatCurrency(this);rollUpFees(\'other\')"><span class="remove-fee" onclick="this.parentElement.remove();rollUpFees(\'other\')"><i class="fas fa-times"></i></span></div>';});
+  h += '</div><div class="add-fee-btn" onclick="addFeeLine(\'otherFeeLines\',\'other\')"><i class="fas fa-plus" style="margin-right:3px;"></i> Add line item</div></div></div>';
+
+  // Third Party Fees — expandable
+  h += '<div class="gen-field full"><label>Third Party Fees</label>';
+  h += '<div class="fee-row"><input id="sc_thirdParty" value="' + s.thirdPartyFees + '" placeholder="$0 — click list to itemize" readonly style="cursor:pointer;flex:1" onclick="toggleFeePanel(\'tpFeePanel\')"><button class="fee-expand-btn" onclick="toggleFeePanel(\'tpFeePanel\')" title="Itemize fees"><i class="fas fa-list"></i></button></div>';
+  h += '<div class="fee-detail-panel" id="tpFeePanel"><div id="tpFeeLines">';
+  var tpItems = s.tpFeeItems || [{name:"Appraisal",amt:""},{name:"Title Search",amt:""},{name:"Title Insurance",amt:""},{name:"Recording Fees",amt:""},{name:"Attorney Fee",amt:""}];
+  tpItems.forEach(function(f){h+='<div class="fee-line"><input placeholder="Fee name" value="'+(f.name||"")+'" onchange="rollUpFees(\'tp\')"><input placeholder="$0" value="'+(f.amt||"")+'" oninput="formatCurrency(this);rollUpFees(\'tp\')"><span class="remove-fee" onclick="this.parentElement.remove();rollUpFees(\'tp\')"><i class="fas fa-times"></i></span></div>';});
+  h += '</div><div class="add-fee-btn" onclick="addFeeLine(\'tpFeeLines\',\'tp\')"><i class="fas fa-plus" style="margin-right:3px;"></i> Add line item</div></div></div>';
+
   h += '<div class="gen-field"><label>Prepaid Interest Days</label><input id="sc_prepaidDays" value="' + s.prepaidDays + '" placeholder="15"></div>';
 
   // Mortgage Insurance
