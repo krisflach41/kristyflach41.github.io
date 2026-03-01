@@ -1785,10 +1785,44 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
             </select>
           </div>
         </div>
-        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">Subject Line *</div><input id="emTplSubject" placeholder="e.g. Happy Birthday, {{first_name}}!"></div>
         <div class="fc-field" style="margin-bottom:12px;">
-          <div class="fc-lbl">Email Body (HTML) * <span style="font-size:9px;opacity:0.5;">Use {{name}}, {{first_name}}, {{email}} for personalization</span></div>
-          <textarea id="emTplBody" rows="12" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi {{first_name}},</p>&#10;<p>Your email content here...</p>"></textarea>
+          <div class="fc-lbl">Subject Line *</div>
+          <div style="display:flex;align-items:center;gap:0;">
+            <input id="emTplSubject" placeholder="Happy Birthday" style="flex:1;border-radius:8px 0 0 8px;">
+            <div id="emTplSubjectSuffix" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;padding:7px 12px;font-size:13px;color:rgba(255,255,255,0.5);white-space:nowrap;font-family:monospace;">, {{first_name}}!</div>
+          </div>
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Email Body *</span>
+            <button class="topbar-btn" onclick="emAiDraft()" style="font-size:10px;padding:3px 10px;"><i class="fas fa-magic"></i> AI Help Me Write This</button>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;padding:8px 12px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;">&lt;p&gt;Hi {{first_name}},&lt;/p&gt;</div>
+          <textarea id="emTplBody" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:0 0 8px 8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Write your email content here..."></textarea>
+        </div>
+        <!-- AI Draft Modal -->
+        <div id="emAiOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;">
+            <div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-magic" style="color:#a855f7;"></i> AI Email Writer</div>
+            <div class="fc-field" style="margin-bottom:12px;">
+              <div class="fc-lbl">Describe what you want this email to say</div>
+              <textarea id="emAiPrompt" rows="3" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:#f0f4f8;font-size:13px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="e.g. Birthday email, warm and friendly, mention I'm here if they need anything with their mortgage"></textarea>
+            </div>
+            <div class="fc-field" style="margin-bottom:16px;">
+              <div class="fc-lbl">Tone</div>
+              <select id="emAiTone">
+                <option value="warm and professional">Warm & Professional</option>
+                <option value="casual and friendly">Casual & Friendly</option>
+                <option value="formal and polished">Formal & Polished</option>
+                <option value="energetic and upbeat">Energetic & Upbeat</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="topbar-btn" onclick="emAiClose()">Cancel</button>
+              <button class="topbar-btn primary" onclick="emAiGenerate()" id="emAiBtn"><i class="fas fa-magic"></i> Generate</button>
+            </div>
+            <div id="emAiResult" style="font-size:11px;margin-top:8px;color:var(--text-muted);"></div>
+          </div>
         </div>
         <div style="display:flex;gap:8px;">
           <button class="topbar-btn" onclick="emCloseTemplateEditor()">Cancel</button>
@@ -6207,20 +6241,29 @@ function emEditTemplate(id) {
   document.getElementById('emTemplateEditor').style.display = 'block';
   document.getElementById('emTplEditorTitle').textContent = 'Edit Template';
   document.getElementById('emTplName').value = t.name;
-  document.getElementById('emTplSubject').value = t.subject;
-  document.getElementById('emTplBody').value = t.body_html;
+  // Strip the ", {{first_name}}!" suffix if present for editing
+  var subj = t.subject.replace(/,\s*\{\{first_name\}\}!?\s*$/, '');
+  document.getElementById('emTplSubject').value = subj;
+  // Strip the greeting prefix if present for editing
+  var body = t.body_html.replace(/^<p>Hi \{\{first_name\}\},<\/p>\s*/i, '');
+  document.getElementById('emTplBody').value = body;
   document.getElementById('emTplCategory').value = t.category || 'custom';
   document.getElementById('emTplEditId').value = t.id;
 }
 
 function emSaveTemplate() {
   var name = document.getElementById('emTplName').value.trim();
-  var subject = document.getElementById('emTplSubject').value.trim();
-  var body = document.getElementById('emTplBody').value.trim();
-  if (!name || !subject || !body) { showToast('Name, subject, and body required'); return; }
+  var subjectInput = document.getElementById('emTplSubject').value.trim();
+  var bodyInput = document.getElementById('emTplBody').value.trim();
+  if (!name || !subjectInput || !bodyInput) { showToast('Name, subject, and body required'); return; }
+
+  // Assemble full subject with suffix
+  var fullSubject = subjectInput + ', {{first_name}}!';
+  // Assemble full body with greeting prefix
+  var fullBody = '<p>Hi {{first_name}},</p>\n' + bodyInput;
 
   var editId = document.getElementById('emTplEditId').value;
-  var template = { name: name, subject: subject, body_html: body, category: document.getElementById('emTplCategory').value };
+  var template = { name: name, subject: fullSubject, body_html: fullBody, category: document.getElementById('emTplCategory').value };
   if (editId) template.id = parseInt(editId);
 
   fetch(API_BASE + '/email-center', {
@@ -6244,16 +6287,60 @@ function emDeleteTemplate(id) {
 }
 
 function emPreviewTemplate() {
-  var body = document.getElementById('emTplBody').value;
-  var subject = document.getElementById('emTplSubject').value;
+  var subjectInput = document.getElementById('emTplSubject').value;
+  var bodyInput = document.getElementById('emTplBody').value;
+  var fullSubject = subjectInput + ', {{first_name}}!';
+  var fullBody = '<p>Hi {{first_name}},</p>\n' + bodyInput;
   var preview = window.open('', '_blank', 'width=650,height=700');
-  var html = '<html><head><title>Preview: ' + subject + '</title></head><body style="font-family:Arial;color:#333;padding:20px;background:#f9f9f9;">';
+  var html = '<html><head><title>Preview: ' + fullSubject.replace(/\{\{first_name\}\}/g, 'Jane') + '</title></head><body style="font-family:Arial;color:#333;padding:20px;background:#f9f9f9;">';
   html += '<div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:4px;">';
-  html += '<div style="font-size:11px;color:#999;margin-bottom:16px;">Subject: ' + subject + '</div>';
-  html += body.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith').replace(/\{\{email\}\}/g, 'jane@example.com');
+  html += '<div style="font-size:11px;color:#999;margin-bottom:16px;">Subject: ' + fullSubject.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith') + '</div>';
+  html += fullBody.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith').replace(/\{\{email\}\}/g, 'jane@example.com');
   html += '</div></body></html>';
   preview.document.write(html);
   preview.document.close();
+}
+
+// ===== AI EMAIL WRITER =====
+function emAiDraft() {
+  document.getElementById('emAiOverlay').style.display = 'flex';
+  document.getElementById('emAiPrompt').value = '';
+  document.getElementById('emAiResult').textContent = '';
+  // Pre-fill tone suggestion based on category
+  var cat = document.getElementById('emTplCategory').value;
+  if (cat === 'milestone') document.getElementById('emAiTone').value = 'warm and professional';
+  if (cat === 'seasonal') document.getElementById('emAiTone').value = 'energetic and upbeat';
+}
+
+function emAiClose() {
+  document.getElementById('emAiOverlay').style.display = 'none';
+}
+
+function emAiGenerate() {
+  var prompt = document.getElementById('emAiPrompt').value.trim();
+  if (!prompt) { document.getElementById('emAiResult').textContent = 'Please describe what you want'; return; }
+  var tone = document.getElementById('emAiTone').value;
+  var btn = document.getElementById('emAiBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Writing...';
+  document.getElementById('emAiResult').textContent = '';
+
+  fetch(API_BASE + '/ai-email-writer', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: prompt, tone: tone })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> Generate';
+    if (data.success && data.body_html) {
+      document.getElementById('emTplBody').value = data.body_html;
+      if (data.subject) document.getElementById('emTplSubject').value = data.subject;
+      emAiClose();
+      showToast('AI draft ready! Review and edit as needed.', 'success');
+    } else {
+      document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
+    }
+  }).catch(function() {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> Generate';
+    document.getElementById('emAiResult').textContent = 'Error connecting to AI';
+  });
 }
 
 // ===== HISTORY =====
