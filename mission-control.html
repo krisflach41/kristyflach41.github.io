@@ -1734,23 +1734,32 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
         <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emBuilderTitle">New Campaign</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-          <div class="fc-field"><div class="fc-lbl">Campaign Name *</div><input id="emCampName" placeholder="e.g. Welcome Series"></div>
-          <div class="fc-field"><div class="fc-lbl">Trigger</div>
+          <div class="fc-field">
+            <div class="fc-lbl" title="Give your campaign a short, descriptive name so you can find it later. Example: 'Refi Follow-Up' or 'Birthday Greeting'" style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Campaign Name * <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+            <input id="emCampName" placeholder="e.g. Refi Opportunity">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl" title="This controls WHEN the campaign starts automatically. 'Manual' means you add people yourself. Other triggers fire automatically when the event happens." style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Trigger <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
             <select id="emCampTrigger">
-              <option value="manual">Manual Enrollment</option>
-              <option value="signup">New Signup</option>
-              <option value="birthday">Birthday</option>
-              <option value="loan_funded">Loan Funded</option>
-              <option value="inactive">Inactive 7+ Days</option>
-              <option value="anniversary">Home Anniversary</option>
-              <option value="rate_drop">Rate Drop Alert</option>
+              <option value="manual" title="You manually add contacts to this campaign from their CRM card">Manual — you add contacts yourself</option>
+              <option value="signup" title="Fires automatically when a new realtor signs up for the portal">Auto — when a realtor signs up</option>
+              <option value="birthday" title="Fires automatically on the contact's birthday from their CRM card">Auto — on contact's birthday</option>
+              <option value="loan_funded" title="Fires automatically when a loan is marked as funded in your pipeline">Auto — when a loan funds</option>
+              <option value="inactive" title="Fires when a realtor hasn't logged into the portal for 7+ days">Auto — realtor inactive 7+ days</option>
+              <option value="anniversary" title="Fires annually on the anniversary of the client's purchase or refi closing date">Auto — purchase/refi anniversary</option>
+              <option value="rate_drop" title="Fires when you trigger a rate alert, targeting clients who could benefit from refinancing">Manual — rate drop opportunity</option>
             </select>
           </div>
         </div>
-        <div class="fc-field" style="margin-bottom:16px;"><div class="fc-lbl">Description</div><input id="emCampDesc" placeholder="Brief description of this campaign"></div>
+        <div class="fc-field" style="margin-bottom:16px;">
+          <div class="fc-lbl" title="A short note to remind you what this campaign is about. Only you see this." style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Description <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+          <input id="emCampDesc" placeholder="e.g. 4 emails over 8 weeks targeting past clients for refi">
+        </div>
 
         <!-- Steps -->
-        <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">EMAIL SEQUENCE</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);" title="Each step is one email in the sequence. They fire in order based on the delay you set. The first email's delay counts from the trigger event." style="cursor:help;">EMAIL SEQUENCE <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+        </div>
         <div id="emStepsList" style="margin-bottom:12px;"></div>
         <button class="topbar-btn" onclick="emAddStep()" style="font-size:11px;margin-bottom:16px;"><i class="fas fa-plus"></i> Add Email Step</button>
 
@@ -1775,31 +1784,36 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emTplEditorTitle">New Template</div>
         <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px;">
           <div class="fc-field"><div class="fc-lbl">Template Name *</div><input id="emTplName" placeholder="e.g. Birthday Greeting"></div>
-          <div class="fc-field"><div class="fc-lbl">Category</div>
+          <div class="fc-field">
+            <div class="fc-lbl" title="Helps organize your templates. Hover over each option to see examples." style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Category <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
             <select id="emTplCategory">
-              <option value="custom">Custom</option>
-              <option value="nurture">Nurture</option>
-              <option value="seasonal">Seasonal</option>
-              <option value="milestone">Milestone</option>
-              <option value="educational">Educational</option>
+              <option value="custom" title="Anything that doesn't fit the other categories">Custom</option>
+              <option value="nurture" title="Stay-in-touch emails: past client check-ins, post-close follow-ups, re-engagement">Nurture — check-ins & follow-ups</option>
+              <option value="seasonal" title="Holiday greetings, seasonal tips, end-of-year messages">Seasonal — holidays & time-of-year</option>
+              <option value="milestone" title="Birthday, home anniversary, loan anniversary, congratulations">Milestone — birthdays & anniversaries</option>
+              <option value="educational" title="Rate explanations, credit tips, home buying guides, market updates">Educational — tips & market info</option>
+              <option value="recruitment" title="Emails to attract new realtor partners or referral sources">Recruitment — realtor outreach</option>
             </select>
           </div>
         </div>
         <div class="fc-field" style="margin-bottom:12px;">
           <div class="fc-lbl">Subject Line *</div>
-          <div style="display:flex;align-items:center;gap:0;">
-            <input id="emTplSubject" placeholder="Happy Birthday" style="flex:1;border-radius:8px 0 0 8px;">
-            <div id="emTplSubjectSuffix" style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-left:none;border-radius:0 8px 8px 0;padding:7px 12px;font-size:13px;color:rgba(255,255,255,0.5);white-space:nowrap;font-family:monospace;">, {{first_name}}!</div>
+          <input id="emTplSubject" placeholder="e.g. Happy Birthday, {{first_name}}!" value="Happy Birthday, {{first_name}}!">
+        </div>
+        <div class="fc-field" style="margin-bottom:4px;">
+          <div class="fc-lbl">Email Body *</div>
+        </div>
+        <!-- Big AI Button -->
+        <div onclick="emAiDraft()" style="cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 20px;margin-bottom:12px;background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12));border:1px dashed rgba(168,85,247,0.4);border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.2),rgba(59,130,246,0.2))';this.style.borderColor='rgba(168,85,247,0.7)';" onmouseout="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12))';this.style.borderColor='rgba(168,85,247,0.4)';">
+          <i class="fas fa-magic" style="font-size:18px;color:#a855f7;"></i>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#a855f7;">Let AI Write This For Me</div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.4);">Describe what you want and AI drafts the email in seconds</div>
           </div>
         </div>
-        <div class="fc-field" style="margin-bottom:12px;">
-          <div class="fc-lbl" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Email Body *</span>
-            <button class="topbar-btn" onclick="emAiDraft()" style="font-size:10px;padding:3px 10px;"><i class="fas fa-magic"></i> AI Help Me Write This</button>
-          </div>
-          <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;padding:8px 12px;font-size:13px;color:rgba(255,255,255,0.5);font-family:monospace;">&lt;p&gt;Hi {{first_name}},&lt;/p&gt;</div>
-          <textarea id="emTplBody" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:0 0 8px 8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Write your email content here..."></textarea>
-        </div>
+        <textarea id="emTplBody" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi {{first_name}},</p>&#10;&#10;<p>Write your email content here...</p>"><p>Hi {{first_name}},</p>
+
+</textarea>
         <!-- AI Draft Modal -->
         <div id="emAiOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
           <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;">
@@ -6134,16 +6148,15 @@ function emRemoveStep(idx) {
 function emRenderSteps() {
   var el = document.getElementById('emStepsList');
   if (emEditSteps.length === 0) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:8px 0;">No steps yet. Add your first email.</div>';
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;border:1px dashed var(--border);border-radius:8px;">No emails in this sequence yet. Click "Add Email Step" to build your drip.</div>';
     return;
   }
-  var tplOpts = '<option value="">— Write inline —</option>';
+  var tplOpts = '<option value="">— Select a template —</option>';
   emTemplates.forEach(function(t) {
     tplOpts += '<option value="' + t.id + '">' + t.name + '</option>';
   });
   var h = '';
   emEditSteps.forEach(function(s, i) {
-    var dayLabel = i === 0 ? 'Immediately' : s.delay_days + ' day' + (s.delay_days !== 1 ? 's' : '') + ' after previous';
     h += '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
     // Timeline dot
     h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;"><div style="width:24px;height:24px;border-radius:50%;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3b82f6;">' + (i+1) + '</div>';
@@ -6151,11 +6164,11 @@ function emRenderSteps() {
     h += '</div>';
     // Step content
     h += '<div style="flex:1;">';
-    h += '<div style="display:grid;grid-template-columns:100px 1fr;gap:8px;margin-bottom:8px;">';
-    h += '<div class="fc-field"><div class="fc-lbl">Delay (days)</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
-    h += '<div class="fc-field"><div class="fc-lbl">Template</div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
+    h += '<div style="display:grid;grid-template-columns:120px 1fr;gap:8px;margin-bottom:8px;">';
+    h += '<div class="fc-field"><div class="fc-lbl" title="' + (i === 0 ? 'How many days after the trigger event to send this email. 0 = send immediately when triggered.' : 'How many days after the PREVIOUS email to send this one.') + '" style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">' + (i === 0 ? 'Days after trigger' : 'Days after prev') + ' <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
+    h += '<div class="fc-field"><div class="fc-lbl" title="Choose which pre-written email template to send at this step. Create templates in the Templates tab first." style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Email Template <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
     h += '</div>';
-    h += '<div class="fc-field"><div class="fc-lbl">Subject (override)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+    h += '<div class="fc-field"><div class="fc-lbl" title="Optional: override the template\'s subject line for this specific step. Leave blank to use the template\'s original subject." style="cursor:help;border-bottom:1px dotted rgba(255,255,255,0.2);">Subject Override (optional) <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
     h += '</div>';
     h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;margin-top:4px;" onclick="emRemoveStep(' + i + ')"><i class="fas fa-times"></i></button>';
     h += '</div>';
@@ -6225,8 +6238,8 @@ function emOpenTemplateEditor() {
   document.getElementById('emTemplateEditor').style.display = 'block';
   document.getElementById('emTplEditorTitle').textContent = 'New Template';
   document.getElementById('emTplName').value = '';
-  document.getElementById('emTplSubject').value = '';
-  document.getElementById('emTplBody').value = '';
+  document.getElementById('emTplSubject').value = 'Happy Birthday, {{first_name}}!';
+  document.getElementById('emTplBody').value = '<p>Hi {{first_name}},</p>\n\n';
   document.getElementById('emTplCategory').value = 'custom';
   document.getElementById('emTplEditId').value = '';
 }
@@ -6241,29 +6254,20 @@ function emEditTemplate(id) {
   document.getElementById('emTemplateEditor').style.display = 'block';
   document.getElementById('emTplEditorTitle').textContent = 'Edit Template';
   document.getElementById('emTplName').value = t.name;
-  // Strip the ", {{first_name}}!" suffix if present for editing
-  var subj = t.subject.replace(/,\s*\{\{first_name\}\}!?\s*$/, '');
-  document.getElementById('emTplSubject').value = subj;
-  // Strip the greeting prefix if present for editing
-  var body = t.body_html.replace(/^<p>Hi \{\{first_name\}\},<\/p>\s*/i, '');
-  document.getElementById('emTplBody').value = body;
+  document.getElementById('emTplSubject').value = t.subject;
+  document.getElementById('emTplBody').value = t.body_html;
   document.getElementById('emTplCategory').value = t.category || 'custom';
   document.getElementById('emTplEditId').value = t.id;
 }
 
 function emSaveTemplate() {
   var name = document.getElementById('emTplName').value.trim();
-  var subjectInput = document.getElementById('emTplSubject').value.trim();
-  var bodyInput = document.getElementById('emTplBody').value.trim();
-  if (!name || !subjectInput || !bodyInput) { showToast('Name, subject, and body required'); return; }
-
-  // Assemble full subject with suffix
-  var fullSubject = subjectInput + ', {{first_name}}!';
-  // Assemble full body with greeting prefix
-  var fullBody = '<p>Hi {{first_name}},</p>\n' + bodyInput;
+  var subject = document.getElementById('emTplSubject').value.trim();
+  var body = document.getElementById('emTplBody').value.trim();
+  if (!name || !subject || !body) { showToast('Name, subject, and body required'); return; }
 
   var editId = document.getElementById('emTplEditId').value;
-  var template = { name: name, subject: fullSubject, body_html: fullBody, category: document.getElementById('emTplCategory').value };
+  var template = { name: name, subject: subject, body_html: body, category: document.getElementById('emTplCategory').value };
   if (editId) template.id = parseInt(editId);
 
   fetch(API_BASE + '/email-center', {
@@ -6287,15 +6291,13 @@ function emDeleteTemplate(id) {
 }
 
 function emPreviewTemplate() {
-  var subjectInput = document.getElementById('emTplSubject').value;
-  var bodyInput = document.getElementById('emTplBody').value;
-  var fullSubject = subjectInput + ', {{first_name}}!';
-  var fullBody = '<p>Hi {{first_name}},</p>\n' + bodyInput;
+  var subject = document.getElementById('emTplSubject').value;
+  var body = document.getElementById('emTplBody').value;
   var preview = window.open('', '_blank', 'width=650,height=700');
-  var html = '<html><head><title>Preview: ' + fullSubject.replace(/\{\{first_name\}\}/g, 'Jane') + '</title></head><body style="font-family:Arial;color:#333;padding:20px;background:#f9f9f9;">';
+  var html = '<html><head><title>Preview</title></head><body style="font-family:Arial;color:#333;padding:20px;background:#f9f9f9;">';
   html += '<div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:4px;">';
-  html += '<div style="font-size:11px;color:#999;margin-bottom:16px;">Subject: ' + fullSubject.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith') + '</div>';
-  html += fullBody.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith').replace(/\{\{email\}\}/g, 'jane@example.com');
+  html += '<div style="font-size:11px;color:#999;margin-bottom:16px;">Subject: ' + subject.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith') + '</div>';
+  html += body.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith').replace(/\{\{email\}\}/g, 'jane@example.com');
   html += '</div></body></html>';
   preview.document.write(html);
   preview.document.close();
