@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loan Comparison</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07090e;--surface:#0d1117;--surface-raised:#131920;--border:rgba(255,255,255,0.05);--border-gold:rgba(186,163,112,0.18);--gold:#baa370;--gold-bright:#d4bc7c;--gold-dim:rgba(186,163,112,0.4);--green:#5ebc8a;--red:#d97373;--blue:#6ba3d6;--blue-btn:#3b82f6;--purple:#9b8ec4;--amber:#d4a953;--text:#e8e4dc;--text-mid:rgba(232,228,220,0.72);--text-dim:rgba(232,228,220,0.42);--text-faint:rgba(232,228,220,0.15)}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ===== GENERATOR FORM ===== */
+.generator-panel{max-width:900px;margin:30px auto;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:28px}
+.gen-title{font-size:18px;font-weight:700;margin-bottom:4px}.gen-sub{font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:20px}
+.gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gen-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;grid-column:1/-1}
+.gen-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;grid-column:1/-1}
+.gen-field{display:flex;flex-direction:column;gap:3px}.gen-field.full{grid-column:1/-1}
+.gen-field label{font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.5px}
+.gen-field input,.gen-field select{padding:8px 10px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit}
+.gen-field select option{background:#0f2035;color:#fff}
+.gen-field input:focus,.gen-field select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.gen-field input::placeholder{color:rgba(255,255,255,0.2)}
+.gen-section{font-size:10px;font-weight:700;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;margin:16px 0 6px;grid-column:1/-1;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06)}
+.gen-actions{display:flex;gap:8px;margin-top:18px}
+.gen-btn{padding:10px 20px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.gen-btn.primary{background:var(--blue-btn);color:#fff;flex:1}.gen-btn.primary:hover{background:#2563eb}
+.gen-btn.secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.6)}.gen-btn.secondary:hover{background:rgba(255,255,255,0.1);color:#fff}
+.gen-btn:disabled{opacity:0.5;cursor:wait}
+.gen-check{display:flex;align-items:center;gap:8px;grid-column:1/-1}
+.gen-check input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue-btn)}
+.gen-check label{font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer}
+.gen-hint{font-size:9px;color:rgba(255,255,255,0.2);grid-column:1/-1;margin-top:-4px}
+
+/* ===== SCENARIO TABS ===== */
+.scenario-tabs{display:flex;gap:6px;margin-bottom:16px;grid-column:1/-1}
+.scenario-tab{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;cursor:pointer;transition:0.15s}
+.scenario-tab.active{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.4);color:#3b82f6}
+.scenario-tab.add{border-style:dashed;color:rgba(255,255,255,0.25)}.scenario-tab.add:hover{color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.2)}
+.scenario-panel{display:none}.scenario-panel.active{display:block}
+.scenario-remove{font-size:10px;color:rgba(255,255,255,0.2);margin-left:6px;cursor:pointer}.scenario-remove:hover{color:var(--red)}
+
+/* ARM & Buydown fields */
+.arm-fields,.buydown-fields{display:none;grid-column:1/-1}
+.arm-fields.visible,.buydown-fields.visible{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ===== REPORT OUTPUT ===== */
+.report-container{display:none;max-width:1200px;margin:20px auto}
+.report-nav{display:flex;gap:10px;justify-content:center;margin:16px auto 12px}
+.report-nav button{padding:10px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.report-nav button:hover{background:rgba(255,255,255,0.1);color:#fff}
+.report-nav button.primary{background:var(--blue-btn);border-color:var(--blue-btn);color:#fff}
+.report-page{background:var(--surface);color:var(--text);overflow:hidden;border:1px solid var(--border-gold)}
+
+/* Hero */
+.rpt-hero{padding:52px 64px 48px;border-bottom:1px solid var(--border);position:relative}
+.rpt-hero::after{content:'';position:absolute;bottom:0;left:64px;right:64px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim),transparent)}
+.rpt-hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+.rpt-hero-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:6px}
+.rpt-hero-sub{font-size:13px;color:var(--text-dim);margin-bottom:4px}
+.rpt-hero-detail{font-size:11px;color:var(--text-faint);letter-spacing:0.3px}
+
+/* KPI Strip */
+.rpt-kpi-strip{display:grid;border-bottom:1px solid var(--border)}
+.rpt-kpi{padding:22px 24px;border-right:1px solid var(--border);text-align:center}.rpt-kpi:last-child{border-right:none}
+.rpt-kpi-label{font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px}
+.rpt-kpi-value{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text)}
+.rpt-kpi-value.green{color:var(--green)}.rpt-kpi-value.gold{color:var(--gold)}.rpt-kpi-value.blue{color:var(--blue)}
+.rpt-kpi-detail{font-size:10px;color:var(--text-dim);margin-top:3px}
+
+/* Section */
+.rpt-section{padding:40px 64px;border-bottom:1px solid var(--border)}
+.rpt-section-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:6px;position:relative;padding-bottom:16px}
+.rpt-section-title::after{content:'';position:absolute;bottom:0;left:0;width:40px;height:2px;background:linear-gradient(90deg,var(--gold),var(--gold-dim));border-radius:1px}
+.rpt-section-intro{font-size:13px;color:var(--text-mid);line-height:1.65;margin-top:14px;max-width:780px}
+
+/* Comparison Grid */
+.comparison-grid{display:grid;gap:0;margin-top:24px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cg-header{background:var(--surface-raised);font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;padding:14px 16px;border-bottom:1px solid var(--border);border-right:1px solid var(--border)}
+.cg-header:last-child{border-right:none}
+.cg-header.scenario{text-align:center}
+.cg-label{font-size:11px;font-weight:600;color:var(--text-dim);padding:10px 16px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);display:flex;align-items:center}
+.cg-value{font-size:13px;font-weight:600;color:var(--text);padding:10px 16px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;font-variant-numeric:tabular-nums}
+.cg-value:last-child{border-right:none}
+.cg-value.highlight{color:var(--green);font-weight:700}
+.cg-value.apr{color:var(--gold);font-size:14px;font-weight:700}
+.cg-value.rate{font-size:14px}
+.cg-group{background:rgba(186,163,112,0.04);font-size:9px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;padding:8px 16px;border-bottom:1px solid var(--border);grid-column:1/-1}
+
+/* Chart */
+.rpt-chart-canvas{width:100%;height:280px;margin-top:20px}
+
+/* Table */
+.rpt-table{width:100%;border-collapse:collapse;margin-top:20px}
+.rpt-table thead th{padding:10px 12px;text-align:left;font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border-gold);background:var(--surface-raised)}
+.rpt-table thead th:not(:first-child){text-align:right}
+.rpt-table tbody td{padding:10px 12px;font-size:12px;color:var(--text-mid);border-bottom:1px solid var(--border)}
+.rpt-table tbody td:first-child{font-weight:600;color:var(--text)}
+.rpt-table tbody td:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.rpt-table tbody tr:hover{background:rgba(255,255,255,0.02)}
+.rpt-table tbody td.green{color:var(--green);font-weight:600}
+
+/* Footer */
+.rpt-footer{background:var(--surface-raised);padding:28px 64px;border-top:1px solid var(--border)}
+.footer-standard{display:flex;justify-content:space-between;align-items:center;gap:20px}
+.footer-your-info{display:flex;align-items:center;gap:14px}
+.footer-headshot{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid var(--border-gold)}
+.footer-name{font-size:14px;font-weight:700;color:var(--text)}
+.footer-credentials{font-size:10px;color:var(--text-dim);line-height:1.5}
+.footer-logos{display:flex;align-items:center;gap:14px}
+.footer-logo{height:28px;opacity:0.7}
+
+/* Disclosures */
+.rpt-disclosures{padding:20px 64px 28px;font-size:8px;color:var(--text-faint);line-height:1.7;background:var(--surface)}
+.rpt-disc-logos{margin-top:8px;display:flex;gap:16px;font-size:8px;font-weight:700;letter-spacing:0.5px}
+
+/* ===== PRINT ===== */
+@media print{
+  body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .generator-panel,.report-nav{display:none!important}
+  .report-container{display:block!important;margin:0;max-width:100%}
+  .rpt-hero{padding:24px 40px 20px}.rpt-section{padding:20px 40px}
+  .rpt-kpi{padding:14px 16px}.rpt-kpi-value{font-size:16px}
+  .rpt-footer{padding:18px 40px}.rpt-disclosures{padding:8px 40px 12px}
+  .cg-value,.cg-label,.cg-header{padding:6px 10px}
+  .report-page,.rpt-footer,.rpt-disclosures{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{margin:0.25in;size:letter}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== GENERATOR FORM ===== -->
+<div class="generator-panel" id="generatorPanel">
+  <div class="gen-title">Loan Comparison</div>
+  <div class="gen-sub">Build side-by-side scenarios to present to your borrower. All required Reg Z disclosures are included automatically.</div>
+
+  <!-- BORROWER INFO -->
+  <div class="gen-grid" id="borrowerInfo">
+    <div class="gen-section">Borrower & Property</div>
+    <div class="gen-field"><label>Borrower Name</label><input id="inp_borrower" placeholder="Jane Smith"></div>
+    <div class="gen-field"><label>Property Address</label><input id="inp_address" placeholder="123 Main St, Anytown, OH 43210"></div>
+    <div class="gen-field"><label>Purchase Price / Property Value</label><input id="inp_price" placeholder="$400,000" oninput="formatCurrency(this);recalcAllScenarios()"></div>
+    <div class="gen-field"><label>Transaction Type</label>
+      <select id="inp_transType"><option value="purchase">Purchase</option><option value="refi">Refinance</option><option value="cashout">Cash-Out Refinance</option></select>
+    </div>
+
+    <div class="gen-section">Shared Estimates</div>
+    <div class="gen-field"><label>Annual Property Taxes</label><input id="inp_taxes" placeholder="$4,200" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Annual Homeowners Insurance</label><input id="inp_insurance" placeholder="$1,800" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Annual HOA (optional)</label><input id="inp_hoa" placeholder="$0" oninput="formatCurrency(this)"></div>
+    <div class="gen-field"><label>Appreciation Rate (for projections)</label><input id="inp_appr" placeholder="3.0" value="3.0"></div>
+  </div>
+
+  <!-- SCENARIO TABS -->
+  <div style="margin-top:20px;">
+    <div class="gen-section" style="margin-top:0;">Loan Scenarios</div>
+    <div class="scenario-tabs" id="scenarioTabs"></div>
+    <div id="scenarioPanels"></div>
+  </div>
+
+  <div class="gen-actions">
+    <button class="gen-btn primary" onclick="generateReport()"><i class="fas fa-chart-bar" style="margin-right:6px;"></i> Generate Comparison</button>
+  </div>
+</div>
+
+<!-- ===== REPORT OUTPUT ===== -->
+<div class="report-container" id="reportContainer">
+  <div class="report-nav">
+    <button onclick="document.getElementById('generatorPanel').style.display='block';document.getElementById('reportContainer').style.display='none';"><i class="fas fa-arrow-left"></i> Edit Scenarios</button>
+    <button onclick="window.print()" class="primary"><i class="fas fa-print"></i> Print / Save PDF</button>
+  </div>
+  <div class="report-page" id="reportPage">
+    <div id="rptHero"></div>
+    <div id="rptKpi"></div>
+    <div id="rptComparison"></div>
+    <div id="rptPaymentChart"></div>
+    <div id="rptEquityChart"></div>
+    <div id="rptAmortization"></div>
+    <div id="rptFooter" class="rpt-footer"></div>
+    <div id="rptDisc" class="rpt-disclosures"></div>
+  </div>
+</div>
+
+<script>
+// ===== GLOBALS =====
+var scenarios = [];
+var activeScenario = 0;
+var currentSofrRate = 4.33; // Default, will attempt live fetch
+var scenarioColors = ['#3b82f6','#22c55e','#a855f7','#f59e0b'];
+var scenarioNames = ['Option A','Option B','Option C','Option D'];
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', function() {
+  addScenario(); // Start with one scenario
+  fetchSofrRate();
+});
+
+// ===== LIVE SOFR FETCH =====
+function fetchSofrRate() {
+  // FRED API - uses existing FRED_API_KEY from Vercel
+  // We'll try fetching, but fall back to default if blocked
+  try {
+    fetch('https://agent-edge-backend.vercel.app/api/sofr-rate')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.rate) currentSofrRate = parseFloat(data.rate);
+      }).catch(function() {});
+  } catch(e) {}
+}
+
+// ===== CURRENCY FORMATTING =====
+function formatCurrency(el) {
+  var v = el.value.replace(/[^0-9.]/g, '');
+  if (v) el.value = '$' + Number(v).toLocaleString('en-US', {maximumFractionDigits:0});
+}
+function parseCurrency(v) {
+  if (!v) return 0;
+  return parseFloat(String(v).replace(/[^0-9.-]/g, '')) || 0;
+}
+function fmtMoney(n) {
+  if (n === undefined || n === null || isNaN(n)) return '$0';
+  return '$' + Math.round(n).toLocaleString('en-US');
+}
+function fmtMoneyDecimal(n) {
+  if (n === undefined || n === null || isNaN(n)) return '$0.00';
+  return '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtPct(n, dec) {
+  return n.toFixed(dec !== undefined ? dec : 3) + '%';
+}
+
+// ===== SCENARIO MANAGEMENT =====
+function addScenario() {
+  if (scenarios.length >= 4) return;
+  var idx = scenarios.length;
+  scenarios.push({
+    label: scenarioNames[idx],
+    program: 'conventional',
+    loanType: 'fixed',
+    term: 30,
+    rate: '',
+    loanAmount: '',
+    downPct: '',
+    downAmt: '',
+    points: '0',
+    origFee: '',
+    otherLenderFees: '',
+    thirdPartyFees: '',
+    prepaidDays: '15',
+    pmiMonthly: '',
+    upfrontMip: 0,
+    vaFundingFee: 0,
+    financeMip: false,
+    financeVa: false,
+    pmiDropLtv: '78',
+    armIndex: 'sofr',
+    armMargin: '2.750',
+    armInitialCap: '2.000',
+    armPeriodicCap: '2.000',
+    armLifetimeCap: '5.000',
+    buydownType: 'none'
+  });
+  renderScenarioTabs();
+  switchScenario(idx);
+}
+
+function removeScenario(idx) {
+  if (scenarios.length <= 1) return;
+  scenarios.splice(idx, 1);
+  if (activeScenario >= scenarios.length) activeScenario = scenarios.length - 1;
+  renderScenarioTabs();
+  switchScenario(activeScenario);
+}
+
+function cloneScenario(idx) {
+  if (scenarios.length >= 4) return;
+  saveCurrentScenario();
+  var clone = JSON.parse(JSON.stringify(scenarios[idx]));
+  clone.label = scenarioNames[scenarios.length];
+  scenarios.push(clone);
+  renderScenarioTabs();
+  switchScenario(scenarios.length - 1);
+}
+
+function renderScenarioTabs() {
+  var h = '';
+  scenarios.forEach(function(s, i) {
+    h += '<div class="scenario-tab' + (i === activeScenario ? ' active' : '') + '" onclick="switchScenario(' + i + ')">';
+    h += '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + scenarioColors[i] + ';margin-right:6px;vertical-align:middle;"></span>';
+    h += s.label;
+    if (scenarios.length > 1) h += '<span class="scenario-remove" onclick="event.stopPropagation();removeScenario(' + i + ')"><i class="fas fa-times"></i></span>';
+    h += '</div>';
+  });
+  if (scenarios.length < 4) {
+    h += '<div class="scenario-tab add" onclick="addScenario()"><i class="fas fa-plus" style="margin-right:4px;"></i> Add Scenario</div>';
+  }
+  document.getElementById('scenarioTabs').innerHTML = h;
+}
+
+function saveCurrentScenario() {
+  var s = scenarios[activeScenario];
+  if (!s) return;
+  s.label = (document.getElementById('sc_label') || {}).value || s.label;
+  s.program = (document.getElementById('sc_program') || {}).value || s.program;
+  s.loanType = (document.getElementById('sc_loanType') || {}).value || s.loanType;
+  s.term = parseInt((document.getElementById('sc_term') || {}).value) || s.term;
+  s.rate = (document.getElementById('sc_rate') || {}).value || '';
+  s.loanAmount = (document.getElementById('sc_loanAmt') || {}).value || '';
+  s.downPct = (document.getElementById('sc_downPct') || {}).value || '';
+  s.downAmt = (document.getElementById('sc_downAmt') || {}).value || '';
+  s.points = (document.getElementById('sc_points') || {}).value || '0';
+  s.origFee = (document.getElementById('sc_origFee') || {}).value || '';
+  s.otherLenderFees = (document.getElementById('sc_otherFees') || {}).value || '';
+  s.thirdPartyFees = (document.getElementById('sc_thirdParty') || {}).value || '';
+  s.prepaidDays = (document.getElementById('sc_prepaidDays') || {}).value || '15';
+  s.pmiMonthly = (document.getElementById('sc_pmi') || {}).value || '';
+  s.pmiDropLtv = (document.getElementById('sc_pmiDrop') || {}).value || '78';
+  s.financeMip = (document.getElementById('sc_financeMip') || {}).checked || false;
+  s.financeVa = (document.getElementById('sc_financeVa') || {}).checked || false;
+  s.armMargin = (document.getElementById('sc_armMargin') || {}).value || '2.750';
+  s.armInitialCap = (document.getElementById('sc_armInitCap') || {}).value || '2.000';
+  s.armPeriodicCap = (document.getElementById('sc_armPerCap') || {}).value || '2.000';
+  s.armLifetimeCap = (document.getElementById('sc_armLifeCap') || {}).value || '5.000';
+  s.buydownType = (document.getElementById('sc_buydownType') || {}).value || 'none';
+}
+
+function switchScenario(idx) {
+  saveCurrentScenario();
+  activeScenario = idx;
+  renderScenarioTabs();
+  renderScenarioForm(idx);
+}
+
+function renderScenarioForm(idx) {
+  var s = scenarios[idx];
+  var color = scenarioColors[idx];
+  var h = '<div class="scenario-panel active" style="border-left:3px solid ' + color + ';padding-left:16px;margin-top:10px;">';
+  h += '<div class="gen-grid">';
+
+  h += '<div class="gen-field"><label>Scenario Label</label><input id="sc_label" value="' + s.label + '" onchange="scenarios[' + idx + '].label=this.value;renderScenarioTabs()"></div>';
+  h += '<div class="gen-field"><label>Loan Program</label><select id="sc_program" onchange="onProgramChange()"><option value="conventional"' + (s.program==='conventional'?' selected':'') + '>Conventional</option><option value="fha"' + (s.program==='fha'?' selected':'') + '>FHA</option><option value="va"' + (s.program==='va'?' selected':'') + '>VA</option><option value="usda"' + (s.program==='usda'?' selected':'') + '>USDA</option><option value="jumbo"' + (s.program==='jumbo'?' selected':'') + '>Jumbo</option></select></div>';
+
+  h += '<div class="gen-field"><label>Loan Type</label><select id="sc_loanType" onchange="onLoanTypeChange()"><option value="fixed"' + (s.loanType==='fixed'?' selected':'') + '>Fixed Rate</option><option value="arm_3_1"' + (s.loanType==='arm_3_1'?' selected':'') + '>3/1 ARM</option><option value="arm_5_1"' + (s.loanType==='arm_5_1'?' selected':'') + '>5/1 ARM</option><option value="arm_7_1"' + (s.loanType==='arm_7_1'?' selected':'') + '>7/1 ARM</option><option value="arm_10_1"' + (s.loanType==='arm_10_1'?' selected':'') + '>10/1 ARM</option></select></div>';
+  h += '<div class="gen-field"><label>Loan Term (years)</label><select id="sc_term"><option value="30"' + (s.term===30?' selected':'') + '>30</option><option value="25"' + (s.term===25?' selected':'') + '>25</option><option value="20"' + (s.term===20?' selected':'') + '>20</option><option value="15"' + (s.term===15?' selected':'') + '>15</option><option value="10"' + (s.term===10?' selected':'') + '>10</option></select></div>';
+
+  h += '<div class="gen-field"><label>Interest Rate (%)</label><input id="sc_rate" value="' + s.rate + '" placeholder="6.500" oninput="recalcScenario()"></div>';
+  h += '<div class="gen-field"><label>Loan Amount</label><input id="sc_loanAmt" value="' + s.loanAmount + '" placeholder="auto from price - down" oninput="formatCurrency(this);calcFromLoanAmt()"></div>';
+
+  h += '<div class="gen-field"><label>Down Payment %</label><input id="sc_downPct" value="' + s.downPct + '" placeholder="5" oninput="calcFromDownPct()"></div>';
+  h += '<div class="gen-field"><label>Down Payment $</label><input id="sc_downAmt" value="' + s.downAmt + '" placeholder="$20,000" oninput="formatCurrency(this);calcFromDownAmt()"></div>';
+
+  // Fees
+  h += '<div class="gen-section">Fees & Costs</div>';
+  h += '<div class="gen-field"><label>Discount Points (%)</label><input id="sc_points" value="' + s.points + '" placeholder="0.000"></div>';
+  h += '<div class="gen-field"><label>Origination Fee</label><input id="sc_origFee" value="' + s.origFee + '" placeholder="$1,500" oninput="formatCurrency(this)"></div>';
+  h += '<div class="gen-field"><label>Other Lender Fees</label><input id="sc_otherFees" value="' + s.otherLenderFees + '" placeholder="$800" oninput="formatCurrency(this)"></div>';
+  h += '<div class="gen-field"><label>Third Party Fees (title, appraisal)</label><input id="sc_thirdParty" value="' + s.thirdPartyFees + '" placeholder="$3,500" oninput="formatCurrency(this)"></div>';
+  h += '<div class="gen-field"><label>Prepaid Interest Days</label><input id="sc_prepaidDays" value="' + s.prepaidDays + '" placeholder="15"></div>';
+
+  // Mortgage Insurance
+  h += '<div class="gen-section">Mortgage Insurance</div>';
+  h += '<div class="gen-field"><label>Monthly PMI/MIP</label><input id="sc_pmi" value="' + s.pmiMonthly + '" placeholder="$0" oninput="formatCurrency(this)"></div>';
+  h += '<div class="gen-field"><label>PMI Drop-off LTV (%)</label><input id="sc_pmiDrop" value="' + s.pmiDropLtv + '" placeholder="78"></div>';
+
+  // FHA checkbox
+  h += '<div id="fhaFinanceRow" class="gen-check" style="' + (s.program==='fha'?'':'display:none;') + '"><input type="checkbox" id="sc_financeMip"' + (s.financeMip?' checked':'') + '><label for="sc_financeMip">Finance upfront MIP (1.75%) into loan amount</label></div>';
+  // VA checkbox
+  h += '<div id="vaFinanceRow" class="gen-check" style="' + (s.program==='va'?'':'display:none;') + '"><input type="checkbox" id="sc_financeVa"' + (s.financeVa?' checked':'') + '><label for="sc_financeVa">Finance VA Funding Fee into loan amount</label></div>';
+
+  // ARM fields
+  var isArm = s.loanType.indexOf('arm') === 0;
+  h += '<div class="arm-fields' + (isArm ? ' visible' : '') + '" id="armFieldsWrap">';
+  h += '<div class="gen-section" style="grid-column:1/-1;">ARM Details</div>';
+  h += '<div class="gen-field"><label>Current SOFR</label><input id="sc_sofr" value="' + currentSofrRate + '" placeholder="4.330"></div>';
+  h += '<div class="gen-field"><label>Margin (%)</label><input id="sc_armMargin" value="' + s.armMargin + '" placeholder="2.750"></div>';
+  h += '<div class="gen-field"><label>Fully Indexed Rate</label><input id="sc_fullyIndexed" value="" readonly style="color:var(--gold);font-weight:700;background:rgba(186,163,112,0.06);"></div>';
+  h += '<div class="gen-field"><label>Initial Adj Cap (%)</label><input id="sc_armInitCap" value="' + s.armInitialCap + '"></div>';
+  h += '<div class="gen-field"><label>Periodic Adj Cap (%)</label><input id="sc_armPerCap" value="' + s.armPeriodicCap + '"></div>';
+  h += '<div class="gen-field"><label>Lifetime Cap (%)</label><input id="sc_armLifeCap" value="' + s.armLifetimeCap + '"></div>';
+  h += '</div>';
+
+  // Buydown
+  h += '<div class="gen-section">Buydown (optional)</div>';
+  h += '<div class="gen-field"><label>Buydown Type</label><select id="sc_buydownType" onchange="onBuydownChange()"><option value="none"' + (s.buydownType==='none'?' selected':'') + '>None</option><option value="2-1"' + (s.buydownType==='2-1'?' selected':'') + '>2-1 Buydown</option><option value="1-0"' + (s.buydownType==='1-0'?' selected':'') + '>1-0 Buydown</option><option value="3-2-1"' + (s.buydownType==='3-2-1'?' selected':'') + '>3-2-1 Buydown</option></select></div>';
+
+  // Clone button
+  h += '<div class="gen-section" style="border-top:none;padding-top:4px;"></div>';
+  h += '<div class="gen-field full" style="flex-direction:row;gap:8px;">';
+  if (scenarios.length < 4) h += '<button class="gen-btn secondary" onclick="cloneScenario(' + idx + ')" style="flex:0;white-space:nowrap;"><i class="fas fa-copy" style="margin-right:4px;"></i> Clone This Scenario</button>';
+  h += '</div>';
+
+  h += '</div></div>';
+  document.getElementById('scenarioPanels').innerHTML = h;
+
+  // Calculate fully indexed rate for ARM
+  if (isArm) calcFullyIndexed();
+}
+
+function onProgramChange() {
+  var prog = document.getElementById('sc_program').value;
+  document.getElementById('fhaFinanceRow').style.display = prog === 'fha' ? '' : 'none';
+  document.getElementById('vaFinanceRow').style.display = prog === 'va' ? '' : 'none';
+}
+
+function onLoanTypeChange() {
+  var lt = document.getElementById('sc_loanType').value;
+  var isArm = lt.indexOf('arm') === 0;
+  document.getElementById('armFieldsWrap').className = 'arm-fields' + (isArm ? ' visible' : '');
+  if (isArm) calcFullyIndexed();
+}
+
+function onBuydownChange() {
+  // Nothing special needed, buydown handled in calculation
+}
+
+function calcFullyIndexed() {
+  var sofr = parseFloat((document.getElementById('sc_sofr') || {}).value) || currentSofrRate;
+  var margin = parseFloat((document.getElementById('sc_armMargin') || {}).value) || 0;
+  var fi = document.getElementById('sc_fullyIndexed');
+  if (fi) fi.value = (sofr + margin).toFixed(3) + '%';
+}
+
+// ===== DOWN PAYMENT / LOAN AMOUNT SYNC =====
+function calcFromDownPct() {
+  var price = parseCurrency(document.getElementById('inp_price').value);
+  var pct = parseFloat(document.getElementById('sc_downPct').value) || 0;
+  if (price > 0 && pct >= 0) {
+    var downAmt = Math.round(price * pct / 100);
+    var loanAmt = price - downAmt;
+    document.getElementById('sc_downAmt').value = fmtMoney(downAmt);
+    document.getElementById('sc_loanAmt').value = fmtMoney(loanAmt);
+  }
+}
+
+function calcFromDownAmt() {
+  var price = parseCurrency(document.getElementById('inp_price').value);
+  var downAmt = parseCurrency(document.getElementById('sc_downAmt').value);
+  if (price > 0 && downAmt >= 0) {
+    var pct = (downAmt / price * 100).toFixed(1);
+    var loanAmt = price - downAmt;
+    document.getElementById('sc_downPct').value = pct;
+    document.getElementById('sc_loanAmt').value = fmtMoney(loanAmt);
+  }
+}
+
+function calcFromLoanAmt() {
+  var price = parseCurrency(document.getElementById('inp_price').value);
+  var loanAmt = parseCurrency(document.getElementById('sc_loanAmt').value);
+  if (price > 0 && loanAmt > 0) {
+    var downAmt = price - loanAmt;
+    var pct = (downAmt / price * 100).toFixed(1);
+    document.getElementById('sc_downAmt').value = fmtMoney(downAmt);
+    document.getElementById('sc_downPct').value = pct;
+  }
+}
+
+function recalcScenario() {} // placeholder for live updates
+function recalcAllScenarios() {} // placeholder
+
+// ===== CALCULATION ENGINES =====
+
+// Monthly P&I (standard amortization)
+function calcMonthlyPI(principal, annualRate, termYears) {
+  if (annualRate === 0) return principal / (termYears * 12);
+  var r = annualRate / 100 / 12;
+  var n = termYears * 12;
+  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+}
+
+// Amortization schedule
+function buildAmortization(principal, annualRate, termYears, extraMonthlyPrincipal) {
+  var r = annualRate / 100 / 12;
+  var n = termYears * 12;
+  var payment = calcMonthlyPI(principal, annualRate, termYears);
+  var balance = principal;
+  var schedule = [];
+  var totalInterest = 0;
+  for (var m = 1; m <= n && balance > 0.01; m++) {
+    var interest = balance * r;
+    var princPaid = payment - interest + (extraMonthlyPrincipal || 0);
+    if (princPaid > balance) princPaid = balance;
+    balance -= princPaid;
+    totalInterest += interest;
+    schedule.push({
+      month: m,
+      payment: payment,
+      principal: princPaid,
+      interest: interest,
+      balance: Math.max(0, balance),
+      totalInterest: totalInterest
+    });
+  }
+  return schedule;
+}
+
+// APR Calculation (Reg Z Appendix J — Newton-Raphson iterative)
+function calcAPR(loanAmount, monthlyPayment, termMonths, totalFinanceCharges) {
+  // Amount financed = loan amount - prepaid finance charges
+  var amountFinanced = loanAmount - totalFinanceCharges;
+  if (amountFinanced <= 0 || monthlyPayment <= 0) return 0;
+
+  // Newton-Raphson to find the rate where PV of payments = amount financed
+  var guess = 0.005; // Start with 6% APR / 12
+  for (var iter = 0; iter < 200; iter++) {
+    var pv = 0, dpv = 0;
+    for (var t = 1; t <= termMonths; t++) {
+      var factor = Math.pow(1 + guess, -t);
+      pv += monthlyPayment * factor;
+      dpv += -t * monthlyPayment * factor / (1 + guess);
+    }
+    var diff = pv - amountFinanced;
+    if (Math.abs(diff) < 0.001) break;
+    var newGuess = guess - diff / dpv;
+    if (newGuess <= 0) newGuess = guess / 2;
+    guess = newGuess;
+  }
+  return guess * 12 * 100; // Convert monthly to annual percentage
+}
+
+// APR with PMI (more complex — payments change when PMI drops)
+function calcAPRWithPMI(loanAmount, monthlyPI, monthlyPMI, pmiDropMonth, termMonths, prepaidFinanceCharges) {
+  var amountFinanced = loanAmount - prepaidFinanceCharges;
+  if (amountFinanced <= 0) return 0;
+
+  var guess = 0.005;
+  for (var iter = 0; iter < 200; iter++) {
+    var pv = 0, dpv = 0;
+    for (var t = 1; t <= termMonths; t++) {
+      var pmt = monthlyPI + (t <= pmiDropMonth ? monthlyPMI : 0);
+      var factor = Math.pow(1 + guess, -t);
+      pv += pmt * factor;
+      dpv += -t * pmt * factor / (1 + guess);
+    }
+    var diff = pv - amountFinanced;
+    if (Math.abs(diff) < 0.001) break;
+    var newGuess = guess - diff / dpv;
+    if (newGuess <= 0) newGuess = guess / 2;
+    guess = newGuess;
+  }
+  return guess * 12 * 100;
+}
+
+// PMI drop-off month calculator
+function calcPMIDropMonth(originalLoan, propertyValue, monthlyPI, annualRate, dropLtv) {
+  var r = annualRate / 100 / 12;
+  var balance = originalLoan;
+  for (var m = 1; m <= 360; m++) {
+    var interest = balance * r;
+    var princPaid = monthlyPI - interest;
+    balance -= princPaid;
+    var ltv = (balance / propertyValue) * 100;
+    if (ltv <= dropLtv) return m;
+  }
+  return 360; // Never drops
+}
+
+// ===== BUILD SCENARIO RESULT =====
+function buildScenarioResult(s, price, annualTaxes, annualInsurance, annualHoa) {
+  var loanAmt = parseCurrency(s.loanAmount);
+  var downAmt = parseCurrency(s.downAmt);
+  var rate = parseFloat(s.rate) || 0;
+  var term = parseInt(s.term) || 30;
+  var points = parseFloat(s.points) || 0;
+  var origFee = parseCurrency(s.origFee);
+  var otherFees = parseCurrency(s.otherLenderFees);
+  var thirdPartyFees = parseCurrency(s.thirdPartyFees);
+  var prepaidDays = parseInt(s.prepaidDays) || 15;
+  var pmiMonthly = parseCurrency(s.pmiMonthly);
+  var pmiDropLtv = parseFloat(s.pmiDropLtv) || 78;
+  var isArm = s.loanType.indexOf('arm') === 0;
+  var isFha = s.program === 'fha';
+  var isVa = s.program === 'va';
+
+  // FHA upfront MIP
+  var upfrontMip = 0;
+  if (isFha) {
+    upfrontMip = loanAmt * 0.0175;
+    if (s.financeMip) loanAmt += upfrontMip;
+  }
+
+  // VA Funding Fee (simplified — first use, <5% down)
+  var vaFundingFee = 0;
+  if (isVa) {
+    var vaFeeRate = downAmt / price < 0.05 ? 0.0230 : downAmt / price < 0.10 ? 0.0165 : 0.0140;
+    vaFundingFee = loanAmt * vaFeeRate;
+    if (s.financeVa) loanAmt += vaFundingFee;
+  }
+
+  // Monthly P&I
+  var monthlyPI = calcMonthlyPI(loanAmt, rate, term);
+  var monthlyTaxes = annualTaxes / 12;
+  var monthlyInsurance = annualInsurance / 12;
+  var monthlyHoa = annualHoa / 12;
+  var totalMonthly = monthlyPI + monthlyTaxes + monthlyInsurance + monthlyHoa + pmiMonthly;
+
+  // Points cost
+  var pointsCost = loanAmt * points / 100;
+
+  // Closing costs
+  var closingCosts = pointsCost + origFee + otherFees + thirdPartyFees;
+  if (isFha && !s.financeMip) closingCosts += upfrontMip;
+  if (isVa && !s.financeVa) closingCosts += vaFundingFee;
+
+  // Cash to close
+  var cashToClose = downAmt + closingCosts;
+
+  // Prepaid interest (for APR calc — this IS a finance charge)
+  var dailyInterest = loanAmt * (rate / 100) / 365;
+  var prepaidInterest = dailyInterest * prepaidDays;
+
+  // Finance charges for APR = points + origination + prepaid interest + PMI premiums + upfront MIP/VA fee
+  var prepaidFinanceCharges = pointsCost + origFee + prepaidInterest;
+  if (isFha) prepaidFinanceCharges += upfrontMip;
+  if (isVa) prepaidFinanceCharges += vaFundingFee;
+
+  // PMI drop month
+  var pmiDropMonth = 0;
+  if (pmiMonthly > 0) {
+    if (isFha) {
+      pmiDropMonth = term * 12; // FHA MIP is life of loan (>10% down = 11 years, but simplified)
+    } else {
+      pmiDropMonth = calcPMIDropMonth(loanAmt, price, monthlyPI, rate, pmiDropLtv);
+    }
+  }
+
+  // APR
+  var apr = 0;
+  if (pmiMonthly > 0 && pmiDropMonth < term * 12) {
+    apr = calcAPRWithPMI(loanAmt, monthlyPI, pmiMonthly, pmiDropMonth, term * 12, prepaidFinanceCharges);
+  } else {
+    var totalPmt = monthlyPI + pmiMonthly;
+    apr = calcAPR(loanAmt, totalPmt, term * 12, prepaidFinanceCharges);
+  }
+
+  // Total interest over life
+  var amortSchedule = buildAmortization(loanAmt, rate, term);
+  var totalInterest = amortSchedule.length > 0 ? amortSchedule[amortSchedule.length - 1].totalInterest : 0;
+
+  // Total of all payments
+  var totalPayments = (monthlyPI * term * 12) + (pmiMonthly * Math.min(pmiDropMonth || term*12, term*12));
+
+  // Total monthly after PMI drops
+  var monthlyAfterPMI = monthlyPI + monthlyTaxes + monthlyInsurance + monthlyHoa;
+
+  // LTV
+  var ltv = (loanAmt / price * 100);
+
+  // ARM details
+  var armDetails = null;
+  if (isArm) {
+    var fixedPeriod = parseInt(s.loanType.split('_')[1]) || 5;
+    var sofr = parseFloat(s.armSofr) || currentSofrRate;
+    var margin = parseFloat(s.armMargin) || 2.75;
+    var fullyIndexed = sofr + margin;
+    var initCap = parseFloat(s.armInitialCap) || 2;
+    var perCap = parseFloat(s.armPeriodicCap) || 2;
+    var lifeCap = parseFloat(s.armLifetimeCap) || 5;
+    var maxRate = rate + lifeCap;
+    var firstAdjRate = Math.min(rate + initCap, maxRate);
+    var firstAdjPayment = calcMonthlyPI(loanAmt, firstAdjRate, term);
+    var maxPayment = calcMonthlyPI(loanAmt, maxRate, term);
+    armDetails = {
+      fixedPeriod: fixedPeriod, fullyIndexed: fullyIndexed,
+      initCap: initCap, perCap: perCap, lifeCap: lifeCap,
+      maxRate: maxRate, firstAdjRate: firstAdjRate,
+      firstAdjPayment: firstAdjPayment, maxPayment: maxPayment
+    };
+  }
+
+  // Buydown details
+  var buydownDetails = null;
+  if (s.buydownType !== 'none') {
+    var bdRates = [];
+    if (s.buydownType === '3-2-1') bdRates = [rate - 3, rate - 2, rate - 1, rate];
+    else if (s.buydownType === '2-1') bdRates = [rate - 2, rate - 1, rate];
+    else if (s.buydownType === '1-0') bdRates = [rate - 1, rate];
+    var bdPayments = bdRates.map(function(r) { return calcMonthlyPI(loanAmt, r, term); });
+    var bdCost = 0;
+    var permPayment = calcMonthlyPI(loanAmt, rate, term);
+    for (var i = 0; i < bdRates.length - 1; i++) {
+      bdCost += (permPayment - bdPayments[i]) * 12;
+    }
+    buydownDetails = { type: s.buydownType, rates: bdRates, payments: bdPayments, cost: bdCost };
+  }
+
+  return {
+    label: s.label, program: s.program, loanType: s.loanType, term: term,
+    rate: rate, apr: apr, loanAmount: loanAmt, downAmt: downAmt,
+    downPct: (downAmt / price * 100), ltv: ltv,
+    monthlyPI: monthlyPI, monthlyTaxes: monthlyTaxes,
+    monthlyInsurance: monthlyInsurance, monthlyHoa: monthlyHoa,
+    pmiMonthly: pmiMonthly, pmiDropMonth: pmiDropMonth,
+    totalMonthly: totalMonthly, monthlyAfterPMI: monthlyAfterPMI,
+    closingCosts: closingCosts, cashToClose: cashToClose,
+    pointsCost: pointsCost, origFee: origFee,
+    totalInterest: totalInterest, totalPayments: totalPayments,
+    upfrontMip: upfrontMip, vaFundingFee: vaFundingFee,
+    isArm: isArm, armDetails: armDetails,
+    buydownDetails: buydownDetails,
+    amortSchedule: amortSchedule
+  };
+}
+
+// ===== GENERATE REPORT =====
+function generateReport() {
+  saveCurrentScenario();
+
+  var price = parseCurrency(document.getElementById('inp_price').value);
+  var taxes = parseCurrency(document.getElementById('inp_taxes').value);
+  var insurance = parseCurrency(document.getElementById('inp_insurance').value);
+  var hoa = parseCurrency(document.getElementById('inp_hoa').value);
+  var borrower = document.getElementById('inp_borrower').value || 'Valued Client';
+  var address = document.getElementById('inp_address').value || '';
+  var transType = document.getElementById('inp_transType').value;
+  var apprRate = parseFloat(document.getElementById('inp_appr').value) || 3;
+
+  if (!price || price <= 0) { alert('Please enter a purchase price.'); return; }
+
+  var results = [];
+  for (var i = 0; i < scenarios.length; i++) {
+    if (!scenarios[i].rate) { alert('Please enter an interest rate for ' + scenarios[i].label); return; }
+    results.push(buildScenarioResult(scenarios[i], price, taxes, insurance, hoa));
+  }
+
+  var numScen = results.length;
+  var dateStr = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
+  var transLabel = transType === 'purchase' ? 'Purchase' : transType === 'refi' ? 'Refinance' : 'Cash-Out Refinance';
+
+  // ===== HERO =====
+  var hero = '<div class="rpt-hero">';
+  hero += '<div class="rpt-hero-label">Loan Comparison Analysis</div>';
+  hero += '<div class="rpt-hero-title">Prepared for ' + borrower + '</div>';
+  if (address) hero += '<div class="rpt-hero-sub">' + address + '</div>';
+  hero += '<div class="rpt-hero-detail">' + transLabel + ' &bull; ' + fmtMoney(price) + ' &bull; ' + numScen + ' Scenario' + (numScen > 1 ? 's' : '') + ' &bull; ' + dateStr + '</div>';
+  hero += '</div>';
+  document.getElementById('rptHero').innerHTML = hero;
+
+  // ===== KPI STRIP =====
+  var lowestPayment = Math.min.apply(null, results.map(function(r){return r.totalMonthly}));
+  var lowestInterest = Math.min.apply(null, results.map(function(r){return r.totalInterest}));
+  var lowestCash = Math.min.apply(null, results.map(function(r){return r.cashToClose}));
+
+  var kpi = '<div class="rpt-kpi-strip" style="grid-template-columns:repeat(' + Math.min(numScen + 1, 4) + ',1fr);">';
+  kpi += '<div class="rpt-kpi"><div class="rpt-kpi-label">Property Value</div><div class="rpt-kpi-value">' + fmtMoney(price) + '</div></div>';
+  if (numScen > 1) kpi += '<div class="rpt-kpi"><div class="rpt-kpi-label">Lowest Monthly</div><div class="rpt-kpi-value green">' + fmtMoney(lowestPayment) + '</div></div>';
+  kpi += '<div class="rpt-kpi"><div class="rpt-kpi-label">Scenarios Compared</div><div class="rpt-kpi-value">' + numScen + '</div></div>';
+  kpi += '</div>';
+  document.getElementById('rptKpi').innerHTML = kpi;
+
+  // ===== SIDE-BY-SIDE COMPARISON =====
+  var cols = numScen + 1;
+  var gc = '<div class="rpt-section"><div class="rpt-section-title">Side-by-Side Comparison</div>';
+  gc += '<div class="rpt-section-intro">Each scenario shows the full cost picture including the Annual Percentage Rate (APR), which reflects the true cost of borrowing including fees, points, and mortgage insurance.</div>';
+  gc += '<div class="comparison-grid" style="grid-template-columns:200px repeat(' + numScen + ',1fr);">';
+
+  // Header row
+  gc += '<div class="cg-header"></div>';
+  results.forEach(function(r, i) {
+    gc += '<div class="cg-header scenario" style="border-bottom-color:' + scenarioColors[i] + ';">';
+    gc += '<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:' + scenarioColors[i] + ';margin-right:4px;vertical-align:middle;"></span> ';
+    gc += r.label + '</div>';
+  });
+
+  function addRow(label, values, cls) {
+    gc += '<div class="cg-label">' + label + '</div>';
+    values.forEach(function(v) { gc += '<div class="cg-value ' + (cls||'') + '">' + v + '</div>'; });
+  }
+  function addGroup(label) {
+    gc += '<div class="cg-group">' + label + '</div>';
+  }
+
+  // Loan Details
+  addGroup('Loan Details');
+  addRow('Program', results.map(function(r) {
+    var prog = r.program.charAt(0).toUpperCase() + r.program.slice(1);
+    var type = r.isArm ? r.loanType.replace('arm_','').replace('_','/') + ' ARM' : 'Fixed';
+    return prog + ' ' + r.term + 'yr ' + type;
+  }));
+  addRow('Interest Rate', results.map(function(r){ return fmtPct(r.rate); }), 'rate');
+  addRow('Annual Percentage Rate (APR)', results.map(function(r){ return fmtPct(r.apr); }), 'apr');
+  addRow('Loan Amount', results.map(function(r){ return fmtMoney(r.loanAmount); }));
+  addRow('Down Payment', results.map(function(r){ return fmtMoney(r.downAmt) + ' (' + r.downPct.toFixed(1) + '%)'; }));
+  addRow('Loan-to-Value', results.map(function(r){ return fmtPct(r.ltv, 1); }));
+
+  // Monthly Payment
+  addGroup('Monthly Payment');
+  addRow('Principal & Interest', results.map(function(r){ return fmtMoney(r.monthlyPI); }));
+  addRow('Property Taxes', results.map(function(r){ return fmtMoney(r.monthlyTaxes); }));
+  addRow('Homeowners Insurance', results.map(function(r){ return fmtMoney(r.monthlyInsurance); }));
+  if (hoa > 0) addRow('HOA Dues', results.map(function(r){ return fmtMoney(r.monthlyHoa); }));
+  addRow('Mortgage Insurance', results.map(function(r){
+    if (r.pmiMonthly <= 0) return '—';
+    var s = fmtMoney(r.pmiMonthly);
+    if (r.program === 'fha') s += ' (life of loan)';
+    else if (r.pmiDropMonth > 0) s += ' (drops ~mo ' + r.pmiDropMonth + ')';
+    return s;
+  }));
+  addRow('Total Monthly Payment', results.map(function(r){ return fmtMoney(r.totalMonthly); }), 'highlight');
+  if (results.some(function(r){ return r.pmiMonthly > 0 && r.pmiDropMonth < r.term * 12; })) {
+    addRow('After PMI Drops', results.map(function(r){
+      if (r.pmiMonthly <= 0 || r.pmiDropMonth >= r.term * 12) return '—';
+      return fmtMoney(r.monthlyAfterPMI);
+    }));
+  }
+
+  // Closing Costs
+  addGroup('Costs to Close');
+  addRow('Discount Points', results.map(function(r){ return r.pointsCost > 0 ? fmtMoney(r.pointsCost) : '—'; }));
+  addRow('Origination Fee', results.map(function(r){ return r.origFee > 0 ? fmtMoney(r.origFee) : '—'; }));
+  if (results.some(function(r){ return r.upfrontMip > 0; })) {
+    addRow('Upfront MIP (FHA)', results.map(function(r){ return r.upfrontMip > 0 ? fmtMoney(r.upfrontMip) : '—'; }));
+  }
+  if (results.some(function(r){ return r.vaFundingFee > 0; })) {
+    addRow('VA Funding Fee', results.map(function(r){ return r.vaFundingFee > 0 ? fmtMoney(r.vaFundingFee) : '—'; }));
+  }
+  addRow('Estimated Closing Costs', results.map(function(r){ return fmtMoney(r.closingCosts); }));
+  addRow('Cash to Close', results.map(function(r){ return fmtMoney(r.cashToClose); }), 'highlight');
+
+  // Long-Term Cost
+  addGroup('Long-Term Cost');
+  addRow('Total Interest (' + results[0].term + ' yr)', results.map(function(r){ return fmtMoney(r.totalInterest); }));
+  addRow('Total of All Payments', results.map(function(r){ return fmtMoney(r.totalPayments); }));
+
+  // ARM details if any
+  if (results.some(function(r){ return r.isArm; })) {
+    addGroup('Adjustable Rate Details');
+    addRow('Fixed Period', results.map(function(r){
+      return r.isArm ? r.armDetails.fixedPeriod + ' years' : 'N/A — Fixed Rate';
+    }));
+    addRow('Fully Indexed Rate', results.map(function(r){
+      return r.isArm ? fmtPct(r.armDetails.fullyIndexed) : '—';
+    }));
+    addRow('Rate Caps (Init/Per/Life)', results.map(function(r){
+      return r.isArm ? r.armDetails.initCap + '/' + r.armDetails.perCap + '/' + r.armDetails.lifeCap : '—';
+    }));
+    addRow('Maximum Possible Rate', results.map(function(r){
+      return r.isArm ? fmtPct(r.armDetails.maxRate) : '—';
+    }));
+    addRow('Maximum Possible Payment', results.map(function(r){
+      return r.isArm ? fmtMoney(r.armDetails.maxPayment) : '—';
+    }));
+    addRow('This is an Adjustable Rate Mortgage', results.map(function(r){
+      return r.isArm ? 'Yes — rate may increase' : 'No — rate is fixed';
+    }));
+  }
+
+  // Buydown details if any
+  if (results.some(function(r){ return r.buydownDetails; })) {
+    addGroup('Buydown Details');
+    var maxYears = Math.max.apply(null, results.map(function(r){ return r.buydownDetails ? r.buydownDetails.rates.length : 0; }));
+    for (var yr = 0; yr < maxYears; yr++) {
+      var yearLabel = yr < maxYears - 1 ? 'Year ' + (yr+1) + ' Rate / Payment' : 'Permanent Rate / Payment';
+      addRow(yearLabel, results.map(function(r){
+        if (!r.buydownDetails || yr >= r.buydownDetails.rates.length) return '—';
+        return fmtPct(r.buydownDetails.rates[yr]) + ' / ' + fmtMoney(r.buydownDetails.payments[yr]);
+      }));
+    }
+    addRow('Buydown Cost', results.map(function(r){
+      return r.buydownDetails ? fmtMoney(r.buydownDetails.cost) : '—';
+    }));
+  }
+
+  gc += '</div></div>';
+  document.getElementById('rptComparison').innerHTML = gc;
+
+  // ===== PAYMENT COMPARISON CHART =====
+  var payChart = '<div class="rpt-section"><div class="rpt-section-title">Monthly Payment Comparison</div>';
+  payChart += '<canvas id="paymentChart" class="rpt-chart-canvas" height="280"></canvas></div>';
+  document.getElementById('rptPaymentChart').innerHTML = payChart;
+
+  // ===== EQUITY BUILDUP CHART =====
+  var eqChart = '<div class="rpt-section"><div class="rpt-section-title">Equity Buildup Over Time</div>';
+  eqChart += '<div class="rpt-section-intro">Projected equity combines principal paid through mortgage payments plus estimated home appreciation at ' + apprRate + '% annually.</div>';
+  eqChart += '<canvas id="equityChart" class="rpt-chart-canvas" height="280"></canvas></div>';
+  document.getElementById('rptEquityChart').innerHTML = eqChart;
+
+  // ===== AMORTIZATION SUMMARY =====
+  var amort = '<div class="rpt-section"><div class="rpt-section-title">Amortization Summary</div>';
+  amort += '<table class="rpt-table"><thead><tr><th>Year</th>';
+  results.forEach(function(r,i) {
+    amort += '<th style="color:' + scenarioColors[i] + ';">' + r.label + ' Balance</th>';
+    amort += '<th style="color:' + scenarioColors[i] + ';">Interest Paid</th>';
+  });
+  amort += '</tr></thead><tbody>';
+  var milestones = [1,2,3,5,7,10,15,20,25,30];
+  milestones.forEach(function(yr) {
+    if (yr > results[0].term) return;
+    var monthIdx = yr * 12 - 1;
+    amort += '<tr><td>Year ' + yr + '</td>';
+    results.forEach(function(r) {
+      if (monthIdx < r.amortSchedule.length) {
+        var row = r.amortSchedule[monthIdx];
+        amort += '<td>' + fmtMoney(row.balance) + '</td>';
+        amort += '<td>' + fmtMoney(row.totalInterest) + '</td>';
+      } else {
+        amort += '<td>$0</td><td>' + fmtMoney(r.totalInterest) + '</td>';
+      }
+    });
+    amort += '</tr>';
+  });
+  amort += '</tbody></table></div>';
+  document.getElementById('rptAmortization').innerHTML = amort;
+
+  // ===== FOOTER =====
+  var footer = '<div class="footer-standard"><div class="footer-your-info">';
+  footer += '<img src="hero-headshot.jpg" class="footer-headshot" alt="Kristy Flach" onerror="this.style.display=\'none\'">';
+  footer += '<div class="footer-details"><div class="footer-name">Kristy Flach</div>';
+  footer += '<div class="footer-credentials">Certified Mortgage Advisor &middot; NMLS# 2632259<br>Paramount Residential Mortgage Group<br>(206) 313-5883 &middot; kflach@prmg.net</div>';
+  footer += '</div></div>';
+  footer += '<div class="footer-logos">';
+  footer += '<img src="PRMG-Logo.png" class="footer-logo" alt="PRMG" onerror="this.style.display=\'none\'">';
+  footer += '<img src="equal-housing-logo.png" class="footer-logo" style="height:30px" alt="Equal Housing" onerror="this.style.display=\'none\'">';
+  footer += '</div></div>';
+  document.getElementById('rptFooter').innerHTML = footer;
+
+  // ===== DISCLOSURES =====
+  var disc = 'Prepared ' + dateStr + '. This is not a Loan Estimate or commitment to lend. For informational and comparison purposes only. ';
+  disc += 'Rates and terms shown are estimates based on information provided by the loan officer and are subject to change without notice. Actual rates, APR, fees, and terms will be determined at the time of application and may vary based on creditworthiness, property type, occupancy, and other factors. ';
+  disc += 'The Annual Percentage Rate (APR) reflects the total cost of credit as a yearly rate and includes applicable origination fees, discount points, and mortgage insurance premiums where applicable. APR calculations follow Regulation Z (12 CFR &sect;1026.22) methodology. ';
+  disc += 'Monthly payment amounts include principal, interest, estimated property taxes, estimated homeowners insurance, and mortgage insurance where applicable. Property taxes and insurance are estimates and may vary. ';
+  disc += 'For adjustable rate mortgages (ARMs), the interest rate and monthly payment may increase after the initial fixed-rate period. The maximum rate and payment shown reflect the worst-case scenario under the loan\'s rate caps. ';
+  disc += 'Equity projections assume ' + apprRate + '% annual appreciation and are not guaranteed. Past performance does not guarantee future results. ';
+  disc += '&copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243. All Rights Reserved.';
+  disc += '<div class="rpt-disc-logos"><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span><span>NMLS #2632259</span></div>';
+  document.getElementById('rptDisc').innerHTML = disc;
+
+  // Show report
+  document.getElementById('generatorPanel').style.display = 'none';
+  document.getElementById('reportContainer').style.display = 'block';
+
+  // Draw charts
+  setTimeout(function() {
+    drawPaymentChart(results);
+    drawEquityChart(results, price, apprRate);
+  }, 100);
+}
+
+// ===== CHART DRAWING =====
+function drawPaymentChart(results) {
+  var canvas = document.getElementById('paymentChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var W = rect.width, H = rect.height;
+  var padL = 80, padR = 40, padT = 30, padB = 60;
+  var cW = W - padL - padR, cH = H - padT - padB;
+
+  var maxVal = Math.max.apply(null, results.map(function(r){ return r.totalMonthly; })) * 1.15;
+  var barGroupWidth = cW / results.length;
+  var barWidth = Math.min(barGroupWidth * 0.5, 80);
+
+  // Y-axis gridlines
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '10px DM Sans';
+  ctx.textAlign = 'right';
+  for (var g = 0; g <= 4; g++) {
+    var yVal = maxVal * g / 4;
+    var yPos = padT + cH - (yVal / maxVal * cH);
+    ctx.beginPath(); ctx.moveTo(padL, yPos); ctx.lineTo(W - padR, yPos); ctx.stroke();
+    ctx.fillText(fmtMoney(yVal), padL - 8, yPos + 4);
+  }
+
+  // Bars — stacked
+  results.forEach(function(r, i) {
+    var x = padL + barGroupWidth * i + (barGroupWidth - barWidth) / 2;
+    var components = [
+      { val: r.monthlyPI, color: scenarioColors[i] },
+      { val: r.monthlyTaxes, color: 'rgba(255,255,255,0.15)' },
+      { val: r.monthlyInsurance, color: 'rgba(255,255,255,0.08)' },
+      { val: r.pmiMonthly, color: 'rgba(239,68,68,0.3)' }
+    ];
+    var cumY = padT + cH;
+    components.forEach(function(c) {
+      var barH = (c.val / maxVal) * cH;
+      cumY -= barH;
+      ctx.fillStyle = c.color;
+      ctx.beginPath();
+      ctx.roundRect(x, cumY, barWidth, barH, [4,4,0,0]);
+      ctx.fill();
+    });
+
+    // Label
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '11px DM Sans';
+    ctx.textAlign = 'center';
+    ctx.fillText(r.label, x + barWidth / 2, padT + cH + 20);
+
+    // Value on top
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px DM Sans';
+    ctx.fillText(fmtMoney(r.totalMonthly), x + barWidth / 2, cumY - 8);
+  });
+}
+
+function drawEquityChart(results, price, apprRate) {
+  var canvas = document.getElementById('equityChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  var W = rect.width, H = rect.height;
+  var padL = 80, padR = 40, padT = 20, padB = 40;
+  var cW = W - padL - padR, cH = H - padT - padB;
+
+  var maxYears = results[0].term;
+  var years = [0,1,2,3,5,7,10,15,20,25,30].filter(function(y){ return y <= maxYears; });
+
+  // Build equity data per scenario
+  var allData = results.map(function(r) {
+    return years.map(function(yr) {
+      var homeVal = price * Math.pow(1 + apprRate/100, yr);
+      var balance = yr === 0 ? r.loanAmount : (yr*12-1 < r.amortSchedule.length ? r.amortSchedule[yr*12-1].balance : 0);
+      return homeVal - balance;
+    });
+  });
+
+  var maxEquity = 0;
+  allData.forEach(function(d) { d.forEach(function(v) { if (v > maxEquity) maxEquity = v; }); });
+  maxEquity *= 1.1;
+
+  function xP(yr) { return padL + (years.indexOf(yr) / (years.length - 1)) * cW; }
+  function yP(v) { return padT + cH - (v / maxEquity) * cH; }
+
+  // Gridlines
+  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '10px DM Sans';
+  ctx.textAlign = 'right';
+  for (var g = 0; g <= 4; g++) {
+    var yVal = maxEquity * g / 4;
+    var yPos = padT + cH - (yVal / maxEquity * cH);
+    ctx.beginPath(); ctx.moveTo(padL, yPos); ctx.lineTo(W - padR, yPos); ctx.stroke();
+    ctx.fillText(fmtMoney(yVal), padL - 8, yPos + 4);
+  }
+
+  // X-axis labels
+  ctx.textAlign = 'center';
+  years.forEach(function(yr) {
+    ctx.fillText('Yr ' + yr, xP(yr), padT + cH + 18);
+  });
+
+  // Lines
+  allData.forEach(function(data, i) {
+    ctx.strokeStyle = scenarioColors[i];
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    data.forEach(function(v, j) {
+      var x = xP(years[j]), y = yP(v);
+      if (j === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Dots at key points
+    [data[0], data[data.length - 1]].forEach(function(v, di) {
+      var yr = di === 0 ? years[0] : years[years.length - 1];
+      ctx.beginPath();
+      ctx.arc(xP(yr), yP(v), 4, 0, Math.PI * 2);
+      ctx.fillStyle = scenarioColors[i];
+      ctx.fill();
+    });
+
+    // End label
+    var lastVal = data[data.length - 1];
+    ctx.fillStyle = scenarioColors[i];
+    ctx.font = 'bold 11px DM Sans';
+    ctx.textAlign = 'left';
+    ctx.fillText(fmtMoney(lastVal), xP(years[years.length-1]) + 8, yP(lastVal) + 4);
+  });
+}
+</script>
+</body>
+</html>
