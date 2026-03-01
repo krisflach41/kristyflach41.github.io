@@ -1691,22 +1691,147 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Email Center</div><div class="topbar-subtitle">Send and track emails</div></div>
+      <div><div class="topbar-title">Email Center</div><div class="topbar-subtitle">Campaigns, templates & send history</div></div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn primary" onclick="openComposeEmail()">+ Compose</button>
+      <button class="topbar-btn" onclick="emTab('dashboard',this)">Dashboard</button>
+      <button class="topbar-btn" onclick="emTab('campaigns',this)">Campaigns</button>
+      <button class="topbar-btn" onclick="emTab('templates',this)">Templates</button>
+      <button class="topbar-btn" onclick="emTab('history',this)">History</button>
+      <button class="topbar-btn primary" onclick="emOpenCompose()">+ Compose</button>
     </div>
   </div>
-  <div class="content-area">
-    <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);">
-      <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value">--</div></div>
-      <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value">--</div></div>
-      <div class="stat-card orange"><div class="stat-label">Replies</div><div class="stat-value">--</div></div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- DASHBOARD -->
+    <div id="emDashboard">
+      <div class="dash-stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;">
+        <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value" id="emStatSent">--</div></div>
+        <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value" id="emStatOpen">--</div></div>
+        <div class="stat-card orange"><div class="stat-label">Active Campaigns</div><div class="stat-value" id="emStatCampaigns">--</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVE DRIPS</div></div>
+          <div id="emActiveDrips" style="padding:8px 0;"></div>
+        </div>
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">RECENT SENDS</div></div>
+          <div id="emRecentSends" style="padding:8px 0;"></div>
+        </div>
+      </div>
     </div>
-    <div class="placeholder-center" style="height:30%;">
-      <div class="placeholder-text">Email history and campaign tools coming soon</div>
-      <div class="placeholder-sub">Send emails directly from CRM contact cards</div>
+
+    <!-- CAMPAIGNS -->
+    <div id="emCampaigns" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Drip Campaigns</div>
+        <button class="topbar-btn primary" onclick="emOpenCampaignBuilder()"><i class="fas fa-plus"></i> New Campaign</button>
+      </div>
+      <div id="emCampaignList"></div>
+
+      <!-- Campaign Builder (hidden by default) -->
+      <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emBuilderTitle">New Campaign</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="fc-field"><div class="fc-lbl">Campaign Name *</div><input id="emCampName" placeholder="e.g. Welcome Series"></div>
+          <div class="fc-field"><div class="fc-lbl">Trigger</div>
+            <select id="emCampTrigger">
+              <option value="manual">Manual Enrollment</option>
+              <option value="signup">New Signup</option>
+              <option value="birthday">Birthday</option>
+              <option value="loan_funded">Loan Funded</option>
+              <option value="inactive">Inactive 7+ Days</option>
+              <option value="anniversary">Home Anniversary</option>
+              <option value="rate_drop">Rate Drop Alert</option>
+            </select>
+          </div>
+        </div>
+        <div class="fc-field" style="margin-bottom:16px;"><div class="fc-lbl">Description</div><input id="emCampDesc" placeholder="Brief description of this campaign"></div>
+
+        <!-- Steps -->
+        <div style="font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">EMAIL SEQUENCE</div>
+        <div id="emStepsList" style="margin-bottom:12px;"></div>
+        <button class="topbar-btn" onclick="emAddStep()" style="font-size:11px;margin-bottom:16px;"><i class="fas fa-plus"></i> Add Email Step</button>
+
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseCampaignBuilder()">Cancel</button>
+          <button class="topbar-btn primary" onclick="emSaveCampaign()"><i class="fas fa-save"></i> Save Campaign</button>
+        </div>
+        <input type="hidden" id="emCampEditId" value="">
+      </div>
     </div>
+
+    <!-- TEMPLATES -->
+    <div id="emTemplates" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Email Templates</div>
+        <button class="topbar-btn primary" onclick="emOpenTemplateEditor()"><i class="fas fa-plus"></i> New Template</button>
+      </div>
+      <div id="emTemplateList"></div>
+
+      <!-- Template Editor -->
+      <div id="emTemplateEditor" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emTplEditorTitle">New Template</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px;">
+          <div class="fc-field"><div class="fc-lbl">Template Name *</div><input id="emTplName" placeholder="e.g. Birthday Greeting"></div>
+          <div class="fc-field"><div class="fc-lbl">Category</div>
+            <select id="emTplCategory">
+              <option value="custom">Custom</option>
+              <option value="nurture">Nurture</option>
+              <option value="seasonal">Seasonal</option>
+              <option value="milestone">Milestone</option>
+              <option value="educational">Educational</option>
+            </select>
+          </div>
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">Subject Line *</div><input id="emTplSubject" placeholder="e.g. Happy Birthday, {{first_name}}!"></div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Email Body (HTML) * <span style="font-size:9px;opacity:0.5;">Use {{name}}, {{first_name}}, {{email}} for personalization</span></div>
+          <textarea id="emTplBody" rows="12" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi {{first_name}},</p>&#10;<p>Your email content here...</p>"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseTemplateEditor()">Cancel</button>
+          <button class="topbar-btn" onclick="emPreviewTemplate()" style="font-size:11px;"><i class="fas fa-eye"></i> Preview</button>
+          <button class="topbar-btn primary" onclick="emSaveTemplate()"><i class="fas fa-save"></i> Save Template</button>
+        </div>
+        <input type="hidden" id="emTplEditId" value="">
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="emHistory" style="display:none;">
+      <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:16px;">Send History</div>
+      <div id="emHistoryList"></div>
+    </div>
+
+    <!-- COMPOSE (modal overlay) -->
+    <div id="emComposeOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:16px;font-weight:700;">Compose Email</div>
+          <button class="topbar-btn" onclick="emCloseCompose()" style="font-size:11px;">✕</button>
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">To *</div><input id="emComposeTo" placeholder="email@example.com"></div>
+        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">Subject *</div><input id="emComposeSubject" placeholder="Subject line"></div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Template (optional)</div>
+          <select id="emComposeTemplate" onchange="emFillFromTemplate()">
+            <option value="">— Write custom —</option>
+          </select>
+        </div>
+        <div class="fc-field" style="margin-bottom:16px;">
+          <div class="fc-lbl">Message</div>
+          <textarea id="emComposeBody" rows="10" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;color:#f0f4f8;font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi there,</p>&#10;<p>Your message here...</p>"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseCompose()">Cancel</button>
+          <button class="topbar-btn primary" onclick="emSendCompose()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+        <div id="emComposeResult" style="font-size:12px;margin-top:8px;"></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2771,6 +2896,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'scenarios') loadScenarios();
   if (viewId === 'calendar') renderCalendar();
   if (viewId === 'settings') initSettingsView();
+  if (viewId === 'email') loadEmailCenter();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -5785,30 +5911,431 @@ function loadUsers() {
 
 // ===== EMAIL =====
 function closeEmailModal() { document.getElementById('emailModal').classList.remove('show'); }
-function openComposeEmail() {
-  document.getElementById('emailTo').value = '';
-  document.getElementById('emailTo').readOnly = false;
-  document.getElementById('emailSubject').value = '';
-  document.getElementById('emailBody').value = '';
-  document.getElementById('emailModal').classList.add('show');
+// ===== EMAIL CENTER =====
+var emTemplates = [];
+var emCampaigns = [];
+var emEditSteps = [];
+var emLoaded = false;
+
+function emTab(tab, el) {
+  ['emDashboard','emCampaigns','emTemplates','emHistory'].forEach(function(id) {
+    var e = document.getElementById(id); if (e) e.style.display = 'none';
+  });
+  var map = { dashboard:'emDashboard', campaigns:'emCampaigns', templates:'emTemplates', history:'emHistory' };
+  var t = document.getElementById(map[tab]); if (t) t.style.display = 'block';
+  if (tab === 'dashboard') emLoadDashboard();
+  if (tab === 'campaigns') emLoadCampaigns();
+  if (tab === 'templates') emLoadTemplates();
+  if (tab === 'history') emLoadHistory();
 }
 
-function sendEmail() {
-  var to = document.getElementById('emailTo').value.trim();
-  var subject = document.getElementById('emailSubject').value.trim();
-  var body = document.getElementById('emailBody').value.trim();
-  if (!to || !subject) { showToast('Email and subject required'); return; }
+function loadEmailCenter() {
+  if (emLoaded) { emLoadDashboard(); return; }
+  emLoadDashboard();
+  emLoaded = true;
+}
 
-  fetch(API_BASE + '/send-email', {
+function emLoadDashboard() {
+  fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ to: to, subject: subject, body: body })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(data) {
-    if (data.success) { showToast('Email sent!'); closeEmailModal(); }
-    else showToast('Send failed');
-  })
-  .catch(function() { showToast('Send failed'); });
+    body: JSON.stringify({ action: 'email_stats', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      document.getElementById('emStatSent').textContent = data.stats.sent_this_month || 0;
+      document.getElementById('emStatOpen').textContent = data.stats.open_rate + '%';
+    }
+  }).catch(function() {});
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_campaigns', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    emCampaigns = data.campaigns || [];
+    var active = emCampaigns.filter(function(c) { return c.status === 'active'; });
+    document.getElementById('emStatCampaigns').textContent = active.length;
+
+    var el = document.getElementById('emActiveDrips');
+    if (active.length === 0) {
+      el.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No active campaigns</div>';
+    } else {
+      var h = '';
+      active.forEach(function(c) {
+        var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive', anniversary:'Anniversary', rate_drop:'Rate Drop' };
+        h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;margin-bottom:3px;">';
+        h += '<div style="width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0;"></div>';
+        h += '<div style="flex:1;font-size:12px;color:rgba(255,255,255,0.7);">' + c.name + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + (trigLabels[c.trigger_type] || c.trigger_type) + '</div>';
+        h += '<div style="font-size:10px;color:rgba(59,130,246,0.6);">' + (c.steps ? c.steps.length : 0) + ' steps</div>';
+        h += '</div>';
+      });
+      el.innerHTML = h;
+    }
+  }).catch(function() {});
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'email_history', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', limit: 5 })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var el = document.getElementById('emRecentSends');
+    var emails = data.emails || [];
+    if (emails.length === 0) {
+      el.innerHTML = '<div style="font-size:11px;color:rgba(255,255,255,0.25);padding:10px;text-align:center;">No emails sent yet</div>';
+    } else {
+      var h = '';
+      emails.forEach(function(e) {
+        var d = new Date(e.sent_at);
+        var dateStr = (d.getMonth()+1) + '/' + d.getDate();
+        h += '<div style="display:flex;align-items:center;gap:10px;padding:6px 12px;border-radius:6px;margin-bottom:2px;">';
+        h += '<div style="flex:1;min-width:0;">';
+        h += '<div style="font-size:12px;color:rgba(255,255,255,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + e.subject + '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">To: ' + e.to_email + '</div>';
+        h += '</div>';
+        h += '<div style="font-size:10px;color:rgba(255,255,255,0.3);">' + dateStr + '</div>';
+        h += '</div>';
+      });
+      el.innerHTML = h;
+    }
+  }).catch(function() {});
+}
+
+// ===== CAMPAIGNS =====
+function emLoadCampaigns() {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_campaigns', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    emCampaigns = data.campaigns || [];
+    emRenderCampaignList();
+  }).catch(function() {});
+}
+
+function emRenderCampaignList() {
+  var el = document.getElementById('emCampaignList');
+  if (emCampaigns.length === 0) {
+    el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;"><i class="fas fa-mail-bulk" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>No campaigns yet. Click "+ New Campaign" to create your first drip sequence.</div>';
+    return;
+  }
+  var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
+  var h = '';
+  emCampaigns.forEach(function(c) {
+    var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'rgba(255,255,255,0.3)';
+    var statusLabel = c.status.charAt(0).toUpperCase() + c.status.slice(1);
+    var stepCount = c.steps ? c.steps.length : 0;
+
+    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
+    h += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
+    h += '<div style="flex:1;">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + '</div>';
+    h += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + stepCount + ' email' + (stepCount !== 1 ? 's' : '') + (c.description ? ' · ' + c.description : '') + '</div>';
+    h += '</div>';
+    h += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
+
+    if (c.status === 'active') {
+      h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'paused\')"><i class="fas fa-pause"></i></button>';
+    } else {
+      h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'active\')"><i class="fas fa-play"></i></button>';
+    }
+    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditCampaign(' + c.id + ')"><i class="fas fa-edit"></i></button>';
+    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="emDeleteCampaign(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function emToggleCampaign(id, newStatus) {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'toggle_campaign', campaign_id: id, status: newStatus })
+  }).then(function() { emLoadCampaigns(); showToast('Campaign ' + newStatus, 'success'); });
+}
+
+function emDeleteCampaign(id) {
+  if (!confirm('Delete this campaign and all its steps? This cannot be undone.')) return;
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_campaign', campaign_id: id })
+  }).then(function() { emLoadCampaigns(); showToast('Campaign deleted'); });
+}
+
+function emOpenCampaignBuilder() {
+  document.getElementById('emCampaignBuilder').style.display = 'block';
+  document.getElementById('emBuilderTitle').textContent = 'New Campaign';
+  document.getElementById('emCampName').value = '';
+  document.getElementById('emCampTrigger').value = 'manual';
+  document.getElementById('emCampDesc').value = '';
+  document.getElementById('emCampEditId').value = '';
+  emEditSteps = [];
+  emRenderSteps();
+}
+
+function emCloseCampaignBuilder() {
+  document.getElementById('emCampaignBuilder').style.display = 'none';
+}
+
+function emEditCampaign(id) {
+  var c = emCampaigns.find(function(x) { return x.id === id; });
+  if (!c) return;
+  document.getElementById('emCampaignBuilder').style.display = 'block';
+  document.getElementById('emBuilderTitle').textContent = 'Edit Campaign';
+  document.getElementById('emCampName').value = c.name;
+  document.getElementById('emCampTrigger').value = c.trigger_type;
+  document.getElementById('emCampDesc').value = c.description || '';
+  document.getElementById('emCampEditId').value = c.id;
+  emEditSteps = (c.steps || []).map(function(s) {
+    return { delay_days: s.delay_days, template_id: s.template_id, subject_override: s.subject_override || '', body_override: s.body_override || '' };
+  });
+  emRenderSteps();
+}
+
+function emAddStep() {
+  emEditSteps.push({ delay_days: emEditSteps.length === 0 ? 0 : 3, template_id: '', subject_override: '', body_override: '' });
+  emRenderSteps();
+}
+
+function emRemoveStep(idx) {
+  emEditSteps.splice(idx, 1);
+  emRenderSteps();
+}
+
+function emRenderSteps() {
+  var el = document.getElementById('emStepsList');
+  if (emEditSteps.length === 0) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:8px 0;">No steps yet. Add your first email.</div>';
+    return;
+  }
+  var tplOpts = '<option value="">— Write inline —</option>';
+  emTemplates.forEach(function(t) {
+    tplOpts += '<option value="' + t.id + '">' + t.name + '</option>';
+  });
+  var h = '';
+  emEditSteps.forEach(function(s, i) {
+    var dayLabel = i === 0 ? 'Immediately' : s.delay_days + ' day' + (s.delay_days !== 1 ? 's' : '') + ' after previous';
+    h += '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
+    // Timeline dot
+    h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;"><div style="width:24px;height:24px;border-radius:50%;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3b82f6;">' + (i+1) + '</div>';
+    if (i < emEditSteps.length - 1) h += '<div style="width:2px;height:20px;background:rgba(59,130,246,0.15);margin-top:4px;"></div>';
+    h += '</div>';
+    // Step content
+    h += '<div style="flex:1;">';
+    h += '<div style="display:grid;grid-template-columns:100px 1fr;gap:8px;margin-bottom:8px;">';
+    h += '<div class="fc-field"><div class="fc-lbl">Delay (days)</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
+    h += '<div class="fc-field"><div class="fc-lbl">Template</div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
+    h += '</div>';
+    h += '<div class="fc-field"><div class="fc-lbl">Subject (override)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+    h += '</div>';
+    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;margin-top:4px;" onclick="emRemoveStep(' + i + ')"><i class="fas fa-times"></i></button>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function emSaveCampaign() {
+  var name = document.getElementById('emCampName').value.trim();
+  if (!name) { showToast('Campaign name required'); return; }
+  var editId = document.getElementById('emCampEditId').value;
+  var campaign = {
+    name: name,
+    trigger_type: document.getElementById('emCampTrigger').value,
+    description: document.getElementById('emCampDesc').value.trim(),
+    status: 'draft',
+    steps: emEditSteps
+  };
+  if (editId) campaign.id = parseInt(editId);
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_campaign', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', campaign: campaign })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      emCloseCampaignBuilder();
+      emLoadCampaigns();
+      showToast('Campaign saved!', 'success');
+    } else { showToast('Error: ' + data.message); }
+  });
+}
+
+// ===== TEMPLATES =====
+function emLoadTemplates() {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_templates', lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    emTemplates = data.templates || [];
+    emRenderTemplateList();
+  });
+}
+
+function emRenderTemplateList() {
+  var el = document.getElementById('emTemplateList');
+  if (emTemplates.length === 0) {
+    el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;"><i class="fas fa-file-alt" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>No templates yet. Click "+ New Template" to create one.</div>';
+    return;
+  }
+  var h = '';
+  emTemplates.forEach(function(t) {
+    h += '<div style="display:flex;align-items:center;gap:14px;padding:12px 16px;background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
+    h += '<div style="width:36px;height:36px;border-radius:8px;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;"><i class="fas fa-envelope" style="color:#3b82f6;font-size:14px;"></i></div>';
+    h += '<div style="flex:1;">';
+    h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);">' + t.name + '</div>';
+    h += '<div style="font-size:11px;color:var(--text-muted);">' + t.subject + '</div>';
+    h += '</div>';
+    h += '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.05);color:var(--text-muted);">' + (t.category || 'custom') + '</span>';
+    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditTemplate(' + t.id + ')"><i class="fas fa-edit"></i></button>';
+    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="emDeleteTemplate(' + t.id + ')"><i class="fas fa-trash-alt"></i></button>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function emOpenTemplateEditor() {
+  document.getElementById('emTemplateEditor').style.display = 'block';
+  document.getElementById('emTplEditorTitle').textContent = 'New Template';
+  document.getElementById('emTplName').value = '';
+  document.getElementById('emTplSubject').value = '';
+  document.getElementById('emTplBody').value = '';
+  document.getElementById('emTplCategory').value = 'custom';
+  document.getElementById('emTplEditId').value = '';
+}
+
+function emCloseTemplateEditor() {
+  document.getElementById('emTemplateEditor').style.display = 'none';
+}
+
+function emEditTemplate(id) {
+  var t = emTemplates.find(function(x) { return x.id === id; });
+  if (!t) return;
+  document.getElementById('emTemplateEditor').style.display = 'block';
+  document.getElementById('emTplEditorTitle').textContent = 'Edit Template';
+  document.getElementById('emTplName').value = t.name;
+  document.getElementById('emTplSubject').value = t.subject;
+  document.getElementById('emTplBody').value = t.body_html;
+  document.getElementById('emTplCategory').value = t.category || 'custom';
+  document.getElementById('emTplEditId').value = t.id;
+}
+
+function emSaveTemplate() {
+  var name = document.getElementById('emTplName').value.trim();
+  var subject = document.getElementById('emTplSubject').value.trim();
+  var body = document.getElementById('emTplBody').value.trim();
+  if (!name || !subject || !body) { showToast('Name, subject, and body required'); return; }
+
+  var editId = document.getElementById('emTplEditId').value;
+  var template = { name: name, subject: subject, body_html: body, category: document.getElementById('emTplCategory').value };
+  if (editId) template.id = parseInt(editId);
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_template', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', template: template })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      emCloseTemplateEditor();
+      emLoadTemplates();
+      showToast('Template saved!', 'success');
+    } else { showToast('Error: ' + data.message); }
+  });
+}
+
+function emDeleteTemplate(id) {
+  if (!confirm('Delete this template?')) return;
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_template', template_id: id })
+  }).then(function() { emLoadTemplates(); showToast('Template deleted'); });
+}
+
+function emPreviewTemplate() {
+  var body = document.getElementById('emTplBody').value;
+  var subject = document.getElementById('emTplSubject').value;
+  var preview = window.open('', '_blank', 'width=650,height=700');
+  var html = '<html><head><title>Preview: ' + subject + '</title></head><body style="font-family:Arial;color:#333;padding:20px;background:#f9f9f9;">';
+  html += '<div style="max-width:600px;margin:0 auto;background:#fff;padding:30px;border-radius:4px;">';
+  html += '<div style="font-size:11px;color:#999;margin-bottom:16px;">Subject: ' + subject + '</div>';
+  html += body.replace(/\{\{first_name\}\}/g, 'Jane').replace(/\{\{name\}\}/g, 'Jane Smith').replace(/\{\{email\}\}/g, 'jane@example.com');
+  html += '</div></body></html>';
+  preview.document.write(html);
+  preview.document.close();
+}
+
+// ===== HISTORY =====
+function emLoadHistory() {
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'email_history', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', limit: 50 })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    var el = document.getElementById('emHistoryList');
+    var emails = data.emails || [];
+    if (emails.length === 0) {
+      el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;">No emails sent yet</div>';
+      return;
+    }
+    var h = '<div style="display:grid;grid-template-columns:2fr 3fr 1fr 1fr;gap:8px;padding:8px 12px;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);margin-bottom:4px;"><div>To</div><div>Subject</div><div>Status</div><div>Date</div></div>';
+    emails.forEach(function(e) {
+      var d = new Date(e.sent_at);
+      var dateStr = (d.getMonth()+1) + '/' + d.getDate() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2,'0');
+      var statusColor = e.status === 'sent' ? '#3b82f6' : e.status === 'opened' ? '#22c55e' : e.status === 'failed' ? '#ef4444' : 'rgba(255,255,255,0.3)';
+      h += '<div style="display:grid;grid-template-columns:2fr 3fr 1fr 1fr;gap:8px;padding:8px 12px;border-radius:6px;margin-bottom:2px;font-size:12px;">';
+      h += '<div style="color:rgba(255,255,255,0.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (e.to_name || e.to_email) + '</div>';
+      h += '<div style="color:rgba(255,255,255,0.8);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + e.subject + '</div>';
+      h += '<div><span style="font-size:10px;padding:2px 6px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';">' + e.status + '</span></div>';
+      h += '<div style="color:rgba(255,255,255,0.3);font-size:11px;">' + dateStr + '</div>';
+      h += '</div>';
+    });
+    el.innerHTML = h;
+  });
+}
+
+// ===== COMPOSE =====
+function emOpenCompose() {
+  document.getElementById('emComposeOverlay').style.display = 'flex';
+  document.getElementById('emComposeTo').value = '';
+  document.getElementById('emComposeSubject').value = '';
+  document.getElementById('emComposeBody').value = '';
+  document.getElementById('emComposeResult').textContent = '';
+  // Load template options
+  var sel = document.getElementById('emComposeTemplate');
+  var opts = '<option value="">— Write custom —</option>';
+  emTemplates.forEach(function(t) { opts += '<option value="' + t.id + '">' + t.name + '</option>'; });
+  sel.innerHTML = opts;
+}
+
+function emCloseCompose() {
+  document.getElementById('emComposeOverlay').style.display = 'none';
+}
+
+function emFillFromTemplate() {
+  var sel = document.getElementById('emComposeTemplate');
+  var tid = sel.value;
+  if (!tid) return;
+  var t = emTemplates.find(function(x) { return String(x.id) === tid; });
+  if (t) {
+    document.getElementById('emComposeSubject').value = t.subject;
+    document.getElementById('emComposeBody').value = t.body_html;
+  }
+}
+
+function emSendCompose() {
+  var to = document.getElementById('emComposeTo').value.trim();
+  var subject = document.getElementById('emComposeSubject').value.trim();
+  var body = document.getElementById('emComposeBody').value.trim();
+  var result = document.getElementById('emComposeResult');
+  if (!to || !subject || !body) { result.style.color = '#ef4444'; result.textContent = 'All fields required'; return; }
+  result.style.color = 'var(--text-muted)'; result.textContent = 'Sending...';
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'send_now', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', to: to, subject: subject, body_html: body })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      result.style.color = '#22c55e'; result.textContent = '✓ Sent!';
+      setTimeout(function() { emCloseCompose(); }, 1000);
+    } else {
+      result.style.color = '#ef4444'; result.textContent = 'Failed: ' + (data.message || 'Unknown');
+    }
+  }).catch(function(err) { result.style.color = '#ef4444'; result.textContent = 'Error'; });
+}
+
+// Keep old function name working for CRM cards
+function openComposeEmail() { emOpenCompose(); }
 }
 
 // ===== PROSPECTING PLACEHOLDER =====
