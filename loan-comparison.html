@@ -132,6 +132,35 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .rpt-disclosures{padding:20px 64px 28px;font-size:8px;color:var(--text-faint);line-height:1.7;background:var(--surface)}
 .rpt-disc-logos{margin-top:8px;display:flex;gap:16px;font-size:8px;font-weight:700;letter-spacing:0.5px}
 
+/* APR Breakdown */
+.apr-breakdown{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px}
+.apr-col{padding:16px;border-radius:8px}
+.apr-col.included{background:rgba(94,188,138,0.04);border:1px solid rgba(94,188,138,0.12)}
+.apr-col.excluded{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06)}
+.apr-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.apr-col.included .apr-col-title{color:var(--green)}
+.apr-col.excluded .apr-col-title{color:var(--text-dim)}
+.apr-item{font-size:12px;color:var(--text-mid);padding:4px 0;display:flex;align-items:center;gap:6px}
+.apr-item i{font-size:9px}
+.apr-col.included .apr-item i{color:var(--green)}
+.apr-col.excluded .apr-item i{color:var(--text-dim)}
+
+/* Shopping Guide */
+.guide-card{background:rgba(186,163,112,0.03);border:1px solid var(--border-gold);border-radius:10px;padding:20px 24px;margin-top:16px}
+.guide-card-title{font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.guide-card-title i{font-size:14px}
+.guide-item{padding:10px 0;border-bottom:1px solid rgba(186,163,112,0.08)}
+.guide-item:last-child{border-bottom:none}
+.guide-q{font-size:13px;font-weight:700;color:var(--text);margin-bottom:4px}
+.guide-a{font-size:12px;color:var(--text-mid);line-height:1.6}
+.guide-warn{font-size:11px;color:var(--amber);font-weight:600;margin-top:6px;display:flex;align-items:flex-start;gap:6px}
+.guide-warn i{margin-top:2px}
+
+/* Estimate scenario picker */
+.est-scenario-picker{display:flex;gap:8px;margin-top:14px}
+.est-pick-btn{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;color:rgba(255,255,255,0.5)}
+.est-pick-btn.active{color:#fff}
+
 /* ===== PRINT ===== */
 @media print{
   body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -168,6 +197,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div class="gen-field"><label>Annual Homeowners Insurance</label><input id="inp_insurance" placeholder="$1,800" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Annual HOA (optional)</label><input id="inp_hoa" placeholder="$0" oninput="formatCurrency(this)"></div>
     <div class="gen-field"><label>Appreciation Rate (for projections)</label><input id="inp_appr" placeholder="3.0" value="3.0"><div class="gen-hint" id="apprHint">Default 3%. Auto-updates from FHFA data when address is entered.</div></div>
+    <div class="gen-field"><label>Estimated Closing Date</label><input id="inp_closeDate" type="date"><div class="gen-hint">Affects prepaid interest days on the Borrower Estimate.</div></div>
   </div>
 
   <!-- SCENARIO TABS -->
@@ -184,10 +214,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 
 <!-- ===== REPORT OUTPUT ===== -->
 <div class="report-container" id="reportContainer">
-  <div class="report-nav">
-    <button onclick="document.getElementById('generatorPanel').style.display='block';document.getElementById('reportContainer').style.display='none';"><i class="fas fa-arrow-left"></i> Edit Scenarios</button>
-    <button onclick="window.print()" class="primary"><i class="fas fa-print"></i> Print / Save PDF</button>
+  <div class="report-nav" id="reportNav">
+    <button onclick="document.getElementById('generatorPanel').style.display='block';document.getElementById('reportContainer').style.display='none';"><i class="fas fa-arrow-left"></i> Edit</button>
+    <button onclick="showView('comparison')" class="primary" id="navComparison"><i class="fas fa-columns"></i> Comparison</button>
+    <button onclick="showView('estimate')" id="navEstimate" style="background:rgba(186,163,112,0.15);border:1px solid rgba(186,163,112,0.18);color:#baa370;"><i class="fas fa-file-invoice-dollar"></i> Borrower Estimate</button>
+    <button onclick="window.print()"><i class="fas fa-print"></i> Print / PDF</button>
   </div>
+  <!-- COMPARISON VIEW -->
+  <div id="comparisonView">
   <div class="report-page" id="reportPage">
     <div id="rptHero"></div>
     <div id="rptKpi"></div>
@@ -197,6 +231,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
     <div id="rptAmortization"></div>
     <div id="rptFooter" class="rpt-footer"></div>
     <div id="rptDisc" class="rpt-disclosures"></div>
+  </div>
+  </div><!-- end comparisonView -->
+
+  <!-- BORROWER ESTIMATE VIEW -->
+  <div id="estimateView" style="display:none;">
+    <div class="report-page">
+      <div id="estHero"></div>
+      <div id="estKpi"></div>
+      <div id="estCosts"></div>
+      <div id="estPayment"></div>
+      <div id="estAprBreakdown"></div>
+      <div id="estShoppingGuide"></div>
+      <div id="estFooter" class="rpt-footer"></div>
+      <div id="estDisc" class="rpt-disclosures"></div>
+    </div>
   </div>
 </div>
 
@@ -212,6 +261,10 @@ var scenarioNames = ['Option A','Option B','Option C','Option D'];
 window.addEventListener('DOMContentLoaded', function() {
   addScenario(); // Start with one scenario
   fetchSofrRate();
+  // Default close date 30 days from now
+  var d = new Date(); d.setDate(d.getDate() + 30);
+  var cd = document.getElementById('inp_closeDate');
+  if (cd) cd.value = d.toISOString().split('T')[0];
 });
 
 // ===== LIVE SOFR FETCH =====
@@ -839,11 +892,13 @@ function buildScenarioResult(s, price, annualTaxes, annualInsurance, annualHoa) 
     totalMonthly: totalMonthly, monthlyAfterPMI: monthlyAfterPMI,
     closingCosts: closingCosts, cashToClose: cashToClose,
     pointsCost: pointsCost, origFee: origFee,
+    otherLenderFees: otherFees, thirdPartyFeesTotal: thirdPartyFees,
     totalInterest: totalInterest, totalPayments: totalPayments,
     upfrontMip: upfrontMip, vaFundingFee: vaFundingFee,
     isArm: isArm, armDetails: armDetails,
     buydownDetails: buydownDetails,
-    amortSchedule: amortSchedule
+    amortSchedule: amortSchedule,
+    prepaidDays: prepaidDays
   };
 }
 
@@ -867,6 +922,9 @@ function generateReport() {
     if (!scenarios[i].rate) { alert('Please enter an interest rate for ' + scenarios[i].label); return; }
     results.push(buildScenarioResult(scenarios[i], price, taxes, insurance, hoa));
   }
+
+  lastResults = results;
+  lastBuildData = {borrower:borrower, address:address, prepaidDays:scenarios[0].prepaidDays};
 
   var numScen = results.length;
   var dateStr = new Date().toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'});
@@ -1079,6 +1137,188 @@ function generateReport() {
     drawPaymentChart(results);
     drawEquityChart(results, price, apprRate);
   }, 100);
+}
+
+// ===== VIEW SWITCHING =====
+var estimateScenarioIdx = 0;
+var lastResults = [];
+var lastBuildData = {};
+
+function showView(view) {
+  document.getElementById('comparisonView').style.display = view === 'comparison' ? '' : 'none';
+  document.getElementById('estimateView').style.display = view === 'estimate' ? '' : 'none';
+  document.getElementById('navComparison').className = view === 'comparison' ? 'primary' : '';
+  var estBtn = document.getElementById('navEstimate');
+  estBtn.style.background = view === 'estimate' ? 'rgba(186,163,112,0.25)' : 'rgba(186,163,112,0.15)';
+  if (view === 'estimate') buildBorrowerEstimate();
+}
+
+function buildBorrowerEstimate() {
+  if (!lastResults.length) return;
+  var r = lastResults[estimateScenarioIdx] || lastResults[0];
+  var borrower = lastBuildData.borrower || 'Valued Client';
+  var address = lastBuildData.address || '';
+  var dateStr = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  var closeDate = document.getElementById('inp_closeDate') ? document.getElementById('inp_closeDate').value : '';
+  var closeDateStr = closeDate ? new Date(closeDate+'T12:00:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}) : dateStr;
+  var prepaidIntAmt = r.loanAmount * (r.rate/100) / 365 * r.prepaidDays;
+
+  // Scenario picker
+  var picker = '';
+  if (lastResults.length > 1) {
+    picker = '<div class="est-scenario-picker">';
+    lastResults.forEach(function(res, i) {
+      picker += '<button class="est-pick-btn' + (i===estimateScenarioIdx?' active':'') + '" style="' + (i===estimateScenarioIdx?'background:'+scenarioColors[i]+';border-color:'+scenarioColors[i]+';color:#fff;':'') + '" onclick="estimateScenarioIdx='+i+';buildBorrowerEstimate()">'+res.label+'</button>';
+    });
+    picker += '</div>';
+  }
+
+  // HERO
+  document.getElementById('estHero').innerHTML = '<div class="rpt-hero"><div class="rpt-hero-label"><i class="fas fa-file-invoice-dollar" style="margin-right:6px;"></i> Good Faith Estimate</div><div class="rpt-hero-title">Your Loan Estimate for Shopping</div><div class="rpt-hero-sub">Prepared for '+borrower+(address?' &bull; '+address:'')+'</div><div class="rpt-hero-detail">'+r.label+' &bull; '+dateStr+' &bull; Est. Closing: '+closeDateStr+'</div>'+picker+'</div>';
+
+  // KPI
+  document.getElementById('estKpi').innerHTML = '<div class="rpt-kpi-strip" style="grid-template-columns:repeat(4,1fr);"><div class="rpt-kpi"><div class="rpt-kpi-label">Interest Rate</div><div class="rpt-kpi-value">'+fmtPct(r.rate)+'</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">APR</div><div class="rpt-kpi-value" style="color:var(--gold);font-size:24px;">'+fmtPct(r.apr)+'</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Monthly Payment</div><div class="rpt-kpi-value" style="color:var(--green);">'+fmtMoney(r.totalMonthly)+'</div></div><div class="rpt-kpi"><div class="rpt-kpi-label">Cash to Close</div><div class="rpt-kpi-value">'+fmtMoney(r.cashToClose)+'</div></div></div>';
+
+  // ITEMIZED COSTS
+  var c = '<div class="rpt-section"><div class="rpt-section-title">Itemized Cost Breakdown</div>';
+  c += '<table class="rpt-table"><thead><tr><th>Item</th><th>Amount</th></tr></thead><tbody>';
+  c += '<tr><td><strong>Loan Amount</strong></td><td>'+fmtMoney(r.loanAmount)+'</td></tr>';
+  c += '<tr><td>Down Payment ('+r.downPct.toFixed(1)+'%)</td><td>'+fmtMoney(r.downAmt)+'</td></tr>';
+
+  c += '<tr><td colspan="2" style="color:var(--gold);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding-top:14px;">Lender Fees</td></tr>';
+  if(r.pointsCost>0) c+='<tr><td>Discount Points</td><td>'+fmtMoney(r.pointsCost)+'</td></tr>';
+  if(r.origFee>0) c+='<tr><td>Origination Fee</td><td>'+fmtMoney(r.origFee)+'</td></tr>';
+  // Itemized other fees
+  var otherFeesEl = document.getElementById('otherFeeLines');
+  if(otherFeesEl) {
+    otherFeesEl.querySelectorAll('.fee-line').forEach(function(row){
+      var inputs=row.querySelectorAll('input');
+      if(inputs.length>=2 && parseCurrency(inputs[1].value)>0) c+='<tr><td>'+inputs[0].value+'</td><td>'+fmtMoney(parseCurrency(inputs[1].value))+'</td></tr>';
+    });
+  } else if(r.otherLenderFees>0) {
+    c+='<tr><td>Other Lender Fees</td><td>'+fmtMoney(r.otherLenderFees)+'</td></tr>';
+  }
+  if(r.upfrontMip>0) c+='<tr><td>Upfront MIP (FHA 1.75%)</td><td>'+fmtMoney(r.upfrontMip)+'</td></tr>';
+  if(r.vaFundingFee>0) c+='<tr><td>VA Funding Fee</td><td>'+fmtMoney(r.vaFundingFee)+'</td></tr>';
+
+  c += '<tr><td colspan="2" style="color:var(--gold);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding-top:14px;">Third Party Fees</td></tr>';
+  var tpFeesEl = document.getElementById('tpFeeLines');
+  if(tpFeesEl) {
+    tpFeesEl.querySelectorAll('.fee-line').forEach(function(row){
+      var inputs=row.querySelectorAll('input');
+      if(inputs.length>=2 && parseCurrency(inputs[1].value)>0) c+='<tr><td>'+inputs[0].value+'</td><td>'+fmtMoney(parseCurrency(inputs[1].value))+'</td></tr>';
+    });
+  } else if(r.thirdPartyFeesTotal>0) {
+    c+='<tr><td>Third Party Fees</td><td>'+fmtMoney(r.thirdPartyFeesTotal)+'</td></tr>';
+  }
+
+  c += '<tr><td colspan="2" style="color:var(--gold);font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:1.5px;padding-top:14px;">Prepaids</td></tr>';
+  c += '<tr><td>Prepaid Interest ('+r.prepaidDays+' days)</td><td>'+fmtMoney(prepaidIntAmt)+'</td></tr>';
+
+  c += '<tr style="border-top:2px solid rgba(186,163,112,0.18);"><td><strong style="color:var(--green);">Estimated Cash to Close</strong></td><td><strong style="color:var(--green);font-size:15px;">'+fmtMoney(r.cashToClose)+'</strong></td></tr>';
+  c += '</tbody></table></div>';
+  document.getElementById('estCosts').innerHTML = c;
+
+  // MONTHLY PAYMENT
+  var p = '<div class="rpt-section"><div class="rpt-section-title">Monthly Payment Breakdown</div>';
+  p += '<table class="rpt-table"><thead><tr><th>Component</th><th>Amount</th></tr></thead><tbody>';
+  p += '<tr><td>Principal &amp; Interest</td><td>'+fmtMoney(r.monthlyPI)+'</td></tr>';
+  p += '<tr><td>Property Taxes</td><td>'+fmtMoney(r.monthlyTaxes)+'</td></tr>';
+  p += '<tr><td>Homeowners Insurance</td><td>'+fmtMoney(r.monthlyInsurance)+'</td></tr>';
+  if(r.monthlyHoa>0) p+='<tr><td>HOA Dues</td><td>'+fmtMoney(r.monthlyHoa)+'</td></tr>';
+  if(r.pmiMonthly>0) p+='<tr><td>Mortgage Insurance</td><td>'+fmtMoney(r.pmiMonthly)+'</td></tr>';
+  p += '<tr style="border-top:2px solid rgba(186,163,112,0.18);"><td><strong style="color:var(--green);">Total Monthly Payment</strong></td><td><strong style="color:var(--green);font-size:15px;">'+fmtMoney(r.totalMonthly)+'</strong></td></tr>';
+  p += '</tbody></table></div>';
+  document.getElementById('estPayment').innerHTML = p;
+
+  // APR BREAKDOWN
+  var a = '<div class="rpt-section"><div class="rpt-section-title">What\'s Included in Your APR</div>';
+  a += '<div class="rpt-section-intro">The APR reflects the true annual cost of your loan. Understanding what goes into it helps you compare apples to apples.</div>';
+  a += '<div class="apr-breakdown">';
+  a += '<div class="apr-col included"><div class="apr-col-title"><i class="fas fa-check-circle" style="margin-right:4px;"></i> Included in APR</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Interest over the life of the loan</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Discount points</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Origination fee</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Other lender fees</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Mortgage insurance premiums</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Upfront MIP / VA Funding Fee</div>';
+  a += '<div class="apr-item"><i class="fas fa-check"></i> Prepaid interest</div>';
+  a += '</div>';
+  a += '<div class="apr-col excluded"><div class="apr-col-title"><i class="fas fa-times-circle" style="margin-right:4px;"></i> Not Included in APR</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Appraisal fee</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Credit report fee</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Title search &amp; title insurance</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Recording fees</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Property taxes &amp; escrow</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Homeowners insurance</div>';
+  a += '<div class="apr-item"><i class="fas fa-times"></i> Home inspection</div>';
+  a += '</div></div></div>';
+  document.getElementById('estAprBreakdown').innerHTML = a;
+
+  // ===== THE SHOPPING GUIDE =====
+  var g = '<div class="rpt-section"><div class="rpt-section-title" style="color:var(--gold);">How to Compare This Estimate with Other Lenders</div>';
+  g += '<div class="rpt-section-intro">This section is here to protect you. When comparing mortgage offers, small differences in how estimates are prepared can make one lender look dramatically cheaper without actually being cheaper. Here is exactly what to look for.</div>';
+
+  // Card 1: Prepaid Interest
+  g += '<div class="guide-card"><div class="guide-card-title"><i class="fas fa-calendar-day"></i> Prepaid Interest Days</div>';
+  g += '<div class="guide-item"><div class="guide-q">This estimate uses '+r.prepaidDays+' days of prepaid interest.</div>';
+  g += '<div class="guide-a">Prepaid interest is the daily interest charged between your closing date and the end of that month. Close on the 1st and you pay around 30 days. Close on the 30th and you pay around 1 day. This single variable can swing your cash to close by thousands of dollars.</div>';
+  g += '<div class="guide-warn"><i class="fas fa-exclamation-triangle"></i> Ask every lender: &ldquo;How many days of prepaid interest are in your estimate?&rdquo; If another lender shows fewer days, their estimate looks cheaper but you still owe that interest at closing. It is not a savings. It is hidden.</div>';
+  g += '</div></div>';
+
+  // Card 2: Escrow Months
+  g += '<div class="guide-card"><div class="guide-card-title"><i class="fas fa-piggy-bank"></i> Escrow &amp; Reserve Months</div>';
+  g += '<div class="guide-item"><div class="guide-q">How many months of taxes and insurance are being collected upfront?</div>';
+  g += '<div class="guide-a">At closing, lenders collect an escrow cushion for property taxes and homeowners insurance. Some lenders show 2 months of reserves, others show 6 or more. Fewer months shown means a lower cash-to-close number on paper but you will be required to make up the difference later.</div>';
+  g += '<div class="guide-warn"><i class="fas fa-exclamation-triangle"></i> Ask every lender: &ldquo;How many months of escrow reserves are included in this estimate?&rdquo; Make sure everyone is using the same number before you compare.</div>';
+  g += '</div></div>';
+
+  // Card 3: APR vs Rate
+  g += '<div class="guide-card"><div class="guide-card-title"><i class="fas fa-percentage"></i> APR vs. Interest Rate</div>';
+  g += '<div class="guide-item"><div class="guide-q">Your interest rate is '+fmtPct(r.rate)+'. Your APR is '+fmtPct(r.apr)+'.</div>';
+  g += '<div class="guide-a">The interest rate is what you pay to borrow money each year. The APR includes the interest rate PLUS fees, points, and mortgage insurance spread across the life of the loan. A lender quoting a lower rate but charging higher fees may actually have a higher APR and cost you more over time.</div>';
+  g += '<div class="guide-warn"><i class="fas fa-exclamation-triangle"></i> Always compare APR to APR, not just rate to rate. The APR is the only number that tells you the true cost of the loan.</div>';
+  g += '</div></div>';
+
+  // Card 4: Points
+  g += '<div class="guide-card"><div class="guide-card-title"><i class="fas fa-coins"></i> Discount Points</div>';
+  g += '<div class="guide-item"><div class="guide-q">'+(r.pointsCost>0?'This estimate includes '+fmtMoney(r.pointsCost)+' in discount points to buy down the rate.':'This estimate does not include discount points.')+'</div>';
+  g += '<div class="guide-a">Discount points are upfront fees paid to get a lower interest rate. One point typically costs 1% of the loan amount. A lender advertising a rock-bottom rate may be baking in 1 to 2 points that you do not see until closing.</div>';
+  g += '<div class="guide-warn"><i class="fas fa-exclamation-triangle"></i> Ask every lender: &ldquo;Does your quoted rate include any discount points?&rdquo; Then compare the rate AND the points side by side.</div>';
+  g += '</div></div>';
+
+  // Card 5: Lender Fees
+  g += '<div class="guide-card"><div class="guide-card-title"><i class="fas fa-receipt"></i> Origination &amp; Lender Fees</div>';
+  g += '<div class="guide-item"><div class="guide-q">These are the fees the lender charges to process and underwrite your loan.</div>';
+  g += '<div class="guide-a">Every lender structures their fees differently. Some wrap everything into a single origination fee. Others break it into processing, underwriting, admin, and other line items. A low origination fee could be offset by high &ldquo;junk fees&rdquo; buried in the fine print.</div>';
+  g += '<div class="guide-warn"><i class="fas fa-exclamation-triangle"></i> Add up ALL lender fees from each estimate, not just the origination charge. The total is what matters.</div>';
+  g += '</div></div>';
+
+  // Card 6: The Bottom Line
+  g += '<div class="guide-card" style="border-color:rgba(94,188,138,0.2);background:rgba(94,188,138,0.03);"><div class="guide-card-title" style="color:var(--green);"><i class="fas fa-shield-halved"></i> The Bottom Line</div>';
+  g += '<div class="guide-item"><div class="guide-q">For a true apples-to-apples comparison, ask every lender to prepare their estimate using:</div>';
+  g += '<div class="guide-a" style="margin-top:8px;"><strong style="color:var(--text);">1.</strong> The same closing date<br><strong style="color:var(--text);">2.</strong> The same number of escrow reserve months<br><strong style="color:var(--text);">3.</strong> The same loan amount and down payment<br><strong style="color:var(--text);">4.</strong> Zero discount points (or the same number of points)<br><br>Then compare the <strong style="color:var(--green);">APR</strong> and the <strong style="color:var(--green);">total cash to close</strong>. Those two numbers, when calculated on the same assumptions, will tell you who is truly offering you the best deal.</div>';
+  g += '</div></div>';
+
+  g += '</div>';
+  document.getElementById('estShoppingGuide').innerHTML = g;
+
+  // Footer & Disclosures (reuse same pattern)
+  buildEstFooter();
+}
+
+function buildEstFooter() {
+  var dateStr = new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('estFooter').innerHTML = document.getElementById('rptFooter').innerHTML;
+
+  var disc = 'Prepared '+dateStr+'. This is not a Loan Estimate under TRID/Regulation Z and is not a commitment to lend. This Good Faith Estimate is provided for informational and comparison purposes only. ';
+  disc += 'Rates, terms, and fees shown are estimates based on information provided and are subject to change without notice. Actual rates, APR, fees, and terms will be determined at the time of formal application. ';
+  disc += 'The Annual Percentage Rate (APR) reflects the total cost of credit as a yearly rate per Regulation Z (&sect;1026.22). ';
+  disc += 'Prepaid interest is calculated based on the estimated closing date shown above. Actual prepaid interest will be based on the actual closing date. ';
+  disc += 'Escrow amounts for property taxes and homeowners insurance are estimates and may vary. ';
+  disc += '&copy; Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS ID #75243. All Rights Reserved.';
+  disc += '<div class="rpt-disc-logos"><span>EQUAL HOUSING LENDER</span><span>NMLS #75243</span><span>NMLS #2632259</span></div>';
+  document.getElementById('estDisc').innerHTML = disc;
 }
 
 // ===== CHART DRAWING =====
