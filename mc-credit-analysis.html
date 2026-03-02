@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Credit Analysis Engine - Agent Edge</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Share+Tech+Mono&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090e;--surface:#0d1117;--surface-raised:#131920;
+  --border:rgba(255,255,255,0.05);--border-gold:rgba(186,163,112,0.18);
+  --gold:#baa370;--gold-bright:#d4bc7c;--gold-dim:rgba(186,163,112,0.4);
+  --green:#5ebc8a;--red:#d97373;--blue:#6ba3d6;--blue-btn:#3b82f6;
+  --purple:#9b8ec4;--amber:#d4a953;
+  --text:#e8e4dc;--text-mid:rgba(232,228,220,0.72);
+  --text-dim:rgba(232,228,220,0.42);--text-faint:rgba(232,228,220,0.15)
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;padding:0}
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+
+/* ===== PAGE WRAPPER ===== */
+.page-wrap{max-width:1100px;margin:0 auto;padding:24px 28px 80px}
+
+/* ===== PAGE HEADER ===== */
+.page-header{margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.page-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.page-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text)}
+.page-title-badge{font-size:8px;font-weight:700;color:var(--gold);background:rgba(186,163,112,0.12);border:1px solid rgba(186,163,112,0.25);padding:3px 8px;border-radius:4px;letter-spacing:1px;vertical-align:middle;margin-left:10px}
+.page-sub{font-size:12px;color:var(--text-dim);letter-spacing:0.3px}
+.back-btn{display:flex;align-items:center;gap:6px;padding:7px 14px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-dim);font-size:11px;font-weight:600;cursor:pointer;transition:0.15s;font-family:inherit}
+.back-btn:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+
+/* ===== SECTION PANELS ===== */
+.section-panel{background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.section-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.section-icon.blue{background:rgba(59,130,246,0.12);color:#3b82f6}
+.section-icon.gold{background:rgba(186,163,112,0.12);color:var(--gold)}
+.section-icon.green{background:rgba(34,197,94,0.12);color:#22c55e}
+.section-icon.purple{background:rgba(168,85,247,0.12);color:#a855f7}
+.section-icon.red{background:rgba(239,68,68,0.12);color:#ef4444}
+.section-icon.amber{background:rgba(245,158,11,0.12);color:#f59e0b}
+.section-title{font-size:14px;font-weight:700;letter-spacing:0.3px}
+.section-subtitle{font-size:10px;color:var(--text-dim);margin-top:1px}
+.section-badge{margin-left:auto;font-size:9px;font-weight:700;letter-spacing:0.5px;padding:3px 10px;border-radius:5px}
+
+/* ===== FORM FIELDS ===== */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.form-grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+.field{display:flex;flex-direction:column;gap:3px}
+.field.full{grid-column:1/-1}
+.field label{font-size:9px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px}
+.field input,.field select,.field textarea{padding:9px 11px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:13px;font-family:inherit;transition:border-color 0.15s}
+.field select option{background:#0f2035;color:#fff}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,0.2)}
+.field textarea{resize:vertical;min-height:60px}
+
+/* ===== BORROWER HEADER ===== */
+.borrower-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600}
+.borrower-badge.source-realtor{background:rgba(168,85,247,0.1);color:#a855f7;border:1px solid rgba(168,85,247,0.2)}
+.borrower-badge.source-direct{background:rgba(59,130,246,0.1);color:#3b82f6;border:1px solid rgba(59,130,246,0.2)}
+
+/* ===== TRADELINE TABLE ===== */
+.tl-table-wrap{overflow-x:auto;margin-top:4px}
+.tl-table{width:100%;border-collapse:collapse;min-width:900px}
+.tl-table thead th{
+  padding:10px 8px;text-align:left;font-size:8px;font-weight:700;
+  color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;
+  border-bottom:1px solid var(--border-gold);background:var(--surface-raised);
+  white-space:nowrap
+}
+.tl-table thead th:first-child{border-radius:8px 0 0 0}
+.tl-table thead th:last-child{border-radius:0 8px 0 0}
+.tl-table tbody td{padding:6px 4px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tl-table tbody tr:hover{background:rgba(255,255,255,0.02)}
+.tl-table tbody tr.sleeping-bear{background:rgba(239,68,68,0.04)}
+
+/* Tradeline inputs */
+.tl-input{padding:7px 8px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#fff;font-size:12px;font-family:inherit;width:100%;transition:border-color 0.15s}
+.tl-input:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+.tl-input::placeholder{color:rgba(255,255,255,0.15)}
+.tl-select{padding:7px 6px;border-radius:6px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#fff;font-size:11px;font-family:inherit;width:100%;cursor:pointer}
+.tl-select option{background:#0f2035;color:#fff}
+.tl-select:focus{outline:none;border-color:rgba(59,130,246,0.4)}
+
+/* Utilization display */
+.util-display{font-size:12px;font-weight:700;font-family:'Share Tech Mono',monospace;text-align:center;padding:6px;border-radius:6px;min-width:55px}
+.util-good{color:var(--green);background:rgba(94,188,138,0.08)}
+.util-fair{color:var(--amber);background:rgba(212,169,83,0.08)}
+.util-poor{color:var(--red);background:rgba(217,115,115,0.08)}
+.util-na{color:var(--text-faint);font-size:10px}
+
+/* Row actions */
+.tl-remove{width:26px;height:26px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:rgba(255,255,255,0.15);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:0.15s}
+.tl-remove:hover{color:var(--red);border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.06)}
+
+/* Sleeping bear warning */
+.sleeping-bear-flag{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:var(--red);background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:4px;padding:2px 6px;letter-spacing:0.3px;white-space:nowrap}
+
+/* Table footer */
+.tl-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.tl-add-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;border:1px dashed rgba(59,130,246,0.3);background:rgba(59,130,246,0.04);color:rgba(59,130,246,0.7);font-size:12px;font-weight:600;cursor:pointer;transition:0.15s;font-family:inherit}
+.tl-add-btn:hover{background:rgba(59,130,246,0.08);color:#3b82f6;border-color:rgba(59,130,246,0.5)}
+
+/* Summary stats */
+.tl-summary{display:flex;gap:20px;align-items:center}
+.tl-stat{text-align:right}
+.tl-stat-label{font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.5px}
+.tl-stat-value{font-size:16px;font-weight:700;font-family:'Share Tech Mono',monospace;margin-top:1px}
+
+/* ===== BUDGET SECTION ===== */
+.budget-row{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.budget-input-wrap{position:relative;flex:0 0 260px}
+.budget-input-wrap .dollar-sign{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-weight:700;font-size:15px;pointer-events:none}
+.budget-input{padding:12px 12px 12px 28px!important;font-size:18px!important;font-weight:700;font-family:'Share Tech Mono',monospace!important;color:var(--gold)!important;border-color:rgba(186,163,112,0.25)!important;background:rgba(186,163,112,0.04)!important;letter-spacing:0.5px}
+.budget-input:focus{border-color:rgba(186,163,112,0.5)!important}
+.loan-input-wrap{flex:0 0 260px}
+
+/* ===== GENERATE BUTTON ===== */
+.generate-row{display:flex;justify-content:center;margin-top:4px}
+.generate-btn{
+  padding:14px 48px;border-radius:10px;border:none;
+  font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;
+  background:linear-gradient(135deg,var(--gold),var(--gold-bright));
+  color:#0b1f3a;letter-spacing:0.5px;
+  box-shadow:0 4px 20px rgba(186,163,112,0.25);
+  transition:all 0.2s
+}
+.generate-btn:hover{box-shadow:0 6px 30px rgba(186,163,112,0.35);transform:translateY(-1px)}
+.generate-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+.generate-btn i{margin-right:6px}
+
+/* ===== RESULTS CONTAINER (hidden until generated) ===== */
+.results-container{display:none}
+
+/* ===== PLAN TABS ===== */
+.plan-tabs{display:flex;gap:6px;margin-bottom:16px}
+.plan-tab{padding:10px 24px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-dim);font-size:13px;font-weight:600;cursor:pointer;transition:0.15s;font-family:inherit}
+.plan-tab:hover{background:rgba(255,255,255,0.06);color:var(--text)}
+.plan-tab.active{background:rgba(186,163,112,0.1);border-color:rgba(186,163,112,0.3);color:var(--gold)}
+.plan-panel{display:none}
+.plan-panel.active{display:block}
+
+/* ===== ACTION ITEMS ===== */
+.action-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:rgba(255,255,255,0.025);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;transition:0.15s}
+.action-item:hover{background:rgba(255,255,255,0.04)}
+.action-item.warning{border-color:rgba(239,68,68,0.2);background:rgba(239,68,68,0.03)}
+.action-check{margin-top:2px;width:18px;height:18px;accent-color:var(--gold);cursor:pointer;flex-shrink:0}
+.action-rank{width:28px;height:28px;border-radius:7px;background:rgba(186,163,112,0.1);border:1px solid rgba(186,163,112,0.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--gold);flex-shrink:0;font-family:'Share Tech Mono',monospace}
+.action-body{flex:1;min-width:0}
+.action-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+.action-detail{font-size:11px;color:var(--text-dim);line-height:1.5}
+.action-metrics{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}
+.action-metric{display:flex;flex-direction:column;gap:1px}
+.action-metric-label{font-size:8px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:0.5px}
+.action-metric-value{font-size:13px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.action-metric-value.green{color:var(--green)}
+.action-metric-value.gold{color:var(--gold)}
+.action-metric-value.red{color:var(--red)}
+.action-metric-value.blue{color:var(--blue)}
+.action-btns{display:flex;gap:6px;margin-top:8px}
+.action-letter-btn{padding:5px 12px;border-radius:5px;border:1px solid rgba(168,85,247,0.3);background:rgba(168,85,247,0.06);color:#a855f7;font-size:10px;font-weight:600;cursor:pointer;transition:0.15s;font-family:inherit}
+.action-letter-btn:hover{background:rgba(168,85,247,0.12);color:#c084fc}
+
+/* ===== LIVE COUNTERS (Plan B) ===== */
+.live-counters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;padding:16px;background:rgba(186,163,112,0.04);border:1px solid rgba(186,163,112,0.15);border-radius:10px}
+.live-counter{text-align:center}
+.live-counter-label{font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.live-counter-value{font-size:24px;font-weight:700;font-family:'Share Tech Mono',monospace}
+.budget-bar{height:6px;background:rgba(255,255,255,0.06);border-radius:3px;margin-top:6px;overflow:hidden}
+.budget-bar-fill{height:100%;border-radius:3px;transition:width 0.3s,background 0.3s}
+.budget-bar-fill.under{background:var(--green)}
+.budget-bar-fill.near{background:var(--amber)}
+.budget-bar-fill.over{background:var(--red)}
+
+/* ===== SCORE THRESHOLD SECTION ===== */
+.threshold-card{padding:20px;background:rgba(186,163,112,0.04);border:1px solid rgba(186,163,112,0.15);border-radius:10px}
+.threshold-tiers{display:flex;align-items:center;gap:4px;margin:16px 0;justify-content:center;flex-wrap:wrap}
+.tier-block{padding:8px 12px;border-radius:6px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:var(--text-dim);min-width:60px}
+.tier-block.current{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red)}
+.tier-block.target{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:var(--green)}
+.tier-arrow{color:var(--gold);font-size:16px}
+.threshold-savings{text-align:center;margin-top:14px}
+.savings-big{font-size:28px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--green)}
+.savings-label{font-size:11px;color:var(--text-dim);margin-top:2px}
+.savings-detail{font-size:12px;color:var(--text-mid);margin-top:8px;line-height:1.6}
+
+/* ===== AI LETTER MODAL ===== */
+.letter-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
+.letter-modal-overlay.active{display:flex}
+.letter-modal{width:700px;max-height:85vh;background:var(--surface);border:1px solid var(--border-gold);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+.letter-modal-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.letter-modal-title{font-size:16px;font-weight:700;color:var(--text)}
+.letter-modal-close{width:32px;height:32px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:0.15s}
+.letter-modal-close:hover{background:rgba(255,255,255,0.06);color:var(--text)}
+.letter-modal-body{flex:1;overflow-y:auto;padding:24px}
+.letter-type-picker{display:flex;gap:8px;margin-bottom:16px}
+.letter-type{padding:10px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;transition:0.15s;font-family:inherit;flex:1;text-align:center}
+.letter-type:hover{background:rgba(255,255,255,0.06);color:var(--text)}
+.letter-type.active{background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.3);color:#a855f7}
+.letter-output{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:20px;font-size:13px;color:var(--text-mid);line-height:1.7;white-space:pre-wrap;min-height:200px;font-family:inherit}
+.letter-output.loading{display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-style:italic}
+.letter-modal-footer{padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.letter-btn{padding:9px 18px;border-radius:7px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:var(--text-dim);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:0.15s}
+.letter-btn:hover{background:rgba(255,255,255,0.08);color:var(--text)}
+.letter-btn.primary{background:var(--blue-btn);border-color:var(--blue-btn);color:#fff}
+.letter-btn.primary:hover{background:#2563eb}
+
+/* ===== PRINT ACTION PLAN BUTTON ===== */
+.print-plan-row{display:flex;justify-content:center;gap:12px;margin-top:20px}
+.print-plan-btn{padding:12px 32px;border-radius:9px;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:0.15s}
+.print-plan-btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold-bright));color:#0b1f3a;box-shadow:0 4px 20px rgba(186,163,112,0.2)}
+.print-plan-btn.gold:hover{box-shadow:0 6px 30px rgba(186,163,112,0.35);transform:translateY(-1px)}
+.print-plan-btn.secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);color:var(--text-dim)}
+.print-plan-btn.secondary:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--surface-raised);border:1px solid var(--border-gold);border-radius:10px;padding:12px 24px;color:var(--text);font-size:13px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,0.4);z-index:2000;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .page-wrap{padding:16px 12px 60px}
+  .form-grid,.form-grid-3,.form-grid-4{grid-template-columns:1fr}
+  .live-counters{grid-template-columns:1fr}
+  .budget-row{flex-direction:column}
+  .budget-input-wrap,.loan-input-wrap{flex:1;width:100%}
+}
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- ===== PAGE HEADER ===== -->
+  <div class="page-header">
+    <div class="page-header-top">
+      <div>
+        <div class="page-title">Credit Analysis Engine <span class="page-title-badge">PHASE 2</span></div>
+        <div class="page-sub">Tradeline analysis, score improvement planning & AI letter generation</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1: BORROWER INFO ===== -->
+  <div class="section-panel" id="borrowerSection">
+    <div class="section-header">
+      <div class="section-icon blue"><i class="fas fa-user"></i></div>
+      <div>
+        <div class="section-title">Borrower Information</div>
+        <div class="section-subtitle">Pre-filled from submission or enter manually</div>
+      </div>
+      <div id="borrowerSourceBadge"></div>
+    </div>
+    <div class="form-grid-4">
+      <div class="field">
+        <label>Borrower Name</label>
+        <input type="text" id="borrowerName" placeholder="First Last">
+      </div>
+      <div class="field">
+        <label>Current Credit Score</label>
+        <input type="number" id="borrowerScore" placeholder="620" min="300" max="850">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="borrowerEmail" placeholder="email@example.com">
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input type="tel" id="borrowerPhone" placeholder="(555) 555-5555">
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: TRADELINE ENTRY ===== -->
+  <div class="section-panel" id="tradelineSection">
+    <div class="section-header">
+      <div class="section-icon gold"><i class="fas fa-list-alt"></i></div>
+      <div>
+        <div class="section-title">Tradeline Entry</div>
+        <div class="section-subtitle">Enter data from credit report — voluntary information only</div>
+      </div>
+      <div class="section-badge" id="tradelineCount" style="background:rgba(186,163,112,0.1);color:var(--gold);border:1px solid rgba(186,163,112,0.2);">0 TRADELINES</div>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th style="width:22px">#</th>
+            <th style="min-width:120px">Account Name</th>
+            <th style="min-width:120px">Type</th>
+            <th style="min-width:85px">Balance</th>
+            <th style="min-width:85px">Credit Limit</th>
+            <th style="min-width:75px">Payment</th>
+            <th style="min-width:135px">Status</th>
+            <th style="min-width:95px">Date Opened</th>
+            <th style="min-width:95px">1st Delinquency</th>
+            <th style="min-width:95px">Last Activity</th>
+            <th style="min-width:55px">Age</th>
+            <th style="min-width:55px">Util %</th>
+            <th style="width:30px"></th>
+          </tr>
+        </thead>
+        <tbody id="tradelineBody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tl-footer">
+      <button class="tl-add-btn" onclick="addTradeline()">
+        <i class="fas fa-plus"></i> Add Tradeline
+      </button>
+      <div class="tl-summary">
+        <div class="tl-stat">
+          <div class="tl-stat-label">Total Debt</div>
+          <div class="tl-stat-value" id="totalDebt" style="color:var(--red);">$0</div>
+        </div>
+        <div class="tl-stat">
+          <div class="tl-stat-label">Monthly Payments</div>
+          <div class="tl-stat-value" id="totalPayments" style="color:var(--amber);">$0</div>
+        </div>
+        <div class="tl-stat">
+          <div class="tl-stat-label">Overall Util</div>
+          <div class="tl-stat-value" id="overallUtil" style="color:var(--green);">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 3: BUDGET & LOAN TARGET ===== -->
+  <div class="section-panel" id="budgetSection">
+    <div class="section-header">
+      <div class="section-icon amber"><i class="fas fa-wallet"></i></div>
+      <div>
+        <div class="section-title">Budget & Loan Target</div>
+        <div class="section-subtitle">Used for Plan B interactive analysis and rate impact calculations</div>
+      </div>
+    </div>
+    <div class="budget-row">
+      <div class="budget-input-wrap">
+        <div class="field">
+          <label>Maximum Credit Repair Budget</label>
+          <div style="position:relative;">
+            <span class="dollar-sign" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gold);font-weight:700;font-size:15px;pointer-events:none;">$</span>
+            <input type="text" id="budgetAmount" class="budget-input" placeholder="5,000" oninput="formatBudget(this)" style="padding-left:28px;">
+          </div>
+        </div>
+      </div>
+      <div class="loan-input-wrap">
+        <div class="field">
+          <label>Target Loan Amount (for rate impact)</label>
+          <div style="position:relative;">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-dim);font-weight:700;font-size:14px;pointer-events:none;">$</span>
+            <input type="text" id="targetLoan" placeholder="300,000" oninput="formatBudget(this)" style="padding:12px 12px 12px 28px;border-radius:7px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#fff;font-size:16px;font-weight:600;font-family:'Share Tech Mono',monospace;width:100%;letter-spacing:0.5px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GENERATE BUTTON ===== -->
+  <div class="section-panel" style="text-align:center;padding:20px;">
+    <div class="generate-row">
+      <button class="generate-btn" id="generateBtn" onclick="generatePlans()">
+        <i class="fas fa-bolt"></i> Generate Credit Improvement Plans
+      </button>
+    </div>
+    <div style="font-size:10px;color:var(--text-faint);margin-top:8px;">All projections are score RANGES based on publicly known FICO scoring principles</div>
+  </div>
+
+  <!-- ===== RESULTS (hidden until generated) ===== -->
+  <div class="results-container" id="resultsContainer">
+
+    <!-- Plan Tabs -->
+    <div class="plan-tabs">
+      <div class="plan-tab active" onclick="switchPlan('a',this)">Plan A — Maximum Impact</div>
+      <div class="plan-tab" onclick="switchPlan('b',this)">Plan B — Interactive Budget</div>
+    </div>
+
+    <!-- Plan A Panel -->
+    <div class="plan-panel active" id="planA">
+      <div class="section-panel">
+        <div class="section-header">
+          <div class="section-icon green"><i class="fas fa-rocket"></i></div>
+          <div>
+            <div class="section-title">Plan A — Maximum Impact</div>
+            <div class="section-subtitle">Every possible action ranked by score impact — no budget constraint</div>
+          </div>
+          <div class="section-badge" id="planASummary" style="background:rgba(94,188,138,0.1);color:var(--green);border:1px solid rgba(94,188,138,0.2);">—</div>
+        </div>
+        <div id="planAActions"></div>
+      </div>
+    </div>
+
+    <!-- Plan B Panel -->
+    <div class="plan-panel" id="planB">
+      <div class="section-panel">
+        <div class="section-header">
+          <div class="section-icon amber"><i class="fas fa-sliders-h"></i></div>
+          <div>
+            <div class="section-title">Plan B — Interactive Budget Plan</div>
+            <div class="section-subtitle">Toggle actions on/off — watch your score, cost & timeline update live</div>
+          </div>
+        </div>
+        <div class="live-counters" id="liveCounters">
+          <div class="live-counter">
+            <div class="live-counter-label">Projected Score Range</div>
+            <div class="live-counter-value" id="liveScore" style="color:var(--green);">—</div>
+          </div>
+          <div class="live-counter">
+            <div class="live-counter-label">Total Cost</div>
+            <div class="live-counter-value" id="liveCost" style="color:var(--gold);">$0</div>
+            <div class="budget-bar"><div class="budget-bar-fill under" id="budgetBarFill" style="width:0%"></div></div>
+          </div>
+          <div class="live-counter">
+            <div class="live-counter-label">Estimated Timeline</div>
+            <div class="live-counter-value" id="liveTimeline" style="color:var(--blue);">—</div>
+          </div>
+        </div>
+        <div id="planBActions"></div>
+      </div>
+    </div>
+
+    <!-- Score Threshold Analysis -->
+    <div class="section-panel" id="thresholdSection">
+      <div class="section-header">
+        <div class="section-icon gold"><i class="fas fa-chart-line"></i></div>
+        <div>
+          <div class="section-title">Score Threshold Analysis</div>
+          <div class="section-subtitle">What reaching the next FICO tier means for your mortgage</div>
+        </div>
+      </div>
+      <div class="threshold-card" id="thresholdContent">
+        <!-- Populated by engine -->
+      </div>
+    </div>
+
+    <!-- Print Action Plan -->
+    <div class="print-plan-row">
+      <button class="print-plan-btn gold" onclick="generateActionPlan()">
+        <i class="fas fa-file-alt" style="margin-right:6px;"></i> Generate Borrower Action Plan
+      </button>
+      <button class="print-plan-btn secondary" onclick="window.print()">
+        <i class="fas fa-print" style="margin-right:6px;"></i> Print
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== AI LETTER MODAL ===== -->
+<div class="letter-modal-overlay" id="letterModal">
+  <div class="letter-modal">
+    <div class="letter-modal-header">
+      <div class="letter-modal-title"><i class="fas fa-envelope" style="color:#a855f7;margin-right:8px;"></i>AI Letter Writer</div>
+      <button class="letter-modal-close" onclick="closeLetterModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="letter-modal-body">
+      <div class="letter-type-picker">
+        <div class="letter-type active" onclick="selectLetterType('dispute',this)">Dispute to Bureau</div>
+        <div class="letter-type" onclick="selectLetterType('goodwill',this)">Goodwill Letter</div>
+        <div class="letter-type" onclick="selectLetterType('paydelete',this)">Pay-for-Delete</div>
+      </div>
+      <div class="field" style="margin-bottom:14px;">
+        <label>Additional Context (optional)</label>
+        <textarea id="letterContext" rows="2" placeholder="Any extra details for the letter..."></textarea>
+      </div>
+      <div class="letter-output" id="letterOutput">Select a letter type and click Generate to create your letter.</div>
+    </div>
+    <div class="letter-modal-footer">
+      <button class="letter-btn" id="generateLetterBtn" onclick="generateLetter()"><i class="fas fa-magic" style="margin-right:4px;"></i> Generate Letter</button>
+      <button class="letter-btn" onclick="copyLetter()"><i class="fas fa-copy" style="margin-right:4px;"></i> Copy</button>
+      <button class="letter-btn primary" onclick="closeLetterModal()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* =============================================
+   CREDIT ANALYSIS ENGINE — AGENT EDGE
+   Phase 2: Tradeline Entry & Auto-Calculations
+   ============================================= */
+
+// ===== STATE =====
+var tradelines = [];
+var tradelineCounter = 0;
+var activePlan = 'a';
+var letterTargetTradeline = null;
+var letterType = 'dispute';
+
+// ===== URL PARAMS (from Mission Control submission) =====
+var params = new URLSearchParams(window.location.search);
+if (params.get('name')) document.getElementById('borrowerName').value = decodeURIComponent(params.get('name'));
+if (params.get('score')) document.getElementById('borrowerScore').value = params.get('score');
+if (params.get('email')) document.getElementById('borrowerEmail').value = decodeURIComponent(params.get('email'));
+if (params.get('phone')) document.getElementById('borrowerPhone').value = decodeURIComponent(params.get('phone'));
+if (params.get('source')) {
+  var badge = document.getElementById('borrowerSourceBadge');
+  var src = params.get('source');
+  if (src === 'realtor') {
+    badge.innerHTML = '<span class="borrower-badge source-realtor"><i class="fas fa-handshake"></i> via ' + (decodeURIComponent(params.get('realtor_name') || 'Realtor')) + '</span>';
+  } else {
+    badge.innerHTML = '<span class="borrower-badge source-direct"><i class="fas fa-user"></i> Direct Submission</span>';
+  }
+}
+
+// ===== ACCOUNT TYPES =====
+var accountTypes = [
+  { value: 'credit_card', label: 'Credit Card', revolving: true },
+  { value: 'auto_loan', label: 'Auto Loan', revolving: false },
+  { value: 'student_loan', label: 'Student Loan', revolving: false },
+  { value: 'mortgage', label: 'Mortgage', revolving: false },
+  { value: 'personal_loan', label: 'Personal Loan', revolving: false },
+  { value: 'heloc', label: 'HELOC', revolving: true },
+  { value: 'other', label: 'Other', revolving: false }
+];
+
+// ===== STATUS TYPES =====
+var statusTypes = [
+  { value: 'current', label: 'Current' },
+  { value: '30_late', label: '30 Day Late' },
+  { value: '60_late', label: '60 Day Late' },
+  { value: '90_late', label: '90+ Day Late' },
+  { value: 'collection_original', label: 'Collection (Original Creditor)' },
+  { value: 'collection_sold', label: 'Collection (Sold to 3rd Party)' },
+  { value: 'chargeoff_balance', label: 'Charge-Off (Balance Owed)' },
+  { value: 'chargeoff_zero', label: 'Charge-Off ($0 Balance)' },
+  { value: 'medical_collection', label: 'Medical Collection' },
+  { value: 'included_bk', label: 'Included in Bankruptcy' },
+  { value: 'authorized_user', label: 'Authorized User' }
+];
+
+// ===== INITIALIZE WITH 3 EMPTY ROWS =====
+function initTradelines() {
+  addTradeline();
+  addTradeline();
+  addTradeline();
+}
+
+// ===== ADD TRADELINE ROW =====
+function addTradeline() {
+  tradelineCounter++;
+  var id = 'tl_' + tradelineCounter;
+  var tl = {
+    id: id,
+    name: '',
+    type: 'credit_card',
+    balance: 0,
+    limit: 0,
+    payment: 0,
+    status: 'current',
+    dateOpened: '',
+    dateFirstDelinquency: '',
+    lastActivity: '',
+    utilization: null,
+    isSleepingBear: false
+  };
+  tradelines.push(tl);
+  renderTradelineRow(tl);
+  updateSummary();
+  updateTradelineCount();
+}
+
+// ===== RENDER A SINGLE ROW =====
+function renderTradelineRow(tl) {
+  var tbody = document.getElementById('tradelineBody');
+  var tr = document.createElement('tr');
+  tr.id = 'row_' + tl.id;
+
+  var idx = tradelines.indexOf(tl) + 1;
+
+  // Build type options
+  var typeOpts = accountTypes.map(function(t) {
+    return '<option value="' + t.value + '"' + (tl.type === t.value ? ' selected' : '') + '>' + t.label + '</option>';
+  }).join('');
+
+  // Build status options
+  var statusOpts = statusTypes.map(function(s) {
+    return '<option value="' + s.value + '"' + (tl.status === s.value ? ' selected' : '') + '>' + s.label + '</option>';
+  }).join('');
+
+  // Build month/year picker HTML
+  function buildMonthYear(fieldName, value) {
+    var parts = value ? value.split('-') : ['',''];
+    var mm = parts[0] || '';
+    var yy = parts[1] || '';
+    var months = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var mOpts = months.map(function(m, i) {
+      var val = i === 0 ? '' : String(i).padStart(2,'0');
+      return '<option value="' + val + '"' + (mm === val ? ' selected' : '') + '>' + m + '</option>';
+    }).join('');
+    return '<div style="display:flex;gap:2px;">'
+      + '<select class="tl-select" style="width:58px;font-size:10px;padding:6px 2px;" onchange="updateTLDate(\'' + tl.id + '\',\'' + fieldName + '\',this.parentNode)">' + mOpts + '</select>'
+      + '<input class="tl-input" type="text" placeholder="YYYY" maxlength="4" value="' + yy + '" style="width:50px;font-size:11px;text-align:center;padding:6px 4px;" onchange="updateTLDate(\'' + tl.id + '\',\'' + fieldName + '\',this.parentNode)">'
+      + '</div>';
+  }
+
+  // Is this a derogatory status that needs first delinquency date?
+  var isDerogatoryStatus = isDerogatory(tl.status);
+
+  // Calculate age display
+  var ageDisplay = calcAccountAge(tl.dateOpened);
+
+  tr.innerHTML = ''
+    + '<td style="color:var(--text-faint);font-size:11px;font-family:\'Share Tech Mono\',monospace;text-align:center;">' + idx + '</td>'
+    + '<td><input class="tl-input" placeholder="e.g. Chase Visa" value="' + tl.name + '" onchange="updateTL(\'' + tl.id + '\',\'name\',this.value)"></td>'
+    + '<td><select class="tl-select" onchange="updateTL(\'' + tl.id + '\',\'type\',this.value)">' + typeOpts + '</select></td>'
+    + '<td><input class="tl-input" type="text" placeholder="$0" value="' + (tl.balance ? formatMoney(tl.balance) : '') + '" onchange="updateTLMoney(\'' + tl.id + '\',\'balance\',this)" onfocus="this.select()"></td>'
+    + '<td><input class="tl-input" id="limit_' + tl.id + '" type="text" placeholder="$0" value="' + (tl.limit ? formatMoney(tl.limit) : '') + '" onchange="updateTLMoney(\'' + tl.id + '\',\'limit\',this)" onfocus="this.select()" ' + (isRevolving(tl.type) ? '' : 'disabled style="opacity:0.25;cursor:not-allowed;"') + '></td>'
+    + '<td><input class="tl-input" type="text" placeholder="$0" value="' + (tl.payment ? formatMoney(tl.payment) : '') + '" onchange="updateTLMoney(\'' + tl.id + '\',\'payment\',this)" onfocus="this.select()"></td>'
+    + '<td><select class="tl-select" onchange="updateTL(\'' + tl.id + '\',\'status\',this.value)">' + statusOpts + '</select></td>'
+    + '<td>' + buildMonthYear('dateOpened', tl.dateOpened) + '</td>'
+    + '<td id="delinq_' + tl.id + '">' + (isDerogatoryStatus ? buildMonthYear('dateFirstDelinquency', tl.dateFirstDelinquency) : '<div style="text-align:center;color:var(--text-faint);font-size:10px;">—</div>') + '</td>'
+    + '<td>' + buildMonthYear('lastActivity', tl.lastActivity) + '</td>'
+    + '<td id="age_' + tl.id + '"><div style="text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:12px;color:var(--text-mid);">' + ageDisplay + '</div></td>'
+    + '<td id="util_' + tl.id + '"><div class="util-display util-na">—</div></td>'
+    + '<td><button class="tl-remove" onclick="removeTradeline(\'' + tl.id + '\')" title="Remove"><i class="fas fa-times"></i></button></td>';
+
+  tbody.appendChild(tr);
+  updateUtilDisplay(tl);
+}
+
+// ===== CHECK IF ACCOUNT TYPE IS REVOLVING =====
+function isRevolving(type) {
+  var found = accountTypes.find(function(t) { return t.value === type; });
+  return found ? found.revolving : false;
+}
+
+// ===== CHECK IF STATUS IS DEROGATORY =====
+function isDerogatory(status) {
+  return ['30_late','60_late','90_late','collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection','included_bk'].indexOf(status) >= 0;
+}
+
+// ===== CALCULATE ACCOUNT AGE FROM DATE OPENED =====
+function calcAccountAge(dateStr) {
+  if (!dateStr) return '—';
+  var parts = dateStr.split('-');
+  var mm = parseInt(parts[0]);
+  var yy = parseInt(parts[1]);
+  if (!mm || !yy || yy < 1950 || yy > 2030) return '—';
+  var opened = new Date(yy, mm - 1, 1);
+  var now = new Date();
+  var years = now.getFullYear() - opened.getFullYear();
+  var months = now.getMonth() - opened.getMonth();
+  if (months < 0) { years--; months += 12; }
+  if (years < 1) return months + 'mo';
+  if (months === 0) return years + 'yr';
+  return years + 'yr ' + months + 'mo';
+}
+
+// ===== GET ACCOUNT AGE IN MONTHS =====
+function getAgeMonths(dateStr) {
+  if (!dateStr) return 0;
+  var parts = dateStr.split('-');
+  var mm = parseInt(parts[0]);
+  var yy = parseInt(parts[1]);
+  if (!mm || !yy) return 0;
+  var opened = new Date(yy, mm - 1, 1);
+  var now = new Date();
+  return (now.getFullYear() - opened.getFullYear()) * 12 + (now.getMonth() - opened.getMonth());
+}
+
+// ===== CALCULATE MONTHS UNTIL 7-YEAR DROP-OFF =====
+function monthsUntilDropOff(dateFirstDelinquency) {
+  if (!dateFirstDelinquency) return null;
+  var parts = dateFirstDelinquency.split('-');
+  var mm = parseInt(parts[0]);
+  var yy = parseInt(parts[1]);
+  if (!mm || !yy) return null;
+  var delinqDate = new Date(yy, mm - 1, 1);
+  var dropOff = new Date(delinqDate);
+  dropOff.setFullYear(dropOff.getFullYear() + 7);
+  var now = new Date();
+  var months = (dropOff.getFullYear() - now.getFullYear()) * 12 + (dropOff.getMonth() - now.getMonth());
+  return months;
+}
+
+// ===== UPDATE MONTH/YEAR DATE FIELD =====
+function updateTLDate(id, field, container) {
+  var tl = tradelines.find(function(t) { return t.id === id; });
+  if (!tl) return;
+  var selects = container.querySelectorAll('select');
+  var inputs = container.querySelectorAll('input');
+  var mm = selects[0] ? selects[0].value : '';
+  var yy = inputs[0] ? inputs[0].value : '';
+  tl[field] = (mm && yy) ? mm + '-' + yy : '';
+
+  // Update age display if dateOpened changed
+  if (field === 'dateOpened') {
+    var ageCell = document.getElementById('age_' + id);
+    if (ageCell) {
+      ageCell.innerHTML = '<div style="text-align:center;font-family:\'Share Tech Mono\',monospace;font-size:12px;color:var(--text-mid);">' + calcAccountAge(tl.dateOpened) + '</div>';
+    }
+  }
+
+  // Re-check sleeping bear
+  checkSleepingBear(tl);
+  updateSummary();
+}
+
+// ===== UPDATE TRADELINE FIELD =====
+function updateTL(id, field, value) {
+  var tl = tradelines.find(function(t) { return t.id === id; });
+  if (!tl) return;
+  tl[field] = value;
+
+  // If type changed, enable/disable credit limit field
+  if (field === 'type') {
+    var limitInput = document.getElementById('limit_' + id);
+    if (limitInput) {
+      if (isRevolving(value)) {
+        limitInput.disabled = false;
+        limitInput.style.opacity = '1';
+        limitInput.style.cursor = '';
+      } else {
+        limitInput.disabled = true;
+        limitInput.style.opacity = '0.25';
+        limitInput.style.cursor = 'not-allowed';
+        tl.limit = 0;
+        limitInput.value = '';
+      }
+    }
+  }
+
+  // If status changed, show/hide first delinquency date field
+  if (field === 'status') {
+    var delinqCell = document.getElementById('delinq_' + id);
+    if (delinqCell) {
+      if (isDerogatory(value)) {
+        // Build the month/year picker
+        var parts = tl.dateFirstDelinquency ? tl.dateFirstDelinquency.split('-') : ['',''];
+        var mm = parts[0] || '';
+        var yy = parts[1] || '';
+        var months = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var mOpts = months.map(function(m, i) {
+          var val = i === 0 ? '' : String(i).padStart(2,'0');
+          return '<option value="' + val + '"' + (mm === val ? ' selected' : '') + '>' + m + '</option>';
+        }).join('');
+        delinqCell.innerHTML = '<div style="display:flex;gap:2px;">'
+          + '<select class="tl-select" style="width:58px;font-size:10px;padding:6px 2px;" onchange="updateTLDate(\'' + id + '\',\'dateFirstDelinquency\',this.parentNode)">' + mOpts + '</select>'
+          + '<input class="tl-input" type="text" placeholder="YYYY" maxlength="4" value="' + yy + '" style="width:50px;font-size:11px;text-align:center;padding:6px 4px;" onchange="updateTLDate(\'' + id + '\',\'dateFirstDelinquency\',this.parentNode)">'
+          + '</div>';
+      } else {
+        tl.dateFirstDelinquency = '';
+        delinqCell.innerHTML = '<div style="text-align:center;color:var(--text-faint);font-size:10px;">—</div>';
+      }
+    }
+  }
+
+  // Check sleeping bear
+  checkSleepingBear(tl);
+  updateUtilDisplay(tl);
+  updateSummary();
+}
+
+// ===== UPDATE MONEY FIELDS =====
+function updateTLMoney(id, field, input) {
+  var tl = tradelines.find(function(t) { return t.id === id; });
+  if (!tl) return;
+  var raw = input.value.replace(/[^0-9.]/g, '');
+  var num = parseFloat(raw) || 0;
+  tl[field] = num;
+  input.value = num > 0 ? formatMoney(num) : '';
+  updateUtilDisplay(tl);
+  updateSummary();
+}
+
+// ===== REMOVE TRADELINE =====
+function removeTradeline(id) {
+  tradelines = tradelines.filter(function(t) { return t.id !== id; });
+  var row = document.getElementById('row_' + id);
+  if (row) row.remove();
+  renumberRows();
+  updateSummary();
+  updateTradelineCount();
+}
+
+// ===== RENUMBER ROWS =====
+function renumberRows() {
+  var rows = document.getElementById('tradelineBody').rows;
+  for (var i = 0; i < rows.length; i++) {
+    rows[i].cells[0].textContent = i + 1;
+  }
+}
+
+// ===== UPDATE UTILIZATION DISPLAY =====
+function updateUtilDisplay(tl) {
+  var cell = document.getElementById('util_' + tl.id);
+  if (!cell) return;
+
+  if (!isRevolving(tl.type) || tl.limit <= 0) {
+    tl.utilization = null;
+    cell.innerHTML = '<div class="util-display util-na">—</div>';
+    return;
+  }
+
+  var util = Math.round((tl.balance / tl.limit) * 100);
+  tl.utilization = util;
+  var cls = 'util-good';
+  if (util > 50) cls = 'util-poor';
+  else if (util > 30) cls = 'util-fair';
+  cell.innerHTML = '<div class="util-display ' + cls + '">' + util + '%</div>';
+}
+
+// ===== CHECK SLEEPING BEAR =====
+function checkSleepingBear(tl) {
+  var isDerogatoryStatus = ['collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection'].indexOf(tl.status) >= 0;
+  tl.isSleepingBear = false;
+  tl.nearDropOff = false;
+  tl.monthsToDropOff = null;
+
+  if (isDerogatoryStatus && tl.lastActivity) {
+    var parts = tl.lastActivity.split('-');
+    var mm = parseInt(parts[0]);
+    var yy = parseInt(parts[1]);
+    if (mm && yy) {
+      var lastDate = new Date(yy, mm - 1, 1);
+      var now = new Date();
+      var monthsInactive = (now.getFullYear() - lastDate.getFullYear()) * 12 + (now.getMonth() - lastDate.getMonth());
+
+      if (monthsInactive >= 24) {
+        tl.isSleepingBear = true;
+      }
+    }
+  }
+
+  // Check 7-year drop-off proximity
+  if (isDerogatoryStatus && tl.dateFirstDelinquency) {
+    var dropMonths = monthsUntilDropOff(tl.dateFirstDelinquency);
+    if (dropMonths !== null) {
+      tl.monthsToDropOff = dropMonths;
+      if (dropMonths <= 18 && dropMonths > 0) {
+        tl.nearDropOff = true;
+      }
+    }
+  }
+
+  // Update row visual
+  var row = document.getElementById('row_' + tl.id);
+  if (row) {
+    if (tl.isSleepingBear || tl.nearDropOff) {
+      row.classList.add('sleeping-bear');
+    } else {
+      row.classList.remove('sleeping-bear');
+    }
+  }
+}
+
+// ===== UPDATE SUMMARY STATS =====
+function updateSummary() {
+  var totalDebt = 0;
+  var totalPay = 0;
+  var totalRevBal = 0;
+  var totalRevLimit = 0;
+
+  tradelines.forEach(function(tl) {
+    totalDebt += tl.balance || 0;
+    totalPay += tl.payment || 0;
+    if (isRevolving(tl.type) && tl.limit > 0) {
+      totalRevBal += tl.balance || 0;
+      totalRevLimit += tl.limit || 0;
+    }
+  });
+
+  document.getElementById('totalDebt').textContent = '$' + numberWithCommas(totalDebt);
+  document.getElementById('totalPayments').textContent = '$' + numberWithCommas(totalPay);
+
+  if (totalRevLimit > 0) {
+    var overallUtil = Math.round((totalRevBal / totalRevLimit) * 100);
+    var el = document.getElementById('overallUtil');
+    el.textContent = overallUtil + '%';
+    if (overallUtil > 50) el.style.color = 'var(--red)';
+    else if (overallUtil > 30) el.style.color = 'var(--amber)';
+    else el.style.color = 'var(--green)';
+  } else {
+    document.getElementById('overallUtil').textContent = '—';
+    document.getElementById('overallUtil').style.color = 'var(--text-faint)';
+  }
+}
+
+// ===== UPDATE TRADELINE COUNT =====
+function updateTradelineCount() {
+  var count = tradelines.length;
+  document.getElementById('tradelineCount').textContent = count + ' TRADELINE' + (count !== 1 ? 'S' : '');
+}
+
+// ===== FORMAT HELPERS =====
+function formatMoney(n) {
+  return numberWithCommas(Math.round(n));
+}
+
+function numberWithCommas(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function formatBudget(input) {
+  var raw = input.value.replace(/[^0-9]/g, '');
+  if (raw) {
+    input.value = numberWithCommas(parseInt(raw));
+  }
+}
+
+function parseMoney(str) {
+  if (!str) return 0;
+  return parseFloat(str.replace(/[^0-9.]/g, '')) || 0;
+}
+
+// ===== PLAN SWITCHING =====
+function switchPlan(plan, el) {
+  activePlan = plan;
+  document.querySelectorAll('.plan-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.plan-panel').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('plan' + plan.toUpperCase()).classList.add('active');
+}
+
+// ===== LETTER MODAL =====
+function openLetterModal(tradelineId) {
+  letterTargetTradeline = tradelines.find(function(t) { return t.id === tradelineId; });
+  document.getElementById('letterOutput').textContent = 'Select a letter type and click Generate to create your letter.';
+  document.getElementById('letterOutput').classList.remove('loading');
+  document.getElementById('letterContext').value = '';
+  document.getElementById('letterModal').classList.add('active');
+}
+
+function closeLetterModal() {
+  document.getElementById('letterModal').classList.remove('active');
+}
+
+function selectLetterType(type, el) {
+  letterType = type;
+  document.querySelectorAll('.letter-type').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+}
+
+function copyLetter() {
+  var text = document.getElementById('letterOutput').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    showToast('Letter copied to clipboard');
+  });
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// ===== PLACEHOLDER FUNCTIONS (Engine will be added in next chunk) =====
+function generatePlans() {
+  showToast('Analysis engine loading in next build chunk...');
+}
+
+function generateLetter() {
+  showToast('AI letter writer loading in next build chunk...');
+}
+
+function generateActionPlan() {
+  showToast('Action plan generator loading in next build chunk...');
+}
+
+// ===== INIT =====
+initTradelines();
+</script>
+
+</body>
+</html>
