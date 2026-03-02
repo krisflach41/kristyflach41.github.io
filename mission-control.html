@@ -2005,9 +2005,15 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     <div class="modal-actions" style="margin-top:16px;">
       <button class="topbar-btn" onclick="document.getElementById('creditDetailModal').style.display='none'">Close</button>
       <button class="topbar-btn" id="csMarkReviewing" style="border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="updateCreditStatus('reviewing')"><i class="fas fa-eye"></i> Mark Reviewing</button>
+      <button class="topbar-btn" style="border-color:rgba(186,163,112,0.4);color:#baa370;background:rgba(186,163,112,0.08);" onclick="openCreditAnalysis()"><i class="fas fa-microscope"></i> Analyze Credit</button>
       <button class="topbar-btn primary" id="csMarkPlanSent" onclick="updateCreditStatus('plan_sent')"><i class="fas fa-paper-plane"></i> Plan Sent</button>
     </div>
   </div>
+</div>
+
+<!-- CREDIT ANALYSIS ENGINE (iframe) -->
+<div class="view-panel" id="view-creditengine">
+  <iframe id="creditEngineFrame" src="" style="width:100%;height:100%;border:none;"></iframe>
 </div>
 
 <!-- ========================================== -->
@@ -7045,7 +7051,7 @@ function renderCreditSubs() {
     h += '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
     h += '<div style="flex:1;min-width:0;">';
     h += '<div style="font-weight:600;font-size:14px;color:#fff;">' + (s.borrower_name || 'Unknown') + '</div>';
-    h += '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + source + ' &bull; Score: ' + (s.self_reported_score || 'N/A') + ' &bull; ' + simCount + ' simulation' + (simCount !== 1 ? 's' : '') + '</div>';
+    h += '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:2px;">' + source + ' &bull; Score: ' + (s.self_reported_score || 'N/A') + (s.goal_score ? ' → Goal: ' + s.goal_score : '') + ' &bull; ' + simCount + ' simulation' + (simCount !== 1 ? 's' : '') + '</div>';
     h += '</div>';
     h += '<div style="text-align:right;flex-shrink:0;">';
     h += '<div style="font-size:10px;font-weight:700;color:' + statusColor + ';letter-spacing:0.5px;">' + statusLabel + '</div>';
@@ -7065,9 +7071,10 @@ function openCreditDetail(id) {
   var h = '';
 
   // Header info
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">';
   h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Borrower</div><div style="font-size:16px;font-weight:700;color:#fff;">' + (s.borrower_name || 'N/A') + '</div></div>';
   h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Self-Reported Score</div><div style="font-size:16px;font-weight:700;color:#f59e0b;">' + (s.self_reported_score || 'N/A') + '</div></div>';
+  h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Goal Score</div><div style="font-size:16px;font-weight:700;color:#22c55e;">' + (s.goal_score || 'N/A') + '</div></div>';
   h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Email</div><div style="font-size:13px;color:#fff;">' + (s.borrower_email || 'N/A') + '</div></div>';
   h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Phone</div><div style="font-size:13px;color:#fff;">' + (s.borrower_phone || 'N/A') + '</div></div>';
   h += '<div><div style="font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.5px;">Source</div><div style="font-size:13px;color:#fff;">' + (s.submitted_by === 'realtor' ? 'Realtor: ' + (s.realtor_name || 'Unknown') : 'Direct') + '</div></div>';
@@ -7137,6 +7144,39 @@ async function saveCreditNotes() {
     activeCreditSub.lo_notes = notes;
     showToast('Notes saved');
   } catch(e) { showToast('Error saving notes'); }
+}
+
+function openCreditAnalysis() {
+  if (!activeCreditSub) return;
+  var s = activeCreditSub;
+
+  // Build URL with borrower data
+  var params = [];
+  if (s.borrower_name) params.push('name=' + encodeURIComponent(s.borrower_name));
+  if (s.self_reported_score) params.push('score=' + s.self_reported_score);
+  if (s.goal_score) params.push('goal=' + s.goal_score);
+  if (s.borrower_email) params.push('email=' + encodeURIComponent(s.borrower_email));
+  if (s.borrower_phone) params.push('phone=' + encodeURIComponent(s.borrower_phone));
+  if (s.submitted_by) params.push('source=' + s.submitted_by);
+  if (s.realtor_name) params.push('realtor_name=' + encodeURIComponent(s.realtor_name));
+
+  var url = 'mc-credit-analysis.html' + (params.length > 0 ? '?' + params.join('&') : '');
+
+  // Load into iframe and switch view
+  document.getElementById('creditEngineFrame').src = url;
+  document.getElementById('creditDetailModal').style.display = 'none';
+
+  // Mark as reviewing automatically
+  if (s.status === 'new') {
+    updateCreditStatus('reviewing');
+  }
+
+  // Switch to the credit engine view
+  document.querySelectorAll('.view-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('view-creditengine').classList.add('active');
+
+  // Update nav state
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
 }
 
 function getTimeAgo(dateStr) {
