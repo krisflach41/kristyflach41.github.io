@@ -182,17 +182,42 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 .budget-bar-fill.near{background:var(--amber)}
 .budget-bar-fill.over{background:var(--red)}
 
-/* ===== SCORE THRESHOLD SECTION ===== */
-.threshold-card{padding:20px;background:rgba(186,163,112,0.04);border:1px solid rgba(186,163,112,0.15);border-radius:10px}
-.threshold-tiers{display:flex;align-items:center;gap:4px;margin:16px 0;justify-content:center;flex-wrap:wrap}
-.tier-block{padding:8px 12px;border-radius:6px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.03);color:var(--text-dim);min-width:60px}
-.tier-block.current{background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.3);color:var(--red)}
-.tier-block.target{background:rgba(34,197,94,0.1);border-color:rgba(34,197,94,0.3);color:var(--green)}
-.tier-arrow{color:var(--gold);font-size:16px}
-.threshold-savings{text-align:center;margin-top:14px}
-.savings-big{font-size:28px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--green)}
-.savings-label{font-size:11px;color:var(--text-dim);margin-top:2px}
-.savings-detail{font-size:12px;color:var(--text-mid);margin-top:8px;line-height:1.6}
+/* ===== SCORE THRESHOLD / GOAL SECTION ===== */
+.threshold-card{padding:24px;background:rgba(186,163,112,0.04);border:1px solid rgba(186,163,112,0.15);border-radius:10px}
+.goal-header{text-align:center;margin-bottom:20px}
+.goal-header-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.goal-header-sub{font-size:12px;color:var(--text-dim)}
+
+/* Progress track */
+.goal-progress-wrap{margin:20px 0;padding:0 10px}
+.goal-progress-labels{display:flex;justify-content:space-between;margin-bottom:8px}
+.goal-progress-label{font-family:'Share Tech Mono',monospace;font-size:13px;font-weight:700}
+.goal-progress-label.current{color:var(--amber)}
+.goal-progress-label.target{color:var(--green)}
+.goal-progress-track{height:12px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden;position:relative}
+.goal-progress-fill{height:100%;border-radius:6px;transition:width 0.5s;position:relative;overflow:hidden}
+.goal-progress-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0) 100%);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.goal-progress-gap{display:flex;justify-content:center;margin-top:8px;font-size:11px;color:var(--text-dim)}
+.goal-progress-gap strong{color:var(--gold);margin:0 4px}
+
+/* Milestone markers */
+.goal-milestones{display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap}
+.milestone{padding:10px 16px;border-radius:8px;text-align:center;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);min-width:100px}
+.milestone.reached{border-color:rgba(94,188,138,0.3);background:rgba(94,188,138,0.06)}
+.milestone.next{border-color:rgba(186,163,112,0.3);background:rgba(186,163,112,0.06)}
+.milestone-score{font-family:'Share Tech Mono',monospace;font-size:14px;font-weight:700;margin-bottom:2px}
+.milestone-score.reached{color:var(--green)}
+.milestone-score.next{color:var(--gold)}
+.milestone-score.future{color:var(--text-faint)}
+.milestone-label{font-size:9px;color:var(--text-dim);letter-spacing:0.3px}
+
+/* Unlock message */
+.goal-unlock{background:rgba(94,188,138,0.06);border:1px solid rgba(94,188,138,0.15);border-radius:10px;padding:18px;text-align:center;margin-top:16px}
+.goal-unlock-title{font-size:11px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.goal-unlock-big{font-size:32px;font-weight:700;font-family:'Share Tech Mono',monospace;color:var(--green);margin-bottom:4px}
+.goal-unlock-detail{font-size:12px;color:var(--text-mid);line-height:1.6}
+.goal-encourage{text-align:center;margin-top:16px;font-size:13px;color:var(--text-mid);line-height:1.7;font-style:italic}
 
 /* ===== AI LETTER MODAL ===== */
 .letter-modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:1000;align-items:center;justify-content:center;padding:20px}
@@ -268,7 +293,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       </div>
       <div class="field">
         <label>Current Credit Score</label>
-        <input type="number" id="borrowerScore" placeholder="620" min="300" max="850">
+        <input type="number" id="borrowerScore" placeholder="520" min="300" max="850">
+      </div>
+      <div class="field">
+        <label>Goal Score</label>
+        <input type="number" id="goalScore" placeholder="620" min="300" max="850">
       </div>
       <div class="field">
         <label>Email</label>
@@ -383,8 +412,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
 
     <!-- Plan Tabs -->
     <div class="plan-tabs">
-      <div class="plan-tab active" onclick="switchPlan('a',this)">Plan A — Maximum Impact</div>
-      <div class="plan-tab" onclick="switchPlan('b',this)">Plan B — Interactive Budget</div>
+      <div class="plan-tab active" onclick="switchPlan('a',this)">Plan A — Full Roadmap</div>
+      <div class="plan-tab" onclick="switchPlan('b',this)">Plan B — Custom Plan</div>
     </div>
 
     <!-- Plan A Panel -->
@@ -393,8 +422,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <div class="section-header">
           <div class="section-icon green"><i class="fas fa-rocket"></i></div>
           <div>
-            <div class="section-title">Plan A — Maximum Impact</div>
-            <div class="section-subtitle">Every possible action ranked by score impact — no budget constraint</div>
+            <div class="section-title">Plan A — Full Roadmap</div>
+            <div class="section-subtitle">Every action that moves you toward your goal — no budget constraint</div>
           </div>
           <div class="section-badge" id="planASummary" style="background:rgba(94,188,138,0.1);color:var(--green);border:1px solid rgba(94,188,138,0.2);">—</div>
         </div>
@@ -408,14 +437,15 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
         <div class="section-header">
           <div class="section-icon amber"><i class="fas fa-sliders-h"></i></div>
           <div>
-            <div class="section-title">Plan B — Interactive Budget Plan</div>
-            <div class="section-subtitle">Toggle actions on/off — watch your score, cost & timeline update live</div>
+            <div class="section-title">Plan B — Your Custom Plan</div>
+            <div class="section-subtitle">Toggle actions on/off within your budget — watch your projected score update live</div>
           </div>
         </div>
         <div class="live-counters" id="liveCounters">
           <div class="live-counter">
-            <div class="live-counter-label">Projected Score Range</div>
+            <div class="live-counter-label">Projected Score</div>
             <div class="live-counter-value" id="liveScore" style="color:var(--green);">—</div>
+            <div id="liveGoalStatus" style="font-size:10px;margin-top:4px;color:var(--text-dim);"></div>
           </div>
           <div class="live-counter">
             <div class="live-counter-label">Total Cost</div>
@@ -431,13 +461,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(-
       </div>
     </div>
 
-    <!-- Score Threshold Analysis -->
+    <!-- Your Goal & What It Unlocks -->
     <div class="section-panel" id="thresholdSection">
       <div class="section-header">
-        <div class="section-icon gold"><i class="fas fa-chart-line"></i></div>
+        <div class="section-icon gold"><i class="fas fa-bullseye"></i></div>
         <div>
-          <div class="section-title">Score Threshold Analysis</div>
-          <div class="section-subtitle">What reaching the next FICO tier means for your mortgage</div>
+          <div class="section-title">Your Goal & What It Unlocks</div>
+          <div class="section-subtitle">Here's what reaching your target score means for your future</div>
         </div>
       </div>
       <div class="threshold-card" id="thresholdContent">
@@ -505,6 +535,7 @@ var letterType = 'dispute';
 var params = new URLSearchParams(window.location.search);
 if (params.get('name')) document.getElementById('borrowerName').value = decodeURIComponent(params.get('name'));
 if (params.get('score')) document.getElementById('borrowerScore').value = params.get('score');
+if (params.get('goal')) document.getElementById('goalScore').value = params.get('goal');
 if (params.get('email')) document.getElementById('borrowerEmail').value = decodeURIComponent(params.get('email'));
 if (params.get('phone')) document.getElementById('borrowerPhone').value = decodeURIComponent(params.get('phone'));
 if (params.get('source')) {
@@ -1461,6 +1492,84 @@ function analyzetradelines() {
     });
   }
 
+  // ===== THIN FILE / CREDIT BUILDING RECOMMENDATIONS =====
+  var revolvingCount = tradelines.filter(function(tl) {
+    return isRevolving(tl.type) && tl.status === 'current';
+  }).length;
+
+  var totalAccounts = tradelines.filter(function(tl) {
+    return tl.name || tl.balance > 0;
+  }).length;
+
+  // Secured credit card recommendation
+  if (revolvingCount < 2) {
+    actions.push({
+      id: 'build_secured',
+      tradelineId: null,
+      tradelineName: 'Credit Building',
+      type: 'credit_building',
+      title: 'Open a secured credit card to build positive payment history',
+      detail: 'A secured card requires a deposit (typically $200-$500) that becomes your credit limit. Use it for small recurring purchases and pay the full balance every month. This builds positive payment history (35% of your score) and adds a revolving account to improve your credit mix. After 6-12 months of on-time payments, many issuers will upgrade you to an unsecured card and refund your deposit.',
+      minPoints: 10,
+      maxPoints: 30,
+      cost: 0,
+      timeline: '3-6 months of on-time payments',
+      timelineDays: 120,
+      isFree: true,
+      isSleepingBear: false,
+      isNearDropOff: false,
+      isAnchor: false,
+      warningText: ''
+    });
+  }
+
+  // Credit builder loan recommendation
+  if (totalAccounts < 3) {
+    actions.push({
+      id: 'build_cbl',
+      tradelineId: null,
+      tradelineName: 'Credit Building',
+      type: 'credit_building',
+      title: 'Consider a credit builder loan to diversify your credit mix',
+      detail: 'A credit builder loan works in reverse — the lender holds the loan amount in a savings account while you make monthly payments. After you\'ve paid it off (usually 12-24 months), you get the money. This adds an installment loan to your credit mix (10% of your score) and builds 12-24 months of perfect payment history. Available through many credit unions and online lenders for as little as $25-$50/month.',
+      minPoints: 5,
+      maxPoints: 20,
+      cost: 0,
+      timeline: '6-12 months for meaningful impact',
+      timelineDays: 270,
+      isFree: true,
+      isSleepingBear: false,
+      isNearDropOff: false,
+      isAnchor: false,
+      warningText: ''
+    });
+  }
+
+  // Autopay recommendation if any current accounts exist
+  var currentAccounts = tradelines.filter(function(tl) {
+    return tl.status === 'current' && (tl.payment > 0 || tl.balance > 0);
+  });
+  if (currentAccounts.length > 0) {
+    actions.push({
+      id: 'build_autopay',
+      tradelineId: null,
+      tradelineName: 'Score Protection',
+      type: 'credit_building',
+      title: 'Set up autopay on all current accounts to protect your score',
+      detail: 'Payment history is 35% of your FICO score. A single missed payment can drop your score 50-100+ points. Setting up automatic minimum payments on every account ensures you never miss a due date. You can still pay more than the minimum manually — autopay is your safety net.',
+      minPoints: 0,
+      maxPoints: 0,
+      cost: 0,
+      timeline: 'Set up today',
+      timelineDays: 1,
+      isFree: true,
+      isSleepingBear: false,
+      isNearDropOff: false,
+      isAnchor: false,
+      warningText: ''
+    });
+  }
+
   return actions;
 }
 
@@ -1468,7 +1577,18 @@ function analyzetradelines() {
 function generatePlans() {
   var score = parseInt(document.getElementById('borrowerScore').value);
   if (!score || score < 300 || score > 850) {
-    showToast('Please enter a valid credit score (300-850)');
+    showToast('Please enter a valid current credit score (300-850)');
+    return;
+  }
+
+  var goalScore = parseInt(document.getElementById('goalScore').value);
+  if (!goalScore || goalScore < 300 || goalScore > 850) {
+    showToast('Please enter a goal score (300-850)');
+    return;
+  }
+
+  if (goalScore <= score) {
+    showToast('Goal score should be higher than current score');
     return;
   }
 
@@ -1510,9 +1630,25 @@ function generatePlans() {
 
   var projMin = Math.min(score + planATotalMin, 850);
   var projMax = Math.min(score + planATotalMax, 850);
+  var gap = goalScore - score;
+  var canReachGoal = projMax >= gap;
 
   // Render Plan A
-  document.getElementById('planASummary').textContent = '+' + planATotalMin + ' to +' + planATotalMax + ' pts | $' + numberWithCommas(planATotalCost);
+  // Calculate longest timeline for Plan A
+  var planAMaxTimeline = 0;
+  planAActions.forEach(function(a) { if (a.timelineDays > planAMaxTimeline) planAMaxTimeline = a.timelineDays; });
+  var planATimeStr = '';
+  if (planAMaxTimeline <= 45) planATimeStr = '30-45 days';
+  else if (planAMaxTimeline <= 75) planATimeStr = '60-90 days';
+  else if (planAMaxTimeline <= 180) planATimeStr = '3-6 months';
+  else planATimeStr = '6+ months';
+
+  var summaryText = projMin + ' – ' + projMax;
+  if (canReachGoal) summaryText += ' ✓';
+  document.getElementById('planASummary').innerHTML = '<div style="font-size:12px;font-weight:700;">' + summaryText + '</div><div style="font-size:9px;opacity:0.7;margin-top:1px;">' + planATimeStr + ' &bull; $' + numberWithCommas(planATotalCost) + '</div>';
+  document.getElementById('planASummary').style.color = canReachGoal ? 'var(--green)' : 'var(--gold)';
+  document.getElementById('planASummary').style.borderColor = canReachGoal ? 'rgba(94,188,138,0.3)' : 'rgba(186,163,112,0.2)';
+  document.getElementById('planASummary').style.background = canReachGoal ? 'rgba(94,188,138,0.1)' : 'rgba(186,163,112,0.1)';
   renderActionList('planAActions', planAActions, false);
 
   // ===== PLAN B: Sort by efficiency (points per dollar, free first) =====
@@ -1619,6 +1755,16 @@ function updateLiveCounters() {
 
   document.getElementById('liveScore').textContent = projMin + ' – ' + projMax;
 
+  // Goal status
+  var goalScore = parseInt(document.getElementById('goalScore').value) || 620;
+  var goalStatus = document.getElementById('liveGoalStatus');
+  if (projMax >= goalScore) {
+    goalStatus.innerHTML = '<span style="color:var(--green);">✓ Goal of ' + goalScore + ' is within reach!</span>';
+  } else {
+    var remaining = goalScore - projMax;
+    goalStatus.innerHTML = '<span style="color:var(--amber);">' + remaining + ' pts still needed to reach ' + goalScore + '</span>';
+  }
+
   document.getElementById('liveCost').textContent = '$' + numberWithCommas(totalCost);
 
   // Timeline
@@ -1642,79 +1788,511 @@ function updateLiveCounters() {
   }
 }
 
-// ===== SCORE THRESHOLD ANALYSIS =====
+// ===== GOAL & UNLOCK SECTION =====
 function renderThresholdAnalysis(score, projMin, projMax) {
   var container = document.getElementById('thresholdContent');
-  var currentTier = getTier(score);
-  var nextTier = getNextTier(score);
+  var goalScore = parseInt(document.getElementById('goalScore').value) || 620;
   var loanAmount = parseMoney(document.getElementById('targetLoan').value) || 300000;
+  var borrowerName = document.getElementById('borrowerName').value.split(' ')[0] || 'you';
 
-  // Default LTV column index (assume 80% LTV — column index 3)
+  // LTV column index (assume 80% — index 3)
   var ltvIdx = 3;
+
+  // Calculate progress
+  var gap = goalScore - score;
+  var progressPct = 0;
+  if (gap <= 0) {
+    progressPct = 100;
+  } else {
+    // Show progress based on projected improvement
+    var midProj = Math.round((projMin + projMax) / 2);
+    progressPct = Math.min(Math.round((midProj / gap) * 100), 100);
+  }
+
+  // Color the progress bar based on how close
+  var barColor = 'linear-gradient(90deg, var(--amber), var(--gold))';
+  if (progressPct >= 100) barColor = 'linear-gradient(90deg, var(--green), #5ebc8a)';
+  else if (progressPct >= 70) barColor = 'linear-gradient(90deg, var(--gold), var(--green))';
 
   var h = '';
 
-  // Tier visualization
-  h += '<div style="text-align:center;margin-bottom:14px;">';
-  h += '<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">YOUR FICO TIER POSITION</div>';
-  h += '<div class="threshold-tiers">';
-  ficoTiers.slice().reverse().forEach(function(tier) {
-    var cls = 'tier-block';
-    if (tier.label === currentTier.label) cls += ' current';
-    else if (nextTier && tier.label === nextTier.label) cls += ' target';
-    h += '<div class="' + cls + '">' + tier.label + '</div>';
-  });
-  h += '</div>';
-  h += '</div>';
-
-  if (nextTier) {
-    var currentLLPA = llpaMatrix[currentTier.label] ? llpaMatrix[currentTier.label][ltvIdx] : 0;
-    var nextLLPA = llpaMatrix[nextTier.label] ? llpaMatrix[nextTier.label][ltvIdx] : 0;
-    var llpaDiff = currentLLPA - nextLLPA;
-    var rateDiff = llpaToRate(llpaDiff);
-    var pointsNeeded = nextTier.min - score;
-
-    // Monthly payment difference (rough calc: rate diff on 30yr)
-    // P&I on 30yr at ~7% on loanAmount
-    var baseRate = 0.07;
-    var monthlyRate1 = (baseRate) / 12;
-    var monthlyRate2 = (baseRate - rateDiff / 100) / 12;
-    var n = 360;
-    var pmt1 = loanAmount * (monthlyRate1 * Math.pow(1 + monthlyRate1, n)) / (Math.pow(1 + monthlyRate1, n) - 1);
-    var pmt2 = loanAmount * (monthlyRate2 * Math.pow(1 + monthlyRate2, n)) / (Math.pow(1 + monthlyRate2, n) - 1);
-    var monthlySavings = Math.round(pmt1 - pmt2);
-    var lifetimeSavings = monthlySavings * 360;
-
-    h += '<div class="threshold-savings">';
-    h += '<div style="font-size:12px;color:var(--text-mid);margin-bottom:8px;">You\'re at <strong style="color:var(--red);">' + score + '</strong>. Reaching <strong style="color:var(--green);">' + nextTier.min + '</strong> moves you from tier <strong>' + currentTier.label + '</strong> to <strong>' + nextTier.label + '</strong>.</div>';
-    h += '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">That\'s <strong style="color:var(--gold);">' + pointsNeeded + ' points</strong> away</div>';
-
-    if (monthlySavings > 0) {
-      h += '<div class="savings-big">$' + numberWithCommas(monthlySavings) + '/mo</div>';
-      h += '<div class="savings-label">estimated monthly savings on a $' + numberWithCommas(loanAmount) + ' loan</div>';
-      h += '<div class="savings-detail">';
-      h += 'LLPA improves by ' + llpaDiff.toFixed(3) + '% → approximately ' + rateDiff.toFixed(3) + '% better rate<br>';
-      h += 'That\'s <strong style="color:var(--green);">$' + numberWithCommas(lifetimeSavings) + '</strong> in savings over the life of a 30-year loan';
-      h += '</div>';
-    } else {
-      h += '<div style="font-size:12px;color:var(--text-dim);">At 80% LTV, the LLPA difference between these tiers is minimal. The real savings increase at higher LTV ratios.</div>';
-    }
-    h += '</div>';
+  // Header — positive framing
+  h += '<div class="goal-header">';
+  if (gap <= 0) {
+    h += '<div class="goal-header-title">🎉 ' + borrowerName + ', you\'ve already reached your goal!</div>';
+    h += '<div class="goal-header-sub">Your current score of ' + score + ' meets or exceeds your target of ' + goalScore + '. Let\'s see how much further we can go.</div>';
   } else {
-    h += '<div style="text-align:center;font-size:13px;color:var(--green);font-weight:600;margin-top:12px;">You\'re already in the top FICO tier! Focus on maintaining this score.</div>';
+    h += '<div class="goal-header-title">Your Roadmap to ' + goalScore + '</div>';
+    h += '<div class="goal-header-sub">' + gap + ' points to go — and we have a plan to get you there</div>';
   }
+  h += '</div>';
+
+  // Progress bar
+  h += '<div class="goal-progress-wrap">';
+  h += '<div class="goal-progress-labels">';
+  h += '<div class="goal-progress-label current">Current: ' + score + '</div>';
+  h += '<div class="goal-progress-label target">Goal: ' + goalScore + '</div>';
+  h += '</div>';
+  h += '<div class="goal-progress-track">';
+  h += '<div class="goal-progress-fill" style="width:' + progressPct + '%;background:' + barColor + ';"></div>';
+  h += '</div>';
+
+  if (gap > 0) {
+    var canReach = projMax >= gap;
+    if (canReach) {
+      h += '<div class="goal-progress-gap">With this plan, <strong style="color:var(--green);">your goal of ' + goalScore + ' is within reach</strong></div>';
+    } else {
+      h += '<div class="goal-progress-gap">This plan gets you <strong>' + projMin + ' to ' + projMax + ' points</strong> closer — ' + (gap > projMax ? 'additional steps may be needed' : 'nearly there') + '</div>';
+    }
+  }
+  h += '</div>';
+
+  // Milestone markers — show key thresholds between current and goal
+  var keyMilestones = [
+    { score: 580, label: 'FHA Eligible (3.5% down)' },
+    { score: 620, label: 'Conventional Eligible' },
+    { score: 640, label: 'Better Rates' },
+    { score: 660, label: 'Good Rates' },
+    { score: 680, label: 'LLPA Savings Kick In' },
+    { score: 700, label: 'Strong Rates' },
+    { score: 720, label: 'Excellent Rates' },
+    { score: 740, label: 'Best Conventional Pricing' },
+    { score: 760, label: 'Near-Optimal Pricing' },
+    { score: 780, label: 'Top Tier Pricing' }
+  ];
+
+  // Filter to relevant milestones (between current-20 and goal+40)
+  var relevantMilestones = keyMilestones.filter(function(m) {
+    return m.score >= (score - 10) && m.score <= (goalScore + 40);
+  });
+
+  if (relevantMilestones.length > 0 && relevantMilestones.length <= 6) {
+    h += '<div class="goal-milestones">';
+    relevantMilestones.forEach(function(m) {
+      var cls = 'milestone';
+      var scoreCls = 'future';
+      if (score >= m.score) { cls += ' reached'; scoreCls = 'reached'; }
+      else if (m.score === goalScore || (m.score <= goalScore && m.score > score)) { cls += ' next'; scoreCls = 'next'; }
+      h += '<div class="' + cls + '">';
+      h += '<div class="milestone-score ' + scoreCls + '">' + m.score + '</div>';
+      h += '<div class="milestone-label">' + m.label + '</div>';
+      if (score >= m.score) h += '<div style="font-size:9px;color:var(--green);margin-top:2px;">✓ Reached</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  // What the goal unlocks — LLPA savings
+  var currentTier = getTier(score);
+  var goalTier = getTier(goalScore);
+
+  if (currentTier.label !== goalTier.label) {
+    var currentLLPA = llpaMatrix[currentTier.label] ? llpaMatrix[currentTier.label][ltvIdx] : 0;
+    var goalLLPA = llpaMatrix[goalTier.label] ? llpaMatrix[goalTier.label][ltvIdx] : 0;
+    var llpaDiff = currentLLPA - goalLLPA;
+    var rateDiff = llpaToRate(llpaDiff);
+
+    if (rateDiff > 0) {
+      var baseRate = 0.07;
+      var monthlyRate1 = baseRate / 12;
+      var monthlyRate2 = (baseRate - rateDiff / 100) / 12;
+      var n = 360;
+      var pmt1 = loanAmount * (monthlyRate1 * Math.pow(1 + monthlyRate1, n)) / (Math.pow(1 + monthlyRate1, n) - 1);
+      var pmt2 = loanAmount * (monthlyRate2 * Math.pow(1 + monthlyRate2, n)) / (Math.pow(1 + monthlyRate2, n) - 1);
+      var monthlySavings = Math.round(pmt1 - pmt2);
+      var lifetimeSavings = monthlySavings * 360;
+
+      if (monthlySavings > 0) {
+        h += '<div class="goal-unlock">';
+        h += '<div class="goal-unlock-title">What reaching ' + goalScore + ' unlocks for you</div>';
+        h += '<div class="goal-unlock-big">$' + numberWithCommas(monthlySavings) + '/mo saved</div>';
+        h += '<div class="goal-unlock-detail">';
+        h += 'On a $' + numberWithCommas(loanAmount) + ' loan, reaching ' + goalScore + ' improves your pricing by approximately ' + rateDiff.toFixed(3) + '% in rate.<br>';
+        h += 'That\'s <strong style="color:var(--green);">$' + numberWithCommas(lifetimeSavings) + ' in total savings</strong> over the life of a 30-year mortgage.';
+        h += '</div>';
+        h += '</div>';
+      }
+    }
+  }
+
+  // Encouragement message
+  var encourageMsg = '';
+  if (gap <= 0) {
+    encourageMsg = 'You\'re in a strong position. The actions below can push your score even higher, which means even better rates and more options.';
+  } else if (gap <= 20) {
+    encourageMsg = 'You\'re so close! A few targeted actions could get you across the finish line in as little as 30-60 days.';
+  } else if (gap <= 50) {
+    encourageMsg = 'This is very achievable. Most people in your situation see meaningful improvement within 60-90 days with the right plan.';
+  } else if (gap <= 100) {
+    encourageMsg = 'This will take some work, but it\'s absolutely doable. We\'ll break it into manageable steps and tackle the highest-impact items first. Many people in your situation reach their goal within 3-6 months.';
+  } else {
+    encourageMsg = 'This is a journey, and every step forward counts. We\'ll build a clear plan with quick wins to build momentum and bigger moves for lasting improvement. The most important thing is that you\'re taking action today.';
+  }
+  h += '<div class="goal-encourage">"' + encourageMsg + '"</div>';
 
   container.innerHTML = h;
 }
 
-// ===== AI LETTER WRITER (next build chunk) =====
+// ===== AI LETTER WRITER =====
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+
 function generateLetter() {
-  showToast('AI letter writer — building in next chunk');
+  if (!letterTargetTradeline) {
+    showToast('No tradeline selected');
+    return;
+  }
+
+  var tl = letterTargetTradeline;
+  var borrowerName = document.getElementById('borrowerName').value || '[BORROWER NAME]';
+  var borrowerAddress = '[BORROWER ADDRESS]';
+  var extraContext = document.getElementById('letterContext').value || '';
+  var output = document.getElementById('letterOutput');
+  var btn = document.getElementById('generateLetterBtn');
+
+  output.textContent = 'Generating letter...';
+  output.classList.add('loading');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  // Build prompt based on letter type
+  var accountDesc = (tl.name || 'the account') + ' (' + (accountTypes.find(function(a){return a.value===tl.type;}) || {label:tl.type}).label + ')';
+  var balanceDesc = tl.balance > 0 ? '$' + numberWithCommas(tl.balance) : 'unknown balance';
+  var statusDesc = (statusTypes.find(function(s){return s.value===tl.status;}) || {label:tl.status}).label;
+
+  var prompt = '';
+
+  if (letterType === 'dispute') {
+    prompt = 'Write a professional credit bureau dispute letter. The borrower ' + borrowerName + ' is disputing ' + accountDesc + ' with a status of "' + statusDesc + '" and a balance of ' + balanceDesc + '. '
+    + 'The letter should be addressed to "Credit Bureau Dispute Department" and request validation of the debt under the Fair Credit Reporting Act (FCRA) Section 611. '
+    + 'Request that the bureau verify: the account belongs to the borrower, the balance is accurate, the status is being reported correctly, and the creditor can provide original documentation. '
+    + 'State that if the item cannot be verified within 30 days, it must be removed per FCRA requirements. '
+    + 'Include placeholders for: borrower address, SSN last 4, date of birth, and the specific account number. '
+    + 'Tone: firm but professional. Not threatening. ';
+  } else if (letterType === 'goodwill') {
+    prompt = 'Write a professional goodwill adjustment letter. The borrower ' + borrowerName + ' is writing to the creditor/original lender for ' + accountDesc + ' which has a status of "' + statusDesc + '". '
+    + 'The letter should acknowledge the negative mark, take responsibility if appropriate, explain that it was an isolated incident (or hardship), '
+    + 'highlight the borrower\'s otherwise positive payment history, and politely request that the creditor remove the negative notation as a goodwill gesture. '
+    + 'Mention that the borrower is working toward homeownership and this item is the primary obstacle. '
+    + 'Include a placeholder for the specific account number. '
+    + 'Tone: sincere, humble, and appreciative. Not demanding. ';
+  } else if (letterType === 'paydelete') {
+    prompt = 'Write a professional pay-for-delete letter. The borrower ' + borrowerName + ' is writing to the collection agency or creditor for ' + accountDesc + ' with a balance of ' + balanceDesc + ' and status "' + statusDesc + '". '
+    + 'The letter should: propose payment of the debt (or a specific settlement amount) IN EXCHANGE for complete removal of the tradeline from all three credit bureaus (Equifax, Experian, TransUnion). '
+    + 'Emphasize that this is a conditional offer — payment will ONLY be made upon receiving a written agreement that the item will be fully deleted (not updated to "paid collection"). '
+    + 'Include space for the creditor to sign and return the agreement. '
+    + 'State that the borrower will pay via cashier\'s check or money order (not personal check or electronic payment) once the signed agreement is received. '
+    + 'Include placeholders for: account number, proposed settlement amount, and creditor\'s response. '
+    + 'Tone: businesslike and clear. Frame it as mutually beneficial. ';
+  }
+
+  if (extraContext) {
+    prompt += 'Additional context from the loan officer: ' + extraContext + '. ';
+  }
+
+  prompt += 'Format: Write only the letter text, ready to print. Include today\'s date. Use [BRACKETS] for any information the borrower needs to fill in. Do not include any preamble or explanation outside the letter itself.';
+
+  // Call the backend which proxies to Anthropic
+  fetch(API_BASE + '/ai-letter', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prompt: prompt,
+      borrowerName: borrowerName,
+      letterType: letterType
+    })
+  })
+  .then(function(resp) { return resp.json(); })
+  .then(function(data) {
+    output.classList.remove('loading');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic" style="margin-right:4px;"></i> Generate Letter';
+    if (data.success && data.letter) {
+      output.textContent = data.letter;
+    } else if (data.letter) {
+      output.textContent = data.letter;
+    } else {
+      // Fallback: generate a template locally
+      output.textContent = generateLocalTemplate(letterType, borrowerName, tl);
+    }
+  })
+  .catch(function(err) {
+    console.error('Letter generation error:', err);
+    output.classList.remove('loading');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-magic" style="margin-right:4px;"></i> Generate Letter';
+    // Fallback to local template
+    output.textContent = generateLocalTemplate(letterType, borrowerName, tl);
+  });
 }
 
-// ===== PRINTABLE ACTION PLAN (next build chunk) =====
+// ===== LOCAL TEMPLATE FALLBACK =====
+function generateLocalTemplate(type, name, tl) {
+  var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  var acctName = tl.name || '[CREDITOR/ACCOUNT NAME]';
+  var balance = tl.balance > 0 ? '$' + numberWithCommas(tl.balance) : '[BALANCE]';
+  var statusLabel = (statusTypes.find(function(s){return s.value===tl.status;}) || {label:tl.status}).label;
+
+  if (type === 'dispute') {
+    return today + '\n\n'
+    + name + '\n[YOUR ADDRESS]\n[CITY, STATE ZIP]\n[SSN Last 4: XXX-XX-____]\n[Date of Birth: ___________]\n\n'
+    + 'Credit Bureau Dispute Department\n[Equifax / Experian / TransUnion]\n[BUREAU ADDRESS]\n\n'
+    + 'Re: Dispute of Inaccurate Information — Account: ' + acctName + '\nAccount Number: [ACCOUNT NUMBER]\n\n'
+    + 'Dear Sir or Madam,\n\n'
+    + 'I am writing to dispute the following information on my credit report pursuant to the Fair Credit Reporting Act, Section 611 (15 U.S.C. § 1681i).\n\n'
+    + 'The account listed as "' + acctName + '" with a reported status of "' + statusLabel + '" and balance of ' + balance + ' is being reported inaccurately. I am requesting that you investigate this item and provide validation including:\n\n'
+    + '1. Verification that this account belongs to me\n'
+    + '2. The original signed agreement or contract bearing my signature\n'
+    + '3. Verification that the balance of ' + balance + ' is accurate\n'
+    + '4. Verification that the reported status of "' + statusLabel + '" is correct\n'
+    + '5. Proof that the reporting entity has the legal right to report this information\n\n'
+    + 'Under the FCRA, you are required to investigate this dispute within 30 days of receipt. If the information cannot be verified, it must be promptly removed from my credit report.\n\n'
+    + 'Please send me written confirmation of the results of your investigation.\n\n'
+    + 'Sincerely,\n\n'
+    + name + '\n\n'
+    + 'Enclosures:\n- Copy of government-issued ID\n- Proof of address (utility bill or bank statement)';
+  }
+
+  if (type === 'goodwill') {
+    return today + '\n\n'
+    + name + '\n[YOUR ADDRESS]\n[CITY, STATE ZIP]\n\n'
+    + '[CREDITOR NAME]\n[CREDITOR ADDRESS]\n\n'
+    + 'Re: Goodwill Adjustment Request — Account: ' + acctName + '\nAccount Number: [ACCOUNT NUMBER]\n\n'
+    + 'Dear Sir or Madam,\n\n'
+    + 'I am writing to respectfully request a goodwill adjustment on the above-referenced account, which is currently reporting a status of "' + statusLabel + '." I have been a customer of [CREDITOR NAME] for [X years] and have valued our relationship.\n\n'
+    + 'I want to take full responsibility for this situation. [BRIEFLY EXPLAIN WHAT HAPPENED — e.g., "I experienced an unexpected medical emergency / job loss / family hardship that temporarily impacted my ability to make timely payments."]\n\n'
+    + 'Since that time, I have [DESCRIBE CORRECTIVE STEPS — e.g., "brought the account current, set up automatic payments, and have not missed a payment since"]. This was an isolated incident that does not reflect my typical financial responsibility.\n\n'
+    + 'I am currently in the process of purchasing a home, and this item on my credit report is the primary obstacle preventing me from qualifying for a mortgage with favorable terms. A goodwill removal of this negative notation would make a tremendous difference for my family.\n\n'
+    + 'I understand that you are under no obligation to make this adjustment, and I sincerely appreciate your consideration. If there is any additional information I can provide, please do not hesitate to contact me.\n\n'
+    + 'Thank you for your time and understanding.\n\n'
+    + 'Sincerely,\n\n'
+    + name + '\n[PHONE NUMBER]\n[EMAIL ADDRESS]';
+  }
+
+  if (type === 'paydelete') {
+    var settlementAmt = tl.balance > 0 ? '$' + numberWithCommas(Math.round(tl.balance * 0.5)) : '[PROPOSED AMOUNT]';
+    return today + '\n\n'
+    + name + '\n[YOUR ADDRESS]\n[CITY, STATE ZIP]\n\n'
+    + '[COLLECTION AGENCY / CREDITOR NAME]\n[CREDITOR ADDRESS]\n\n'
+    + 'Re: Conditional Settlement Offer — Account: ' + acctName + '\nAccount Number: [ACCOUNT NUMBER]\nReported Balance: ' + balance + '\n\n'
+    + 'Dear Sir or Madam,\n\n'
+    + 'I am writing to propose a settlement of the above-referenced account. This letter is not an acknowledgment of the debt\'s validity, and all rights under the Fair Debt Collection Practices Act are expressly reserved.\n\n'
+    + 'I am prepared to pay ' + settlementAmt + ' as full and final settlement of this account, subject to the following condition:\n\n'
+    + 'CONDITION: Upon receipt of payment, you agree to request complete deletion of this tradeline from all three major credit bureaus (Equifax, Experian, and TransUnion) within 30 days. The account must be fully removed — not updated to "paid collection," "settled," or any other status.\n\n'
+    + 'This is a conditional offer. Payment will ONLY be remitted upon receipt of a signed written agreement to the above terms. Payment will be made via cashier\'s check or money order.\n\n'
+    + 'If you agree to these terms, please sign below and return this letter to the address above. Upon receipt of the signed agreement, I will remit payment within 10 business days.\n\n'
+    + '_______________________________________________\n'
+    + 'Authorized Representative Signature\n\n'
+    + '_______________________________________________\n'
+    + 'Printed Name and Title\n\n'
+    + '_______________________________________________\n'
+    + 'Date\n\n'
+    + 'Sincerely,\n\n'
+    + name;
+  }
+
+  return 'Template not available for this letter type.';
+}
+
+// ===== COPY LETTER =====
+function copyLetter() {
+  var text = document.getElementById('letterOutput').textContent;
+  if (!text || text === 'Select a letter type and click Generate to create your letter.') {
+    showToast('Generate a letter first');
+    return;
+  }
+  navigator.clipboard.writeText(text).then(function() {
+    showToast('Letter copied to clipboard');
+  }).catch(function() {
+    // Fallback for older browsers
+    var textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textarea);
+    showToast('Letter copied to clipboard');
+  });
+}
+
+// ===== PRINTABLE BORROWER ACTION PLAN =====
 function generateActionPlan() {
-  showToast('Borrower action plan — building in next chunk');
+  var score = parseInt(document.getElementById('borrowerScore').value) || 0;
+  var goalScore = parseInt(document.getElementById('goalScore').value) || 0;
+  var borrowerName = document.getElementById('borrowerName').value || 'Valued Client';
+  var loanAmount = parseMoney(document.getElementById('targetLoan').value) || 300000;
+
+  // Get the active plan's actions
+  var actions = [];
+  if (activePlan === 'a' && window.planBData) {
+    // Use Plan A — all actions
+    actions = analyzetradelines().sort(function(a, b) { return b.maxPoints - a.maxPoints; });
+  } else if (window.planBData) {
+    // Use Plan B — only checked actions
+    window.planBData.forEach(function(a) {
+      var cb = document.getElementById('check_' + a.id);
+      if (cb && cb.checked) actions.push(a);
+    });
+  }
+
+  if (actions.length === 0) {
+    showToast('No actions to include in the plan');
+    return;
+  }
+
+  // Calculate totals
+  var totalMin = 0, totalMax = 0, totalCost = 0, maxTimeline = 0;
+  actions.forEach(function(a) {
+    totalMin += a.minPoints;
+    totalMax += a.maxPoints;
+    totalCost += a.cost;
+    if (a.timelineDays > maxTimeline) maxTimeline = a.timelineDays;
+  });
+  if (totalMin > 120) totalMin = 120;
+  if (totalMax > 180) totalMax = 180;
+  var projMin = Math.min(score + totalMin, 850);
+  var projMax = Math.min(score + totalMax, 850);
+
+  var timeStr = '';
+  if (maxTimeline <= 45) timeStr = '30-45 days';
+  else if (maxTimeline <= 75) timeStr = '60-90 days';
+  else if (maxTimeline <= 180) timeStr = '3-6 months';
+  else timeStr = '6+ months';
+
+  var today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Get LO name from localStorage
+  var loName = localStorage.getItem('ae_lo_name') || 'Your Loan Officer';
+  var loNMLS = localStorage.getItem('ae_lo_nmls') || '';
+
+  // Build the print document
+  var printWin = window.open('', '_blank');
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Credit Improvement Action Plan - ' + borrowerName + '</title>';
+  html += '<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">';
+  html += '<style>';
+  html += '*{box-sizing:border-box;margin:0;padding:0}';
+  html += 'body{font-family:"DM Sans",system-ui,sans-serif;background:#07090e;color:#e8e4dc;-webkit-font-smoothing:antialiased;padding:0}';
+  html += '.page{max-width:800px;margin:0 auto;background:#0d1117;border:1px solid rgba(186,163,112,0.18)}';
+
+  // Hero
+  html += '.hero{padding:48px 56px 40px;border-bottom:1px solid rgba(255,255,255,0.05);position:relative}';
+  html += '.hero::after{content:"";position:absolute;bottom:0;left:56px;right:56px;height:1px;background:linear-gradient(90deg,transparent,rgba(186,163,112,0.4),transparent)}';
+  html += '.hero-label{font-size:10px;font-weight:600;letter-spacing:2.5px;color:#baa370;text-transform:uppercase;margin-bottom:12px}';
+  html += '.hero-title{font-family:"Playfair Display",serif;font-size:26px;font-weight:700;line-height:1.3;margin-bottom:6px}';
+  html += '.hero-sub{font-size:13px;color:rgba(232,228,220,0.5)}';
+  html += '.hero-detail{font-size:11px;color:rgba(232,228,220,0.25);margin-top:4px}';
+
+  // KPI strip
+  html += '.kpi-strip{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;border-bottom:1px solid rgba(255,255,255,0.05)}';
+  html += '.kpi{padding:20px 16px;border-right:1px solid rgba(255,255,255,0.05);text-align:center}';
+  html += '.kpi:last-child{border-right:none}';
+  html += '.kpi-label{font-size:8px;font-weight:700;color:rgba(232,228,220,0.35);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}';
+  html += '.kpi-value{font-family:"Playfair Display",serif;font-size:20px;font-weight:700}';
+  html += '.green{color:#5ebc8a}.gold{color:#baa370}.blue{color:#6ba3d6}.red{color:#d97373}';
+
+  // Section
+  html += '.section{padding:36px 56px;border-bottom:1px solid rgba(255,255,255,0.05)}';
+  html += '.section-title{font-family:"Playfair Display",serif;font-size:17px;font-weight:600;margin-bottom:6px;padding-bottom:14px;position:relative}';
+  html += '.section-title::after{content:"";position:absolute;bottom:0;left:0;width:36px;height:2px;background:linear-gradient(90deg,#baa370,rgba(186,163,112,0.4));border-radius:1px}';
+  html += '.section-intro{font-size:12px;color:rgba(232,228,220,0.55);line-height:1.65;margin-top:12px}';
+
+  // Action steps
+  html += '.step{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,0.04)}';
+  html += '.step:last-child{border-bottom:none}';
+  html += '.step-num{width:28px;height:28px;border-radius:7px;background:rgba(186,163,112,0.1);border:1px solid rgba(186,163,112,0.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#baa370;flex-shrink:0;font-family:"Share Tech Mono",monospace}';
+  html += '.step-body{flex:1}';
+  html += '.step-title{font-size:13px;font-weight:600;margin-bottom:3px}';
+  html += '.step-detail{font-size:11px;color:rgba(232,228,220,0.5);line-height:1.5}';
+  html += '.step-metrics{display:flex;gap:20px;margin-top:8px}';
+  html += '.step-metric{font-size:10px}.step-metric-label{color:rgba(232,228,220,0.3);text-transform:uppercase;letter-spacing:0.5px;font-weight:700;font-size:8px}';
+  html += '.step-metric-value{font-family:"Share Tech Mono",monospace;font-weight:700;font-size:12px;margin-top:1px}';
+  html += '.warning-flag{display:inline-block;font-size:9px;font-weight:700;color:#d97373;background:rgba(217,115,115,0.08);border:1px solid rgba(217,115,115,0.2);border-radius:4px;padding:2px 6px;margin:4px 0}';
+
+  // Footer
+  html += '.footer{padding:32px 56px;text-align:center}';
+  html += '.footer-disclaimer{font-size:10px;color:rgba(232,228,220,0.25);line-height:1.7;margin-bottom:16px}';
+  html += '.footer-lo{font-size:12px;color:rgba(232,228,220,0.5)}';
+  html += '.footer-lo strong{color:#baa370}';
+
+  // Print styles
+  html += '@media print{body{background:#fff;color:#1a1a1a;-webkit-print-color-adjust:exact;print-color-adjust:exact}';
+  html += '.page{border:none;box-shadow:none;background:#fff}';
+  html += '.hero{background:#0b1f3a;color:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}';
+  html += '.kpi-strip{background:#f8f9fa;border:1px solid #e0e0e0}.kpi{border-color:#e0e0e0}';
+  html += '.green{color:#2e7d32}.gold{color:#8d6e2f}.blue{color:#1565c0}.red{color:#c62828}';
+  html += '.section{border-color:#e0e0e0}.step{border-color:#f0f0f0}';
+  html += '.footer{background:#f8f9fa}}';
+  html += '</style></head><body>';
+
+  html += '<div class="page">';
+
+  // Hero
+  html += '<div class="hero">';
+  html += '<div class="hero-label">Credit Improvement Action Plan</div>';
+  html += '<div class="hero-title">Your Roadmap to ' + goalScore + '</div>';
+  html += '<div class="hero-sub">Prepared for ' + borrowerName + ' &bull; ' + today + '</div>';
+  html += '<div class="hero-detail">This plan is based on voluntarily provided information and general FICO scoring principles.</div>';
+  html += '</div>';
+
+  // KPI strip
+  html += '<div class="kpi-strip">';
+  html += '<div class="kpi"><div class="kpi-label">Current Score</div><div class="kpi-value gold">' + score + '</div></div>';
+  html += '<div class="kpi"><div class="kpi-label">Goal Score</div><div class="kpi-value green">' + goalScore + '</div></div>';
+  html += '<div class="kpi"><div class="kpi-label">Projected Range</div><div class="kpi-value blue">' + projMin + ' – ' + projMax + '</div></div>';
+  html += '<div class="kpi"><div class="kpi-label">Est. Timeline</div><div class="kpi-value">' + timeStr + '</div></div>';
+  html += '</div>';
+
+  // Action steps
+  html += '<div class="section">';
+  html += '<div class="section-title">Your Action Steps</div>';
+  html += '<div class="section-intro">Complete these steps in order of priority. Free actions are listed first. Each step includes the estimated score impact and timeline. Your loan officer is here to guide you through every step.</div>';
+
+  actions.forEach(function(a, i) {
+    html += '<div class="step">';
+    html += '<div class="step-num">' + (i + 1) + '</div>';
+    html += '<div class="step-body">';
+    html += '<div class="step-title">' + a.title + '</div>';
+    if (a.warningText) html += '<div class="warning-flag">' + a.warningText + '</div>';
+    html += '<div class="step-detail">' + a.detail + '</div>';
+    html += '<div class="step-metrics">';
+    if (a.minPoints > 0 || a.maxPoints > 0) {
+      html += '<div class="step-metric"><div class="step-metric-label">Score Impact</div><div class="step-metric-value green">+' + a.minPoints + ' to +' + a.maxPoints + ' pts</div></div>';
+    }
+    html += '<div class="step-metric"><div class="step-metric-label">Cost</div><div class="step-metric-value ' + (a.isFree ? 'green' : 'gold') + '">' + (a.isFree ? 'FREE' : '$' + numberWithCommas(a.cost)) + '</div></div>';
+    html += '<div class="step-metric"><div class="step-metric-label">Timeline</div><div class="step-metric-value blue">' + a.timeline + '</div></div>';
+    html += '</div></div></div>';
+  });
+  html += '</div>';
+
+  // Next steps section
+  html += '<div class="section">';
+  html += '<div class="section-title">What Happens Next</div>';
+  html += '<div class="section-intro" style="margin-top:12px;">';
+  html += '1. Review this action plan and start with Step 1.<br><br>';
+  html += '2. For disputes, send letters via certified mail with return receipt requested. Keep copies of everything.<br><br>';
+  html += '3. For pay-for-delete agreements, get everything in writing BEFORE making any payment.<br><br>';
+  html += '4. Monitor your credit reports monthly at annualcreditreport.com — you are entitled to free weekly reports from all three bureaus.<br><br>';
+  html += '5. Contact your loan officer for a progress check in 60-90 days. We can pull updated scores and adjust the plan as needed.';
+  html += '</div></div>';
+
+  // Footer with disclaimers
+  html += '<div class="footer">';
+  html += '<div class="footer-disclaimer">';
+  html += 'IMPORTANT DISCLAIMERS: This action plan is based on voluntarily provided information and general FICO scoring principles. ';
+  html += 'Projected score improvements are estimated ranges, not guarantees. Actual results will vary based on your complete credit profile. ';
+  html += 'This is not a credit pull and does not affect your credit score. For the most accurate projections, we recommend obtaining your official 3-bureau credit report ';
+  html += 'from annualcreditreport.com or authorizing a tri-merge credit pull through your loan officer. ';
+  html += 'This document does not constitute financial advice and is provided for educational and planning purposes only.';
+  html += '</div>';
+  html += '<div class="footer-lo">Prepared by <strong>' + loName + '</strong>';
+  if (loNMLS) html += ' &bull; NMLS #' + loNMLS;
+  html += '</div>';
+  html += '</div>';
+
+  html += '</div></body></html>';
+
+  printWin.document.write(html);
+  printWin.document.close();
+  showToast('Action plan opened — print or save as PDF');
 }
 
 // ===== INIT =====
