@@ -227,47 +227,77 @@ body {
   background: rgba(255,255,255,0.75);
   border: 1px solid rgba(0,37,86,0.15);
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 15px;
+  padding: 24px;
+  margin-bottom: 16px;
 }
 
 .scenario-card h3 {
   color: #002556;
   font-size: 18px;
   margin-top: 0;
+  margin-bottom: 14px;
 }
 
 .scenario-warning {
-  background: rgba(244,67,54,0.1);
+  background: rgba(244,67,54,0.08);
   border-left: 3px solid #f44336;
-  padding: 12px;
-  margin: 15px 0;
+  padding: 12px 14px;
+  margin: 0 0 14px 0;
   border-radius: 4px;
   font-size: 13px;
   color: #c62828;
+  line-height: 1.6;
+}
+
+.scenario-card select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid rgba(0,37,86,0.25);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  background: rgba(255,255,255,0.9);
+  color: #0b1f3a;
+  cursor: pointer;
+}
+
+.scenario-card select:focus {
+  outline: none;
+  border-color: #002556;
+  box-shadow: 0 0 0 3px rgba(0,37,86,0.1);
 }
 
 .input-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 100px;
-  gap: 10px;
-  margin-bottom: 10px;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
   align-items: end;
 }
 
+.input-row.two-col {
+  grid-template-columns: 1fr 1fr;
+}
+
 .add-btn {
-  padding: 8px 16px;
-  background: #002556;
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #002556, #003d82);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
+  margin-top: 4px;
+  transition: all 0.2s;
 }
 
 .add-btn:hover {
-  background: #003d82;
+  background: linear-gradient(135deg, #003d82, #002556);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,37,86,0.25);
 }
 
 .results-section {
@@ -384,9 +414,18 @@ body {
   .input-row {
     grid-template-columns: 1fr;
   }
-  
+
+  .input-row.two-col {
+    grid-template-columns: 1fr;
+  }
+
   .score-comparison {
     grid-template-columns: 1fr;
+  }
+
+  .submitCta-inner {
+    flex-direction: column;
+    text-align: center;
   }
 }
 </style>
@@ -456,7 +495,7 @@ body {
       </div>
       
       <div class="button-group">
-        <button class="btn btn-secondary" onclick="window.location.href='mailto:kristy@paramountrmg.com'">
+        <button class="btn btn-secondary" id="contactLoBtn" onclick="window.location.href='mailto:kristy@paramountrmg.com'">
           📞 Contact <span class="lo-name-dynamic">Your Loan Officer</span> First
         </button>
         <button class="btn btn-primary" id="continueBtn" disabled>
@@ -508,7 +547,7 @@ body {
         <div class="scenario-card">
           <h3>💰 Pay or Remove Collection</h3>
           <div class="scenario-warning">
-            <strong>⚠️ CRITICAL WARNING:</strong> Paying a collection can LOWER your score by restarting the "last activity" date. Collections stay on your report for 7 years from the ORIGINAL delinquency date. Paying does NOT remove it unless negotiated. NEVER pay without consulting Kristy Flach first!
+            <strong>⚠️ CRITICAL WARNING:</strong> Paying a collection can LOWER your score by restarting the "last activity" date. Collections stay on your report for 7 years from the ORIGINAL delinquency date. Paying does NOT remove it unless negotiated. NEVER pay without consulting <span class="lo-name-dynamic">your loan officer</span> first!
           </div>
           <div class="input-row">
             <div class="form-group" style="margin: 0;">
@@ -613,20 +652,20 @@ body {
             These are ESTIMATES only. Your actual score change will depend on many factors not captured by this calculator. Making the wrong move at the wrong time can cost you thousands in higher interest rates or prevent you from qualifying for a home loan.
           </p>
           <p style="margin: 10px 0 0 0; font-weight: 600; color: #e65100;">
-            Schedule a consultation with Kristy Flach to create a personalized credit strategy that maximizes your score safely.
+            Schedule a consultation with <span class="lo-name-dynamic">your loan officer</span> to create a personalized credit strategy that maximizes your score safely.
           </p>
-          <a href="mailto:kristy@paramountrmg.com" class="contact-btn">📞 Schedule Consultation with <span class="lo-name-dynamic">Kristy</span></a>
+          <a href="mailto:kristy@paramountrmg.com" class="contact-btn" id="consultLoBtn">📞 Schedule Consultation with <span class="lo-name-dynamic">Your Loan Officer</span></a>
         </div>
 
-        <!-- SUBMIT FOR CUSTOMIZED PLAN -->
-        <div id="submitCta" style="display:none;margin-top:20px;background:linear-gradient(135deg,rgba(0,37,86,0.06),rgba(0,37,86,0.02));border:2px solid rgba(0,37,86,0.15);border-radius:12px;padding:24px;">
-          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-            <div style="font-size:28px;">✨</div>
+        <!-- SUBMIT FOR CUSTOMIZED PLAN — Always visible -->
+        <div id="submitCta" style="margin-top:24px;background:linear-gradient(135deg,rgba(0,37,86,0.08),rgba(0,37,86,0.03));border:2px solid rgba(0,37,86,0.2);border-radius:12px;padding:24px;">
+          <div class="submitCta-inner" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="font-size:32px;">✨</div>
             <div style="flex:1;min-width:200px;">
-              <div style="font-size:16px;font-weight:700;color:#002556;">Want a Customized Credit Improvement Plan?</div>
-              <div style="font-size:13px;color:#666;margin-top:4px;">Submit your simulation to <span class="lo-name-dynamic">your loan officer</span> for a personalized action plan with prioritized steps and projected improvements.</div>
+              <div style="font-size:17px;font-weight:700;color:#002556;">Ready for a Customized Credit Improvement Plan?</div>
+              <div style="font-size:13px;color:#666;margin-top:4px;">Submit your information to <span class="lo-name-dynamic">your loan officer</span> for a personalized action plan with prioritized steps, projected score improvements, and a realistic timeline.</div>
             </div>
-            <button onclick="openSubmitForm()" style="padding:12px 24px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;">Submit for Plan →</button>
+            <button onclick="openSubmitForm()" style="padding:14px 28px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit for Plan →</button>
           </div>
         </div>
       </div>
@@ -634,19 +673,23 @@ body {
       <!-- SUBMISSION OVERLAY -->
       <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;padding:20px;overflow-y:auto;">
         <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
-          <div onclick="closeSubmitForm()" style="position:absolute;top:16px;right:20px;font-size:20px;cursor:pointer;color:#999;">✕</div>
+          <div onclick="closeSubmitForm()" style="position:absolute;top:16px;right:20px;font-size:20px;cursor:pointer;color:#999;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">✕</div>
           <h3 style="color:#002556;margin:0 0 4px;font-size:20px;">Submit for a Customized Plan</h3>
-          <p style="font-size:13px;color:#666;margin:0 0 20px;"><span class="lo-name-dynamic">Your loan officer</span> will review your simulation and create a personalized credit improvement plan.</p>
+          <p style="font-size:13px;color:#666;margin:0 0 20px;"><span class="lo-name-dynamic">Your loan officer</span> will review your information and create a personalized credit improvement plan with step-by-step instructions.</p>
           <div class="form-group"><label for="submitName">Your Name *</label><input type="text" id="submitName" placeholder="First and last name"></div>
           <div class="form-group"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="your@email.com"></div>
           <div class="form-group"><label for="submitPhone">Phone (optional)</label><input type="tel" id="submitPhone" placeholder="(555) 123-4567"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+            <div class="form-group" style="margin:0;"><label for="submitCurrentScore">Current Credit Score *</label><input type="number" id="submitCurrentScore" placeholder="e.g. 580" min="300" max="850"></div>
+            <div class="form-group" style="margin:0;"><label for="submitGoalScore">What Score Do You Need? *</label><input type="number" id="submitGoalScore" placeholder="e.g. 620" min="300" max="850"></div>
+          </div>
           <div class="form-group"><label for="submitSituation">Describe your credit situation</label><textarea id="submitSituation" rows="3" style="width:100%;padding:12px;border:1px solid rgba(0,37,86,0.25);border-radius:8px;font-family:inherit;font-size:14px;background:rgba(255,255,255,0.9);resize:vertical;" placeholder="e.g. I have two collections from 2022, high credit card balances, a late payment from last year..."></textarea></div>
           <div style="background:rgba(0,37,86,0.04);border-radius:8px;padding:12px;margin-bottom:16px;">
             <div style="font-size:11px;color:#002556;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your Simulation Summary</div>
-            <div id="submitSimSummary" style="font-size:13px;color:#444;line-height:1.6;">No simulations run yet.</div>
+            <div id="submitSimSummary" style="font-size:13px;color:#444;line-height:1.6;">Run a simulation above to see your projected results here, or submit without one.</div>
           </div>
           <div style="font-size:11px;color:#888;line-height:1.6;margin-bottom:16px;">By submitting, you agree that the information you provide is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score. Projected outcomes are estimates based on general FICO scoring principles. For the most accurate plan, we recommend obtaining your official 3-bureau credit report from <a href="https://www.annualcreditreport.com" target="_blank" style="color:#002556;">annualcreditreport.com</a> or authorizing a tri-merge credit pull through your loan officer.</div>
-          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:16px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
+          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:16px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
           <div id="submitResult" style="margin-top:12px;font-size:14px;font-weight:600;text-align:center;"></div>
         </div>
       </div>
@@ -925,9 +968,7 @@ showResults = function(action, impact, details) {
     timestamp: new Date().toISOString()
   });
   
-  // Show submit CTA after first simulation
-  var cta = document.getElementById('submitCta');
-  if (cta) cta.style.display = 'block';
+  // Show submit CTA is always visible now — no toggle needed
   
   // Update summary in form
   updateSimSummary();
@@ -953,6 +994,12 @@ function openSubmitForm() {
   if (warnName && warnName.value) document.getElementById('submitName').value = warnName.value;
   if (warnEmail && warnEmail.value) document.getElementById('submitEmail').value = warnEmail.value;
   
+  // Pre-fill current score from the simulator
+  var currentScore = getCurrentScore();
+  if (currentScore) {
+    document.getElementById('submitCurrentScore').value = currentScore;
+  }
+  
   updateSimSummary();
   document.getElementById('submitOverlay').style.display = 'block';
   document.body.style.overflow = 'hidden';
@@ -968,12 +1015,26 @@ async function submitForPlan() {
   var email = document.getElementById('submitEmail').value.trim();
   var phone = document.getElementById('submitPhone').value.trim();
   var situation = document.getElementById('submitSituation').value.trim();
+  var currentScore = parseInt(document.getElementById('submitCurrentScore').value) || 0;
+  var goalScore = parseInt(document.getElementById('submitGoalScore').value) || 0;
   var result = document.getElementById('submitResult');
   var btn = document.getElementById('submitPlanBtn');
   
   if (!name || !email) {
     result.style.color = '#c62828';
     result.textContent = 'Name and email are required.';
+    return;
+  }
+
+  if (!currentScore || currentScore < 300 || currentScore > 850) {
+    result.style.color = '#c62828';
+    result.textContent = 'Please enter a valid current credit score (300-850).';
+    return;
+  }
+
+  if (!goalScore || goalScore < 300 || goalScore > 850) {
+    result.style.color = '#c62828';
+    result.textContent = 'Please enter the score you need to reach (300-850).';
     return;
   }
   
@@ -997,7 +1058,8 @@ async function submitForPlan() {
         borrower_name: name,
         borrower_email: email,
         borrower_phone: phone,
-        self_reported_score: getCurrentScore(),
+        self_reported_score: currentScore,
+        goal_score: goalScore,
         situation_notes: situation,
         simulations_ran: simulationHistory,
         submitted_by: submittedBy,
@@ -1027,16 +1089,27 @@ async function submitForPlan() {
 (function() {
   var urlParams = new URLSearchParams(window.location.search);
   var loName = urlParams.get('lo_name') || null;
+  var loEmail = urlParams.get('lo_email') || null;
   
   // Also check localStorage for logged-in context
   if (!loName) {
     try { loName = localStorage.getItem('ae_lo_name'); } catch(e) {}
+  }
+  if (!loEmail) {
+    try { loEmail = localStorage.getItem('ae_lo_email'); } catch(e) {}
   }
   
   if (loName) {
     document.querySelectorAll('.lo-name-dynamic').forEach(function(el) {
       el.textContent = loName;
     });
+  }
+  
+  if (loEmail) {
+    var contactBtn = document.getElementById('contactLoBtn');
+    if (contactBtn) contactBtn.onclick = function() { window.location.href = 'mailto:' + loEmail; };
+    var consultBtn = document.getElementById('consultLoBtn');
+    if (consultBtn) consultBtn.href = 'mailto:' + loEmail;
   }
 })();
 </script>
