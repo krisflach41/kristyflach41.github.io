@@ -425,7 +425,7 @@ body {
           This simulator provides ESTIMATES based on general credit scoring principles. Actual results will vary significantly based on your complete credit profile, which includes factors this calculator cannot account for.
         </p>
         
-        <strong style="color: #b71c1c; font-size: 18px;">YOU MUST CONSULT WITH KRISTY FLACH BEFORE MAKING ANY CREDIT CHANGES</strong>
+        <strong style="color: #b71c1c; font-size: 18px;">YOU MUST CONSULT WITH <span class="lo-name-dynamic">YOUR LOAN OFFICER</span> BEFORE MAKING ANY CREDIT CHANGES</strong>
       </div>
       
       <div class="form-group">
@@ -446,9 +446,9 @@ body {
             <ol style="margin: 10px 0; padding-left: 20px;">
               <li>This calculator provides ESTIMATES ONLY and actual credit score changes may differ significantly</li>
               <li>Some credit actions (including paying collections) can LOWER my score</li>
-              <li>I will NOT take any credit actions without first consulting Kristy Flach at Paramount Residential Mortgage Group</li>
+              <li>I will NOT take any credit actions without first consulting <span class="lo-name-dynamic">my loan officer</span> at Paramount Residential Mortgage Group</li>
               <li>I understand this tool is for educational planning purposes only</li>
-              <li>Kristy Flach and Paramount Residential Mortgage Group are not liable for any credit decisions I make without their consultation</li>
+              <li><span class="lo-name-dynamic">Your loan officer</span> and Paramount Residential Mortgage Group are not liable for any credit decisions I make without their consultation</li>
               <li>My usage of this tool (including my name, email, IP address, and scenarios simulated) will be logged for legal protection purposes</li>
             </ol>
           </span>
@@ -457,10 +457,10 @@ body {
       
       <div class="button-group">
         <button class="btn btn-secondary" onclick="window.location.href='mailto:kristy@paramountrmg.com'">
-          📞 Contact Kristy First
+          📞 Contact <span class="lo-name-dynamic">Your Loan Officer</span> First
         </button>
         <button class="btn btn-primary" id="continueBtn" disabled>
-          I Understand - Continue to Calculator
+          I Understand - Continue to Simulator
         </button>
       </div>
     </div>
@@ -615,7 +615,39 @@ body {
           <p style="margin: 10px 0 0 0; font-weight: 600; color: #e65100;">
             Schedule a consultation with Kristy Flach to create a personalized credit strategy that maximizes your score safely.
           </p>
-          <a href="mailto:kristy@paramountrmg.com" class="contact-btn">📞 Schedule Consultation with Kristy</a>
+          <a href="mailto:kristy@paramountrmg.com" class="contact-btn">📞 Schedule Consultation with <span class="lo-name-dynamic">Kristy</span></a>
+        </div>
+
+        <!-- SUBMIT FOR CUSTOMIZED PLAN -->
+        <div id="submitCta" style="display:none;margin-top:20px;background:linear-gradient(135deg,rgba(0,37,86,0.06),rgba(0,37,86,0.02));border:2px solid rgba(0,37,86,0.15);border-radius:12px;padding:24px;">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div style="font-size:28px;">✨</div>
+            <div style="flex:1;min-width:200px;">
+              <div style="font-size:16px;font-weight:700;color:#002556;">Want a Customized Credit Improvement Plan?</div>
+              <div style="font-size:13px;color:#666;margin-top:4px;">Submit your simulation to <span class="lo-name-dynamic">your loan officer</span> for a personalized action plan with prioritized steps and projected improvements.</div>
+            </div>
+            <button onclick="openSubmitForm()" style="padding:12px 24px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;white-space:nowrap;">Submit for Plan →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUBMISSION OVERLAY -->
+      <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;padding:20px;overflow-y:auto;">
+        <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
+          <div onclick="closeSubmitForm()" style="position:absolute;top:16px;right:20px;font-size:20px;cursor:pointer;color:#999;">✕</div>
+          <h3 style="color:#002556;margin:0 0 4px;font-size:20px;">Submit for a Customized Plan</h3>
+          <p style="font-size:13px;color:#666;margin:0 0 20px;"><span class="lo-name-dynamic">Your loan officer</span> will review your simulation and create a personalized credit improvement plan.</p>
+          <div class="form-group"><label for="submitName">Your Name *</label><input type="text" id="submitName" placeholder="First and last name"></div>
+          <div class="form-group"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="your@email.com"></div>
+          <div class="form-group"><label for="submitPhone">Phone (optional)</label><input type="tel" id="submitPhone" placeholder="(555) 123-4567"></div>
+          <div class="form-group"><label for="submitSituation">Describe your credit situation</label><textarea id="submitSituation" rows="3" style="width:100%;padding:12px;border:1px solid rgba(0,37,86,0.25);border-radius:8px;font-family:inherit;font-size:14px;background:rgba(255,255,255,0.9);resize:vertical;" placeholder="e.g. I have two collections from 2022, high credit card balances, a late payment from last year..."></textarea></div>
+          <div style="background:rgba(0,37,86,0.04);border-radius:8px;padding:12px;margin-bottom:16px;">
+            <div style="font-size:11px;color:#002556;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your Simulation Summary</div>
+            <div id="submitSimSummary" style="font-size:13px;color:#444;line-height:1.6;">No simulations run yet.</div>
+          </div>
+          <div style="font-size:11px;color:#888;line-height:1.6;margin-bottom:16px;">By submitting, you agree that the information you provide is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score. Projected outcomes are estimates based on general FICO scoring principles. For the most accurate plan, we recommend obtaining your official 3-bureau credit report from <a href="https://www.annualcreditreport.com" target="_blank" style="color:#002556;">annualcreditreport.com</a> or authorizing a tri-merge credit pull through your loan officer.</div>
+          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:16px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
+          <div id="submitResult" style="margin-top:12px;font-size:14px;font-weight:600;text-align:center;"></div>
         </div>
       </div>
       
@@ -874,6 +906,139 @@ function simulateCloseAccount() {
     `Closing a ${age}-year-old account with $${limit} limit will likely HURT your score by increasing overall utilization and reducing average account age. This is rarely recommended! Keep unused accounts open instead.`
   );
 }
+
+// ===== SIMULATION TRACKING FOR SUBMISSION =====
+var simulationHistory = [];
+
+// Override showResults to also track simulations and show submit CTA
+var originalShowResults = showResults;
+showResults = function(action, impact, details) {
+  originalShowResults(action, impact, details);
+  
+  var current = getCurrentScore();
+  simulationHistory.push({
+    action: action,
+    currentScore: current,
+    projectedMin: Math.max(300, Math.min(850, current + impact.min)),
+    projectedMax: Math.max(300, Math.min(850, current + impact.max)),
+    details: details,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Show submit CTA after first simulation
+  var cta = document.getElementById('submitCta');
+  if (cta) cta.style.display = 'block';
+  
+  // Update summary in form
+  updateSimSummary();
+};
+
+function updateSimSummary() {
+  var el = document.getElementById('submitSimSummary');
+  if (!el || simulationHistory.length === 0) return;
+  
+  var html = '<strong>Score entered:</strong> ' + simulationHistory[0].currentScore + '<br>';
+  html += '<strong>Simulations run:</strong><br>';
+  simulationHistory.forEach(function(sim) {
+    var arrow = sim.projectedMin > sim.currentScore ? '↑' : '↓';
+    html += '• ' + sim.action + ' → ' + sim.projectedMin + '-' + sim.projectedMax + ' (' + arrow + ')<br>';
+  });
+  el.innerHTML = html;
+}
+
+function openSubmitForm() {
+  // Pre-fill name and email from the warning screen inputs
+  var warnName = document.getElementById('userName');
+  var warnEmail = document.getElementById('userEmail');
+  if (warnName && warnName.value) document.getElementById('submitName').value = warnName.value;
+  if (warnEmail && warnEmail.value) document.getElementById('submitEmail').value = warnEmail.value;
+  
+  updateSimSummary();
+  document.getElementById('submitOverlay').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeSubmitForm() {
+  document.getElementById('submitOverlay').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+async function submitForPlan() {
+  var name = document.getElementById('submitName').value.trim();
+  var email = document.getElementById('submitEmail').value.trim();
+  var phone = document.getElementById('submitPhone').value.trim();
+  var situation = document.getElementById('submitSituation').value.trim();
+  var result = document.getElementById('submitResult');
+  var btn = document.getElementById('submitPlanBtn');
+  
+  if (!name || !email) {
+    result.style.color = '#c62828';
+    result.textContent = 'Name and email are required.';
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+  result.style.color = '#666';
+  result.textContent = '';
+  
+  // Detect if submitted from realtor portal
+  var urlParams = new URLSearchParams(window.location.search);
+  var realtorId = urlParams.get('realtor_id') || null;
+  var realtorName = urlParams.get('realtor_name') || null;
+  var submittedBy = realtorId ? 'realtor' : 'direct';
+  
+  try {
+    var resp = await fetch('https://agent-edge-backend.vercel.app/api/credit-submission', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'submit',
+        borrower_name: name,
+        borrower_email: email,
+        borrower_phone: phone,
+        self_reported_score: getCurrentScore(),
+        situation_notes: situation,
+        simulations_ran: simulationHistory,
+        submitted_by: submittedBy,
+        realtor_id: realtorId,
+        realtor_name: realtorName
+      })
+    });
+    
+    var data = await resp.json();
+    if (data.success) {
+      result.style.color = '#2e7d32';
+      result.innerHTML = '✅ Submitted! <span class="lo-name-dynamic">Your loan officer</span> will review your simulation and reach out with a customized plan.';
+      btn.textContent = 'Submitted!';
+      btn.style.background = '#2e7d32';
+    } else {
+      throw new Error(data.message || 'Submission failed');
+    }
+  } catch (err) {
+    result.style.color = '#c62828';
+    result.textContent = 'Error: ' + err.message;
+    btn.disabled = false;
+    btn.innerHTML = 'Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan';
+  }
+}
+
+// ===== DYNAMIC LO NAME =====
+(function() {
+  var urlParams = new URLSearchParams(window.location.search);
+  var loName = urlParams.get('lo_name') || null;
+  
+  // Also check localStorage for logged-in context
+  if (!loName) {
+    try { loName = localStorage.getItem('ae_lo_name'); } catch(e) {}
+  }
+  
+  if (loName) {
+    document.querySelectorAll('.lo-name-dynamic').forEach(function(el) {
+      el.textContent = loName;
+    });
+  }
+})();
 </script>
 
 </body>
