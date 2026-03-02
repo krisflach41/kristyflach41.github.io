@@ -672,25 +672,27 @@ body {
 
       <!-- SUBMISSION OVERLAY -->
       <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;">
-        <div style="max-width:520px;margin:20px auto;background:#fff;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
-          <div onclick="closeSubmitForm()" style="position:absolute;top:16px;right:20px;font-size:20px;cursor:pointer;color:#999;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">✕</div>
-          <h3 style="color:#002556;margin:0 0 4px;font-size:20px;">Submit for a Customized Plan</h3>
-          <p style="font-size:13px;color:#666;margin:0 0 20px;"><span class="lo-name-dynamic">Your loan officer</span> will review your information and create a personalized credit improvement plan with step-by-step instructions.</p>
-          <div class="form-group"><label for="submitName">Your Name *</label><input type="text" id="submitName" placeholder="First and last name"></div>
-          <div class="form-group"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="your@email.com"></div>
-          <div class="form-group"><label for="submitPhone">Phone (optional)</label><input type="tel" id="submitPhone" placeholder="(555) 123-4567"></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
-            <div class="form-group" style="margin:0;"><label for="submitCurrentScore">Current Credit Score *</label><input type="number" id="submitCurrentScore" placeholder="e.g. 580" min="300" max="850"></div>
-            <div class="form-group" style="margin:0;"><label for="submitGoalScore">What Score Do You Need? *</label><input type="number" id="submitGoalScore" placeholder="e.g. 620" min="300" max="850"></div>
+        <div style="max-width:500px;margin:10px auto;background:#fff;border-radius:16px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
+          <div onclick="closeSubmitForm()" style="position:absolute;top:12px;right:16px;font-size:20px;cursor:pointer;color:#999;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">✕</div>
+          <h3 style="color:#002556;margin:0 0 2px;font-size:18px;">Submit for a Customized Plan</h3>
+          <p style="font-size:12px;color:#666;margin:0 0 14px;">Your loan officer will review your information and create a personalized credit improvement plan.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="form-group" style="margin:0;"><label for="submitName">Your Name *</label><input type="text" id="submitName" placeholder="First and last name"></div>
+            <div class="form-group" style="margin:0;"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="your@email.com"></div>
           </div>
-          <div class="form-group"><label for="submitSituation">Describe your credit situation</label><textarea id="submitSituation" rows="3" style="width:100%;padding:12px;border:1px solid rgba(0,37,86,0.25);border-radius:8px;font-family:inherit;font-size:14px;background:rgba(255,255,255,0.9);resize:vertical;" placeholder="e.g. I have two collections from 2022, high credit card balances, a late payment from last year..."></textarea></div>
-          <div style="background:rgba(0,37,86,0.04);border-radius:8px;padding:12px;margin-bottom:16px;">
-            <div style="font-size:11px;color:#002556;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Your Simulation Summary</div>
-            <div id="submitSimSummary" style="font-size:13px;color:#444;line-height:1.6;">Run a simulation above to see your projected results here, or submit without one.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+            <div class="form-group" style="margin:0;"><label for="submitPhone">Phone</label><input type="tel" id="submitPhone" placeholder="(555) 123-4567"></div>
+            <div class="form-group" style="margin:0;"><label for="submitCurrentScore">Current Score *</label><input type="number" id="submitCurrentScore" placeholder="580" min="300" max="850"></div>
+            <div class="form-group" style="margin:0;"><label for="submitGoalScore">Goal Score *</label><input type="number" id="submitGoalScore" placeholder="620" min="300" max="850"></div>
           </div>
-          <div style="font-size:11px;color:#888;line-height:1.6;margin-bottom:16px;">By submitting, you agree that the information you provide is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score. Projected outcomes are estimates based on general FICO scoring principles. For the most accurate plan, we recommend obtaining your official 3-bureau credit report from <a href="https://www.annualcreditreport.com" target="_blank" style="color:#002556;">annualcreditreport.com</a> or authorizing a tri-merge credit pull through your loan officer.</div>
-          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:16px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
-          <div id="submitResult" style="margin-top:12px;font-size:14px;font-weight:600;text-align:center;"></div>
+          <div class="form-group" style="margin-bottom:10px;"><label for="submitSituation">Describe your credit situation</label><textarea id="submitSituation" rows="2" style="width:100%;padding:10px;border:1px solid rgba(0,37,86,0.25);border-radius:8px;font-family:inherit;font-size:13px;background:rgba(255,255,255,0.9);resize:vertical;" placeholder="e.g. I have two collections from 2022, high credit card balances..."></textarea></div>
+          <div id="simSummaryWrap" style="background:rgba(0,37,86,0.04);border-radius:8px;padding:10px;margin-bottom:10px;">
+            <div style="font-size:10px;color:#002556;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Your Simulation Summary</div>
+            <div id="submitSimSummary" style="font-size:12px;color:#444;line-height:1.5;">Run a simulation above to see your projected results here, or submit without one.</div>
+          </div>
+          <div style="font-size:10px;color:#999;line-height:1.5;margin-bottom:12px;">By submitting, you agree that the information you provide is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score.</div>
+          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
+          <div id="submitResult" style="margin-top:8px;font-size:13px;font-weight:600;text-align:center;"></div>
         </div>
       </div>
       
