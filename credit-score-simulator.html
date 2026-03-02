@@ -671,8 +671,8 @@ body {
       </div>
 
       <!-- SUBMISSION OVERLAY -->
-      <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;padding:20px;overflow-y:auto;">
-        <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
+      <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;">
+        <div style="max-width:520px;margin:20px auto;background:#fff;border-radius:16px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
           <div onclick="closeSubmitForm()" style="position:absolute;top:16px;right:20px;font-size:20px;cursor:pointer;color:#999;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">✕</div>
           <h3 style="color:#002556;margin:0 0 4px;font-size:20px;">Submit for a Customized Plan</h3>
           <p style="font-size:13px;color:#666;margin:0 0 20px;"><span class="lo-name-dynamic">Your loan officer</span> will review your information and create a personalized credit improvement plan with step-by-step instructions.</p>
@@ -1002,7 +1002,11 @@ function openSubmitForm() {
   
   updateSimSummary();
   document.getElementById('submitOverlay').style.display = 'block';
+  document.getElementById('submitOverlay').scrollTop = 0;
   document.body.style.overflow = 'hidden';
+  
+  // Scroll to top of page to ensure overlay is visible (critical for iframes)
+  window.scrollTo(0, 0);
 }
 
 function closeSubmitForm() {
