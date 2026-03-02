@@ -961,17 +961,760 @@ function showToast(msg) {
   setTimeout(function() { t.classList.remove('show'); }, 2500);
 }
 
-// ===== PLACEHOLDER FUNCTIONS (Engine will be added in next chunk) =====
+// ===== FANNIE MAE LLPA MATRIX (Effective 01/28/2026) =====
+// Credit Score tiers vs LTV ranges — values are pricing adjustments in %
+// Used for score threshold analysis to show rate/payment impact
+var llpaMatrix = {
+  // [LTV <=60, 60.01-70, 70.01-75, 75.01-80, 80.01-85, 85.01-90, 90.01-95, 95.01-97]
+  '780+':    [0.000, 0.125, 0.125, 0.250, 0.250, 0.250, 0.250, 0.500],
+  '760-779': [0.000, 0.125, 0.250, 0.375, 0.375, 0.250, 0.250, 0.500],
+  '740-759': [0.000, 0.250, 0.250, 0.500, 0.250, 0.250, 0.250, 0.750],
+  '720-739': [0.000, 0.250, 0.500, 0.750, 0.500, 0.500, 0.500, 1.000],
+  '700-719': [0.000, 0.500, 1.000, 1.250, 1.000, 1.000, 1.000, 1.500],
+  '680-699': [0.000, 0.500, 1.250, 1.750, 1.500, 1.250, 1.250, 1.500],
+  '660-679': [0.000, 1.000, 2.250, 2.750, 2.750, 2.250, 2.250, 2.250],
+  '640-659': [0.500, 1.250, 2.750, 3.000, 3.250, 2.750, 2.750, 2.750],
+  '620-639': [0.500, 1.500, 3.000, 3.000, 3.250, 3.250, 3.250, 3.500],
+  '<620':    [0.500, 1.500, 3.000, 3.000, 3.250, 3.250, 3.250, 3.750]
+};
+
+// FICO tiers in order
+var ficoTiers = [
+  { label: '780+', min: 780, max: 850 },
+  { label: '760-779', min: 760, max: 779 },
+  { label: '740-759', min: 740, max: 759 },
+  { label: '720-739', min: 720, max: 739 },
+  { label: '700-719', min: 700, max: 719 },
+  { label: '680-699', min: 680, max: 699 },
+  { label: '660-679', min: 660, max: 679 },
+  { label: '640-659', min: 640, max: 659 },
+  { label: '620-639', min: 620, max: 639 },
+  { label: '<620', min: 300, max: 619 }
+];
+
+function getTier(score) {
+  for (var i = 0; i < ficoTiers.length; i++) {
+    if (score >= ficoTiers[i].min && score <= ficoTiers[i].max) return ficoTiers[i];
+  }
+  return ficoTiers[ficoTiers.length - 1];
+}
+
+function getNextTier(score) {
+  var current = getTier(score);
+  var idx = ficoTiers.indexOf(current);
+  if (idx <= 0) return null; // already at top
+  return ficoTiers[idx - 1];
+}
+
+// LLPA to rate conversion: ~4:1 ratio (0.50% LLPA ≈ 0.125% rate)
+function llpaToRate(llpa) {
+  return llpa / 4;
+}
+
+// ===== SCORING ENGINE =====
+// Generates all possible actions from tradeline data
+function analyzetradelines() {
+  var actions = [];
+  var score = parseInt(document.getElementById('borrowerScore').value) || 620;
+
+  // Overall utilization data
+  var totalRevBal = 0;
+  var totalRevLimit = 0;
+  tradelines.forEach(function(tl) {
+    if (isRevolving(tl.type) && tl.limit > 0) {
+      totalRevBal += tl.balance || 0;
+      totalRevLimit += tl.limit || 0;
+    }
+  });
+  var overallUtil = totalRevLimit > 0 ? (totalRevBal / totalRevLimit) * 100 : 0;
+
+  // Find oldest account for anchor protection
+  var oldestAgeMonths = 0;
+  var oldestTL = null;
+  tradelines.forEach(function(tl) {
+    var age = getAgeMonths(tl.dateOpened);
+    if (age > oldestAgeMonths) {
+      oldestAgeMonths = age;
+      oldestTL = tl;
+    }
+  });
+
+  // Average account age
+  var totalAge = 0;
+  var ageCount = 0;
+  tradelines.forEach(function(tl) {
+    var age = getAgeMonths(tl.dateOpened);
+    if (age > 0) { totalAge += age; ageCount++; }
+  });
+  var avgAgeMonths = ageCount > 0 ? totalAge / ageCount : 0;
+
+  tradelines.forEach(function(tl) {
+    var acctAge = getAgeMonths(tl.dateOpened);
+    var isOldest = (tl === oldestTL && oldestAgeMonths > 24);
+
+    // ===== UTILIZATION ACTIONS (Revolving accounts) =====
+    if (isRevolving(tl.type) && tl.limit > 0 && tl.balance > 0 && tl.status === 'current') {
+      var currentUtil = (tl.balance / tl.limit) * 100;
+
+      if (currentUtil > 30) {
+        // Pay down to 30%
+        var target30 = Math.round(tl.limit * 0.30);
+        var cost30 = tl.balance - target30;
+        var minPts30, maxPts30;
+        if (currentUtil > 70) { minPts30 = 15; maxPts30 = 35; }
+        else if (currentUtil > 50) { minPts30 = 10; maxPts30 = 25; }
+        else { minPts30 = 5; maxPts30 = 15; }
+
+        actions.push({
+          id: 'util30_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'utilization',
+          title: 'Pay ' + (tl.name || 'revolving account') + ' down to 30% utilization',
+          detail: 'Reduce balance from $' + numberWithCommas(tl.balance) + ' to $' + numberWithCommas(target30) + ' (currently ' + Math.round(currentUtil) + '% utilized)',
+          minPoints: minPts30,
+          maxPoints: maxPts30,
+          cost: cost30,
+          timeline: 'Immediate upon reporting',
+          timelineDays: 30,
+          isFree: false,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+      }
+
+      if (currentUtil > 10) {
+        // Pay down to under 10% (optimal)
+        var target10 = Math.round(tl.limit * 0.09);
+        var cost10 = tl.balance - target10;
+        var minPts10, maxPts10;
+        if (currentUtil > 70) { minPts10 = 25; maxPts10 = 55; }
+        else if (currentUtil > 50) { minPts10 = 20; maxPts10 = 40; }
+        else if (currentUtil > 30) { minPts10 = 10; maxPts10 = 25; }
+        else { minPts10 = 5; maxPts10 = 15; }
+
+        actions.push({
+          id: 'util10_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'utilization',
+          title: 'Pay ' + (tl.name || 'revolving account') + ' down to under 10% utilization',
+          detail: 'Reduce balance from $' + numberWithCommas(tl.balance) + ' to $' + numberWithCommas(target10) + ' (optimal range for FICO scoring)',
+          minPoints: minPts10,
+          maxPoints: maxPts10,
+          cost: cost10,
+          timeline: 'Immediate upon reporting',
+          timelineDays: 30,
+          isFree: false,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+      }
+    }
+
+    // ===== LATE PAYMENT ACTIONS =====
+    if (tl.status === '30_late') {
+      actions.push({
+        id: 'late30_' + tl.id,
+        tradelineId: tl.id,
+        tradelineName: tl.name || tl.type,
+        type: 'payment_history',
+        title: 'Request goodwill removal of 30-day late on ' + (tl.name || 'account'),
+        detail: 'Write a goodwill letter to the creditor requesting removal of the late payment mark. Most effective if you have a long positive history with the creditor and this was an isolated incident.',
+        minPoints: 10,
+        maxPoints: 25,
+        cost: 0,
+        timeline: '30-60 days if creditor agrees',
+        timelineDays: 45,
+        isFree: true,
+        isSleepingBear: false,
+        isNearDropOff: false,
+        isAnchor: false,
+        warningText: ''
+      });
+    }
+
+    if (tl.status === '60_late') {
+      actions.push({
+        id: 'late60_' + tl.id,
+        tradelineId: tl.id,
+        tradelineName: tl.name || tl.type,
+        type: 'payment_history',
+        title: 'Dispute or request goodwill removal of 60-day late on ' + (tl.name || 'account'),
+        detail: 'A 60-day late is more damaging than 30-day. If it was reported inaccurately, dispute with the bureaus. If accurate, try a goodwill letter to the creditor.',
+        minPoints: 20,
+        maxPoints: 50,
+        cost: 0,
+        timeline: '30-90 days',
+        timelineDays: 60,
+        isFree: true,
+        isSleepingBear: false,
+        isNearDropOff: false,
+        isAnchor: false,
+        warningText: ''
+      });
+    }
+
+    if (tl.status === '90_late') {
+      actions.push({
+        id: 'late90_' + tl.id,
+        tradelineId: tl.id,
+        tradelineName: tl.name || tl.type,
+        type: 'payment_history',
+        title: 'Dispute 90+ day late on ' + (tl.name || 'account'),
+        detail: '90+ day late payments are the most damaging single-account derogatories. Dispute inaccuracies with all three bureaus. If accurate, negotiate with creditor for removal in exchange for payment.',
+        minPoints: 30,
+        maxPoints: 75,
+        cost: 0,
+        timeline: '30-90 days',
+        timelineDays: 60,
+        isFree: true,
+        isSleepingBear: false,
+        isNearDropOff: false,
+        isAnchor: false,
+        warningText: ''
+      });
+    }
+
+    // ===== COLLECTION ACTIONS =====
+    if (tl.status === 'collection_original' || tl.status === 'collection_sold') {
+      var isThirdParty = tl.status === 'collection_sold';
+      var dropMonths = tl.monthsToDropOff;
+      var isBear = tl.isSleepingBear;
+      var isNearDrop = tl.nearDropOff;
+      var collBalance = tl.balance || 0;
+
+      // Determine recommendation based on dormancy and drop-off
+      if (isNearDrop && dropMonths !== null && dropMonths <= 12) {
+        // Within 12 months of falling off — DO NOT TOUCH
+        actions.push({
+          id: 'coll_wait_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'collection',
+          title: 'DO NOT CONTACT — ' + (tl.name || 'Collection') + ' drops off in ' + dropMonths + ' months',
+          detail: 'This collection is within ' + dropMonths + ' months of the 7-year reporting window. Any contact or payment could reset the date of last activity and restart the damage. Let it age off naturally.',
+          minPoints: 0,
+          maxPoints: 0,
+          cost: 0,
+          timeline: dropMonths + ' months to auto-removal',
+          timelineDays: dropMonths * 30,
+          isFree: true,
+          isSleepingBear: isBear,
+          isNearDropOff: true,
+          isAnchor: false,
+          warningText: '⚠️ NEAR DROP-OFF: ' + dropMonths + ' months until this falls off your report. Do NOT contact the creditor.'
+        });
+      } else if (isBear) {
+        // Dormant but not near drop-off — pay-for-delete only
+        actions.push({
+          id: 'coll_pfd_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'collection',
+          title: 'Pay-for-Delete ONLY — ' + (tl.name || 'Collection') + ' (dormant)',
+          detail: 'This collection has been inactive for 2+ years. Making a payment or even calling can reset the date of last activity and make FICO treat it as a NEW derogatory. Only proceed with a written pay-for-delete agreement where the creditor agrees to REMOVE the tradeline entirely from all three bureaus.',
+          minPoints: 15,
+          maxPoints: 45,
+          cost: collBalance,
+          timeline: '60-90 days after agreement',
+          timelineDays: 75,
+          isFree: false,
+          isSleepingBear: true,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: '🐻 SLEEPING BEAR: Dormant 2+ years. Do NOT call or make partial payments. Pay-for-delete with written agreement only.'
+        });
+      } else {
+        // Active collection — dispute first, then pay-for-delete
+        actions.push({
+          id: 'coll_dispute_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'collection',
+          title: 'Dispute ' + (tl.name || 'Collection') + ' with all three bureaus',
+          detail: 'Request validation of the debt. The collector must prove the debt is yours, the amount is correct, and they have the right to collect. If they cannot validate within 30 days, the item must be removed.' + (isThirdParty ? ' Third-party collections have higher dispute success rates.' : ''),
+          minPoints: 15,
+          maxPoints: 45,
+          cost: 0,
+          timeline: '30-45 days for bureau investigation',
+          timelineDays: 38,
+          isFree: true,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+
+        if (collBalance > 0) {
+          actions.push({
+            id: 'coll_pfd2_' + tl.id,
+            tradelineId: tl.id,
+            tradelineName: tl.name || tl.type,
+            type: 'collection',
+            title: 'Negotiate pay-for-delete on ' + (tl.name || 'Collection'),
+            detail: 'If dispute does not succeed, negotiate a pay-for-delete agreement. Get the agreement IN WRITING before making any payment. The creditor must agree to remove the tradeline from all three bureaus upon payment. ' + (isThirdParty ? 'Third-party agencies are often more willing to negotiate.' : 'Original creditors may be less flexible but are worth trying.'),
+            minPoints: 15,
+            maxPoints: 40,
+            cost: Math.round(collBalance * 0.5), // Estimate negotiated at 50%
+            timeline: '60-90 days after agreement',
+            timelineDays: 75,
+            isFree: false,
+            isSleepingBear: false,
+            isNearDropOff: false,
+            isAnchor: false,
+            warningText: 'Cost shown is estimated at 50% settlement. Actual negotiated amount may vary.'
+          });
+        }
+      }
+    }
+
+    // ===== MEDICAL COLLECTION ACTIONS =====
+    if (tl.status === 'medical_collection') {
+      var medBalance = tl.balance || 0;
+      if (medBalance > 0 && medBalance <= 500) {
+        actions.push({
+          id: 'med_pay_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || 'Medical Collection',
+          type: 'collection',
+          title: 'Pay ' + (tl.name || 'Medical Collection') + ' — auto-removes under $500',
+          detail: 'All three credit bureaus agreed to remove paid medical collections under $500. Paying this balance should result in automatic removal from your report, which is significantly better than a paid collection remaining.',
+          minPoints: 15,
+          maxPoints: 40,
+          cost: medBalance,
+          timeline: '30-60 days after payment reports',
+          timelineDays: 45,
+          isFree: false,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+      } else if (medBalance > 500) {
+        actions.push({
+          id: 'med_dispute_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || 'Medical Collection',
+          type: 'collection',
+          title: 'Dispute ' + (tl.name || 'Medical Collection') + ' with all three bureaus',
+          detail: 'Medical debt disputes have high success rates. Request validation — verify the amount, that insurance was properly billed, and the debt is actually yours. Medical billing errors are extremely common.',
+          minPoints: 15,
+          maxPoints: 45,
+          cost: 0,
+          timeline: '30-45 days',
+          timelineDays: 38,
+          isFree: true,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+      }
+    }
+
+    // ===== CHARGE-OFF ACTIONS =====
+    if (tl.status === 'chargeoff_balance') {
+      var coBalance = tl.balance || 0;
+      var coBear = tl.isSleepingBear;
+      var coNearDrop = tl.nearDropOff;
+      var coDropMonths = tl.monthsToDropOff;
+
+      if (coNearDrop && coDropMonths !== null && coDropMonths <= 12) {
+        actions.push({
+          id: 'co_wait_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'chargeoff',
+          title: 'DO NOT CONTACT — ' + (tl.name || 'Charge-Off') + ' drops off in ' + coDropMonths + ' months',
+          detail: 'This charge-off is near the end of its 7-year reporting window. Let it age off. Any payment or contact could restart activity dating.',
+          minPoints: 0,
+          maxPoints: 0,
+          cost: 0,
+          timeline: coDropMonths + ' months to auto-removal',
+          timelineDays: coDropMonths * 30,
+          isFree: true,
+          isSleepingBear: coBear,
+          isNearDropOff: true,
+          isAnchor: false,
+          warningText: '⚠️ NEAR DROP-OFF: ' + coDropMonths + ' months until removal. Do NOT contact.'
+        });
+      } else if (coBear) {
+        actions.push({
+          id: 'co_pfd_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'chargeoff',
+          title: 'Goodwill letter to ' + (tl.name || 'creditor') + ' for charge-off removal',
+          detail: 'This charge-off is dormant. Original creditors sometimes agree to remove charge-offs as a goodwill gesture after full payment, especially if you had a long history with them. Get any agreement in writing first. Do NOT simply pay without an agreement — a paid charge-off still damages your score.',
+          minPoints: 15,
+          maxPoints: 40,
+          cost: coBalance,
+          timeline: '60-90 days',
+          timelineDays: 75,
+          isFree: false,
+          isSleepingBear: true,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: '🐻 SLEEPING BEAR: Dormant charge-off. Get removal agreement in writing before paying.'
+        });
+      } else {
+        // Active charge-off with balance — reporting utilization damage
+        actions.push({
+          id: 'co_settle_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || tl.type,
+          type: 'chargeoff',
+          title: 'Negotiate settlement with removal for ' + (tl.name || 'Charge-Off'),
+          detail: 'A charge-off with a balance is double damage — derogatory status AND the balance may affect utilization on some scoring models. Negotiate to pay a settled amount in exchange for complete removal from all three bureaus.',
+          minPoints: 15,
+          maxPoints: 45,
+          cost: Math.round(coBalance * 0.4), // Charge-offs often settle lower
+          timeline: '60-90 days',
+          timelineDays: 75,
+          isFree: false,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: 'Cost shown estimated at 40% settlement. Do not pay without written removal agreement.'
+        });
+      }
+    }
+
+    if (tl.status === 'chargeoff_zero') {
+      actions.push({
+        id: 'co0_goodwill_' + tl.id,
+        tradelineId: tl.id,
+        tradelineName: tl.name || tl.type,
+        type: 'chargeoff',
+        title: 'Goodwill letter requesting removal of $0 charge-off on ' + (tl.name || 'account'),
+        detail: 'The balance is already $0 so there is nothing to pay. Write a goodwill letter to the original creditor asking them to remove the charge-off notation. Since the debt is satisfied, creditors are sometimes willing to do this.',
+        minPoints: 10,
+        maxPoints: 30,
+        cost: 0,
+        timeline: '30-60 days',
+        timelineDays: 45,
+        isFree: true,
+        isSleepingBear: false,
+        isNearDropOff: false,
+        isAnchor: false,
+        warningText: ''
+      });
+    }
+
+    // ===== BANKRUPTCY =====
+    if (tl.status === 'included_bk') {
+      var bkDropMonths = tl.monthsToDropOff;
+      var bkMsg = '';
+      if (bkDropMonths !== null && bkDropMonths > 0) {
+        bkMsg = 'This item drops off your report in approximately ' + bkDropMonths + ' months. ';
+      }
+      actions.push({
+        id: 'bk_info_' + tl.id,
+        tradelineId: tl.id,
+        tradelineName: tl.name || 'Bankruptcy Item',
+        type: 'bankruptcy',
+        title: 'Bankruptcy item — ' + (tl.name || 'account') + ' — focus on other tradelines',
+        detail: bkMsg + 'Bankruptcy records cannot be removed unless there is a legitimate error (wrong filing date, not yours, already past reporting window). Chapter 7 reports for 10 years, Chapter 13 for 7 years from filing date. Focus your efforts on building positive credit history with other tradelines.',
+        minPoints: 0,
+        maxPoints: 0,
+        cost: 0,
+        timeline: bkDropMonths && bkDropMonths > 0 ? bkDropMonths + ' months to auto-removal' : 'Verify reporting window',
+        timelineDays: bkDropMonths ? bkDropMonths * 30 : 0,
+        isFree: true,
+        isSleepingBear: false,
+        isNearDropOff: false,
+        isAnchor: false,
+        warningText: ''
+      });
+    }
+
+    // ===== AUTHORIZED USER =====
+    if (tl.status === 'authorized_user' && acctAge > 0) {
+      // This is already an AU — note it for the engine but no action needed
+    }
+  });
+
+  // ===== AUTHORIZED USER STRATEGY (if thin file or low avg age) =====
+  if (avgAgeMonths < 36 || ageCount < 3) {
+    actions.push({
+      id: 'au_strategy',
+      tradelineId: null,
+      tradelineName: 'New Strategy',
+      type: 'authorized_user',
+      title: 'Add as authorized user on a family member\'s established credit card',
+      detail: 'Average account age is only ' + Math.floor(avgAgeMonths / 12) + ' years ' + (avgAgeMonths % 12) + ' months with ' + ageCount + ' accounts. Being added as an authorized user on a family member\'s old, low-utilization credit card (ideally 5+ years old with perfect payment history) can significantly boost average account age and add positive payment history. The primary cardholder does not need to give you the physical card.',
+      minPoints: 10,
+      maxPoints: 35,
+      cost: 0,
+      timeline: '30-60 days after being added',
+      timelineDays: 45,
+      isFree: true,
+      isSleepingBear: false,
+      isNearDropOff: false,
+      isAnchor: false,
+      warningText: ''
+    });
+  }
+
+  return actions;
+}
+
+// ===== GENERATE PLANS =====
 function generatePlans() {
-  showToast('Analysis engine loading in next build chunk...');
+  var score = parseInt(document.getElementById('borrowerScore').value);
+  if (!score || score < 300 || score > 850) {
+    showToast('Please enter a valid credit score (300-850)');
+    return;
+  }
+
+  var filledTradelines = tradelines.filter(function(tl) {
+    return tl.name || tl.balance > 0 || tl.status !== 'current';
+  });
+
+  if (filledTradelines.length === 0) {
+    showToast('Please enter at least one tradeline');
+    return;
+  }
+
+  var budgetStr = document.getElementById('budgetAmount').value;
+  var budget = parseMoney(budgetStr) || 0;
+
+  var actions = analyzetradelines();
+
+  if (actions.length === 0) {
+    showToast('No improvement actions identified — all tradelines appear to be in good standing');
+    return;
+  }
+
+  // ===== PLAN A: Sort by max impact =====
+  var planAActions = actions.slice().sort(function(a, b) {
+    return b.maxPoints - a.maxPoints;
+  });
+
+  // Cap total projected improvement
+  var planATotalMin = 0;
+  var planATotalMax = 0;
+  var planATotalCost = 0;
+  planAActions.forEach(function(a) {
+    planATotalMin += a.minPoints;
+    planATotalMax += a.maxPoints;
+    planATotalCost += a.cost;
+  });
+  if (planATotalMin > 120) planATotalMin = 120;
+  if (planATotalMax > 180) planATotalMax = 180;
+
+  var projMin = Math.min(score + planATotalMin, 850);
+  var projMax = Math.min(score + planATotalMax, 850);
+
+  // Render Plan A
+  document.getElementById('planASummary').textContent = '+' + planATotalMin + ' to +' + planATotalMax + ' pts | $' + numberWithCommas(planATotalCost);
+  renderActionList('planAActions', planAActions, false);
+
+  // ===== PLAN B: Sort by efficiency (points per dollar, free first) =====
+  var planBActions = actions.slice().sort(function(a, b) {
+    // Free actions first
+    if (a.isFree && !b.isFree) return -1;
+    if (!a.isFree && b.isFree) return 1;
+    // Then by efficiency (higher is better)
+    var effA = a.cost > 0 ? a.maxPoints / a.cost : 999;
+    var effB = b.cost > 0 ? b.maxPoints / b.cost : 999;
+    return effB - effA;
+  });
+
+  // Store for interactive toggling
+  window.planBData = planBActions;
+  window.planBBudget = budget;
+  window.currentScore = score;
+
+  renderActionList('planBActions', planBActions, true);
+  updateLiveCounters();
+
+  // ===== SCORE THRESHOLD ANALYSIS =====
+  renderThresholdAnalysis(score, projMin, projMax);
+
+  // Show results
+  document.getElementById('resultsContainer').style.display = 'block';
+  document.getElementById('resultsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// ===== RENDER ACTION LIST =====
+function renderActionList(containerId, actions, interactive) {
+  var container = document.getElementById(containerId);
+  var h = '';
+
+  actions.forEach(function(a, i) {
+    var isWarning = a.isSleepingBear || a.isNearDropOff;
+    var warningClass = isWarning ? ' warning' : '';
+    var checked = !isWarning ? ' checked' : '';
+
+    h += '<div class="action-item' + warningClass + '" id="action_' + a.id + '">';
+
+    if (interactive) {
+      h += '<input type="checkbox" class="action-check" id="check_' + a.id + '"' + checked + ' onchange="updateLiveCounters()" data-action-id="' + a.id + '">';
+    }
+
+    h += '<div class="action-rank">' + (i + 1) + '</div>';
+    h += '<div class="action-body">';
+    h += '<div class="action-title">' + a.title + '</div>';
+
+    if (a.warningText) {
+      h += '<div style="margin:6px 0;"><span class="sleeping-bear-flag">' + a.warningText + '</span></div>';
+    }
+
+    h += '<div class="action-detail">' + a.detail + '</div>';
+
+    h += '<div class="action-metrics">';
+    if (a.minPoints > 0 || a.maxPoints > 0) {
+      h += '<div class="action-metric"><div class="action-metric-label">Score Impact</div><div class="action-metric-value green">+' + a.minPoints + ' to +' + a.maxPoints + ' pts</div></div>';
+    }
+    h += '<div class="action-metric"><div class="action-metric-label">Est. Cost</div><div class="action-metric-value ' + (a.isFree ? 'green' : 'gold') + '">' + (a.isFree ? 'FREE' : '$' + numberWithCommas(a.cost)) + '</div></div>';
+    h += '<div class="action-metric"><div class="action-metric-label">Timeline</div><div class="action-metric-value blue">' + a.timeline + '</div></div>';
+    h += '</div>';
+
+    // Letter writer button (not for BK or AU strategy or wait items)
+    if (a.tradelineId && a.type !== 'bankruptcy' && !a.isNearDropOff) {
+      h += '<div class="action-btns">';
+      h += '<button class="action-letter-btn" onclick="openLetterModal(\'' + a.tradelineId + '\')"><i class="fas fa-envelope" style="margin-right:4px;"></i> Draft Letter</button>';
+      h += '</div>';
+    }
+
+    h += '</div></div>';
+  });
+
+  container.innerHTML = h;
+}
+
+// ===== UPDATE LIVE COUNTERS (Plan B interactive) =====
+function updateLiveCounters() {
+  if (!window.planBData) return;
+  var score = window.currentScore || 620;
+  var budget = window.planBBudget || 0;
+
+  var totalMin = 0;
+  var totalMax = 0;
+  var totalCost = 0;
+  var maxTimeline = 0;
+
+  window.planBData.forEach(function(a) {
+    var checkbox = document.getElementById('check_' + a.id);
+    if (checkbox && checkbox.checked) {
+      totalMin += a.minPoints;
+      totalMax += a.maxPoints;
+      totalCost += a.cost;
+      if (a.timelineDays > maxTimeline) maxTimeline = a.timelineDays;
+    }
+  });
+
+  // Cap projections
+  if (totalMin > 120) totalMin = 120;
+  if (totalMax > 180) totalMax = 180;
+
+  var projMin = Math.min(score + totalMin, 850);
+  var projMax = Math.min(score + totalMax, 850);
+
+  document.getElementById('liveScore').textContent = projMin + ' – ' + projMax;
+
+  document.getElementById('liveCost').textContent = '$' + numberWithCommas(totalCost);
+
+  // Timeline
+  if (maxTimeline <= 0) {
+    document.getElementById('liveTimeline').textContent = '—';
+  } else if (maxTimeline <= 45) {
+    document.getElementById('liveTimeline').textContent = '30-45 days';
+  } else if (maxTimeline <= 75) {
+    document.getElementById('liveTimeline').textContent = '60-90 days';
+  } else {
+    document.getElementById('liveTimeline').textContent = Math.round(maxTimeline / 30) + '+ months';
+  }
+
+  // Budget bar
+  if (budget > 0) {
+    var pct = Math.min((totalCost / budget) * 100, 100);
+    var fill = document.getElementById('budgetBarFill');
+    fill.style.width = pct + '%';
+    fill.className = 'budget-bar-fill ' + (pct > 100 ? 'over' : pct > 80 ? 'near' : 'under');
+    document.getElementById('liveCost').style.color = totalCost > budget ? 'var(--red)' : 'var(--gold)';
+  }
+}
+
+// ===== SCORE THRESHOLD ANALYSIS =====
+function renderThresholdAnalysis(score, projMin, projMax) {
+  var container = document.getElementById('thresholdContent');
+  var currentTier = getTier(score);
+  var nextTier = getNextTier(score);
+  var loanAmount = parseMoney(document.getElementById('targetLoan').value) || 300000;
+
+  // Default LTV column index (assume 80% LTV — column index 3)
+  var ltvIdx = 3;
+
+  var h = '';
+
+  // Tier visualization
+  h += '<div style="text-align:center;margin-bottom:14px;">';
+  h += '<div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">YOUR FICO TIER POSITION</div>';
+  h += '<div class="threshold-tiers">';
+  ficoTiers.slice().reverse().forEach(function(tier) {
+    var cls = 'tier-block';
+    if (tier.label === currentTier.label) cls += ' current';
+    else if (nextTier && tier.label === nextTier.label) cls += ' target';
+    h += '<div class="' + cls + '">' + tier.label + '</div>';
+  });
+  h += '</div>';
+  h += '</div>';
+
+  if (nextTier) {
+    var currentLLPA = llpaMatrix[currentTier.label] ? llpaMatrix[currentTier.label][ltvIdx] : 0;
+    var nextLLPA = llpaMatrix[nextTier.label] ? llpaMatrix[nextTier.label][ltvIdx] : 0;
+    var llpaDiff = currentLLPA - nextLLPA;
+    var rateDiff = llpaToRate(llpaDiff);
+    var pointsNeeded = nextTier.min - score;
+
+    // Monthly payment difference (rough calc: rate diff on 30yr)
+    // P&I on 30yr at ~7% on loanAmount
+    var baseRate = 0.07;
+    var monthlyRate1 = (baseRate) / 12;
+    var monthlyRate2 = (baseRate - rateDiff / 100) / 12;
+    var n = 360;
+    var pmt1 = loanAmount * (monthlyRate1 * Math.pow(1 + monthlyRate1, n)) / (Math.pow(1 + monthlyRate1, n) - 1);
+    var pmt2 = loanAmount * (monthlyRate2 * Math.pow(1 + monthlyRate2, n)) / (Math.pow(1 + monthlyRate2, n) - 1);
+    var monthlySavings = Math.round(pmt1 - pmt2);
+    var lifetimeSavings = monthlySavings * 360;
+
+    h += '<div class="threshold-savings">';
+    h += '<div style="font-size:12px;color:var(--text-mid);margin-bottom:8px;">You\'re at <strong style="color:var(--red);">' + score + '</strong>. Reaching <strong style="color:var(--green);">' + nextTier.min + '</strong> moves you from tier <strong>' + currentTier.label + '</strong> to <strong>' + nextTier.label + '</strong>.</div>';
+    h += '<div style="font-size:11px;color:var(--text-dim);margin-bottom:4px;">That\'s <strong style="color:var(--gold);">' + pointsNeeded + ' points</strong> away</div>';
+
+    if (monthlySavings > 0) {
+      h += '<div class="savings-big">$' + numberWithCommas(monthlySavings) + '/mo</div>';
+      h += '<div class="savings-label">estimated monthly savings on a $' + numberWithCommas(loanAmount) + ' loan</div>';
+      h += '<div class="savings-detail">';
+      h += 'LLPA improves by ' + llpaDiff.toFixed(3) + '% → approximately ' + rateDiff.toFixed(3) + '% better rate<br>';
+      h += 'That\'s <strong style="color:var(--green);">$' + numberWithCommas(lifetimeSavings) + '</strong> in savings over the life of a 30-year loan';
+      h += '</div>';
+    } else {
+      h += '<div style="font-size:12px;color:var(--text-dim);">At 80% LTV, the LLPA difference between these tiers is minimal. The real savings increase at higher LTV ratios.</div>';
+    }
+    h += '</div>';
+  } else {
+    h += '<div style="text-align:center;font-size:13px;color:var(--green);font-weight:600;margin-top:12px;">You\'re already in the top FICO tier! Focus on maintaining this score.</div>';
+  }
+
+  container.innerHTML = h;
+}
+
+// ===== AI LETTER WRITER (next build chunk) =====
 function generateLetter() {
-  showToast('AI letter writer loading in next build chunk...');
+  showToast('AI letter writer — building in next chunk');
 }
 
+// ===== PRINTABLE ACTION PLAN (next build chunk) =====
 function generateActionPlan() {
-  showToast('Action plan generator loading in next build chunk...');
+  showToast('Borrower action plan — building in next chunk');
 }
 
 // ===== INIT =====
