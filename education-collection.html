@@ -7,7 +7,6 @@
 
 <style>
 
-/* ===== BACKGROUND (LOCKED PORTAL STYLE) ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -18,199 +17,94 @@ body {
   color: #0b1f3a;
 }
 
-/* ===== PAGE WIDTH ===== */
-.page-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 1150px; margin: 0 auto; padding: 0 24px; }
 
-/* ===== MAIN GLASS CONTAINER ===== */
 .gallery-section {
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 60px 50px; border-radius: 22px;
+  background: rgba(255,255,255,0.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-/* ===== TITLES ===== */
-.section-title {
-  font-size: 36px;
-  margin-bottom: 10px;
-  text-align: center;
-  color: #002556;
-}
+.section-title { font-size: 36px; margin-bottom: 10px; text-align: center; color: #002556; }
+.section-subtitle { text-align: center; max-width: 700px; margin: 0 auto 50px auto; color: #555; font-size: 16px; line-height: 1.6; }
 
-.section-subtitle {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 50px auto;
-  color: #555;
-  font-size: 16px;
-  line-height: 1.6;
-}
+.wing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 35px; }
 
-/* ===== GALLERY GRID ===== */
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  justify-content: center;
-}
-
-/* ===== WING PANELS ===== */
-.wing-panel {
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 18px;
-  padding: 28px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.wing-panel:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
-}
-
-.wing-panel h3 {
-  font-size: 22px;
-  color: #002556;
-  margin: 0 0 10px 0;
-}
-
-.wing-panel p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.6;
-  margin: 0 0 18px 0;
-}
-
-/* ===== THUMB PREVIEWS ===== */
-.panel-thumbs {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.thumb-wrap {
-  position: relative;
-  width: 60px;
-  height: 80px;
-  border-radius: 6px;
-  overflow: hidden;
-}
-
-.thumb {
-  width: 60px;
-  height: 80px;
-  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.thumb:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-}
-
-.thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  padding: 6px;
-  line-height: 1.2;
-}
-
-.thumb-wrap:hover .thumb-overlay {
-  opacity: 1;
-}
-
-/* ===== ENTER BUTTON ===== */
-.wing-btn {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 10px 22px;
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
+.wing-card {
   border-radius: 20px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
-}
-
-.wing-btn:hover {
-  background: linear-gradient(135deg, #003d82, #002556);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,37,86,0.35);
-}
-
-/* ===== FLOATING RETURN LINK ===== */
-.return-main {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  transition: all 0.25s ease;
-  z-index: 999;
+  box-shadow: 0 15px 40px rgba(160,140,110,0.15), 0 5px 14px rgba(160,140,110,0.08);
+  overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.wing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(160,140,110,0.2), 0 8px 20px rgba(160,140,110,0.1);
 }
 
-.return-main:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
+.wing-preview {
+  height: 200px; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background-size: cover; background-position: center; background-color: #2d4a3e;
+}
+.wing-preview::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(35,60,48,0.92) 0%, rgba(45,74,62,0.75) 40%, rgba(55,85,70,0.35) 70%, transparent 100%);
 }
 
-/* ===== RESPONSIVE ===== */
+.preview-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
+}
+.preview-badge.live { background: rgba(52,211,153,0.25); color: #34d399; border: 1px solid rgba(52,211,153,0.35); }
+.preview-badge.interactive { background: rgba(245,158,11,0.25); color: #f59e0b; border: 1px solid rgba(245,158,11,0.35); }
+
+.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; z-index: 2; }
+.preview-label h3 { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 2px 0; }
+.preview-label p { font-size: 12px; color: rgba(255,255,255,0.55); margin: 0; }
+
+.wing-body { padding: 22px 24px 26px; }
+.wing-body > p { font-size: 15px; color: #555; line-height: 1.65; margin: 0 0 16px 0; }
+
+.wing-features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.feat-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: rgba(110,127,119,0.1); color: #4a5f56; }
+
+.wing-btn {
+  display: inline-block; padding: 9px 20px; border-radius: 20px;
+  background: #6e7f77; color: white; text-decoration: none;
+  font-weight: 600; font-size: 15px; transition: background 0.2s ease, transform 0.2s ease;
+}
+.wing-btn:hover { background: #556b62; transform: translateY(-1px); }
+
+.disclaimer-box { margin-top: 40px; padding: 18px 22px; border-left: 3px solid #002556; background: rgba(0,37,86,0.04); border-radius: 0 12px 12px 0; }
+.disclaimer-box h4 { font-size: 14px; font-weight: 700; color: #002556; margin: 0 0 6px 0; }
+.disclaimer-box p { font-size: 13px; color: #666; line-height: 1.6; margin: 0; }
+
+.back-link { display: block; text-align: center; margin-top: 40px; }
+.back-btn {
+  display: inline-block; padding: 10px 24px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 15px; transition: all 0.25s ease;
+}
+.back-btn:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
+
+.return-main {
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.25s ease; z-index: 999;
+}
+.return-main:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
+
 @media (max-width: 768px) {
-  .gallery-section {
-    padding: 40px 25px;
-  }
-
-  .section-title {
-    font-size: 28px;
-  }
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-
-  .wing-panel {
-    padding: 24px 20px;
-  }
+  .gallery-section { padding: 40px 25px; }
+  .wing-grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 28px; }
 }
 
 </style>
@@ -225,94 +119,109 @@ body {
 
     <h2 class="section-title">Education Collection</h2>
     <p class="section-subtitle">
-      Essential tools, guides, and resources designed to help Realtors educate and empower their clients.
+      Professional education resources and interactive tools built to support informed
+      conversations with clients at every stage of the lending process.
     </p>
 
-    <div class="gallery-grid">
+    <div class="wing-grid">
 
-      <!-- WING 1: FINANCIAL CALCULATORS -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">🧮</div>
-            <div class="thumb-overlay">W-2 Income</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">💼</div>
-            <div class="thumb-overlay">Self-Employed</div>
+      <!-- FINANCIAL CALCULATORS -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('education_financial_calculators.jpg');">
+          <span class="preview-badge live">Live Tools</span>
+          <div class="preview-label">
+            <h3>Financial Calculators</h3>
+            <p>Income Qualification Tools</p>
           </div>
         </div>
-        <h3>Financial Calculators</h3>
-        <p>Income qualification tools for W-2 wage earners and self-employed borrowers.</p>
-        <a href="education-calculators.html" class="wing-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Income qualification tools for W-2 wage earners and self-employed borrowers. Built for accuracy and designed to give clients clear, confident answers on the spot.</p>
+          <div class="wing-features">
+            <span class="feat-tag">W-2 Income</span>
+            <span class="feat-tag">Self-Employed</span>
+            <span class="feat-tag">Qualification Estimates</span>
+          </div>
+          <a href="education-calculators.html" class="wing-btn">Enter Wing →</a>
+        </div>
       </div>
 
-      <!-- WING 2: VIDEO LIBRARY -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">🎬</div>
-            <div class="thumb-overlay">Video 1</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">📺</div>
-            <div class="thumb-overlay">Video 2</div>
+      <!-- VIDEO LIBRARY -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('education_video_library.jpg');">
+          <div class="preview-label">
+            <h3>Video Library</h3>
+            <p>Client Education Content</p>
           </div>
         </div>
-        <h3>Video Library</h3>
-        <p>Educational video content to share with clients and support your conversations.</p>
-        <a href="education-videos.html" class="wing-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Educational video content to share with clients and support your conversations. Clear explanations of the lending process designed to build confidence and trust.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Process Walkthroughs</span>
+            <span class="feat-tag">Client-Facing</span>
+            <span class="feat-tag">Shareable</span>
+          </div>
+          <a href="education-videos.html" class="wing-btn">Enter Wing →</a>
+        </div>
       </div>
 
-      <!-- WING 3: LOAN PROGRAM GUIDES -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">🏛</div>
-            <div class="thumb-overlay">Conventional</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">🏠</div>
-            <div class="thumb-overlay">FHA</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">🎖</div>
-            <div class="thumb-overlay">VA</div>
+      <!-- LOAN PROGRAM GUIDES -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('education_loan_guides.jpg');">
+          <span class="preview-badge live">Live Data</span>
+          <div class="preview-label">
+            <h3>Loan Program Guides</h3>
+            <p>Every Major Program Covered</p>
           </div>
         </div>
-        <h3>Loan Program Guides</h3>
-        <p>Comprehensive guides covering every major loan program with current data and requirements.</p>
-        <a href="education-loan-guides.html" class="wing-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Comprehensive guides covering every major loan program with current data and requirements. Conventional, FHA, VA, USDA, Jumbo, Reverse, and DSCR — all in one place.</p>
+          <div class="wing-features">
+            <span class="feat-tag">7 Programs</span>
+            <span class="feat-tag">Current Requirements</span>
+            <span class="feat-tag">Side-by-Side Compare</span>
+          </div>
+          <a href="education-loan-guides.html" class="wing-btn">Enter Wing →</a>
+        </div>
       </div>
 
-      <!-- WING 4: CREDIT & FINANCIAL TOOLS -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">📈</div>
-            <div class="thumb-overlay">Credit Score</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">💰</div>
-            <div class="thumb-overlay">Down Payment</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">🧮</div>
-            <div class="thumb-overlay">Simulator</div>
+      <!-- CREDIT & FINANCIAL TOOLS -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('education_credit_tools.jpg');">
+          <span class="preview-badge interactive">Interactive</span>
+          <div class="preview-label">
+            <h3>Credit &amp; Financial Tools</h3>
+            <p>Score Education &amp; Simulation</p>
           </div>
         </div>
-        <h3>Credit & Financial Tools</h3>
-        <p>Credit score education, down payment assistance resources, and interactive simulation tools.</p>
-        <a href="education-credit-tools.html" class="wing-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Credit score education, down payment assistance resources, and the interactive Credit Score Simulator. Give clients clarity on where they stand and a path to where they need to be.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Credit Simulator</span>
+            <span class="feat-tag">Score Education</span>
+            <span class="feat-tag">Down Payment Assistance</span>
+          </div>
+          <a href="education-credit-tools.html" class="wing-btn">Enter Wing →</a>
+        </div>
       </div>
 
+    </div>
+
+    <!-- DISCLAIMER -->
+    <div class="disclaimer-box">
+      <h4>Important Disclaimer</h4>
+      <p>All tools and calculators are for educational purposes only. Simulations are estimates and should not be used as the basis for financial decisions. Users must consult with a qualified professional before taking any credit-related or financial actions.</p>
+    </div>
+
+    <!-- BACK -->
+    <div class="back-link">
+      <a href="portal.html" class="back-btn">← Back to Portal</a>
     </div>
 
   </section>
 </div>
 
-<a href="portal.html" class="return-main">← Return to Agent Edge Portal</a>
+<a href="portal.html" class="return-main">← Back to Portal</a>
 
+<script src="login.js"></script>
 </body>
 </html>
-
