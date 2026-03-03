@@ -34,6 +34,7 @@ body {
   border-radius: 22px;
   background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
   box-shadow:
     0 20px 55px rgba(0,0,0,0.10),
@@ -42,58 +43,97 @@ body {
 
 /* ===== TITLES ===== */
 .section-title {
-  font-size: 34px;
+  font-size: 36px;
   text-align: center;
   margin-bottom: 10px;
+  color: #002556;
 }
 
 .section-subtitle {
   text-align: center;
-  max-width: 650px;
+  max-width: 700px;
   margin: 0 auto 50px auto;
   color: #555;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* ===== GRID ===== */
+/* ===== REPORT GRID ===== */
 .flyer-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 35px;
+  gap: 30px;
 }
 
-/* ===== CARD ===== */
+/* ===== REPORT CARD (FRAMED) ===== */
 .flyer-card {
-  text-align: center;
-}
-
-.flyer-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 12px 35px rgba(160,140,110,0.12), 0 4px 12px rgba(160,140,110,0.06);
+  overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
-.flyer-card img:hover {
-  transform: scale(1.03);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+.flyer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(160,140,110,0.18), 0 6px 16px rgba(160,140,110,0.1);
 }
 
-/* ===== ADD BUTTON ===== */
-.add-btn {
-  margin-top: 8px;
-  padding: 6px 12px;
-  border-radius: 20px;
-  border: 1px solid #0b4ea2;
-  background: transparent;
-  color: #0b4ea2;
-  font-weight: 600;
+/* ===== REPORT THUMBNAIL ===== */
+.flyer-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  object-position: top;
+  display: block;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.flyer-card img:hover {
+  opacity: 0.9;
 }
 
+/* ===== CARD BODY ===== */
+.card-body {
+  padding: 16px 20px 20px;
+  text-align: center;
+}
+.card-body h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0b1f3a;
+  margin: 0 0 10px 0;
+}
+
+/* ===== CARD ACTIONS ===== */
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ===== ADD BUTTON (sage green) ===== */
+.add-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid #6e7f77;
+  background: transparent;
+  color: #6e7f77;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.add-btn:hover {
+  background: #6e7f77;
+  color: #fff;
+}
 .add-btn.added {
-  background: #0b4ea2;
+  background: #6e7f77;
   color: #fff;
 }
 
@@ -120,7 +160,7 @@ body {
   border-radius: 12px;
   padding: 10px;
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .empty {
@@ -128,6 +168,45 @@ body {
   color: #777;
 }
 
+/* ===== BACK BUTTON ===== */
+.back-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+.back-btn:hover {
+  background: rgba(255,255,255,0.55);
+  transform: translateY(-2px);
+}
+
+/* ===== FLOATING RETURN ===== */
+.return-main {
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.25s ease; z-index: 999;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .flyer-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-card { padding: 40px 25px; }
+}
+@media (max-width: 600px) {
+  .flyer-grid { grid-template-columns: 1fr; }
+}
+
+/* ===== PRESERVED STYLES (info, lightbox, panel, guide, cheatsheet) ===== */
 /* ===== INFO ICON ===== */
 .info-icon {
   display: inline-flex;
@@ -169,6 +248,7 @@ body {
   transform: translateX(-50%) translateY(4px);
 }
 
+
 /* ===== BACK TO ADVISORY BUTTON ===== */
 .back-btn {
   display: inline-block;
@@ -197,6 +277,7 @@ body {
   color: #0b1f3a;
   font-weight: 600;
 }
+
 
 /* ===== IMAGE LIGHTBOX ===== */
 .lightbox {
@@ -245,6 +326,7 @@ body {
   cursor: pointer;
   box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
+
 
 /* ===== CODEPEN PANEL STYLES ===== */
 .panel-overlay {
@@ -368,6 +450,7 @@ body {
   font-size: 14px;
 }
 
+
 /* ===== REPORT GUIDE LINK ===== */
 .guide-link {
   display: inline-block;
@@ -393,6 +476,7 @@ body {
 .guide-link:hover svg {
   opacity: 1;
 }
+
 
 /* ===== CHEAT SHEET OVERLAY ===== */
 .cheatsheet-overlay {
@@ -513,6 +597,8 @@ body {
   font-style: italic;
 }
 
+
+
 </style>
 </head>
 
@@ -530,51 +616,79 @@ Advisor-grade market visuals designed to help Realtors explain trends, pricing d
 
 <div class="flyer-card" data-report="bid">
 <img src="Bid-Over-Ask.png" alt="Worth the Premium">
+<div class="card-body">
 <h3>Worth the Premium</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('bid')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="buyrent">
 <img src="Buy-vs-Rent.png" alt="Rent to Wealth">
+<div class="card-body">
 <h3>Rent to Wealth</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('buyrent')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="costwaiting">
 <img src="Cost-of-Waiting.png" alt="Your Wealth Starts Now">
+<div class="card-body">
 <h3>Your Wealth Starts Now</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('costwaiting')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="investment">
 <img src="Investment-Property.png" alt="Owner to Investor">
+<div class="card-body">
 <h3>Owner to Investor</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('investment')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="amortization">
 <img src="Mortgage-Amortization.png" alt="Payoff Accelerator">
+<div class="card-body">
 <h3>Payoff Accelerator</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('amortization')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="reportcard">
 <img src="Real-Estate-Report-Card.png" alt="Neighborhood Blueprint">
+<div class="card-body">
 <h3>Neighborhood Blueprint</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('reportcard')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 <div class="flyer-card" data-report="appreciation">
 <img src="Appreciation.png" alt="Wealth in Motion">
+<div class="card-body">
 <h3>Wealth in Motion</h3>
+<div class="card-actions">
 <a class="guide-link" onclick="openGuide('appreciation')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6.5"/><path d="M8 7v4M8 5.5v0"/></svg>Report Guide</a>
 <button class="add-btn">Add to My Kit</button>
+</div>
+</div>
 </div>
 
 </div>
@@ -1357,5 +1471,10 @@ document.getElementById('cheatsheetOverlay').addEventListener('click', function(
 
 </script>
 
+</body>
+</html>
+
+
+<script src="login.js"></script>
 </body>
 </html>
