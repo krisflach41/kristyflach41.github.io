@@ -3,229 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Down Payment Assistance Programs - Agent Edge</title>
+<title>Down Payment Assistance - Agent Edge</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-  line-height: 1.7;
+  padding: 40px 20px 80px 20px;
+  background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0a0f1a 100%);
+  color: #c8ccd4;
+  min-height: 100vh;
 }
 
-.page-wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 860px; margin: 0 auto; }
 
 .guide-card {
   padding: 50px 45px;
   border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.65);
-  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+  background: linear-gradient(145deg, rgba(17,24,39,0.95), rgba(10,15,26,0.98));
+  border: 1px solid rgba(110,127,119,0.15);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 80px rgba(110,127,119,0.03);
 }
 
 .page-title {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
   font-size: 34px;
-  margin-bottom: 8px;
-  color: #0b4ea2;
+  font-weight: 700;
+  color: #e8dcc8;
+  margin: 0 0 6px 0;
 }
 
 .page-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
-}
-
-.hero-box {
-  background: linear-gradient(135deg, rgba(76,175,80,0.12), rgba(76,175,80,0.06));
-  border-left: 4px solid #4caf50;
-  padding: 25px;
-  border-radius: 12px;
-  margin-bottom: 30px;
-  font-size: 16px;
-  line-height: 1.7;
-}
-
-.hero-box strong {
-  display: block;
-  font-size: 18px;
-  margin-bottom: 12px;
-  color: #2e7d32;
+  text-align: center;
+  color: rgba(200,204,212,0.5);
+  font-size: 15px;
+  margin: 0 0 35px 0;
 }
 
 .section-heading {
-  font-size: 24px;
-  color: #0b4ea2;
-  margin: 35px 0 18px 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #e8dcc8;
+  margin: 40px 0 16px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid rgba(11,78,162,0.2);
+  border-bottom: 1px solid rgba(110,127,119,0.15);
 }
 
-.section-heading:first-of-type {
-  margin-top: 10px;
-}
+.guide-card p { font-size: 15px; line-height: 1.7; color: rgba(200,204,212,0.75); }
+.guide-card p strong { color: #e8dcc8; }
+.guide-card em { color: rgba(200,204,212,0.5); }
 
-.benefits-list, .requirements-list {
-  margin: 15px 0;
-  padding-left: 0;
-  list-style: none;
-}
-
-.benefits-list li, .requirements-list li {
-  padding: 10px 0 10px 30px;
-  position: relative;
+/* ===== HERO BOX ===== */
+.hero-box {
+  background: rgba(110,127,119,0.06);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-left: 3px solid #6e7f77;
+  border-radius: 0 12px 12px 0;
+  padding: 22px 24px;
+  margin-bottom: 35px;
   font-size: 15px;
+  line-height: 1.7;
+  color: rgba(200,204,212,0.7);
 }
-
-.benefits-list li:before {
-  content: "✓";
-  position: absolute;
-  left: 0;
-  color: #4caf50;
-  font-weight: 700;
-  font-size: 18px;
-}
-
-.requirements-list li:before {
-  content: "•";
-  position: absolute;
-  left: 8px;
-  color: #0b4ea2;
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.highlight-box {
-  background: linear-gradient(135deg, rgba(11,78,162,0.08), rgba(11,78,162,0.04));
-  padding: 25px;
-  border-radius: 12px;
-  margin: 25px 0;
-  border-left: 4px solid #0b4ea2;
-}
-
-.resource-card {
-  background: rgba(255,255,255,0.75);
-  border: 2px solid rgba(11,78,162,0.15);
-  border-radius: 14px;
-  padding: 25px;
-  margin: 20px 0;
-  transition: all 0.3s ease;
-}
-
-.resource-card:hover {
-  border-color: rgba(11,78,162,0.4);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-}
-
-.resource-card h3 {
-  margin-top: 0;
-  color: #0b4ea2;
-  font-size: 20px;
-}
-
-.cta-button {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 14px 32px;
-  border-radius: 30px;
-  background: linear-gradient(135deg, #0b4ea2, #1565c0);
-  color: white;
-  text-decoration: none;
-  font-weight: 700;
+.hero-box strong {
+  color: #6e7f77;
+  display: block;
+  margin-bottom: 8px;
   font-size: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
 }
 
-.cta-button:hover {
-  background: linear-gradient(135deg, #1565c0, #0b4ea2);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(11,78,162,0.4);
+/* ===== DISCLAIMER ===== */
+.disclaimer-box {
+  background: rgba(110,127,119,0.06);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-left: 3px solid #6e7f77;
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
+  margin: 30px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(200,204,212,0.5);
+}
+.disclaimer-box strong {
+  color: #6e7f77;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 6px;
 }
 
+/* ===== INFO GRID ===== */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
   margin: 25px 0;
 }
 
 .info-box {
-  background: rgba(255,255,255,0.5);
-  border: 1px solid rgba(11,78,162,0.15);
-  border-radius: 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(110,127,119,0.12);
+  border-radius: 14px;
   padding: 20px;
+  transition: border-color 0.3s ease;
 }
-
+.info-box:hover { border-color: rgba(110,127,119,0.25); }
 .info-box h4 {
-  margin-top: 0;
-  color: #0b4ea2;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e8dcc8;
+  margin: 0 0 6px 0;
 }
-
-.disclaimer-box {
-  background: linear-gradient(135deg, rgba(255,152,0,0.12), rgba(255,152,0,0.06));
-  border-left: 4px solid #ff9800;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 30px 0;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-.disclaimer-box strong {
-  display: block;
+.info-box p {
   font-size: 14px;
-  margin-bottom: 8px;
-  color: #e65100;
+  color: rgba(200,204,212,0.6);
+  margin: 0;
+  line-height: 1.5;
 }
 
+/* ===== HIGHLIGHT BOX ===== */
+.highlight-box {
+  background: rgba(110,127,119,0.05);
+  border: 1px solid rgba(110,127,119,0.12);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 20px 0;
+}
+.highlight-box p { font-size: 15px; color: rgba(200,204,212,0.75); margin: 0 0 12px 0; }
+.highlight-box p strong { color: #e8dcc8; }
+
+/* ===== RESOURCE CARD ===== */
+.resource-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 20px 0;
+  transition: border-color 0.3s ease;
+}
+.resource-card:hover { border-color: rgba(110,127,119,0.3); }
+.resource-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 19px;
+  font-weight: 600;
+  color: #e8dcc8;
+  margin: 0 0 10px 0;
+}
+.resource-card p { font-size: 15px; color: rgba(200,204,212,0.7); }
+
+/* ===== CTA BUTTON ===== */
+.cta-button {
+  display: inline-block;
+  margin-top: 15px;
+  padding: 12px 28px;
+  border-radius: 25px;
+  background: #6e7f77;
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.25s ease;
+}
+.cta-button:hover {
+  background: #556b62;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(110,127,119,0.3);
+}
+
+/* ===== LISTS ===== */
+.requirements-list,
+.benefits-list {
+  padding-left: 0;
+  list-style: none;
+  margin: 12px 0;
+}
+.requirements-list li,
+.benefits-list li {
+  position: relative;
+  padding: 8px 0 8px 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(200,204,212,0.7);
+}
+.requirements-list li strong,
+.benefits-list li strong { color: #e8dcc8; }
+.requirements-list li::before,
+.benefits-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6e7f77;
+  opacity: 0.4;
+}
+
+/* ===== BACK ===== */
 .back-btn {
   display: inline-block;
   margin-top: 40px;
-  padding: 12px 24px;
+  padding: 10px 24px;
   border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(110,127,119,0.2);
   text-decoration: none;
-  color: #0b1f3a;
+  color: rgba(200,204,212,0.6);
   font-weight: 600;
+  font-size: 14px;
   transition: all 0.25s ease;
 }
-
 .back-btn:hover {
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.06);
+  color: #e8dcc8;
   transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
-  .guide-card {
-    padding: 35px 25px;
-  }
-  
-  .page-title {
-    font-size: 28px;
-  }
-  
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 640px) {
+  .guide-card { padding: 30px 22px; }
+  .page-title { font-size: 28px; }
+  .section-heading { font-size: 19px; }
+  .info-grid { grid-template-columns: 1fr; }
 }
 </style>
 <script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
 </head>
 
 <body>
+
 <div class="page-wrap">
   <article class="guide-card">
     
@@ -233,7 +244,7 @@ body {
     <p class="page-subtitle">Explore Grants, Loans & Programs to Help You Buy a Home</p>
     
     <div class="hero-box">
-      <strong>💰 Good News: Thousands of Down Payment Assistance Programs Exist!</strong>
+      <strong> Good News: Thousands of Down Payment Assistance Programs Exist!</strong>
       Down payment assistance (DPA) programs can provide grants or low-interest loans to help cover your down payment and closing costs. Many programs are available through state housing finance agencies, local governments, and nonprofit organizations.
     </div>
 
@@ -253,22 +264,22 @@ body {
     
     <div class="info-grid">
       <div class="info-box">
-        <h4>🏠 First-Time Homebuyers</h4>
+        <h4> First-Time Homebuyers</h4>
         <p>Many programs prioritize buyers who haven't owned a home in the last 3 years.</p>
       </div>
       
       <div class="info-box">
-        <h4>💵 Income Limits</h4>
+        <h4> Income Limits</h4>
         <p>Most programs have maximum income thresholds (often 80-120% of area median income).</p>
       </div>
       
       <div class="info-box">
-        <h4>📍 Location Requirements</h4>
+        <h4> Location Requirements</h4>
         <p>Property must be in eligible areas (city, county, or state programs).</p>
       </div>
       
       <div class="info-box">
-        <h4>✅ Credit & Employment</h4>
+        <h4> Credit & Employment</h4>
         <p>Minimum credit scores (often 620-640) and stable employment history.</p>
       </div>
     </div>
@@ -325,7 +336,7 @@ body {
     <h2 class="section-heading">Official Down Payment Assistance Resources</h2>
     
     <div class="resource-card">
-      <h3>🏛️ HUD's Official DPA Search Tool</h3>
+      <h3> HUD's Official DPA Search Tool</h3>
       <p>The U.S. Department of Housing and Urban Development (HUD) maintains the most comprehensive, up-to-date database of down payment assistance programs across all 50 states.</p>
       <p><strong>What you'll find:</strong></p>
       <ul class="requirements-list">
@@ -341,7 +352,7 @@ body {
     </div>
 
     <div class="resource-card">
-      <h3>🏦 Down Payment Resource (Industry Database)</h3>
+      <h3> Down Payment Resource (Industry Database)</h3>
       <p>A comprehensive database of 2,500+ homeownership programs nationwide, searchable by location and eligibility criteria.</p>
       <a href="https://downpaymentresource.com/" class="cta-button" target="_blank" rel="noopener">
         Visit Down Payment Resource →
@@ -365,15 +376,17 @@ body {
     <p><strong>Step 5:</strong> Apply for programs (many have limited funding—apply early!)</p>
 
     <div class="disclaimer-box">
-      <strong>⚠️ Important Notes</strong>
+      <strong>Important Notes</strong>
       Down payment assistance programs have specific eligibility requirements, funding limits, and application deadlines. Many programs operate on a first-come, first-served basis and can run out of funding. Not all DPA programs work with all loan types or lenders. Always consult with Kristy Flach before applying to ensure the program is compatible with your mortgage plan and to maximize your benefits.
     </div>
 
     <div style="text-align:center; margin-top: 40px;">
-      <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
+      <a href="education-credit-tools.html" class="back-btn">← Back to Credit & Financial Tools</a>
     </div>
 
   </article>
 </div>
+
+<script src="login.js"></script>
 </body>
 </html>
