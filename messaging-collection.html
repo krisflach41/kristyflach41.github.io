@@ -17,198 +17,102 @@ body {
   color: #0b1f3a;
 }
 
-.page-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 1150px; margin: 0 auto; padding: 0 24px; }
 
 .gallery-section {
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 60px 50px; border-radius: 22px;
+  background: rgba(255,255,255,0.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-.section-title {
-  font-size: 36px;
-  margin-bottom: 10px;
-  text-align: center;
-  color: #002556;
-}
+.section-title { font-size: 36px; margin-bottom: 10px; text-align: center; color: #002556; }
+.section-subtitle { text-align: center; max-width: 700px; margin: 0 auto 50px auto; color: #555; font-size: 16px; line-height: 1.6; }
 
-.section-subtitle {
-  text-align: center;
-  max-width: 700px;
-  margin: 0 auto 50px auto;
-  color: #555;
-  font-size: 16px;
-  line-height: 1.6;
-}
-
-.gallery-grid {
+.wing-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  justify-content: center;
+  gap: 35px;
 }
-
-/* Make the third panel span full width and center it */
-.gallery-grid .wing-panel:last-child {
+.wing-grid .wing-card:last-child:nth-child(odd) {
   grid-column: 1 / -1;
-  max-width: 480px;
-  justify-self: center;
+  max-width: 520px;
+  margin: 0 auto;
   width: 100%;
 }
 
-.wing-panel {
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+.wing-card {
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 18px;
-  padding: 28px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 15px 40px rgba(160,140,110,0.15), 0 5px 14px rgba(160,140,110,0.08);
+  overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
-.wing-panel:hover {
+.wing-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 22px 50px rgba(160,140,110,0.2), 0 8px 20px rgba(160,140,110,0.1);
 }
 
-.wing-panel h3 {
-  font-size: 22px;
-  color: #002556;
-  margin: 0 0 10px 0;
+.wing-preview {
+  height: 200px; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  background-size: cover; background-position: center; background-color: #2d4a3e;
+}
+.wing-preview::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(35,60,48,0.92) 0%, rgba(45,74,62,0.75) 40%, rgba(55,85,70,0.35) 70%, transparent 100%);
 }
 
-.wing-panel p {
-  font-size: 14px;
-  color: #555;
-  line-height: 1.6;
-  margin: 0 0 18px 0;
+.preview-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  font-size: 10px; font-weight: 700; padding: 4px 10px;
+  border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
 }
+.preview-badge.ai { background: rgba(139,92,246,0.25); color: #a78bfa; border: 1px solid rgba(139,92,246,0.35); }
+.preview-badge.live { background: rgba(52,211,153,0.25); color: #34d399; border: 1px solid rgba(52,211,153,0.35); }
+.preview-badge.free { background: rgba(245,158,11,0.25); color: #f59e0b; border: 1px solid rgba(245,158,11,0.35); }
 
-.panel-thumbs {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; z-index: 2; }
+.preview-label h3 { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 2px 0; }
+.preview-label p { font-size: 12px; color: rgba(255,255,255,0.55); margin: 0; }
 
-.thumb-wrap {
-  position: relative;
-  width: 60px;
-  height: 80px;
-  border-radius: 6px;
-  overflow: hidden;
-}
+.wing-body { padding: 22px 24px 26px; }
+.wing-body > p { font-size: 15px; color: #555; line-height: 1.65; margin: 0 0 16px 0; }
 
-.thumb {
-  width: 60px;
-  height: 80px;
-  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.thumb:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-}
-
-.thumb-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  padding: 6px;
-  line-height: 1.2;
-}
-
-.thumb-wrap:hover .thumb-overlay {
-  opacity: 1;
-}
+.wing-features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.feat-tag { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px; background: rgba(110,127,119,0.1); color: #4a5f56; }
 
 .wing-btn {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 10px 22px;
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s ease;
+  display: inline-block; padding: 9px 20px; border-radius: 20px;
+  background: #6e7f77; color: white; text-decoration: none;
+  font-weight: 600; font-size: 15px; transition: background 0.2s ease, transform 0.2s ease;
 }
+.wing-btn:hover { background: #556b62; transform: translateY(-1px); }
 
-.wing-btn:hover {
-  background: linear-gradient(135deg, #003d82, #002556);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,37,86,0.35);
+.back-link { display: block; text-align: center; margin-top: 40px; }
+.back-btn {
+  display: inline-block; padding: 10px 24px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 15px; transition: all 0.25s ease;
 }
+.back-btn:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
 .return-main {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  font-size: 14px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  transition: all 0.25s ease;
-  z-index: 999;
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.25s ease; z-index: 999;
 }
-
-.return-main:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
-}
+.return-main:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
 @media (max-width: 768px) {
-  .gallery-section {
-    padding: 40px 25px;
-  }
-
-  .section-title {
-    font-size: 28px;
-  }
-
-  .gallery-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
-  }
-
-  .gallery-grid .wing-panel:last-child {
-    max-width: 100%;
-  }
+  .gallery-section { padding: 40px 25px; }
+  .wing-grid { grid-template-columns: 1fr; }
+  .wing-grid .wing-card:last-child:nth-child(odd) { max-width: none; }
+  .section-title { font-size: 28px; }
 }
 
 </style>
@@ -226,69 +130,79 @@ body {
       Ready-to-use social media content, AI-powered custom posts, and image resources — all in one place.
     </p>
 
-    <div class="gallery-grid">
+    <div class="wing-grid">
 
-      <!-- WING 1: ON-DEMAND CONTENT STUDIO -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">✨</div>
-            <div class="thumb-overlay">AI Custom</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">✍️</div>
-            <div class="thumb-overlay">Your Topic</div>
+      <!-- ON-DEMAND CONTENT STUDIO -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('messaging_ondemand_studio.jpg');">
+          <span class="preview-badge ai">AI Powered</span>
+          <div class="preview-label">
+            <h3>On-Demand Content Studio</h3>
+            <p>Custom Posts in Seconds</p>
           </div>
         </div>
-        <h3>On-Demand Content Studio</h3>
-        <p>AI-powered custom social media posts created in seconds. Choose your topic, tone, and platform.</p>
-        <a href="messaging-ondemand.html" class="wing-btn">Enter Studio →</a>
+        <div class="wing-body">
+          <p>AI-powered custom social media posts created in seconds. Choose your topic, tone, and platform — get polished, ready-to-publish content instantly.</p>
+          <div class="wing-features">
+            <span class="feat-tag">AI Generated</span>
+            <span class="feat-tag">Custom Topics</span>
+            <span class="feat-tag">Multi-Platform</span>
+          </div>
+          <a href="messaging-ondemand.html" class="wing-btn">Enter Collection →</a>
+        </div>
       </div>
 
-      <!-- WING 2: GRAB & GO CONTENT STUDIO -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">📱</div>
-            <div class="thumb-overlay">Pick Post</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">🖼️</div>
-            <div class="thumb-overlay">Add Image</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">⬇️</div>
-            <div class="thumb-overlay">Download</div>
+      <!-- GRAB & GO CONTENT STUDIO -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('messaging_grabandgo_studio.jpg');">
+          <span class="preview-badge live">40+ Posts</span>
+          <div class="preview-label">
+            <h3>Grab &amp; Go Content Studio</h3>
+            <p>Pre-Written Posts with Image Pairing</p>
           </div>
         </div>
-        <h3>Grab & Go Content Studio</h3>
-        <p>Pre-written posts with built-in image search. Edit, pair with an image, and download a finished graphic.</p>
-        <a href="messaging-grabandgo.html" class="wing-btn">Enter Studio →</a>
+        <div class="wing-body">
+          <p>Pre-written posts with built-in image search. Edit the copy, pair it with a professional photo, and download a finished graphic ready for social media.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Pre-Written</span>
+            <span class="feat-tag">Image Search</span>
+            <span class="feat-tag">Download Graphics</span>
+          </div>
+          <a href="messaging-grabandgo.html" class="wing-btn">Enter Collection →</a>
+        </div>
       </div>
 
-      <!-- WING 3: IMAGE LIBRARY -->
-      <div class="wing-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <div class="thumb">📸</div>
-            <div class="thumb-overlay">Browse</div>
-          </div>
-          <div class="thumb-wrap">
-            <div class="thumb">🔍</div>
-            <div class="thumb-overlay">Search</div>
+      <!-- IMAGE LIBRARY -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('messaging_image_library.jpg');">
+          <span class="preview-badge free">Free Stock</span>
+          <div class="preview-label">
+            <h3>Image Library</h3>
+            <p>Curated Photography for Every Post</p>
           </div>
         </div>
-        <h3>Image Library</h3>
-        <p>Free, high-quality stock photos organized by category. Search and download directly.</p>
-        <a href="messaging-images.html" class="wing-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Free, high-quality stock photos organized by category. Search by keyword, browse curated collections, and download directly — no watermarks, no attribution required.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Keyword Search</span>
+            <span class="feat-tag">Curated Categories</span>
+            <span class="feat-tag">Free Download</span>
+          </div>
+          <a href="messaging-images.html" class="wing-btn">Enter Collection →</a>
+        </div>
       </div>
 
+    </div>
+
+    <div class="back-link">
+      <a href="portal.html" class="back-btn">← Back to Portal</a>
     </div>
 
   </section>
 </div>
 
-<a href="portal.html" class="return-main">← Return to Agent Edge Portal</a>
+<a href="portal.html" class="return-main">← Back to Portal</a>
 
+<script src="login.js"></script>
 </body>
 </html>
