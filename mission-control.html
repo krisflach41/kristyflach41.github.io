@@ -2004,46 +2004,16 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
   </div>
   <div class="content-area" style="padding:16px 24px;">
-    <!-- STAT CARDS -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;">Total Submissions</div>
-        <div style="font-size:24px;font-weight:700;color:#fff;margin-top:4px;" id="csTotalStat">0</div>
-      </div>
-      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px 16px;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#ef4444;text-transform:uppercase;">Awaiting Review</div>
-        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;" id="csNewStat">0</div>
-      </div>
-      <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:14px 16px;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">In Review</div>
-        <div style="font-size:24px;font-weight:700;color:#f59e0b;margin-top:4px;" id="csReviewStat">0</div>
-      </div>
-      <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px 16px;">
-        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#22c55e;text-transform:uppercase;">Plans Sent</div>
-        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;" id="csPlanStat">0</div>
-      </div>
-    </div>
-    <!-- FILTER TABS -->
     <div style="display:flex; gap:8px; margin-bottom:16px;">
-      <button class="topbar-btn" id="csFilterNew" onclick="filterCreditSubs('new')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">New <span id="csNewCount"></span></button>
-      <button class="topbar-btn" id="csFilterReviewing" onclick="filterCreditSubs('reviewing')" style="background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3);">Reviewing <span id="csReviewCount"></span></button>
-      <button class="topbar-btn" id="csFilterPlanSent" onclick="filterCreditSubs('plan_sent')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">Plan Sent <span id="csPlanCount"></span></button>
+      <button class="topbar-btn" id="csFilterNew" onclick="filterCreditSubs('new')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">🔴 New <span id="csNewCount"></span></button>
+      <button class="topbar-btn" id="csFilterReviewing" onclick="filterCreditSubs('reviewing')" style="background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3);">🟡 Reviewing <span id="csReviewCount"></span></button>
+      <button class="topbar-btn" id="csFilterPlanSent" onclick="filterCreditSubs('plan_sent')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">✅ Plan Sent <span id="csPlanCount"></span></button>
       <button class="topbar-btn" id="csFilterAll" onclick="filterCreditSubs('all')" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);">All</button>
     </div>
-    <!-- SPLIT LAYOUT -->
-    <div style="display:flex;gap:16px;height:calc(100vh - 280px);">
-      <div style="width:340px;flex-shrink:0;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);" id="creditSubList">
-        <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
-          <div style="font-size:36px;margin-bottom:12px;">&#x1F4CA;</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;">LOADING SUBMISSIONS...</div>
-        </div>
-      </div>
-      <div style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);padding:20px;" id="creditDetailPreview">
-        <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25);">
-          <div style="font-size:48px;margin-bottom:12px;">&#x1F4CB;</div>
-          <div style="font-size:14px;margin-bottom:4px;">Select a submission to view details</div>
-          <div style="font-size:12px;color:rgba(255,255,255,0.15);">or click New Analysis to start a direct review</div>
-        </div>
+    <div id="creditSubList">
+      <div style="text-align:center; padding:40px; color:rgba(255,255,255,0.3);">
+        <div style="font-size:36px; margin-bottom:12px;">📊</div>
+        <div style="font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px;">LOADING SUBMISSIONS...</div>
       </div>
     </div>
   </div>
@@ -2712,23 +2682,48 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
   </div>
   <div class="content-area" style="padding:16px 24px;">
-
-    <!-- Filter tabs -->
-    <div style="display:flex; gap:8px; margin-bottom:16px;">
-      <button class="scenario-action-btn callback" style="padding:8px 16px;" id="filterHot" onclick="filterScenarios('hot')">🚨 Hot Leads <span id="filterHotCount"></span></button>
-      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(59,130,246,0.15); color:#3b82f6;" id="filterIntel" onclick="filterScenarios('intel')">🔍 Intel Feed <span id="filterIntelCount"></span></button>
-      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(34,197,94,0.15); color:#22c55e;" id="filterResolved" onclick="filterScenarios('resolved')">✅ Resolved <span id="filterResolvedCount"></span></button>
-      <button class="scenario-action-btn" style="padding:8px 16px; background:rgba(255,255,255,0.05); color:rgba(255,255,255,0.5);" id="filterAll" onclick="filterScenarios('all')">All</button>
-    </div>
-
-    <!-- Scenario list -->
-    <div id="scenarioList">
-      <div style="text-align:center; padding:40px; color:rgba(255,255,255,0.3);">
-        <div style="font-size:36px; margin-bottom:12px;">🐾</div>
-        <div style="font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px;">LOADING SCENARIOS...</div>
+    <!-- STAT CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#ef4444;text-transform:uppercase;">Hot Leads</div>
+        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;" id="scHotStat">0</div>
+      </div>
+      <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#3b82f6;text-transform:uppercase;">Intel Feed</div>
+        <div style="font-size:24px;font-weight:700;color:#3b82f6;margin-top:4px;" id="scIntelStat">0</div>
+      </div>
+      <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#22c55e;text-transform:uppercase;">Resolved</div>
+        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;" id="scResolvedStat">0</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;">Total</div>
+        <div style="font-size:24px;font-weight:700;color:#fff;margin-top:4px;" id="scTotalStat">0</div>
       </div>
     </div>
-
+    <!-- FILTER TABS -->
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="topbar-btn" id="filterHot" onclick="filterScenarios('hot')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">Hot Leads <span id="filterHotCount"></span></button>
+      <button class="topbar-btn" id="filterIntel" onclick="filterScenarios('intel')" style="background:rgba(59,130,246,0.15);color:#3b82f6;border-color:rgba(59,130,246,0.3);">Intel Feed <span id="filterIntelCount"></span></button>
+      <button class="topbar-btn" id="filterResolved" onclick="filterScenarios('resolved')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">Resolved <span id="filterResolvedCount"></span></button>
+      <button class="topbar-btn" id="filterAll" onclick="filterScenarios('all')" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);">All</button>
+    </div>
+    <!-- SPLIT LAYOUT -->
+    <div style="display:flex;gap:16px;height:calc(100vh - 300px);">
+      <div style="width:340px;flex-shrink:0;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);" id="scenarioList">
+        <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
+          <div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);padding:20px;" id="scenarioDetailPreview">
+        <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25);">
+          <div style="font-size:48px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-size:14px;margin-bottom:4px;">Select a scenario to view details</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.15);">Click any submission from the list</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -7085,8 +7080,6 @@ function renderCreditSubs() {
   var planC = creditSubmissions.filter(function(s){return s.status==='plan_sent'}).length;
   var ce = function(id,v){var el=document.getElementById(id);if(el)el.textContent=v?'('+v+')':'';};
   ce('csNewCount',newC); ce('csReviewCount',revC); ce('csPlanCount',planC);
-  var se=function(i,v){var e=document.getElementById(i);if(e)e.textContent=v;};
-  se('csTotalStat',creditSubmissions.length);se('csNewStat',newC);se('csReviewStat',revC);se('csPlanStat',planC);
 
   if (filtered.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);"><div style="font-size:36px;margin-bottom:12px;">📊</div><div style="font-size:13px;">No submissions found.</div></div>';
@@ -7102,7 +7095,7 @@ function renderCreditSubs() {
     var timeAgo = getTimeAgo(s.created_at);
     var source = s.submitted_by === 'realtor' ? '<span style="color:#a855f7;">via ' + (s.realtor_name || 'Realtor') + '</span>' : '<span style="color:#3b82f6;">Direct</span>';
 
-    h += '<div data-id="' + s.id + '" onclick="openCreditDetail(\'' + s.id + '\')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:0.15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.04)\'" onmouseout="this.style.background=\'transparent\'">';
+    h += '<div onclick="openCreditDetail(\'' + s.id + '\')" style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:0.15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">';
     h += '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
     h += '<div style="flex:1;min-width:0;">';
     h += '<div style="font-weight:600;font-size:14px;color:#fff;">' + (s.borrower_name || 'Unknown') + '</div>';
@@ -7126,7 +7119,7 @@ function openCreditDetail(id) {
   if (!s) return;
   activeCreditSub = s;
 
-  var content = document.getElementById('creditDetailPreview') || document.getElementById('creditDetailContent');
+  var content = document.getElementById('creditDetailContent');
   var h = '';
 
   // Header info
@@ -7172,17 +7165,8 @@ function openCreditDetail(id) {
   h += '<button class="topbar-btn" onclick="saveCreditNotes()" style="margin-top:6px;font-size:11px;"><i class="fas fa-save"></i> Save Notes</button>';
   h += '</div>';
 
-  // Action buttons
-  h += '<div style="display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;">';
-  h += '<button class="topbar-btn" style="border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="updateCreditStatus(\'reviewing\')"><i class="fas fa-eye"></i> Reviewing</button>';
-  h += '<button class="topbar-btn" style="border-color:rgba(186,163,112,0.4);color:#baa370;background:rgba(186,163,112,0.08);" onclick="openCreditAnalysis()"><i class="fas fa-microscope"></i> Analyze</button>';
-  h += '<button class="topbar-btn primary" onclick="updateCreditStatus(\'plan_sent\')"><i class="fas fa-paper-plane"></i> Plan Sent</button>';
-  h += '</div>';
   content.innerHTML = h;
-  // Highlight selected
-  document.querySelectorAll('#creditSubList [data-id]').forEach(function(el){ el.style.background='transparent'; });
-  var sel = document.querySelector('#creditSubList [data-id="'+id+'"]');
-  if(sel) sel.style.background='rgba(186,163,112,0.08)';
+  document.getElementById('creditDetailModal').style.display = 'flex';
 }
 
 async function updateCreditStatus(newStatus) {
@@ -7194,9 +7178,8 @@ async function updateCreditStatus(newStatus) {
       body: JSON.stringify({ action: 'updateStatus', id: activeCreditSub.id, status: newStatus })
     });
     activeCreditSub.status = newStatus;
-    // Refresh inline preview
+    document.getElementById('creditDetailModal').style.display = 'none';
     renderCreditSubs();
-    if (activeCreditSub) openCreditDetail(activeCreditSub.id);
     loadHotLeads();
     showToast('Status updated to ' + newStatus.replace('_',' '));
   } catch(e) { showToast('Error updating status'); }
@@ -7334,6 +7317,10 @@ function updateScenarioNav() {
   document.getElementById('filterHotCount').textContent = hotCount ? '(' + hotCount + ')' : '';
   document.getElementById('filterIntelCount').textContent = intelCount ? '(' + intelCount + ')' : '';
   document.getElementById('filterResolvedCount').textContent = resolvedCount ? '(' + resolvedCount + ')' : '';
+
+  // Stat cards
+  var sse=function(id,v){var el=document.getElementById(id);if(el)el.textContent=v;};
+  sse("scHotStat",hotCount);sse("scIntelStat",intelCount);sse("scResolvedStat",resolvedCount);sse("scTotalStat",allScenarios.length);
 }
 
 function filterScenarios(filter) {
@@ -7354,66 +7341,117 @@ function renderScenarios() {
   }
 
   if (filtered.length === 0) {
-    var msg = currentFilter === 'hot' ? 'No hot leads right now — check back soon' : currentFilter === 'intel' ? 'No guideline searches yet' : 'No resolved scenarios';
-    list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.25);"><div style="font-size:28px;margin-bottom:8px;">🐾</div><div style="font-size:13px;">' + msg + '</div></div>';
+    var msg = currentFilter === 'hot' ? 'No hot leads right now' : currentFilter === 'intel' ? 'No guideline searches yet' : currentFilter === 'resolved' ? 'No resolved scenarios' : 'No scenarios found';
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.25);"><div style="font-size:28px;margin-bottom:8px;">&#x1F43E;</div><div style="font-size:13px;">' + msg + '</div></div>';
     return;
   }
 
   var html = '';
-  filtered.forEach(function(s, idx) {
+  filtered.forEach(function(s) {
     var isHot = s.status === 'new' && s.type !== 'ask_gus';
     var isIntel = s.type === 'ask_gus' && s.status === 'auto_resolved';
     var isResolved = s.status === 'called_back' || s.status === 'closed';
-    var cardClass = isHot ? 'hot' : isIntel ? 'intel' : 'resolved';
-    var badgeClass = cardClass;
-    var badgeText = isHot ? (s.type === 'forwarded_gus' ? '🐾 FORWARDED' : '🚨 REVIEW REQUEST') : isIntel ? '🔍 GUS GUS SEARCH' : '✅ RESOLVED';
+    var dotColor = isHot ? '#ef4444' : isIntel ? '#3b82f6' : '#22c55e';
+    var statusLabel = isHot ? 'NEW' : isIntel ? 'INTEL' : 'RESOLVED';
+    var typeLabel = s.type === 'ask_gus' ? 'Gus Search' : s.type === 'forwarded_gus' ? 'Forwarded' : 'Review Request';
+    var snippet = s.question ? s.question.substring(0, 60) + (s.question.length > 60 ? '...' : '') : 'No details';
 
-    var scenarioInfo = '';
-    if (s.scenario_data && s.scenario_data.scenario_types && s.scenario_data.scenario_types.length) {
-      var parts = [];
-      if (s.scenario_data.borrower && s.scenario_data.borrower.credit_score) parts.push('Credit: ' + s.scenario_data.borrower.credit_score);
-      if (s.scenario_data.borrower && s.scenario_data.borrower.employment) parts.push('Employment: ' + s.scenario_data.borrower.employment);
-      if (s.scenario_data.property && s.scenario_data.property.type) parts.push('Property: ' + s.scenario_data.property.type);
-      if (s.scenario_data.property && s.scenario_data.property.use) parts.push('Use: ' + s.scenario_data.property.use);
-      if (parts.length) scenarioInfo = '<div style="font-size:12px;color:rgba(255,255,255,0.4);margin:6px 0;font-family:Share Tech Mono,monospace;">' + parts.join(' · ') + '</div>';
-    }
-
-    var realtorNotes = '';
-    if (s.type === 'forwarded_gus' && s.scenario_data && s.scenario_data.realtor_notes) {
-      realtorNotes = '<div class="scenario-notes-label">REALTOR NOTES</div><div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:8px;padding:8px 12px;background:rgba(110,127,119,0.08);border-radius:8px;">' + escHtml(s.scenario_data.realtor_notes) + '</div>';
-    }
-
-    var aiSection = '';
-    if (s.ai_response) {
-      aiSection = '<div class="scenario-notes-label">GUS GUS RESEARCH NOTES</div>' +
-        '<div class="scenario-ai-response" id="aiResp' + idx + '">' + formatScenarioAI(s.ai_response) + '</div>' +
-        '<div class="scenario-toggle" onclick="toggleAI(' + idx + ')">▸ Show research notes</div>';
-    }
-
-    var actions = '';
-    if (isHot) {
-      actions = '<div class="scenario-actions">' +
-        '<button class="scenario-action-btn callback" onclick="markScenario(\'' + s.id + '\',\'called_back\')">✓ Called Back</button>' +
-        '<button class="scenario-action-btn dismiss" onclick="markScenario(\'' + s.id + '\',\'closed\')">Dismiss</button>' +
-        '</div>';
-    }
-
-    html += '<div class="scenario-card ' + cardClass + '">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-        '<span class="scenario-type-badge ' + badgeClass + '">' + badgeText + '</span>' +
-        '<span class="scenario-meta">' + timeAgo(s.created_at) + '</span>' +
-      '</div>' +
-      '<div style="font-size:15px;font-weight:600;color:#fff;margin-top:8px;">' + escHtml(s.realtor_name || 'Unknown Realtor') + '</div>' +
-      '<div style="font-size:11px;color:rgba(255,255,255,0.3);">' + escHtml(s.realtor_email || '') + '</div>' +
-      scenarioInfo +
-      '<div class="scenario-question">' + escHtml(s.question || 'No details provided') + '</div>' +
-      realtorNotes +
-      aiSection +
-      actions +
-    '</div>';
+    html += '<div data-id="' + s.id + '" onclick="showScenarioDetail(\'' + s.id + '\')" style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04);transition:0.15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.04)\'" onmouseout="if(!this.classList.contains(\'sc-active\'))this.style.background=\'transparent\'">';
+    html += '<div style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';flex-shrink:0;"></div>';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<div style="font-weight:600;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escHtml(s.realtor_name || 'Unknown Realtor') + '</div>';
+    html += '<div style="font-size:11px;color:rgba(255,255,255,0.35);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + escHtml(snippet) + '</div>';
+    html += '</div>';
+    html += '<div style="text-align:right;flex-shrink:0;">';
+    html += '<div style="font-size:9px;font-weight:700;color:' + dotColor + ';letter-spacing:0.5px;">' + statusLabel + '</div>';
+    html += '<div style="font-size:10px;color:rgba(255,255,255,0.25);margin-top:2px;">' + timeAgo(s.created_at) + '</div>';
+    html += '</div></div>';
   });
 
   list.innerHTML = html;
+}
+
+function showScenarioDetail(id) {
+  var s = allScenarios.find(function(sc) { return sc.id === id; });
+  if (!s) return;
+
+  // Highlight active in list
+  document.querySelectorAll('#scenarioList [data-id]').forEach(function(el){ el.style.background='transparent'; el.classList.remove('sc-active'); });
+  var sel = document.querySelector('#scenarioList [data-id="'+id+'"]');
+  if (sel) { sel.style.background='rgba(255,255,255,0.06)'; sel.classList.add('sc-active'); }
+
+  var preview = document.getElementById('scenarioDetailPreview');
+  if (!preview) return;
+
+  var isHot = s.status === 'new' && s.type !== 'ask_gus';
+  var isIntel = s.type === 'ask_gus' && s.status === 'auto_resolved';
+  var isResolved = s.status === 'called_back' || s.status === 'closed';
+  var badgeColor = isHot ? '#ef4444' : isIntel ? '#3b82f6' : '#22c55e';
+  var badgeBg = isHot ? 'rgba(239,68,68,0.15)' : isIntel ? 'rgba(59,130,246,0.15)' : 'rgba(34,197,94,0.15)';
+  var badgeText = isHot ? (s.type === 'forwarded_gus' ? 'FORWARDED' : 'REVIEW REQUEST') : isIntel ? 'GUS GUS SEARCH' : 'RESOLVED';
+
+  var ts = new Date(s.created_at);
+  var dateStr = (ts.getMonth()+1) + '/' + ts.getDate() + '/' + ts.getFullYear() + ' at ' + ts.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit',hour12:true});
+
+  var h = '';
+  // Header
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
+  h += '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;background:' + badgeBg + ';color:' + badgeColor + ';">' + badgeText + '</span>';
+  h += '<span style="font-size:11px;color:rgba(255,255,255,0.3);font-family:Share Tech Mono,monospace;">' + dateStr + '</span>';
+  h += '</div>';
+
+  // Realtor info
+  h += '<div style="font-size:18px;font-weight:700;color:#fff;">' + escHtml(s.realtor_name || 'Unknown Realtor') + '</div>';
+  if (s.realtor_email) h += '<div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:2px;">' + escHtml(s.realtor_email) + '</div>';
+
+  // Scenario data
+  if (s.scenario_data && s.scenario_data.scenario_types && s.scenario_data.scenario_types.length) {
+    h += '<div style="margin-top:16px;padding:12px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:8px;">';
+    h += '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:8px;">Scenario Details</div>';
+    var parts = [];
+    if (s.scenario_data.borrower && s.scenario_data.borrower.credit_score) parts.push('<span style="color:rgba(255,255,255,0.5);">Credit:</span> ' + s.scenario_data.borrower.credit_score);
+    if (s.scenario_data.borrower && s.scenario_data.borrower.employment) parts.push('<span style="color:rgba(255,255,255,0.5);">Employment:</span> ' + s.scenario_data.borrower.employment);
+    if (s.scenario_data.property && s.scenario_data.property.type) parts.push('<span style="color:rgba(255,255,255,0.5);">Property:</span> ' + s.scenario_data.property.type);
+    if (s.scenario_data.property && s.scenario_data.property.use) parts.push('<span style="color:rgba(255,255,255,0.5);">Use:</span> ' + s.scenario_data.property.use);
+    if (s.scenario_data.purchase_price) parts.push('<span style="color:rgba(255,255,255,0.5);">Price:</span> ' + s.scenario_data.purchase_price);
+    if (s.scenario_data.down_payment) parts.push('<span style="color:rgba(255,255,255,0.5);">Down:</span> ' + s.scenario_data.down_payment);
+    h += '<div style="font-size:13px;color:rgba(255,255,255,0.7);line-height:2;">' + parts.join('<br>') + '</div>';
+    h += '</div>';
+  }
+
+  // Question / full story
+  if (s.question) {
+    h += '<div style="margin-top:16px;">';
+    h += '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px;">Details</div>';
+    h += '<div style="font-size:14px;color:rgba(255,255,255,0.75);line-height:1.7;">' + escHtml(s.question) + '</div>';
+    h += '</div>';
+  }
+
+  // Realtor notes (for forwarded)
+  if (s.type === 'forwarded_gus' && s.scenario_data && s.scenario_data.realtor_notes) {
+    h += '<div style="margin-top:16px;">';
+    h += '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px;">Realtor Notes</div>';
+    h += '<div style="font-size:13px;color:rgba(255,255,255,0.65);line-height:1.6;padding:10px 14px;background:rgba(110,127,119,0.08);border-radius:8px;">' + escHtml(s.scenario_data.realtor_notes) + '</div>';
+    h += '</div>';
+  }
+
+  // AI research notes
+  if (s.ai_response) {
+    h += '<div style="margin-top:16px;">';
+    h += '<div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:6px;">Research Notes</div>';
+    h += '<div style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.7;">' + formatScenarioAI(s.ai_response) + '</div>';
+    h += '</div>';
+  }
+
+  // Action buttons
+  if (isHot) {
+    h += '<div style="display:flex;gap:10px;margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">';
+    h += '<button class="scenario-action-btn callback" onclick="markScenario(\'' + s.id + '\',\'called_back\')">&#x2713; Called Back</button>';
+    h += '<button class="scenario-action-btn dismiss" onclick="markScenario(\'' + s.id + '\',\'closed\')">Dismiss</button>';
+    h += '</div>';
+  }
+
+  preview.innerHTML = h;
 }
 
 function toggleAI(idx) {
