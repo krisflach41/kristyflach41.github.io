@@ -78,9 +78,14 @@ body {
 
 /* ===== CARD PREVIEW BANNER ===== */
 .tool-preview {
-  height: 160px;
+  height: 180px;
   display: flex; align-items: center; justify-content: center;
   position: relative; overflow: hidden;
+  background-size: cover; background-position: center;
+}
+.tool-preview::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 100%);
 }
 .tool-preview.live {
   background: linear-gradient(135deg, #3d4f47 0%, #6e7f77 50%, #8a9e94 100%);
@@ -92,9 +97,8 @@ body {
   background: linear-gradient(135deg, #1a2a22 0%, #2d4a3e 50%, #6e7f77 100%);
   height: 180px;
 }
-.preview-icon { font-size: 52px; opacity: 0.25; }
 .preview-badge {
-  position: absolute; top: 14px; left: 14px;
+  position: absolute; top: 14px; left: 14px; z-index: 2;
   font-size: 9px; font-weight: 700; padding: 4px 10px;
   border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
 }
@@ -107,7 +111,7 @@ body {
 .preview-badge.coming {
   background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
 }
-.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; }
+.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; z-index: 2; }
 .preview-label h3 { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 2px 0; }
 .preview-label p { font-size: 11px; color: rgba(255,255,255,0.55); margin: 0; }
 
@@ -235,8 +239,7 @@ body {
 
     <!-- SCENARIO DESK (NEW) -->
     <div class="tool-card">
-      <div class="tool-preview scenario">
-        <div class="preview-icon">🐾</div>
+      <div class="tool-preview scenario" style="background-image:url('decision_tools_scenario_desk.jpg');">
         <span class="preview-badge new">NEW</span>
         <div class="preview-label">
           <h3>Scenario Desk</h3>
@@ -261,8 +264,7 @@ body {
 
     <!-- MARKET PULSE -->
     <div class="tool-card">
-      <div class="tool-preview live">
-        <div class="preview-icon">🗺️</div>
+      <div class="tool-preview live" style="background-image:url('decision_tools_market_pulse.jpg');">
         <span class="preview-badge live">Live Data</span>
         <div class="preview-label">
           <h3>Market Pulse</h3>
@@ -287,8 +289,7 @@ body {
 
     <!-- SELLER STRATEGIES -->
     <div class="tool-card">
-      <div class="tool-preview live">
-        <div class="preview-icon">⚖️</div>
+      <div class="tool-preview live" style="background-image:url('decision_tools_seller_strategies.jpg');">
         <span class="preview-badge live">Live Tool</span>
         <div class="preview-label">
           <h3>Seller Strategies</h3>
