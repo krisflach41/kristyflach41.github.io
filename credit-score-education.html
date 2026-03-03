@@ -5,210 +5,214 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credit Score Education - Agent Edge</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
-  padding: 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-  line-height: 1.7;
+  padding: 40px 20px 80px 20px;
+  background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0a0f1a 100%);
+  color: #c8ccd4;
+  min-height: 100vh;
 }
 
-.page-wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 860px; margin: 0 auto; }
 
 .guide-card {
   padding: 50px 45px;
   border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.65);
-  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+  background: linear-gradient(145deg, rgba(17,24,39,0.95), rgba(10,15,26,0.98));
+  border: 1px solid rgba(110,127,119,0.15);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 80px rgba(110,127,119,0.03);
 }
 
 .page-title {
+  text-align: center;
+  font-family: 'Playfair Display', serif;
   font-size: 34px;
-  margin-bottom: 8px;
-  color: #0b4ea2;
+  font-weight: 700;
+  color: #e8dcc8;
+  margin: 0 0 6px 0;
 }
 
 .page-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
+  text-align: center;
+  color: rgba(200,204,212,0.5);
+  font-size: 15px;
+  margin: 0 0 35px 0;
 }
 
+/* ===== SECTION HEADINGS ===== */
+.section-heading {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #e8dcc8;
+  margin: 40px 0 16px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(110,127,119,0.15);
+}
+
+/* ===== BODY TEXT ===== */
+.guide-card p { font-size: 15px; line-height: 1.7; color: rgba(200,204,212,0.75); }
+.guide-card p strong { color: #e8dcc8; }
+.guide-card em { color: rgba(200,204,212,0.5); }
+
+/* ===== DISCLAIMER ===== */
 .disclaimer-box {
-  background: linear-gradient(135deg, rgba(255,152,0,0.12), rgba(255,152,0,0.06));
-  border-left: 4px solid #ff9800;
-  padding: 20px;
-  border-radius: 8px;
+  background: rgba(110,127,119,0.06);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-left: 3px solid #6e7f77;
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
   margin-bottom: 35px;
   font-size: 13px;
   line-height: 1.6;
+  color: rgba(200,204,212,0.5);
 }
-
 .disclaimer-box strong {
+  color: #6e7f77;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   display: block;
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #e65100;
+  margin-bottom: 6px;
 }
 
-.section-heading {
-  font-size: 24px;
-  color: #0b4ea2;
-  margin: 35px 0 18px 0;
-  padding-bottom: 10px;
-  border-bottom: 2px solid rgba(11,78,162,0.2);
-}
-
-.section-heading:first-of-type {
-  margin-top: 10px;
-}
-
+/* ===== SCORE TABLE ===== */
 .score-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   margin: 20px 0;
-  font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(110,127,119,0.12);
 }
-
-.score-table th {
-  background: #0b4ea2;
-  color: white;
-  padding: 14px;
-  text-align: left;
+.score-table thead th {
+  background: rgba(110,127,119,0.12);
+  color: #e8dcc8;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 14px 16px;
+  text-align: left;
 }
-
-.score-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid rgba(0,0,0,0.06);
+.score-table tbody td {
+  padding: 13px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(110,127,119,0.06);
+  color: rgba(200,204,212,0.7);
 }
+.score-table tbody tr:last-child td { border-bottom: none; }
+.score-table tbody td strong { color: #e8dcc8; }
+.score-table .score-excellent td { border-left: 3px solid #34d399; }
+.score-table .score-good td { border-left: 3px solid #6e7f77; }
+.score-table .score-fair td { border-left: 3px solid #f59e0b; }
+.score-table .score-poor td { border-left: 3px solid #ef4444; }
 
-.score-table tr:hover {
-  background: rgba(11,78,162,0.03);
+/* ===== HIGHLIGHT BOX ===== */
+.highlight-box {
+  background: rgba(110,127,119,0.05);
+  border: 1px solid rgba(110,127,119,0.12);
+  border-radius: 14px;
+  padding: 24px;
+  margin: 20px 0;
 }
+.highlight-box p { font-size: 15px; color: rgba(200,204,212,0.75); margin: 0 0 12px 0; }
+.highlight-box p strong { color: #e8dcc8; }
 
-.score-excellent { background: rgba(76,175,80,0.08); }
-.score-good { background: rgba(33,150,243,0.08); }
-.score-fair { background: rgba(255,152,0,0.08); }
-.score-poor { background: rgba(244,67,54,0.08); }
+/* ===== WARNING BOX ===== */
+.warning-box {
+  background: rgba(239,68,68,0.06);
+  border: 1px solid rgba(239,68,68,0.15);
+  border-left: 3px solid #ef4444;
+  border-radius: 0 12px 12px 0;
+  padding: 18px 22px;
+  margin: 20px 0;
+}
+.warning-box strong { color: #ef4444; font-size: 15px; }
+.warning-box p { color: rgba(200,204,212,0.6); }
 
-.benefits-list, .requirements-list {
-  margin: 15px 0;
+/* ===== LISTS ===== */
+.requirements-list,
+.benefits-list,
+.donot-list {
   padding-left: 0;
   list-style: none;
+  margin: 12px 0;
 }
 
-.benefits-list li, .requirements-list li {
-  padding: 10px 0 10px 30px;
+.requirements-list li,
+.benefits-list li {
   position: relative;
+  padding: 8px 0 8px 24px;
   font-size: 15px;
+  line-height: 1.6;
+  color: rgba(200,204,212,0.7);
 }
+.requirements-list li strong,
+.benefits-list li strong { color: #e8dcc8; }
 
-.benefits-list li:before {
-  content: "✓";
+.requirements-list li::before,
+.benefits-list li::before {
+  content: '';
   position: absolute;
   left: 0;
-  color: #4caf50;
-  font-weight: 700;
-  font-size: 18px;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6e7f77;
+  opacity: 0.4;
 }
 
-.requirements-list li:before {
-  content: "•";
-  position: absolute;
-  left: 8px;
-  color: #0b4ea2;
-  font-weight: 700;
-  font-size: 20px;
-}
-
-.highlight-box {
-  background: linear-gradient(135deg, rgba(11,78,162,0.08), rgba(11,78,162,0.04));
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px 0;
-  border-left: 4px solid #0b4ea2;
-}
-
-.warning-box {
-  background: linear-gradient(135deg, rgba(244,67,54,0.08), rgba(244,67,54,0.04));
-  padding: 18px;
-  border-radius: 10px;
-  margin: 20px 0;
-  border-left: 4px solid #f44336;
-  font-size: 14px;
-}
-
-.donot-list {
-  background: rgba(244,67,54,0.04);
-  padding: 20px;
-  border-radius: 10px;
-  margin: 20px 0;
-  border-left: 4px solid #f44336;
-}
-
+/* DO NOT list - red bullets */
 .donot-list li {
-  padding: 8px 0 8px 30px;
   position: relative;
-  color: #c62828;
-  font-weight: 500;
+  padding: 8px 0 8px 24px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(200,204,212,0.7);
 }
-
-.donot-list li:before {
-  content: "✗";
+.donot-list li::before {
+  content: '';
   position: absolute;
   left: 0;
-  color: #f44336;
-  font-weight: 700;
-  font-size: 20px;
+  top: 16px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ef4444;
+  opacity: 0.5;
 }
 
+/* ===== BACK ===== */
 .back-btn {
   display: inline-block;
   margin-top: 40px;
-  padding: 12px 24px;
+  padding: 10px 24px;
   border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(110,127,119,0.2);
   text-decoration: none;
-  color: #0b1f3a;
+  color: rgba(200,204,212,0.6);
   font-weight: 600;
+  font-size: 14px;
   transition: all 0.25s ease;
 }
-
 .back-btn:hover {
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.06);
+  color: #e8dcc8;
   transform: translateY(-2px);
 }
 
-@media (max-width: 768px) {
-  .guide-card {
-    padding: 35px 25px;
-  }
-  
-  .page-title {
-    font-size: 28px;
-  }
-  
-  .score-table {
-    font-size: 12px;
-  }
-  
-  .score-table th, .score-table td {
-    padding: 10px 8px;
-  }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .guide-card { padding: 30px 22px; }
+  .page-title { font-size: 28px; }
+  .section-heading { font-size: 19px; }
 }
 </style>
 <script src="tracking.js"></script>
@@ -216,6 +220,7 @@ body {
 </head>
 
 <body>
+
 <div class="page-wrap">
   <article class="guide-card">
     
@@ -223,7 +228,7 @@ body {
     <p class="page-subtitle">Understanding How Credit Affects Your Mortgage</p>
     
     <div class="disclaimer-box">
-      <strong>⚠️ Important Disclaimer</strong>
+      <strong>Important Disclaimer</strong>
       The information presented here is provided as an educational tool only. Credit scoring models and lender requirements are subject to change at any time. This is not a comprehensive list of all factors affecting creditworthiness. Always consult with Kristy Flach for personalized guidance on improving your credit and qualifying for a mortgage.
     </div>
 
@@ -232,7 +237,7 @@ body {
 
     <p><strong>Example:</strong> On a $400,000 mortgage, a borrower with a 780 credit score might save over $59,000 in interest compared to someone with a 620 score over a 30-year term.</p>
 
-    <h2 class="section-heading">Credit Score Ranges & Mortgage Rates (2026)</h2>
+    <h2 class="section-heading">Credit Score Ranges & Mortgage Rate Impact</h2>
     
     <table class="score-table">
       <thead>
@@ -246,32 +251,32 @@ body {
         <tr class="score-excellent">
           <td><strong>760 - 850</strong></td>
           <td>Excellent</td>
-          <td>Best rates available (6.4% - 6.5%)</td>
+          <td>Best available rates</td>
         </tr>
         <tr class="score-good">
           <td><strong>700 - 759</strong></td>
           <td>Good</td>
-          <td>Competitive rates (6.6% - 6.9%)</td>
+          <td>Typically 0.125% – 0.375% higher</td>
         </tr>
         <tr class="score-good">
           <td><strong>660 - 699</strong></td>
           <td>Fair</td>
-          <td>Higher rates (7.0% - 7.3%)</td>
+          <td>Typically 0.5% – 0.75% higher</td>
         </tr>
         <tr class="score-fair">
           <td><strong>620 - 659</strong></td>
           <td>Poor</td>
-          <td>Significantly higher rates (7.4%+)</td>
+          <td>Typically 0.875% – 1.25%+ higher</td>
         </tr>
         <tr class="score-poor">
           <td><strong>Below 620</strong></td>
           <td>Very Poor</td>
-          <td>May require FHA or alternative options</td>
+          <td>May require FHA or alternative programs</td>
         </tr>
       </tbody>
     </table>
 
-    <p style="font-size: 13px; color: #666; margin-top: 10px;"><em>Note: Rates shown are approximate 2026 averages for conventional 30-year fixed mortgages and vary by lender, down payment, and other factors.</em></p>
+    <p style="font-size: 13px; color: #666; margin-top: 10px;"><em>Note: Rate differences shown are approximate spreads relative to the best available rate. Actual rates vary by lender, market conditions, down payment, and other factors.</em></p>
 
     <h2 class="section-heading">What Impacts Your Credit Score?</h2>
     
@@ -289,7 +294,7 @@ body {
     <h2 class="section-heading">DO NOT Do These Things During Your Mortgage Process!</h2>
     
     <div class="warning-box">
-      <strong>⚠️ CRITICAL: Your lender will check your credit again before closing!</strong>
+      <strong>CRITICAL: Your lender will check your credit again before closing!</strong>
       <p style="margin-top: 10px;">Even small credit changes can delay or cancel your loan. Avoid these mistakes:</p>
     </div>
 
@@ -329,7 +334,7 @@ body {
     <h2 class="section-heading">When to Check Your Credit</h2>
     
     <div class="highlight-box">
-      <p><strong>✓ DO check your credit when:</strong></p>
+      <p><strong> DO check your credit when:</strong></p>
       <ul class="requirements-list">
         <li>Planning to buy a home 6-12 months out</li>
         <li>Using free services like AnnualCreditReport.com</li>
@@ -337,7 +342,7 @@ body {
         <li>Monitoring your score monthly (soft inquiry)</li>
       </ul>
       
-      <p style="margin-top: 20px;"><strong>✗ DO NOT check when:</strong></p>
+      <p style="margin-top: 20px;"><strong> DO NOT check when:</strong></p>
       <ul class="requirements-list">
         <li>Applying for credit cards "just to see" if you'll be approved</li>
         <li>Shopping for multiple loans without a plan</li>
@@ -345,7 +350,7 @@ body {
       </ul>
     </div>
 
-    <h2 class="section-heading">Credit Score Changes for 2026</h2>
+    <h2 class="section-heading">Recent Credit Score Changes</h2>
     <p>Important update: Fannie Mae eliminated its minimum 620 credit score requirement in November 2025. However, this doesn't mean all borrowers below 620 will be approved. Instead, lenders now look at a broader range of factors including:</p>
     <ul class="requirements-list">
       <li>Borrower reserves and liquid assets</li>
@@ -372,10 +377,12 @@ body {
     <p style="margin-top: 15px;"><strong>Need personalized guidance on improving your credit for a mortgage?</strong> Contact Kristy Flach for expert advice tailored to your situation.</p>
 
     <div style="text-align:center; margin-top: 40px;">
-      <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
+      <a href="education-credit-tools.html" class="back-btn">← Back to Credit & Financial Tools</a>
     </div>
 
   </article>
 </div>
+
+<script src="login.js"></script>
 </body>
 </html>
