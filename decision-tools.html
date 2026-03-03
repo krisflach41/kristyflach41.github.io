@@ -78,23 +78,25 @@ body {
 
 /* ===== CARD PREVIEW BANNER ===== */
 .tool-preview {
-  height: 160px;
-  display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
 }
-.tool-preview.live {
-  background: linear-gradient(135deg, #3d4f47 0%, #6e7f77 50%, #8a9e94 100%);
+.tool-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.15) 40%, transparent 100%);
+  pointer-events: none;
 }
-.tool-preview.coming {
-  background: linear-gradient(135deg, #c8c3b8 0%, #a8a296 100%);
-}
-.tool-preview.scenario {
-  background: linear-gradient(135deg, #1a2a22 0%, #2d4a3e 50%, #6e7f77 100%);
-  height: 180px;
-}
-.preview-icon { font-size: 52px; opacity: 0.25; }
+
 .preview-badge {
-  position: absolute; top: 14px; left: 14px;
+  position: absolute; top: 14px; left: 14px; z-index: 2;
   font-size: 9px; font-weight: 700; padding: 4px 10px;
   border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
 }
@@ -104,10 +106,8 @@ body {
 .preview-badge.new {
   background: rgba(245,158,11,0.25); color: #f59e0b; border: 1px solid rgba(245,158,11,0.35);
 }
-.preview-badge.coming {
-  background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.2);
-}
-.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; }
+
+.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; z-index: 2; }
 .preview-label h3 { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 2px 0; }
 .preview-label p { font-size: 11px; color: rgba(255,255,255,0.55); margin: 0; }
 
@@ -129,7 +129,15 @@ body {
   font-weight: 600; font-size: 14px; transition: background 0.2s ease, transform 0.2s ease;
 }
 .tool-btn:hover { background: #556b62; transform: translateY(-1px); }
-.tool-btn.disabled { background: rgba(11,30,58,0.1); color: rgba(11,30,58,0.3); pointer-events: none; }
+
+/* ===== GUIDE LINK ===== */
+.guide-link {
+  display: inline-block; margin-left: 14px; font-size: 12px;
+  color: #6b7c93; cursor: pointer; transition: color 0.2s;
+  text-decoration: none; letter-spacing: 0.3px; vertical-align: middle;
+}
+.guide-link:hover { color: #6e7f77; }
+.guide-link svg { width: 13px; height: 13px; vertical-align: -2px; margin-right: 3px; }
 
 /* ===== DATA SOURCE ===== */
 .data-source { text-align: center; margin-top: 40px; font-size: 11px; color: #999; }
@@ -148,24 +156,7 @@ body {
   border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a; font-weight: 600;
 }
 
-@media (max-width: 640px) {
-  body { padding: 40px 0; }
-  .gallery-card { padding: 30px 20px; }
-  .section-title { font-size: 26px; }
-  .tool-grid { grid-template-columns: 1fr; gap: 24px; }
-}
-
-/* ===== REPORT GUIDE LINK ===== */
-.guide-link {
-  display: inline-block; margin-left: 14px; font-size: 12px;
-  color: #6b7c93; cursor: pointer; transition: color 0.2s;
-  text-decoration: none; letter-spacing: 0.3px; vertical-align: middle;
-}
-.guide-link:hover { color: #6e7f77; }
-.guide-link svg { width: 13px; height: 13px; vertical-align: -2px; margin-right: 4px; opacity: 0.6; }
-.guide-link:hover svg { opacity: 1; }
-
-/* ===== CHEAT SHEET OVERLAY ===== */
+/* ===== CHEATSHEET OVERLAY ===== */
 .cheatsheet-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.5);
   display: none; z-index: 10001; align-items: center; justify-content: center;
@@ -227,16 +218,15 @@ body {
 
   <h2 class="section-title">Decision Tools</h2>
   <p class="section-subtitle">
-    Interactive tools designed to support planning and decision-making.
-    Explore the data, compare scenarios, and share insights with clients.
+    Interactive tools designed to support planning and decision-making. Explore the data,
+    compare scenarios, and share insights with clients.
   </p>
 
   <div class="tool-grid">
 
     <!-- SCENARIO DESK (NEW) -->
     <div class="tool-card">
-      <div class="tool-preview scenario">
-        <div class="preview-icon">🐾</div>
+      <div class="tool-preview" style="background-image:url('decision_tools_scenario_desk.jpg'); background-color:#1a2a22;">
         <span class="preview-badge new">NEW</span>
         <div class="preview-label">
           <h3>Scenario Desk</h3>
@@ -245,9 +235,9 @@ body {
       </div>
       <div class="tool-body">
         <p>
-          Got a unique borrower or property situation? Ask Gus Gus to search lending guidelines
-          from Fannie Mae, Freddie Mac, FHA, VA, and USDA — or submit a scenario directly
-          for expert review and a callback with answers.
+          Got a unique borrower or property situation? Ask Gus Gus to search lending
+          guidelines from Fannie Mae, Freddie Mac, FHA, VA, and USDA — or submit a
+          scenario directly for expert review and a callback with answers.
         </p>
         <div class="tool-features">
           <span class="tool-feat-tag">Guideline Search</span>
@@ -261,8 +251,7 @@ body {
 
     <!-- MARKET PULSE -->
     <div class="tool-card">
-      <div class="tool-preview live">
-        <div class="preview-icon">🗺️</div>
+      <div class="tool-preview" style="background-image:url('decision_tools_market_pulse.jpg'); background-color:#3d4f47;">
         <span class="preview-badge live">Live Data</span>
         <div class="preview-label">
           <h3>Market Pulse</h3>
@@ -287,8 +276,7 @@ body {
 
     <!-- SELLER STRATEGIES -->
     <div class="tool-card">
-      <div class="tool-preview live">
-        <div class="preview-icon">⚖️</div>
+      <div class="tool-preview" style="background-image:url('decision_tools_seller_strategies.jpg'); background-color:#3d4f47;">
         <span class="preview-badge live">Live Tool</span>
         <div class="preview-label">
           <h3>Seller Strategies</h3>
@@ -337,9 +325,9 @@ var guideData = {
   seller: {
     name: 'Seller Strategies',
     tagline: 'Price Drop vs. Smart Concessions',
-    what: 'Compares alternative strategies for homes that need to sell fast or have been aging on the market. Instead of defaulting to a price reduction, this tool shows the seller — in black and white — how a rate buydown or closing cost credit can achieve the same result for less money. The seller keeps more equity, the buyer gets a better payment,',
+    what: 'Compares alternative strategies for homes that need to sell fast or have been aging on the market. Instead of defaulting to a price reduction, this tool shows the seller \u2014 in black and white \u2014 how a rate buydown or closing cost credit can achieve the same result for less money. The seller keeps more equity, the buyer gets a better payment,',
     whatHighlight: 'and you protect your full commission on the original list price.',
-    when: 'Your seller is getting anxious and the price reduction conversation is coming. Before they cut $10k\u2013$25k off the top, pull this report and show them a smarter path. Also use it when you\'re comparing offers \u2014 the buyer\'s loan type determines how much room you have to work this strategy.',
+    when: 'Your seller is getting anxious and the price reduction conversation is coming. Before they cut $10k\u201325k off the top, pull this report and show them a smarter path. Also use it when you\'re comparing offers \u2014 the buyer\'s loan type determines how much room you have to work this strategy.',
     points: [
       '"Before we drop the price, let me show you what that same money could do if we spent it differently."',
       '"A price reduction comes straight out of your equity and goes on public record. A rate buydown achieves the same impact on the buyer\'s payment for a fraction of the cost."',
@@ -388,5 +376,6 @@ document.getElementById('cheatsheetOverlay').addEventListener('click', function(
 });
 </script>
 
+<script src="login.js"></script>
 </body>
 </html>
