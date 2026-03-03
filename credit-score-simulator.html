@@ -211,6 +211,14 @@ h2 {
 }
 .currency-wrap input { padding-left: 24px; }
 /* Calc buttons */
+/* Multi-entry */
+.entry-item { position: relative; padding: 0 0 12px 0; margin-bottom: 12px; }
+.entry-item + .entry-item { padding-top: 12px; border-top: 1px dashed var(--rule-light); }
+.entry-label { font-size: 10px; font-weight: 600; color: var(--ink-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+.remove-entry { position: absolute; top: 0; right: 0; font-size: 11px; color: var(--ink-muted); cursor: pointer; background: none; border: none; font-family: Inter, sans-serif; padding: 2px 0; }
+.remove-entry:hover { color: var(--warn); }
+.add-entry-btn { display: inline-block; font-size: 12px; font-weight: 500; color: var(--ink-muted); cursor: pointer; background: none; border: none; font-family: Inter, sans-serif; padding: 6px 0; margin-bottom: 8px; }
+.add-entry-btn:hover { color: var(--ink); }
 .add-btn {
   display: block; width: 100%; padding: 10px;
   background: transparent; color: var(--ink);
@@ -403,109 +411,85 @@ h2 {
         <h2 style="color: var(--ink); font-size: 20px; margin-bottom: 20px;">Scenarios</h2>
         
         <!-- Pay Down Credit Card -->
-        <div class="scenario-card">
-          <h3>Pay Down Credit Card Balance</h3>
-          <div class="input-row">
-            <div class="form-group" style="margin: 0;">
-              <label>Current Balance</label>
-              <div class="currency-wrap"><input type="text" id="cardBalance" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Credit Limit</label>
-              <div class="currency-wrap"><input type="text" id="cardLimit" placeholder="5,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Pay Down To</label>
-              <div class="currency-wrap"><input type="text" id="newBalance" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-          </div>
-          <button class="add-btn" onclick="simulateCardPaydown()">Calculate Impact</button>
-        </div>
-        
-        <!-- Pay Collection -->
-        <div class="scenario-card">
-          <h3>Pay or Remove Collection</h3>
-          <div class="scenario-warning">
-            <strong>Critical:</strong> Paying a collection can lower your score by restarting the "last activity" date. Collections remain on your report for seven years from the original delinquency. Payment does not remove the record unless deletion is negotiated. Do not pay without consulting <span class="lo-name-dynamic">your loan officer</span>.
-          </div>
-          <div class="input-row">
-            <div class="form-group" style="margin: 0;">
-              <label>Collection Amount</label>
-              <div class="currency-wrap"><input type="text" id="collectionAmount" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Age (Years)</label>
-              <input type="number" id="collectionAge" placeholder="3" min="0" max="7">
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Action</label>
-              <select id="collectionAction">
-                <option value="pay">Pay / Settle</option>
-                <option value="remove">Remove / Dispute</option>
-              </select>
-            </div>
-          </div>
-          <button class="add-btn" onclick="simulateCollection()">Calculate Impact</button>
-        </div>
-        
-        <!-- Late Payment -->
-        <div class="scenario-card">
-          <h3>Late Payment Falls Off Report</h3>
-          <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">
-            Late payments typically fall off after seven years. This estimates the score recovery when that occurs.
-          </div>
-          <div class="input-row two-col">
-            <div class="form-group" style="margin: 0;">
-              <label>Severity</label>
-              <select id="latePaymentSeverity">
-                <option value="30">30 Days Late</option>
-                <option value="60">60 Days Late</option>
-                <option value="90">90+ Days Late</option>
-              </select>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Number of Payments</label>
-              <input type="number" id="latePaymentCount" value="1" min="1" max="10">
-            </div>
-          </div>
-          <button class="add-btn" onclick="simulateLatePaymentRemoval()">Calculate Impact</button>
-        </div>
-        
-        <!-- Open New Account -->
-        <div class="scenario-card">
-          <h3>Open New Credit Account</h3>
-          <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">
-            New accounts typically cause a temporary 5&ndash;10 point reduction from the hard inquiry. Long-term, additional credit capacity can be beneficial.
-          </div>
-          <div class="input-row" style="grid-template-columns:1fr;">
-            <div class="form-group" style="margin: 0;">
-              <label>New Credit Limit</label>
-              <div class="currency-wrap"><input type="text" id="newAccountLimit" placeholder="3,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-          </div>
-          <button class="add-btn" onclick="simulateNewAccount()">Calculate Impact</button>
-        </div>
-        
-        <!-- Close Account -->
-        <div class="scenario-card">
-          <h3>Close Credit Account</h3>
-          <div class="scenario-warning">
-            Closing accounts typically hurts your score by increasing utilization, reducing average age of accounts, and lowering total available credit. This action is rarely advisable.
-          </div>
-          <div class="input-row two-col">
-            <div class="form-group" style="margin: 0;">
-              <label>Account Credit Limit</label>
-              <div class="currency-wrap"><input type="text" id="closeAccountLimit" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label>Account Age (Years)</label>
-              <input type="number" id="accountAge" placeholder="5">
-            </div>
-          </div>
-          <button class="add-btn" onclick="simulateCloseAccount()">Calculate Impact</button>
-        </div>
+<div class="scenario-card">
+  <h3>Pay Down Credit Card Balance</h3>
+  <div id="cardEntries">
+    <div class="entry-item" data-idx="1">
+      <div class="entry-label">Card 1</div>
+      <div class="input-row">
+        <div class="form-group" style="margin:0;"><label>Current Balance</label><div class="currency-wrap"><input type="text" class="card-bal" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
+        <div class="form-group" style="margin:0;"><label>Credit Limit</label><div class="currency-wrap"><input type="text" class="card-lim" placeholder="5,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
+        <div class="form-group" style="margin:0;"><label>Pay Down To</label><div class="currency-wrap"><input type="text" class="card-pay" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
       </div>
-      
+    </div>
+  </div>
+  <button class="add-entry-btn" onclick="addCardEntry()">+ Add another card</button>
+  <button class="add-btn" onclick="simulateCards()">Calculate Impact</button>
+</div>
+
+<div class="scenario-card">
+  <h3>Pay or Remove Collection</h3>
+  <div class="scenario-warning"><strong>Critical:</strong> Paying a collection can lower your score by restarting the last activity date. Collections remain on your report for seven years. Payment does not remove the record unless deletion is negotiated. Do not pay without consulting <span class="lo-name-dynamic">your loan officer</span>.</div>
+  <div id="collEntries">
+    <div class="entry-item" data-idx="1">
+      <div class="entry-label">Collection 1</div>
+      <div class="input-row">
+        <div class="form-group" style="margin:0;"><label>Amount</label><div class="currency-wrap"><input type="text" class="coll-amt" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
+        <div class="form-group" style="margin:0;"><label>Age (Years)</label><input type="number" class="coll-age" placeholder="3" min="0" max="7"></div>
+        <div class="form-group" style="margin:0;"><label>Action</label><select class="coll-act"><option value="pay">Pay / Settle</option><option value="remove">Remove / Dispute</option></select></div>
+      </div>
+    </div>
+  </div>
+  <button class="add-entry-btn" onclick="addCollEntry()">+ Add another collection</button>
+  <button class="add-btn" onclick="simulateCollections()">Calculate Impact</button>
+</div>
+
+<div class="scenario-card">
+  <h3>Late Payment Falls Off Report</h3>
+  <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">Late payments typically fall off after seven years. This estimates the score recovery when that occurs.</div>
+  <div id="lateEntries">
+    <div class="entry-item" data-idx="1">
+      <div class="entry-label">Late Payment 1</div>
+      <div class="input-row two-col">
+        <div class="form-group" style="margin:0;"><label>Severity</label><select class="late-sev"><option value="30">30 Days Late</option><option value="60">60 Days Late</option><option value="90">90+ Days Late</option></select></div>
+        <div class="form-group" style="margin:0;"><label>Number of Payments</label><input type="number" class="late-cnt" value="1" min="1" max="10"></div>
+      </div>
+    </div>
+  </div>
+  <button class="add-entry-btn" onclick="addLateEntry()">+ Add another late payment</button>
+  <button class="add-btn" onclick="simulateLatePayments()">Calculate Impact</button>
+</div>
+
+<div class="scenario-card">
+  <h3>Open New Credit Account</h3>
+  <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">New accounts typically cause a temporary 5-10 point reduction from the hard inquiry. Long-term, additional credit capacity can be beneficial.</div>
+  <div id="newAcctEntries">
+    <div class="entry-item" data-idx="1">
+      <div class="entry-label">Account 1</div>
+      <div class="input-row" style="grid-template-columns:1fr;">
+        <div class="form-group" style="margin:0;"><label>New Credit Limit</label><div class="currency-wrap"><input type="text" class="newacct-lim" placeholder="3,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
+      </div>
+    </div>
+  </div>
+  <button class="add-entry-btn" onclick="addNewAcctEntry()">+ Add another account</button>
+  <button class="add-btn" onclick="simulateNewAccounts()">Calculate Impact</button>
+</div>
+
+<div class="scenario-card">
+  <h3>Close Credit Account</h3>
+  <div class="scenario-warning">Closing accounts typically hurts your score by increasing utilization, reducing average age of accounts, and lowering total available credit. This action is rarely advisable.</div>
+  <div id="closeEntries">
+    <div class="entry-item" data-idx="1">
+      <div class="entry-label">Account 1</div>
+      <div class="input-row two-col">
+        <div class="form-group" style="margin:0;"><label>Account Credit Limit</label><div class="currency-wrap"><input type="text" class="close-lim" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div>
+        <div class="form-group" style="margin:0;"><label>Account Age (Years)</label><input type="number" class="close-age" placeholder="5"></div>
+      </div>
+    </div>
+  </div>
+  <button class="add-entry-btn" onclick="addCloseEntry()">+ Add another account</button>
+  <button class="add-btn" onclick="simulateCloseAccounts()">Calculate Impact</button>
+</div>      
       <div class="results-section" id="resultsSection">
         <h3 style="color: var(--ink); margin-top: 0; font-size: 20px;">Projected Impact</h3>
         
@@ -711,87 +695,124 @@ async function logSimulation(action, details, projectedScore) {
   }
 }
 
-function simulateCardPaydown() {
-  const balance = getCurrVal('cardBalance');
-  const limit = getCurrVal('cardLimit');
-  const newBal = getCurrVal('newBalance');
-  
-  if (!balance || !limit) { alert('Please complete all fields.'); return; }
-  
-  const currentUtil = (balance / limit) * 100;
-  const newUtil = (newBal / limit) * 100;
-  const utilChange = currentUtil - newUtil;
-  
-  let impact = { min: 0, max: 0 };
-  if (utilChange > 30) impact = { min: 25, max: 45 };
-  else if (utilChange > 15) impact = { min: 15, max: 30 };
-  else if (utilChange > 5) impact = { min: 5, max: 15 };
-  else impact = { min: 0, max: 5 };
-  
-  showResults('Pay Down Credit Card', impact,
-    'Balance reduced from ' + fmtDollar(balance) + ' to ' + fmtDollar(newBal) + ' on a ' + fmtDollar(limit) + ' limit. Utilization moves from ' + currentUtil.toFixed(1) + '% to ' + newUtil.toFixed(1) + '%.');
+// ===== MULTI-ENTRY MANAGEMENT =====
+var counters = { card: 1, coll: 1, late: 1, newacct: 1, close: 1 };
+function removeEntry(btn) { btn.closest('.entry-item').remove(); }
+function addCardEntry() {
+  counters.card++;
+  var c = document.getElementById('cardEntries');
+  var d = document.createElement('div');
+  d.className = 'entry-item';
+  d.innerHTML = '<div class="entry-label">Card '+counters.card+' <button class="remove-entry" onclick="removeEntry(this)">Remove</button></div><div class="input-row"><div class="form-group" style="margin:0;"><label>Current Balance</label><div class="currency-wrap"><input type="text" class="card-bal" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div><div class="form-group" style="margin:0;"><label>Credit Limit</label><div class="currency-wrap"><input type="text" class="card-lim" placeholder="5,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div><div class="form-group" style="margin:0;"><label>Pay Down To</label><div class="currency-wrap"><input type="text" class="card-pay" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div></div>';
+  c.appendChild(d);
 }
-
-function simulateCollection() {
-  const amount = getCurrVal('collectionAmount');
-  const age = parseInt(document.getElementById('collectionAge').value);
-  const action = document.getElementById('collectionAction').value;
-  
-  if (!amount || isNaN(age)) { alert('Please complete all fields.'); return; }
-  
-  let impact = { min: 0, max: 0 };
-  let details = '';
-  
-  if (action === 'pay') {
-    if (age >= 3) {
-      impact = { min: -15, max: -5 };
-      details = 'Paying a ' + age + '-year-old ' + fmtDollar(amount) + ' collection will likely lower your score by reactivating the account. Do not proceed without a negotiated deletion agreement.';
-    } else {
-      impact = { min: -5, max: 5 };
-      details = 'Paying a ' + age + '-year-old ' + fmtDollar(amount) + ' collection may produce minimal change. Payment alone does not remove the record from your report.';
+function addCollEntry() {
+  counters.coll++;
+  var c = document.getElementById('collEntries');
+  var d = document.createElement('div');
+  d.className = 'entry-item';
+  d.innerHTML = '<div class="entry-label">Collection '+counters.coll+' <button class="remove-entry" onclick="removeEntry(this)">Remove</button></div><div class="input-row"><div class="form-group" style="margin:0;"><label>Amount</label><div class="currency-wrap"><input type="text" class="coll-amt" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div><div class="form-group" style="margin:0;"><label>Age (Years)</label><input type="number" class="coll-age" placeholder="3" min="0" max="7"></div><div class="form-group" style="margin:0;"><label>Action</label><select class="coll-act"><option value="pay">Pay / Settle</option><option value="remove">Remove / Dispute</option></select></div></div>';
+  c.appendChild(d);
+}
+function addLateEntry() {
+  counters.late++;
+  var c = document.getElementById('lateEntries');
+  var d = document.createElement('div');
+  d.className = 'entry-item';
+  d.innerHTML = '<div class="entry-label">Late Payment '+counters.late+' <button class="remove-entry" onclick="removeEntry(this)">Remove</button></div><div class="input-row two-col"><div class="form-group" style="margin:0;"><label>Severity</label><select class="late-sev"><option value="30">30 Days Late</option><option value="60">60 Days Late</option><option value="90">90+ Days Late</option></select></div><div class="form-group" style="margin:0;"><label>Number of Payments</label><input type="number" class="late-cnt" value="1" min="1" max="10"></div></div>';
+  c.appendChild(d);
+}
+function addNewAcctEntry() {
+  counters.newacct++;
+  var c = document.getElementById('newAcctEntries');
+  var d = document.createElement('div');
+  d.className = 'entry-item';
+  d.innerHTML = '<div class="entry-label">Account '+counters.newacct+' <button class="remove-entry" onclick="removeEntry(this)">Remove</button></div><div class="input-row" style="grid-template-columns:1fr;"><div class="form-group" style="margin:0;"><label>New Credit Limit</label><div class="currency-wrap"><input type="text" class="newacct-lim" placeholder="3,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div></div>';
+  c.appendChild(d);
+}
+function addCloseEntry() {
+  counters.close++;
+  var c = document.getElementById('closeEntries');
+  var d = document.createElement('div');
+  d.className = 'entry-item';
+  d.innerHTML = '<div class="entry-label">Account '+counters.close+' <button class="remove-entry" onclick="removeEntry(this)">Remove</button></div><div class="input-row two-col"><div class="form-group" style="margin:0;"><label>Account Credit Limit</label><div class="currency-wrap"><input type="text" class="close-lim" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div></div><div class="form-group" style="margin:0;"><label>Account Age (Years)</label><input type="number" class="close-age" placeholder="5"></div></div>';
+  c.appendChild(d);
+}
+function getVal(el) { var raw = el.getAttribute('data-raw') || el.value; return parseFloat((raw||'').replace(/[^0-9.\-]/g,'')) || 0; }
+// ===== MULTI-ENTRY SIMULATION FUNCTIONS =====
+function simulateCards() {
+  var entries = document.querySelectorAll('#cardEntries .entry-item');
+  var tMin=0,tMax=0,det=[],ok=false;
+  entries.forEach(function(e,i){
+    var b=getVal(e.querySelector('.card-bal')),l=getVal(e.querySelector('.card-lim')),n=getVal(e.querySelector('.card-pay'));
+    if(!b||!l)return; ok=true;
+    var cu=(b/l)*100,nu=(n/l)*100,d=cu-nu;
+    var imp=d>30?{min:25,max:45}:d>15?{min:15,max:30}:d>5?{min:5,max:15}:{min:0,max:5};
+    tMin+=imp.min;tMax+=imp.max;
+    det.push('Card '+(i+1)+': '+fmtDollar(b)+' to '+fmtDollar(n)+' on '+fmtDollar(l)+' limit ('+cu.toFixed(1)+'% to '+nu.toFixed(1)+'%)');
+  });
+  if(!ok){alert('Please complete at least one card entry.');return;}
+  tMin=Math.min(tMin,65);tMax=Math.min(tMax,85);
+  showResults('Pay Down Credit Cards',{min:tMin,max:tMax},det.join('<br>'));
+}
+function simulateCollections() {
+  var entries = document.querySelectorAll('#collEntries .entry-item');
+  var tMin=0,tMax=0,det=[],ok=false;
+  entries.forEach(function(e,i){
+    var amt=getVal(e.querySelector('.coll-amt')),age=parseInt(e.querySelector('.coll-age').value),act=e.querySelector('.coll-act').value;
+    if(!amt||isNaN(age))return; ok=true;
+    var imp,d;
+    if(act==='pay'){
+      if(age>=3){imp={min:-15,max:-5};d='Pay '+fmtDollar(amt)+' ('+age+'yr) - likely lowers score';}
+      else{imp={min:-5,max:5};d='Pay '+fmtDollar(amt)+' ('+age+'yr) - minimal change';}
+    }else{
+      imp=amt>1000?{min:25,max:50}:amt>500?{min:15,max:35}:{min:10,max:25};
+      d='Remove '+fmtDollar(amt)+' ('+age+'yr) - significant improvement possible';
     }
-  } else {
-    if (amount > 1000) impact = { min: 25, max: 50 };
-    else if (amount > 500) impact = { min: 15, max: 35 };
-    else impact = { min: 10, max: 25 };
-    details = 'Successful removal of a ' + fmtDollar(amount) + ' collection (' + age + ' years old) can produce significant score improvement.';
-  }
-  
-  showResults(action === 'pay' ? 'Pay / Settle Collection' : 'Remove Collection', impact, details);
+    tMin+=imp.min;tMax+=imp.max;
+    det.push('Collection '+(i+1)+': '+d);
+  });
+  if(!ok){alert('Please complete at least one collection entry.');return;}
+  showResults('Collections',{min:tMin,max:tMax},det.join('<br>'));
 }
-
-function simulateLatePaymentRemoval() {
-  const severity = document.getElementById('latePaymentSeverity').value;
-  const count = parseInt(document.getElementById('latePaymentCount').value);
-  
-  let impact = { min: 0, max: 0 };
-  if (severity === '90') impact = { min: 20 * count, max: 35 * count };
-  else if (severity === '60') impact = { min: 15 * count, max: 25 * count };
-  else impact = { min: 10 * count, max: 20 * count };
-  
-  showResults('Late Payment Removal', impact,
-    count + ' late payment(s) at ' + severity + ' days removed from report after the seven-year reporting period.');
+function simulateLatePayments() {
+  var entries = document.querySelectorAll('#lateEntries .entry-item');
+  var tMin=0,tMax=0,det=[],ok=false;
+  entries.forEach(function(e,i){
+    var sev=e.querySelector('.late-sev').value,cnt=parseInt(e.querySelector('.late-cnt').value)||1;
+    ok=true;
+    var imp=sev==='90'?{min:20*cnt,max:35*cnt}:sev==='60'?{min:15*cnt,max:25*cnt}:{min:10*cnt,max:20*cnt};
+    tMin+=imp.min;tMax+=imp.max;
+    det.push((i+1)+': '+cnt+' payment(s) at '+sev+' days removed');
+  });
+  if(!ok){alert('Please complete at least one entry.');return;}
+  showResults('Late Payment Removal',{min:tMin,max:tMax},det.join('<br>'));
 }
-
-function simulateNewAccount() {
-  const limit = getCurrVal('newAccountLimit');
-  if (!limit) { alert('Please enter the credit limit.'); return; }
-  
-  showResults('Open New Account', { min: -10, max: -5 },
-    'New account with ' + fmtDollar(limit) + ' limit. Expect a temporary reduction from the hard inquiry. Allow at least six months before a mortgage application.');
+function simulateNewAccounts() {
+  var entries = document.querySelectorAll('#newAcctEntries .entry-item');
+  var tMin=0,tMax=0,det=[],ok=false;
+  entries.forEach(function(e,i){
+    var l=getVal(e.querySelector('.newacct-lim'));
+    if(!l)return; ok=true;
+    tMin+=-10;tMax+=-5;
+    det.push('Account '+(i+1)+': '+fmtDollar(l)+' limit - temporary inquiry impact');
+  });
+  if(!ok){alert('Please enter at least one credit limit.');return;}
+  showResults('Open New Accounts',{min:tMin,max:tMax},det.join('<br>'));
 }
-
-function simulateCloseAccount() {
-  const limit = getCurrVal('closeAccountLimit');
-  const age = parseInt(document.getElementById('accountAge').value);
-  if (!limit || !age) { alert('Please complete all fields.'); return; }
-  
-  let impact = age > 10 ? { min: -35, max: -15 } : { min: -25, max: -10 };
-  
-  showResults('Close Account', impact,
-    'Closing a ' + age + '-year-old account (' + fmtDollar(limit) + ' limit) will reduce available credit and lower average account age. This action is rarely recommended.');
+function simulateCloseAccounts() {
+  var entries = document.querySelectorAll('#closeEntries .entry-item');
+  var tMin=0,tMax=0,det=[],ok=false;
+  entries.forEach(function(e,i){
+    var l=getVal(e.querySelector('.close-lim')),a=parseInt(e.querySelector('.close-age').value);
+    if(!l||!a)return; ok=true;
+    var imp=a>10?{min:-35,max:-15}:{min:-25,max:-10};
+    tMin+=imp.min;tMax+=imp.max;
+    det.push('Account '+(i+1)+': '+fmtDollar(l)+' limit, '+a+' years old');
+  });
+  if(!ok){alert('Please complete at least one entry.');return;}
+  showResults('Close Accounts',{min:tMin,max:tMax},det.join('<br>')+'<br>Closing accounts is rarely recommended.');
 }
-
 // ===== SIMULATION TRACKING FOR SUBMISSION =====
 var simulationHistory = [];
 
