@@ -4,429 +4,316 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Credit Score Simulator - Agent Edge</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1a1a;
+  --ink-light: #555;
+  --ink-muted: #888;
+  --rule: #d4d4d4;
+  --rule-light: #e8e8e8;
+  --surface: rgba(255,255,255,0.72);
+  --warn: #6b1d1d;
+  --positive: #1a4d2e;
+  --negative: #6b1d1d;
+}
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-weight: 400; font-size: 14px; margin: 0; padding: 48px 0;
+  background: linear-gradient(rgba(255,255,255,0.50), rgba(255,255,255,0.60)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-  line-height: 1.7;
+  color: var(--ink); line-height: 1.7; -webkit-font-smoothing: antialiased;
 }
-
-.page-wrap {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
+.page-wrap { max-width: 780px; margin: 0 auto; padding: 0 20px; }
 .content-container {
-  padding: 50px 45px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.65);
-  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+  padding: 48px;
+  background: var(--surface);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(200,200,200,0.5);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-
-.warning-screen {
-  display: block;
+h1, .page-title {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 28px; font-weight: 500; color: var(--ink);
+  text-align: center; letter-spacing: 0.02em; margin-bottom: 4px;
 }
-
-.warning-screen.hidden {
-  display: none;
+.page-subtitle, .subtitle {
+  text-align: center; font-size: 12px; font-weight: 400;
+  color: var(--ink-muted); letter-spacing: 0.15em;
+  text-transform: uppercase; margin-bottom: 40px;
 }
-
-.calculator-screen {
-  display: none;
+h2 {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 500; color: var(--ink);
+  margin-bottom: 24px; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
 }
-
-.calculator-screen.active {
-  display: block;
-}
-
-.page-title {
-  font-size: 34px;
-  margin-bottom: 12px;
-  color: #002556;
-  text-align: center;
-}
-
-.page-subtitle {
-  font-size: 16px;
-  color: #666;
-  margin-bottom: 30px;
-  text-align: center;
-}
-
+/* Screens */
+.warning-screen { display: block; }
+.warning-screen.hidden { display: none; }
+.calculator-screen { display: none; }
+.calculator-screen.active { display: block; }
+/* Disclosure */
 .warning-box {
-  background: linear-gradient(135deg, rgba(244,67,54,0.15), rgba(244,67,54,0.08));
-  border: 3px solid #f44336;
-  border-radius: 12px;
-  padding: 30px;
-  margin-bottom: 30px;
+  border: 1px solid var(--rule); padding: 28px 32px; margin-bottom: 32px;
+  background: transparent; border-radius: 0;
 }
-
 .warning-box h2 {
-  color: #c62828;
-  margin-top: 0;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 600; color: var(--warn);
+  margin-bottom: 16px; padding-bottom: 0; border-bottom: none;
+  display: block;
 }
-
+.warning-box p {
+  font-size: 13px; line-height: 1.8; color: var(--ink-light); margin-bottom: 12px;
+}
 .warning-box h3 {
-  color: #d32f2f;
-  font-size: 18px;
-  margin-top: 25px;
-  margin-bottom: 10px;
+  font-size: 13px; font-weight: 700; color: var(--warn);
+  text-transform: uppercase; letter-spacing: 0.8px;
+  margin: 20px 0 10px; display: block;
 }
-
-.warning-box ul {
-  margin: 10px 0;
-  padding-left: 20px;
-}
-
+.warning-box ul { margin: 0 0 16px 0; padding: 0; list-style: none; }
 .warning-box li {
-  margin: 8px 0;
-  color: #c62828;
-  font-weight: 500;
+  position: relative; padding: 4px 0 4px 24px;
+  font-size: 13px; color: var(--ink-light); font-weight: 500; line-height: 1.8;
 }
-
+.warning-box li::before {
+  content: '\2014'; position: absolute; left: 0;
+  color: var(--warn); font-weight: 700;
+}
 .warning-box strong {
-  color: #b71c1c;
-  font-size: 16px;
-  display: block;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  font-size: 12px; font-weight: 600; color: var(--warn);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  padding-top: 16px; border-top: 1px solid var(--rule-light);
+  margin-top: 16px; display: block;
 }
-
-.form-group {
-  margin-bottom: 20px;
-}
-
+/* Forms */
+.form-group { margin-bottom: 16px; }
 .form-group label {
-  display: block;
-  font-weight: 600;
-  color: #002556;
-  margin-bottom: 8px;
-  font-size: 14px;
+  display: block; font-size: 11px; font-weight: 600;
+  color: var(--ink-light); text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 6px;
 }
-
-.form-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid rgba(0,37,86,0.25);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  background: rgba(255,255,255,0.9);
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--rule);
+  border-radius: 0; font-family: 'Inter', sans-serif; font-size: 14px;
+  color: var(--ink); background: rgba(255,255,255,0.6);
+  transition: border-color 0.15s;
 }
-
-.form-group input:focus {
-  outline: none;
-  border-color: #002556;
-  box-shadow: 0 0 0 3px rgba(0,37,86,0.1);
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--ink);
 }
-
+.form-group input::placeholder, .form-group textarea::placeholder {
+  color: #bbb; font-weight: 300;
+}
+/* Checkbox */
 .checkbox-container {
-  background: rgba(255,255,255,0.7);
-  border: 2px solid #f44336;
-  border-radius: 10px;
-  padding: 20px;
-  margin: 25px 0;
+  border: 1px solid var(--rule); padding: 20px 24px;
+  margin: 24px 0; background: transparent; border-radius: 0;
 }
-
 .checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  cursor: pointer;
-  font-size: 14px;
-  line-height: 1.6;
+  display: flex; align-items: flex-start; gap: 12px;
+  cursor: pointer; font-size: 13px; line-height: 1.7; color: var(--ink-light);
 }
-
 .checkbox-label input[type="checkbox"] {
-  width: 22px;
-  height: 22px;
-  margin-top: 2px;
-  cursor: pointer;
-  accent-color: #002556;
-  flex-shrink: 0;
+  width: 16px; height: 16px; margin-top: 3px;
+  cursor: pointer; accent-color: var(--ink); flex-shrink: 0;
 }
-
-.button-group {
-  display: flex;
-  gap: 15px;
-  margin-top: 25px;
+.checkbox-label ol { margin: 10px 0 0 0; padding-left: 16px; }
+.checkbox-label li {
+  margin: 4px 0; font-size: 12px; line-height: 1.7; color: var(--ink-light);
 }
-
+/* Buttons */
+.button-group { display: flex; gap: 12px; margin-top: 28px; }
 .btn {
-  flex: 1;
-  padding: 16px;
-  border: none;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  flex: 1; padding: 12px 20px; border: none; border-radius: 0;
+  font-family: 'Inter', sans-serif; font-weight: 600; font-size: 13px;
+  cursor: pointer; letter-spacing: 0.04em; transition: all 0.15s;
 }
-
-.btn-primary {
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #003d82, #002556);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,37,86,0.4);
-}
-
-.btn-primary:disabled {
-  background: #999;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #333; }
+.btn-primary:disabled { background: #bbb; cursor: not-allowed; opacity: 1; }
 .btn-secondary {
-  background: rgba(255,255,255,0.8);
-  color: #002556;
-  border: 2px solid #002556;
+  background: transparent; color: var(--ink); border: 1px solid var(--rule);
 }
-
-.btn-secondary:hover {
-  background: rgba(0,37,86,0.1);
-  transform: translateY(-2px);
-}
-
+.btn-secondary:hover { border-color: var(--ink); }
+/* Score */
 .current-score-section {
-  background: linear-gradient(135deg, rgba(0,37,86,0.08), rgba(0,37,86,0.04));
-  border-radius: 12px;
-  padding: 25px;
-  margin-bottom: 30px;
+  text-align: center; padding: 32px 0; margin-bottom: 32px;
+  border-bottom: 1px solid var(--rule);
+  background: transparent; border-radius: 0;
 }
-
+.current-score-section h3 {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 14px; font-weight: 500; color: var(--ink);
+  text-align: center; margin-top: 0; margin-bottom: 16px;
+}
 .score-display {
-  text-align: center;
-  font-size: 64px;
-  font-weight: 700;
-  color: #002556;
-  margin: 20px 0;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 56px; font-weight: 400; color: var(--ink); margin: 0;
 }
-
-.scenario-section {
-  margin-bottom: 30px;
+.current-score-section input[type="number"] {
+  font-family: 'EB Garamond', Georgia, serif !important;
+  font-size: 56px !important; text-align: center; width: 180px;
+  border: none !important; border-bottom: 2px solid var(--rule) !important;
+  border-radius: 0 !important; padding: 4px 0 !important;
+  font-weight: 400 !important; color: var(--ink) !important;
+  background: transparent !important;
 }
-
+.current-score-section input[type="number"]:focus {
+  outline: none; border-bottom-color: var(--ink) !important;
+  box-shadow: none !important;
+}
+.current-score-section p {
+  font-size: 11px; color: var(--ink-muted); margin-top: 12px;
+  letter-spacing: 0.05em;
+}
+/* Scenarios */
+.scenario-section h2 {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 500; color: var(--ink);
+  padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+}
 .scenario-card {
-  background: rgba(255,255,255,0.75);
-  border: 1px solid rgba(0,37,86,0.15);
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 16px;
+  background: transparent; border: none; border-radius: 0;
+  padding: 24px 0; margin-bottom: 0;
+  border-bottom: 1px solid var(--rule-light);
 }
-
+.scenario-card:last-of-type { border-bottom: none; }
 .scenario-card h3 {
-  color: #002556;
-  font-size: 18px;
-  margin-top: 0;
-  margin-bottom: 14px;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 17px; font-weight: 500; color: var(--ink); margin-bottom: 12px;
 }
-
 .scenario-warning {
-  background: rgba(244,67,54,0.08);
-  border-left: 3px solid #f44336;
-  padding: 12px 14px;
-  margin: 0 0 14px 0;
-  border-radius: 4px;
-  font-size: 13px;
-  color: #c62828;
-  line-height: 1.6;
+  font-size: 12px; line-height: 1.8; color: var(--warn);
+  margin: 0 0 16px 0; padding-left: 16px;
+  border-left: 2px solid var(--warn); border-radius: 0;
+  background: transparent; opacity: 0.85;
 }
-
-.scenario-card select {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid rgba(0,37,86,0.25);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  background: rgba(255,255,255,0.9);
-  color: #0b1f3a;
-  cursor: pointer;
-}
-
-.scenario-card select:focus {
-  outline: none;
-  border-color: #002556;
-  box-shadow: 0 0 0 3px rgba(0,37,86,0.1);
-}
-
+.scenario-warning strong { font-weight: 700; }
 .input-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 12px;
-  align-items: end;
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px; margin-bottom: 14px; align-items: end;
 }
-
-.input-row.two-col {
-  grid-template-columns: 1fr 1fr;
+.input-row.two-col { grid-template-columns: 1fr 1fr; }
+.scenario-card select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--rule);
+  border-radius: 0; font-family: 'Inter', sans-serif; font-size: 14px;
+  color: var(--ink); background: rgba(255,255,255,0.6); cursor: pointer;
 }
-
+.scenario-card select:focus { outline: none; border-color: var(--ink); }
+/* Currency wrap for scenario inputs */
+.currency-wrap { position: relative; }
+.currency-wrap::before {
+  content: '$'; position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%); font-size: 14px;
+  color: var(--ink-muted); pointer-events: none;
+}
+.currency-wrap input { padding-left: 24px; }
+/* Calc buttons */
 .add-btn {
-  display: block;
-  width: 100%;
-  padding: 10px 16px;
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  margin-top: 4px;
-  transition: all 0.2s;
+  display: block; width: 100%; padding: 10px;
+  background: transparent; color: var(--ink);
+  border: 1px solid var(--rule); border-radius: 0;
+  font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer; transition: all 0.15s; margin-top: 4px;
 }
-
 .add-btn:hover {
-  background: linear-gradient(135deg, #003d82, #002556);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,37,86,0.25);
+  border-color: var(--ink); background: var(--ink); color: #fff;
 }
-
+/* Results */
 .results-section {
-  background: linear-gradient(135deg, rgba(76,175,80,0.12), rgba(76,175,80,0.06));
-  border: 2px solid #4caf50;
-  border-radius: 12px;
-  padding: 30px;
-  margin-top: 30px;
-  display: none;
+  background: transparent; border: none; border-radius: 0;
+  padding: 30px 0; margin-top: 32px;
+  border-top: 1px solid var(--rule); display: none;
 }
-
-.results-section.show {
-  display: block;
+.results-section.show { display: block; }
+.results-section h3 {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 20px; font-weight: 500; color: var(--ink); margin-bottom: 20px;
 }
-
 .score-comparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin: 20px 0;
+  display: grid; grid-template-columns: 1fr 40px 1fr;
+  align-items: center; margin: 24px 0; gap: 0;
 }
-
 .score-box {
-  text-align: center;
-  padding: 20px;
-  background: rgba(255,255,255,0.8);
-  border-radius: 10px;
+  text-align: center; padding: 24px 16px;
+  background: transparent; border-radius: 0; border: none;
 }
-
 .score-box h4 {
-  margin-top: 0;
-  color: #666;
-  font-size: 14px;
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.15em; color: var(--ink-muted); margin-top: 0; margin-bottom: 8px;
 }
-
 .score-box .score {
-  font-size: 48px;
-  font-weight: 700;
-  color: #002556;
+  font-family: 'EB Garamond', Georgia, serif;
+  font-size: 48px; font-weight: 400; color: var(--ink);
 }
-
-.impact-positive {
-  color: #4caf50 !important;
+.score-arrow {
+  text-align: center; font-size: 18px; color: var(--ink-muted);
 }
-
-.impact-negative {
-  color: #f44336 !important;
+.impact-positive { color: var(--positive) !important; }
+.impact-negative { color: var(--negative) !important; }
+#impactText { text-align: center; }
+#actionSummary {
+  font-size: 13px; line-height: 1.8; color: var(--ink-light);
+  padding: 20px 24px; border: 1px solid var(--rule-light);
+  margin-top: 16px; background: transparent; border-radius: 0;
 }
-
+#actionSummary strong { color: var(--ink); font-weight: 600; }
+/* Final CTA */
 .final-cta {
-  background: rgba(255,152,0,0.12);
-  border-left: 4px solid #ff9800;
-  padding: 20px;
-  margin-top: 25px;
-  border-radius: 8px;
+  padding: 24px; border: 1px solid var(--rule);
+  margin-top: 24px; border-radius: 0; background: transparent;
+  border-left: none; border-right: none; border-bottom: none;
 }
-
 .final-cta strong {
-  color: #e65100;
-  display: block;
-  margin-bottom: 10px;
-  font-size: 16px;
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--ink-muted);
+  display: block; margin-bottom: 12px;
 }
-
+.final-cta p {
+  font-size: 13px; line-height: 1.8; color: var(--ink-light); margin: 0 0 10px 0;
+}
 .contact-btn {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 14px 28px;
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
-  text-decoration: none;
-  border-radius: 10px;
-  font-weight: 700;
-  transition: all 0.3s ease;
+  display: inline-block; margin-top: 16px; padding: 10px 24px;
+  background: var(--ink); color: #fff; text-decoration: none;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  border-radius: 0; transition: background 0.15s;
 }
-
-.contact-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,37,86,0.3);
+.contact-btn:hover { background: #333; }
+/* Submit CTA */
+#submitCta {
+  margin-top: 32px !important; padding: 24px !important;
+  border: 1px solid var(--rule) !important; border-radius: 0 !important;
+  background: transparent !important;
 }
-
+#submitCta .submitCta-inner { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+#submitCta .submitCta-inner > div:first-child { display: none; }
+/* Submit overlay */
+#submitOverlay .overlay-inner {
+  max-width: 500px; margin: 10px auto; background: #fff;
+  padding: 32px; border: 1px solid var(--rule);
+}
+/* Back link */
 .back-btn {
-  display: inline-block;
-  margin-top: 40px;
-  padding: 12px 24px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  transition: all 0.25s ease;
+  display: inline-block; margin-top: 32px; padding: 0;
+  border-radius: 0; background: transparent; backdrop-filter: none;
+  border: none; text-decoration: none;
+  color: var(--ink-muted); font-weight: 400; font-size: 12px;
+  letter-spacing: 0.04em; transition: color 0.15s;
 }
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-  .content-container {
-    padding: 35px 25px;
-  }
-  
-  .page-title {
-    font-size: 28px;
-  }
-  
-  .button-group {
-    flex-direction: column;
-  }
-  
-  .input-row {
-    grid-template-columns: 1fr;
-  }
-
-  .input-row.two-col {
-    grid-template-columns: 1fr;
-  }
-
-  .score-comparison {
-    grid-template-columns: 1fr;
-  }
-
-  .submitCta-inner {
-    flex-direction: column;
-    text-align: center;
-  }
+.back-btn:hover { color: var(--ink); background: transparent; transform: none; }
+/* Responsive */
+@media (max-width: 700px) {
+  body { padding: 24px 0; }
+  .content-container { padding: 32px 24px; }
+  h1, .page-title { font-size: 24px; }
+  .button-group { flex-direction: column; }
+  .input-row, .input-row.two-col { grid-template-columns: 1fr; }
+  .score-comparison { grid-template-columns: 1fr; }
+  .score-arrow { transform: rotate(90deg); padding: 8px 0; }
+  #submitCta .submitCta-inner { flex-direction: column; text-align: center; }
 }
 </style>
 <script src="tracking.js"></script>
@@ -443,52 +330,47 @@ body {
       <p class="page-subtitle">Educational Planning Tool</p>
       
       <div class="warning-box">
-        <h2>⚠️ CRITICAL WARNING - READ BEFORE USING</h2>
+        <h2>Important Disclosure</h2>
         
-        <p style="font-size: 16px; line-height: 1.8; color: #c62828; font-weight: 500;">
-          Credit score changes are COMPLEX and sometimes counterintuitive. This tool is for EDUCATIONAL PURPOSES ONLY.
+        <p style="font-size: 13px; line-height: 1.8; color: var(--ink-light);">
+          Credit score changes are complex and at times counterintuitive. This tool is for educational purposes only and provides estimates based on general scoring principles. Actual results will vary based on your complete credit profile.
         </p>
         
-        <h3>🚫 CRITICAL FACTS YOU MUST UNDERSTAND:</h3>
+        <h3>Important Facts</h3>
         <ul>
-          <li><strong>Paying off or settling a collection can LOWER your score temporarily</strong></li>
-          <li><strong>Making a payment on an old collection can restart the aging clock</strong></li>
-          <li><strong>Closing credit accounts can HURT your score significantly</strong></li>
-          <li><strong>The timing of credit actions matters - wrong timing = score damage</strong></li>
-          <li><strong>Every credit situation is unique and requires professional analysis</strong></li>
+          <li>Paying off or settling a collection can lower your score temporarily</li>
+          <li>Making a payment on an old collection can restart the aging clock</li>
+          <li>Closing credit accounts can hurt your score significantly</li>
+          <li>The timing of credit actions matters &mdash; incorrect timing can cause damage</li>
+          <li>Every credit situation is unique and requires professional analysis</li>
         </ul>
         
-        <strong>⚠️ DO NOT TAKE ANY CREDIT ACTIONS BASED ON THIS CALCULATOR</strong>
-        
-        <p style="font-size: 15px; margin-top: 10px; color: #c62828;">
-          This simulator provides ESTIMATES based on general credit scoring principles. Actual results will vary significantly based on your complete credit profile, which includes factors this calculator cannot account for.
-        </p>
-        
-        <strong style="color: #b71c1c; font-size: 18px;">YOU MUST CONSULT WITH <span class="lo-name-dynamic">YOUR LOAN OFFICER</span> BEFORE MAKING ANY CREDIT CHANGES</strong>
+        <strong>Do not take any credit actions based on this tool. Consult with <span class="lo-name-dynamic">your loan officer</span> before making changes.</strong>
       </div>
       
-      <div class="form-group">
-        <label for="userName">Your Name *</label>
-        <input type="text" id="userName" placeholder="Required for legal tracking" required>
-      </div>
-      
-      <div class="form-group">
-        <label for="userEmail">Your Email *</label>
-        <input type="email" id="userEmail" placeholder="Required for legal tracking" required>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div class="form-group" style="margin:0;">
+          <label for="userName">Name *</label>
+          <input type="text" id="userName" placeholder="Full name" required>
+        </div>
+        <div class="form-group" style="margin:0;">
+          <label for="userEmail">Email *</label>
+          <input type="email" id="userEmail" placeholder="name@email.com" required>
+        </div>
       </div>
       
       <div class="checkbox-container">
         <label class="checkbox-label">
           <input type="checkbox" id="acknowledgment" required>
-          <span style="font-weight: 600; color: #002556;">
-            By checking this box and proceeding, I acknowledge that:
-            <ol style="margin: 10px 0; padding-left: 20px;">
-              <li>This calculator provides ESTIMATES ONLY and actual credit score changes may differ significantly</li>
-              <li>Some credit actions (including paying collections) can LOWER my score</li>
-              <li>I will NOT take any credit actions without first consulting <span class="lo-name-dynamic">my loan officer</span> at Paramount Residential Mortgage Group</li>
-              <li>I understand this tool is for educational planning purposes only</li>
-              <li><span class="lo-name-dynamic">Your loan officer</span> and Paramount Residential Mortgage Group are not liable for any credit decisions I make without their consultation</li>
-              <li>My usage of this tool (including my name, email, IP address, and scenarios simulated) will be logged for legal protection purposes</li>
+          <span>
+            <strong style="color:var(--ink);font-size:13px;border:none;padding:0;margin:0;text-transform:none;letter-spacing:0;">By checking this box, I acknowledge:</strong>
+            <ol>
+              <li>This calculator provides estimates only and actual changes may differ significantly</li>
+              <li>Some credit actions, including paying collections, can lower my score</li>
+              <li>I will not take any credit actions without first consulting <span class="lo-name-dynamic">my loan officer</span></li>
+              <li>This tool is for educational planning purposes only</li>
+              <li><span class="lo-name-dynamic">My loan officer</span> and Paramount Residential Mortgage Group bear no liability for credit decisions made without their consultation</li>
+              <li>My usage of this tool will be logged</li>
             </ol>
           </span>
         </label>
@@ -496,10 +378,10 @@ body {
       
       <div class="button-group">
         <button class="btn btn-secondary" id="contactLoBtn" onclick="window.location.href='mailto:kristy@paramountrmg.com'">
-          📞 Contact <span class="lo-name-dynamic">Your Loan Officer</span> First
+          Contact <span class="lo-name-dynamic">Your Loan Officer</span>
         </button>
         <button class="btn btn-primary" id="continueBtn" disabled>
-          I Understand - Continue to Simulator
+          Continue to Simulator
         </button>
       </div>
     </div>
@@ -507,37 +389,34 @@ body {
     <!-- CALCULATOR SCREEN -->
     <div class="calculator-screen" id="calculatorScreen">
       <h1 class="page-title">Credit Score Simulator</h1>
-      <p class="page-subtitle">What-If Planning Tool</p>
+      <p class="page-subtitle">What-If Analysis</p>
       
       <div class="current-score-section">
-        <h3 style="text-align: center; color: #002556; margin-top: 0;">Your Current Credit Score</h3>
+        <h3>Current Credit Score</h3>
         <div style="text-align: center;">
-          <input type="number" id="currentScore" min="300" max="850" value="680" 
-                 style="font-size: 48px; text-align: center; width: 200px; border: 2px solid #002556; border-radius: 10px; padding: 10px; font-weight: 700;">
+          <input type="number" id="currentScore" min="300" max="850" value="680">
         </div>
-        <p style="text-align: center; color: #666; font-size: 14px; margin-top: 10px;">
-          Enter your current credit score (300-850)
-        </p>
+        <p>300 &ndash; 850</p>
       </div>
       
       <div class="scenario-section">
-        <h2 style="color: #002556; font-size: 24px; margin-bottom: 20px;">Simulate Credit Actions</h2>
+        <h2 style="color: var(--ink); font-size: 20px; margin-bottom: 20px;">Scenarios</h2>
         
         <!-- Pay Down Credit Card -->
         <div class="scenario-card">
-          <h3>💳 Pay Down Credit Card</h3>
+          <h3>Pay Down Credit Card Balance</h3>
           <div class="input-row">
             <div class="form-group" style="margin: 0;">
               <label>Current Balance</label>
-              <input type="number" id="cardBalance" placeholder="e.g., 2000">
+              <div class="currency-wrap"><input type="text" id="cardBalance" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
             <div class="form-group" style="margin: 0;">
               <label>Credit Limit</label>
-              <input type="number" id="cardLimit" placeholder="e.g., 5000">
+              <div class="currency-wrap"><input type="text" id="cardLimit" placeholder="5,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
             <div class="form-group" style="margin: 0;">
               <label>Pay Down To</label>
-              <input type="number" id="newBalance" placeholder="e.g., 500">
+              <div class="currency-wrap"><input type="text" id="newBalance" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
           </div>
           <button class="add-btn" onclick="simulateCardPaydown()">Calculate Impact</button>
@@ -545,24 +424,24 @@ body {
         
         <!-- Pay Collection -->
         <div class="scenario-card">
-          <h3>💰 Pay or Remove Collection</h3>
+          <h3>Pay or Remove Collection</h3>
           <div class="scenario-warning">
-            <strong>⚠️ CRITICAL WARNING:</strong> Paying a collection can LOWER your score by restarting the "last activity" date. Collections stay on your report for 7 years from the ORIGINAL delinquency date. Paying does NOT remove it unless negotiated. NEVER pay without consulting <span class="lo-name-dynamic">your loan officer</span> first!
+            <strong>Critical:</strong> Paying a collection can lower your score by restarting the "last activity" date. Collections remain on your report for seven years from the original delinquency. Payment does not remove the record unless deletion is negotiated. Do not pay without consulting <span class="lo-name-dynamic">your loan officer</span>.
           </div>
           <div class="input-row">
             <div class="form-group" style="margin: 0;">
               <label>Collection Amount</label>
-              <input type="number" id="collectionAmount" placeholder="e.g., 500">
+              <div class="currency-wrap"><input type="text" id="collectionAmount" placeholder="500.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
             <div class="form-group" style="margin: 0;">
-              <label>Years Old</label>
-              <input type="number" id="collectionAge" placeholder="e.g., 3" min="0" max="7">
+              <label>Age (Years)</label>
+              <input type="number" id="collectionAge" placeholder="3" min="0" max="7">
             </div>
             <div class="form-group" style="margin: 0;">
               <label>Action</label>
               <select id="collectionAction">
-                <option value="pay">Pay/Settle</option>
-                <option value="remove">Removed/Disputed</option>
+                <option value="pay">Pay / Settle</option>
+                <option value="remove">Remove / Dispute</option>
               </select>
             </div>
           </div>
@@ -571,21 +450,21 @@ body {
         
         <!-- Late Payment -->
         <div class="scenario-card">
-          <h3>📅 Late Payment Falls Off</h3>
-          <div class="scenario-warning">
-            <strong>Note:</strong> Late payments typically fall off after 7 years. This simulates the score improvement when that happens.
+          <h3>Late Payment Falls Off Report</h3>
+          <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">
+            Late payments typically fall off after seven years. This estimates the score recovery when that occurs.
           </div>
-          <div class="input-row">
+          <div class="input-row two-col">
             <div class="form-group" style="margin: 0;">
-              <label>How Late?</label>
+              <label>Severity</label>
               <select id="latePaymentSeverity">
-                <option value="30">30 days late</option>
-                <option value="60">60 days late</option>
-                <option value="90">90+ days late</option>
+                <option value="30">30 Days Late</option>
+                <option value="60">60 Days Late</option>
+                <option value="90">90+ Days Late</option>
               </select>
             </div>
             <div class="form-group" style="margin: 0;">
-              <label>How Many?</label>
+              <label>Number of Payments</label>
               <input type="number" id="latePaymentCount" value="1" min="1" max="10">
             </div>
           </div>
@@ -594,14 +473,14 @@ body {
         
         <!-- Open New Account -->
         <div class="scenario-card">
-          <h3>🆕 Open New Credit Account</h3>
-          <div class="scenario-warning">
-            <strong>Note:</strong> Opening new accounts typically causes a temporary 5-10 point drop from the hard inquiry, but can help long-term by increasing available credit.
+          <h3>Open New Credit Account</h3>
+          <div class="scenario-warning" style="color:var(--ink-muted);border-left-color:var(--rule-light);opacity:1;">
+            New accounts typically cause a temporary 5&ndash;10 point reduction from the hard inquiry. Long-term, additional credit capacity can be beneficial.
           </div>
-          <div class="input-row">
+          <div class="input-row" style="grid-template-columns:1fr;">
             <div class="form-group" style="margin: 0;">
               <label>New Credit Limit</label>
-              <input type="number" id="newAccountLimit" placeholder="e.g., 3000">
+              <div class="currency-wrap"><input type="text" id="newAccountLimit" placeholder="3,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
           </div>
           <button class="add-btn" onclick="simulateNewAccount()">Calculate Impact</button>
@@ -609,18 +488,18 @@ body {
         
         <!-- Close Account -->
         <div class="scenario-card">
-          <h3>🚫 Close Credit Account</h3>
+          <h3>Close Credit Account</h3>
           <div class="scenario-warning">
-            <strong>⚠️ WARNING:</strong> Closing accounts usually HURTS your score by increasing overall utilization, reducing average account age, and lowering total available credit. This is rarely recommended!
+            Closing accounts typically hurts your score by increasing utilization, reducing average age of accounts, and lowering total available credit. This action is rarely advisable.
           </div>
-          <div class="input-row">
+          <div class="input-row two-col">
             <div class="form-group" style="margin: 0;">
               <label>Account Credit Limit</label>
-              <input type="number" id="closeAccountLimit" placeholder="e.g., 2000">
+              <div class="currency-wrap"><input type="text" id="closeAccountLimit" placeholder="2,000.00" onfocus="clearForEdit(this)" onblur="restoreFormat(this)"></div>
             </div>
             <div class="form-group" style="margin: 0;">
-              <label>Account Age (years)</label>
-              <input type="number" id="accountAge" placeholder="e.g., 5">
+              <label>Account Age (Years)</label>
+              <input type="number" id="accountAge" placeholder="5">
             </div>
           </div>
           <button class="add-btn" onclick="simulateCloseAccount()">Calculate Impact</button>
@@ -628,76 +507,74 @@ body {
       </div>
       
       <div class="results-section" id="resultsSection">
-        <h3 style="color: #2e7d32; margin-top: 0; font-size: 22px;">📊 Projected Score Impact</h3>
+        <h3 style="color: var(--ink); margin-top: 0; font-size: 20px;">Projected Impact</h3>
         
         <div class="score-comparison">
           <div class="score-box">
-            <h4>Current Score</h4>
+            <h4>Current</h4>
             <div class="score" id="beforeScore">680</div>
           </div>
-          <div class="score-box">
-            <h4>Projected Score Range</h4>
-            <div class="score" id="afterScore">---</div>
-            <div id="impactText" style="font-size: 18px; font-weight: 700; margin-top: 10px;"></div>
+          <div class="score-arrow">&rarr;</div>
+          <div class="score-box" id="afterCard">
+            <h4>Projected</h4>
+            <div class="score" id="afterScore">&mdash;</div>
+            <div id="impactText" style="font-size: 14px; font-weight: 600; margin-top: 8px;"></div>
           </div>
         </div>
         
-        <div id="actionSummary" style="background: rgba(255,255,255,0.7); padding: 20px; border-radius: 8px; margin-top: 20px;">
-          <!-- Summary will be inserted here -->
-        </div>
+        <div id="actionSummary"></div>
         
         <div class="final-cta">
-          <strong>⚠️ BEFORE YOU TAKE ANY ACTION:</strong>
-          <p style="margin: 10px 0 0 0; font-size: 14px; line-height: 1.7;">
-            These are ESTIMATES only. Your actual score change will depend on many factors not captured by this calculator. Making the wrong move at the wrong time can cost you thousands in higher interest rates or prevent you from qualifying for a home loan.
+          <strong>Before Taking Action</strong>
+          <p>
+            These projections are estimates only. Actual score changes depend on factors this tool cannot capture. An incorrect action taken at the wrong time can cost thousands in higher interest rates or disqualify you from a mortgage.
           </p>
-          <p style="margin: 10px 0 0 0; font-weight: 600; color: #e65100;">
-            Schedule a consultation with <span class="lo-name-dynamic">your loan officer</span> to create a personalized credit strategy that maximizes your score safely.
+          <p style="font-weight: 500; color: var(--ink);">
+            Consult with <span class="lo-name-dynamic">your loan officer</span> to develop a strategy tailored to your specific credit profile.
           </p>
-          <a href="mailto:kristy@paramountrmg.com" class="contact-btn" id="consultLoBtn">📞 Schedule Consultation with <span class="lo-name-dynamic">Your Loan Officer</span></a>
+          <a href="mailto:kristy@paramountrmg.com" class="contact-btn" id="consultLoBtn">Schedule Consultation</a>
         </div>
       </div>
 
-      <!-- SUBMIT FOR CUSTOMIZED PLAN — Outside results section so always visible -->
-      <div id="submitCta" style="margin-top:24px;background:linear-gradient(135deg,rgba(0,37,86,0.08),rgba(0,37,86,0.03));border:2px solid rgba(0,37,86,0.2);border-radius:12px;padding:24px;">
-        <div class="submitCta-inner" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-          <div style="font-size:32px;">✨</div>
+      <!-- SUBMIT CTA -->
+      <div id="submitCta" style="margin-top:32px;border:1px solid var(--rule);padding:24px;">
+        <div class="submitCta-inner" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
           <div style="flex:1;min-width:200px;">
-            <div style="font-size:17px;font-weight:700;color:#002556;">Ready for a Customized Credit Improvement Plan?</div>
-            <div style="font-size:13px;color:#666;margin-top:4px;">Submit your information to <span class="lo-name-dynamic">your loan officer</span> for a personalized action plan with prioritized steps, projected score improvements, and a realistic timeline.</div>
+            <div style="font-family:'EB Garamond',Georgia,serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:4px;">Request a Customized Credit Improvement Plan</div>
+            <div style="font-size:12px;color:var(--ink-muted);line-height:1.6;">Submit your information for a personalized plan with prioritized steps, projected outcomes, and a realistic timeline.</div>
           </div>
-          <button onclick="openSubmitForm()" style="padding:14px 28px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;white-space:nowrap;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit for Plan →</button>
+          <button onclick="openSubmitForm()" style="padding:12px 28px;background:var(--ink);color:#fff;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.04em;cursor:pointer;white-space:nowrap;transition:background 0.15s;">Submit for Plan</button>
         </div>
       </div>
 
       <!-- SUBMISSION OVERLAY -->
-      <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;overflow-y:auto;">
-        <div style="max-width:500px;margin:10px auto;background:#fff;border-radius:16px;padding:28px 32px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;">
-          <div onclick="closeSubmitForm()" style="position:absolute;top:12px;right:16px;font-size:20px;cursor:pointer;color:#999;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:0.15s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">✕</div>
-          <h3 style="color:#002556;margin:0 0 2px;font-size:18px;">Submit for a Customized Plan</h3>
-          <p style="font-size:12px;color:#666;margin:0 0 14px;">Your loan officer will review your information and create a personalized credit improvement plan.</p>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-            <div class="form-group" style="margin:0;"><label for="submitName">Your Name *</label><input type="text" id="submitName" placeholder="First and last name"></div>
-            <div class="form-group" style="margin:0;"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="your@email.com"></div>
+      <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;overflow-y:auto;">
+        <div style="max-width:500px;margin:10px auto;background:#fff;padding:32px;border:1px solid var(--rule);position:relative;">
+          <div onclick="closeSubmitForm()" style="position:absolute;top:12px;right:16px;font-size:18px;cursor:pointer;color:var(--ink-muted);transition:color 0.15s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--ink-muted)'">&times;</div>
+          <h3 style="font-family:'EB Garamond',Georgia,serif;font-size:17px;font-weight:500;color:var(--ink);margin:0 0 2px;">Submit for a Customized Plan</h3>
+          <p style="font-size:12px;color:var(--ink-muted);margin:0 0 18px;">Your loan officer will review your information and create a personalized credit improvement plan.</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+            <div class="form-group" style="margin:0;"><label for="submitName">Name *</label><input type="text" id="submitName" placeholder="Full name"></div>
+            <div class="form-group" style="margin:0;"><label for="submitEmail">Email *</label><input type="email" id="submitEmail" placeholder="name@email.com"></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
             <div class="form-group" style="margin:0;"><label for="submitPhone">Phone</label><input type="tel" id="submitPhone" placeholder="(555) 123-4567"></div>
             <div class="form-group" style="margin:0;"><label for="submitCurrentScore">Current Score *</label><input type="number" id="submitCurrentScore" placeholder="580" min="300" max="850"></div>
             <div class="form-group" style="margin:0;"><label for="submitGoalScore">Goal Score *</label><input type="number" id="submitGoalScore" placeholder="620" min="300" max="850"></div>
           </div>
-          <div class="form-group" style="margin-bottom:10px;"><label for="submitSituation">Describe your credit situation</label><textarea id="submitSituation" rows="2" style="width:100%;padding:10px;border:1px solid rgba(0,37,86,0.25);border-radius:8px;font-family:inherit;font-size:13px;background:rgba(255,255,255,0.9);resize:vertical;" placeholder="e.g. I have two collections from 2022, high credit card balances..."></textarea></div>
-          <div id="simSummaryWrap" style="background:rgba(0,37,86,0.04);border-radius:8px;padding:10px;margin-bottom:10px;">
-            <div style="font-size:10px;color:#002556;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Your Simulation Summary</div>
-            <div id="submitSimSummary" style="font-size:12px;color:#444;line-height:1.5;">Run a simulation above to see your projected results here, or submit without one.</div>
+          <div class="form-group" style="margin-bottom:12px;"><label for="submitSituation">Describe Your Credit Situation</label><textarea id="submitSituation" rows="2" style="width:100%;padding:10px 12px;border:1px solid var(--rule);font-family:'Inter',sans-serif;font-size:13px;color:var(--ink);background:rgba(255,255,255,0.6);resize:vertical;" placeholder="Collections, high balances, late payments, etc."></textarea></div>
+          <div id="simSummaryWrap" style="border:1px solid var(--rule-light);padding:10px 14px;margin-bottom:12px;">
+            <div style="font-size:10px;font-weight:600;color:var(--ink-muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Simulation Summary</div>
+            <div id="submitSimSummary" style="font-size:12px;color:var(--ink-light);line-height:1.6;">Run a simulation above to see results here, or submit without one.</div>
           </div>
-          <div style="font-size:10px;color:#999;line-height:1.5;margin-bottom:12px;">By submitting, you agree that the information you provide is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score.</div>
-          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:14px;background:linear-gradient(135deg,#002556,#003d82);color:#fff;border:none;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(0,37,86,0.2);">Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan</button>
+          <div style="font-size:10px;color:var(--ink-muted);line-height:1.6;margin-bottom:14px;">By submitting, you agree that the information provided is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score.</div>
+          <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:12px;background:var(--ink);color:#fff;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.04em;cursor:pointer;transition:background 0.15s;">Submit to <span class="lo-name-dynamic">Your Loan Officer</span></button>
           <div id="submitResult" style="margin-top:8px;font-size:13px;font-weight:600;text-align:center;"></div>
         </div>
       </div>
       
-      <div style="text-align: center; margin-top: 40px;">
-        <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="education-collection.html" class="back-btn">&larr; Back to Education Collection</a>
       </div>
     </div>
     
@@ -705,7 +582,29 @@ body {
 </div>
 
 <script>
-// Warning screen logic
+// ===== CURRENCY FORMATTING =====
+function clearForEdit(el) {
+  var raw = el.getAttribute('data-raw') || el.value.replace(/[^0-9.]/g, '');
+  el.value = raw;
+}
+function restoreFormat(el) {
+  var raw = el.value.replace(/[^0-9.]/g, '');
+  if (!raw) { el.value = ''; return; }
+  var num = parseFloat(raw);
+  if (isNaN(num)) { el.value = ''; return; }
+  el.value = num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  el.setAttribute('data-raw', raw);
+}
+function getCurrVal(id) {
+  var el = document.getElementById(id);
+  var raw = el.getAttribute('data-raw') || el.value;
+  return parseFloat((raw || '').replace(/[^0-9.\-]/g, '')) || 0;
+}
+function fmtDollar(num) {
+  return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ===== WARNING SCREEN =====
 const userName = document.getElementById('userName');
 const userEmail = document.getElementById('userEmail');
 const acknowledgment = document.getElementById('acknowledgment');
@@ -724,7 +623,6 @@ userEmail.addEventListener('input', checkFormValid);
 acknowledgment.addEventListener('change', checkFormValid);
 
 continueBtn.addEventListener('click', async () => {
-  // Log acknowledgment to Google Sheets
   const userData = {
     name: userName.value,
     email: userEmail.value,
@@ -733,8 +631,6 @@ continueBtn.addEventListener('click', async () => {
     ipAddress: 'Captured by backend',
     userAgent: navigator.userAgent
   };
-  
-  // Send to backend for logging (we'll add this endpoint)
   try {
     await fetch('https://agent-edge-backend.vercel.app/api/log-simulator-access', {
       method: 'POST',
@@ -744,13 +640,11 @@ continueBtn.addEventListener('click', async () => {
   } catch (error) {
     console.log('Logging failed but continuing:', error);
   }
-  
-  // Show calculator
   document.getElementById('warningScreen').classList.add('hidden');
   document.getElementById('calculatorScreen').classList.add('active');
 });
 
-// Calculator logic
+// ===== CALCULATOR =====
 function getCurrentScore() {
   return parseInt(document.getElementById('currentScore').value) || 680;
 }
@@ -761,6 +655,7 @@ function showResults(action, impact, details) {
   const afterScore = document.getElementById('afterScore');
   const impactText = document.getElementById('impactText');
   const actionSummary = document.getElementById('actionSummary');
+  const afterCard = document.getElementById('afterCard');
   
   const current = getCurrentScore();
   const newScoreMin = Math.max(300, Math.min(850, current + impact.min));
@@ -771,29 +666,29 @@ function showResults(action, impact, details) {
   if (impact.min === impact.max) {
     afterScore.textContent = newScoreMin;
   } else {
-    afterScore.textContent = `${newScoreMin}-${newScoreMax}`;
+    afterScore.textContent = newScoreMin + ' \u2013 ' + newScoreMax;
   }
   
   const avgImpact = (impact.min + impact.max) / 2;
+  // Reset classes
+  afterScore.className = 'score';
+  afterCard.className = 'score-box';
+  
   if (avgImpact > 0) {
     afterScore.classList.add('impact-positive');
-    afterScore.classList.remove('impact-negative');
-    impactText.innerHTML = `<span class="impact-positive">+${Math.round(avgImpact)} points</span>`;
+    impactText.innerHTML = '<span class="impact-positive">+' + Math.round(avgImpact) + ' points</span>';
   } else if (avgImpact < 0) {
     afterScore.classList.add('impact-negative');
-    afterScore.classList.remove('impact-positive');
-    impactText.innerHTML = `<span class="impact-negative">${Math.round(avgImpact)} points</span>`;
+    impactText.innerHTML = '<span class="impact-negative">' + Math.round(avgImpact) + ' points</span>';
   } else {
-    afterScore.classList.remove('impact-positive', 'impact-negative');
-    impactText.textContent = 'Minimal change';
+    impactText.textContent = 'Minimal change expected';
   }
   
-  actionSummary.innerHTML = `<strong>Action:</strong> ${action}<br><strong>Details:</strong> ${details}`;
+  actionSummary.innerHTML = '<strong>' + action + '</strong><br>' + details;
   
   resultsSection.classList.add('show');
   resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   
-  // Log simulation to backend
   logSimulation(action, details, {min: newScoreMin, max: newScoreMax});
 }
 
@@ -805,8 +700,7 @@ async function logSimulation(action, details, projectedScore) {
       body: JSON.stringify({
         userName: userName.value,
         userEmail: userEmail.value,
-        action,
-        details,
+        action, details,
         currentScore: getCurrentScore(),
         projectedScore,
         timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
@@ -818,77 +712,52 @@ async function logSimulation(action, details, projectedScore) {
 }
 
 function simulateCardPaydown() {
-  const balance = parseFloat(document.getElementById('cardBalance').value);
-  const limit = parseFloat(document.getElementById('cardLimit').value);
-  const newBalance = parseFloat(document.getElementById('newBalance').value);
+  const balance = getCurrVal('cardBalance');
+  const limit = getCurrVal('cardLimit');
+  const newBal = getCurrVal('newBalance');
   
-  if (!balance || !limit || isNaN(newBalance)) {
-    alert('Please fill in all fields');
-    return;
-  }
+  if (!balance || !limit) { alert('Please complete all fields.'); return; }
   
   const currentUtil = (balance / limit) * 100;
-  const newUtil = (newBalance / limit) * 100;
+  const newUtil = (newBal / limit) * 100;
   const utilChange = currentUtil - newUtil;
   
   let impact = { min: 0, max: 0 };
+  if (utilChange > 30) impact = { min: 25, max: 45 };
+  else if (utilChange > 15) impact = { min: 15, max: 30 };
+  else if (utilChange > 5) impact = { min: 5, max: 15 };
+  else impact = { min: 0, max: 5 };
   
-  if (utilChange > 30) {
-    impact = { min: 25, max: 45 }; // Big improvement
-  } else if (utilChange > 15) {
-    impact = { min: 15, max: 30 }; // Good improvement
-  } else if (utilChange > 5) {
-    impact = { min: 5, max: 15 }; // Modest improvement
-  } else {
-    impact = { min: 0, max: 5 }; // Minimal improvement
-  }
-  
-  showResults(
-    'Pay Down Credit Card',
-    impact,
-    `Reducing balance from $${balance} to $${newBalance} on a $${limit} limit (utilization from ${currentUtil.toFixed(1)}% to ${newUtil.toFixed(1)}%)`
-  );
+  showResults('Pay Down Credit Card', impact,
+    'Balance reduced from ' + fmtDollar(balance) + ' to ' + fmtDollar(newBal) + ' on a ' + fmtDollar(limit) + ' limit. Utilization moves from ' + currentUtil.toFixed(1) + '% to ' + newUtil.toFixed(1) + '%.');
 }
 
 function simulateCollection() {
-  const amount = parseFloat(document.getElementById('collectionAmount').value);
+  const amount = getCurrVal('collectionAmount');
   const age = parseInt(document.getElementById('collectionAge').value);
   const action = document.getElementById('collectionAction').value;
   
-  if (!amount || isNaN(age)) {
-    alert('Please fill in all fields');
-    return;
-  }
+  if (!amount || isNaN(age)) { alert('Please complete all fields.'); return; }
   
   let impact = { min: 0, max: 0 };
   let details = '';
   
   if (action === 'pay') {
-    // Paying can actually LOWER score
     if (age >= 3) {
-      impact = { min: -15, max: -5 }; // Older collections hurt more when paid
-      details = `Paying a ${age}-year-old $${amount} collection will likely LOWER your score by restarting the "last activity" date. The collection stays on your report for 7 years from original delinquency. NEVER pay without negotiating for deletion first!`;
+      impact = { min: -15, max: -5 };
+      details = 'Paying a ' + age + '-year-old ' + fmtDollar(amount) + ' collection will likely lower your score by reactivating the account. Do not proceed without a negotiated deletion agreement.';
     } else {
       impact = { min: -5, max: 5 };
-      details = `Paying a ${age}-year-old $${amount} collection may have minimal impact or slightly lower your score. It does NOT remove the collection from your report unless negotiated. Consult Kristy before paying!`;
+      details = 'Paying a ' + age + '-year-old ' + fmtDollar(amount) + ' collection may produce minimal change. Payment alone does not remove the record from your report.';
     }
   } else {
-    // Removal (deletion or aged off) improves score
-    if (amount > 1000) {
-      impact = { min: 25, max: 50 };
-    } else if (amount > 500) {
-      impact = { min: 15, max: 35 };
-    } else {
-      impact = { min: 10, max: 25 };
-    }
-    details = `Successfully removing/disputing a $${amount} collection that is ${age} years old can significantly improve your score. Work with Kristy on proper dispute or "pay for delete" strategies.`;
+    if (amount > 1000) impact = { min: 25, max: 50 };
+    else if (amount > 500) impact = { min: 15, max: 35 };
+    else impact = { min: 10, max: 25 };
+    details = 'Successful removal of a ' + fmtDollar(amount) + ' collection (' + age + ' years old) can produce significant score improvement.';
   }
   
-  showResults(
-    action === 'pay' ? 'Pay Collection' : 'Remove Collection',
-    impact,
-    details
-  );
+  showResults(action === 'pay' ? 'Pay / Settle Collection' : 'Remove Collection', impact, details);
 }
 
 function simulateLatePaymentRemoval() {
@@ -896,70 +765,39 @@ function simulateLatePaymentRemoval() {
   const count = parseInt(document.getElementById('latePaymentCount').value);
   
   let impact = { min: 0, max: 0 };
+  if (severity === '90') impact = { min: 20 * count, max: 35 * count };
+  else if (severity === '60') impact = { min: 15 * count, max: 25 * count };
+  else impact = { min: 10 * count, max: 20 * count };
   
-  if (severity === '90') {
-    impact = { min: 20 * count, max: 35 * count };
-  } else if (severity === '60') {
-    impact = { min: 15 * count, max: 25 * count };
-  } else {
-    impact = { min: 10 * count, max: 20 * count };
-  }
-  
-  showResults(
-    'Late Payment(s) Fall Off Report',
-    impact,
-    `${count} late payment(s) of ${severity} days falling off your report after 7 years. Late payments have decreasing impact as they age.`
-  );
+  showResults('Late Payment Removal', impact,
+    count + ' late payment(s) at ' + severity + ' days removed from report after the seven-year reporting period.');
 }
 
 function simulateNewAccount() {
-  const limit = parseFloat(document.getElementById('newAccountLimit').value);
+  const limit = getCurrVal('newAccountLimit');
+  if (!limit) { alert('Please enter the credit limit.'); return; }
   
-  if (!limit) {
-    alert('Please enter a credit limit');
-    return;
-  }
-  
-  // New accounts typically hurt short-term, help long-term
-  const impact = { min: -10, max: -5 };
-  
-  showResults(
-    'Open New Credit Account',
-    impact,
-    `Opening a new account with $${limit} limit will cause a temporary score drop (5-10 points) from the hard inquiry. Long-term, it can help by increasing available credit. Wait at least 6 months before mortgage application if opening new credit.`
-  );
+  showResults('Open New Account', { min: -10, max: -5 },
+    'New account with ' + fmtDollar(limit) + ' limit. Expect a temporary reduction from the hard inquiry. Allow at least six months before a mortgage application.');
 }
 
 function simulateCloseAccount() {
-  const limit = parseFloat(document.getElementById('closeAccountLimit').value);
+  const limit = getCurrVal('closeAccountLimit');
   const age = parseInt(document.getElementById('accountAge').value);
+  if (!limit || !age) { alert('Please complete all fields.'); return; }
   
-  if (!limit || !age) {
-    alert('Please fill in all fields');
-    return;
-  }
+  let impact = age > 10 ? { min: -35, max: -15 } : { min: -25, max: -10 };
   
-  // Closing accounts almost always hurts
-  let impact = { min: -25, max: -10 };
-  if (age > 10) {
-    impact = { min: -35, max: -15 }; // Worse if it's an old account
-  }
-  
-  showResults(
-    'Close Credit Account',
-    impact,
-    `Closing a ${age}-year-old account with $${limit} limit will likely HURT your score by increasing overall utilization and reducing average account age. This is rarely recommended! Keep unused accounts open instead.`
-  );
+  showResults('Close Account', impact,
+    'Closing a ' + age + '-year-old account (' + fmtDollar(limit) + ' limit) will reduce available credit and lower average account age. This action is rarely recommended.');
 }
 
 // ===== SIMULATION TRACKING FOR SUBMISSION =====
 var simulationHistory = [];
 
-// Override showResults to also track simulations and show submit CTA
 var originalShowResults = showResults;
 showResults = function(action, impact, details) {
   originalShowResults(action, impact, details);
-  
   var current = getCurrentScore();
   simulationHistory.push({
     action: action,
@@ -969,45 +807,32 @@ showResults = function(action, impact, details) {
     details: details,
     timestamp: new Date().toISOString()
   });
-  
-  // Show submit CTA is always visible now — no toggle needed
-  
-  // Update summary in form
   updateSimSummary();
 };
 
 function updateSimSummary() {
   var el = document.getElementById('submitSimSummary');
   if (!el || simulationHistory.length === 0) return;
-  
   var html = '<strong>Score entered:</strong> ' + simulationHistory[0].currentScore + '<br>';
   html += '<strong>Simulations run:</strong><br>';
   simulationHistory.forEach(function(sim) {
-    var arrow = sim.projectedMin > sim.currentScore ? '↑' : '↓';
-    html += '• ' + sim.action + ' → ' + sim.projectedMin + '-' + sim.projectedMax + ' (' + arrow + ')<br>';
+    var arrow = sim.projectedMin > sim.currentScore ? '\u2191' : '\u2193';
+    html += '\u2022 ' + sim.action + ' \u2192 ' + sim.projectedMin + '-' + sim.projectedMax + ' (' + arrow + ')<br>';
   });
   el.innerHTML = html;
 }
 
 function openSubmitForm() {
-  // Pre-fill name and email from the warning screen inputs
   var warnName = document.getElementById('userName');
   var warnEmail = document.getElementById('userEmail');
   if (warnName && warnName.value) document.getElementById('submitName').value = warnName.value;
   if (warnEmail && warnEmail.value) document.getElementById('submitEmail').value = warnEmail.value;
-  
-  // Pre-fill current score from the simulator
   var currentScore = getCurrentScore();
-  if (currentScore) {
-    document.getElementById('submitCurrentScore').value = currentScore;
-  }
-  
+  if (currentScore) document.getElementById('submitCurrentScore').value = currentScore;
   updateSimSummary();
   document.getElementById('submitOverlay').style.display = 'block';
   document.getElementById('submitOverlay').scrollTop = 0;
   document.body.style.overflow = 'hidden';
-  
-  // Scroll to top of page to ensure overlay is visible (critical for iframes)
   window.scrollTo(0, 0);
 }
 
@@ -1027,29 +852,25 @@ async function submitForPlan() {
   var btn = document.getElementById('submitPlanBtn');
   
   if (!name || !email) {
-    result.style.color = '#c62828';
+    result.style.color = '#6b1d1d';
     result.textContent = 'Name and email are required.';
     return;
   }
-
   if (!currentScore || currentScore < 300 || currentScore > 850) {
-    result.style.color = '#c62828';
+    result.style.color = '#6b1d1d';
     result.textContent = 'Please enter a valid current credit score (300-850).';
     return;
   }
-
   if (!goalScore || goalScore < 300 || goalScore > 850) {
-    result.style.color = '#c62828';
+    result.style.color = '#6b1d1d';
     result.textContent = 'Please enter the score you need to reach (300-850).';
     return;
   }
   
   btn.disabled = true;
   btn.textContent = 'Submitting...';
-  result.style.color = '#666';
   result.textContent = '';
   
-  // Detect if submitted from realtor portal
   var urlParams = new URLSearchParams(window.location.search);
   var realtorId = urlParams.get('realtor_id') || null;
   var realtorName = urlParams.get('realtor_name') || null;
@@ -1073,21 +894,20 @@ async function submitForPlan() {
         realtor_name: realtorName
       })
     });
-    
     var data = await resp.json();
     if (data.success) {
-      result.style.color = '#2e7d32';
-      result.innerHTML = '✅ Submitted! <span class="lo-name-dynamic">Your loan officer</span> will review your simulation and reach out with a customized plan.';
-      btn.textContent = 'Submitted!';
-      btn.style.background = '#2e7d32';
+      result.style.color = '#1a4d2e';
+      result.innerHTML = 'Submitted successfully. <span class="lo-name-dynamic">Your loan officer</span> will review and reach out with a customized plan.';
+      btn.textContent = 'Submitted';
+      btn.style.background = '#1a4d2e';
     } else {
       throw new Error(data.message || 'Submission failed');
     }
   } catch (err) {
-    result.style.color = '#c62828';
+    result.style.color = '#6b1d1d';
     result.textContent = 'Error: ' + err.message;
     btn.disabled = false;
-    btn.innerHTML = 'Submit to <span class="lo-name-dynamic">Your Loan Officer</span> for Plan';
+    btn.innerHTML = 'Submit to <span class="lo-name-dynamic">Your Loan Officer</span>';
   }
 }
 
@@ -1096,21 +916,11 @@ async function submitForPlan() {
   var urlParams = new URLSearchParams(window.location.search);
   var loName = urlParams.get('lo_name') || null;
   var loEmail = urlParams.get('lo_email') || null;
-  
-  // Also check localStorage for logged-in context
-  if (!loName) {
-    try { loName = localStorage.getItem('ae_lo_name'); } catch(e) {}
-  }
-  if (!loEmail) {
-    try { loEmail = localStorage.getItem('ae_lo_email'); } catch(e) {}
-  }
-  
+  if (!loName) { try { loName = localStorage.getItem('ae_lo_name'); } catch(e) {} }
+  if (!loEmail) { try { loEmail = localStorage.getItem('ae_lo_email'); } catch(e) {} }
   if (loName) {
-    document.querySelectorAll('.lo-name-dynamic').forEach(function(el) {
-      el.textContent = loName;
-    });
+    document.querySelectorAll('.lo-name-dynamic').forEach(function(el) { el.textContent = loName; });
   }
-  
   if (loEmail) {
     var contactBtn = document.getElementById('contactLoBtn');
     if (contactBtn) contactBtn.onclick = function() { window.location.href = 'mailto:' + loEmail; };
