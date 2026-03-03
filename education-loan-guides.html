@@ -15,130 +15,134 @@ body {
     linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
   color: #0b1f3a;
-  line-height: 1.7;
 }
 
-.page-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 1150px; margin: 0 auto; padding: 0 24px; }
 
-.content-section {
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.gallery-section {
+  padding: 60px 50px; border-radius: 22px;
+  background: rgba(255,255,255,0.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 50px;
-}
+.section-title { font-size: 36px; margin-bottom: 10px; text-align: center; color: #002556; }
+.section-subtitle { text-align: center; max-width: 700px; margin: 0 auto 50px auto; color: #555; font-size: 16px; line-height: 1.6; }
 
-.page-title {
-  font-size: 36px;
-  margin-bottom: 10px;
-  color: #002556;
-}
-
-.page-subtitle {
-  font-size: 16px;
-  color: #555;
-  max-width: 650px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-
-/* ===== GUIDE CARDS ===== */
-.items-grid {
+/* ===== PROGRAM GRID ===== */
+.program-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px;
-  margin-bottom: 20px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
 }
 
-.item-card {
-  padding: 30px 28px;
+/* ===== PROGRAM CARD ===== */
+.program-card {
   border-radius: 18px;
-  background: rgba(255,255,255,0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.6);
-  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
-  transition: all 0.3s ease;
+  box-shadow: 0 12px 35px rgba(160,140,110,0.12), 0 4px 12px rgba(160,140,110,0.06);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
   text-decoration: none;
-  display: block;
   color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.program-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 45px rgba(160,140,110,0.18), 0 6px 16px rgba(160,140,110,0.1);
 }
 
-.item-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 18px 50px rgba(0,0,0,0.14);
-  border-color: rgba(0,37,86,0.3);
+/* ===== ACCENT BAR ===== */
+.accent-bar {
+  height: 6px;
+  width: 100%;
+}
+.accent-bar.sage { background: linear-gradient(90deg, #6e7f77, #8a9e94); }
+.accent-bar.navy { background: linear-gradient(90deg, #002556, #1a4a7a); }
+.accent-bar.forest { background: linear-gradient(90deg, #2d4a3e, #4a6b5d); }
+.accent-bar.slate { background: linear-gradient(90deg, #4a5568, #718096); }
+.accent-bar.bronze { background: linear-gradient(90deg, #92774a, #b8995a); }
+.accent-bar.steel { background: linear-gradient(90deg, #5a6b7a, #7a8b9a); }
+.accent-bar.deep { background: linear-gradient(90deg, #1a3a2a, #2d5a45); }
+
+/* ===== CARD BODY ===== */
+.program-body {
+  padding: 24px 24px 26px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-.item-icon {
-  font-size: 36px;
-  margin-bottom: 12px;
+.program-type {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #6e7f77;
+  margin-bottom: 8px;
 }
 
-.item-card h3 {
-  margin: 0 0 10px 0;
+.program-body h3 {
   font-size: 20px;
+  font-weight: 700;
   color: #002556;
+  margin: 0 0 10px 0;
+  line-height: 1.3;
 }
 
-.item-card p {
-  margin: 0;
-  font-size: 13px;
+.program-body > p {
+  font-size: 15px;
   color: #555;
   line-height: 1.6;
+  margin: 0 0 16px 0;
+  flex: 1;
 }
 
-/* ===== BACK LINK ===== */
-.back-link {
-  text-align: center;
-  margin-top: 40px;
+/* ===== KEY FACTS ===== */
+.key-facts { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.fact-tag {
+  font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 12px;
+  background: rgba(110,127,119,0.1); color: #4a5f56;
 }
 
-.back-link a {
-  display: inline-block;
-  padding: 12px 28px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.25s ease;
+/* ===== VIEW BUTTON ===== */
+.view-btn {
+  display: inline-block; padding: 8px 18px; border-radius: 20px;
+  background: #6e7f77; color: white; text-decoration: none;
+  font-weight: 600; font-size: 14px; transition: background 0.2s ease, transform 0.2s ease;
+  align-self: flex-start;
 }
+.view-btn:hover { background: #556b62; transform: translateY(-1px); }
 
-.back-link a:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
+/* ===== BACK ===== */
+.back-link { display: block; text-align: center; margin-top: 40px; }
+.back-btn {
+  display: inline-block; padding: 10px 24px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 15px; transition: all 0.25s ease;
 }
+.back-btn:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .content-section {
-    padding: 40px 25px;
-  }
+.return-main {
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.25s ease; z-index: 999;
+}
+.return-main:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
-  .page-title {
-    font-size: 28px;
-  }
-
-  .items-grid {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 900px) {
+  .program-grid { grid-template-columns: repeat(2, 1fr); }
+  .gallery-section { padding: 40px 25px; }
+}
+@media (max-width: 600px) {
+  .program-grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 28px; }
 }
 
 </style>
@@ -147,65 +151,140 @@ body {
 </head>
 
 <body>
+
 <div class="page-wrap">
-  <div class="content-section">
+  <section class="gallery-section">
 
-    <header class="page-header">
-      <h1 class="page-title">Loan Program Guides</h1>
-      <p class="page-subtitle">Comprehensive guides covering every major loan program with current data and requirements</p>
-    </header>
+    <h2 class="section-title">Loan Program Guides</h2>
+    <p class="section-subtitle">
+      Comprehensive guides covering every major loan program with current data and requirements.
+    </p>
 
-    <div class="items-grid">
+    <div class="program-grid">
 
-      <a href="conventional-loans-education.html" class="item-card">
-        <div class="item-icon">🏛️</div>
-        <h3>Conventional Loans</h3>
-        <p>Fixed and adjustable-rate mortgages backed by Fannie Mae and Freddie Mac. 3% down options available.</p>
+      <!-- CONVENTIONAL -->
+      <a href="conventional-loans-education.html" class="program-card">
+        <div class="accent-bar sage"></div>
+        <div class="program-body">
+          <div class="program-type">Conforming</div>
+          <h3>Conventional Loans</h3>
+          <p>Fixed and adjustable-rate mortgages backed by Fannie Mae and Freddie Mac. The most common loan type for borrowers with good credit and stable income.</p>
+          <div class="key-facts">
+            <span class="fact-tag">3% Down</span>
+            <span class="fact-tag">620+ Credit</span>
+            <span class="fact-tag">PMI Removable</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="fha-loans-education.html" class="item-card">
-        <div class="item-icon">🏠</div>
-        <h3>FHA Loans</h3>
-        <p>Government-insured loans with 3.5% down payment and flexible credit requirements for first-time buyers.</p>
+      <!-- FHA -->
+      <a href="fha-loans-education.html" class="program-card">
+        <div class="accent-bar navy"></div>
+        <div class="program-body">
+          <div class="program-type">Government</div>
+          <h3>FHA Loans</h3>
+          <p>Government-insured loans with flexible credit requirements and low down payment options. Ideal for first-time buyers and borrowers rebuilding credit.</p>
+          <div class="key-facts">
+            <span class="fact-tag">3.5% Down</span>
+            <span class="fact-tag">580+ Credit</span>
+            <span class="fact-tag">First-Time Buyers</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="va-loan-educaton.html" class="item-card">
-        <div class="item-icon">🎖️</div>
-        <h3>VA Loans</h3>
-        <p>Zero down payment loans for eligible veterans, active duty service members, and surviving spouses.</p>
+      <!-- VA -->
+      <a href="va-loan-educaton.html" class="program-card">
+        <div class="accent-bar forest"></div>
+        <div class="program-body">
+          <div class="program-type">Military</div>
+          <h3>VA Loans</h3>
+          <p>Zero down payment loans for eligible veterans, active duty service members, and surviving spouses. No PMI and competitive rates.</p>
+          <div class="key-facts">
+            <span class="fact-tag">Zero Down</span>
+            <span class="fact-tag">No PMI</span>
+            <span class="fact-tag">Veterans Only</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="usda-loans-education.html" class="item-card">
-        <div class="item-icon">🌾</div>
-        <h3>USDA Loans</h3>
-        <p>Zero down payment loans for rural and suburban properties with income limits and location requirements.</p>
+      <!-- USDA -->
+      <a href="usda-loans-education.html" class="program-card">
+        <div class="accent-bar deep"></div>
+        <div class="program-body">
+          <div class="program-type">Rural Development</div>
+          <h3>USDA Loans</h3>
+          <p>Zero down payment loans for rural and suburban properties with income limits and location requirements. A hidden gem for eligible areas.</p>
+          <div class="key-facts">
+            <span class="fact-tag">Zero Down</span>
+            <span class="fact-tag">Income Limits</span>
+            <span class="fact-tag">Rural/Suburban</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="jumbo-loans-education.html" class="item-card">
-        <div class="item-icon">💎</div>
-        <h3>Jumbo Loans</h3>
-        <p>Non-conforming loans for high-value properties exceeding conventional loan limits ($832,750+).</p>
+      <!-- JUMBO -->
+      <a href="jumbo-loans-education.html" class="program-card">
+        <div class="accent-bar bronze"></div>
+        <div class="program-body">
+          <div class="program-type">Non-Conforming</div>
+          <h3>Jumbo Loans</h3>
+          <p>Non-conforming loans for high-value properties exceeding conventional loan limits. Designed for luxury purchases and high-cost markets.</p>
+          <div class="key-facts">
+            <span class="fact-tag">$832,750+</span>
+            <span class="fact-tag">Higher Reserves</span>
+            <span class="fact-tag">Luxury Markets</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="reverse-mortgage-education.html" class="item-card">
-        <div class="item-icon">🔄</div>
-        <h3>Reverse Mortgages</h3>
-        <p>Home Equity Conversion Mortgages (HECM) for homeowners 62+ to access equity without monthly payments.</p>
+      <!-- REVERSE MORTGAGES -->
+      <a href="reverse-mortgage-education.html" class="program-card">
+        <div class="accent-bar steel"></div>
+        <div class="program-body">
+          <div class="program-type">Equity Access</div>
+          <h3>Reverse Mortgages</h3>
+          <p>Home Equity Conversion Mortgages (HECM) for homeowners 62+ to access equity without monthly payments. A powerful retirement planning tool.</p>
+          <div class="key-facts">
+            <span class="fact-tag">Age 62+</span>
+            <span class="fact-tag">No Monthly Payment</span>
+            <span class="fact-tag">HECM</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
-      <a href="dscr-loans-education.html" class="item-card">
-        <div class="item-icon">📊</div>
-        <h3>DSCR Loans</h3>
-        <p>Investment property loans that qualify borrowers based on rental income instead of personal income.</p>
+      <!-- DSCR -->
+      <a href="dscr-loans-education.html" class="program-card">
+        <div class="accent-bar slate"></div>
+        <div class="program-body">
+          <div class="program-type">Investor</div>
+          <h3>DSCR Loans</h3>
+          <p>Investment property loans that qualify borrowers based on rental income instead of personal income. Built for real estate investors scaling their portfolio.</p>
+          <div class="key-facts">
+            <span class="fact-tag">Rental Income</span>
+            <span class="fact-tag">No W-2 Required</span>
+            <span class="fact-tag">Investment Only</span>
+          </div>
+          <span class="view-btn">View Guide →</span>
+        </div>
       </a>
 
     </div>
 
     <div class="back-link">
-      <a href="education-collection.html">← Back to Education Collection</a>
+      <a href="education-collection.html" class="back-btn">← Back to Education Collection</a>
     </div>
 
-  </div>
+  </section>
 </div>
+
+<a href="portal.html" class="return-main">← Back to Portal</a>
+
+<script src="login.js"></script>
 </body>
 </html>
