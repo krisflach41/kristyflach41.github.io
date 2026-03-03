@@ -571,6 +571,7 @@ var statusTypes = [
   { value: 'chargeoff_zero', label: 'Charge-Off ($0 Balance)' },
   { value: 'medical_collection', label: 'Medical Collection' },
   { value: 'included_bk', label: 'Included in Bankruptcy' },
+  { value: 'repossession', label: 'Repossession' },
   { value: 'authorized_user', label: 'Authorized User' }
 ];
 
@@ -672,7 +673,7 @@ function isRevolving(type) {
 
 // ===== CHECK IF STATUS IS DEROGATORY =====
 function isDerogatory(status) {
-  return ['30_late','60_late','90_late','collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection','included_bk'].indexOf(status) >= 0;
+  return ['30_late','60_late','90_late','collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection','included_bk','repossession'].indexOf(status) >= 0;
 }
 
 // ===== CALCULATE ACCOUNT AGE FROM DATE OPENED =====
@@ -848,7 +849,7 @@ function updateUtilDisplay(tl) {
 
 // ===== CHECK SLEEPING BEAR =====
 function checkSleepingBear(tl) {
-  var isDerogatoryStatus = ['collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection'].indexOf(tl.status) >= 0;
+  var isDerogatoryStatus = ['collection_original','collection_sold','chargeoff_balance','chargeoff_zero','medical_collection','repossession'].indexOf(tl.status) >= 0;
   tl.isSleepingBear = false;
   tl.nearDropOff = false;
   tl.monthsToDropOff = null;
@@ -1435,6 +1436,72 @@ function analyzetradelines() {
         isAnchor: false,
         warningText: ''
       });
+    }
+
+    // ===== REPOSSESSION ACTIONS =====
+    if (tl.status === 'repossession') {
+      var repoBalance = tl.balance || 0;
+      var repoDropMonths = tl.monthsToDropOff;
+      var repoNearDrop = tl.nearDropOff;
+
+      if (repoNearDrop && repoDropMonths !== null && repoDropMonths <= 12) {
+        actions.push({
+          id: 'repo_wait_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || 'Repossession',
+          type: 'repossession',
+          title: 'Repossession on ' + (tl.name || 'account') + ' drops off in ~' + repoDropMonths + ' months \u2014 do not disturb',
+          detail: 'This repossession is close to falling off your credit report. Any contact with the creditor or collector could reset activity dates and restart the reporting clock. Wait it out.',
+          minPoints: 20,
+          maxPoints: 50,
+          cost: 0,
+          timeline: repoDropMonths + ' months to auto-removal',
+          timelineDays: repoDropMonths * 30,
+          isFree: true,
+          isSleepingBear: true,
+          isNearDropOff: true,
+          isAnchor: false,
+          warningText: 'DO NOT contact the creditor \u2014 this account is near the end of its reporting window.'
+        });
+      } else if (repoBalance > 0) {
+        actions.push({
+          id: 'repo_settle_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || 'Repossession',
+          type: 'repossession',
+          title: 'Negotiate settlement on ' + (tl.name || 'repossession') + ' \u2014 deficiency balance $' + repoBalance.toLocaleString(),
+          detail: 'Repossessions with outstanding deficiency balances are severe derogatories. Negotiate a settlement with a pay-for-delete agreement in writing before sending payment. Typical settlements range from 25-50% of the remaining balance. Without a deletion agreement, paying may not improve your score since the derogatory mark remains.',
+          minPoints: 15,
+          maxPoints: 40,
+          cost: Math.round(repoBalance * 0.4),
+          timeline: '30-90 days',
+          timelineDays: 60,
+          isFree: false,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: true,
+          warningText: 'Get deletion agreement in writing before sending any payment.'
+        });
+      } else {
+        actions.push({
+          id: 'repo_dispute_' + tl.id,
+          tradelineId: tl.id,
+          tradelineName: tl.name || 'Repossession',
+          type: 'repossession',
+          title: 'Dispute or goodwill request on $0 balance repossession \u2014 ' + (tl.name || 'account'),
+          detail: 'The deficiency balance has been satisfied. Dispute the tradeline with all three bureaus for any inaccuracies (dates, balance, account details). Alternatively, send a goodwill letter to the original creditor requesting removal since the debt is resolved.',
+          minPoints: 10,
+          maxPoints: 30,
+          cost: 0,
+          timeline: '30-60 days',
+          timelineDays: 45,
+          isFree: true,
+          isSleepingBear: false,
+          isNearDropOff: false,
+          isAnchor: false,
+          warningText: ''
+        });
+      }
     }
 
     // ===== BANKRUPTCY =====
