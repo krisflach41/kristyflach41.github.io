@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Advisory Collection</title>
+<title>Advisory Collection - Agent Edge</title>
 
 <style>
 
@@ -20,13 +20,13 @@ body {
 
 /* ===== PAGE WIDTH ===== */
 .page-wrap {
-  max-width: 1100px;
+  max-width: 1150px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
 /* ===== MAIN GLASS CONTAINER ===== */
-.blog-section {
+.gallery-section {
   padding: 60px 50px;
   border-radius: 22px;
   background: rgba(255,255,255,0.58);
@@ -40,159 +40,130 @@ body {
 
 /* ===== TITLES ===== */
 .section-title {
-  font-size: 36px;
+  font-size: 34px;
   margin-bottom: 10px;
   text-align: center;
+  color: #002556;
 }
 
 .section-subtitle {
   text-align: center;
-  max-width: 650px;
+  max-width: 700px;
   margin: 0 auto 50px auto;
   color: #555;
+  font-size: 16px;
+  line-height: 1.6;
 }
 
-/* ===== GALLERY GRID ===== */
-.studio-gallery {
+/* ===== WING GRID ===== */
+.wing-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
-  justify-content: center;
+  gap: 35px;
 }
-
-/* Full-width card for odd-one-out */
-.studio-gallery .full-width {
+.wing-grid .wing-card:last-child:nth-child(odd) {
   grid-column: 1 / -1;
-  max-width: 480px;
-  justify-self: center;
+  max-width: 520px;
+  margin: 0 auto;
   width: 100%;
 }
 
-/* ===== CATEGORY PANELS ===== */
-.studio-panel {
-  background: rgba(255,255,255,0.35);
+/* ===== WING CARD ===== */
+.wing-card {
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border: 1px solid rgba(255,255,255,0.6);
-  border-radius: 18px;
-  padding: 28px;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-}
-
-/* ===== THUMB PREVIEWS ===== */
-.panel-thumbs {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-.thumb {
-  width: 60px;
-  height: 80px;
-  background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
-  border-radius: 6px;
+  box-shadow: 0 15px 40px rgba(160,140,110,0.15), 0 5px 14px rgba(160,140,110,0.08);
+  overflow: hidden;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
-
-/* ===== THUMB HOVER TITLE OVERLAY ===== */
-.thumb-wrap {
-  position: relative;
-  width: 60px;
-  height: 80px;
-  border-radius: 6px;
-  overflow: hidden;
+.wing-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 50px rgba(160,140,110,0.2), 0 8px 20px rgba(160,140,110,0.1);
 }
 
-.thumb-overlay {
+/* ===== CARD PREVIEW BANNER ===== */
+.wing-preview {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-color: #2d4a3e;
+}
+.wing-preview::after {
+  content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.55);
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-  padding: 6px;
+  background: linear-gradient(to top, rgba(35,60,48,0.92) 0%, rgba(45,74,62,0.75) 40%, rgba(55,85,70,0.35) 70%, transparent 100%);
+  pointer-events: none;
 }
 
-.thumb-wrap:hover .thumb-overlay {
-  opacity: 1;
+/* Badge */
+.preview-badge {
+  position: absolute; top: 14px; left: 14px; z-index: 2;
+  font-size: 9px; font-weight: 700; padding: 4px 10px;
+  border-radius: 12px; text-transform: uppercase; letter-spacing: 1px;
+}
+.preview-badge.live {
+  background: rgba(52,211,153,0.25); color: #34d399; border: 1px solid rgba(52,211,153,0.35);
 }
 
-.thumb:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+/* Preview label */
+.preview-label { position: absolute; bottom: 14px; left: 18px; right: 18px; z-index: 2; }
+.preview-label h3 { font-size: 18px; font-weight: 700; color: #fff; margin: 0 0 2px 0; }
+.preview-label p { font-size: 11px; color: rgba(255,255,255,0.55); margin: 0; }
+
+/* ===== CARD BODY ===== */
+.wing-body { padding: 22px 24px 26px; }
+.wing-body > p { font-size: 14px; color: #555; line-height: 1.65; margin: 0 0 16px 0; }
+
+/* ===== FEATURE TAGS (sage green) ===== */
+.wing-features { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+.feat-tag {
+  font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 12px;
+  background: rgba(110,127,119,0.1); color: #4a5f56;
 }
 
-/* ===== BUTTON ===== */
-.panel-btn {
-  display: inline-block;
-  margin-top: 14px;
-  padding: 8px 18px;
-  background: #0b4ea2;
-  color: white;
-  border-radius: 20px;
-  text-decoration: none;
-  font-weight: 600;
+/* ===== BUTTONS (sage green) ===== */
+.wing-btn {
+  display: inline-block; padding: 8px 18px; border-radius: 20px;
+  background: #6e7f77; color: white; text-decoration: none;
+  font-weight: 600; font-size: 14px; transition: background 0.2s ease, transform 0.2s ease;
 }
+.wing-btn:hover { background: #556b62; transform: translateY(-1px); }
 
-/* ===== TOOL-STYLE THUMBS (for Decision Tools card) ===== */
-.tool-thumb {
-  width: 60px;
-  height: 80px;
-  background: linear-gradient(135deg, #0a1628, #162d4a);
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+/* ===== BACK BUTTON ===== */
+.back-link { display: block; text-align: center; margin-top: 40px; }
+.back-btn {
+  display: inline-block; padding: 10px 24px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; transition: all 0.25s ease;
 }
-
-.tool-thumb:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-}
-
-/* ===== LIVE BADGE ===== */
-.live-badge {
-  display: inline-block;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 10px;
-  background: rgba(52, 211, 153, 0.15);
-  color: #059669;
-  margin-left: 6px;
-  vertical-align: middle;
-  letter-spacing: 0.5px;
-}
+.back-btn:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
 /* ===== FLOATING RETURN LINK ===== */
 .return-main {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  transition: all 0.25s ease; z-index: 999;
 }
+.return-main:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
-@media (max-width: 640px) {
-  .studio-gallery { grid-template-columns: 1fr; }
-  .studio-gallery .full-width { max-width: 100%; }
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .gallery-section { padding: 40px 25px; }
+  .wing-grid { grid-template-columns: 1fr; }
+  .wing-grid .wing-card:last-child:nth-child(odd) { max-width: none; }
+  .section-title { font-size: 28px; }
 }
 
 </style>
@@ -203,75 +174,86 @@ body {
 <body>
 
 <div class="page-wrap">
-  <section class="blog-section">
+  <section class="gallery-section">
 
     <h2 class="section-title">Advisory Collection</h2>
     <p class="section-subtitle">
       Curated advisory resources designed to help Realtors guide confident, informed client decisions.
     </p>
 
-    <div class="studio-gallery">
+    <div class="wing-grid">
 
-      <!-- WING 1: MARKET INTELLIGENCE -->
-      <div class="studio-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <img src="Real-Estate-Report-Card.png" class="thumb" alt="Neighborhood Blueprint">
-            <div class="thumb-overlay">Neighborhood Blueprint</div>
-          </div>
-          <div class="thumb-wrap">
-            <img src="Bid-Over-Ask.png" class="thumb" alt="Bid Over Ask">
-            <div class="thumb-overlay">Bid Over Ask</div>
-          </div>
-          <div class="thumb-wrap">
-            <img src="Appreciation.png" class="thumb" alt="Appreciation">
-            <div class="thumb-overlay">Appreciation</div>
+      <!-- MARKET INTELLIGENCE -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('advisory_market_intelligence.jpg');">
+          <span class="preview-badge live">Reports</span>
+          <div class="preview-label">
+            <h3>Market Intelligence</h3>
+            <p>Data-Driven Client Conversations</p>
           </div>
         </div>
-        <h3>Market Intelligence</h3>
-        <p>Market insights and visual reports to support client conversations.</p>
-        <a href="market-intelligence.html" class="panel-btn">Enter Collection →</a>
+        <div class="wing-body">
+          <p>Market insights and visual reports to support client conversations. Neighborhood data, appreciation trends, and competitive analysis — all designed to position you as the expert in the room.</p>
+          <div class="wing-features">
+            <span class="feat-tag">7 Report Types</span>
+            <span class="feat-tag">Live Data</span>
+            <span class="feat-tag">Client-Ready</span>
+          </div>
+          <a href="market-intelligence.html" class="wing-btn">Enter Collection →</a>
+        </div>
       </div>
 
-      <!-- WING 2: FINANCING STRATEGIES -->
-      <div class="studio-panel">
-        <div class="panel-thumbs">
-          <div class="thumb-wrap">
-            <img src="calc-payment.png" class="thumb" alt="Payment Calculator">
-            <div class="thumb-overlay">Payment Calculator</div>
-          </div>
-          <div class="thumb-wrap">
-            <img src="calc-buying-power.png" class="thumb" alt="Buying Power">
-            <div class="thumb-overlay">Buying Power</div>
-          </div>
-          <div class="thumb-wrap">
-            <img src="calc-affordability.png" class="thumb" alt="Affordability">
-            <div class="thumb-overlay">Affordability</div>
+      <!-- FINANCING STRATEGIES -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('advisory_financing_strategies.jpg');">
+          <span class="preview-badge live">Guides</span>
+          <div class="preview-label">
+            <h3>Financing Strategies</h3>
+            <p>Program Overviews &amp; Comparisons</p>
           </div>
         </div>
-        <h3>Financing Strategies</h3>
-        <p>Clear program overviews to help explain financing strategies with confidence.</p>
-        <a href="financing-strategies.html" class="panel-btn">Enter Collection →</a>
-      </div>
-
-      <!-- WING 3: DECISION TOOLS (centered, full-width) -->
-      <div class="studio-panel full-width">
-        <div class="panel-thumbs">
-          <div class="tool-thumb">🗺️</div>
-          <div class="tool-thumb">📊</div>
-          <div class="tool-thumb">📈</div>
+        <div class="wing-body">
+          <p>Clear program overviews to help explain financing strategies with confidence. Rate comparisons, payment breakdowns, and loan option guides that make complex lending simple for your clients.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Loan Comparisons</span>
+            <span class="feat-tag">Payment Visuals</span>
+            <span class="feat-tag">Realtor-Facing</span>
+          </div>
+          <a href="financing-strategies.html" class="wing-btn">Enter Collection →</a>
         </div>
-        <h3>Decision Tools <span class="live-badge">LIVE</span></h3>
-        <p>Interactive tools designed to support planning and decision-making.</p>
-        <a href="decision-tools.html" class="panel-btn">Enter Collection →</a>
       </div>
 
+      <!-- DECISION TOOLS -->
+      <div class="wing-card">
+        <div class="wing-preview" style="background-image:url('advisory_decision_tools.jpg');">
+          <span class="preview-badge live">Live Tools</span>
+          <div class="preview-label">
+            <h3>Decision Tools</h3>
+            <p>Interactive Planning &amp; Analysis</p>
+          </div>
+        </div>
+        <div class="wing-body">
+          <p>Interactive tools designed to support planning and decision-making. Scenario analysis, market tracking, and seller strategy calculators — live data at your fingertips.</p>
+          <div class="wing-features">
+            <span class="feat-tag">Scenario Desk</span>
+            <span class="feat-tag">Market Pulse</span>
+            <span class="feat-tag">Seller Strategies</span>
+          </div>
+          <a href="decision-tools.html" class="wing-btn">Enter Collection →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="back-link">
+      <a href="portal.html" class="back-btn">← Back to Portal</a>
     </div>
 
   </section>
 </div>
 
-<a href="portal.html" class="return-main">← Return to Agent Edge Partner Portal</a>
+<a href="portal.html" class="return-main">← Back to Portal</a>
 
+<script src="login.js"></script>
 </body>
 </html>
