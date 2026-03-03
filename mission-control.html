@@ -2004,16 +2004,46 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
   </div>
   <div class="content-area" style="padding:16px 24px;">
+    <!-- STAT CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(255,255,255,0.35);text-transform:uppercase;">Total Submissions</div>
+        <div style="font-size:24px;font-weight:700;color:#fff;margin-top:4px;" id="csTotalStat">0</div>
+      </div>
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#ef4444;text-transform:uppercase;">Awaiting Review</div>
+        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;" id="csNewStat">0</div>
+      </div>
+      <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">In Review</div>
+        <div style="font-size:24px;font-weight:700;color:#f59e0b;margin-top:4px;" id="csReviewStat">0</div>
+      </div>
+      <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#22c55e;text-transform:uppercase;">Plans Sent</div>
+        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;" id="csPlanStat">0</div>
+      </div>
+    </div>
+    <!-- FILTER TABS -->
     <div style="display:flex; gap:8px; margin-bottom:16px;">
-      <button class="topbar-btn" id="csFilterNew" onclick="filterCreditSubs('new')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">🔴 New <span id="csNewCount"></span></button>
-      <button class="topbar-btn" id="csFilterReviewing" onclick="filterCreditSubs('reviewing')" style="background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3);">🟡 Reviewing <span id="csReviewCount"></span></button>
-      <button class="topbar-btn" id="csFilterPlanSent" onclick="filterCreditSubs('plan_sent')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">✅ Plan Sent <span id="csPlanCount"></span></button>
+      <button class="topbar-btn" id="csFilterNew" onclick="filterCreditSubs('new')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">New <span id="csNewCount"></span></button>
+      <button class="topbar-btn" id="csFilterReviewing" onclick="filterCreditSubs('reviewing')" style="background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3);">Reviewing <span id="csReviewCount"></span></button>
+      <button class="topbar-btn" id="csFilterPlanSent" onclick="filterCreditSubs('plan_sent')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">Plan Sent <span id="csPlanCount"></span></button>
       <button class="topbar-btn" id="csFilterAll" onclick="filterCreditSubs('all')" style="background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.5);">All</button>
     </div>
-    <div id="creditSubList">
-      <div style="text-align:center; padding:40px; color:rgba(255,255,255,0.3);">
-        <div style="font-size:36px; margin-bottom:12px;">📊</div>
-        <div style="font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:1px;">LOADING SUBMISSIONS...</div>
+    <!-- SPLIT LAYOUT -->
+    <div style="display:flex;gap:16px;height:calc(100vh - 280px);">
+      <div style="width:340px;flex-shrink:0;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);" id="creditSubList">
+        <div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);">
+          <div style="font-size:36px;margin-bottom:12px;">&#x1F4CA;</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;">LOADING SUBMISSIONS...</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;border:1px solid rgba(255,255,255,0.06);border-radius:10px;background:rgba(255,255,255,0.02);padding:20px;" id="creditDetailPreview">
+        <div style="text-align:center;padding:60px 20px;color:rgba(255,255,255,0.25);">
+          <div style="font-size:48px;margin-bottom:12px;">&#x1F4CB;</div>
+          <div style="font-size:14px;margin-bottom:4px;">Select a submission to view details</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.15);">or click New Analysis to start a direct review</div>
+        </div>
       </div>
     </div>
   </div>
@@ -7055,6 +7085,8 @@ function renderCreditSubs() {
   var planC = creditSubmissions.filter(function(s){return s.status==='plan_sent'}).length;
   var ce = function(id,v){var el=document.getElementById(id);if(el)el.textContent=v?'('+v+')':'';};
   ce('csNewCount',newC); ce('csReviewCount',revC); ce('csPlanCount',planC);
+  var se=function(i,v){var e=document.getElementById(i);if(e)e.textContent=v;};
+  se('csTotalStat',creditSubmissions.length);se('csNewStat',newC);se('csReviewStat',revC);se('csPlanStat',planC);
 
   if (filtered.length === 0) {
     list.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.3);"><div style="font-size:36px;margin-bottom:12px;">📊</div><div style="font-size:13px;">No submissions found.</div></div>';
@@ -7070,7 +7102,7 @@ function renderCreditSubs() {
     var timeAgo = getTimeAgo(s.created_at);
     var source = s.submitted_by === 'realtor' ? '<span style="color:#a855f7;">via ' + (s.realtor_name || 'Realtor') + '</span>' : '<span style="color:#3b82f6;">Direct</span>';
 
-    h += '<div onclick="openCreditDetail(\'' + s.id + '\')" style="display:flex;align-items:center;gap:16px;padding:14px 16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:0.15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.06)\'" onmouseout="this.style.background=\'rgba(255,255,255,0.03)\'">';
+    h += '<div data-id="' + s.id + '" onclick="openCreditDetail(\'' + s.id + '\')" style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:0.15s;" onmouseover="this.style.background=\'rgba(255,255,255,0.04)\'" onmouseout="this.style.background=\'transparent\'">';
     h += '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
     h += '<div style="flex:1;min-width:0;">';
     h += '<div style="font-weight:600;font-size:14px;color:#fff;">' + (s.borrower_name || 'Unknown') + '</div>';
@@ -7094,7 +7126,7 @@ function openCreditDetail(id) {
   if (!s) return;
   activeCreditSub = s;
 
-  var content = document.getElementById('creditDetailContent');
+  var content = document.getElementById('creditDetailPreview') || document.getElementById('creditDetailContent');
   var h = '';
 
   // Header info
@@ -7140,8 +7172,17 @@ function openCreditDetail(id) {
   h += '<button class="topbar-btn" onclick="saveCreditNotes()" style="margin-top:6px;font-size:11px;"><i class="fas fa-save"></i> Save Notes</button>';
   h += '</div>';
 
+  // Action buttons
+  h += '<div style="display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;">';
+  h += '<button class="topbar-btn" style="border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="updateCreditStatus(\'reviewing\')"><i class="fas fa-eye"></i> Reviewing</button>';
+  h += '<button class="topbar-btn" style="border-color:rgba(186,163,112,0.4);color:#baa370;background:rgba(186,163,112,0.08);" onclick="openCreditAnalysis()"><i class="fas fa-microscope"></i> Analyze</button>';
+  h += '<button class="topbar-btn primary" onclick="updateCreditStatus(\'plan_sent\')"><i class="fas fa-paper-plane"></i> Plan Sent</button>';
+  h += '</div>';
   content.innerHTML = h;
-  document.getElementById('creditDetailModal').style.display = 'flex';
+  // Highlight selected
+  document.querySelectorAll('#creditSubList [data-id]').forEach(function(el){ el.style.background='transparent'; });
+  var sel = document.querySelector('#creditSubList [data-id="'+id+'"]');
+  if(sel) sel.style.background='rgba(186,163,112,0.08)';
 }
 
 async function updateCreditStatus(newStatus) {
@@ -7153,8 +7194,9 @@ async function updateCreditStatus(newStatus) {
       body: JSON.stringify({ action: 'updateStatus', id: activeCreditSub.id, status: newStatus })
     });
     activeCreditSub.status = newStatus;
-    document.getElementById('creditDetailModal').style.display = 'none';
+    // Refresh inline preview
     renderCreditSubs();
+    if (activeCreditSub) openCreditDetail(activeCreditSub.id);
     loadHotLeads();
     showToast('Status updated to ' + newStatus.replace('_',' '));
   } catch(e) { showToast('Error updating status'); }
