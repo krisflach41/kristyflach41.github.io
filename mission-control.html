@@ -2000,6 +2000,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
     <div class="topbar-right">
       <button class="topbar-btn" onclick="loadCreditSubmissions()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      <button class="topbar-btn primary" onclick="openDirectAnalysis()" style="background:rgba(186,163,112,0.2);color:#baa370;border-color:rgba(186,163,112,0.4);"><i class="fas fa-plus"></i> New Analysis</button>
     </div>
   </div>
   <div class="content-area" style="padding:16px 24px;">
@@ -7082,6 +7083,10 @@ function renderCreditSubs() {
   });
 
   list.innerHTML = h;
+}
+
+function openDirectAnalysis() {
+  window.open('mc-credit-analysis.html', '_blank');
 }
 
 function openCreditDetail(id) {
