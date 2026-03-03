@@ -377,8 +377,8 @@ h2 {
               <li>Some credit actions, including paying collections, can lower my score</li>
               <li>I will not take any credit actions without first consulting <span class="lo-name-dynamic">my loan officer</span></li>
               <li>This tool is for educational planning purposes only</li>
-              <li><span class="lo-name-dynamic">My loan officer</span> and Paramount Residential Mortgage Group bear no liability for credit decisions made without their consultation</li>
-              <li>My usage of this tool will be logged</li>
+              <li><span class="lo-name-dynamic">My loan officer</span> and lender(s) bear no liability for credit decisions made without their consultation</li>
+              <li>My acknowledgment will be logged</li>
             </ol>
           </span>
         </label>
@@ -515,7 +515,7 @@ h2 {
         <div class="submitCta-inner" style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
           <div style="flex:1;min-width:200px;">
             <div style="font-family:'EB Garamond',Georgia,serif;font-size:17px;font-weight:500;color:var(--ink);margin-bottom:4px;">Request a Customized Credit Improvement Plan</div>
-            <div style="font-size:12px;color:var(--ink-muted);line-height:1.6;">Submit your information for a personalized plan with prioritized steps, projected outcomes, and a realistic timeline.</div>
+            <div style="font-size:12px;color:var(--ink-muted);line-height:1.6;">Submit your borrower's credit scenario for a professional review and receive a customized, step-by-step improvement plan with projected outcomes and a realistic timeline.</div>
           </div>
           <button onclick="openSubmitForm()" style="padding:12px 28px;background:var(--ink);color:#fff;border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.04em;cursor:pointer;white-space:nowrap;transition:background 0.15s;">Submit for Plan</button>
         </div>
@@ -523,17 +523,17 @@ h2 {
 
       <!-- SUBMISSION OVERLAY -->
       <div id="submitOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:9999;overflow-y:auto;">
-        <div style="max-width:520px;margin:10px auto;background:#fff;padding:32px;border:1px solid #d4d4d4;position:relative;">
+        <div style="max-width:520px;margin:40px auto 60px;background:#fff;padding:32px 32px 40px;border:1px solid #d4d4d4;position:relative;">
           <div onclick="closeSubmitForm()" style="position:absolute;top:12px;right:16px;font-size:18px;cursor:pointer;color:#888;" onmouseover="this.style.color='#1a1a1a'" onmouseout="this.style.color='#888'">&times;</div>
           <h3 style="font-family:'EB Garamond',Georgia,serif;font-size:17px;font-weight:500;color:#1a1a1a;margin:0 0 2px;">Submit for a Customized Plan</h3>
-          <p style="font-size:12px;color:#888;margin:0 0 20px;">Your loan officer will review the borrower information and create a personalized credit improvement plan.</p>
+          <p style="font-size:12px;color:#888;margin:0 0 20px;">This is not a credit pull and does not affect the borrower&#39;s credit score.</p>
           <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Your Information</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
             <div class="form-group" style="margin:0;"><label for="submitRealtorName">Your Name</label><input type="text" id="submitRealtorName" placeholder="Realtor name"></div>
             <div class="form-group" style="margin:0;"><label for="submitRealtorEmail">Your Email</label><input type="email" id="submitRealtorEmail" placeholder="realtor@email.com"></div>
           </div>
           <div style="border-top:1px solid #e8e8e8;margin-bottom:20px;"></div>
-          <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Borrower Information</div>
+          <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:10px;">Borrower Information <span style="font-weight:400;font-size:9px;letter-spacing:0.05em;color:#aaa;">- Required to generate your customized report</span></div>
           <div class="form-group" style="margin:0 0 12px;"><label for="submitBorrowerName">Borrower Name *</label><input type="text" id="submitBorrowerName" placeholder="Full name" required></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
             <div class="form-group" style="margin:0;"><label for="submitBorrowerPhone">Borrower Phone</label><input type="tel" id="submitBorrowerPhone" placeholder="(555) 123-4567"></div>
@@ -549,7 +549,7 @@ h2 {
             <div style="font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">Simulation Summary</div>
             <div id="submitSimSummary" style="font-size:12px;color:#555;line-height:1.6;">Run a simulation above to see results here, or submit without one.</div>
           </div>
-          <div style="font-size:10px;color:#888;line-height:1.6;margin-bottom:14px;">By submitting, you agree that the information provided is voluntary and will be used to create a personalized credit improvement plan. This is not a credit pull and does not affect your credit score.</div>
+          <div style="font-size:10px;color:#888;line-height:1.6;margin-bottom:14px;"><div style="font-size:10px;color:#888;line-height:1.6;margin-bottom:14px;">By submitting, you agree that the information provided is voluntary and will be used solely to generate a customized credit improvement plan.</div>
           <button onclick="submitForPlan()" id="submitPlanBtn" style="width:100%;padding:12px;background:#1a1a1a;color:#fff;border:none;font-family:Inter,sans-serif;font-size:13px;font-weight:600;letter-spacing:0.04em;cursor:pointer;">Submit to <span class="lo-name-dynamic">Your Loan Officer</span></button>
           <div id="submitResult" style="margin-top:8px;font-size:13px;font-weight:600;text-align:center;"></div>
         </div>
@@ -873,7 +873,7 @@ async function submitForPlan() {
   var goalScore = parseInt(document.getElementById('submitGoalScore').value) || 0;
   var result = document.getElementById('submitResult');
   var btn = document.getElementById('submitPlanBtn');
-  if (!borrowerName) { result.style.color = '#6b1d1d'; result.textContent = 'Borrower name is required.'; return; }
+  if (!borrowerName) { result.style.color = '#6b1d1d'; result.textContent = 'Borrower name is required.'; result.scrollIntoView({behavior:'smooth',block:'nearest'}); return; }
   if (!currentScore || currentScore < 300 || currentScore > 850) { result.style.color = '#6b1d1d'; result.textContent = 'Valid current score required (300-850).'; return; }
   if (!goalScore || goalScore < 300 || goalScore > 850) { result.style.color = '#6b1d1d'; result.textContent = 'Valid goal score required (300-850).'; return; }
   btn.disabled = true; btn.textContent = 'Submitting...'; result.textContent = '';
@@ -896,7 +896,7 @@ async function submitForPlan() {
     var data = await resp.json();
     if (data.success) {
       result.style.color = '#1a4d2e';
-      result.innerHTML = 'Submitted successfully.';
+      result.innerHTML = '<div style="padding:12px;border:1px solid #1a4d2e;margin-top:12px;background:rgba(26,77,46,0.05);">Submitted successfully. Your loan officer will review and reach out with a customized plan.</div>'; result.scrollIntoView({behavior:'smooth',block:'nearest'});
       btn.textContent = 'Submitted'; btn.style.background = '#1a4d2e';
     } else { throw new Error(data.message || 'Submission failed'); }
   } catch (err) {
