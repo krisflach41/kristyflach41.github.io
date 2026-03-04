@@ -24,15 +24,15 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 40px 20px;
+  padding: 30px;
 }
 
 .lobby-card {
   background: rgba(17,24,39,0.92);
   border: 1px solid rgba(110,127,119,0.15);
   border-radius: 22px;
-  padding: 50px;
-  max-width: 520px;
+  padding: 30px 40px 35px;
+  max-width: 900px;
   width: 100%;
   text-align: center;
   backdrop-filter: blur(12px);
@@ -41,15 +41,15 @@ body {
 
 .lobby-title {
   font-family: 'Playfair Display', serif;
-  font-size: 28px;
+  font-size: 32px;
   color: #e8dcc8;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .lobby-subtitle {
   color: rgba(200,204,212,0.5);
   font-size: 14px;
-  margin-bottom: 35px;
+  margin-bottom: 24px;
 }
 
 .preview-container {
@@ -59,7 +59,7 @@ body {
   border-radius: 14px;
   overflow: hidden;
   background: #000;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   border: 1px solid rgba(110,127,119,0.2);
 }
 
@@ -81,6 +81,24 @@ body {
   color: rgba(255,255,255,0.8);
 }
 
+.lobby-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.lobby-controls select {
+  flex: 1;
+  min-width: 0;
+}
+
+.lobby-controls .start-btn {
+  width: auto;
+  padding: 16px 40px;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
 .start-btn {
   display: block;
   width: 100%;
@@ -100,24 +118,17 @@ body {
 .start-btn:hover { background: #556b62; transform: translateY(-1px); }
 .start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.device-select {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.device-select select {
-  flex: 1;
-  padding: 9px 12px;
+.lobby-card select {
+  padding: 12px 14px;
   border: 1px solid rgba(110,127,119,0.2);
-  border-radius: 8px;
+  border-radius: 10px;
   background: rgba(255,255,255,0.04);
   color: #e8dcc8;
   font-size: 13px;
   font-family: inherit;
 }
 
-.device-select select option { background: #111827; color: #e8dcc8; }
+.lobby-card select option { background: #111827; color: #e8dcc8; }
 
 /* ===== ACTIVE CALL ===== */
 .call-view {
@@ -291,14 +302,10 @@ body {
       <div class="preview-label">Camera Preview</div>
     </div>
 
-    <div class="device-select">
+    <div class="lobby-controls">
       <select id="cameraSelect" title="Camera"></select>
       <select id="micSelect" title="Microphone"></select>
-    </div>
-
-    <button class="start-btn" id="startCallBtn" onclick="createRoom()">Start Call</button>
-    <div style="font-size:12px; color:rgba(200,204,212,0.3); margin-top:8px;">
-      You'll receive a room code to share with your borrower
+      <button class="start-btn" id="startCallBtn" onclick="createRoom()">Start Call</button>
     </div>
   </div>
 </div>
