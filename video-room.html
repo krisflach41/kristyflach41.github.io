@@ -265,7 +265,7 @@ body {
     <input type="text" class="name-input" id="borrowerName" placeholder="Your name">
 
     <div class="code-input-wrap">
-      <input type="text" class="code-input" id="codeInput" placeholder="CALL-0000" maxlength="9" autocomplete="off">
+      <input type="text" class="code-input" id="codeInput" placeholder="00000" maxlength="5" autocomplete="off" inputmode="numeric">
     </div>
 
     <button class="join-btn" id="joinBtn" onclick="joinRoom()">Join Call</button>
@@ -330,7 +330,7 @@ async function initCam() {
 
 // ===== AUTO-FORMAT CODE =====
 document.getElementById('codeInput').addEventListener('input', function(e) {
-  var val = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+  var val = e.target.value.replace(/[^0-9]/g, '');
   e.target.value = val;
 });
 
@@ -341,8 +341,8 @@ async function joinRoom() {
   var errEl = document.getElementById('joinError');
   errEl.classList.remove('show');
 
-  if (!code || code.length < 8) {
-    errEl.textContent = 'Please enter a valid room code (e.g., CALL-1234)';
+  if (!code || code.length < 5) {
+    errEl.textContent = 'Please enter the 5-digit room code';
     errEl.classList.add('show');
     return;
   }
