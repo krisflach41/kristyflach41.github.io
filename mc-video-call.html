@@ -178,57 +178,64 @@ body {
 
 .video-grid {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 4px;
+  position: relative;
   background: #000;
   min-height: 0;
 }
 
-.video-grid.solo { grid-template-columns: 1fr; }
-
-.video-cell {
-  position: relative;
-  background: #0a0f1a;
-  border-radius: 8px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.remote-video-wrap {
+  width: 100%;
+  height: 100%;
 }
 
-.video-cell video {
+.remote-video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0a0f1a;
+}
+
+.remote-video-wrap .waiting-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.pip-video {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(110,127,119,0.4);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  cursor: grab;
+  z-index: 10;
+  background: #111;
+}
+
+.pip-video:active { cursor: grabbing; }
+
+.pip-video video {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.video-cell .local-video { transform: scaleX(-1); }
+.pip-video .local-video { transform: scaleX(-1); }
 
-.video-label {
+.pip-label {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 6px;
+  left: 6px;
   background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  padding: 5px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
   color: white;
-}
-
-.waiting-message {
-  color: rgba(200,204,212,0.4);
-  font-size: 16px;
-  text-align: center;
-}
-
-.waiting-message div {
-  font-size: 13px;
-  margin-top: 8px;
-  color: rgba(200,204,212,0.25);
 }
 
 /* ===== CALL CONTROLS ===== */
@@ -320,14 +327,17 @@ body {
     <span id="callStatus" style="font-size:12px; color:rgba(200,204,212,0.4); margin-left:12px;">Waiting for borrower...</span>
   </div>
 
-  <div class="video-grid solo" id="videoGrid">
-    <div class="video-cell">
-      <video id="localVideo" autoplay muted playsinline class="local-video"></video>
-      <div class="video-label">You</div>
-    </div>
-    <div class="video-cell" id="remoteCell" style="display:none;">
+  <div class="video-grid" id="videoGrid">
+    <div class="remote-video-wrap">
       <video id="remoteVideo" autoplay playsinline></video>
-      <div class="video-label" id="remoteLabel">Borrower</div>
+      <div class="waiting-message" id="waitingMsg">
+        <div style="font-size:16px;color:rgba(200,204,212,0.4);">Waiting for borrower to join...</div>
+        <div style="font-size:13px;margin-top:8px;color:rgba(200,204,212,0.25);">Share your room code to get started</div>
+      </div>
+    </div>
+    <div class="pip-video" id="pipVideo">
+      <video id="localVideo" autoplay muted playsinline class="local-video"></video>
+      <div class="pip-label">You</div>
     </div>
   </div>
 
@@ -515,8 +525,7 @@ async function setupPeerConnection() {
     var remoteVideo = document.getElementById('remoteVideo');
     if (remoteVideo.srcObject !== event.streams[0]) {
       remoteVideo.srcObject = event.streams[0];
-      document.getElementById('remoteCell').style.display = '';
-      document.getElementById('videoGrid').classList.remove('solo');
+      document.getElementById('waitingMsg').style.display = 'none';
       document.getElementById('waitingPulse').style.display = 'none';
       document.getElementById('callStatus').textContent = 'Connected';
       updateStatus('connected', 'Connected');
@@ -574,7 +583,9 @@ async function toggleScreenShare() {
         if (sender) sender.replaceTrack(screenTrack);
       }
 
+      // Show screen share in PIP so LO can see what they're presenting
       document.getElementById('localVideo').srcObject = screenStream;
+      document.getElementById('localVideo').classList.remove('local-video');
       document.getElementById('btnScreen').classList.add('active');
       isScreenSharing = true;
 
@@ -656,6 +667,73 @@ function startTimer() {
 
 // ===== INIT =====
 setupDevices();
+
+// ===== DRAGGABLE PIP =====
+(function() {
+  var pip = document.getElementById('pipVideo');
+  var isDragging = false;
+  var offsetX, offsetY;
+
+  pip.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    offsetX = e.clientX - pip.getBoundingClientRect().left;
+    offsetY = e.clientY - pip.getBoundingClientRect().top;
+    pip.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    var parent = pip.parentElement.getBoundingClientRect();
+    var x = e.clientX - parent.left - offsetX;
+    var y = e.clientY - parent.top - offsetY;
+
+    // Constrain to parent
+    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
+    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
+
+    pip.style.left = x + 'px';
+    pip.style.top = y + 'px';
+    pip.style.right = 'auto';
+    pip.style.bottom = 'auto';
+  });
+
+  document.addEventListener('mouseup', function() {
+    isDragging = false;
+    pip.style.transition = '';
+  });
+
+  // Touch support for mobile
+  pip.addEventListener('touchstart', function(e) {
+    isDragging = true;
+    var touch = e.touches[0];
+    offsetX = touch.clientX - pip.getBoundingClientRect().left;
+    offsetY = touch.clientY - pip.getBoundingClientRect().top;
+    pip.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    var touch = e.touches[0];
+    var parent = pip.parentElement.getBoundingClientRect();
+    var x = touch.clientX - parent.left - offsetX;
+    var y = touch.clientY - parent.top - offsetY;
+
+    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
+    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
+
+    pip.style.left = x + 'px';
+    pip.style.top = y + 'px';
+    pip.style.right = 'auto';
+    pip.style.bottom = 'auto';
+  });
+
+  document.addEventListener('touchend', function() {
+    isDragging = false;
+    pip.style.transition = '';
+  });
+})();
 </script>
 </body>
 </html>
