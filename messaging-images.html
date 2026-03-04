@@ -6,6 +6,7 @@
 <title>Image Library - Agent Edge</title>
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
 
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
@@ -18,176 +19,107 @@ body {
   line-height: 1.7;
 }
 
-.page-wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
 
 .content-section {
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  padding: 60px 50px; border-radius: 22px;
+  background: rgba(255,255,255,0.58); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
   box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-.page-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
+.page-header { text-align: center; margin-bottom: 40px; }
 
 .page-title {
-  font-size: 36px;
-  margin-bottom: 10px;
-  color: #002556;
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; margin-bottom: 10px; color: #002556;
 }
 
 .page-subtitle {
-  font-size: 16px;
-  color: #555;
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.6;
+  font-size: 16px; color: #555; max-width: 700px; margin: 0 auto; line-height: 1.6;
 }
 
+/* ===== CATEGORY CARDS ===== */
 .categories-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 25px;
-  margin-bottom: 40px;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px; margin-bottom: 40px;
 }
 
 .category-card {
-  background: rgba(255,255,255,0.75);
-  border: 1px solid rgba(0,37,86,0.15);
-  border-radius: 16px;
-  padding: 25px;
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 18px; padding: 28px;
+  box-shadow: 0 12px 35px rgba(160,140,110,0.12), 0 4px 12px rgba(160,140,110,0.06);
   transition: all 0.3s ease;
 }
-
 .category-card:hover {
-  border-color: rgba(0,37,86,0.35);
   transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+  box-shadow: 0 18px 45px rgba(160,140,110,0.18), 0 6px 16px rgba(160,140,110,0.1);
 }
 
-.category-icon {
-  font-size: 36px;
-  margin-bottom: 15px;
-}
+.category-icon { display: none; }
 
 .category-card h3 {
-  font-size: 20px;
-  color: #002556;
-  font-weight: 700;
-  margin: 0 0 12px 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; color: #002556; font-weight: 700; margin: 0 0 10px 0;
 }
 
 .category-card p {
-  font-size: 14px;
-  color: #666;
-  margin: 0 0 15px 0;
-  line-height: 1.6;
+  font-size: 14px; color: #666; margin: 0 0 15px 0; line-height: 1.6;
 }
 
 .keyword-list {
-  background: rgba(0,37,86,0.04);
-  padding: 12px;
-  border-radius: 6px;
-  margin-bottom: 15px;
+  background: rgba(110,127,119,0.06);
+  border: 1px solid rgba(110,127,119,0.1);
+  padding: 14px; border-radius: 10px; margin-bottom: 15px;
 }
 
 .keyword-list strong {
-  display: block;
-  color: #002556;
-  font-size: 12px;
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  display: block; color: #6e7f77; font-size: 11px; margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.8px;
 }
 
-.keywords {
-  font-size: 13px;
-  color: #555;
-  line-height: 1.5;
-}
+.keywords { font-size: 13px; color: #555; line-height: 1.5; }
 
-.image-links {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.image-links { display: flex; flex-direction: column; gap: 8px; }
 
 .image-link {
-  display: inline-block;
-  padding: 8px 16px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #002556, #003d82);
-  color: white;
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  text-align: center;
+  display: inline-block; padding: 9px 16px; border-radius: 10px;
+  background: #6e7f77; color: white; text-decoration: none;
+  font-size: 13px; font-weight: 600; transition: all 0.3s ease; text-align: center;
 }
-
 .image-link:hover {
-  background: linear-gradient(135deg, #003d82, #002556);
-  transform: translateX(4px);
-  box-shadow: 0 4px 15px rgba(0,37,86,0.3);
+  background: #556b62; transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(110,127,119,0.3);
 }
 
+/* ===== RESOURCE NOTE ===== */
 .resource-note {
-  background: rgba(0,37,86,0.06);
-  border-left: 3px solid #002556;
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 30px;
-  font-size: 14px;
-  line-height: 1.7;
-  color: #555;
+  background: rgba(110,127,119,0.06);
+  border-left: 3px solid #6e7f77;
+  padding: 22px; border-radius: 0 12px 12px 0;
+  margin-top: 30px; font-size: 14px; line-height: 1.7; color: #555;
 }
 
 .resource-note strong {
-  color: #002556;
-  display: block;
-  margin-bottom: 8px;
-  font-size: 15px;
+  color: #002556; display: block; margin-bottom: 8px; font-size: 15px;
 }
 
-.back-link {
-  text-align: center;
-  margin-top: 40px;
-}
-
+/* ===== BACK LINK ===== */
+.back-link { text-align: center; margin-top: 40px; }
 .back-link a {
-  display: inline-block;
-  padding: 12px 28px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  font-size: 14px;
-  transition: all 0.25s ease;
+  display: inline-block; padding: 12px 28px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6); text-decoration: none;
+  color: #0b1f3a; font-weight: 600; font-size: 15px; transition: all 0.25s ease;
 }
-
-.back-link a:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
-}
+.back-link a:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
 @media (max-width: 768px) {
   .content-section { padding: 40px 25px; }
   .page-title { font-size: 28px; }
   .categories-grid { grid-template-columns: 1fr; }
 }
-
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
@@ -205,7 +137,7 @@ body {
     <div class="categories-grid">
 
       <div class="category-card">
-        <div class="category-icon">📊</div>
+        <div class="category-icon"></div>
         <h3>Market Updates</h3>
         <p>Professional images for market analysis, trends, and data posts</p>
         <div class="keyword-list">
@@ -219,7 +151,7 @@ body {
       </div>
 
       <div class="category-card">
-        <div class="category-icon">🏡</div>
+        <div class="category-icon"></div>
         <h3>Homebuying Tips</h3>
         <p>Images for buyer education, tips, and homeownership content</p>
         <div class="keyword-list">
@@ -233,7 +165,7 @@ body {
       </div>
 
       <div class="category-card">
-        <div class="category-icon">💰</div>
+        <div class="category-icon"></div>
         <h3>Mortgage Education</h3>
         <p>Professional images for mortgage tips, finance, and lending posts</p>
         <div class="keyword-list">
@@ -247,7 +179,7 @@ body {
       </div>
 
       <div class="category-card">
-        <div class="category-icon">🎉</div>
+        <div class="category-icon"></div>
         <h3>Client Success</h3>
         <p>Celebration and testimonial images for client wins</p>
         <div class="keyword-list">
@@ -261,7 +193,7 @@ body {
       </div>
 
       <div class="category-card">
-        <div class="category-icon">🌟</div>
+        <div class="category-icon"></div>
         <h3>Lifestyle & Community</h3>
         <p>Inspirational and community-focused images</p>
         <div class="keyword-list">
@@ -275,7 +207,7 @@ body {
       </div>
 
       <div class="category-card">
-        <div class="category-icon">📸</div>
+        <div class="category-icon"></div>
         <h3>General Real Estate</h3>
         <p>Versatile images for any real estate content</p>
         <div class="keyword-list">
@@ -291,7 +223,7 @@ body {
     </div>
 
     <div class="resource-note">
-      <strong>📖 How to Use the Image Library:</strong>
+      <strong>How to Use the Image Library:</strong>
       1. Click the category that matches your post type<br>
       2. Search using the provided keywords on Unsplash or Pexels<br>
       3. Download free, high-resolution images (no attribution required for commercial use)<br>
