@@ -247,6 +247,16 @@ body {
 }
 .back-link a:hover { background: rgba(255,255,255,0.55); transform: translateY(-2px); }
 
+.replay-tour-btn {
+  position: absolute; top: 20px; right: 24px;
+  padding: 8px 18px; border-radius: 20px;
+  background: rgba(110,127,119,0.08); backdrop-filter: blur(6px);
+  border: 1px solid rgba(110,127,119,0.2); color: #6e7f77;
+  font-weight: 600; font-size: 13px; cursor: pointer;
+  font-family: inherit; transition: all 0.25s ease;
+}
+.replay-tour-btn:hover { background: rgba(110,127,119,0.15); transform: translateY(-1px); }
+
 @media (max-width: 768px) {
   .content-section { padding: 40px 25px; }
   .page-title { font-size: 28px; }
@@ -314,7 +324,9 @@ body {
 </div>
 
 <div class="page-wrap">
-  <div class="content-section">
+  <div class="content-section" style="position: relative;">
+
+    <button class="replay-tour-btn" id="replayTourBtn">Watch Tour</button>
 
     <header class="page-header">
       <h1 class="page-title">Grab & Go Content Studio</h1>
@@ -905,6 +917,13 @@ clearPreview();
   // Show tutorial
   overlay.style.display = 'flex';
   renderStep();
+
+  // Expose replay function
+  document.getElementById('replayTourBtn').addEventListener('click', function() {
+    currentStep = 0;
+    renderStep();
+    overlay.style.display = 'flex';
+  });
 })();
 </script>
 
