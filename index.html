@@ -122,75 +122,7 @@
       transition: opacity 0.2s ease;
     }
 
-   .main-nav > a:hover { opacity: 0.75; }
-
-    /* Contact dropdown */
-    .nav-dropdown {
-      position: relative;
-      display: inline-block;
-      padding-bottom: 15px;
-      margin-bottom: -15px;
-    }
-
-    .nav-dropdown > a {
-      cursor: pointer;
-    }
-
-    .nav-dropdown-menu {
-      display: none;
-      position: absolute;
-      top: calc(100% - 15px);
-      left: 50%;
-      transform: translateX(-50%);
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
-      min-width: 170px;
-      padding: 22px 0 8px 0;
-      z-index: 1000;
-    }
-
-    .nav-dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: 16px;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      width: 12px;
-      height: 12px;
-      background: white;
-    }
-
-    .nav-dropdown:hover .nav-dropdown-menu {
-      display: block;
-    }
-
-    .nav-dropdown-menu a {
-      display: flex !important;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
-      font-size: 15px !important;
-      font-weight: 700 !important;
-      color: var(--dark) !important;
-      text-decoration: none;
-      white-space: nowrap;
-      transition: background 0.15s ease;
-      margin: 0 !important;
-      opacity: 1 !important;
-    }
-
-    .nav-dropdown-menu a:hover {
-      background: rgba(110,127,119,0.08);
-      opacity: 1 !important;
-    }
-
-    .nav-dropdown-menu a svg {
-      width: 16px;
-      height: 16px;
-      color: #6e7f77;
-      flex-shrink: 0;
-    }
+    .main-nav a:hover { opacity: 0.75; }
 
     .phone-btn {
       margin-right: 10px;
@@ -1014,27 +946,6 @@
       }
 
       .main-nav { flex-direction: column; gap: 10px; }
-
-      .nav-dropdown-menu {
-        position: static;
-        transform: none;
-        box-shadow: none;
-        background: transparent;
-        margin-top: 4px;
-        padding: 0;
-        display: block;
-      }
-
-      .nav-dropdown-menu::before { display: none; }
-
-      .nav-dropdown-menu a {
-        justify-content: center;
-        padding: 6px 12px;
-        font-size: 14px;
-      }
-
-      .nav-dropdown > a { display: none; }
-
       .phone-btn { width: 100%; text-align: center; }
 
       /* Hero */
@@ -1138,19 +1049,8 @@
         <a href="realtor.html">Realtors Only</a>
         <a href="#charities">My Charities</a>
         <a href="#media">Media</a>
-        <div class="nav-dropdown">
-          <a href="#contact">Contact</a>
-          <div class="nav-dropdown-menu">
-            <a href="#contact">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              Email Me
-            </a>
-            <a href="video-room.html">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-              Video Call
-            </a>
-          </div>
-        </div>
+        <a href="#contact">Contact</a>
+        <a href="video-room.html">Video Call</a>
       </nav>
 
       <a href="tel:2063135883" class="phone-btn">
