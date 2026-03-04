@@ -124,6 +124,19 @@ body {
 .highlight-box p { font-size: 15px; color: rgba(200,204,212,0.75); margin: 0 0 12px 0; }
 .highlight-box p strong { color: #e8dcc8; }
 
+/* ===== FORMULA BOX ===== */
+.formula-box {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #6e7f77;
+  padding: 16px;
+  margin: 15px 0;
+  background: rgba(110,127,119,0.08);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-radius: 10px;
+}
+
 /* ===== LISTS ===== */
 .requirements-list,
 .benefits-list {
@@ -176,12 +189,12 @@ body {
 
 .return-main {
   position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
-  background: rgba(255,255,255,0.06); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(110,127,119,0.2); text-decoration: none; color: rgba(200,204,212,0.6);
-  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  background: rgba(255,255,255,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.7); text-decoration: none; color: #0b1f3a;
+  font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.1);
   transition: all 0.25s ease; z-index: 999;
 }
-.return-main:hover { background: rgba(255,255,255,0.1); color: #e8dcc8; transform: translateY(-2px); }
+.return-main:hover { background: rgba(255,255,255,0.7); color: #0b1f3a; transform: translateY(-2px); }
 
 @media (max-width: 640px) {
   .guide-card { padding: 30px 22px; }
