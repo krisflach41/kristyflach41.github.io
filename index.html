@@ -1087,7 +1087,7 @@
     </div>
 
     <!-- RATE TICKER - inside hero glass, near bottom -->
-    <div style="position:absolute;bottom:24px;left:0;width:100%;overflow:hidden;background:#6e7f77;color:white;padding:10px 0;z-index:3;">
+    <div style="position:absolute;bottom:24px;left:0;width:100%;overflow:hidden;background:#6e7f77;color:white;padding:10px 0 6px 0;z-index:3;">
       <div style="display:flex;width:200%;animation:rateTicker 18s linear infinite;">
         <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
           <span style="white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;">Loading rates...</span>
@@ -1096,6 +1096,7 @@
           <span style="white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;">Loading rates...</span>
         </div>
       </div>
+      <div style="text-align:center;font-size:10px;color:rgba(255,255,255,0.5);margin-top:4px;letter-spacing:0.3px;">Rates shown are national averages and may not reflect your individual rate.</div>
     </div>
   </section>
 
@@ -1502,7 +1503,7 @@
         <h3>Contact Details</h3>
 
         <div class="detail-label">Email</div>
-        <div>kristy@kristyflach.com</div>
+        <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="046f766d77707d446f766d77707d626865676c2a676b69">[email&#160;protected]</a></div>
 
         <div class="detail-label">Phone</div>
         <div>(206) 313-5883</div>
@@ -1549,7 +1550,7 @@
        JAVASCRIPT - All scripts organized at bottom
        ========================================================== -->
 
-  <script>
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // ===== BACK TO TOP =====
     (function() {
       const btn = document.getElementById("backToTop");
@@ -1710,15 +1711,3 @@
           method: "POST",
           body: formData,
           headers: { "Accept": "application/json" }
-        }).then(function(response) {
-          if (response.ok) {
-            document.getElementById("formMessage").style.display = "block";
-            form.reset();
-          }
-        });
-      });
-    })();
-  </script>
-
-</body>
-</html>
