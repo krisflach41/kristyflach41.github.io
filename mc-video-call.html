@@ -609,32 +609,28 @@ function toggleCam() {
   document.getElementById('btnCam').classList.toggle('muted', isCamOff);
 }
 
-var remoteStream = null; // Store reference to borrower's stream
+var remoteStream = null;
 
 async function toggleScreenShare() {
   if (!isScreenSharing) {
     try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      // Request screen share - prefer entire screen, not tabs
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'monitor' },
+        audio: false,
+        selfBrowserSurface: 'exclude',
+        surfaceSwitching: 'exclude'
+      });
       var screenTrack = screenStream.getVideoTracks()[0];
 
+      // Replace the video track in peer connection so borrower sees our screen
       if (peerConnection) {
         var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
         if (sender) sender.replaceTrack(screenTrack);
       }
 
-      var remoteVid = document.getElementById('remoteVideo');
-      var localVid = document.getElementById('localVideo');
-
-      // Save the borrower stream reference
-      if (remoteVid.srcObject) remoteStream = remoteVid.srcObject;
-
-      // Main view = your screen share, PIP = borrower's face
-      remoteVid.srcObject = screenStream;
-      if (remoteStream) {
-        localVid.srcObject = remoteStream;
-        localVid.classList.remove('local-video');
-      }
-
+      // DON'T change the local display - LO already sees their own screen
+      // Main view stays on borrower, PIP stays on your camera
       document.getElementById('btnScreen').classList.add('active');
       isScreenSharing = true;
 
@@ -655,14 +651,6 @@ function stopScreenShare() {
     screenStream = null;
   }
 
-  var remoteVid = document.getElementById('remoteVideo');
-  var localVid = document.getElementById('localVideo');
-
-  // Restore: main view = borrower, PIP = your camera
-  if (remoteStream) remoteVid.srcObject = remoteStream;
-  localVid.srcObject = localStream;
-  localVid.classList.add('local-video');
-
   // Restore camera track to peer connection
   var camTrack = localStream.getVideoTracks()[0];
   if (peerConnection && camTrack) {
@@ -672,9 +660,6 @@ function stopScreenShare() {
 
   document.getElementById('btnScreen').classList.remove('active');
   isScreenSharing = false;
-
-  // Bring call window back to focus
-  window.focus();
 }
 
 // ===== RECORD CALL =====
@@ -708,24 +693,41 @@ function startRecording() {
     mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' });
   } catch (e) {
     try {
-      mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+      mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp8,opus' });
     } catch (e2) {
-      alert('Recording not supported in this browser.');
-      return;
+      try {
+        mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+      } catch (e3) {
+        try {
+          // Safari fallback
+          mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
+        } catch (e4) {
+          try {
+            // Last resort - let browser pick
+            mediaRecorder = new MediaRecorder(combinedStream);
+          } catch (e5) {
+            alert('Recording not supported in this browser.');
+            return;
+          }
+        }
+      }
     }
   }
+
+  var fileExt = (mediaRecorder.mimeType && mediaRecorder.mimeType.indexOf('mp4') > -1) ? 'mp4' : 'webm';
 
   mediaRecorder.ondataavailable = function(event) {
     if (event.data && event.data.size > 0) recordedChunks.push(event.data);
   };
 
   mediaRecorder.onstop = function() {
-    var blob = new Blob(recordedChunks, { type: 'video/webm' });
+    var mimeType = mediaRecorder.mimeType || 'video/webm';
+    var blob = new Blob(recordedChunks, { type: mimeType });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
     var date = new Date().toISOString().slice(0,10);
-    a.download = 'call-recording-' + date + '.webm';
+    a.download = 'call-recording-' + date + '.' + fileExt;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
