@@ -63,9 +63,7 @@ body {
   margin-bottom: 30px;
 }
 
-.code-input-wrap {
-  margin-bottom: 20px;
-}
+.code-input-wrap { margin-bottom: 20px; }
 
 .code-input {
   width: 100%;
@@ -77,7 +75,6 @@ body {
   font-weight: 700;
   text-align: center;
   letter-spacing: 4px;
-  text-transform: uppercase;
   color: #002556;
   background: rgba(255,255,255,0.8);
   transition: border-color 0.25s ease;
@@ -89,11 +86,7 @@ body {
   box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
 }
 
-.code-input::placeholder {
-  color: #bbb;
-  font-size: 16px;
-  letter-spacing: 1px;
-}
+.code-input::placeholder { color: #bbb; font-size: 16px; letter-spacing: 1px; }
 
 .join-btn {
   display: block;
@@ -113,13 +106,7 @@ body {
 .join-btn:hover { background: #556b62; }
 .join-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.join-error {
-  color: #ef4444;
-  font-size: 13px;
-  margin-top: 12px;
-  display: none;
-}
-
+.join-error { color: #ef4444; font-size: 13px; margin-top: 12px; display: none; }
 .join-error.show { display: block; }
 
 .preview-small {
@@ -151,10 +138,7 @@ body {
   font-family: inherit;
 }
 
-.name-input:focus {
-  outline: none;
-  border-color: #6e7f77;
-}
+.name-input:focus { outline: none; border-color: #6e7f77; }
 
 /* ===== IN-CALL VIEW ===== */
 .call-active {
@@ -178,40 +162,49 @@ body {
 
 .call-header strong { color: #e8dcc8; }
 
-.vid-grid {
+.vid-area {
   flex: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  padding: 4px;
+  position: relative;
   background: #000;
   min-height: 0;
 }
 
-.vid-cell {
-  position: relative;
-  background: #0a0f1a;
-  border-radius: 8px;
-  overflow: hidden;
-}
+.remote-wrap { width: 100%; height: 100%; }
 
-.vid-cell video {
+.remote-wrap video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #0a0f1a;
 }
 
-.vid-cell .me { transform: scaleX(-1); }
-
-.vid-label {
+.pip-box {
   position: absolute;
-  bottom: 10px;
-  left: 10px;
+  bottom: 20px;
+  right: 20px;
+  width: 180px;
+  aspect-ratio: 16/9;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(110,127,119,0.4);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+  cursor: grab;
+  z-index: 10;
+  background: #111;
+}
+
+.pip-box:active { cursor: grabbing; }
+.pip-box video { width: 100%; height: 100%; object-fit: cover; }
+.pip-box .me { transform: scaleX(-1); }
+
+.pip-lbl {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
   background: rgba(0,0,0,0.6);
-  padding: 5px 14px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
   color: white;
 }
 
@@ -242,10 +235,12 @@ body {
 .ctl-btn.muted { background: rgba(239,68,68,0.3); color: #ef4444; }
 .ctl-btn.leave { background: #ef4444; width: 64px; border-radius: 26px; font-size: 14px; font-weight: 700; }
 .ctl-btn.leave:hover { background: #dc2626; }
+.ctl-btn.screen-share.active { background: #6e7f77; }
+.ctl-btn.disabled-by-host { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
 
 @media (max-width: 768px) {
-  .vid-grid { grid-template-columns: 1fr; }
   .join-card { padding: 30px 22px; }
+  .pip-box { width: 120px; bottom: 10px; right: 10px; }
 }
 </style>
 </head>
@@ -280,14 +275,13 @@ body {
     Connected with <strong id="loNameDisplay">your loan officer</strong>
   </div>
 
-  <div class="vid-grid">
-    <div class="vid-cell">
+  <div class="vid-area" id="vidArea">
+    <div class="remote-wrap">
       <video id="remoteVid" autoplay playsinline></video>
-      <div class="vid-label" id="remoteName">Loan Officer</div>
     </div>
-    <div class="vid-cell">
+    <div class="pip-box" id="pipBox">
       <video id="localVid" autoplay muted playsinline class="me"></video>
-      <div class="vid-label" id="myLabel">You</div>
+      <div class="pip-lbl" id="myLabel">You</div>
     </div>
   </div>
 
@@ -298,6 +292,9 @@ body {
     <button class="ctl-btn" id="bCam" onclick="bToggleCam()" title="Camera">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
     </button>
+    <button class="ctl-btn screen-share" id="bScreen" onclick="bToggleScreen()" title="Share Screen">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </button>
     <button class="ctl-btn leave" onclick="leaveCall()">LEAVE</button>
   </div>
 </div>
@@ -306,11 +303,14 @@ body {
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
 var roomCode = null;
 var localStream = null;
+var screenStream = null;
 var peerConnection = null;
 var pollInterval = null;
 var lastSignalTime = '2000-01-01T00:00:00Z';
 var bMuted = false;
 var bCamOff = false;
+var bScreenSharing = false;
+var screenShareAllowed = true;
 
 var iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -318,25 +318,19 @@ var iceServers = [
   { urls: 'stun:stun2.l.google.com:19302' }
 ];
 
-// ===== INIT CAMERA =====
 async function initCam() {
   try {
     localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
     document.getElementById('previewVid').srcObject = localStream;
-  } catch (err) {
-    console.error('Camera error:', err);
-  }
+  } catch (err) { console.error('Camera error:', err); }
 }
 
-// ===== AUTO-FORMAT CODE =====
 document.getElementById('codeInput').addEventListener('input', function(e) {
-  var val = e.target.value.replace(/[^0-9]/g, '');
-  e.target.value = val;
+  e.target.value = e.target.value.replace(/[^0-9]/g, '');
 });
 
-// ===== JOIN ROOM =====
 async function joinRoom() {
-  var code = document.getElementById('codeInput').value.trim().toUpperCase();
+  var code = document.getElementById('codeInput').value.trim();
   var name = document.getElementById('borrowerName').value.trim() || 'Borrower';
   var errEl = document.getElementById('joinError');
   errEl.classList.remove('show');
@@ -369,19 +363,13 @@ async function joinRoom() {
 
     roomCode = code;
     document.getElementById('loNameDisplay').textContent = data.room.lo_name;
-    document.getElementById('remoteName').textContent = data.room.lo_name;
     document.getElementById('myLabel').textContent = name;
 
-    // Switch to call view
     document.getElementById('joinLobby').classList.add('hidden');
     document.getElementById('callActive').classList.add('active');
-
     document.getElementById('localVid').srcObject = localStream;
 
-    // Send join signal
     await sendSignal('join', { name: name });
-
-    // Start polling
     startPolling();
 
   } catch (err) {
@@ -392,7 +380,6 @@ async function joinRoom() {
   }
 }
 
-// ===== POLLING =====
 function startPolling() {
   pollInterval = setInterval(async function() {
     try {
@@ -404,13 +391,10 @@ function startPolling() {
           lastSignalTime = data.signals[i].created_at;
         }
       }
-    } catch (err) {
-      console.error('Poll error:', err);
-    }
+    } catch (err) { console.error('Poll error:', err); }
   }, 1500);
 }
 
-// ===== HANDLE SIGNAL =====
 async function handleSignal(signal) {
   var sigData = JSON.parse(signal.signal_data);
 
@@ -424,16 +408,25 @@ async function handleSignal(signal) {
 
   if (signal.signal_type === 'ice-candidate') {
     if (peerConnection) {
-      try {
-        await peerConnection.addIceCandidate(new RTCIceCandidate(sigData));
-      } catch (e) {
-        console.log('ICE error:', e);
-      }
+      try { await peerConnection.addIceCandidate(new RTCIceCandidate(sigData)); }
+      catch (e) { console.log('ICE error:', e); }
+    }
+  }
+
+  if (signal.signal_type === 'screen-share-permission') {
+    screenShareAllowed = sigData.allowed;
+    var btn = document.getElementById('bScreen');
+    if (!screenShareAllowed) {
+      btn.classList.add('disabled-by-host');
+      btn.title = 'Screen sharing disabled by host';
+      if (bScreenSharing) bStopScreen();
+    } else {
+      btn.classList.remove('disabled-by-host');
+      btn.title = 'Share Screen';
     }
   }
 }
 
-// ===== PEER CONNECTION =====
 async function setupPeer() {
   peerConnection = new RTCPeerConnection({ iceServers: iceServers });
 
@@ -442,39 +435,25 @@ async function setupPeer() {
   });
 
   peerConnection.onicecandidate = function(event) {
-    if (event.candidate) {
-      sendSignal('ice-candidate', event.candidate.toJSON());
-    }
+    if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
   };
 
   peerConnection.ontrack = function(event) {
     var rv = document.getElementById('remoteVid');
-    if (rv.srcObject !== event.streams[0]) {
-      rv.srcObject = event.streams[0];
-    }
+    if (rv.srcObject !== event.streams[0]) rv.srcObject = event.streams[0];
   };
 }
 
-// ===== SEND SIGNAL =====
 async function sendSignal(type, data) {
   try {
     await fetch(API_BASE + '?action=signal', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'signal',
-        room_code: roomCode,
-        signal_type: type,
-        signal_data: data,
-        sender: 'borrower'
-      })
+      body: JSON.stringify({ action: 'signal', room_code: roomCode, signal_type: type, signal_data: data, sender: 'borrower' })
     });
-  } catch (err) {
-    console.error('Signal error:', err);
-  }
+  } catch (err) { console.error('Signal error:', err); }
 }
 
-// ===== CONTROLS =====
 function bToggleMic() {
   bMuted = !bMuted;
   localStream.getAudioTracks().forEach(function(t) { t.enabled = !bMuted; });
@@ -487,16 +466,49 @@ function bToggleCam() {
   document.getElementById('bCam').classList.toggle('muted', bCamOff);
 }
 
+async function bToggleScreen() {
+  if (!screenShareAllowed) return;
+  if (!bScreenSharing) {
+    try {
+      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      var screenTrack = screenStream.getVideoTracks()[0];
+      if (peerConnection) {
+        var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
+        if (sender) sender.replaceTrack(screenTrack);
+      }
+      document.getElementById('localVid').srcObject = screenStream;
+      document.getElementById('localVid').classList.remove('me');
+      document.getElementById('bScreen').classList.add('active');
+      bScreenSharing = true;
+      screenTrack.onended = function() { bStopScreen(); };
+    } catch (err) { console.log('Screen share cancelled'); }
+  } else {
+    bStopScreen();
+  }
+}
+
+function bStopScreen() {
+  if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
+  var camTrack = localStream.getVideoTracks()[0];
+  if (peerConnection && camTrack) {
+    var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
+    if (sender) sender.replaceTrack(camTrack);
+  }
+  document.getElementById('localVid').srcObject = localStream;
+  document.getElementById('localVid').classList.add('me');
+  document.getElementById('bScreen').classList.remove('active');
+  bScreenSharing = false;
+}
+
 function leaveCall() {
   if (pollInterval) clearInterval(pollInterval);
   if (peerConnection) { peerConnection.close(); peerConnection = null; }
   if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
+  if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
 
-  // Show ended state instead of going back to join lobby
   document.getElementById('callActive').classList.remove('active');
   document.getElementById('joinLobby').classList.remove('hidden');
 
-  // Replace join card content with ended message
   var card = document.querySelector('.join-card');
   card.innerHTML = '<div class="join-logo">Agent Edge</div>' +
     '<h1 class="join-title">Call Ended</h1>' +
@@ -505,8 +517,62 @@ function leaveCall() {
     '<button class="join-btn" onclick="location.reload()" style="background:transparent;color:#6e7f77;border:2px solid #6e7f77;margin-top:10px;">Rejoin a Call</button>';
 }
 
-// ===== INIT =====
 initCam();
+
+// ===== DRAGGABLE PIP =====
+(function() {
+  var pip = document.getElementById('pipBox');
+  var isDragging = false;
+  var offsetX, offsetY;
+
+  pip.addEventListener('mousedown', function(e) {
+    isDragging = true;
+    offsetX = e.clientX - pip.getBoundingClientRect().left;
+    offsetY = e.clientY - pip.getBoundingClientRect().top;
+    pip.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    var parent = document.getElementById('vidArea').getBoundingClientRect();
+    var x = e.clientX - parent.left - offsetX;
+    var y = e.clientY - parent.top - offsetY;
+    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
+    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
+    pip.style.left = x + 'px';
+    pip.style.top = y + 'px';
+    pip.style.right = 'auto';
+    pip.style.bottom = 'auto';
+  });
+
+  document.addEventListener('mouseup', function() { isDragging = false; pip.style.transition = ''; });
+
+  pip.addEventListener('touchstart', function(e) {
+    isDragging = true;
+    var touch = e.touches[0];
+    offsetX = touch.clientX - pip.getBoundingClientRect().left;
+    offsetY = touch.clientY - pip.getBoundingClientRect().top;
+    pip.style.transition = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!isDragging) return;
+    var touch = e.touches[0];
+    var parent = document.getElementById('vidArea').getBoundingClientRect();
+    var x = touch.clientX - parent.left - offsetX;
+    var y = touch.clientY - parent.top - offsetY;
+    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
+    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
+    pip.style.left = x + 'px';
+    pip.style.top = y + 'px';
+    pip.style.right = 'auto';
+    pip.style.bottom = 'auto';
+  });
+
+  document.addEventListener('touchend', function() { isDragging = false; pip.style.transition = ''; });
+})();
 </script>
 </body>
 </html>
