@@ -2558,11 +2558,13 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
     </div>
     <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
-    <!-- Portal Members (existing) -->
-    <div class="analytics-table">
-      <div class="at-title">Partner Portal Members</div>
-      <div class="at-header at-5"><div>Name</div><div>Email</div><div>Status</div><div>Joined</div><div>Actions</div></div>
-      <div id="usersList" style="color:var(--text-muted);padding:20px;text-align:center;font-size:12px;">Loading users...</div>
+    <!-- Video Call Studio -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">Video Call Studio</div>
+      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
+      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:12px 24px;">
+        <i class="fas fa-video"></i> Launch Video Studio
+      </button>
     </div>
   </div>
 </div>
