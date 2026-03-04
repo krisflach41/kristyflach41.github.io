@@ -269,6 +269,31 @@ body {
 .ctrl-btn.end-call { background: #ef4444; width: 64px; height: 52px; border-radius: 26px; font-size: 14px; font-weight: 700; }
 .ctrl-btn.end-call:hover { background: #dc2626; }
 .ctrl-btn.screen-share.active { background: #6e7f77; }
+.ctrl-btn.recording { background: #ef4444; animation: rec-pulse 1.5s ease infinite; }
+.ctrl-btn.perm-off { background: rgba(239,68,68,0.2); color: #ef4444; }
+
+@keyframes rec-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
+}
+
+.rec-indicator {
+  display: none;
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(239,68,68,0.9);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  z-index: 20;
+  animation: rec-pulse 1.5s ease infinite;
+}
+
+.rec-indicator.show { display: flex; align-items: center; gap: 6px; }
+.rec-dot { width: 8px; height: 8px; border-radius: 50%; background: white; }
 
 /* ===== STATUS BAR ===== */
 .status-bar {
@@ -328,6 +353,7 @@ body {
   </div>
 
   <div class="video-grid" id="videoGrid">
+    <div class="rec-indicator" id="recIndicator"><div class="rec-dot"></div> REC</div>
     <div class="remote-video-wrap">
       <video id="remoteVideo" autoplay playsinline></video>
       <div class="waiting-message" id="waitingMsg">
@@ -350,6 +376,12 @@ body {
     </button>
     <button class="ctrl-btn screen-share" id="btnScreen" onclick="toggleScreenShare()" title="Share Screen">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </button>
+    <button class="ctrl-btn" id="btnRecord" onclick="toggleRecord()" title="Record Call">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
+    </button>
+    <button class="ctrl-btn" id="btnBorrowerScreen" onclick="toggleBorrowerScreenShare()" title="Allow/Block Borrower Screen Share">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="3" x2="22" y2="17" stroke-width="2.5"/></svg>
     </button>
     <button class="ctrl-btn end-call" id="btnEnd" onclick="endCall()">END</button>
   </div>
@@ -374,6 +406,10 @@ var isCamOff = false;
 var isScreenSharing = false;
 var callStartTime = null;
 var timerInterval = null;
+var mediaRecorder = null;
+var recordedChunks = [];
+var isRecording = false;
+var borrowerScreenAllowed = true;
 
 var iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -615,7 +651,95 @@ function stopScreenShare() {
   isScreenSharing = false;
 }
 
+// ===== RECORD CALL =====
+function toggleRecord() {
+  if (!isRecording) {
+    startRecording();
+  } else {
+    stopRecording();
+  }
+}
+
+function startRecording() {
+  recordedChunks = [];
+  var remoteVideo = document.getElementById('remoteVideo');
+
+  // Capture both local and remote audio/video into a canvas
+  // For simplicity, record the remote stream + local audio
+  var streams = [];
+  if (remoteVideo.srcObject) streams.push(remoteVideo.srcObject);
+  if (localStream) streams.push(localStream);
+
+  // Create a combined stream
+  var tracks = [];
+  streams.forEach(function(s) {
+    s.getTracks().forEach(function(t) { tracks.push(t); });
+  });
+
+  var combinedStream = new MediaStream(tracks);
+
+  try {
+    mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' });
+  } catch (e) {
+    try {
+      mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
+    } catch (e2) {
+      alert('Recording not supported in this browser.');
+      return;
+    }
+  }
+
+  mediaRecorder.ondataavailable = function(event) {
+    if (event.data && event.data.size > 0) recordedChunks.push(event.data);
+  };
+
+  mediaRecorder.onstop = function() {
+    var blob = new Blob(recordedChunks, { type: 'video/webm' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    var date = new Date().toISOString().slice(0,10);
+    a.download = 'call-recording-' + date + '.webm';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  mediaRecorder.start(1000);
+  isRecording = true;
+  document.getElementById('btnRecord').classList.add('recording');
+  document.getElementById('recIndicator').classList.add('show');
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+  }
+  isRecording = false;
+  document.getElementById('btnRecord').classList.remove('recording');
+  document.getElementById('recIndicator').classList.remove('show');
+}
+
+// ===== TOGGLE BORROWER SCREEN SHARE =====
+function toggleBorrowerScreenShare() {
+  borrowerScreenAllowed = !borrowerScreenAllowed;
+  var btn = document.getElementById('btnBorrowerScreen');
+
+  if (!borrowerScreenAllowed) {
+    btn.classList.add('perm-off');
+    btn.title = 'Borrower screen share BLOCKED - click to allow';
+  } else {
+    btn.classList.remove('perm-off');
+    btn.title = 'Borrower screen share ALLOWED - click to block';
+  }
+
+  // Send permission signal to borrower
+  sendSignal('screen-share-permission', { allowed: borrowerScreenAllowed });
+}
+
 async function endCall() {
+  if (isRecording) stopRecording();
   if (pollInterval) clearInterval(pollInterval);
   if (timerInterval) clearInterval(timerInterval);
 
@@ -637,14 +761,12 @@ async function endCall() {
   if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
   if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
 
-  // Back to lobby
-  document.getElementById('callView').classList.remove('active');
-  document.getElementById('lobby').classList.remove('hidden');
-  roomCode = null;
-  lastSignalTime = '2000-01-01T00:00:00Z';
-  document.getElementById('startCallBtn').disabled = false;
-  document.getElementById('startCallBtn').textContent = 'Start Call';
-  setupDevices();
+  // Return to Mission Control
+  if (window.opener) {
+    window.close();
+  } else {
+    window.location.href = 'mission-control.html';
+  }
 }
 
 // ===== HELPERS =====
