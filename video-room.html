@@ -311,7 +311,6 @@ var bMuted = false;
 var bCamOff = false;
 var bScreenSharing = false;
 var screenShareAllowed = true;
-var bRemoteStream = null;
 
 var iceServers = [
   { urls: 'stun:stun.l.google.com:19302' },
@@ -443,7 +442,6 @@ async function setupPeer() {
     var rv = document.getElementById('remoteVid');
     if (rv.srcObject !== event.streams[0]) {
       rv.srcObject = event.streams[0];
-      bRemoteStream = event.streams[0];
     }
   };
 }
@@ -474,26 +472,19 @@ async function bToggleScreen() {
   if (!screenShareAllowed) return;
   if (!bScreenSharing) {
     try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      screenStream = await navigator.mediaDevices.getDisplayMedia({
+        video: { displaySurface: 'monitor' },
+        audio: false,
+        selfBrowserSurface: 'exclude',
+        surfaceSwitching: 'exclude'
+      });
       var screenTrack = screenStream.getVideoTracks()[0];
       if (peerConnection) {
         var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
         if (sender) sender.replaceTrack(screenTrack);
       }
 
-      var remoteVid = document.getElementById('remoteVid');
-      var localVid = document.getElementById('localVid');
-
-      // Save LO stream reference
-      if (remoteVid.srcObject) bRemoteStream = remoteVid.srcObject;
-
-      // Main view = your screen share, PIP = LO's face
-      remoteVid.srcObject = screenStream;
-      if (bRemoteStream) {
-        localVid.srcObject = bRemoteStream;
-        localVid.classList.remove('me');
-      }
-
+      // Don't change local display - borrower already sees their own screen
       document.getElementById('bScreen').classList.add('active');
       bScreenSharing = true;
       screenTrack.onended = function() { bStopScreen(); };
@@ -509,15 +500,6 @@ function bStopScreen() {
     screenStream = null;
   }
 
-  var remoteVid = document.getElementById('remoteVid');
-  var localVid = document.getElementById('localVid');
-
-  // Restore: main view = LO, PIP = your camera
-  if (bRemoteStream) remoteVid.srcObject = bRemoteStream;
-  localVid.srcObject = localStream;
-  localVid.classList.add('me');
-
-  // Restore camera track to peer connection
   var camTrack = localStream.getVideoTracks()[0];
   if (peerConnection && camTrack) {
     var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
@@ -526,8 +508,6 @@ function bStopScreen() {
 
   document.getElementById('bScreen').classList.remove('active');
   bScreenSharing = false;
-
-  window.focus();
 }
 
 function leaveCall() {
