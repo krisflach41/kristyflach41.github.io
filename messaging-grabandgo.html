@@ -326,7 +326,7 @@ body {
 <div class="page-wrap">
   <div class="content-section" style="position: relative;">
 
-    <button class="replay-tour-btn" id="replayTourBtn">Watch Tour</button>
+    <button class="replay-tour-btn" id="replayTourBtn">Watch Tutorial</button>
 
     <header class="page-header">
       <h1 class="page-title">Grab & Go Content Studio</h1>
@@ -818,37 +818,28 @@ clearPreview();
 
 // ===== TUTORIAL WALKTHROUGH =====
 (function() {
-  // Check if user has already seen the tutorial
-  if (localStorage.getItem('grabandgo_tutorial_seen')) return;
-
   var steps = [
     {
-      icon: '',
       title: 'Welcome to the Grab & Go Content Studio',
       text: 'Create professional social media graphics in seconds — without ever leaving this page. Let me show you how it works.'
     },
     {
-      icon: '',
       title: 'Step 1: Pick a Post',
       text: 'Browse pre-written posts by category and goal. Each one is crafted for maximum engagement. Use the filters at the top to find exactly what you need.'
     },
     {
-      icon: '',
       title: 'Step 2: Edit Your Text',
       text: 'Click "Create Graphic" on any post. The text loads into an editor where you can customize it — change wording, add your name, make it yours. Or leave it as-is.'
     },
     {
-      icon: '',
       title: 'Step 3: Search for an Image',
       text: 'Search thousands of free, professional stock photos right here. Just type what you\'re looking for and click the image you want. No downloading, no other sites.'
     },
     {
-      icon: '',
       title: 'Step 4: Preview Your Graphic',
       text: 'Your text and image combine into a live preview — a finished social media graphic, ready to go. See exactly what your followers will see.'
     },
     {
-      icon: '',
       title: 'Step 5: Download & Post',
       text: 'Hit download and your graphic saves as a high-quality image. Upload it straight to Facebook, Instagram, LinkedIn — anywhere. That\'s it. You\'re done.'
     }
@@ -857,20 +848,19 @@ clearPreview();
   var currentStep = 0;
   var overlay = document.getElementById('tutorialOverlay');
   var dotsContainer = document.getElementById('tutStepDots');
-  var icon = document.getElementById('tutIcon');
-  var title = document.getElementById('tutTitle');
-  var text = document.getElementById('tutText');
+  var iconEl = document.getElementById('tutIcon');
+  var titleEl = document.getElementById('tutTitle');
+  var textEl = document.getElementById('tutText');
   var nextBtn = document.getElementById('tutNext');
   var skipBtn = document.getElementById('tutSkip');
   var dismissBtn = document.getElementById('tutDismiss');
 
   function renderStep() {
     var step = steps[currentStep];
-    icon.textContent = step.icon;
-    title.textContent = step.title;
-    text.textContent = step.text;
+    iconEl.textContent = '';
+    titleEl.textContent = step.title;
+    textEl.textContent = step.text;
 
-    // Update dots
     dotsContainer.innerHTML = '';
     steps.forEach(function(_, i) {
       var dot = document.createElement('div');
@@ -880,7 +870,6 @@ clearPreview();
       dotsContainer.appendChild(dot);
     });
 
-    // Update button text
     if (currentStep === steps.length - 1) {
       nextBtn.textContent = 'Get Started! →';
       skipBtn.style.display = 'none';
@@ -895,6 +884,12 @@ clearPreview();
     if (remember) {
       localStorage.setItem('grabandgo_tutorial_seen', 'true');
     }
+  }
+
+  function startTutorial() {
+    currentStep = 0;
+    renderStep();
+    overlay.style.display = 'flex';
   }
 
   nextBtn.addEventListener('click', function() {
@@ -914,16 +909,15 @@ clearPreview();
     closeTutorial(true);
   });
 
-  // Show tutorial
-  overlay.style.display = 'flex';
-  renderStep();
-
-  // Expose replay function
+  // Replay button always wired
   document.getElementById('replayTourBtn').addEventListener('click', function() {
-    currentStep = 0;
-    renderStep();
-    overlay.style.display = 'flex';
+    startTutorial();
   });
+
+  // Auto-show on first visit only
+  if (!localStorage.getItem('grabandgo_tutorial_seen')) {
+    startTutorial();
+  }
 })();
 </script>
 
