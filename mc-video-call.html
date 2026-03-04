@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Video Call Studio - Agent Edge</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0a0f1a 100%);
+  color: #c8ccd4;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== LOBBY ===== */
+.lobby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.lobby-card {
+  background: rgba(17,24,39,0.92);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-radius: 22px;
+  padding: 50px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+}
+
+.lobby-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: #e8dcc8;
+  margin-bottom: 8px;
+}
+
+.lobby-subtitle {
+  color: rgba(200,204,212,0.5);
+  font-size: 14px;
+  margin-bottom: 35px;
+}
+
+.preview-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+  margin-bottom: 25px;
+  border: 1px solid rgba(110,127,119,0.2);
+}
+
+.preview-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.preview-label {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.6);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+}
+
+.start-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 12px;
+  background: #6e7f77;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: inherit;
+  margin-bottom: 12px;
+}
+
+.start-btn:hover { background: #556b62; transform: translateY(-1px); }
+.start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.device-select {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.device-select select {
+  flex: 1;
+  padding: 9px 12px;
+  border: 1px solid rgba(110,127,119,0.2);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.04);
+  color: #e8dcc8;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.device-select select option { background: #111827; color: #e8dcc8; }
+
+/* ===== ACTIVE CALL ===== */
+.call-view {
+  display: none;
+  height: 100vh;
+  flex-direction: column;
+}
+
+.call-view.active { display: flex; }
+.lobby.hidden { display: none; }
+
+.room-code-banner {
+  text-align: center;
+  padding: 12px;
+  background: rgba(110,127,119,0.1);
+  border-bottom: 1px solid rgba(110,127,119,0.15);
+}
+
+.room-code-banner span {
+  font-size: 13px;
+  color: rgba(200,204,212,0.6);
+}
+
+.room-code {
+  font-family: 'Courier New', monospace;
+  font-size: 22px;
+  font-weight: 700;
+  color: #e8dcc8;
+  letter-spacing: 3px;
+  margin-left: 10px;
+}
+
+.waiting-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6e7f77;
+  margin-left: 12px;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.video-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: #000;
+  min-height: 0;
+}
+
+.video-grid.solo { grid-template-columns: 1fr; }
+
+.video-cell {
+  position: relative;
+  background: #0a0f1a;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-cell video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-cell .local-video { transform: scaleX(-1); }
+
+.video-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  padding: 5px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+}
+
+.waiting-message {
+  color: rgba(200,204,212,0.4);
+  font-size: 16px;
+  text-align: center;
+}
+
+.waiting-message div {
+  font-size: 13px;
+  margin-top: 8px;
+  color: rgba(200,204,212,0.25);
+}
+
+/* ===== CALL CONTROLS ===== */
+.call-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 18px;
+  background: rgba(17,24,39,0.95);
+  border-top: 1px solid rgba(110,127,119,0.1);
+}
+
+.ctrl-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: white;
+  background: rgba(110,127,119,0.2);
+}
+
+.ctrl-btn:hover { background: rgba(110,127,119,0.35); transform: scale(1.08); }
+.ctrl-btn.active { background: #6e7f77; }
+.ctrl-btn.muted { background: rgba(239,68,68,0.3); color: #ef4444; }
+.ctrl-btn.end-call { background: #ef4444; width: 64px; height: 52px; border-radius: 26px; font-size: 14px; font-weight: 700; }
+.ctrl-btn.end-call:hover { background: #dc2626; }
+.ctrl-btn.screen-share.active { background: #6e7f77; }
+
+/* ===== STATUS BAR ===== */
+.status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px;
+  font-size: 12px;
+  color: rgba(200,204,212,0.4);
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #6e7f77;
+}
+
+.status-dot.disconnected { background: #ef4444; }
+
+@media (max-width: 768px) {
+  .video-grid { grid-template-columns: 1fr; }
+  .lobby-card { padding: 30px 22px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== LOBBY ===== -->
+<div class="lobby" id="lobby">
+  <div class="lobby-card">
+    <h1 class="lobby-title">Video Call Studio</h1>
+    <p class="lobby-subtitle">Start a video call with your borrower</p>
+
+    <div class="preview-container">
+      <video id="previewVideo" autoplay muted playsinline></video>
+      <div class="preview-label">Camera Preview</div>
+    </div>
+
+    <div class="device-select">
+      <select id="cameraSelect" title="Camera"></select>
+      <select id="micSelect" title="Microphone"></select>
+    </div>
+
+    <button class="start-btn" id="startCallBtn" onclick="createRoom()">Start Call</button>
+    <div style="font-size:12px; color:rgba(200,204,212,0.3); margin-top:8px;">
+      You'll receive a room code to share with your borrower
+    </div>
+  </div>
+</div>
+
+<!-- ===== ACTIVE CALL ===== -->
+<div class="call-view" id="callView">
+
+  <div class="room-code-banner" id="roomBanner">
+    <span>Room Code:</span>
+    <span class="room-code" id="roomCodeDisplay">----</span>
+    <span class="waiting-pulse" id="waitingPulse"></span>
+    <span id="callStatus" style="font-size:12px; color:rgba(200,204,212,0.4); margin-left:12px;">Waiting for borrower...</span>
+  </div>
+
+  <div class="video-grid solo" id="videoGrid">
+    <div class="video-cell">
+      <video id="localVideo" autoplay muted playsinline class="local-video"></video>
+      <div class="video-label">You</div>
+    </div>
+    <div class="video-cell" id="remoteCell" style="display:none;">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="video-label" id="remoteLabel">Borrower</div>
+    </div>
+  </div>
+
+  <div class="call-controls">
+    <button class="ctrl-btn" id="btnMic" onclick="toggleMic()" title="Mute/Unmute">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+    </button>
+    <button class="ctrl-btn" id="btnCam" onclick="toggleCam()" title="Camera On/Off">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+    </button>
+    <button class="ctrl-btn screen-share" id="btnScreen" onclick="toggleScreenShare()" title="Share Screen">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </button>
+    <button class="ctrl-btn end-call" id="btnEnd" onclick="endCall()">END</button>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot"></div>
+    <span id="statusText">Initializing...</span>
+    <span id="callTimer" style="margin-left:12px;"></span>
+  </div>
+</div>
+
+<script>
+var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
+var roomCode = null;
+var localStream = null;
+var screenStream = null;
+var peerConnection = null;
+var pollInterval = null;
+var lastSignalTime = '2000-01-01T00:00:00Z';
+var isMuted = false;
+var isCamOff = false;
+var isScreenSharing = false;
+var callStartTime = null;
+var timerInterval = null;
+
+var iceServers = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  { urls: 'stun:stun1.l.google.com:19302' },
+  { urls: 'stun:stun2.l.google.com:19302' }
+];
+
+// ===== DEVICE ENUMERATION =====
+async function setupDevices() {
+  try {
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('previewVideo').srcObject = localStream;
+
+    var devices = await navigator.mediaDevices.enumerateDevices();
+    var camSelect = document.getElementById('cameraSelect');
+    var micSelect = document.getElementById('micSelect');
+    camSelect.innerHTML = '';
+    micSelect.innerHTML = '';
+
+    devices.forEach(function(d, i) {
+      var opt = document.createElement('option');
+      opt.value = d.deviceId;
+      if (d.kind === 'videoinput') {
+        opt.textContent = d.label || 'Camera ' + (camSelect.options.length + 1);
+        camSelect.appendChild(opt);
+      } else if (d.kind === 'audioinput') {
+        opt.textContent = d.label || 'Mic ' + (micSelect.options.length + 1);
+        micSelect.appendChild(opt);
+      }
+    });
+  } catch (err) {
+    console.error('Camera/mic error:', err);
+    alert('Please allow camera and microphone access to use Video Call Studio.');
+  }
+}
+
+// ===== CREATE ROOM =====
+async function createRoom() {
+  var btn = document.getElementById('startCallBtn');
+  btn.disabled = true;
+  btn.textContent = 'Creating room...';
+
+  try {
+    var loName = localStorage.getItem('userName') || 'Loan Officer';
+    var resp = await fetch(API_BASE + '?action=create-room', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create-room', lo_name: loName })
+    });
+    var data = await resp.json();
+    if (!data.success) throw new Error(data.message);
+
+    roomCode = data.room_code;
+    document.getElementById('roomCodeDisplay').textContent = roomCode;
+
+    // Switch to call view
+    document.getElementById('lobby').classList.add('hidden');
+    document.getElementById('callView').classList.add('active');
+
+    // Move stream to call view
+    document.getElementById('localVideo').srcObject = localStream;
+
+    // Start polling for borrower
+    startPolling();
+    updateStatus('waiting', 'Waiting for borrower to join...');
+
+  } catch (err) {
+    alert('Error creating room: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Start Call';
+  }
+}
+
+// ===== POLLING FOR SIGNALS =====
+function startPolling() {
+  pollInterval = setInterval(async function() {
+    try {
+      var resp = await fetch(API_BASE + '?action=poll-signals&room_code=' + encodeURIComponent(roomCode) + '&for_user=lo&after=' + encodeURIComponent(lastSignalTime));
+      var data = await resp.json();
+      if (data.success && data.signals.length > 0) {
+        for (var i = 0; i < data.signals.length; i++) {
+          await handleSignal(data.signals[i]);
+          lastSignalTime = data.signals[i].created_at;
+        }
+      }
+    } catch (err) {
+      console.error('Poll error:', err);
+    }
+  }, 1500);
+}
+
+// ===== HANDLE INCOMING SIGNAL =====
+async function handleSignal(signal) {
+  var sigData = JSON.parse(signal.signal_data);
+
+  if (signal.signal_type === 'offer') {
+    // Borrower sent an offer (shouldn't happen in our flow, but handle it)
+    await setupPeerConnection();
+    await peerConnection.setRemoteDescription(new RTCSessionDescription(sigData));
+    var answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    await sendSignal('answer', answer);
+  }
+
+  if (signal.signal_type === 'answer') {
+    if (peerConnection && peerConnection.signalingState === 'have-local-offer') {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(sigData));
+    }
+  }
+
+  if (signal.signal_type === 'ice-candidate') {
+    if (peerConnection) {
+      try {
+        await peerConnection.addIceCandidate(new RTCIceCandidate(sigData));
+      } catch (e) {
+        console.log('ICE candidate error (non-fatal):', e);
+      }
+    }
+  }
+
+  if (signal.signal_type === 'join') {
+    // Borrower joined - create offer
+    updateStatus('connecting', 'Borrower joined. Connecting...');
+    await setupPeerConnection();
+    var offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    await sendSignal('offer', offer);
+  }
+}
+
+// ===== PEER CONNECTION =====
+async function setupPeerConnection() {
+  peerConnection = new RTCPeerConnection({ iceServers: iceServers });
+
+  // Add local tracks
+  localStream.getTracks().forEach(function(track) {
+    peerConnection.addTrack(track, localStream);
+  });
+
+  // ICE candidates
+  peerConnection.onicecandidate = function(event) {
+    if (event.candidate) {
+      sendSignal('ice-candidate', event.candidate.toJSON());
+    }
+  };
+
+  // Remote stream
+  peerConnection.ontrack = function(event) {
+    var remoteVideo = document.getElementById('remoteVideo');
+    if (remoteVideo.srcObject !== event.streams[0]) {
+      remoteVideo.srcObject = event.streams[0];
+      document.getElementById('remoteCell').style.display = '';
+      document.getElementById('videoGrid').classList.remove('solo');
+      document.getElementById('waitingPulse').style.display = 'none';
+      document.getElementById('callStatus').textContent = 'Connected';
+      updateStatus('connected', 'Connected');
+      startTimer();
+    }
+  };
+
+  peerConnection.onconnectionstatechange = function() {
+    if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
+      updateStatus('disconnected', 'Connection lost');
+    }
+  };
+}
+
+// ===== SEND SIGNAL =====
+async function sendSignal(type, data) {
+  try {
+    await fetch(API_BASE + '?action=signal', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'signal',
+        room_code: roomCode,
+        signal_type: type,
+        signal_data: data,
+        sender: 'lo'
+      })
+    });
+  } catch (err) {
+    console.error('Send signal error:', err);
+  }
+}
+
+// ===== CONTROLS =====
+function toggleMic() {
+  isMuted = !isMuted;
+  localStream.getAudioTracks().forEach(function(t) { t.enabled = !isMuted; });
+  document.getElementById('btnMic').classList.toggle('muted', isMuted);
+}
+
+function toggleCam() {
+  isCamOff = !isCamOff;
+  localStream.getVideoTracks().forEach(function(t) { t.enabled = !isCamOff; });
+  document.getElementById('btnCam').classList.toggle('muted', isCamOff);
+}
+
+async function toggleScreenShare() {
+  if (!isScreenSharing) {
+    try {
+      screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+      var screenTrack = screenStream.getVideoTracks()[0];
+
+      if (peerConnection) {
+        var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
+        if (sender) sender.replaceTrack(screenTrack);
+      }
+
+      document.getElementById('localVideo').srcObject = screenStream;
+      document.getElementById('btnScreen').classList.add('active');
+      isScreenSharing = true;
+
+      screenTrack.onended = function() {
+        stopScreenShare();
+      };
+    } catch (err) {
+      console.log('Screen share cancelled');
+    }
+  } else {
+    stopScreenShare();
+  }
+}
+
+function stopScreenShare() {
+  if (screenStream) {
+    screenStream.getTracks().forEach(function(t) { t.stop(); });
+  }
+  var camTrack = localStream.getVideoTracks()[0];
+  if (peerConnection && camTrack) {
+    var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
+    if (sender) sender.replaceTrack(camTrack);
+  }
+  document.getElementById('localVideo').srcObject = localStream;
+  document.getElementById('localVideo').classList.add('local-video');
+  document.getElementById('btnScreen').classList.remove('active');
+  isScreenSharing = false;
+}
+
+async function endCall() {
+  if (pollInterval) clearInterval(pollInterval);
+  if (timerInterval) clearInterval(timerInterval);
+
+  if (peerConnection) {
+    peerConnection.close();
+    peerConnection = null;
+  }
+
+  if (roomCode) {
+    try {
+      await fetch(API_BASE + '?action=end-room', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'end-room', room_code: roomCode })
+      });
+    } catch (e) {}
+  }
+
+  if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
+  if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
+
+  // Back to lobby
+  document.getElementById('callView').classList.remove('active');
+  document.getElementById('lobby').classList.remove('hidden');
+  roomCode = null;
+  lastSignalTime = '2000-01-01T00:00:00Z';
+  document.getElementById('startCallBtn').disabled = false;
+  document.getElementById('startCallBtn').textContent = 'Start Call';
+  setupDevices();
+}
+
+// ===== HELPERS =====
+function updateStatus(state, text) {
+  var dot = document.getElementById('statusDot');
+  dot.className = 'status-dot';
+  if (state === 'disconnected') dot.classList.add('disconnected');
+  document.getElementById('statusText').textContent = text;
+}
+
+function startTimer() {
+  callStartTime = Date.now();
+  timerInterval = setInterval(function() {
+    var elapsed = Math.floor((Date.now() - callStartTime) / 1000);
+    var mins = Math.floor(elapsed / 60);
+    var secs = elapsed % 60;
+    document.getElementById('callTimer').textContent = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+  }, 1000);
+}
+
+// ===== INIT =====
+setupDevices();
+</script>
+</body>
+</html>
