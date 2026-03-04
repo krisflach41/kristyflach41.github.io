@@ -561,6 +561,7 @@ async function setupPeerConnection() {
     var remoteVideo = document.getElementById('remoteVideo');
     if (remoteVideo.srcObject !== event.streams[0]) {
       remoteVideo.srcObject = event.streams[0];
+      remoteStream = event.streams[0];
       document.getElementById('waitingMsg').style.display = 'none';
       document.getElementById('waitingPulse').style.display = 'none';
       document.getElementById('callStatus').textContent = 'Connected';
@@ -608,6 +609,8 @@ function toggleCam() {
   document.getElementById('btnCam').classList.toggle('muted', isCamOff);
 }
 
+var remoteStream = null; // Store reference to borrower's stream
+
 async function toggleScreenShare() {
   if (!isScreenSharing) {
     try {
@@ -619,9 +622,19 @@ async function toggleScreenShare() {
         if (sender) sender.replaceTrack(screenTrack);
       }
 
-      // Show screen share in PIP so LO can see what they're presenting
-      document.getElementById('localVideo').srcObject = screenStream;
-      document.getElementById('localVideo').classList.remove('local-video');
+      var remoteVid = document.getElementById('remoteVideo');
+      var localVid = document.getElementById('localVideo');
+
+      // Save the borrower stream reference
+      if (remoteVid.srcObject) remoteStream = remoteVid.srcObject;
+
+      // Main view = your screen share, PIP = borrower's face
+      remoteVid.srcObject = screenStream;
+      if (remoteStream) {
+        localVid.srcObject = remoteStream;
+        localVid.classList.remove('local-video');
+      }
+
       document.getElementById('btnScreen').classList.add('active');
       isScreenSharing = true;
 
@@ -639,16 +652,29 @@ async function toggleScreenShare() {
 function stopScreenShare() {
   if (screenStream) {
     screenStream.getTracks().forEach(function(t) { t.stop(); });
+    screenStream = null;
   }
+
+  var remoteVid = document.getElementById('remoteVideo');
+  var localVid = document.getElementById('localVideo');
+
+  // Restore: main view = borrower, PIP = your camera
+  if (remoteStream) remoteVid.srcObject = remoteStream;
+  localVid.srcObject = localStream;
+  localVid.classList.add('local-video');
+
+  // Restore camera track to peer connection
   var camTrack = localStream.getVideoTracks()[0];
   if (peerConnection && camTrack) {
     var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
     if (sender) sender.replaceTrack(camTrack);
   }
-  document.getElementById('localVideo').srcObject = localStream;
-  document.getElementById('localVideo').classList.add('local-video');
+
   document.getElementById('btnScreen').classList.remove('active');
   isScreenSharing = false;
+
+  // Bring call window back to focus
+  window.focus();
 }
 
 // ===== RECORD CALL =====
