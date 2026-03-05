@@ -14,7 +14,7 @@
 
 
 :root {
-  --bg-deep: #eaecf2;
+  --bg-deep: #f5f6fa;
   --bg-panel: #ffffff;
   --bg-card: #ffffff;
   --bg-hover: #f0f2f7;
@@ -1030,14 +1030,14 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 /* Calendar */
 .cal-grid { width:100%; }
 .cal-header-row { display:grid; grid-template-columns:repeat(7,1fr); }
-.cal-header-cell { padding:10px 0; text-align:center; font-family:'DM Sans',sans-serif; font-size:11px; letter-spacing:2px; color:var(--text-muted); background:rgba(0,0,0,0.02); border-bottom:1px solid var(--border); }
+.cal-header-cell { padding:10px 0; text-align:center; font-family:sans-serif; font-size:11px; letter-spacing:2px; color:var(--text-muted); background:rgba(0,0,0,0.02); border-bottom:1px solid var(--border); }
 .cal-week { display:grid; grid-template-columns:repeat(7,1fr); }
 .cal-day { min-height:110px; border-bottom:1px solid var(--border); border-right:1px solid var(--border); padding:6px; position:relative; transition:background 0.15s; }
 .cal-day:nth-child(7n) { border-right:none; }
 .cal-day:hover { background:rgba(0,0,0,0.02); }
 .cal-day.outside { opacity:0.25; }
 .cal-day.today { background:rgba(59,130,246,0.06); }
-.cal-day-num { font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-secondary); margin-bottom:4px; }
+.cal-day-num { font-family:sans-serif; font-size:14px; color:var(--text-secondary); margin-bottom:4px; }
 .cal-day.today .cal-day-num { color:#3b82f6; font-weight:700; }
 .cal-event { font-size:12px; padding:3px 6px; border-radius:3px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:pointer; transition:opacity 0.15s; line-height:1.4; }
 .cal-event:hover { opacity:0.8; }
@@ -1051,7 +1051,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .cal-upcoming-row { display:flex; align-items:center; gap:12px; padding:10px 16px; border-bottom:1px solid var(--border); }
 .cal-upcoming-row:last-child { border-bottom:none; }
 .cal-upcoming-dot { width:8px; height:8px; border-radius:3px; flex-shrink:0; }
-.cal-upcoming-date { font-family:'DM Sans',sans-serif; font-size:13px; color:var(--text-muted); width:100px; flex-shrink:0; }
+.cal-upcoming-date { font-family:sans-serif; font-size:13px; color:var(--text-muted); width:100px; flex-shrink:0; }
 .cal-upcoming-label { font-size:14px; color:var(--text-primary); flex:1; }
 .cal-upcoming-loan { font-size:12px; color:var(--text-muted); }
 .cal-upcoming-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; }
@@ -1425,7 +1425,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
     <div class="topbar-right">
       <button class="topbar-btn" onclick="calPrevMonth()"><i class="fas fa-chevron-left"></i></button>
-      <span style="font-family:'DM Sans',sans-serif;font-size:14px;letter-spacing:2px;color:var(--text-primary);min-width:180px;text-align:center;" id="calMonthLabel">---</span>
+      <span style="font-family:sans-serif;font-size:14px;letter-spacing:2px;color:var(--text-primary);min-width:180px;text-align:center;" id="calMonthLabel">---</span>
       <button class="topbar-btn" onclick="calNextMonth()"><i class="fas fa-chevron-right"></i></button>
       <button class="topbar-btn" onclick="calToday()" style="margin-left:8px;"><i class="fas fa-crosshairs"></i> Today</button>
     </div>
@@ -1649,9 +1649,9 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     <!-- ===== DASHBOARD TAB ===== -->
     <div id="ppDashboard">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
-        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:900;color:#22c55e;" id="ppKpiPartners">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;margin-top:4px;">ACTIVE PARTNERS</div></div>
-        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:900;color:#3b82f6;" id="ppKpiOrders">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;margin-top:4px;">ORDERS THIS WEEK</div></div>
-        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:'DM Sans',sans-serif;font-size:32px;font-weight:900;color:#a855f7;" id="ppKpiDownloads">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;margin-top:4px;">DOWNLOADS THIS MONTH</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#22c55e;" id="ppKpiPartners">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">ACTIVE PARTNERS</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#3b82f6;" id="ppKpiOrders">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">ORDERS THIS WEEK</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#a855f7;" id="ppKpiDownloads">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">DOWNLOADS THIS MONTH</div></div>
       </div>
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <!-- Leaderboard -->
@@ -1717,10 +1717,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
         <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;color:#3b82f6;">27</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">REPORTS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;color:#a855f7;">19</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">FLYERS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;color:#22c55e;">42</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">SOCIAL POSTS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:'DM Sans',sans-serif;font-size:24px;font-weight:900;color:#f59e0b;">88</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">TOTAL</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#3b82f6;">27</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">REPORTS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#a855f7;">19</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">FLYERS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#22c55e;">42</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">SOCIAL POSTS</div></div>
+            <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#f59e0b;">88</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">TOTAL</div></div>
           </div>
         </div>
       </div>
@@ -1732,7 +1732,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           </select>
         </div>
         <div class="mc-table-wrap"><table class="mc-table" id="ppActTable"><thead><tr><th>PARTNER</th><th>ACTION</th><th>DETAIL</th><th>DATE / TIME</th><th>TIME SPENT</th></tr></thead><tbody id="ppActTableBody"></tbody></table></div>
-        <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;"></div>
+        <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:var(--text-muted);font-weight:600;"></div>
       </div>
     </div>
 
@@ -1740,7 +1740,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     <div id="ppSettings" style="display:none;">
       <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">PARTNER ACCESS MANAGEMENT</div><div class="mc-status" id="ppSettingsCount">—</div></div>
         <div id="ppSettingsTable"></div>
-        <div style="margin-top:16px;"><button class="topbar-btn primary" style="font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:3px;padding:10px 24px;">+ INVITE PARTNER</button></div>
+        <div style="margin-top:16px;"><button class="topbar-btn primary" style="font-family:sans-serif;font-size:12px;letter-spacing:3px;padding:10px 24px;">+ INVITE PARTNER</button></div>
       </div>
     </div>
 
@@ -2062,7 +2062,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     <div id="creditSubList">
       <div style="text-align:center; padding:40px; color:var(--text-muted);">
         <div style="font-size:36px; margin-bottom:12px;">📊</div>
-        <div style="font-family:'DM Sans',sans-serif; font-size:12px; letter-spacing:1px;">LOADING SUBMISSIONS...</div>
+        <div style="font-family:sans-serif; font-size:12px; letter-spacing:1px;">LOADING SUBMISSIONS...</div>
       </div>
     </div>
   </div>
@@ -2144,7 +2144,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedCount" style="color:#3b82f6;">—</div><div class="mc-kpi-label">LOANS FUNDED</div></div>
           <div class="mc-kpi"><div class="mc-kpi-value" id="anaAvgSize" style="color:#f472b6;">—</div><div class="mc-kpi-label">AVG LOAN SIZE</div></div>
         </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:'DM Sans',sans-serif;">MONTHLY FUNDED VOLUME</div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">MONTHLY FUNDED VOLUME</div>
         <div class="mc-vbar-wrap" id="anaMonthlyBars"></div>
       </div>
 
@@ -2155,7 +2155,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div class="mc-panel-title">PIPELINE VELOCITY</div>
           <div class="mc-status" id="anaVelocityStatus">—</div>
         </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:'DM Sans',sans-serif;">LOANS PER STAGE</div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
         <div id="anaVelocityBars"></div>
         <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
           <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
@@ -2183,7 +2183,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
             <div class="mc-status" id="anaSourceStatus">—</div>
           </div>
           <div id="anaSourceBars"></div>
-          <div id="anaSourceFooter" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);font-size:10px;color:var(--text-muted);letter-spacing:1px;font-family:'DM Sans',sans-serif;"></div>
+          <div id="anaSourceFooter" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);font-size:10px;color:var(--text-muted);letter-spacing:1px;font-family:sans-serif;"></div>
         </div>
 
         <!-- BIRTHDAYS & ANNIVERSARIES -->
@@ -2209,7 +2209,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaMktRate">—</div><div class="mc-kpi-label">CURRENT MKT RATE</div></div>
           <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaRefiCount">—</div><div class="mc-kpi-label">REFI CANDIDATES</div></div>
         </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:'DM Sans',sans-serif;">CLIENTS ABOVE CURRENT MARKET RATE</div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">CLIENTS ABOVE CURRENT MARKET RATE</div>
         <div id="anaStrikeCards"><div class="mc-empty-msg">SCANNING...</div></div>
       </div>
     </div>
@@ -2279,10 +2279,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <input type="text" class="qb-filter-val" id="anaSearchBox" placeholder="Search results..." oninput="anaFilterResults()" style="max-width:300px;font-size:13px;padding:8px 14px;">
           <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
           <button class="qb-export" onclick="anaSaveQuickReport()">⭐ SAVE AS QUICK REPORT</button>
-          <div style="margin-left:auto;font-size:12px;color:rgba(59,130,246,0.5);letter-spacing:1px;font-family:'DM Sans',sans-serif;" id="anaResultCount2"></div>
+          <div style="margin-left:auto;font-size:12px;color:rgba(59,130,246,0.5);letter-spacing:1px;font-family:sans-serif;" id="anaResultCount2"></div>
         </div>
         <div class="mc-table-wrap" id="anaResultsTable"></div>
-        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);letter-spacing:1px;font-family:'DM Sans',sans-serif;"></div>
+        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);letter-spacing:1px;font-family:sans-serif;"></div>
       </div>
     </div>
 
@@ -2301,7 +2301,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   </div>
   <div class="content-area" style="padding:20px 24px;max-width:960px;">
 
-    <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:'DM Sans',sans-serif;letter-spacing:0.5px;"></div>
+    <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:sans-serif;letter-spacing:0.5px;"></div>
 
     <!-- ECONOMIC CALENDAR -->
     <div class="mc-panel" style="margin-bottom:16px;">
@@ -2314,7 +2314,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 
       <div id="calDropZone" onclick="document.getElementById('calFileInput').click()" style="border:1px dashed rgba(59,130,246,0.3);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;background:rgba(59,130,246,0.03);transition:all 0.25s;">
         <input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">
-        <div id="calDropText" style="color:var(--text-muted);font-size:13px;font-family:'DM Sans',sans-serif;">Drop image here or <span style="color:#3b82f6;text-decoration:underline;cursor:pointer;">browse</span></div>
+        <div id="calDropText" style="color:var(--text-muted);font-size:13px;font-family:sans-serif;">Drop image here or <span style="color:#3b82f6;text-decoration:underline;cursor:pointer;">browse</span></div>
       </div>
 
       <div style="margin-top:12px;">
@@ -2322,7 +2322,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
 
       <div id="calPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.1);display:none;">
-        <div id="calPreviewTitle" style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;">PREVIEW — CALENDAR DATA</div>
+        <div id="calPreviewTitle" style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;">PREVIEW — CALENDAR DATA</div>
         <div id="calPreviewContent"></div>
       </div>
     </div>
@@ -2343,12 +2343,12 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
 
       <div id="mktPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.1);display:none;">
-        <div style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(34,197,94,0.6);margin-bottom:10px;">REALTOR PARTNER SUMMARY</div>
+        <div style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(34,197,94,0.6);margin-bottom:10px;">REALTOR PARTNER SUMMARY</div>
         <div id="mktPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
       </div>
 
       <div id="clientPreview" style="margin-top:10px;padding:16px;border-radius:8px;background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.1);display:none;">
-        <div style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(168,85,247,0.6);margin-bottom:10px;">CLIENT-FRIENDLY SUMMARY</div>
+        <div style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(168,85,247,0.6);margin-bottom:10px;">CLIENT-FRIENDLY SUMMARY</div>
         <div id="clientPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
       </div>
     </div>
@@ -2374,13 +2374,13 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <textarea id="wirInput" class="bc-textarea" style="min-height:120px;" placeholder="Week in review will appear here after generating, or paste your own..." disabled></textarea>
 
       <div id="wirPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);display:none;">
-        <div id="wirPreviewLabel" style="font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(245,158,11,0.6);margin-bottom:10px;">WEEK IN REVIEW PREVIEW</div>
+        <div id="wirPreviewLabel" style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(245,158,11,0.6);margin-bottom:10px;">WEEK IN REVIEW PREVIEW</div>
         <div id="wirPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
       </div>
     </div>
 
     <!-- PUBLISH -->
-    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:16px;border:none;border-radius:8px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.1));border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all 0.25s;text-transform:uppercase;">
+    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:16px;border:none;border-radius:8px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.1));border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all 0.25s;text-transform:uppercase;">
       PUBLISH TO PORTAL
     </button>
 
@@ -2388,10 +2388,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 </div>
 
 <style>
-.bc-btn { padding:10px 20px; border:1px solid rgba(59,130,246,0.3); border-radius:6px; background:rgba(59,130,246,0.12); color:#60a5fa; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s; }
+.bc-btn { padding:10px 20px; border:1px solid rgba(59,130,246,0.3); border-radius:6px; background:rgba(59,130,246,0.12); color:#60a5fa; font-family:sans-serif; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s; }
 .bc-btn:hover:not(:disabled) { background:rgba(59,130,246,0.2); }
 .bc-btn:disabled { opacity:0.4; cursor:not-allowed; }
-.bc-textarea { width:100%; min-height:160px; padding:14px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fafbfc; color:var(--text-primary); box-sizing:border-box; resize:vertical; line-height:1.6; transition:all 0.25s; }
+.bc-textarea { width:100%; min-height:160px; padding:14px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:sans-serif; background:#fafbfc; color:var(--text-primary); box-sizing:border-box; resize:vertical; line-height:1.6; transition:all 0.25s; }
 .bc-textarea:focus { outline:none; border-color:rgba(59,130,246,0.3); background:#f8f9fb; }
 .bc-textarea:disabled { opacity:0.4; }
 .bc-spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:currentColor; border-radius:50%; animation:briefSpin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
@@ -2864,7 +2864,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div style="width:340px;flex-shrink:0;overflow-y:auto;border:1px solid var(--border-light);border-radius:10px;background:#fafbfc;" id="scenarioList">
         <div style="text-align:center;padding:40px;color:var(--text-muted);">
           <div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div>
-          <div style="font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
+          <div style="font-family:sans-serif;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
         </div>
       </div>
       <div style="flex:1;overflow-y:auto;border:1px solid var(--border-light);border-radius:10px;background:#fafbfc;padding:20px;" id="scenarioDetailPreview">
@@ -3866,22 +3866,22 @@ function qrBuildConfig(type){
   var months=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
   var cm=new Date().getMonth();
   var now=new Date(),yStr=now.getFullYear()+'-01-01',tStr=now.toISOString().split('T')[0];
-  var mp='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">SELECT MONTH</div><div class="qr-months">';
+  var mp='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">SELECT MONTH</div><div class="qr-months">';
   months.forEach(function(m,i){mp+='<div class="qr-month'+(i===cm?' active':'')+'" onclick="qrPickMonth(this,'+i+')">'+m+'</div>';});mp+='</div>';
-  var datePickers='<div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;"><span style="font-size:13px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">OR CUSTOM RANGE:</span><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:var(--text-muted);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div>';
-  var pp='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">SELECT PERIOD</div><div class="qr-periods"><div class="qr-period" onclick="qrPickPeriod(this,\'mtd\')">THIS MONTH</div><div class="qr-period" onclick="qrPickPeriod(this,\'qtd\')">THIS QUARTER</div><div class="qr-period active" onclick="qrPickPeriod(this,\'ytd\')">YEAR TO DATE</div><div class="qr-period" onclick="qrPickPeriod(this,\'12mo\')">LAST 12 MONTHS</div><div class="qr-period" onclick="qrPickPeriod(this,\'all\')">ALL TIME</div><div class="qr-period" onclick="qrPickPeriod(this,\'custom\')">CUSTOM</div></div><div id="qrCustomDateWrap" style="display:none;margin-top:10px;"><div style="display:flex;align-items:center;gap:10px;"><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:var(--text-muted);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div></div>';
-  var mktInput='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:13px;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-weight:600;">MARKET RATE:</span><input type="number" step="0.001" value="6.375" id="qrMktRate" style="background:#fafbfc;border:1px solid rgba(59,130,246,0.2);color:#3b82f6;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;padding:6px 12px;border-radius:4px;width:100px;outline:none;text-align:center;" onfocus="this.style.borderColor=\'rgba(59,130,246,0.5)\'" onblur="this.style.borderColor=\'rgba(59,130,246,0.2)\'"><span style="font-size:13px;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-weight:600;">%</span><span style="font-size:12px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;margin-left:8px;">EDIT TO MATCH YOUR PRICING</span></div>';
+  var datePickers='<div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">OR CUSTOM RANGE:</span><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:var(--text-muted);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div>';
+  var pp='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">SELECT PERIOD</div><div class="qr-periods"><div class="qr-period" onclick="qrPickPeriod(this,\'mtd\')">THIS MONTH</div><div class="qr-period" onclick="qrPickPeriod(this,\'qtd\')">THIS QUARTER</div><div class="qr-period active" onclick="qrPickPeriod(this,\'ytd\')">YEAR TO DATE</div><div class="qr-period" onclick="qrPickPeriod(this,\'12mo\')">LAST 12 MONTHS</div><div class="qr-period" onclick="qrPickPeriod(this,\'all\')">ALL TIME</div><div class="qr-period" onclick="qrPickPeriod(this,\'custom\')">CUSTOM</div></div><div id="qrCustomDateWrap" style="display:none;margin-top:10px;"><div style="display:flex;align-items:center;gap:10px;"><input type="date" class="qb-date-input" id="qrDateFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:var(--text-muted);">→</span><input type="date" class="qb-date-input" id="qrDateTo" value="'+tStr+'" style="font-size:13px;"></div></div>';
+  var mktInput='<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;"><span style="font-size:13px;color:var(--text-secondary);font-weight:600;">MARKET RATE:</span><input type="number" step="0.001" value="6.375" id="qrMktRate" style="background:#fafbfc;border:1px solid rgba(59,130,246,0.2);color:#3b82f6;font-family:sans-serif;font-size:16px;font-weight:700;padding:6px 12px;border-radius:4px;width:100px;outline:none;text-align:center;" onfocus="this.style.borderColor=\'rgba(59,130,246,0.5)\'" onblur="this.style.borderColor=\'rgba(59,130,246,0.2)\'"><span style="font-size:13px;color:var(--text-secondary);font-weight:600;">%</span><span style="font-size:12px;color:var(--text-muted);font-weight:600;margin-left:8px;">EDIT TO MATCH YOUR PRICING</span></div>';
   qrCurrentConfig={};
   if(type==='birthdays'){title.textContent='BIRTHDAYS';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='anniv-purchase'){title.textContent='PURCHASE CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='anniv-refi'){title.textContent='REFI CLOSING ANNIVERSARIES';body.innerHTML=mp;qrCurrentConfig.month=cm;}
   else if(type==='production'){title.textContent='MONTHLY PRODUCTION';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
   else if(type==='sources'){title.textContent='SOURCE BREAKDOWN';body.innerHTML=pp;qrCurrentConfig.period='ytd';}
-  else if(type==='refi'){title.textContent='REFI CANDIDATES';body.innerHTML=mktInput+'<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-family:'DM Sans',sans-serif;font-weight:600;">SHOWS ALL FUNDED CLIENTS WITH RATES ABOVE YOUR MARKET RATE</div>';}
-  else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML=mktInput+'<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-family:'DM Sans',sans-serif;font-weight:600;">SHOWS SPREAD BETWEEN CLIENT RATES AND CURRENT MARKET</div>';}
-  else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
-  else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
-  else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
+  else if(type==='refi'){title.textContent='REFI CANDIDATES';body.innerHTML=mktInput+'<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-weight:600;">SHOWS ALL FUNDED CLIENTS WITH RATES ABOVE YOUR MARKET RATE</div>';}
+  else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML=mktInput+'<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-weight:600;">SHOWS SPREAD BETWEEN CLIENT RATES AND CURRENT MARKET</div>';}
+  else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);letter-spacing:1px;font-weight:600;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
   else if(type.startsWith('user_')){var s=qrUserReports.find(function(r){return r.id===type;});if(s){title.textContent=s.name.toUpperCase();body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);">SAVED REPORT — CLICK RUN</div>';qrCurrentConfig=JSON.parse(JSON.stringify(s.config));}}
 }
 
@@ -3979,17 +3979,17 @@ function ppBuildDashboard(){
     var pct=(p.orders/maxO)*100;
     h+='<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;margin-bottom:3px;transition:all 0.2s;">';
     var colors=['#fbbf24','#94a3b8','#d97706'];
-    h+='<div style="font-family:'DM Sans',sans-serif;font-size:16px;font-weight:900;width:30px;text-align:center;color:'+(i<3?colors[i]:'var(--text-muted)')+';">'+(i+1)+'</div>';
+    h+='<div style="font-family:sans-serif;font-size:16px;font-weight:900;width:30px;text-align:center;color:'+(i<3?colors[i]:'var(--text-muted)')+';">'+(i+1)+'</div>';
     h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:'+p.color+'20;color:'+p.color+';">'+ini+'</div>';
-    h+='<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text-primary);font-family:'DM Sans',sans-serif;font-weight:600;">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);">'+p.brokerage+'</div></div>';
+    h+='<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text-primary);font-weight:600;">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);">'+p.brokerage+'</div></div>';
     h+='<div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+p.color+'30,'+p.color+');border-radius:3px;"></div></div>';
-    h+='<div style="text-align:right;"><div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.orders+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">ORDERS</div></div>';
+    h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.orders+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">ORDERS</div></div>';
     h+='</div>';
   });
   var lb=document.getElementById('ppLeaderboard');if(lb)lb.innerHTML=h;
   var topR=[{n:'Market Snapshot',c:14},{n:'Buyer Qualification',c:11},{n:'Rate Comparison',c:8},{n:'Neighborhood Stats',c:6},{n:'Amortization Schedule',c:4}];
   var topF=[{n:'Open House',c:9},{n:'Just Listed',c:7},{n:'Rate Drop Alert',c:5},{n:'First-Time Buyer',c:4},{n:'Co-Branded Header',c:3}];
-  function top5(data){var h='';data.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(0,0,0,0.01);"><div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-weight:600;flex:1;">'+d.n+'</div><div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});return h;}
+  function top5(data){var h='';data.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(0,0,0,0.01);"><div style="font-family:sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:var(--text-secondary);font-weight:600;flex:1;">'+d.n+'</div><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});return h;}
   var tr=document.getElementById('ppTopReports');if(tr)tr.innerHTML=top5(topR);
   var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=top5(topF);
   // Load who's online
@@ -4387,7 +4387,7 @@ function ppBuildReportOrders(){
     var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
     h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
   });
-  if(h==='')h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;">NO ACTIVE ORDERS</div>';
+  if(h==='')h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-weight:600;font-size:13px;">NO ACTIVE ORDERS</div>';
   document.getElementById('ppReportOrders').innerHTML=h;
   document.getElementById('ppReportOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
 }
@@ -4417,7 +4417,7 @@ function ppBuildFlyerOrders(){
     var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'';
     h+=ppBuildOrderRow(parsed,o.name||'Unknown',(o.brokerage||'')+(ts?' · '+ts:''),sl,sc,o.email||'',o.orderId||'');
   });
-  if(h==='')h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:13px;">NO FLYER ORDERS</div>';
+  if(h==='')h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-weight:600;font-size:13px;">NO FLYER ORDERS</div>';
   document.getElementById('ppFlyerOrders').innerHTML=h;
   document.getElementById('ppFlyerOrderCount').textContent=pendingCount>0?pendingCount+' PENDING':'ALL CLEAR';
 }
@@ -4452,18 +4452,18 @@ function ppBuildOrderHistory(filter){
     var cobrand=o.branding==='Co-branded'?'Yes · '+(o.cobrandLayout||'left').toUpperCase():'No';
     var itemSummary=parsed.lineItems.length+' item'+(parsed.lineItems.length!==1?'s':'');
     h+='<tr>';
-    h+='<td style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:11px;color:var(--text-muted);">'+o.orderId+'</td>';
+    h+='<td style="font-weight:600;font-size:11px;color:var(--text-muted);">'+o.orderId+'</td>';
     h+='<td style="font-weight:600;color:var(--text-secondary);">'+(o.name||'Unknown')+'</td>';
     h+='<td>'+(o.brokerage||'—')+'</td>';
     h+='<td>'+itemSummary+'</td>';
     h+='<td>'+cobrand+'</td>';
-    h+='<td style="font-family:'DM Sans',sans-serif;font-weight:600;">'+ts+'</td>';
+    h+='<td style="font-weight:600;">'+ts+'</td>';
     h+='<td><span class="status-badge" style="background:'+statusColor+'15;color:'+statusColor+';">'+statusLabel+'</span></td>';
     h+='<td><button class="pp-order-btn" onclick="ppViewOrder(\''+o.orderId+'\')" style="padding:5px 12px;font-size:9px;letter-spacing:1px;">VIEW</button></td>';
     h+='</tr>';
   });
   h+='</tbody></table>';
-  if(orders.length===0)h='<div style="padding:30px;text-align:center;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">NO ORDERS FOUND</div>';
+  if(orders.length===0)h='<div style="padding:30px;text-align:center;color:var(--text-muted);font-weight:600;">NO ORDERS FOUND</div>';
   document.getElementById('ppHistoryTable').innerHTML=h;
   document.getElementById('ppHistoryCount').textContent=orders.length+' ORDER'+(orders.length!==1?'S':'');
 }
@@ -4475,14 +4475,14 @@ function ppBuildActivity(){
     var isA=ppActFilterPartner===p.name;
     h+='<div class="pp-pcard'+(isA?' active':'')+'" onclick="ppTogglePartner(\''+p.name+'\')">';
     h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:'+p.color+'20;color:'+p.color+';flex-shrink:0;">'+ini+'</div>';
-    h+='<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:var(--text-primary);font-family:'DM Sans',sans-serif;font-weight:600;">'+p.name+'</div><div style="font-size:10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">'+p.visits+' visits · Last: '+p.lastLogin+'</div></div>';
-    h+='<div style="text-align:right;"><div style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.totalTime+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;">TIME</div></div>';
+    h+='<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:var(--text-primary);font-weight:600;">'+p.name+'</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">'+p.visits+' visits · Last: '+p.lastLogin+'</div></div>';
+    h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.totalTime+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">TIME</div></div>';
     h+='</div>';
   });
   document.getElementById('ppPartnerCards').innerHTML=h;
   var tools=[{n:'MARKET PULSE',c:24,cl:'#3b82f6'},{n:'AMORT CALC',c:18,cl:'#22c55e'},{n:'REPORT GEN',c:14,cl:'#a855f7'},{n:'FLYER STUDIO',c:10,cl:'#f472b6'},{n:'CREDIT SIM',c:6,cl:'#fbbf24'},{n:'SOCIAL',c:42,cl:'#06b6d4'}];
   var mx=Math.max.apply(null,tools.map(function(t){return t.c;}));var th='';
-  tools.forEach(function(t){var pct=(t.c/mx)*100;th+='<div style="display:flex;align-items:center;gap:12px;padding:6px 0;"><div style="width:110px;font-size:11px;color:var(--text-muted);text-align:right;font-family:'DM Sans',sans-serif;font-weight:600;">'+t.n+'</div><div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+t.cl+'30,'+t.cl+');border-radius:3px;"></div></div><div style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:'+t.cl+';width:30px;text-align:right;">'+t.c+'</div></div>';});
+  tools.forEach(function(t){var pct=(t.c/mx)*100;th+='<div style="display:flex;align-items:center;gap:12px;padding:6px 0;"><div style="width:110px;font-size:11px;color:var(--text-muted);text-align:right;font-weight:600;">'+t.n+'</div><div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+t.cl+'30,'+t.cl+');border-radius:3px;"></div></div><div style="font-family:sans-serif;font-size:13px;font-weight:700;color:'+t.cl+';width:30px;text-align:right;">'+t.c+'</div></div>';});
   document.getElementById('ppToolBars').innerHTML=th;
   ppActFilter();
 }
@@ -4513,14 +4513,14 @@ function ppActFilter(){
 }
 
 function ppBuildSettings(){
-  var h='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:10px 16px;font-size:11px;color:var(--text-muted);letter-spacing:1.5px;font-family:'DM Sans',sans-serif;font-weight:600;border-bottom:1px solid rgba(59,130,246,0.08);"><div>PARTNER</div><div>EMAIL</div><div>STATUS</div><div>ACTION</div></div>';
+  var h='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:10px 16px;font-size:11px;color:var(--text-muted);letter-spacing:1.5px;font-weight:600;border-bottom:1px solid rgba(59,130,246,0.08);"><div>PARTNER</div><div>EMAIL</div><div>STATUS</div><div>ACTION</div></div>';
   ppPartners.forEach(function(p){
     var active=p.visits>5;
     h+='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.02);font-size:13px;">';
     h+='<div style="font-weight:700;color:var(--text-secondary);">'+p.name+'</div>';
-    h+='<div style="color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;">'+p.email+'</div>';
-    h+='<div><span style="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;font-family:'DM Sans',sans-serif;font-weight:600;background:'+(active?'rgba(34,197,94,0.1)':'rgba(251,191,36,0.1)')+';color:'+(active?'#22c55e':'#fbbf24')+';">'+(active?'ACTIVE':'INACTIVE')+'</span></div>';
-    h+='<div><button style="padding:6px 14px;border-radius:4px;border:1px solid rgba(59,130,246,0.2);background:transparent;color:rgba(59,130,246,0.6);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;letter-spacing:1px;">RESET PW</button></div>';
+    h+='<div style="color:var(--text-muted);font-weight:600;font-size:12px;">'+p.email+'</div>';
+    h+='<div><span style="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;font-weight:600;background:'+(active?'rgba(34,197,94,0.1)':'rgba(251,191,36,0.1)')+';color:'+(active?'#22c55e':'#fbbf24')+';">'+(active?'ACTIVE':'INACTIVE')+'</span></div>';
+    h+='<div><button style="padding:6px 14px;border-radius:4px;border:1px solid rgba(59,130,246,0.2);background:transparent;color:rgba(59,130,246,0.6);font-size:11px;cursor:pointer;font-weight:600;letter-spacing:1px;">RESET PW</button></div>';
     h+='</div>';
   });
   document.getElementById('ppSettingsTable').innerHTML=h;
@@ -7449,7 +7449,7 @@ async function loadScenarios() {
     loadHotLeads();
   } catch (err) {
     console.error('Failed to load scenarios:', err);
-    document.getElementById('scenarioList').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><div style="font-family:'DM Sans',sans-serif;font-weight:600;font-size:12px;">FAILED TO LOAD SCENARIOS</div></div>';
+    document.getElementById('scenarioList').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><div style="font-weight:600;font-size:12px;">FAILED TO LOAD SCENARIOS</div></div>';
   }
 }
 
@@ -7573,7 +7573,7 @@ function showScenarioDetail(id) {
   // Header
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">';
   h += '<span style="font-size:9px;font-weight:700;letter-spacing:1px;padding:4px 10px;border-radius:4px;background:' + badgeBg + ';color:' + badgeColor + ';">' + badgeText + '</span>';
-  h += '<span style="font-size:11px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">' + dateStr + '</span>';
+  h += '<span style="font-size:11px;color:var(--text-muted);font-weight:600;">' + dateStr + '</span>';
   h += '</div>';
 
   // Realtor info
@@ -7828,8 +7828,8 @@ function renderHotLeadsList() {
     h += '<div style="font-size:11px;color:var(--text-muted);margin-top:1px;">' + item.detail + '</div>';
     h += '</div>';
     h += '<div style="text-align:right;flex-shrink:0;">';
-    h += '<div style="font-size:10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">' + dateStr + '</div>';
-    h += '<div style="font-size:10px;color:var(--text-muted);font-family:'DM Sans',sans-serif;font-weight:600;">' + timeStr + '</div>';
+    h += '<div style="font-size:10px;color:var(--text-muted);font-weight:600;">' + dateStr + '</div>';
+    h += '<div style="font-size:10px;color:var(--text-muted);font-weight:600;">' + timeStr + '</div>';
     h += '</div>';
     h += '<div onclick="event.stopPropagation();switchView(\'' + item.viewTarget + '\',document.querySelector(\'[onclick*=' + item.viewTarget + ']\'))" style="padding:5px 12px;border-radius:5px;background:rgba(239,68,68,0.15);color:#ef4444;font-size:10px;font-weight:700;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">REVIEW</div>';
     h += '</div>';
