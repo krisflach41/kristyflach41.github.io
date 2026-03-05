@@ -1125,6 +1125,26 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 }
 .blog-badge.published { background:rgba(34,197,94,0.12); color:#22c55e; }
 .blog-badge.draft { background:rgba(245,158,11,0.12); color:#f59e0b; }
+
+/* Blog image search */
+.blog-img-search-bar { display:flex; gap:8px; margin-bottom:12px; }
+.blog-img-search-input {
+  flex:1; padding:10px 14px; border-radius:8px;
+  background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12);
+  color:#f0f4f8; font-size:13px; font-family:inherit;
+}
+.blog-img-search-input:focus { outline:none; border-color:rgba(168,85,247,0.5); box-shadow:0 0 0 3px rgba(168,85,247,0.1); }
+.blog-img-results {
+  display:grid; grid-template-columns:repeat(3,1fr); gap:8px;
+  max-height:220px; overflow-y:auto; margin-bottom:8px;
+}
+.blog-img-item {
+  aspect-ratio:1; border-radius:6px; overflow:hidden;
+  cursor:pointer; border:3px solid transparent; transition:all 0.15s;
+}
+.blog-img-item:hover { transform:scale(1.04); box-shadow:0 4px 12px rgba(0,0,0,0.3); }
+.blog-img-item.selected { border-color:#a855f7; box-shadow:0 0 0 2px #a855f7; }
+.blog-img-item img { width:100%; height:100%; object-fit:cover; display:block; }
 </style>
 <link rel="stylesheet" href="crm-cards.css">
 <script src="tracking.js"></script>
@@ -2622,8 +2642,14 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <input id="blogSummary" placeholder="1-2 sentence summary for the blog card" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
         </div>
         <div style="margin-bottom:12px;">
-          <div class="fc-lbl">Image URL (Unsplash)</div>
-          <input id="blogImageUrl" placeholder="https://images.unsplash.com/..." style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+          <div class="fc-lbl">Blog Image</div>
+          <div class="blog-img-search-bar">
+            <input type="text" class="blog-img-search-input" id="blogImgSearchInput" placeholder="Search images, e.g. 'home buying', 'mortgage signing'...">
+            <button class="topbar-btn primary" onclick="blogSearchImages()" id="blogImgSearchBtn" style="white-space:nowrap;"><i class="fas fa-search"></i> Search</button>
+          </div>
+          <div id="blogImgResults" class="blog-img-results"></div>
+          <div id="blogImgCredit" style="font-size:10px;color:var(--text-muted);"></div>
+          <input type="hidden" id="blogImageUrl" value="">
         </div>
         <div style="margin-bottom:16px;">
           <div class="fc-lbl">Body (HTML)</div>
@@ -8411,6 +8437,9 @@ function openBlogEditor() {
   document.getElementById('blogBody').value = '';
   document.getElementById('blogAiTopic').value = '';
   document.getElementById('blogSaveStatus').textContent = '';
+  document.getElementById('blogImgSearchInput').value = '';
+  document.getElementById('blogImgResults').innerHTML = '';
+  document.getElementById('blogImgCredit').textContent = '';
   document.getElementById('blogEditor').style.display = 'block';
 }
 
@@ -8564,6 +8593,55 @@ function blogAiPolish() {
 }
 
 // Blog posts load when User Management view is opened via switchView
+
+// ===== BLOG IMAGE SEARCH (UNSPLASH) =====
+document.getElementById('blogImgSearchBtn').addEventListener('click', blogSearchImages);
+document.getElementById('blogImgSearchInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') blogSearchImages();
+});
+
+function blogSearchImages() {
+  var query = document.getElementById('blogImgSearchInput').value.trim();
+  if (!query) return;
+
+  var btn = document.getElementById('blogImgSearchBtn');
+  var resultsDiv = document.getElementById('blogImgResults');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Searching...</div>';
+
+  fetch('https://agent-edge-backend.vercel.app/api/image-search?query=' + encodeURIComponent(query))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-search"></i> Search';
+
+      if (!data.success || !data.images || data.images.length === 0) {
+        resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">No images found. Try different keywords.</div>';
+        return;
+      }
+
+      resultsDiv.innerHTML = '';
+      data.images.forEach(function(img) {
+        var div = document.createElement('div');
+        div.className = 'blog-img-item';
+        div.innerHTML = '<img src="' + img.thumb + '" alt="' + (img.alt || 'Stock photo') + '">';
+        div.addEventListener('click', function() {
+          document.querySelectorAll('.blog-img-item').forEach(function(el) { el.classList.remove('selected'); });
+          div.classList.add('selected');
+          document.getElementById('blogImageUrl').value = img.regular;
+          document.getElementById('blogImgCredit').textContent = 'Photo by ' + img.photographer + ' on Unsplash';
+        });
+        resultsDiv.appendChild(div);
+      });
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-search"></i> Search';
+      resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--accent-red);font-size:12px;">Search failed. Try again.</div>';
+    });
+}
+
 
 </script>
 
