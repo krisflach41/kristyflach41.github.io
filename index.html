@@ -1050,7 +1050,6 @@
         <a href="#charities">My Charities</a>
         <a href="#media">Media</a>
         <a href="#contact">Contact</a>
-        <a href="video-room.html">Video Call</a>
       </nav>
 
       <a href="tel:2063135883" class="phone-btn">
@@ -1503,7 +1502,7 @@
         <h3>Contact Details</h3>
 
         <div class="detail-label">Email</div>
-        <div><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="046f766d77707d446f766d77707d626865676c2a676b69">[email&#160;protected]</a></div>
+        <div>kristy@kristyflach.com</div>
 
         <div class="detail-label">Phone</div>
         <div>(206) 313-5883</div>
@@ -1550,7 +1549,7 @@
        JAVASCRIPT - All scripts organized at bottom
        ========================================================== -->
 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  <script>
     // ===== BACK TO TOP =====
     (function() {
       const btn = document.getElementById("backToTop");
@@ -1711,3 +1710,15 @@
           method: "POST",
           body: formData,
           headers: { "Accept": "application/json" }
+        }).then(function(response) {
+          if (response.ok) {
+            document.getElementById("formMessage").style.display = "block";
+            form.reset();
+          }
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
