@@ -1354,7 +1354,8 @@
     <h2 class="section-heading">Mortgage & Homeownership Blog</h2>
     <p class="section-subtext">Education. Strategy. Clarity for smart homeownership decisions.</p>
 
-    <div class="blog-grid">
+    <div class="blog-grid" id="blogGrid">
+      <!-- Populated dynamically from Supabase -->
       <article class="blog-card">
         <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa" alt="Buying a home">
         <div class="blog-content">
@@ -1385,7 +1386,37 @@
         </div>
       </article>
     </div>
+
+    <div style="margin-top:30px;">
+      <a href="blog-archive.html" style="text-decoration:none;font-weight:700;color:var(--dark);font-size:16px;">View All Posts →</a>
+    </div>
   </section>
+
+  <script>
+  (function() {
+    fetch('https://agent-edge-backend.vercel.app/api/blog-api?action=public')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.success || !data.posts || data.posts.length === 0) return; // keep fallback cards
+        var grid = document.getElementById('blogGrid');
+        var defaultImg = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa';
+        var html = '';
+        data.posts.forEach(function(p) {
+          var img = p.image_url || defaultImg;
+          html += '<article class="blog-card">' +
+            '<img src="' + img + '" alt="' + (p.title || '').replace(/"/g,'&quot;') + '">' +
+            '<div class="blog-content">' +
+            '<span class="blog-category">' + (p.category || 'General') + '</span>' +
+            '<h3>' + (p.title || 'Untitled') + '</h3>' +
+            '<p>' + (p.summary || '') + '</p>' +
+            '<a href="blog-post.html?slug=' + encodeURIComponent(p.slug) + '" class="read-more">Read More →</a>' +
+            '</div></article>';
+        });
+        grid.innerHTML = html;
+      })
+      .catch(function() { /* keep fallback cards on error */ });
+  })();
+  </script>
 
   <!-- ===== REVIEWS ===== -->
   <section id="reviews" class="glass-section">
