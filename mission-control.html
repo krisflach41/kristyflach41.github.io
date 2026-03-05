@@ -1092,6 +1092,39 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 .team-card-role { font-size:10px; color:var(--accent-purple); }
 .team-card-contact { font-size:10px; color:var(--text-muted); }
 .team-card-actions { display:flex; gap:6px; }
+
+/* ===== USER MANAGEMENT CARDS ===== */
+.um-card {
+  max-width:720px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.15s ease;
+}
+.um-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+.um-card-header { display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.um-card-icon {
+  width:36px; height:36px; border-radius:8px;
+  display:flex; align-items:center; justify-content:center; font-size:15px;
+}
+.um-card-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; }
+.um-card-desc { font-size:13px; color:var(--text-secondary); line-height:1.5; margin-bottom:16px; }
+.blog-row {
+  display:flex; align-items:center; gap:12px; padding:10px 14px;
+  border:1px solid var(--border); border-radius:8px; margin-bottom:6px;
+  cursor:pointer; transition: background 0.15s;
+}
+.blog-row:hover { background: var(--bg-hover); }
+.blog-row-title { font-size:13px; font-weight:600; }
+.blog-row-meta { font-size:11px; color:var(--text-muted); }
+.blog-badge {
+  padding:3px 10px; border-radius:20px; font-size:10px; font-weight:700;
+  text-transform:uppercase; letter-spacing:0.3px; white-space:nowrap;
+}
+.blog-badge.published { background:rgba(34,197,94,0.12); color:#22c55e; }
+.blog-badge.draft { background:rgba(245,158,11,0.12); color:#f59e0b; }
 </style>
 <link rel="stylesheet" href="crm-cards.css">
 <script src="tracking.js"></script>
@@ -2498,41 +2531,122 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">User Management</div><div class="topbar-subtitle">Your profile and loan team</div></div>
+      <div><div class="topbar-title">User Management</div><div class="topbar-subtitle">Your profile, blog, and loan team</div></div>
     </div>
     <div class="topbar-right">
       <button class="topbar-btn primary" onclick="openTeamMemberForm()"><i class="fas fa-plus"></i> Add Team Member</button>
     </div>
   </div>
   <div class="content-area" style="padding:24px;">
-    <!-- Team Roster -->
-    <div style="max-width:700px;">
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">My Loan Team</div>
-      <div style="font-size:11px;color:var(--text-muted);margin-bottom:16px;">Add your processor, underwriter, closer, and other team members. They'll be available for task assignments on loan files.</div>
+
+    <!-- ===== CARD: My Loan Team ===== -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(59,130,246,0.12);color:#3b82f6;"><i class="fas fa-users"></i></div>
+        <div class="um-card-title">My Loan Team</div>
+      </div>
+      <div class="um-card-desc">Add your processor, underwriter, closer, and other team members. They'll be available for task assignments on loan files.</div>
       <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;"></div>
-    </div>
-    <!-- Add/Edit Team Member Form (hidden by default) -->
-    <div id="teamMemberForm" style="display:none;max-width:700px;margin-top:16px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:16px;">
-      <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-        <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
-        <div class="fc-field"><div class="fc-lbl">Role</div>
-          <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
+      <!-- Add/Edit Team Member Form (hidden by default) -->
+      <div id="teamMemberForm" style="display:none;margin-top:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
+          <div class="fc-field"><div class="fc-lbl">Role</div>
+            <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
+          </div>
+          <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
+          <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
         </div>
-        <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
-        <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-        <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
-        <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
-        <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:#f59e0b;text-decoration:none;">Manage SMS Alerts →</a></span>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+          <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
+          <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
+          <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:#f59e0b;text-decoration:none;">Manage SMS Alerts →</a></span>
+        </div>
       </div>
     </div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
-    <!-- Import Contacts -->
-    <div style="max-width:700px;">
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">Import Contacts</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
+
+    <!-- ===== CARD: Blog Management ===== -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(168,85,247,0.12);color:#a855f7;"><i class="fas fa-pen-nib"></i></div>
+        <div class="um-card-title">Blog Management</div>
+      </div>
+      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
+      </div>
+      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
+      </div>
+
+      <!-- Blog Editor (hidden by default) -->
+      <div id="blogEditor" style="display:none;margin-top:16px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:14px;font-weight:700;" id="blogEditorTitle">New Blog Post</div>
+          <button class="topbar-btn" onclick="closeBlogEditor()" style="padding:4px 10px;font-size:12px;">✕ Close</button>
+        </div>
+
+        <!-- AI Tools -->
+        <div style="background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.15);border-radius:8px;padding:14px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-wand-magic-sparkles"></i> AI Writing Assistant</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div style="flex:1;">
+              <input id="blogAiTopic" placeholder="Enter a topic, e.g. 'Why buyers should lock rates early'" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:13px;font-family:inherit;">
+            </div>
+            <button class="topbar-btn primary" onclick="blogAiDraft()" id="blogAiDraftBtn" style="white-space:nowrap;"><i class="fas fa-wand-magic-sparkles"></i> Draft from Topic</button>
+            <button class="topbar-btn" onclick="blogAiPolish()" id="blogAiPolishBtn" style="white-space:nowrap;"><i class="fas fa-sparkles"></i> Polish My Writing</button>
+          </div>
+        </div>
+
+        <!-- Post Fields -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <div class="fc-lbl">Title</div>
+            <input id="blogTitle" placeholder="Post title" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+          </div>
+          <div>
+            <div class="fc-lbl">Category</div>
+            <select id="blogCategory" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+              <option value="Home Buying">Home Buying</option>
+              <option value="Refinance">Refinance</option>
+              <option value="Mortgage Strategy">Mortgage Strategy</option>
+              <option value="Market Update">Market Update</option>
+              <option value="Credit & Finance">Credit & Finance</option>
+              <option value="First-Time Buyers">First-Time Buyers</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="fc-lbl">Summary (shown on homepage card)</div>
+          <input id="blogSummary" placeholder="1-2 sentence summary for the blog card" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="fc-lbl">Image URL (Unsplash)</div>
+          <input id="blogImageUrl" placeholder="https://images.unsplash.com/..." style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+        </div>
+        <div style="margin-bottom:16px;">
+          <div class="fc-lbl">Body (HTML)</div>
+          <textarea id="blogBody" rows="14" placeholder="Write your post here... HTML tags like <h3>, <p>, <ul> are supported." style="width:100%;padding:12px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:13px;font-family:inherit;line-height:1.6;resize:vertical;"></textarea>
+        </div>
+
+        <input type="hidden" id="blogEditId" value="">
+
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="topbar-btn primary" onclick="saveBlogPost('published')"><i class="fas fa-globe"></i> Publish</button>
+          <button class="topbar-btn" onclick="saveBlogPost('draft')"><i class="fas fa-save"></i> Save Draft</button>
+          <span id="blogSaveStatus" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CARD: Import Contacts ===== -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(34,197,94,0.12);color:#22c55e;"><i class="fas fa-file-upload"></i></div>
+        <div class="um-card-title">Import Contacts</div>
+      </div>
+      <div class="um-card-desc">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
         <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
           <i class="fas fa-file-upload"></i> Upload Import File
@@ -2544,28 +2658,33 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
       <div id="importStatus" style="margin-top:12px;display:none;"></div>
     </div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
-    <!-- Delete Contact -->
-    <div style="max-width:700px;">
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;color:#ef4444;">Delete Contact</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Permanently remove a contact from your database. This cannot be undone. The contact will also be unlinked from any co-borrower relationships.</div>
-      <div style="display:flex;gap:10px;align-items:flex-end;">
-        <div style="flex:1;">
-          <label style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.75);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;">Search Contact</label>
-          <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
-        </div>
+
+    <!-- ===== CARD: Video Call Studio ===== -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(20,184,166,0.12);color:#14b8a6;"><i class="fas fa-video"></i></div>
+        <div class="um-card-title">Video Call Studio</div>
       </div>
-      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
-    </div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
-    <!-- Video Call Studio -->
-    <div style="max-width:700px;">
-      <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:4px;">Video Call Studio</div>
-      <div style="font-size:13px;color:rgba(255,255,255,0.65);margin-bottom:16px;line-height:1.5;">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
-      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:12px 24px;">
+      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
+      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
         <i class="fas fa-video"></i> Launch Video Studio
       </button>
     </div>
+
+    <!-- ===== CARD: Delete Contact ===== -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(239,68,68,0.12);color:#ef4444;"><i class="fas fa-trash-alt"></i></div>
+        <div class="um-card-title">Delete Contact</div>
+      </div>
+      <div class="um-card-desc">Permanently remove a contact from your database. This cannot be undone. The contact will also be unlinked from any co-borrower relationships.</div>
+      <div>
+        <div class="fc-lbl">Search Contact</div>
+        <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:#f0f4f8;font-size:14px;font-family:inherit;">
+      </div>
+      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -3107,6 +3226,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'calendar') renderCalendar();
   if (viewId === 'settings') initSettingsView();
   if (viewId === 'email') loadEmailCenter();
+  if (viewId === 'users') loadBlogPosts();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -8235,6 +8355,217 @@ loadCreditSubmissions();
 setTimeout(loadHotLeads, 1500);
 </script>
 <script src="crm-cards.js?v=20260220b"></script>
+
+<!-- ===== BLOG MANAGEMENT JS ===== -->
+<script>
+var BLOG_API = 'https://agent-edge-backend.vercel.app/api/blog-api';
+var blogPosts = [];
+
+function loadBlogPosts() {
+  fetch(BLOG_API + '?action=list')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success) return;
+      blogPosts = data.posts || [];
+      renderBlogList();
+    })
+    .catch(function(err) {
+      document.getElementById('blogPostList').innerHTML = '<div style="font-size:12px;color:var(--accent-red);padding:8px 0;">Failed to load posts</div>';
+    });
+}
+
+function renderBlogList() {
+  var el = document.getElementById('blogPostList');
+  if (!blogPosts.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No blog posts yet. Click "New Post" to get started.</div>';
+    return;
+  }
+  var html = '';
+  blogPosts.forEach(function(p) {
+    var dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : 'Draft';
+    var badge = p.status === 'published'
+      ? '<span class="blog-badge published">Published</span>'
+      : '<span class="blog-badge draft">Draft</span>';
+    html += '<div class="blog-row" onclick="editBlogPost(\'' + p.id + '\')">' +
+      '<div style="flex:1;"><div class="blog-row-title">' + escapeHtml(p.title) + '</div>' +
+      '<div class="blog-row-meta">' + escapeHtml(p.category) + ' · ' + dateStr + '</div></div>' +
+      badge +
+      '<button class="topbar-btn" onclick="event.stopPropagation();deleteBlogPost(\'' + p.id + '\',\'' + escapeHtml(p.title).replace(/'/g, "\\'") + '\')" style="padding:4px 8px;font-size:11px;color:#ef4444;border-color:rgba(239,68,68,0.3);"><i class="fas fa-trash"></i></button>' +
+      '</div>';
+  });
+  el.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function openBlogEditor() {
+  document.getElementById('blogEditorTitle').textContent = 'New Blog Post';
+  document.getElementById('blogEditId').value = '';
+  document.getElementById('blogTitle').value = '';
+  document.getElementById('blogCategory').value = 'Home Buying';
+  document.getElementById('blogSummary').value = '';
+  document.getElementById('blogImageUrl').value = '';
+  document.getElementById('blogBody').value = '';
+  document.getElementById('blogAiTopic').value = '';
+  document.getElementById('blogSaveStatus').textContent = '';
+  document.getElementById('blogEditor').style.display = 'block';
+}
+
+function closeBlogEditor() {
+  document.getElementById('blogEditor').style.display = 'none';
+}
+
+function editBlogPost(id) {
+  // Fetch full post data
+  var post = blogPosts.find(function(p) { return p.id === id; });
+  if (!post) return;
+
+  // Need full body — fetch from single endpoint
+  fetch(BLOG_API + '?action=single&slug=' + encodeURIComponent(post.slug || ''))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.post) {
+        // Fallback: use list data
+        fillBlogEditor(post);
+        return;
+      }
+      fillBlogEditor(data.post);
+    })
+    .catch(function() { fillBlogEditor(post); });
+}
+
+function fillBlogEditor(post) {
+  document.getElementById('blogEditorTitle').textContent = 'Edit: ' + (post.title || 'Untitled');
+  document.getElementById('blogEditId').value = post.id;
+  document.getElementById('blogTitle').value = post.title || '';
+  document.getElementById('blogCategory').value = post.category || 'Home Buying';
+  document.getElementById('blogSummary').value = post.summary || '';
+  document.getElementById('blogImageUrl').value = post.image_url || '';
+  document.getElementById('blogBody').value = post.body || '';
+  document.getElementById('blogAiTopic').value = '';
+  document.getElementById('blogSaveStatus').textContent = '';
+  document.getElementById('blogEditor').style.display = 'block';
+}
+
+function saveBlogPost(status) {
+  var id = document.getElementById('blogEditId').value;
+  var payload = {
+    action: id ? 'update' : 'create',
+    title: document.getElementById('blogTitle').value.trim(),
+    category: document.getElementById('blogCategory').value,
+    summary: document.getElementById('blogSummary').value.trim(),
+    image_url: document.getElementById('blogImageUrl').value.trim(),
+    body: document.getElementById('blogBody').value,
+    status: status
+  };
+  if (id) payload.id = id;
+
+  if (!payload.title) {
+    document.getElementById('blogSaveStatus').textContent = 'Title is required';
+    return;
+  }
+
+  document.getElementById('blogSaveStatus').textContent = 'Saving...';
+
+  fetch(BLOG_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) {
+        document.getElementById('blogSaveStatus').textContent = status === 'published' ? 'Published!' : 'Draft saved!';
+        if (data.post && data.post.id) document.getElementById('blogEditId').value = data.post.id;
+        loadBlogPosts();
+      } else {
+        document.getElementById('blogSaveStatus').textContent = 'Error: ' + (data.error || 'Unknown');
+      }
+    })
+    .catch(function(err) {
+      document.getElementById('blogSaveStatus').textContent = 'Error: ' + err.message;
+    });
+}
+
+function deleteBlogPost(id, title) {
+  if (!confirm('Delete "' + title + '"? This cannot be undone.')) return;
+
+  fetch(BLOG_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', id: id })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success) loadBlogPosts();
+    });
+}
+
+function blogAiDraft() {
+  var topic = document.getElementById('blogAiTopic').value.trim();
+  if (!topic) { alert('Enter a topic first'); return; }
+
+  var btn = document.getElementById('blogAiDraftBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Drafting...';
+
+  fetch(BLOG_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'ai-draft', topic: topic })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Draft from Topic';
+      if (data.success && data.draft) {
+        if (data.draft.title) document.getElementById('blogTitle').value = data.draft.title;
+        if (data.draft.category) document.getElementById('blogCategory').value = data.draft.category;
+        if (data.draft.summary) document.getElementById('blogSummary').value = data.draft.summary;
+        if (data.draft.body) document.getElementById('blogBody').value = data.draft.body;
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Draft from Topic';
+      alert('AI draft failed: ' + err.message);
+    });
+}
+
+function blogAiPolish() {
+  var body = document.getElementById('blogBody').value.trim();
+  if (!body) { alert('Write something first, then click Polish'); return; }
+
+  var btn = document.getElementById('blogAiPolishBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Polishing...';
+
+  fetch(BLOG_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'ai-polish', text: body })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sparkles"></i> Polish My Writing';
+      if (data.success && data.polished) {
+        document.getElementById('blogBody').value = data.polished;
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sparkles"></i> Polish My Writing';
+      alert('AI polish failed: ' + err.message);
+    });
+}
+
+// Blog posts load when User Management view is opened via switchView
+
+</script>
 
 </body>
 </html>
