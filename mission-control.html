@@ -2560,6 +2560,72 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
       <div class="um-card-desc">Add your processor, underwriter, closer, and other team members. They'll be available for task assignments on loan files.</div>
       <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- CARD: Blog Management -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
+        <div class="um-card-title">Blog Management</div>
+      </div>
+      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
+      </div>
+      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
+      </div>
+      </div>
+    </div>
+
+    <!-- CARD: Import Contacts -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i class="fas fa-file-upload"></i></div>
+        <div class="um-card-title">Import Contacts</div>
+      </div>
+      <div class="um-card-desc">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-file-upload"></i> Upload Import File
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="handleCrmImport(this)" style="display:none;">
+        </label>
+        <a href="Agent_Edge_CRM_Import_Template.xlsx" download class="topbar-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+          <i class="fas fa-download"></i> Download Template
+        </a>
+      </div>
+      <div id="importStatus" style="margin-top:12px;display:none;"></div>
+    </div>
+
+    <!-- CARD: Video Call Studio -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><i class="fas fa-video"></i></div>
+        <div class="um-card-title">Video Call Studio</div>
+      </div>
+      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
+      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
+        <i class="fas fa-video"></i> Launch Video Studio
+      </button>
+    </div>
+
+    <!-- CARD: Delete Contact -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(220,38,38,0.1);color:#dc2626;"><i class="fas fa-trash-alt"></i></div>
+        <div class="um-card-title">Delete Contact</div>
+      </div>
+      <div class="um-card-desc">Permanently remove a contact from your database. This cannot be undone.</div>
+      <div>
+        <div class="fc-lbl">Search Contact</div>
+        <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+      </div>
+      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
+    </div>
+
+    </div><!-- close grid -->
+
+    <div style="margin-top:16px;">
       <div id="teamMemberForm" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:16px;">
         <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
@@ -2578,19 +2644,8 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
     </div>
 
-    <!-- CARD: Blog Management -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
-        <div class="um-card-title">Blog Management</div>
-      </div>
-      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
-      <div style="display:flex;gap:10px;margin-bottom:16px;">
-        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
-      </div>
-      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
-      </div>
+
+    <div style="margin-top:16px;">
       <div id="blogEditor" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
           <div style="font-size:14px;font-weight:700;" id="blogEditorTitle">New Blog Post</div>
@@ -2664,55 +2719,8 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <input id="blogRewriteInstructions" placeholder="Rewrite instructions, e.g. 'don't mention specific prices' or 'make it less about me'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
         </div>
         </div>
-      </div>
     </div>
 
-    <!-- CARD: Import Contacts -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i class="fas fa-file-upload"></i></div>
-        <div class="um-card-title">Import Contacts</div>
-      </div>
-      <div class="um-card-desc">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
-      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
-          <i class="fas fa-file-upload"></i> Upload Import File
-          <input type="file" accept=".xlsx,.xls,.csv" onchange="handleCrmImport(this)" style="display:none;">
-        </label>
-        <a href="Agent_Edge_CRM_Import_Template.xlsx" download class="topbar-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
-          <i class="fas fa-download"></i> Download Template
-        </a>
-      </div>
-      <div id="importStatus" style="margin-top:12px;display:none;"></div>
-    </div>
-
-    <!-- CARD: Video Call Studio -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><i class="fas fa-video"></i></div>
-        <div class="um-card-title">Video Call Studio</div>
-      </div>
-      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
-      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
-        <i class="fas fa-video"></i> Launch Video Studio
-      </button>
-    </div>
-
-    <!-- CARD: Delete Contact -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(220,38,38,0.1);color:#dc2626;"><i class="fas fa-trash-alt"></i></div>
-        <div class="um-card-title">Delete Contact</div>
-      </div>
-      <div class="um-card-desc">Permanently remove a contact from your database. This cannot be undone.</div>
-      <div>
-        <div class="fc-lbl">Search Contact</div>
-        <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
-      </div>
-      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
-    </div>
-
-    </div><!-- close grid -->
   </div>
 </div>
 
