@@ -2658,9 +2658,20 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 
         <input type="hidden" id="blogEditId" value="">
 
-        <div style="display:flex;gap:10px;align-items:center;">
+        <!-- Preview Panel (hidden by default) -->
+        <div id="blogPreviewPanel" style="display:none;margin-bottom:16px;background:rgba(255,255,255,0.05);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(255,255,255,0.03);">
+            <div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Preview</div>
+            <button class="topbar-btn" onclick="document.getElementById('blogPreviewPanel').style.display='none'" style="padding:3px 8px;font-size:11px;">Close Preview</button>
+          </div>
+          <div id="blogPreviewContent" style="padding:24px;max-height:400px;overflow-y:auto;color:var(--text-primary);font-size:14px;line-height:1.8;"></div>
+        </div>
+
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
           <button class="topbar-btn primary" onclick="saveBlogPost('published')"><i class="fas fa-globe"></i> Publish</button>
           <button class="topbar-btn" onclick="saveBlogPost('draft')"><i class="fas fa-save"></i> Save Draft</button>
+          <button class="topbar-btn" onclick="previewBlogPost()" style="border-color:rgba(168,85,247,0.3);color:#a855f7;"><i class="fas fa-eye"></i> Preview</button>
+          <button class="topbar-btn" onclick="blogAiRewrite()" id="blogAiRewriteBtn" style="border-color:rgba(245,158,11,0.3);color:#f59e0b;"><i class="fas fa-rotate"></i> AI Rewrite</button>
           <span id="blogSaveStatus" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
         </div>
       </div>
@@ -8589,6 +8600,52 @@ function blogAiPolish() {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-sparkles"></i> Polish My Writing';
       alert('AI polish failed: ' + err.message);
+    });
+}
+
+function previewBlogPost() {
+  var title = document.getElementById('blogTitle').value || 'Untitled';
+  var category = document.getElementById('blogCategory').value || 'General';
+  var body = document.getElementById('blogBody').value;
+  var imgUrl = document.getElementById('blogImageUrl').value;
+
+  if (!body) { alert('Nothing to preview — write or draft something first.'); return; }
+
+  var imgHtml = imgUrl ? '<img src="' + imgUrl + '" style="width:100%;max-height:250px;object-fit:cover;border-radius:8px;margin-bottom:16px;">' : '';
+  var html = '<div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#a855f7;font-weight:700;margin-bottom:8px;">' + category + '</div>' +
+    '<div style="font-size:22px;font-weight:700;margin-bottom:16px;color:var(--text-primary);">' + title.replace(/</g,'&lt;') + '</div>' +
+    imgHtml +
+    '<div style="font-size:14px;line-height:1.8;color:var(--text-primary);">' + body + '</div>';
+
+  document.getElementById('blogPreviewContent').innerHTML = html;
+  document.getElementById('blogPreviewPanel').style.display = 'block';
+}
+
+function blogAiRewrite() {
+  var body = document.getElementById('blogBody').value.trim();
+  if (!body) { alert('Write something first, then click Rewrite.'); return; }
+
+  var btn = document.getElementById('blogAiRewriteBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rewriting...';
+
+  fetch(BLOG_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'ai-polish', text: body })
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-rotate"></i> AI Rewrite';
+      if (data.success && data.polished) {
+        document.getElementById('blogBody').value = data.polished;
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-rotate"></i> AI Rewrite';
+      alert('Rewrite failed: ' + err.message);
     });
 }
 
