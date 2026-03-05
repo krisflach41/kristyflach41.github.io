@@ -188,14 +188,18 @@ body {
 
     <div class="form-group">
       <label class="form-label" for="password">Password</label>
-      <input 
-        type="password" 
-        id="password" 
-        class="form-input" 
-        placeholder="Enter your password"
-        autocomplete="current-password"
-        required
-      >
+      <div style="position:relative;">
+        <input 
+          type="password" 
+          id="password" 
+          class="form-input" 
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          required
+          style="padding-right:44px;"
+        >
+        <button type="button" onclick="togglePasswordVisibility()" id="eyeBtn" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:18px;color:#888;padding:4px;">👁</button>
+      </div>
     </div>
 
     <button type="submit" class="login-btn">Sign In</button>
@@ -278,7 +282,7 @@ loginForm.addEventListener('submit', async function(e) {
     // Check if temp password
     if (data.tempPassword) {
       // Redirect to password reset page
-      window.location.href = 'reset-password.html';
+      window.location.href = 'change-password.html';
     } else {
       // Redirect to portal
       window.location.href = 'portal.html';
@@ -293,6 +297,18 @@ loginForm.addEventListener('submit', async function(e) {
 
 // Auto-focus username field
 document.getElementById('username').focus();
+
+function togglePasswordVisibility() {
+  var pw = document.getElementById('password');
+  var btn = document.getElementById('eyeBtn');
+  if (pw.type === 'password') {
+    pw.type = 'text';
+    btn.textContent = '🙈';
+  } else {
+    pw.type = 'password';
+    btn.textContent = '👁';
+  }
+}
 </script>
 
 </body>
