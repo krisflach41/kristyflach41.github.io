@@ -2659,6 +2659,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <button class="topbar-btn" onclick="blogAiRewrite()" id="blogAiRewriteBtn" style="border-color:rgba(234,88,12,0.3);color:#ea580c;"><i class="fas fa-rotate"></i> AI Rewrite</button>
           <span id="blogSaveStatus" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
         </div>
+        <div style="margin-top:10px;">
+          <input id="blogRewriteInstructions" placeholder="Rewrite instructions, e.g. 'don't mention specific prices' or 'make it less about me'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+        </div>
+        </div>
       </div>
     </div>
 
@@ -8549,9 +8553,10 @@ function previewBlogPost() {
 function blogAiRewrite() {
   var body = document.getElementById('blogBody').value.trim();
   if (!body) { alert('Write something first.'); return; }
+  var instructions = document.getElementById('blogRewriteInstructions').value.trim();
   var btn = document.getElementById('blogAiRewriteBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Rewriting...';
-  fetch(BLOG_API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'ai-polish', text:body }) })
+  fetch(BLOG_API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'ai-polish', text:body, instructions:instructions }) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       btn.disabled = false; btn.innerHTML = '<i class="fas fa-rotate"></i> AI Rewrite';
