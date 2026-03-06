@@ -2553,6 +2553,8 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   </div>
   <div class="content-area" style="padding:24px;">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;">
+
+    <!-- ROW 1 -->
     <div class="um-card">
       <div class="um-card-header">
         <div class="um-card-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="fas fa-users"></i></div>
@@ -2562,7 +2564,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
-    <!-- CARD: Import Contacts -->
     <div class="um-card">
       <div class="um-card-header">
         <div class="um-card-icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i class="fas fa-file-upload"></i></div>
@@ -2581,7 +2582,18 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div id="importStatus" style="margin-top:12px;display:none;"></div>
     </div>
 
-    <!-- CARD: Blog Management -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><i class="fas fa-video"></i></div>
+        <div class="um-card-title">Video Call Studio</div>
+      </div>
+      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
+      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
+        <i class="fas fa-video"></i> Launch Video Studio
+      </button>
+    </div>
+
+    <!-- ROW 2 -->
     <div class="um-card">
       <div class="um-card-header">
         <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
@@ -2596,19 +2608,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       </div>
     </div>
 
-    <!-- CARD: Video Call Studio -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><i class="fas fa-video"></i></div>
-        <div class="um-card-title">Video Call Studio</div>
-      </div>
-      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
-      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
-        <i class="fas fa-video"></i> Launch Video Studio
-      </button>
-    </div>
-
-    <!-- CARD: Delete Contact -->
     <div class="um-card">
       <div class="um-card-header">
         <div class="um-card-icon" style="background:rgba(220,38,38,0.1);color:#dc2626;"><i class="fas fa-trash-alt"></i></div>
