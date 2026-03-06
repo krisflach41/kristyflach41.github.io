@@ -2547,9 +2547,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
       <div><div class="topbar-title">User Management</div><div class="topbar-subtitle">Your profile, blog, and loan team</div></div>
     </div>
-    <div class="topbar-right">
-      <button class="topbar-btn primary" onclick="openTeamMemberForm()"><i class="fas fa-plus"></i> Add Team Member</button>
-    </div>
+    <div class="topbar-right"></div>
   </div>
   <div class="content-area" style="padding:24px;">
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;">
@@ -2561,7 +2559,24 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         <div class="um-card-title">My Loan Team</div>
       </div>
       <div class="um-card-desc">Add your processor, underwriter, closer, and other team members. They'll be available for task assignments on loan files.</div>
-      <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+      <button class="topbar-btn primary" onclick="openTeamMemberForm()" style="display:inline-flex;align-items:center;gap:6px;"><i class="fas fa-plus"></i> Add Team Member</button>
+      <div id="teamMemberForm" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
+          <div class="fc-field"><div class="fc-lbl">Role</div>
+            <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
+          </div>
+          <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
+          <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+          <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
+          <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
+          <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:var(--accent-orange);text-decoration:none;">Manage SMS Alerts &rarr;</a></span>
+        </div>
+      </div>
     </div>
 
     <div class="um-card">
@@ -2624,25 +2639,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div><!-- close grid -->
 
     <div style="margin-top:16px;">
-      <div id="teamMemberForm" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:16px;">
-        <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-          <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
-          <div class="fc-field"><div class="fc-lbl">Role</div>
-            <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
-          </div>
-          <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
-          <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
-          <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
-          <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
-          <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:var(--accent-orange);text-decoration:none;">Manage SMS Alerts &rarr;</a></span>
-        </div>
-      </div>
-    </div>
-
-
     <div style="margin-top:16px;">
       <div id="blogEditor" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:20px;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
