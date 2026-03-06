@@ -8407,22 +8407,72 @@ function loadBlogPosts() {
 function renderBlogList() {
   var el = document.getElementById('blogPostList');
   if (!blogPosts.length) {
-    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No blog posts yet. Click "New Post" to get started.</div>';
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No blog posts yet. Click &quot;New Post&quot; to get started.</div>';
     return;
   }
-  var html = '';
-  blogPosts.forEach(function(p) {
+
+  var active = blogPosts.filter(function(p) { return p.status !== 'archived'; });
+  var archived = blogPosts.filter(function(p) { return p.status === 'archived'; });
+
+  function makeRow(p, isArchived) {
     var dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : 'Draft';
-    var badge = p.status === 'published' ? '<span class="blog-badge published">Published</span>' : '<span class="blog-badge draft">Draft</span>';
-    html += '<div class="blog-row" onclick="editBlogPost(\'' + p.id + '\')">' +
+    var badge = p.status === 'published' ? '<span class="blog-badge published">Published</span>'
+              : p.status === 'archived' ? '<span class="blog-badge" style="background:rgba(100,100,100,0.15);color:#888;">Archived</span>'
+              : '<span class="blog-badge draft">Draft</span>';
+    var archiveBtn = !isArchived
+      ? '<button class="topbar-btn" title="Archive" onclick="event.stopPropagation();archiveBlogPost(\'' + p.id + '\')" style="padding:4px 8px;font-size:11px;color:#888;border-color:rgba(150,150,150,0.3);margin-right:4px;"><i class="fas fa-box-archive"></i></button>'
+      : '<button class="topbar-btn" title="Restore" onclick="event.stopPropagation();restoreBlogPost(\'' + p.id + '\')" style="padding:4px 8px;font-size:11px;color:#6e7f77;border-color:rgba(110,127,119,0.3);margin-right:4px;"><i class="fas fa-rotate-left"></i></button>';
+    return '<div class="blog-row" onclick="editBlogPost(\'' + p.id + '\')">' +
       '<div style="flex:1;"><div class="blog-row-title">' + escBlogHtml(p.title) + '</div>' +
       '<div class="blog-row-meta">' + escBlogHtml(p.category) + ' &middot; ' + dateStr + '</div></div>' +
-      badge +
+      badge + archiveBtn +
       '<button class="topbar-btn" onclick="event.stopPropagation();deleteBlogPost(\'' + p.id + '\',\'' + escBlogHtml(p.title).replace(/'/g, "\\'") + '\')" style="padding:4px 8px;font-size:11px;color:var(--accent-red);border-color:rgba(220,38,38,0.3);"><i class="fas fa-trash"></i></button>' +
       '</div>';
-  });
+  }
+
+  var html = '';
+  if (active.length === 0) {
+    html += '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No active posts. Click &quot;New Post&quot; to get started.</div>';
+  } else {
+    active.forEach(function(p) { html += makeRow(p, false); });
+  }
+
+  if (archived.length > 0) {
+    html += '<div style="margin-top:14px;">' +
+      '<button onclick="toggleBlogArchive()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px;font-family:inherit;">' +
+      '<i class="fas fa-chevron-right" id="blogArchiveChevron" style="font-size:10px;transition:transform 0.2s;"></i>' +
+      'Archived (' + archived.length + ')</button>' +
+      '<div id="blogArchiveList" style="display:none;margin-top:6px;">';
+    archived.forEach(function(p) { html += makeRow(p, true); });
+    html += '</div></div>';
+  }
+
   el.innerHTML = html;
 }
+
+function toggleBlogArchive() {
+  var list = document.getElementById('blogArchiveList');
+  var chevron = document.getElementById('blogArchiveChevron');
+  var open = list.style.display === 'block';
+  list.style.display = open ? 'none' : 'block';
+  chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(90deg)';
+}
+
+function archiveBlogPost(id) {
+  if (!confirm('Archive this post? It will still appear on the public View All Posts page.')) return;
+  fetch(BLOG_API, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({action:'update', id:id, status:'archived', keep_date:true})
+  }).then(function(r) { return r.json(); }).then(function() { loadBlogPosts(); });
+}
+
+function restoreBlogPost(id) {
+  fetch(BLOG_API, {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({action:'update', id:id, status:'published', keep_date:true})
+  }).then(function(r) { return r.json(); }).then(function() { loadBlogPosts(); });
+}
+
 
 function escBlogHtml(str) {
   if (!str) return '';
