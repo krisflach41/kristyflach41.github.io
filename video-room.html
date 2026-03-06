@@ -4,97 +4,79 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Join Video Call - Kristy Flach</title>
+<script src="https://unpkg.com/@daily-co/daily-js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family: 'Segoe UI', system-ui, sans-serif;
-  background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center/cover no-repeat fixed;
-  color: #0b1f3a;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)), url("portal-bg.jpg") center/cover no-repeat fixed;
+  color:#0b1f3a; min-height:100vh; display:flex; flex-direction:column;
 }
 
 /* JOIN LOBBY */
-.join-lobby {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  min-height: 100vh; padding: 40px 20px;
-}
-.join-lobby.hidden { display: none; }
-
-.join-card {
-  background: rgba(255,255,255,0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.7);
-  border-radius: 22px; padding: 50px;
-  max-width: 460px; width: 100%; text-align: center;
-  box-shadow: 0 20px 55px rgba(0,0,0,0.1);
-}
-
-.join-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 13px; color: #6e7f77;
-  text-transform: uppercase; letter-spacing: 3px; margin-bottom: 28px;
-}
-.join-title { font-family: 'Playfair Display', serif; font-size: 28px; color: #002556; margin-bottom: 8px; }
-.join-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
-
-.name-input, .code-input {
-  width: 100%; padding: 14px 16px;
-  border: 1px solid rgba(110,127,119,0.25);
-  border-radius: 10px; font-size: 15px;
-  color: #002556; background: rgba(255,255,255,0.85);
-  font-family: inherit; margin-bottom: 14px;
-  transition: border-color 0.2s;
-}
-.name-input:focus, .code-input:focus { outline: none; border-color: #6e7f77; }
-
-.code-input {
-  font-family: 'Courier New', monospace;
-  font-size: 28px; font-weight: 700;
-  text-align: center; letter-spacing: 6px;
-}
-.code-input::placeholder { color: #bbb; font-size: 16px; letter-spacing: 1px; }
-
-.join-btn {
-  display: block; width: 100%; padding: 16px;
-  border: none; border-radius: 12px; background: #6e7f77;
-  color: white; font-weight: 700; font-size: 16px;
-  cursor: pointer; transition: all 0.25s; font-family: inherit;
-}
-.join-btn:hover { background: #556b62; }
-.join-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.join-error { color: #ef4444; font-size: 13px; margin-top: 12px; display: none; }
-.join-error.show { display: block; }
+.join-lobby { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:40px 20px; }
+.join-lobby.hidden { display:none; }
+.join-card { background:rgba(255,255,255,0.75); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.7); border-radius:22px; padding:50px; max-width:460px; width:100%; text-align:center; box-shadow:0 20px 55px rgba(0,0,0,0.1); }
+.join-logo { font-family:'Playfair Display',serif; font-size:13px; color:#6e7f77; text-transform:uppercase; letter-spacing:3px; margin-bottom:28px; }
+.join-title { font-family:'Playfair Display',serif; font-size:28px; color:#002556; margin-bottom:8px; }
+.join-subtitle { color:#666; font-size:14px; margin-bottom:30px; }
+.name-input, .code-input { width:100%; padding:14px 16px; border:1px solid rgba(110,127,119,0.25); border-radius:10px; font-size:15px; color:#002556; background:rgba(255,255,255,0.85); font-family:inherit; margin-bottom:14px; transition:border-color 0.2s; }
+.name-input:focus, .code-input:focus { outline:none; border-color:#6e7f77; }
+.code-input { font-family:'Courier New',monospace; font-size:28px; font-weight:700; text-align:center; letter-spacing:6px; }
+.code-input::placeholder { color:#bbb; font-size:16px; letter-spacing:1px; }
+.join-btn { display:block; width:100%; padding:16px; border:none; border-radius:12px; background:#6e7f77; color:white; font-weight:700; font-size:16px; cursor:pointer; transition:all 0.25s; font-family:inherit; }
+.join-btn:hover { background:#556b62; }
+.join-btn:disabled { opacity:0.5; cursor:not-allowed; }
+.join-error { color:#ef4444; font-size:13px; margin-top:12px; display:none; }
+.join-error.show { display:block; }
 
 /* CALL VIEW */
-.call-view { display: none; flex-direction: column; height: 100vh; }
-.call-view.active { display: flex; }
+.call-view { display:none; flex-direction:column; height:100vh; background:#0a0f1a; }
+.call-view.active { display:flex; }
 
-.call-header {
-  text-align: center; padding: 10px;
-  background: #0b1f3a; color: rgba(200,204,212,0.7);
-  font-size: 13px;
-}
-.call-header strong { color: #e8dcc8; }
+.call-header { text-align:center; padding:10px; background:rgba(11,31,58,0.95); color:rgba(200,204,212,0.7); font-size:13px; flex-shrink:0; border-bottom:1px solid rgba(110,127,119,0.1); }
+.call-header strong { color:#e8dcc8; }
 
-.daily-frame { flex: 1; border: none; background: #000; min-height: 0; }
+/* VIDEO STAGE */
+.video-stage { flex:1; position:relative; background:#0a0f1a; overflow:hidden; min-height:0; }
 
-.leave-bar {
-  display: flex; justify-content: center;
-  padding: 12px; background: #0b1f3a;
-  border-top: 1px solid rgba(110,127,119,0.1);
-}
-.leave-btn {
-  padding: 10px 32px; border: none; border-radius: 20px;
-  background: #ef4444; color: white; font-weight: 700;
-  font-size: 14px; cursor: pointer;
-}
-.leave-btn:hover { background: #dc2626; }
+.main-video-wrap { position:absolute; inset:0; }
+.main-video-wrap video { width:100%; height:100%; object-fit:contain; background:#0a0f1a; }
+.main-label { position:absolute; bottom:10px; left:12px; background:rgba(0,0,0,0.6); padding:3px 10px; border-radius:6px; font-size:12px; color:white; }
+
+/* PIP tiles */
+.pip-tile { position:absolute; background:#111827; border:2px solid rgba(110,127,119,0.4); border-radius:10px; overflow:hidden; cursor:grab; box-shadow:0 6px 20px rgba(0,0,0,0.5); z-index:10; resize:both; min-width:100px; min-height:70px; }
+.pip-tile:active { cursor:grabbing; }
+.pip-tile video { width:100%; height:100%; object-fit:cover; display:block; }
+.pip-tile.local-tile video { transform:scaleX(-1); }
+.pip-label { position:absolute; bottom:5px; left:7px; background:rgba(0,0,0,0.6); padding:2px 8px; border-radius:4px; font-size:10px; color:white; pointer-events:none; }
+.pip-controls { position:absolute; top:5px; right:5px; display:flex; gap:4px; opacity:0; transition:opacity 0.2s; }
+.pip-tile:hover .pip-controls { opacity:1; }
+.pip-swap-btn { width:22px; height:22px; border-radius:5px; border:none; background:rgba(0,0,0,0.6); color:white; font-size:11px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.pip-swap-btn:hover { background:rgba(110,127,119,0.8); }
+
+.waiting-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:12px; }
+.waiting-overlay.hidden { display:none; }
+.waiting-text { font-size:16px; color:rgba(200,204,212,0.4); }
+
+/* CONTROLS */
+.controls-bar { display:flex; align-items:center; justify-content:center; gap:10px; padding:12px 16px; background:rgba(11,31,58,0.95); border-top:1px solid rgba(110,127,119,0.1); flex-shrink:0; flex-wrap:wrap; }
+.ctl-btn { padding:8px 16px; border:1px solid rgba(110,127,119,0.3); border-radius:8px; background:transparent; color:rgba(200,204,212,0.7); font-size:13px; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+.ctl-btn:hover { border-color:#6e7f77; color:#e8dcc8; }
+.ctl-btn.off { border-color:rgba(239,68,68,0.4); color:rgba(239,68,68,0.8); }
+.ctl-btn.active { border-color:#6e7f77; color:#e8dcc8; background:rgba(110,127,119,0.1); }
+.leave-btn { padding:9px 24px; border:none; border-radius:20px; background:#ef4444; color:white; font-weight:700; font-size:13px; cursor:pointer; }
+.leave-btn:hover { background:#dc2626; }
+
+/* REACTIONS */
+.reaction-pop { position:fixed; font-size:32px; pointer-events:none; animation:reactionFloat 3s ease forwards; z-index:200; }
+@keyframes reactionFloat { 0%{opacity:0;transform:translateY(0) scale(0.5)} 15%{opacity:1;transform:translateY(-20px) scale(1.2)} 70%{opacity:1;transform:translateY(-80px) scale(1)} 100%{opacity:0;transform:translateY(-140px) scale(0.8)} }
+
+.reaction-bar { display:none; align-items:center; justify-content:center; gap:6px; padding:8px 16px; background:rgba(11,31,58,0.95); border-top:1px solid rgba(110,127,119,0.1); flex-shrink:0; }
+.reaction-bar.open { display:flex; }
+.rxn-btn { font-size:22px; background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:8px; transition:transform 0.15s; line-height:1; }
+.rxn-btn:hover { transform:scale(1.3); background:rgba(255,255,255,0.06); }
 </style>
 </head>
 <body>
@@ -102,34 +84,85 @@ body {
 <!-- JOIN LOBBY -->
 <div class="join-lobby" id="joinLobby">
   <div class="join-card">
-    <div class="join-logo">Kristy Flach · Agent Edge</div>
+    <div class="join-logo">Kristy Flach — Agent Edge</div>
     <h1 class="join-title">Join Video Call</h1>
-    <p class="join-subtitle">Enter your name and the 5-digit code your loan officer gave you</p>
-
+    <p class="join-subtitle">Enter your name and the 5-digit code from your loan officer</p>
     <input type="text" class="name-input" id="borrowerName" placeholder="Your name">
-
     <input type="text" class="code-input" id="codeInput" placeholder="00000" maxlength="5" inputmode="numeric" autocomplete="off">
-
     <button class="join-btn" id="joinBtn" onclick="joinRoom()">Join Call</button>
     <div class="join-error" id="joinError"></div>
-
-    <a href="index.html" style="display:inline-block;margin-top:20px;font-size:13px;color:#6e7f77;text-decoration:none;font-weight:600;">← Back to Main Website</a>
+    <a href="index.html" style="display:inline-block;margin-top:20px;font-size:13px;color:#6e7f77;text-decoration:none;font-weight:600;">Back to Main Website</a>
   </div>
 </div>
 
 <!-- CALL VIEW -->
 <div class="call-view" id="callView">
   <div class="call-header">
-    Connected with <strong id="loNameDisplay">your loan officer</strong> &nbsp;·&nbsp; To leave, click the button below
+    Connected with <strong id="loNameDisplay">your loan officer</strong>
   </div>
-  <iframe id="dailyFrame" class="daily-frame" allow="camera; microphone; fullscreen; display-capture; autoplay" allowfullscreen></iframe>
-  <div class="leave-bar">
+
+  <div class="video-stage" id="videoStage">
+    <!-- Main view — LO or screen share -->
+    <div class="main-video-wrap">
+      <video id="mainVideo" autoplay playsinline></video>
+      <div class="main-label" id="mainLabel">Connecting...</div>
+    </div>
+
+    <div class="waiting-overlay" id="waitingOverlay">
+      <div class="waiting-text">Connecting to your loan officer...</div>
+    </div>
+
+    <!-- Local PIP (borrower's own camera) -->
+    <div class="pip-tile local-tile" id="localPip" style="width:180px;height:120px;bottom:16px;right:16px;">
+      <video id="localVideo" autoplay muted playsinline></video>
+      <div class="pip-label">You</div>
+      <div class="pip-controls">
+        <button class="pip-swap-btn" onclick="swapToMain('local')" title="Make main view">&#8645;</button>
+      </div>
+    </div>
+
+    <!-- Remote PIP (LO camera when screen sharing) -->
+    <div class="pip-tile" id="remotePip" style="width:180px;height:120px;bottom:16px;left:16px;display:none;">
+      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="pip-label" id="remotePipLabel">Kristy</div>
+      <div class="pip-controls">
+        <button class="pip-swap-btn" onclick="swapToMain('remote')" title="Make main view">&#8645;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="reaction-bar" id="reactionBar">
+    <span style="font-size:12px;color:rgba(200,204,212,0.4);margin-right:4px;">React:</span>
+    <button class="rxn-btn" onclick="sendReaction('&#9995;')">&#9995;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#128400;')">&#128400;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#128077;')">&#128077;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#128079;')">&#128079;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#10084;')">&#10084;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#128514;')">&#128514;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#127881;')">&#127881;</button>
+    <button class="rxn-btn" onclick="sendReaction('&#129300;')">&#129300;</button>
+    <button class="upload-bg-btn" onclick="document.getElementById('reactionBar').classList.remove('open')" style="padding:6px 12px;border:1px solid rgba(110,127,119,0.3);border-radius:8px;background:transparent;color:rgba(200,204,212,0.5);font-size:12px;cursor:pointer;font-family:inherit;margin-left:8px;">Done</button>
+  </div>
+
+  <div class="controls-bar">
+    <button class="ctl-btn" id="btnMic" onclick="toggleMic()">Mic On</button>
+    <button class="ctl-btn" id="btnCam" onclick="toggleCam()">Cam On</button>
+    <button class="ctl-btn" id="btnScreen" onclick="toggleScreen()">Share Screen</button>
+    <button class="ctl-btn" onclick="document.getElementById('reactionBar').classList.toggle('open')">React</button>
     <button class="leave-btn" onclick="leaveCall()">Leave Call</button>
   </div>
 </div>
 
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
+var callFrame = null;
+var micOn = true;
+var camOn = true;
+var screenSharing = false;
+var localStream = null;
+var remoteStream = null;
+var screenStream = null;
+var myName = 'Guest';
 
 document.getElementById('codeInput').addEventListener('input', function(e) {
   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -137,7 +170,7 @@ document.getElementById('codeInput').addEventListener('input', function(e) {
 
 async function joinRoom() {
   var code = document.getElementById('codeInput').value.trim();
-  var name = document.getElementById('borrowerName').value.trim() || 'Borrower';
+  myName = document.getElementById('borrowerName').value.trim() || 'Guest';
   var errEl = document.getElementById('joinError');
   errEl.classList.remove('show');
 
@@ -148,51 +181,212 @@ async function joinRoom() {
   }
 
   var btn = document.getElementById('joinBtn');
-  btn.disabled = true;
-  btn.textContent = 'Joining...';
+  btn.disabled = true; btn.textContent = 'Joining...';
 
   try {
     var resp = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'join-room', room_code: code })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({action:'join-room', room_code:code})
     });
     var data = await resp.json();
 
     if (!data.success) {
       errEl.textContent = data.message || 'Room not found. Check your code and try again.';
       errEl.classList.add('show');
-      btn.disabled = false;
-      btn.textContent = 'Join Call';
+      btn.disabled = false; btn.textContent = 'Join Call';
       return;
     }
 
     document.getElementById('loNameDisplay').textContent = data.lo_name || 'your loan officer';
-    document.getElementById('dailyFrame').src = data.room_url;
-
     document.getElementById('joinLobby').classList.add('hidden');
     document.getElementById('callView').classList.add('active');
 
-  } catch (err) {
+    // Use call object for custom layout
+    callFrame = window.DailyIframe.createCallObject();
+
+    callFrame.on('joined-meeting', function(e) {
+      var tracks = e.participants.local.tracks;
+      if (tracks.video && tracks.video.persistentTrack) {
+        localStream = new MediaStream([tracks.video.persistentTrack]);
+        document.getElementById('localVideo').srcObject = localStream;
+      }
+      updateMicBtn(); updateCamBtn();
+    });
+
+    callFrame.on('track-started', function(e) {
+      if (e.participant.local) return;
+
+      // Remote camera track
+      if (e.track.kind === 'video' && !e.participant.screen) {
+        var tracks = e.participant.tracks;
+        if (tracks.video && tracks.video.persistentTrack) {
+          remoteStream = new MediaStream([tracks.video.persistentTrack]);
+          document.getElementById('mainVideo').srcObject = remoteStream;
+          document.getElementById('mainVideo').style.transform = 'none';
+          document.getElementById('mainLabel').textContent = data.lo_name || 'Kristy';
+          document.getElementById('remotePipLabel').textContent = data.lo_name || 'Kristy';
+          document.getElementById('waitingOverlay').classList.add('hidden');
+        }
+      }
+
+      // Screen share track — show in main, push LO camera to pip
+      if (e.track.kind === 'video' && e.participant.screen) {
+        var screenMediaStream = new MediaStream([e.track]);
+        document.getElementById('mainVideo').srcObject = screenMediaStream;
+        document.getElementById('mainLabel').textContent = 'Screen Share';
+        // Show LO camera in remote pip
+        if (remoteStream) {
+          document.getElementById('remoteVideo').srcObject = remoteStream;
+          document.getElementById('remotePip').style.display = 'block';
+        }
+      }
+    });
+
+    callFrame.on('track-stopped', function(e) {
+      if (e.participant && e.participant.screen) {
+        // Screen share ended — restore LO camera to main
+        if (remoteStream) {
+          document.getElementById('mainVideo').srcObject = remoteStream;
+          document.getElementById('mainLabel').textContent = data.lo_name || 'Kristy';
+        }
+        document.getElementById('remotePip').style.display = 'none';
+      }
+    });
+
+    callFrame.on('participant-left', function(e) {
+      if (!e.participant.local) {
+        document.getElementById('waitingOverlay').classList.remove('hidden');
+        document.getElementById('mainVideo').srcObject = null;
+        document.getElementById('mainLabel').textContent = 'Connecting...';
+        document.getElementById('remotePip').style.display = 'none';
+      }
+    });
+
+    // Reactions and chat from host
+    callFrame.on('app-message', function(e) {
+      var msg = e.data;
+      if (msg && msg.type === 'reaction') showReaction(msg.emoji, msg.name);
+      if (msg && msg.type === 'chat') showChatToast(msg.name, msg.text);
+    });
+
+    await callFrame.join({url: data.room_url, userName: myName, audioSource:true, videoSource:true});
+
+  } catch(err) {
     errEl.textContent = 'Connection error. Please try again.';
     errEl.classList.add('show');
-    btn.disabled = false;
-    btn.textContent = 'Join Call';
+    btn.disabled = false; btn.textContent = 'Join Call';
   }
 }
 
+// ===== MIC / CAM =====
+function toggleMic() {
+  micOn = !micOn;
+  if (callFrame) callFrame.setLocalAudio(micOn);
+  updateMicBtn();
+}
+function updateMicBtn() {
+  var btn = document.getElementById('btnMic');
+  btn.textContent = micOn ? 'Mic On' : 'Mic Off';
+  btn.classList.toggle('off', !micOn);
+}
+function toggleCam() {
+  camOn = !camOn;
+  if (callFrame) callFrame.setLocalVideo(camOn);
+  updateCamBtn();
+}
+function updateCamBtn() {
+  var btn = document.getElementById('btnCam');
+  btn.textContent = camOn ? 'Cam On' : 'Cam Off';
+  btn.classList.toggle('off', !camOn);
+}
+
+// ===== SCREEN SHARE =====
+async function toggleScreen() {
+  if (!screenSharing) {
+    try {
+      await callFrame.startScreenShare();
+      screenSharing = true;
+      document.getElementById('btnScreen').textContent = 'Stop Share';
+      document.getElementById('btnScreen').classList.add('active');
+    } catch(e) { if (e.name !== 'NotAllowedError') alert('Screen share error: ' + e.message); }
+  } else {
+    await callFrame.stopScreenShare();
+    screenSharing = false;
+    document.getElementById('btnScreen').textContent = 'Share Screen';
+    document.getElementById('btnScreen').classList.remove('active');
+  }
+}
+
+// ===== SWAP MAIN =====
+function swapToMain(source) {
+  var mainVid = document.getElementById('mainVideo');
+  if (source === 'local' && localStream) {
+    mainVid.srcObject = localStream;
+    mainVid.style.transform = 'scaleX(-1)';
+    document.getElementById('mainLabel').textContent = 'You';
+  } else if (source === 'remote' && remoteStream) {
+    mainVid.srcObject = remoteStream;
+    mainVid.style.transform = 'none';
+    document.getElementById('mainLabel').textContent = 'Kristy';
+  }
+}
+
+// ===== REACTIONS =====
+function sendReaction(emoji) {
+  if (callFrame) callFrame.sendAppMessage({type:'reaction', emoji:emoji, name:myName}, '*');
+  showReaction(emoji, myName);
+}
+function showReaction(emoji, name) {
+  var el = document.createElement('div');
+  el.className = 'reaction-pop'; el.textContent = emoji;
+  var stage = document.getElementById('videoStage').getBoundingClientRect();
+  el.style.left = (stage.left + 60 + Math.random() * (stage.width - 120)) + 'px';
+  el.style.top = (stage.top + stage.height - 60) + 'px';
+  document.body.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 3000);
+}
+
+// ===== CHAT TOAST =====
+function showChatToast(name, text) {
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(17,24,39,0.95);border:1px solid rgba(110,127,119,0.3);color:#e8dcc8;padding:10px 18px;border-radius:10px;font-size:13px;z-index:300;max-width:320px;text-align:center;';
+  toast.innerHTML = '<strong style="color:#6e7f77;">' + name + ':</strong> ' + text;
+  document.body.appendChild(toast);
+  setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 5000);
+}
+
+// ===== DRAGGABLE PIPS =====
+function makeDraggable(el) {
+  var isDragging = false, startX, startY, startLeft, startTop;
+  el.addEventListener('mousedown', function(e) {
+    if (e.target.classList.contains('pip-swap-btn')) return;
+    isDragging = true;
+    startX = e.clientX; startY = e.clientY;
+    var rect = el.getBoundingClientRect();
+    startLeft = rect.left; startTop = rect.top;
+    el.style.right = 'auto'; el.style.bottom = 'auto';
+    el.style.left = startLeft + 'px'; el.style.top = startTop + 'px';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging) return;
+    var stage = document.getElementById('videoStage').getBoundingClientRect();
+    var newLeft = Math.max(0, Math.min(startLeft + (e.clientX - startX), stage.width - el.offsetWidth));
+    var newTop = Math.max(0, Math.min(startTop + (e.clientY - startY), stage.height - el.offsetHeight));
+    el.style.left = newLeft + 'px'; el.style.top = newTop + 'px';
+  });
+  document.addEventListener('mouseup', function() { isDragging = false; });
+}
+makeDraggable(document.getElementById('localPip'));
+makeDraggable(document.getElementById('remotePip'));
+
+// ===== LEAVE =====
 function leaveCall() {
-  document.getElementById('dailyFrame').src = '';
+  if (callFrame) { callFrame.leave(); callFrame.destroy(); callFrame = null; }
   document.getElementById('callView').classList.remove('active');
   document.getElementById('joinLobby').classList.remove('hidden');
-
   var card = document.querySelector('.join-card');
-  card.innerHTML =
-    '<div class="join-logo">Kristy Flach · Agent Edge</div>' +
-    '<h1 class="join-title">Call Ended</h1>' +
-    '<p class="join-subtitle" style="margin-bottom:30px;">Thank you for connecting with Kristy.</p>' +
-    '<a href="index.html" class="join-btn" style="display:block;text-align:center;text-decoration:none;">Back to Main Website</a>' +
-    '<button class="join-btn" onclick="location.reload()" style="background:transparent;color:#6e7f77;border:2px solid #6e7f77;margin-top:10px;">Rejoin a Call</button>';
+  card.innerHTML = '<div class="join-logo">Kristy Flach — Agent Edge</div><h1 class="join-title">Call Ended</h1><p class="join-subtitle" style="margin-bottom:30px;">Thank you for connecting with Kristy.</p><a href="index.html" class="join-btn" style="display:block;text-align:center;text-decoration:none;">Back to Main Website</a><button class="join-btn" onclick="location.reload()" style="background:transparent;color:#6e7f77;border:2px solid #6e7f77;margin-top:10px;">Rejoin a Call</button>';
 }
 </script>
 </body>
