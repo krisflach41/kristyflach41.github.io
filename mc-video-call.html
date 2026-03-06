@@ -18,123 +18,173 @@ body {
 }
 
 /* LOBBY */
-.lobby { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; }
-.lobby.hidden { display: none; }
+.lobby { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:100vh; padding:30px; }
+.lobby.hidden { display:none; }
 .lobby-card {
-  background: rgba(17,24,39,0.92);
-  border: 1px solid rgba(110,127,119,0.15);
-  border-radius: 22px; padding: 40px;
-  max-width: 580px; width: 100%; text-align: center;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+  background:rgba(17,24,39,0.92); border:1px solid rgba(110,127,119,0.15);
+  border-radius:22px; padding:40px; max-width:580px; width:100%; text-align:center;
+  backdrop-filter:blur(12px); box-shadow:0 25px 60px rgba(0,0,0,0.4);
 }
-.lobby-title { font-family: 'Playfair Display', serif; font-size: 32px; color: #e8dcc8; margin-bottom: 8px; }
-.lobby-subtitle { color: rgba(200,204,212,0.5); font-size: 14px; margin-bottom: 28px; }
+.lobby-title { font-family:'Playfair Display',serif; font-size:32px; color:#e8dcc8; margin-bottom:8px; }
+.lobby-subtitle { color:rgba(200,204,212,0.5); font-size:14px; margin-bottom:28px; }
 
-/* BG SELECTOR */
 .bg-section {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(110,127,119,0.15);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  text-align: left;
+  background:rgba(255,255,255,0.04); border:1px solid rgba(110,127,119,0.15);
+  border-radius:12px; padding:16px; margin-bottom:20px; text-align:left;
 }
-.bg-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(200,204,212,0.5); margin-bottom: 12px; }
-.bg-options { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.bg-option {
-  width: 72px; height: 48px; border-radius: 8px; overflow: hidden;
-  border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s;
-  flex-shrink: 0;
-}
-.bg-option:hover { border-color: rgba(110,127,119,0.5); }
-.bg-option.selected { border-color: #6e7f77; }
-.bg-option img { width: 100%; height: 100%; object-fit: cover; }
-.bg-none {
-  width: 72px; height: 48px; border-radius: 8px;
-  border: 2px solid rgba(110,127,119,0.2); cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; color: rgba(200,204,212,0.4);
-  transition: all 0.2s; flex-shrink: 0;
-}
-.bg-none:hover { border-color: rgba(110,127,119,0.5); }
-.bg-none.selected { border-color: #6e7f77; color: #e8dcc8; }
-.bg-blur {
-  width: 72px; height: 48px; border-radius: 8px;
-  border: 2px solid rgba(110,127,119,0.2); cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 3px; font-size: 10px; color: rgba(200,204,212,0.4);
-  background: rgba(255,255,255,0.03);
-  transition: all 0.2s; flex-shrink: 0;
-}
-.bg-blur:hover { border-color: rgba(110,127,119,0.5); }
-.bg-blur.selected { border-color: #6e7f77; color: #e8dcc8; }
-.upload-bg-btn {
-  padding: 8px 14px; border: 1px dashed rgba(110,127,119,0.4);
-  border-radius: 8px; background: transparent; color: rgba(200,204,212,0.5);
-  font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit;
-  white-space: nowrap;
-}
-.upload-bg-btn:hover { border-color: #6e7f77; color: #e8dcc8; }
+.bg-section-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:rgba(200,204,212,0.5); margin-bottom:12px; }
+.bg-options { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.bg-option { width:72px; height:48px; border-radius:8px; overflow:hidden; border:2px solid transparent; cursor:pointer; transition:border-color 0.2s; flex-shrink:0; }
+.bg-option:hover { border-color:rgba(110,127,119,0.5); }
+.bg-option.selected { border-color:#6e7f77; }
+.bg-option img { width:100%; height:100%; object-fit:cover; }
+.bg-none { width:72px; height:48px; border-radius:8px; border:2px solid rgba(110,127,119,0.2); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:11px; color:rgba(200,204,212,0.4); transition:all 0.2s; flex-shrink:0; }
+.bg-none:hover, .bg-blur:hover { border-color:rgba(110,127,119,0.5); }
+.bg-none.selected, .bg-blur.selected { border-color:#6e7f77; color:#e8dcc8; }
+.bg-blur { width:72px; height:48px; border-radius:8px; border:2px solid rgba(110,127,119,0.2); cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; font-size:10px; color:rgba(200,204,212,0.4); background:rgba(255,255,255,0.03); transition:all 0.2s; flex-shrink:0; }
+.upload-bg-btn { padding:8px 14px; border:1px dashed rgba(110,127,119,0.4); border-radius:8px; background:transparent; color:rgba(200,204,212,0.5); font-size:12px; cursor:pointer; transition:all 0.2s; font-family:inherit; white-space:nowrap; }
+.upload-bg-btn:hover { border-color:#6e7f77; color:#e8dcc8; }
 
-.start-btn {
-  display: block; width: 100%; padding: 16px;
-  border: none; border-radius: 12px; background: #6e7f77;
-  color: white; font-weight: 700; font-size: 16px;
-  cursor: pointer; transition: all 0.25s; font-family: inherit;
-}
-.start-btn:hover { background: #556b62; transform: translateY(-1px); }
-.start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.start-btn { display:block; width:100%; padding:16px; border:none; border-radius:12px; background:#6e7f77; color:white; font-weight:700; font-size:16px; cursor:pointer; transition:all 0.25s; font-family:inherit; }
+.start-btn:hover { background:#556b62; transform:translateY(-1px); }
+.start-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 
 /* CALL VIEW */
-.call-view { display: none; flex-direction: column; height: 100vh; }
-.call-view.active { display: flex; }
+.call-view { display:none; flex-direction:column; height:100vh; }
+.call-view.active { display:flex; }
 
 .room-banner {
-  display: flex; align-items: center; justify-content: center; gap: 24px;
-  padding: 12px 20px;
-  background: rgba(17,24,39,0.95);
-  border-bottom: 1px solid rgba(110,127,119,0.15);
-  flex-wrap: wrap;
+  display:flex; align-items:center; justify-content:center; gap:24px;
+  padding:10px 20px; background:rgba(17,24,39,0.95);
+  border-bottom:1px solid rgba(110,127,119,0.15); flex-wrap:wrap;
 }
-.banner-label { font-size: 11px; color: rgba(200,204,212,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
-.room-code { font-family: 'Courier New', monospace; font-size: 28px; font-weight: 700; color: #e8dcc8; letter-spacing: 4px; }
-.banner-url { font-size: 13px; color: #e8dcc8; font-weight: 600; }
-.pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6e7f77; margin-right: 6px; animation: pulse 1.5s ease infinite; }
+.banner-label { font-size:11px; color:rgba(200,204,212,0.4); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:2px; }
+.room-code { font-family:'Courier New',monospace; font-size:26px; font-weight:700; color:#e8dcc8; letter-spacing:4px; }
+.banner-url { font-size:13px; color:#e8dcc8; font-weight:600; }
+.pulse { display:inline-block; width:8px; height:8px; border-radius:50%; background:#6e7f77; margin-right:6px; animation:pulse 1.5s ease infinite; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-#callContainer { flex: 1; background: #000; min-height: 0; position: relative; }
+/* WAITING ROOM BADGE */
+.waiting-badge {
+  background:rgba(234,88,12,0.15); border:1px solid rgba(234,88,12,0.3);
+  color:#ea580c; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;
+  cursor:pointer; transition:all 0.2s;
+}
+.waiting-badge:hover { background:rgba(234,88,12,0.25); }
 
-.bottom-bar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 20px;
-  background: rgba(17,24,39,0.95);
-  border-top: 1px solid rgba(110,127,119,0.1);
-  gap: 12px; flex-wrap: wrap;
-}
-.timer { font-size: 13px; color: rgba(200,204,212,0.5); font-family: monospace; }
-.end-btn {
-  padding: 10px 28px; border: none; border-radius: 20px;
-  background: #ef4444; color: white; font-weight: 700;
-  font-size: 14px; cursor: pointer; transition: background 0.2s;
-}
-.end-btn:hover { background: #dc2626; }
-.change-bg-btn {
-  padding: 8px 14px; border: 1px solid rgba(110,127,119,0.3);
-  border-radius: 8px; background: transparent; color: rgba(200,204,212,0.6);
-  font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit;
-}
-.change-bg-btn:hover { border-color: #6e7f77; color: #e8dcc8; }
+/* MAIN AREA */
+.call-main { flex:1; display:flex; min-height:0; }
+#callContainer { flex:1; background:#000; min-height:0; position:relative; }
 
-/* INLINE BG PICKER (in call) */
+/* PARTICIPANTS PANEL */
+.participants-panel {
+  width:260px; background:rgba(17,24,39,0.98); border-left:1px solid rgba(110,127,119,0.1);
+  display:flex; flex-direction:column; overflow:hidden;
+  transition:width 0.25s ease;
+}
+.participants-panel.collapsed { width:0; overflow:hidden; }
+.panel-header { padding:12px 16px; border-bottom:1px solid rgba(110,127,119,0.1); display:flex; align-items:center; justify-content:space-between; }
+.panel-title { font-size:13px; font-weight:700; color:#e8dcc8; }
+.panel-close { background:none; border:none; color:rgba(200,204,212,0.4); cursor:pointer; font-size:18px; line-height:1; }
+.panel-tabs { display:flex; border-bottom:1px solid rgba(110,127,119,0.1); }
+.panel-tab { flex:1; padding:8px; text-align:center; font-size:12px; cursor:pointer; color:rgba(200,204,212,0.4); border-bottom:2px solid transparent; transition:all 0.2s; }
+.panel-tab.active { color:#e8dcc8; border-bottom-color:#6e7f77; }
+.panel-content { flex:1; overflow-y:auto; padding:10px; }
+.panel-content.hidden { display:none; }
+
+/* WAITING ROOM LIST */
+.waiting-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 10px; border-radius:8px; margin-bottom:6px;
+  background:rgba(234,88,12,0.08); border:1px solid rgba(234,88,12,0.15);
+}
+.waiting-item-name { font-size:13px; color:#e8dcc8; }
+.admit-btn { padding:4px 10px; border:none; border-radius:6px; background:#6e7f77; color:white; font-size:11px; font-weight:700; cursor:pointer; }
+.admit-btn:hover { background:#556b62; }
+.deny-btn { padding:4px 10px; border:none; border-radius:6px; background:rgba(239,68,68,0.2); color:#ef4444; font-size:11px; font-weight:700; cursor:pointer; margin-left:4px; }
+
+/* PARTICIPANT LIST */
+.participant-item {
+  display:flex; align-items:center; gap:8px;
+  padding:8px 10px; border-radius:8px; margin-bottom:6px;
+  background:rgba(255,255,255,0.03); border:1px solid rgba(110,127,119,0.1);
+}
+.participant-avatar { width:30px; height:30px; border-radius:50%; background:#6e7f77; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:white; flex-shrink:0; }
+.participant-name { flex:1; font-size:12px; color:#e8dcc8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.participant-controls { display:flex; gap:4px; }
+.p-ctrl { width:24px; height:24px; border-radius:6px; border:none; background:rgba(255,255,255,0.06); color:rgba(200,204,212,0.6); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:12px; transition:all 0.2s; }
+.p-ctrl:hover { background:rgba(239,68,68,0.2); color:#ef4444; }
+.p-ctrl.muted { background:rgba(239,68,68,0.15); color:#ef4444; }
+
+/* MUTE ALL */
+.mute-all-btn { width:100%; margin-top:8px; padding:8px; border:1px solid rgba(110,127,119,0.2); border-radius:8px; background:transparent; color:rgba(200,204,212,0.6); font-size:12px; cursor:pointer; font-family:inherit; transition:all 0.2s; }
+.mute-all-btn:hover { border-color:#6e7f77; color:#e8dcc8; }
+
+/* CHAT */
+.chat-messages { flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:6px; }
+.chat-msg { padding:8px 10px; border-radius:8px; font-size:12px; line-height:1.5; }
+.chat-msg.from-host { background:rgba(110,127,119,0.15); border:1px solid rgba(110,127,119,0.2); }
+.chat-msg.from-participant { background:rgba(255,255,255,0.04); border:1px solid rgba(110,127,119,0.08); }
+.chat-msg-name { font-weight:700; color:#6e7f77; margin-bottom:2px; font-size:11px; }
+.chat-msg-text { color:#c8ccd4; }
+.chat-input-area { padding:10px; border-top:1px solid rgba(110,127,119,0.1); display:flex; gap:6px; }
+.chat-input { flex:1; padding:8px 10px; border-radius:8px; border:1px solid rgba(110,127,119,0.2); background:rgba(255,255,255,0.04); color:#e8dcc8; font-size:12px; font-family:inherit; }
+.chat-input:focus { outline:none; border-color:#6e7f77; }
+.chat-send { padding:8px 12px; border:none; border-radius:8px; background:#6e7f77; color:white; font-size:12px; cursor:pointer; font-family:inherit; }
+.chat-send:hover { background:#556b62; }
+
+/* REACTIONS */
+.reactions-overlay { position:fixed; bottom:80px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:100; pointer-events:none; }
+.reaction-pop {
+  font-size:36px; animation:reactionPop 3s ease forwards;
+  pointer-events:none; filter:drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+}
+@keyframes reactionPop {
+  0% { opacity:0; transform:translateY(0) scale(0.5); }
+  15% { opacity:1; transform:translateY(-20px) scale(1.2); }
+  70% { opacity:1; transform:translateY(-60px) scale(1); }
+  100% { opacity:0; transform:translateY(-100px) scale(0.8); }
+}
+
+/* BOTTOM BARS */
+.toolbar {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; background:rgba(17,24,39,0.95);
+  border-top:1px solid rgba(110,127,119,0.1); gap:8px; flex-wrap:wrap;
+}
+.toolbar-group { display:flex; align-items:center; gap:8px; }
+.timer { font-size:13px; color:rgba(200,204,212,0.5); font-family:monospace; min-width:48px; }
+
+.tool-btn {
+  padding:7px 12px; border:1px solid rgba(110,127,119,0.2);
+  border-radius:8px; background:transparent; color:rgba(200,204,212,0.6);
+  font-size:12px; cursor:pointer; font-family:inherit; transition:all 0.2s;
+  display:flex; align-items:center; gap:5px; white-space:nowrap;
+}
+.tool-btn:hover { border-color:#6e7f77; color:#e8dcc8; }
+.tool-btn.active { border-color:#6e7f77; color:#e8dcc8; background:rgba(110,127,119,0.1); }
+.tool-btn.rec { border-color:rgba(239,68,68,0.3); color:rgba(239,68,68,0.7); }
+.tool-btn.rec.active { border-color:#ef4444; color:#ef4444; background:rgba(239,68,68,0.1); animation:pulse 1.5s ease infinite; }
+.end-btn { padding:9px 24px; border:none; border-radius:20px; background:#ef4444; color:white; font-weight:700; font-size:13px; cursor:pointer; }
+.end-btn:hover { background:#dc2626; }
+
+/* REACTION BAR */
+.reaction-bar {
+  display:none; align-items:center; justify-content:center; gap:6px;
+  padding:8px 16px; background:rgba(17,24,39,0.95);
+  border-top:1px solid rgba(110,127,119,0.1);
+}
+.reaction-bar.open { display:flex; }
+.rxn-btn { font-size:24px; background:none; border:none; cursor:pointer; padding:4px 8px; border-radius:8px; transition:transform 0.15s; line-height:1; }
+.rxn-btn:hover { transform:scale(1.3); background:rgba(255,255,255,0.06); }
+
+/* BG PICKER BAR */
 .bg-picker-bar {
-  display: none;
-  align-items: center; gap: 10px; flex-wrap: wrap;
-  padding: 10px 20px;
-  background: rgba(17,24,39,0.95);
-  border-top: 1px solid rgba(110,127,119,0.1);
+  display:none; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:8px 16px; background:rgba(17,24,39,0.95);
+  border-top:1px solid rgba(110,127,119,0.1);
 }
-.bg-picker-bar.open { display: flex; }
+.bg-picker-bar.open { display:flex; }
 </style>
 </head>
 <body>
@@ -143,17 +193,15 @@ body {
 <div class="lobby" id="lobby">
   <div class="lobby-card">
     <h1 class="lobby-title">Video Call Studio</h1>
-    <p class="lobby-subtitle">Choose your background, then start your call</p>
+    <p class="lobby-subtitle">Set your background, then start your room</p>
 
     <div class="bg-section">
       <div class="bg-section-title">Virtual Background</div>
-      <div class="bg-options" id="bgOptions">
-        <div class="bg-none selected" id="bgNone" onclick="selectBg('none')">None</div>
-        <div class="bg-blur" id="bgBlur" onclick="selectBg('blur')">
-          <span style="font-size:18px;">⬜</span>Blur
-        </div>
-        <div class="bg-option selected" id="bgDefault" onclick="selectBg('default')" style="border-color:#6e7f77;">
-          <img src="video-background.jpg" alt="Default background">
+      <div class="bg-options">
+        <div class="bg-none" id="bgNone" onclick="selectBg('none')">None</div>
+        <div class="bg-blur" id="bgBlur" onclick="selectBg('blur')"><span style="font-size:18px;">⬜</span>Blur</div>
+        <div class="bg-option selected" id="bgDefault" onclick="selectBg('default')">
+          <img src="video-background.jpg" alt="Default">
         </div>
         <button class="upload-bg-btn" onclick="document.getElementById('bgUpload').click()">+ Upload Image</button>
         <input type="file" id="bgUpload" accept="image/*" style="display:none;" onchange="handleBgUpload(this)">
@@ -161,15 +209,15 @@ body {
       <div id="uploadedBgWrap" style="display:none;margin-top:10px;">
         <div class="bg-options">
           <div class="bg-option" id="bgUploaded" onclick="selectBg('uploaded')">
-            <img id="uploadedBgImg" src="" alt="Custom background">
+            <img id="uploadedBgImg" src="" alt="Custom">
           </div>
           <span style="font-size:12px;color:rgba(200,204,212,0.4);">Custom image ready</span>
         </div>
       </div>
     </div>
 
-    <button class="start-btn" id="startBtn" onclick="createRoom()">📹 Start Call</button>
-    <p style="margin-top:14px;font-size:12px;color:rgba(200,204,212,0.25);">Powered by Daily.co · Up to 4 hours per session</p>
+    <button class="start-btn" id="startBtn" onclick="createRoom()">📹 Start Room</button>
+    <p style="margin-top:14px;font-size:12px;color:rgba(200,204,212,0.25);">Powered by Daily.co · Participants held in waiting room until you admit them</p>
   </div>
 </div>
 
@@ -177,41 +225,107 @@ body {
 <div class="call-view" id="callView">
   <div class="room-banner">
     <div>
-      <div class="banner-label">Give this code to your borrower</div>
+      <div class="banner-label">Room Code</div>
       <div class="room-code" id="roomCodeDisplay">-----</div>
     </div>
     <div>
-      <div class="banner-label">Borrower joins at</div>
+      <div class="banner-label">Participants join at</div>
       <div class="banner-url">kristyflach.com/video-room.html</div>
+    </div>
+    <div id="waitingBadgeWrap" style="display:none;">
+      <div class="waiting-badge" onclick="showWaitingRoom()" id="waitingBadge">⏳ 0 Waiting — Admit</div>
     </div>
     <div>
       <span class="pulse"></span>
-      <span id="statusText" style="font-size:13px;color:rgba(200,204,212,0.4);">Waiting for borrower...</span>
+      <span id="statusText" style="font-size:13px;color:rgba(200,204,212,0.4);">Waiting room open...</span>
     </div>
   </div>
 
-  <div id="callContainer"></div>
+  <div class="call-main">
+    <div id="callContainer"></div>
 
+    <!-- PARTICIPANTS / CHAT PANEL -->
+    <div class="participants-panel collapsed" id="sidePanel">
+      <div class="panel-header">
+        <span class="panel-title" id="panelTitle">Participants</span>
+        <button class="panel-close" onclick="togglePanel(null)">×</button>
+      </div>
+      <div class="panel-tabs">
+        <div class="panel-tab active" id="tabPeople" onclick="switchTab('people')">People</div>
+        <div class="panel-tab" id="tabWaiting" onclick="switchTab('waiting')">Waiting <span id="waitingCount" style="background:rgba(234,88,12,0.3);padding:1px 5px;border-radius:8px;font-size:10px;"></span></div>
+        <div class="panel-tab" id="tabChat" onclick="switchTab('chat')">Chat <span id="chatBadge" style="display:none;background:rgba(110,127,119,0.4);padding:1px 5px;border-radius:8px;font-size:10px;"></span></div>
+      </div>
+
+      <!-- PEOPLE TAB -->
+      <div class="panel-content" id="contentPeople">
+        <div id="participantList"></div>
+        <button class="mute-all-btn" onclick="muteAll()">🔇 Mute All Participants</button>
+      </div>
+
+      <!-- WAITING TAB -->
+      <div class="panel-content hidden" id="contentWaiting">
+        <div id="waitingList"><div style="font-size:12px;color:rgba(200,204,212,0.3);padding:12px 0;text-align:center;">No one waiting</div></div>
+        <button class="mute-all-btn" onclick="admitAll()" style="margin-top:8px;">✅ Admit Everyone</button>
+      </div>
+
+      <!-- CHAT TAB -->
+      <div class="panel-content hidden" id="contentChat" style="display:flex;flex-direction:column;padding:0;height:100%;">
+        <div class="chat-messages" id="chatMessages">
+          <div style="font-size:11px;color:rgba(200,204,212,0.25);text-align:center;padding:16px;">Chat messages appear here</div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" class="chat-input" id="chatInput" placeholder="Message to all..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="chat-send" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REACTION BAR -->
+  <div class="reaction-bar" id="reactionBar">
+    <span style="font-size:12px;color:rgba(200,204,212,0.4);margin-right:4px;">React:</span>
+    <button class="rxn-btn" onclick="sendReaction('✋')" title="Raise Hand">✋</button>
+    <button class="rxn-btn" onclick="sendReaction('🖐️')" title="Hi Five">🖐️</button>
+    <button class="rxn-btn" onclick="sendReaction('👍')" title="Thumbs Up">👍</button>
+    <button class="rxn-btn" onclick="sendReaction('👏')" title="Clap">👏</button>
+    <button class="rxn-btn" onclick="sendReaction('❤️')" title="Heart">❤️</button>
+    <button class="rxn-btn" onclick="sendReaction('😂')" title="Laugh">😂</button>
+    <button class="rxn-btn" onclick="sendReaction('🎉')" title="Celebrate">🎉</button>
+    <button class="rxn-btn" onclick="sendReaction('🤔')" title="Thinking">🤔</button>
+    <button class="upload-bg-btn" onclick="toggleReactions()" style="margin-left:auto;">Done</button>
+  </div>
+
+  <!-- BG PICKER (in-call) -->
   <div class="bg-picker-bar" id="bgPickerBar">
     <span style="font-size:12px;color:rgba(200,204,212,0.4);">Background:</span>
-    <div class="bg-none" id="inCallBgNone" onclick="changeCallBg('none')">None</div>
-    <div class="bg-blur" id="inCallBgBlur" onclick="changeCallBg('blur')">⬜ Blur</div>
-    <div class="bg-option" id="inCallBgDefault" onclick="changeCallBg('default')" style="width:56px;height:38px;">
-      <img src="video-background.jpg" alt="Default">
-    </div>
+    <div class="bg-none" onclick="changeCallBg('none')">None</div>
+    <div class="bg-blur" onclick="changeCallBg('blur')">⬜ Blur</div>
+    <div class="bg-option" onclick="changeCallBg('default')" style="width:56px;height:38px;border:2px solid transparent;cursor:pointer;border-radius:6px;overflow:hidden;"><img src="video-background.jpg" style="width:100%;height:100%;object-fit:cover;"></div>
     <button class="upload-bg-btn" onclick="document.getElementById('bgUploadCall').click()">+ Upload</button>
     <input type="file" id="bgUploadCall" accept="image/*" style="display:none;" onchange="handleCallBgUpload(this)">
-    <button class="upload-bg-btn" onclick="closeBgPicker()" style="margin-left:auto;">Done</button>
+    <button class="upload-bg-btn" onclick="toggleBgPicker()" style="margin-left:auto;">Done</button>
   </div>
 
-  <div class="bottom-bar">
-    <div class="timer" id="callTimer">00:00</div>
-    <button class="change-bg-btn" onclick="toggleBgPicker()">🎨 Background</button>
-    <button class="change-bg-btn" id="recBtn" onclick="toggleRecording()" style="border-color:rgba(239,68,68,0.3);color:rgba(239,68,68,0.7);">⏺ Record</button>
-    <div id="recIndicator" style="display:none;align-items:center;gap:6px;font-size:12px;color:#ef4444;animation:pulse 1.5s ease infinite;"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span> REC</div>
-    <button class="end-btn" onclick="endCall()">End Call</button>
+  <!-- MAIN TOOLBAR -->
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <div class="timer" id="callTimer">00:00</div>
+    </div>
+    <div class="toolbar-group">
+      <button class="tool-btn" onclick="togglePanel('people')" id="btnPeople">👥 People</button>
+      <button class="tool-btn" onclick="togglePanel('chat')" id="btnChat">💬 Chat</button>
+      <button class="tool-btn" onclick="toggleReactions()" id="btnReact">😊 React</button>
+      <button class="tool-btn" onclick="toggleBgPicker()" id="btnBg">🎨 Background</button>
+      <button class="tool-btn rec" id="recBtn" onclick="toggleRecording()">⏺ Record</button>
+    </div>
+    <div class="toolbar-group">
+      <button class="end-btn" onclick="endCall()">End Call</button>
+    </div>
   </div>
 </div>
+
+<!-- REACTIONS OVERLAY -->
+<div class="reactions-overlay" id="reactionsOverlay"></div>
 
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
@@ -220,29 +334,34 @@ var roomCode = null;
 var roomName = null;
 var timerInterval = null;
 var callStart = null;
-var selectedBg = 'default'; // default to custom background
+var selectedBg = 'default';
 var uploadedBgUrl = null;
 var uploadedCallBgUrl = null;
+var mediaRecorder = null;
+var recordedChunks = [];
+var isRecording = false;
+var participants = {};
+var waitingParticipants = {};
+var activeTab = 'people';
+var panelOpen = false;
+var unreadChat = 0;
 
-// BG SELECTION (lobby)
+// ===== BG SELECTION =====
 function selectBg(type) {
   selectedBg = type;
-  document.getElementById('bgNone').classList.toggle('selected', type === 'none');
-  document.getElementById('bgBlur').classList.toggle('selected', type === 'blur');
-  document.getElementById('bgDefault').classList.toggle('selected', type === 'default');
-  var uploaded = document.getElementById('bgUploaded');
-  if (uploaded) uploaded.classList.toggle('selected', type === 'uploaded');
+  ['bgNone','bgBlur','bgDefault','bgUploaded'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('selected');
+  });
+  var map = { none:'bgNone', blur:'bgBlur', default:'bgDefault', uploaded:'bgUploaded' };
+  if (map[type] && document.getElementById(map[type])) document.getElementById(map[type]).classList.add('selected');
 }
-
-// Pre-select default on load
 selectBg('default');
 
 function handleBgUpload(input) {
   if (!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  var url = URL.createObjectURL(file);
-  uploadedBgUrl = url;
-  document.getElementById('uploadedBgImg').src = url;
+  uploadedBgUrl = URL.createObjectURL(input.files[0]);
+  document.getElementById('uploadedBgImg').src = uploadedBgUrl;
   document.getElementById('uploadedBgWrap').style.display = 'block';
   selectBg('uploaded');
 }
@@ -254,184 +373,326 @@ async function applyBackground(frame, type, customUrl) {
     } else if (type === 'blur') {
       await frame.updateInputSettings({ video: { processor: { type: 'background-blur', config: { strength: 0.5 } } } });
     } else if (type === 'default') {
-      var imgUrl = window.location.origin + '/video-background.jpg';
-      await frame.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: imgUrl } } } });
+      await frame.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: window.location.origin + '/video-background.jpg' } } } });
     } else if (type === 'uploaded' && customUrl) {
       await frame.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: customUrl } } } });
     }
-  } catch (e) {
-    console.warn('Background apply failed (may not be supported in this browser):', e);
-  }
+  } catch(e) { console.warn('BG apply failed:', e); }
 }
 
+// ===== CREATE ROOM =====
 async function createRoom() {
   var btn = document.getElementById('startBtn');
-  btn.disabled = true;
-  btn.textContent = 'Creating room...';
-
+  btn.disabled = true; btn.textContent = 'Creating room...';
   try {
     var resp = await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'create-room', lo_name: 'Kristy Flach' })
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create-room', lo_name: 'Kristy Flach', enable_knocking: true })
     });
     var data = await resp.json();
     if (!data.success) throw new Error(data.error || 'Failed to create room');
-
     roomCode = data.room_code;
     roomName = data.room_name;
-
     document.getElementById('roomCodeDisplay').textContent = roomCode;
     document.getElementById('lobby').classList.add('hidden');
     document.getElementById('callView').classList.add('active');
 
-    // Build Daily call frame
     callFrame = window.DailyIframe.createFrame(
       document.getElementById('callContainer'),
-      {
-        iframeStyle: { width: '100%', height: '100%', border: 'none' },
-        showLeaveButton: false,
-        showFullscreenButton: true
-      }
+      { iframeStyle: { width:'100%', height:'100%', border:'none' }, showLeaveButton:false, showFullscreenButton:true }
     );
 
     callFrame.on('joined-meeting', async function() {
       startTimer();
-      // Apply selected background after joining
       await applyBackground(callFrame, selectedBg, uploadedBgUrl);
     });
 
     callFrame.on('participant-joined', function(e) {
       if (!e.participant.local) {
-        document.getElementById('statusText').textContent = 'Borrower connected';
+        participants[e.participant.session_id] = e.participant;
+        renderParticipants();
+        document.getElementById('statusText').textContent = Object.keys(participants).length + ' participant(s) connected';
+      }
+    });
+
+    callFrame.on('participant-updated', function(e) {
+      if (!e.participant.local) {
+        participants[e.participant.session_id] = e.participant;
+        renderParticipants();
       }
     });
 
     callFrame.on('participant-left', function(e) {
-      if (!e.participant.local) {
-        document.getElementById('statusText').textContent = 'Borrower left the call';
+      delete participants[e.participant.session_id];
+      renderParticipants();
+      document.getElementById('statusText').textContent = Object.keys(participants).length + ' participant(s) connected';
+    });
+
+    // WAITING ROOM
+    callFrame.on('waiting-participant-added', function(e) {
+      waitingParticipants[e.participant.id] = e.participant;
+      updateWaitingBadge();
+      renderWaitingList();
+    });
+
+    callFrame.on('waiting-participant-updated', function(e) {
+      waitingParticipants[e.participant.id] = e.participant;
+    });
+
+    callFrame.on('waiting-participant-removed', function(e) {
+      delete waitingParticipants[e.participant.id];
+      updateWaitingBadge();
+      renderWaitingList();
+    });
+
+    // APP MESSAGES (reactions + chat from participants)
+    callFrame.on('app-message', function(e) {
+      var msg = e.data;
+      if (msg && msg.type === 'reaction') {
+        showReaction(msg.emoji, msg.name);
+      }
+      if (msg && msg.type === 'chat') {
+        appendChat(msg.name, msg.text, false);
+        if (activeTab !== 'chat' || !panelOpen) {
+          unreadChat++;
+          document.getElementById('chatBadge').textContent = unreadChat;
+          document.getElementById('chatBadge').style.display = 'inline';
+        }
       }
     });
 
     await callFrame.join({ url: data.room_url });
 
-  } catch (err) {
+  } catch(err) {
     alert('Error: ' + err.message);
-    btn.disabled = false;
-    btn.textContent = '📹 Start Call';
+    btn.disabled = false; btn.textContent = '📹 Start Room';
     document.getElementById('lobby').classList.remove('hidden');
     document.getElementById('callView').classList.remove('active');
   }
 }
 
-// IN-CALL BACKGROUND CONTROLS
-function toggleBgPicker() {
-  document.getElementById('bgPickerBar').classList.toggle('open');
+// ===== WAITING ROOM =====
+function updateWaitingBadge() {
+  var count = Object.keys(waitingParticipants).length;
+  var wrap = document.getElementById('waitingBadgeWrap');
+  var badge = document.getElementById('waitingBadge');
+  var countEl = document.getElementById('waitingCount');
+  wrap.style.display = count > 0 ? 'block' : 'none';
+  badge.textContent = '⏳ ' + count + ' Waiting — Admit';
+  countEl.textContent = count > 0 ? count : '';
 }
-function closeBgPicker() {
-  document.getElementById('bgPickerBar').classList.remove('open');
+
+function showWaitingRoom() { togglePanel('waiting'); }
+
+function renderWaitingList() {
+  var list = document.getElementById('waitingList');
+  var keys = Object.keys(waitingParticipants);
+  if (keys.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:rgba(200,204,212,0.3);padding:12px 0;text-align:center;">No one waiting</div>';
+    return;
+  }
+  list.innerHTML = keys.map(function(id) {
+    var p = waitingParticipants[id];
+    return '<div class="waiting-item">' +
+      '<span class="waiting-item-name">' + (p.name || 'Guest') + '</span>' +
+      '<div>' +
+        '<button class="admit-btn" onclick="admitOne(\'' + id + '\')">Admit</button>' +
+        '<button class="deny-btn" onclick="denyOne(\'' + id + '\')">Deny</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
 }
+
+async function admitOne(id) {
+  try { await callFrame.updateWaitingParticipant(id, { grantRequestedAccess: true }); } catch(e) {}
+}
+async function denyOne(id) {
+  try { await callFrame.updateWaitingParticipant(id, { grantRequestedAccess: false }); } catch(e) {}
+}
+async function admitAll() {
+  var keys = Object.keys(waitingParticipants);
+  for (var i = 0; i < keys.length; i++) { await admitOne(keys[i]); }
+}
+
+// ===== PARTICIPANTS =====
+function renderParticipants() {
+  var list = document.getElementById('participantList');
+  var keys = Object.keys(participants);
+  if (keys.length === 0) {
+    list.innerHTML = '<div style="font-size:12px;color:rgba(200,204,212,0.3);padding:12px 0;text-align:center;">No participants yet</div>';
+    return;
+  }
+  list.innerHTML = keys.map(function(id) {
+    var p = participants[id];
+    var name = p.user_name || 'Guest';
+    var initial = name.charAt(0).toUpperCase();
+    var audioMuted = !p.audio;
+    var videoMuted = !p.video;
+    return '<div class="participant-item">' +
+      '<div class="participant-avatar">' + initial + '</div>' +
+      '<span class="participant-name">' + name + '</span>' +
+      '<div class="participant-controls">' +
+        '<button class="p-ctrl ' + (audioMuted ? 'muted' : '') + '" onclick="toggleParticipantAudio(\'' + id + '\')" title="' + (audioMuted ? 'Unmute' : 'Mute') + '">' + (audioMuted ? '🔇' : '🔊') + '</button>' +
+        '<button class="p-ctrl ' + (videoMuted ? 'muted' : '') + '" onclick="toggleParticipantVideo(\'' + id + '\')" title="' + (videoMuted ? 'Start cam' : 'Stop cam') + '">' + (videoMuted ? '📷' : '📹') + '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+async function toggleParticipantAudio(sessionId) {
+  try {
+    var p = participants[sessionId];
+    await callFrame.updateParticipant(sessionId, { setAudio: !!p.audio ? false : true });
+  } catch(e) { console.warn('Cannot control participant audio:', e); }
+}
+
+async function toggleParticipantVideo(sessionId) {
+  try {
+    var p = participants[sessionId];
+    await callFrame.updateParticipant(sessionId, { setVideo: !!p.video ? false : true });
+  } catch(e) { console.warn('Cannot control participant video:', e); }
+}
+
+async function muteAll() {
+  var keys = Object.keys(participants);
+  for (var i = 0; i < keys.length; i++) {
+    try { await callFrame.updateParticipant(keys[i], { setAudio: false }); } catch(e) {}
+  }
+}
+
+// ===== CHAT =====
+function appendChat(name, text, fromHost) {
+  var msgs = document.getElementById('chatMessages');
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + (fromHost ? 'from-host' : 'from-participant');
+  div.innerHTML = '<div class="chat-msg-name">' + name + '</div><div class="chat-msg-text">' + text + '</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var text = input.value.trim();
+  if (!text || !callFrame) return;
+  callFrame.sendAppMessage({ type: 'chat', name: 'Kristy (Host)', text: text }, '*');
+  appendChat('Kristy (Host)', text, true);
+  input.value = '';
+}
+
+// ===== REACTIONS =====
+function sendReaction(emoji) {
+  if (callFrame) {
+    callFrame.sendAppMessage({ type: 'reaction', emoji: emoji, name: 'Kristy' }, '*');
+  }
+  showReaction(emoji, 'Kristy');
+}
+
+function showReaction(emoji, name) {
+  var overlay = document.getElementById('reactionsOverlay');
+  var el = document.createElement('div');
+  el.className = 'reaction-pop';
+  el.title = name;
+  el.textContent = emoji;
+  overlay.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 3000);
+}
+
+// ===== PANEL =====
+function togglePanel(tab) {
+  if (panelOpen && (tab === null || activeTab === tab)) {
+    document.getElementById('sidePanel').classList.add('collapsed');
+    panelOpen = false;
+  } else {
+    document.getElementById('sidePanel').classList.remove('collapsed');
+    panelOpen = true;
+    if (tab) switchTab(tab);
+  }
+}
+
+function switchTab(tab) {
+  activeTab = tab;
+  ['people','waiting','chat'].forEach(function(t) {
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+    document.getElementById('content' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('hidden', t !== tab);
+  });
+  if (tab === 'chat') {
+    unreadChat = 0;
+    document.getElementById('chatBadge').style.display = 'none';
+    var msgs = document.getElementById('chatMessages');
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+}
+
+function toggleReactions() { document.getElementById('reactionBar').classList.toggle('open'); }
+function toggleBgPicker() { document.getElementById('bgPickerBar').classList.toggle('open'); }
 
 async function changeCallBg(type) {
   if (!callFrame) return;
   await applyBackground(callFrame, type, uploadedCallBgUrl || uploadedBgUrl);
 }
-
 function handleCallBgUpload(input) {
   if (!input.files || !input.files[0]) return;
-  var url = URL.createObjectURL(input.files[0]);
-  uploadedCallBgUrl = url;
+  uploadedCallBgUrl = URL.createObjectURL(input.files[0]);
   changeCallBg('uploaded');
 }
 
+// ===== TIMER =====
 function startTimer() {
   callStart = Date.now();
   timerInterval = setInterval(function() {
     var s = Math.floor((Date.now() - callStart) / 1000);
     var m = Math.floor(s / 60); s = s % 60;
-    document.getElementById('callTimer').textContent =
-      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    document.getElementById('callTimer').textContent = (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
   }, 1000);
 }
 
-
-// RECORDING
-var mediaRecorder = null;
-var recordedChunks = [];
-var isRecording = false;
-
-function toggleRecording() {
-  if (!isRecording) { startRecording(); } else { stopRecording(); }
-}
+// ===== RECORDING =====
+function toggleRecording() { isRecording ? stopRecording() : startRecording(); }
 
 function startRecording() {
-  var container = document.getElementById('callContainer');
-  var stream = null;
-
-  // Capture the call container via canvas stream or display media
-  try {
-    // Capture screen area — prompts user to select the call window/tab
-    navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).then(function(displayStream) {
-      var chunks = [];
-      var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' :
-                     MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
-      mediaRecorder = new MediaRecorder(displayStream, { mimeType: mimeType });
-      mediaRecorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
-      mediaRecorder.onstop = function() {
-        var blob = new Blob(chunks, { type: mimeType });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.href = url;
-        var date = new Date().toISOString().slice(0,10);
-        a.download = 'call-recording-' + date + '.' + (mimeType.indexOf('mp4') > -1 ? 'mp4' : 'webm');
-        document.body.appendChild(a); a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      };
-      // Stop recording if user stops screen share
-      displayStream.getVideoTracks()[0].onended = function() { if (isRecording) stopRecording(); };
-      mediaRecorder.start(1000);
-      isRecording = true;
-      document.getElementById('recBtn').textContent = '⏹ Stop Rec';
-      document.getElementById('recBtn').style.borderColor = '#ef4444';
-      document.getElementById('recBtn').style.color = '#ef4444';
-      document.getElementById('recIndicator').style.display = 'flex';
-    }).catch(function(err) {
-      if (err.name !== 'NotAllowedError') alert('Recording error: ' + err.message);
-    });
-  } catch(e) {
-    alert('Recording not supported in this browser.');
-  }
+  navigator.mediaDevices.getDisplayMedia({ video:true, audio:true }).then(function(stream) {
+    var chunks = [];
+    var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm';
+    mediaRecorder = new MediaRecorder(stream, { mimeType: mime });
+    mediaRecorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+    mediaRecorder.onstop = function() {
+      var blob = new Blob(chunks, { type: mime });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a'); a.href = url;
+      a.download = 'call-' + new Date().toISOString().slice(0,10) + '.webm';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    };
+    stream.getVideoTracks()[0].onended = function() { if (isRecording) stopRecording(); };
+    mediaRecorder.start(1000);
+    isRecording = true;
+    document.getElementById('recBtn').classList.add('active');
+    document.getElementById('recBtn').textContent = '⏹ Stop Rec';
+  }).catch(function(e) { if (e.name !== 'NotAllowedError') alert('Recording error: ' + e.message); });
 }
 
 function stopRecording() {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
-  if (mediaRecorder && mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(function(t){ t.stop(); });
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+    mediaRecorder.stop();
+    if (mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(function(t){ t.stop(); });
+  }
   isRecording = false;
+  document.getElementById('recBtn').classList.remove('active');
   document.getElementById('recBtn').textContent = '⏺ Record';
-  document.getElementById('recBtn').style.borderColor = 'rgba(239,68,68,0.3)';
-  document.getElementById('recBtn').style.color = 'rgba(239,68,68,0.7)';
-  document.getElementById('recIndicator').style.display = 'none';
 }
 
+// ===== END CALL =====
 async function endCall() {
   if (isRecording) stopRecording();
   if (timerInterval) clearInterval(timerInterval);
-  if (callFrame) {
-    await callFrame.leave();
-    callFrame.destroy();
-    callFrame = null;
-  }
+  if (callFrame) { await callFrame.leave(); callFrame.destroy(); callFrame = null; }
   try {
     await fetch(API_BASE, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'delete-room', room_name: roomName, room_code: roomCode })
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'delete-room', room_name:roomName, room_code:roomCode })
     });
   } catch(e) {}
-
-  if (window.opener) { window.close(); }
-  else { window.location.href = 'mission-control.html'; }
+  if (window.opener) { window.close(); } else { window.location.href = 'mission-control.html'; }
 }
 </script>
 </body>
