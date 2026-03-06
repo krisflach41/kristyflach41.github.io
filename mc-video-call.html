@@ -546,20 +546,13 @@ async function toggleScreenShare() {
     try {
       screenStream = await navigator.mediaDevices.getDisplayMedia({video:true, audio:false});
       var screenTrack = screenStream.getVideoTracks()[0];
-      // Send screen to remote participant via Daily
+      // Send screen to remote participant via Daily only
       await callFrame.startScreenShare();
-      // Show screen in main, push remote to pip
+      // Show a small preview of screen in the screen pip tile only
       document.getElementById('screenVideo').srcObject = screenStream;
       document.getElementById('screenPip').style.display = 'block';
-      // Keep client visible in remote pip, screen in main
-      document.getElementById('mainVideo').srcObject = screenStream;
-      document.getElementById('mainVideo').style.transform = 'none';
-      document.getElementById('mainLabel').textContent = 'Your Screen (client sees this)';
-      // Make sure remote pip is visible
-      if (remoteStream) {
-        document.getElementById('remoteVideo').srcObject = remoteStream;
-        document.getElementById('remotePip').style.display = 'block';
-      }
+      // Keep main view on client - do NOT change main video
+      // Client stays in main, screen pip is just a small preview for you
       screenSharing = true;
       document.getElementById('btnScreen').textContent = 'Stop Share';
       document.getElementById('btnScreen').classList.add('active');
@@ -575,15 +568,9 @@ async function stopScreenShare() {
   try { await callFrame.stopScreenShare(); } catch(e) {}
   document.getElementById('screenPip').style.display = 'none';
   document.getElementById('screenVideo').srcObject = null;
-  // Restore remote to main
-  if (remoteStream) {
-    document.getElementById('mainVideo').srcObject = remoteStream;
-    document.getElementById('mainLabel').textContent = 'Client';
-  }
   screenSharing = false;
   document.getElementById('btnScreen').textContent = 'Share Screen';
   document.getElementById('btnScreen').classList.remove('active');
-  mainViewSource = 'remote';
 }
 
 // ===== DRAGGABLE PIPS =====
