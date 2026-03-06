@@ -279,7 +279,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <label class="form-label">Topic / Video Idea</label>
           <input type="text" class="form-input" id="scriptTopic" placeholder="e.g. Why rates dropped this week, FHA vs Conventional...">
         </div>
-        <div class="form-row">
+        <div class="form-row single">
           <div class="form-group">
             <label class="form-label">Format</label>
             <select class="form-select" id="scriptFormat">
@@ -290,6 +290,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
               <option>How-to walkthrough</option>
             </select>
           </div>
+        </div>
+        <div class="form-row single" style="margin-bottom:14px;">
           <div class="form-group">
             <label class="form-label">Audience</label>
             <select class="form-select" id="scriptAudience">
@@ -986,22 +988,18 @@ async function generateScript() {
   showStatus(status, 'Generating your script...', 'info');
 
   try {
-    var resp = await fetch(ANTHROPIC_API, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        messages:[{
-          role:'user',
-          content:'Write a ' + format + ' video script for Kristy Flach, a Certified Mortgage Advisor (CMA) and Loan Officer (NMLS #2632259) at Paramount Residential Mortgage Group. Audience: ' + audience + '. Topic: ' + topic + '. Write in a conversational, professional tone. Include a hook, key points, and a call to action. Format as a teleprompter script (clear sentences, no bullet points). Include any required NMLS or rate disclaimer note at the end if discussing rates or loan products. Keep it tight and punchy for video.'
-        }]
-      })
+    var resp = await fetch(API_BASE + '/generate-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: topic, format: format, audience: audience })
     });
     var data = await resp.json();
-    var text = data.content && data.content[0] ? data.content[0].text : '';
-    document.getElementById('scriptText').value = text;
-    showStatus(status, 'Script generated! Review it and click "Load to Teleprompter" when ready.', 'success');
+    if (data.success && data.script) {
+      document.getElementById('scriptText').value = data.script;
+      showStatus(status, 'Script generated! Review it and click "Load to Teleprompter" when ready.', 'success');
+    } else {
+      showStatus(status, data.message || 'Error generating script. Try again.', 'error');
+    }
   } catch(e) {
     showStatus(status, 'Error generating script. Try again.', 'error');
   }
@@ -1041,24 +1039,15 @@ async function aiCaptionHelper() {
   var existing = document.getElementById('postCaption').value.trim();
   if (!existing) { alert('Write something first — even a rough idea — and the AI will polish it.'); return; }
   var platforms = selectedPlatforms.length ? selectedPlatforms.join(', ') : 'social media';
-
   try {
-    var resp = await fetch(ANTHROPIC_API, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:500,
-        messages:[{
-          role:'user',
-          content:'Improve this social media caption for Kristy Flach, a Certified Mortgage Advisor (NMLS #2632259). Platform: ' + platforms + '. Make it engaging, professional, and authentic. Keep her voice. Here is the draft: ' + existing
-        }]
-      })
+    var resp = await fetch(API_BASE + '/generate-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: existing, format: 'social caption', audience: platforms, type: 'caption' })
     });
     var data = await resp.json();
-    var text = data.content && data.content[0] ? data.content[0].text : '';
-    if (text) {
-      document.getElementById('postCaption').value = text;
+    if (data.success && data.script) {
+      document.getElementById('postCaption').value = data.script;
       onCaptionInput();
     }
   } catch(e) { alert('AI helper error. Try again.'); }
@@ -1068,23 +1057,15 @@ async function addHashtags() {
   var caption = document.getElementById('postCaption').value.trim();
   if (!caption) { alert('Write your caption first.'); return; }
   try {
-    var resp = await fetch(ANTHROPIC_API, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:200,
-        messages:[{
-          role:'user',
-          content:'Generate 8-12 relevant hashtags for this mortgage/real estate social media post. Return ONLY the hashtags on one line, no explanation: ' + caption
-        }]
-      })
+    var resp = await fetch(API_BASE + '/generate-script', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ topic: caption, format: 'hashtags only', audience: 'mortgage real estate', type: 'hashtags' })
     });
     var data = await resp.json();
-    var tags = data.content && data.content[0] ? data.content[0].text.trim() : '';
-    if (tags) {
+    if (data.success && data.script) {
       var current = document.getElementById('postCaption').value;
-      document.getElementById('postCaption').value = current + '\n\n' + tags;
+      document.getElementById('postCaption').value = current + '\n\n' + data.script;
       onCaptionInput();
     }
   } catch(e) { alert('Error. Try again.'); }
