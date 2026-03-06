@@ -124,6 +124,41 @@
 
     .main-nav a:hover { opacity: 0.75; }
 
+    /* Contact dropdown */
+    .nav-dropdown {
+      position: relative;
+      display: inline-block;
+    }
+    .nav-dropdown > a { margin: 0 16px; text-decoration: none; color: var(--dark); font-size: 17px; font-weight: 700; transition: opacity 0.2s ease; }
+    .nav-dropdown > a:hover { opacity: 0.75; }
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 170px;
+      overflow: hidden;
+      z-index: 999;
+    }
+    .nav-dropdown-menu a {
+      display: block;
+      padding: 12px 18px;
+      text-decoration: none;
+      color: var(--dark);
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s;
+      margin: 0;
+    }
+    .nav-dropdown-menu a:hover { background: #f3f6f9; opacity: 1; }
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown-menu:hover { display: block; }
+
     .phone-btn {
       margin-right: 10px;
       background: #6e7f77;
@@ -1049,7 +1084,13 @@
         <a href="realtor.html">Realtors Only</a>
         <a href="#charities">My Charities</a>
         <a href="#media">Media</a>
-        <a href="#contact">Contact</a>
+        <div class="nav-dropdown">
+          <a href="#contact">Contact</a>
+          <div class="nav-dropdown-menu">
+            <a href="#contact">Contact Me</a>
+            <a href="video-room.html">Join Video Call</a>
+          </div>
+        </div>
       </nav>
 
       <a href="tel:2063135883" class="phone-btn">
