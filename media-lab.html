@@ -82,7 +82,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .tp-drag-handle:active{cursor:grabbing;}
 .tp-drag-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;}
 .tp-drag-dots{font-size:12px;color:rgba(255,255,255,0.3);}
-.tp-inner{padding:12px 16px;overflow:hidden;height:calc(100% - 30px);box-sizing:border-box;}
+.tp-inner{padding:12px 16px;overflow-y:scroll;height:calc(100% - 30px);box-sizing:border-box;scrollbar-width:none;}
+.tp-inner::-webkit-scrollbar{display:none;}
 .teleprompter-text{color:white;font-size:20px;line-height:1.7;white-space:normal;word-wrap:break-word;overflow-wrap:break-word;}
 .rec-indicator{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.6);padding:5px 10px;border-radius:20px;display:none;}
 .rec-dot{width:9px;height:9px;border-radius:50%;background:#ef4444;animation:recPulse 1s ease infinite;}
@@ -325,8 +326,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <div class="status-msg" id="rewriteStatus"></div>
         <div class="tp-speed-row" style="margin-top:10px;">
           <label class="form-label">Scroll Speed</label>
-          <input type="range" id="tpSpeed" min="20" max="120" value="50" oninput="updateTpSpeed()">
-          <span style="font-size:12px;color:var(--text-muted);min-width:30px;" id="tpSpeedLabel">50</span>
+          <input type="range" id="tpSpeed" min="1" max="10" value="3" oninput="updateTpSpeed()">
+          <span style="font-size:12px;color:var(--text-muted);min-width:30px;" id="tpSpeedLabel">3</span>
+          <button class="btn" style="padding:4px 10px;font-size:11px;margin-left:6px;" onclick="resetTeleprompter()" title="Back to beginning"><i class="fas fa-rotate-left"></i> Reset</button>
         </div>
       </div>
     </div>
@@ -833,6 +835,7 @@ var recTimerInterval = null;
 var recSeconds = 0;
 var tpInterval = null;
 var tpRunning = false;
+var tpAnimFrame = null;
 
 function toggleCamera() {
   if (mediaStream) {
@@ -957,16 +960,35 @@ function loadToTeleprompter() {
 }
 
 function startTpScroll() {
+  stopTpScroll();
+  var inner = document.querySelector('.tp-inner');
+  if (!inner) return;
+  inner.scrollTop = 0;
   var speed = parseInt(document.getElementById('tpSpeed').value);
-  var display = document.getElementById('tpDisplay');
-  var duration = Math.max(10, (tpText.length / speed) * 3);
-  display.style.animation = 'none';
-  display.offsetHeight; // reflow
-  display.style.animation = 'tpScroll ' + duration + 's linear forwards';
+  var pixelsPerSecond = speed * 20; // 1=20px/s ... 10=200px/s
+  var lastTime = null;
+
+  function step(timestamp) {
+    if (!tpRunning) return;
+    if (!lastTime) lastTime = timestamp;
+    var delta = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+    inner.scrollTop += pixelsPerSecond * delta;
+    if (inner.scrollTop < inner.scrollHeight - inner.clientHeight) {
+      tpAnimFrame = requestAnimationFrame(step);
+    }
+  }
+  tpAnimFrame = requestAnimationFrame(step);
 }
 
 function stopTpScroll() {
-  document.getElementById('tpDisplay').style.animation = 'none';
+  if (tpAnimFrame) { cancelAnimationFrame(tpAnimFrame); tpAnimFrame = null; }
+}
+
+function resetTeleprompter() {
+  var inner = document.querySelector('.tp-inner');
+  if (inner) inner.scrollTop = 0;
+  if (tpRunning) { stopTpScroll(); startTpScroll(); }
 }
 
 function updateTpSpeed() {
