@@ -6,18 +6,17 @@
 <title>Video Call Studio - Agent Edge</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Segoe UI', system-ui, sans-serif;
   background: linear-gradient(135deg, #0a0f1a 0%, #111827 50%, #0a0f1a 100%);
   color: #c8ccd4;
   min-height: 100vh;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-/* ===== LOBBY ===== */
+/* LOBBY */
 .lobby {
   display: flex;
   flex-direction: column;
@@ -26,864 +25,182 @@ body {
   min-height: 100vh;
   padding: 30px;
 }
+.lobby.hidden { display: none; }
 
 .lobby-card {
   background: rgba(17,24,39,0.92);
   border: 1px solid rgba(110,127,119,0.15);
   border-radius: 22px;
-  padding: 30px 40px 35px;
-  max-width: 900px;
+  padding: 40px;
+  max-width: 560px;
   width: 100%;
   text-align: center;
   backdrop-filter: blur(12px);
   box-shadow: 0 25px 60px rgba(0,0,0,0.4);
 }
-
 .lobby-title {
   font-family: 'Playfair Display', serif;
   font-size: 32px;
   color: #e8dcc8;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 }
-
-.lobby-subtitle {
-  color: rgba(200,204,212,0.5);
-  font-size: 14px;
-  margin-bottom: 24px;
-}
-
-.preview-container {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #000;
-  margin-bottom: 20px;
-  border: 1px solid rgba(110,127,119,0.2);
-}
-
-.preview-container video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-}
-
-.preview-label {
-  position: absolute;
-  bottom: 12px;
-  left: 12px;
-  background: rgba(0,0,0,0.6);
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  color: rgba(255,255,255,0.8);
-}
-
-.lobby-controls {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.lobby-controls select {
-  flex: 1;
-  min-width: 0;
-}
-
-.lobby-controls .start-btn {
-  width: auto;
-  padding: 16px 40px;
-  margin-bottom: 0;
-  white-space: nowrap;
-}
+.lobby-subtitle { color: rgba(200,204,212,0.5); font-size: 14px; margin-bottom: 32px; }
 
 .start-btn {
-  display: block;
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 12px;
-  background: #6e7f77;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  font-family: inherit;
-  margin-bottom: 12px;
+  display: block; width: 100%; padding: 16px;
+  border: none; border-radius: 12px; background: #6e7f77;
+  color: white; font-weight: 700; font-size: 16px;
+  cursor: pointer; transition: all 0.25s ease; font-family: inherit;
 }
-
 .start-btn:hover { background: #556b62; transform: translateY(-1px); }
 .start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-.lobby-card select {
-  padding: 12px 14px;
-  border: 1px solid rgba(110,127,119,0.2);
-  border-radius: 10px;
-  background: rgba(255,255,255,0.04);
-  color: #e8dcc8;
-  font-size: 13px;
-  font-family: inherit;
-}
-
-.lobby-card select option { background: #111827; color: #e8dcc8; }
-
-/* ===== ACTIVE CALL ===== */
-.call-view {
-  display: none;
-  height: 100vh;
-  flex-direction: column;
-}
-
+/* CALL VIEW */
+.call-view { display: none; flex-direction: column; height: 100vh; }
 .call-view.active { display: flex; }
-.lobby.hidden { display: none; }
 
-.room-code-banner {
-  text-align: center;
-  padding: 12px;
-  background: rgba(110,127,119,0.1);
+.room-banner {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  padding: 12px 20px;
+  background: rgba(17,24,39,0.95);
   border-bottom: 1px solid rgba(110,127,119,0.15);
+  flex-wrap: wrap;
 }
-
-.room-code-banner span {
-  font-size: 13px;
-  color: rgba(200,204,212,0.6);
-}
-
+.banner-label { font-size: 13px; color: rgba(200,204,212,0.5); }
 .room-code {
   font-family: 'Courier New', monospace;
-  font-size: 22px;
-  font-weight: 700;
-  color: #e8dcc8;
-  letter-spacing: 3px;
-  margin-left: 10px;
+  font-size: 28px; font-weight: 700; color: #e8dcc8; letter-spacing: 4px;
 }
+.banner-status { font-size: 13px; color: rgba(200,204,212,0.4); }
+.pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6e7f77; margin-right: 6px; animation: pulse 1.5s ease infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-.waiting-pulse {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #6e7f77;
-  margin-left: 12px;
-  animation: pulse 1.5s ease infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
-}
-
-.video-grid {
+.daily-frame {
   flex: 1;
-  position: relative;
+  border: none;
   background: #000;
   min-height: 0;
 }
 
-.remote-video-wrap {
-  width: 100%;
-  height: 100%;
-}
-
-.remote-video-wrap video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #0a0f1a;
-}
-
-.remote-video-wrap .waiting-message {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.pip-video {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 200px;
-  aspect-ratio: 16/9;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 2px solid rgba(110,127,119,0.4);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-  cursor: grab;
-  z-index: 10;
-  background: #111;
-}
-
-.pip-video:active { cursor: grabbing; }
-
-.pip-video video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pip-video .local-video { transform: scaleX(-1); }
-
-.pip-label {
-  position: absolute;
-  bottom: 6px;
-  left: 6px;
-  background: rgba(0,0,0,0.6);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  color: white;
-}
-
-/* ===== CALL CONTROLS ===== */
-.call-controls {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 18px;
+.bottom-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 20px;
   background: rgba(17,24,39,0.95);
   border-top: 1px solid rgba(110,127,119,0.1);
+  gap: 12px;
 }
-
-.ctrl-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  color: white;
-  background: rgba(110,127,119,0.2);
+.timer { font-size: 13px; color: rgba(200,204,212,0.5); font-family: monospace; }
+.end-btn {
+  padding: 10px 28px; border: none; border-radius: 20px;
+  background: #ef4444; color: white; font-weight: 700;
+  font-size: 14px; cursor: pointer; transition: background 0.2s;
 }
-
-.ctrl-btn:hover { background: rgba(110,127,119,0.35); transform: scale(1.08); }
-.ctrl-btn.active { background: #6e7f77; }
-.ctrl-btn.muted { background: rgba(239,68,68,0.3); color: #ef4444; }
-.ctrl-btn.end-call { background: #ef4444; width: 64px; height: 52px; border-radius: 26px; font-size: 14px; font-weight: 700; }
-.ctrl-btn.end-call:hover { background: #dc2626; }
-.ctrl-btn.screen-share.active { background: #6e7f77; }
-.ctrl-btn.recording { background: #ef4444; animation: rec-pulse 1.5s ease infinite; }
-.ctrl-btn.perm-off { background: rgba(239,68,68,0.2); color: #ef4444; }
-
-@keyframes rec-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
-  50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); }
-}
-
-.rec-indicator {
-  display: none;
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  background: rgba(239,68,68,0.9);
-  color: white;
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  z-index: 20;
-  animation: rec-pulse 1.5s ease infinite;
-}
-
-.rec-indicator.show { display: flex; align-items: center; gap: 6px; }
-.rec-dot { width: 8px; height: 8px; border-radius: 50%; background: white; }
-
-/* ===== STATUS BAR ===== */
-.status-bar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 6px;
-  font-size: 12px;
-  color: rgba(200,204,212,0.4);
-}
-
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #6e7f77;
-}
-
-.status-dot.disconnected { background: #ef4444; }
-
-@media (max-width: 768px) {
-  .video-grid { grid-template-columns: 1fr; }
-  .lobby-card { padding: 30px 22px; }
-}
+.end-btn:hover { background: #dc2626; }
 </style>
 </head>
 <body>
 
-<!-- ===== LOBBY ===== -->
+<!-- LOBBY -->
 <div class="lobby" id="lobby">
   <div class="lobby-card">
     <h1 class="lobby-title">Video Call Studio</h1>
-    <p class="lobby-subtitle">Start a video call with your borrower</p>
-
-    <div class="preview-container">
-      <video id="previewVideo" autoplay muted playsinline></video>
-      <div class="preview-label">Camera Preview</div>
-    </div>
-
-    <div class="lobby-controls">
-      <select id="cameraSelect" title="Camera"></select>
-      <select id="micSelect" title="Microphone"></select>
-      <button class="start-btn" id="startCallBtn" onclick="createRoom()">Start Call</button>
-    </div>
+    <p class="lobby-subtitle">Create a room and share the code with your borrower</p>
+    <button class="start-btn" id="startBtn" onclick="createRoom()">
+      <i style="margin-right:8px;">📹</i> Start Call
+    </button>
+    <p style="margin-top:16px;font-size:12px;color:rgba(200,204,212,0.3);">Powered by Daily.co · Up to 4 hours per session</p>
   </div>
 </div>
 
-<!-- ===== ACTIVE CALL ===== -->
+<!-- ACTIVE CALL -->
 <div class="call-view" id="callView">
-
-  <div class="room-code-banner" id="roomBanner">
-    <span>Room Code:</span>
-    <span class="room-code" id="roomCodeDisplay">----</span>
-    <span class="waiting-pulse" id="waitingPulse"></span>
-    <span id="callStatus" style="font-size:12px; color:rgba(200,204,212,0.4); margin-left:12px;">Waiting for borrower...</span>
-  </div>
-
-  <div class="video-grid" id="videoGrid">
-    <div class="rec-indicator" id="recIndicator"><div class="rec-dot"></div> REC</div>
-    <div class="remote-video-wrap">
-      <video id="remoteVideo" autoplay playsinline></video>
-      <div class="waiting-message" id="waitingMsg">
-        <div style="font-size:16px;color:rgba(200,204,212,0.4);">Waiting for borrower to join...</div>
-        <div style="font-size:13px;margin-top:8px;color:rgba(200,204,212,0.25);">Share your room code to get started</div>
-      </div>
+  <div class="room-banner">
+    <div>
+      <div class="banner-label">Give this code to your borrower</div>
+      <div class="room-code" id="roomCodeDisplay">-----</div>
     </div>
-    <div class="pip-video" id="pipVideo">
-      <video id="localVideo" autoplay muted playsinline class="local-video"></video>
-      <div class="pip-label">You</div>
+    <div>
+      <div class="banner-label">Borrower joins at</div>
+      <div style="font-size:13px;color:#e8dcc8;font-weight:600;">kristyflach.com/video-room.html</div>
+    </div>
+    <div class="banner-status">
+      <span class="pulse" id="statusPulse"></span>
+      <span id="statusText">Waiting for borrower...</span>
     </div>
   </div>
 
-  <div class="call-controls">
-    <button class="ctrl-btn" id="btnMic" onclick="toggleMic()" title="Mute/Unmute">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-    </button>
-    <button class="ctrl-btn" id="btnCam" onclick="toggleCam()" title="Camera On/Off">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-    </button>
-    <button class="ctrl-btn screen-share" id="btnScreen" onclick="toggleScreenShare()" title="Share Screen">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-    </button>
-    <button class="ctrl-btn" id="btnRecord" onclick="toggleRecord()" title="Record Call">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4" fill="currentColor"/></svg>
-    </button>
-    <button class="ctrl-btn" id="btnBorrowerScreen" onclick="toggleBorrowerScreenShare()" title="Allow/Block Borrower Screen Share">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="3" x2="22" y2="17" stroke-width="2.5"/></svg>
-    </button>
-    <button class="ctrl-btn end-call" id="btnEnd" onclick="endCall()">END</button>
-  </div>
+  <iframe id="dailyFrame" class="daily-frame" allow="camera; microphone; fullscreen; display-capture; autoplay" allowfullscreen></iframe>
 
-  <div class="status-bar">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Initializing...</span>
-    <span id="callTimer" style="margin-left:12px;"></span>
+  <div class="bottom-bar">
+    <div class="timer" id="callTimer">00:00</div>
+    <button class="end-btn" onclick="endCall()">End Call</button>
   </div>
 </div>
 
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
 var roomCode = null;
-var localStream = null;
-var screenStream = null;
-var peerConnection = null;
-var pollInterval = null;
-var lastSignalTime = '2000-01-01T00:00:00Z';
-var isMuted = false;
-var isCamOff = false;
-var isScreenSharing = false;
-var callStartTime = null;
+var roomName = null;
 var timerInterval = null;
-var mediaRecorder = null;
-var recordedChunks = [];
-var isRecording = false;
-var borrowerScreenAllowed = true;
+var callStart = null;
 
-var iceServers = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun2.l.google.com:19302' }
-];
-
-// ===== DEVICE ENUMERATION =====
-async function setupDevices() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    document.getElementById('previewVideo').srcObject = localStream;
-
-    var devices = await navigator.mediaDevices.enumerateDevices();
-    var camSelect = document.getElementById('cameraSelect');
-    var micSelect = document.getElementById('micSelect');
-    camSelect.innerHTML = '';
-    micSelect.innerHTML = '';
-
-    devices.forEach(function(d, i) {
-      var opt = document.createElement('option');
-      opt.value = d.deviceId;
-      if (d.kind === 'videoinput') {
-        opt.textContent = d.label || 'Camera ' + (camSelect.options.length + 1);
-        camSelect.appendChild(opt);
-      } else if (d.kind === 'audioinput') {
-        opt.textContent = d.label || 'Mic ' + (micSelect.options.length + 1);
-        micSelect.appendChild(opt);
-      }
-    });
-  } catch (err) {
-    console.error('Camera/mic error:', err);
-    alert('Please allow camera and microphone access to use Video Call Studio.');
-  }
-}
-
-// ===== CREATE ROOM =====
 async function createRoom() {
-  var btn = document.getElementById('startCallBtn');
+  var btn = document.getElementById('startBtn');
   btn.disabled = true;
   btn.textContent = 'Creating room...';
 
   try {
-    var loName = localStorage.getItem('userName') || 'Loan Officer';
-    var resp = await fetch(API_BASE + '?action=create-room', {
+    var resp = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'create-room', lo_name: loName })
+      body: JSON.stringify({ action: 'create-room', lo_name: 'Kristy Flach' })
     });
     var data = await resp.json();
-    if (!data.success) throw new Error(data.message);
+    if (!data.success) throw new Error(data.error || 'Failed to create room');
 
     roomCode = data.room_code;
-    document.getElementById('roomCodeDisplay').textContent = roomCode;
+    roomName = data.room_name;
 
-    // Switch to call view
+    document.getElementById('roomCodeDisplay').textContent = roomCode;
+    document.getElementById('dailyFrame').src = data.room_url;
+
     document.getElementById('lobby').classList.add('hidden');
     document.getElementById('callView').classList.add('active');
 
-    // Move stream to call view
-    document.getElementById('localVideo').srcObject = localStream;
-
-    // Start polling for borrower
-    startPolling();
-    updateStatus('waiting', 'Waiting for borrower to join...');
+    startTimer();
 
   } catch (err) {
-    alert('Error creating room: ' + err.message);
+    alert('Error: ' + err.message);
     btn.disabled = false;
     btn.textContent = 'Start Call';
   }
 }
 
-// ===== POLLING FOR SIGNALS =====
-function startPolling() {
-  pollInterval = setInterval(async function() {
-    try {
-      var resp = await fetch(API_BASE + '?action=poll-signals&room_code=' + encodeURIComponent(roomCode) + '&for_user=lo&after=' + encodeURIComponent(lastSignalTime));
-      var data = await resp.json();
-      if (data.success && data.signals.length > 0) {
-        for (var i = 0; i < data.signals.length; i++) {
-          await handleSignal(data.signals[i]);
-          lastSignalTime = data.signals[i].created_at;
-        }
-      }
-    } catch (err) {
-      console.error('Poll error:', err);
-    }
-  }, 1500);
-}
-
-// ===== HANDLE INCOMING SIGNAL =====
-async function handleSignal(signal) {
-  var sigData = JSON.parse(signal.signal_data);
-
-  if (signal.signal_type === 'offer') {
-    // Borrower sent an offer (shouldn't happen in our flow, but handle it)
-    await setupPeerConnection();
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(sigData));
-    var answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
-    await sendSignal('answer', answer);
-  }
-
-  if (signal.signal_type === 'answer') {
-    if (peerConnection && peerConnection.signalingState === 'have-local-offer') {
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(sigData));
-    }
-  }
-
-  if (signal.signal_type === 'ice-candidate') {
-    if (peerConnection) {
-      try {
-        await peerConnection.addIceCandidate(new RTCIceCandidate(sigData));
-      } catch (e) {
-        console.log('ICE candidate error (non-fatal):', e);
-      }
-    }
-  }
-
-  if (signal.signal_type === 'join') {
-    // Borrower joined - create offer
-    updateStatus('connecting', 'Borrower joined. Connecting...');
-    await setupPeerConnection();
-    var offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    await sendSignal('offer', offer);
-  }
-}
-
-// ===== PEER CONNECTION =====
-async function setupPeerConnection() {
-  peerConnection = new RTCPeerConnection({ iceServers: iceServers });
-
-  // Add local tracks
-  localStream.getTracks().forEach(function(track) {
-    peerConnection.addTrack(track, localStream);
-  });
-
-  // ICE candidates
-  peerConnection.onicecandidate = function(event) {
-    if (event.candidate) {
-      sendSignal('ice-candidate', event.candidate.toJSON());
-    }
-  };
-
-  // Remote stream
-  peerConnection.ontrack = function(event) {
-    var remoteVideo = document.getElementById('remoteVideo');
-    if (remoteVideo.srcObject !== event.streams[0]) {
-      remoteVideo.srcObject = event.streams[0];
-      remoteStream = event.streams[0];
-      document.getElementById('waitingMsg').style.display = 'none';
-      document.getElementById('waitingPulse').style.display = 'none';
-      document.getElementById('callStatus').textContent = 'Connected';
-      updateStatus('connected', 'Connected');
-      startTimer();
-    }
-  };
-
-  peerConnection.onconnectionstatechange = function() {
-    if (peerConnection.connectionState === 'disconnected' || peerConnection.connectionState === 'failed') {
-      updateStatus('disconnected', 'Connection lost');
-    }
-  };
-}
-
-// ===== SEND SIGNAL =====
-async function sendSignal(type, data) {
-  try {
-    await fetch(API_BASE + '?action=signal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'signal',
-        room_code: roomCode,
-        signal_type: type,
-        signal_data: data,
-        sender: 'lo'
-      })
-    });
-  } catch (err) {
-    console.error('Send signal error:', err);
-  }
-}
-
-// ===== CONTROLS =====
-function toggleMic() {
-  isMuted = !isMuted;
-  localStream.getAudioTracks().forEach(function(t) { t.enabled = !isMuted; });
-  document.getElementById('btnMic').classList.toggle('muted', isMuted);
-}
-
-function toggleCam() {
-  isCamOff = !isCamOff;
-  localStream.getVideoTracks().forEach(function(t) { t.enabled = !isCamOff; });
-  document.getElementById('btnCam').classList.toggle('muted', isCamOff);
-}
-
-var remoteStream = null;
-
-async function toggleScreenShare() {
-  if (!isScreenSharing) {
-    try {
-      // Request screen share - prefer entire screen, not tabs
-      screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { displaySurface: 'monitor' },
-        audio: false,
-        selfBrowserSurface: 'exclude',
-        surfaceSwitching: 'exclude'
-      });
-      var screenTrack = screenStream.getVideoTracks()[0];
-
-      // Replace the video track in peer connection so borrower sees our screen
-      if (peerConnection) {
-        var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
-        if (sender) sender.replaceTrack(screenTrack);
-      }
-
-      // DON'T change the local display - LO already sees their own screen
-      // Main view stays on borrower, PIP stays on your camera
-      document.getElementById('btnScreen').classList.add('active');
-      isScreenSharing = true;
-
-      screenTrack.onended = function() {
-        stopScreenShare();
-      };
-    } catch (err) {
-      console.log('Screen share cancelled');
-    }
-  } else {
-    stopScreenShare();
-  }
-}
-
-function stopScreenShare() {
-  if (screenStream) {
-    screenStream.getTracks().forEach(function(t) { t.stop(); });
-    screenStream = null;
-  }
-
-  // Restore camera track to peer connection
-  var camTrack = localStream.getVideoTracks()[0];
-  if (peerConnection && camTrack) {
-    var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
-    if (sender) sender.replaceTrack(camTrack);
-  }
-
-  document.getElementById('btnScreen').classList.remove('active');
-  isScreenSharing = false;
-}
-
-// ===== RECORD CALL =====
-function toggleRecord() {
-  if (!isRecording) {
-    startRecording();
-  } else {
-    stopRecording();
-  }
-}
-
-function startRecording() {
-  recordedChunks = [];
-  var remoteVideo = document.getElementById('remoteVideo');
-
-  // Capture both local and remote audio/video into a canvas
-  // For simplicity, record the remote stream + local audio
-  var streams = [];
-  if (remoteVideo.srcObject) streams.push(remoteVideo.srcObject);
-  if (localStream) streams.push(localStream);
-
-  // Create a combined stream
-  var tracks = [];
-  streams.forEach(function(s) {
-    s.getTracks().forEach(function(t) { tracks.push(t); });
-  });
-
-  var combinedStream = new MediaStream(tracks);
-
-  try {
-    mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp9,opus' });
-  } catch (e) {
-    try {
-      mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm;codecs=vp8,opus' });
-    } catch (e2) {
-      try {
-        mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/webm' });
-      } catch (e3) {
-        try {
-          // Safari fallback
-          mediaRecorder = new MediaRecorder(combinedStream, { mimeType: 'video/mp4' });
-        } catch (e4) {
-          try {
-            // Last resort - let browser pick
-            mediaRecorder = new MediaRecorder(combinedStream);
-          } catch (e5) {
-            alert('Recording not supported in this browser.');
-            return;
-          }
-        }
-      }
-    }
-  }
-
-  var fileExt = (mediaRecorder.mimeType && mediaRecorder.mimeType.indexOf('mp4') > -1) ? 'mp4' : 'webm';
-
-  mediaRecorder.ondataavailable = function(event) {
-    if (event.data && event.data.size > 0) recordedChunks.push(event.data);
-  };
-
-  mediaRecorder.onstop = function() {
-    var mimeType = mediaRecorder.mimeType || 'video/webm';
-    var blob = new Blob(recordedChunks, { type: mimeType });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    var date = new Date().toISOString().slice(0,10);
-    a.download = 'call-recording-' + date + '.' + fileExt;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
-  mediaRecorder.start(1000);
-  isRecording = true;
-  document.getElementById('btnRecord').classList.add('recording');
-  document.getElementById('recIndicator').classList.add('show');
-}
-
-function stopRecording() {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-  }
-  isRecording = false;
-  document.getElementById('btnRecord').classList.remove('recording');
-  document.getElementById('recIndicator').classList.remove('show');
-}
-
-// ===== TOGGLE BORROWER SCREEN SHARE =====
-function toggleBorrowerScreenShare() {
-  borrowerScreenAllowed = !borrowerScreenAllowed;
-  var btn = document.getElementById('btnBorrowerScreen');
-
-  if (!borrowerScreenAllowed) {
-    btn.classList.add('perm-off');
-    btn.title = 'Borrower screen share BLOCKED - click to allow';
-  } else {
-    btn.classList.remove('perm-off');
-    btn.title = 'Borrower screen share ALLOWED - click to block';
-  }
-
-  // Send permission signal to borrower
-  sendSignal('screen-share-permission', { allowed: borrowerScreenAllowed });
-}
-
-async function endCall() {
-  if (isRecording) stopRecording();
-  if (pollInterval) clearInterval(pollInterval);
-  if (timerInterval) clearInterval(timerInterval);
-
-  if (peerConnection) {
-    peerConnection.close();
-    peerConnection = null;
-  }
-
-  if (roomCode) {
-    try {
-      await fetch(API_BASE + '?action=end-room', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'end-room', room_code: roomCode })
-      });
-    } catch (e) {}
-  }
-
-  if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
-  if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
-
-  // Return to Mission Control
-  if (window.opener) {
-    window.close();
-  } else {
-    window.location.href = 'mission-control.html';
-  }
-}
-
-// ===== HELPERS =====
-function updateStatus(state, text) {
-  var dot = document.getElementById('statusDot');
-  dot.className = 'status-dot';
-  if (state === 'disconnected') dot.classList.add('disconnected');
-  document.getElementById('statusText').textContent = text;
-}
-
 function startTimer() {
-  callStartTime = Date.now();
+  callStart = Date.now();
   timerInterval = setInterval(function() {
-    var elapsed = Math.floor((Date.now() - callStartTime) / 1000);
-    var mins = Math.floor(elapsed / 60);
-    var secs = elapsed % 60;
-    document.getElementById('callTimer').textContent = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
+    var s = Math.floor((Date.now() - callStart) / 1000);
+    var m = Math.floor(s / 60); s = s % 60;
+    document.getElementById('callTimer').textContent =
+      (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }, 1000);
 }
 
-// ===== INIT =====
-setupDevices();
+async function endCall() {
+  if (timerInterval) clearInterval(timerInterval);
+  document.getElementById('dailyFrame').src = '';
 
-// ===== DRAGGABLE PIP =====
-(function() {
-  var pip = document.getElementById('pipVideo');
-  var isDragging = false;
-  var offsetX, offsetY;
+  try {
+    await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'delete-room', room_name: roomName, room_code: roomCode })
+    });
+  } catch(e) {}
 
-  pip.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    offsetX = e.clientX - pip.getBoundingClientRect().left;
-    offsetY = e.clientY - pip.getBoundingClientRect().top;
-    pip.style.transition = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!isDragging) return;
-    var parent = pip.parentElement.getBoundingClientRect();
-    var x = e.clientX - parent.left - offsetX;
-    var y = e.clientY - parent.top - offsetY;
-
-    // Constrain to parent
-    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
-    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
-
-    pip.style.left = x + 'px';
-    pip.style.top = y + 'px';
-    pip.style.right = 'auto';
-    pip.style.bottom = 'auto';
-  });
-
-  document.addEventListener('mouseup', function() {
-    isDragging = false;
-    pip.style.transition = '';
-  });
-
-  // Touch support for mobile
-  pip.addEventListener('touchstart', function(e) {
-    isDragging = true;
-    var touch = e.touches[0];
-    offsetX = touch.clientX - pip.getBoundingClientRect().left;
-    offsetY = touch.clientY - pip.getBoundingClientRect().top;
-    pip.style.transition = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!isDragging) return;
-    var touch = e.touches[0];
-    var parent = pip.parentElement.getBoundingClientRect();
-    var x = touch.clientX - parent.left - offsetX;
-    var y = touch.clientY - parent.top - offsetY;
-
-    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
-    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
-
-    pip.style.left = x + 'px';
-    pip.style.top = y + 'px';
-    pip.style.right = 'auto';
-    pip.style.bottom = 'auto';
-  });
-
-  document.addEventListener('touchend', function() {
-    isDragging = false;
-    pip.style.transition = '';
-  });
-})();
+  if (window.opener) { window.close(); }
+  else { window.location.href = 'mission-control.html'; }
+}
 </script>
 </body>
 </html>
