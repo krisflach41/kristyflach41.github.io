@@ -137,15 +137,15 @@
       top: 100%;
       left: 50%;
       transform: translateX(-50%);
-      padding-top: 8px;
       background: white;
       border: 1px solid rgba(0,0,0,0.08);
       border-radius: 10px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       min-width: 170px;
-      overflow: hidden;
       z-index: 999;
+      padding: 6px 0;
     }
+    .nav-dropdown-menu.open { display: block; }
     .nav-dropdown-menu a {
       display: block;
       padding: 12px 18px;
@@ -157,16 +157,6 @@
       margin: 0;
     }
     .nav-dropdown-menu a:hover { background: #f3f6f9; opacity: 1; }
-    .nav-dropdown:hover .nav-dropdown-menu,
-    .nav-dropdown-menu:hover { display: block; }
-    .nav-dropdown-menu::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 8px;
-    }
 
     .phone-btn {
       margin-right: 10px;
@@ -1801,5 +1791,29 @@
     })();
   </script>
 
+
+<script>
+(function() {
+  var dropdown = document.querySelector('.nav-dropdown');
+  var menu = document.querySelector('.nav-dropdown-menu');
+  if (!dropdown || !menu) return;
+  var hideTimer = null;
+
+  function showMenu() {
+    clearTimeout(hideTimer);
+    menu.classList.add('open');
+  }
+  function hideMenu() {
+    hideTimer = setTimeout(function() {
+      menu.classList.remove('open');
+    }, 300);
+  }
+
+  dropdown.addEventListener('mouseenter', showMenu);
+  dropdown.addEventListener('mouseleave', hideMenu);
+  menu.addEventListener('mouseenter', showMenu);
+  menu.addEventListener('mouseleave', hideMenu);
+})();
+</script>
 </body>
 </html>
