@@ -207,6 +207,8 @@ body {
   <div class="bottom-bar">
     <div class="timer" id="callTimer">00:00</div>
     <button class="change-bg-btn" onclick="toggleBgPicker()">🎨 Background</button>
+    <button class="change-bg-btn" id="recBtn" onclick="toggleRecording()" style="border-color:rgba(239,68,68,0.3);color:rgba(239,68,68,0.7);">⏺ Record</button>
+    <div id="recIndicator" style="display:none;align-items:center;gap:6px;font-size:12px;color:#ef4444;animation:pulse 1.5s ease infinite;"><span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;"></span> REC</div>
     <button class="end-btn" onclick="endCall()">End Call</button>
   </div>
 </div>
@@ -352,7 +354,68 @@ function startTimer() {
   }, 1000);
 }
 
+
+// RECORDING
+var mediaRecorder = null;
+var recordedChunks = [];
+var isRecording = false;
+
+function toggleRecording() {
+  if (!isRecording) { startRecording(); } else { stopRecording(); }
+}
+
+function startRecording() {
+  var container = document.getElementById('callContainer');
+  var stream = null;
+
+  // Capture the call container via canvas stream or display media
+  try {
+    // Capture screen area — prompts user to select the call window/tab
+    navigator.mediaDevices.getDisplayMedia({ video: true, audio: true }).then(function(displayStream) {
+      var chunks = [];
+      var mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' :
+                     MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+      mediaRecorder = new MediaRecorder(displayStream, { mimeType: mimeType });
+      mediaRecorder.ondataavailable = function(e) { if (e.data && e.data.size > 0) chunks.push(e.data); };
+      mediaRecorder.onstop = function() {
+        var blob = new Blob(chunks, { type: mimeType });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        var date = new Date().toISOString().slice(0,10);
+        a.download = 'call-recording-' + date + '.' + (mimeType.indexOf('mp4') > -1 ? 'mp4' : 'webm');
+        document.body.appendChild(a); a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      };
+      // Stop recording if user stops screen share
+      displayStream.getVideoTracks()[0].onended = function() { if (isRecording) stopRecording(); };
+      mediaRecorder.start(1000);
+      isRecording = true;
+      document.getElementById('recBtn').textContent = '⏹ Stop Rec';
+      document.getElementById('recBtn').style.borderColor = '#ef4444';
+      document.getElementById('recBtn').style.color = '#ef4444';
+      document.getElementById('recIndicator').style.display = 'flex';
+    }).catch(function(err) {
+      if (err.name !== 'NotAllowedError') alert('Recording error: ' + err.message);
+    });
+  } catch(e) {
+    alert('Recording not supported in this browser.');
+  }
+}
+
+function stopRecording() {
+  if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if (mediaRecorder && mediaRecorder.stream) mediaRecorder.stream.getTracks().forEach(function(t){ t.stop(); });
+  isRecording = false;
+  document.getElementById('recBtn').textContent = '⏺ Record';
+  document.getElementById('recBtn').style.borderColor = 'rgba(239,68,68,0.3)';
+  document.getElementById('recBtn').style.color = 'rgba(239,68,68,0.7)';
+  document.getElementById('recIndicator').style.display = 'none';
+}
+
 async function endCall() {
+  if (isRecording) stopRecording();
   if (timerInterval) clearInterval(timerInterval);
   if (callFrame) {
     await callFrame.leave();
