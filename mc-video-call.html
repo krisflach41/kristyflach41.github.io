@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Video Call Studio - Agent Edge</title>
+<script src="https://unpkg.com/@daily-co/daily-js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -17,40 +18,70 @@ body {
 }
 
 /* LOBBY */
-.lobby {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 30px;
-}
+.lobby { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 30px; }
 .lobby.hidden { display: none; }
-
 .lobby-card {
   background: rgba(17,24,39,0.92);
   border: 1px solid rgba(110,127,119,0.15);
-  border-radius: 22px;
-  padding: 40px;
-  max-width: 560px;
-  width: 100%;
-  text-align: center;
+  border-radius: 22px; padding: 40px;
+  max-width: 580px; width: 100%; text-align: center;
   backdrop-filter: blur(12px);
   box-shadow: 0 25px 60px rgba(0,0,0,0.4);
 }
-.lobby-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
-  color: #e8dcc8;
-  margin-bottom: 8px;
+.lobby-title { font-family: 'Playfair Display', serif; font-size: 32px; color: #e8dcc8; margin-bottom: 8px; }
+.lobby-subtitle { color: rgba(200,204,212,0.5); font-size: 14px; margin-bottom: 28px; }
+
+/* BG SELECTOR */
+.bg-section {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(110,127,119,0.15);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  text-align: left;
 }
-.lobby-subtitle { color: rgba(200,204,212,0.5); font-size: 14px; margin-bottom: 32px; }
+.bg-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: rgba(200,204,212,0.5); margin-bottom: 12px; }
+.bg-options { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.bg-option {
+  width: 72px; height: 48px; border-radius: 8px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; transition: border-color 0.2s;
+  flex-shrink: 0;
+}
+.bg-option:hover { border-color: rgba(110,127,119,0.5); }
+.bg-option.selected { border-color: #6e7f77; }
+.bg-option img { width: 100%; height: 100%; object-fit: cover; }
+.bg-none {
+  width: 72px; height: 48px; border-radius: 8px;
+  border: 2px solid rgba(110,127,119,0.2); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: rgba(200,204,212,0.4);
+  transition: all 0.2s; flex-shrink: 0;
+}
+.bg-none:hover { border-color: rgba(110,127,119,0.5); }
+.bg-none.selected { border-color: #6e7f77; color: #e8dcc8; }
+.bg-blur {
+  width: 72px; height: 48px; border-radius: 8px;
+  border: 2px solid rgba(110,127,119,0.2); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 3px; font-size: 10px; color: rgba(200,204,212,0.4);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.2s; flex-shrink: 0;
+}
+.bg-blur:hover { border-color: rgba(110,127,119,0.5); }
+.bg-blur.selected { border-color: #6e7f77; color: #e8dcc8; }
+.upload-bg-btn {
+  padding: 8px 14px; border: 1px dashed rgba(110,127,119,0.4);
+  border-radius: 8px; background: transparent; color: rgba(200,204,212,0.5);
+  font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit;
+  white-space: nowrap;
+}
+.upload-bg-btn:hover { border-color: #6e7f77; color: #e8dcc8; }
 
 .start-btn {
   display: block; width: 100%; padding: 16px;
   border: none; border-radius: 12px; background: #6e7f77;
   color: white; font-weight: 700; font-size: 16px;
-  cursor: pointer; transition: all 0.25s ease; font-family: inherit;
+  cursor: pointer; transition: all 0.25s; font-family: inherit;
 }
 .start-btn:hover { background: #556b62; transform: translateY(-1px); }
 .start-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
@@ -60,34 +91,26 @@ body {
 .call-view.active { display: flex; }
 
 .room-banner {
-  display: flex; align-items: center; justify-content: center; gap: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 24px;
   padding: 12px 20px;
   background: rgba(17,24,39,0.95);
   border-bottom: 1px solid rgba(110,127,119,0.15);
   flex-wrap: wrap;
 }
-.banner-label { font-size: 13px; color: rgba(200,204,212,0.5); }
-.room-code {
-  font-family: 'Courier New', monospace;
-  font-size: 28px; font-weight: 700; color: #e8dcc8; letter-spacing: 4px;
-}
-.banner-status { font-size: 13px; color: rgba(200,204,212,0.4); }
+.banner-label { font-size: 11px; color: rgba(200,204,212,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.room-code { font-family: 'Courier New', monospace; font-size: 28px; font-weight: 700; color: #e8dcc8; letter-spacing: 4px; }
+.banner-url { font-size: 13px; color: #e8dcc8; font-weight: 600; }
 .pulse { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #6e7f77; margin-right: 6px; animation: pulse 1.5s ease infinite; }
 @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
 
-.daily-frame {
-  flex: 1;
-  border: none;
-  background: #000;
-  min-height: 0;
-}
+#callContainer { flex: 1; background: #000; min-height: 0; position: relative; }
 
 .bottom-bar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px;
+  padding: 10px 20px;
   background: rgba(17,24,39,0.95);
   border-top: 1px solid rgba(110,127,119,0.1);
-  gap: 12px;
+  gap: 12px; flex-wrap: wrap;
 }
 .timer { font-size: 13px; color: rgba(200,204,212,0.5); font-family: monospace; }
 .end-btn {
@@ -96,6 +119,22 @@ body {
   font-size: 14px; cursor: pointer; transition: background 0.2s;
 }
 .end-btn:hover { background: #dc2626; }
+.change-bg-btn {
+  padding: 8px 14px; border: 1px solid rgba(110,127,119,0.3);
+  border-radius: 8px; background: transparent; color: rgba(200,204,212,0.6);
+  font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: inherit;
+}
+.change-bg-btn:hover { border-color: #6e7f77; color: #e8dcc8; }
+
+/* INLINE BG PICKER (in call) */
+.bg-picker-bar {
+  display: none;
+  align-items: center; gap: 10px; flex-wrap: wrap;
+  padding: 10px 20px;
+  background: rgba(17,24,39,0.95);
+  border-top: 1px solid rgba(110,127,119,0.1);
+}
+.bg-picker-bar.open { display: flex; }
 </style>
 </head>
 <body>
@@ -104,11 +143,33 @@ body {
 <div class="lobby" id="lobby">
   <div class="lobby-card">
     <h1 class="lobby-title">Video Call Studio</h1>
-    <p class="lobby-subtitle">Create a room and share the code with your borrower</p>
-    <button class="start-btn" id="startBtn" onclick="createRoom()">
-      <i style="margin-right:8px;">📹</i> Start Call
-    </button>
-    <p style="margin-top:16px;font-size:12px;color:rgba(200,204,212,0.3);">Powered by Daily.co · Up to 4 hours per session</p>
+    <p class="lobby-subtitle">Choose your background, then start your call</p>
+
+    <div class="bg-section">
+      <div class="bg-section-title">Virtual Background</div>
+      <div class="bg-options" id="bgOptions">
+        <div class="bg-none selected" id="bgNone" onclick="selectBg('none')">None</div>
+        <div class="bg-blur" id="bgBlur" onclick="selectBg('blur')">
+          <span style="font-size:18px;">⬜</span>Blur
+        </div>
+        <div class="bg-option selected" id="bgDefault" onclick="selectBg('default')" style="border-color:#6e7f77;">
+          <img src="video-background.jpg" alt="Default background">
+        </div>
+        <button class="upload-bg-btn" onclick="document.getElementById('bgUpload').click()">+ Upload Image</button>
+        <input type="file" id="bgUpload" accept="image/*" style="display:none;" onchange="handleBgUpload(this)">
+      </div>
+      <div id="uploadedBgWrap" style="display:none;margin-top:10px;">
+        <div class="bg-options">
+          <div class="bg-option" id="bgUploaded" onclick="selectBg('uploaded')">
+            <img id="uploadedBgImg" src="" alt="Custom background">
+          </div>
+          <span style="font-size:12px;color:rgba(200,204,212,0.4);">Custom image ready</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn" onclick="createRoom()">📹 Start Call</button>
+    <p style="margin-top:14px;font-size:12px;color:rgba(200,204,212,0.25);">Powered by Daily.co · Up to 4 hours per session</p>
   </div>
 </div>
 
@@ -121,28 +182,85 @@ body {
     </div>
     <div>
       <div class="banner-label">Borrower joins at</div>
-      <div style="font-size:13px;color:#e8dcc8;font-weight:600;">kristyflach.com/video-room.html</div>
+      <div class="banner-url">kristyflach.com/video-room.html</div>
     </div>
-    <div class="banner-status">
-      <span class="pulse" id="statusPulse"></span>
-      <span id="statusText">Waiting for borrower...</span>
+    <div>
+      <span class="pulse"></span>
+      <span id="statusText" style="font-size:13px;color:rgba(200,204,212,0.4);">Waiting for borrower...</span>
     </div>
   </div>
 
-  <iframe id="dailyFrame" class="daily-frame" allow="camera; microphone; fullscreen; display-capture; autoplay" allowfullscreen></iframe>
+  <div id="callContainer"></div>
+
+  <div class="bg-picker-bar" id="bgPickerBar">
+    <span style="font-size:12px;color:rgba(200,204,212,0.4);">Background:</span>
+    <div class="bg-none" id="inCallBgNone" onclick="changeCallBg('none')">None</div>
+    <div class="bg-blur" id="inCallBgBlur" onclick="changeCallBg('blur')">⬜ Blur</div>
+    <div class="bg-option" id="inCallBgDefault" onclick="changeCallBg('default')" style="width:56px;height:38px;">
+      <img src="video-background.jpg" alt="Default">
+    </div>
+    <button class="upload-bg-btn" onclick="document.getElementById('bgUploadCall').click()">+ Upload</button>
+    <input type="file" id="bgUploadCall" accept="image/*" style="display:none;" onchange="handleCallBgUpload(this)">
+    <button class="upload-bg-btn" onclick="closeBgPicker()" style="margin-left:auto;">Done</button>
+  </div>
 
   <div class="bottom-bar">
     <div class="timer" id="callTimer">00:00</div>
+    <button class="change-bg-btn" onclick="toggleBgPicker()">🎨 Background</button>
     <button class="end-btn" onclick="endCall()">End Call</button>
   </div>
 </div>
 
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
+var callFrame = null;
 var roomCode = null;
 var roomName = null;
 var timerInterval = null;
 var callStart = null;
+var selectedBg = 'default'; // default to custom background
+var uploadedBgUrl = null;
+var uploadedCallBgUrl = null;
+
+// BG SELECTION (lobby)
+function selectBg(type) {
+  selectedBg = type;
+  document.getElementById('bgNone').classList.toggle('selected', type === 'none');
+  document.getElementById('bgBlur').classList.toggle('selected', type === 'blur');
+  document.getElementById('bgDefault').classList.toggle('selected', type === 'default');
+  var uploaded = document.getElementById('bgUploaded');
+  if (uploaded) uploaded.classList.toggle('selected', type === 'uploaded');
+}
+
+// Pre-select default on load
+selectBg('default');
+
+function handleBgUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var url = URL.createObjectURL(file);
+  uploadedBgUrl = url;
+  document.getElementById('uploadedBgImg').src = url;
+  document.getElementById('uploadedBgWrap').style.display = 'block';
+  selectBg('uploaded');
+}
+
+async function applyBackground(frame, type, customUrl) {
+  try {
+    if (type === 'none') {
+      await frame.updateInputSettings({ video: { processor: { type: 'none' } } });
+    } else if (type === 'blur') {
+      await frame.updateInputSettings({ video: { processor: { type: 'background-blur', config: { strength: 0.5 } } } });
+    } else if (type === 'default') {
+      var imgUrl = window.location.origin + '/video-background.jpg';
+      await frame.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: imgUrl } } } });
+    } else if (type === 'uploaded' && customUrl) {
+      await frame.updateInputSettings({ video: { processor: { type: 'background-image', config: { source: customUrl } } } });
+    }
+  } catch (e) {
+    console.warn('Background apply failed (may not be supported in this browser):', e);
+  }
+}
 
 async function createRoom() {
   var btn = document.getElementById('startBtn');
@@ -162,18 +280,66 @@ async function createRoom() {
     roomName = data.room_name;
 
     document.getElementById('roomCodeDisplay').textContent = roomCode;
-    document.getElementById('dailyFrame').src = data.room_url;
-
     document.getElementById('lobby').classList.add('hidden');
     document.getElementById('callView').classList.add('active');
 
-    startTimer();
+    // Build Daily call frame
+    callFrame = window.DailyIframe.createFrame(
+      document.getElementById('callContainer'),
+      {
+        iframeStyle: { width: '100%', height: '100%', border: 'none' },
+        showLeaveButton: false,
+        showFullscreenButton: true
+      }
+    );
+
+    callFrame.on('joined-meeting', async function() {
+      startTimer();
+      // Apply selected background after joining
+      await applyBackground(callFrame, selectedBg, uploadedBgUrl);
+    });
+
+    callFrame.on('participant-joined', function(e) {
+      if (!e.participant.local) {
+        document.getElementById('statusText').textContent = 'Borrower connected';
+      }
+    });
+
+    callFrame.on('participant-left', function(e) {
+      if (!e.participant.local) {
+        document.getElementById('statusText').textContent = 'Borrower left the call';
+      }
+    });
+
+    await callFrame.join({ url: data.room_url });
 
   } catch (err) {
     alert('Error: ' + err.message);
     btn.disabled = false;
-    btn.textContent = 'Start Call';
+    btn.textContent = '📹 Start Call';
+    document.getElementById('lobby').classList.remove('hidden');
+    document.getElementById('callView').classList.remove('active');
   }
+}
+
+// IN-CALL BACKGROUND CONTROLS
+function toggleBgPicker() {
+  document.getElementById('bgPickerBar').classList.toggle('open');
+}
+function closeBgPicker() {
+  document.getElementById('bgPickerBar').classList.remove('open');
+}
+
+async function changeCallBg(type) {
+  if (!callFrame) return;
+  await applyBackground(callFrame, type, uploadedCallBgUrl || uploadedBgUrl);
+}
+
+function handleCallBgUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var url = URL.createObjectURL(input.files[0]);
+  uploadedCallBgUrl = url;
+  changeCallBg('uploaded');
 }
 
 function startTimer() {
@@ -188,8 +354,11 @@ function startTimer() {
 
 async function endCall() {
   if (timerInterval) clearInterval(timerInterval);
-  document.getElementById('dailyFrame').src = '';
-
+  if (callFrame) {
+    await callFrame.leave();
+    callFrame.destroy();
+    callFrame = null;
+  }
   try {
     await fetch(API_BASE, {
       method: 'POST',
