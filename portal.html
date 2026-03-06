@@ -679,22 +679,29 @@ h1 {
 
 <div class="rate-ticker">
   <div class="ticker-track">
-    <div class="ticker-line">
-      <span>30-Year 6.22%</span>
-      <span>FHA 6.076%</span>
-      <span>VA 5.825%</span>
-      <span>Jumbo 6.308%</span>
-      <span>15-Year 5.8%</span>
-    </div>
-    <div class="ticker-line">
-      <span>30-Year 6.22%</span>
-      <span>FHA 6.076%</span>
-      <span>VA 5.825%</span>
-      <span>Jumbo 6.308%</span>
-      <span>15-Year 5.8%</span>
-    </div>
+    <div class="ticker-line" id="portalTickerLine1"><span>Loading rates...</span></div>
+    <div class="ticker-line" id="portalTickerLine2"><span>Loading rates...</span></div>
   </div>
 </div>
+<script>
+(function() {
+  fetch('https://agent-edge-backend.vercel.app/api/rates')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.rates) return;
+      var r = data.rates;
+      var html = '';
+      if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
+      if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
+      if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
+      if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
+      if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
+      document.getElementById('portalTickerLine1').innerHTML = html;
+      document.getElementById('portalTickerLine2').innerHTML = html;
+    })
+    .catch(function(err) { console.error('Rate fetch error:', err); });
+})();
+</script>
 
 <div class="page-wrap">
 <section class="blog-section">
