@@ -3,327 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Join Video Call - Agent Edge</title>
+<title>Join Video Call - Kristy Flach</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap');
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
-
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center / cover no-repeat fixed;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center/cover no-repeat fixed;
   color: #0b1f3a;
   min-height: 100vh;
-}
-
-/* ===== JOIN LOBBY ===== */
-.join-lobby {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 40px 20px;
 }
 
+/* JOIN LOBBY */
+.join-lobby {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; padding: 40px 20px;
+}
+.join-lobby.hidden { display: none; }
+
 .join-card {
-  background: rgba(255,255,255,0.65);
+  background: rgba(255,255,255,0.75);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255,255,255,0.7);
-  border-radius: 22px;
-  padding: 50px;
-  max-width: 480px;
-  width: 100%;
-  text-align: center;
+  border-radius: 22px; padding: 50px;
+  max-width: 460px; width: 100%; text-align: center;
   box-shadow: 0 20px 55px rgba(0,0,0,0.1);
 }
 
 .join-logo {
   font-family: 'Playfair Display', serif;
-  font-size: 14px;
-  color: #6e7f77;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  margin-bottom: 30px;
+  font-size: 13px; color: #6e7f77;
+  text-transform: uppercase; letter-spacing: 3px; margin-bottom: 28px;
 }
+.join-title { font-family: 'Playfair Display', serif; font-size: 28px; color: #002556; margin-bottom: 8px; }
+.join-subtitle { color: #666; font-size: 14px; margin-bottom: 30px; }
 
-.join-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
-  color: #002556;
-  margin-bottom: 8px;
+.name-input, .code-input {
+  width: 100%; padding: 14px 16px;
+  border: 1px solid rgba(110,127,119,0.25);
+  border-radius: 10px; font-size: 15px;
+  color: #002556; background: rgba(255,255,255,0.85);
+  font-family: inherit; margin-bottom: 14px;
+  transition: border-color 0.2s;
 }
-
-.join-subtitle {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 30px;
-}
-
-.code-input-wrap { margin-bottom: 20px; }
+.name-input:focus, .code-input:focus { outline: none; border-color: #6e7f77; }
 
 .code-input {
-  width: 100%;
-  padding: 16px;
-  border: 2px solid rgba(110,127,119,0.25);
-  border-radius: 12px;
-  font-size: 24px;
   font-family: 'Courier New', monospace;
-  font-weight: 700;
-  text-align: center;
-  letter-spacing: 4px;
-  color: #002556;
-  background: rgba(255,255,255,0.8);
-  transition: border-color 0.25s ease;
+  font-size: 28px; font-weight: 700;
+  text-align: center; letter-spacing: 6px;
 }
-
-.code-input:focus {
-  outline: none;
-  border-color: #6e7f77;
-  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
-}
-
 .code-input::placeholder { color: #bbb; font-size: 16px; letter-spacing: 1px; }
 
 .join-btn {
-  display: block;
-  width: 100%;
-  padding: 16px;
-  border: none;
-  border-radius: 12px;
-  background: #6e7f77;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  font-family: inherit;
+  display: block; width: 100%; padding: 16px;
+  border: none; border-radius: 12px; background: #6e7f77;
+  color: white; font-weight: 700; font-size: 16px;
+  cursor: pointer; transition: all 0.25s; font-family: inherit;
 }
-
 .join-btn:hover { background: #556b62; }
 .join-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .join-error { color: #ef4444; font-size: 13px; margin-top: 12px; display: none; }
 .join-error.show { display: block; }
 
-.preview-small {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #000;
-  margin-bottom: 20px;
-  border: 1px solid rgba(110,127,119,0.15);
-}
-
-.preview-small video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scaleX(-1);
-}
-
-.name-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid rgba(110,127,119,0.2);
-  border-radius: 10px;
-  font-size: 15px;
-  color: #002556;
-  background: rgba(255,255,255,0.8);
-  margin-bottom: 15px;
-  font-family: inherit;
-}
-
-.name-input:focus { outline: none; border-color: #6e7f77; }
-
-/* ===== IN-CALL VIEW ===== */
-.call-active {
-  display: none;
-  height: 100vh;
-  flex-direction: column;
-  background: #0a0f1a;
-}
-
-.call-active.active { display: flex; }
-.join-lobby.hidden { display: none; }
+/* CALL VIEW */
+.call-view { display: none; flex-direction: column; height: 100vh; }
+.call-view.active { display: flex; }
 
 .call-header {
-  text-align: center;
-  padding: 10px;
-  background: rgba(17,24,39,0.95);
-  color: rgba(200,204,212,0.6);
+  text-align: center; padding: 10px;
+  background: #0b1f3a; color: rgba(200,204,212,0.7);
   font-size: 13px;
-  border-bottom: 1px solid rgba(110,127,119,0.1);
 }
-
 .call-header strong { color: #e8dcc8; }
 
-.vid-area {
-  flex: 1;
-  position: relative;
-  background: #000;
-  min-height: 0;
+.daily-frame { flex: 1; border: none; background: #000; min-height: 0; }
+
+.leave-bar {
+  display: flex; justify-content: center;
+  padding: 12px; background: #0b1f3a;
+  border-top: 1px solid rgba(110,127,119,0.1);
 }
-
-.remote-wrap { width: 100%; height: 100%; }
-
-.remote-wrap video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #0a0f1a;
+.leave-btn {
+  padding: 10px 32px; border: none; border-radius: 20px;
+  background: #ef4444; color: white; font-weight: 700;
+  font-size: 14px; cursor: pointer;
 }
-
-.pip-box {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 180px;
-  aspect-ratio: 16/9;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 2px solid rgba(110,127,119,0.4);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-  cursor: grab;
-  z-index: 10;
-  background: #111;
-}
-
-.pip-box:active { cursor: grabbing; }
-.pip-box video { width: 100%; height: 100%; object-fit: cover; }
-.pip-box .me { transform: scaleX(-1); }
-
-.pip-lbl {
-  position: absolute;
-  bottom: 6px;
-  left: 6px;
-  background: rgba(0,0,0,0.6);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 10px;
-  color: white;
-}
-
-.controls-bar {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 18px;
-  background: rgba(17,24,39,0.95);
-}
-
-.ctl-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
-  cursor: pointer;
-  font-size: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  color: white;
-  background: rgba(110,127,119,0.2);
-}
-
-.ctl-btn:hover { background: rgba(110,127,119,0.35); }
-.ctl-btn.muted { background: rgba(239,68,68,0.3); color: #ef4444; }
-.ctl-btn.leave { background: #ef4444; width: 64px; border-radius: 26px; font-size: 14px; font-weight: 700; }
-.ctl-btn.leave:hover { background: #dc2626; }
-.ctl-btn.screen-share.active { background: #6e7f77; }
-.ctl-btn.disabled-by-host { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
-
-@media (max-width: 768px) {
-  .join-card { padding: 30px 22px; }
-  .pip-box { width: 120px; bottom: 10px; right: 10px; }
-}
+.leave-btn:hover { background: #dc2626; }
 </style>
 </head>
 <body>
 
-<!-- ===== JOIN LOBBY ===== -->
+<!-- JOIN LOBBY -->
 <div class="join-lobby" id="joinLobby">
   <div class="join-card">
-    <div class="join-logo">Agent Edge</div>
+    <div class="join-logo">Kristy Flach · Agent Edge</div>
     <h1 class="join-title">Join Video Call</h1>
-    <p class="join-subtitle">Enter the room code your loan officer gave you</p>
-
-    <div class="preview-small">
-      <video id="previewVid" autoplay muted playsinline></video>
-    </div>
+    <p class="join-subtitle">Enter your name and the 5-digit code your loan officer gave you</p>
 
     <input type="text" class="name-input" id="borrowerName" placeholder="Your name">
 
-    <div class="code-input-wrap">
-      <input type="text" class="code-input" id="codeInput" placeholder="00000" maxlength="5" autocomplete="off" inputmode="numeric">
-    </div>
+    <input type="text" class="code-input" id="codeInput" placeholder="00000" maxlength="5" inputmode="numeric" autocomplete="off">
 
     <button class="join-btn" id="joinBtn" onclick="joinRoom()">Join Call</button>
     <div class="join-error" id="joinError"></div>
-    <a href="index.html" style="display:inline-block;margin-top:16px;font-size:13px;color:#6e7f77;text-decoration:none;font-weight:600;">Back to Main Website</a>
+
+    <a href="index.html" style="display:inline-block;margin-top:20px;font-size:13px;color:#6e7f77;text-decoration:none;font-weight:600;">← Back to Main Website</a>
   </div>
 </div>
 
-<!-- ===== IN-CALL ===== -->
-<div class="call-active" id="callActive">
+<!-- CALL VIEW -->
+<div class="call-view" id="callView">
   <div class="call-header">
-    Connected with <strong id="loNameDisplay">your loan officer</strong>
+    Connected with <strong id="loNameDisplay">your loan officer</strong> &nbsp;·&nbsp; To leave, click the button below
   </div>
-
-  <div class="vid-area" id="vidArea">
-    <div class="remote-wrap">
-      <video id="remoteVid" autoplay playsinline></video>
-    </div>
-    <div class="pip-box" id="pipBox">
-      <video id="localVid" autoplay muted playsinline class="me"></video>
-      <div class="pip-lbl" id="myLabel">You</div>
-    </div>
-  </div>
-
-  <div class="controls-bar">
-    <button class="ctl-btn" id="bMic" onclick="bToggleMic()" title="Mute">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-    </button>
-    <button class="ctl-btn" id="bCam" onclick="bToggleCam()" title="Camera">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
-    </button>
-    <button class="ctl-btn screen-share" id="bScreen" onclick="bToggleScreen()" title="Share Screen">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-    </button>
-    <button class="ctl-btn leave" onclick="leaveCall()">LEAVE</button>
+  <iframe id="dailyFrame" class="daily-frame" allow="camera; microphone; fullscreen; display-capture; autoplay" allowfullscreen></iframe>
+  <div class="leave-bar">
+    <button class="leave-btn" onclick="leaveCall()">Leave Call</button>
   </div>
 </div>
 
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api/video-call';
-var roomCode = null;
-var localStream = null;
-var screenStream = null;
-var peerConnection = null;
-var pollInterval = null;
-var lastSignalTime = '2000-01-01T00:00:00Z';
-var bMuted = false;
-var bCamOff = false;
-var bScreenSharing = false;
-var screenShareAllowed = true;
-
-var iceServers = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'stun:stun2.l.google.com:19302' }
-];
-
-async function initCam() {
-  try {
-    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    document.getElementById('previewVid').srcObject = localStream;
-  } catch (err) { console.error('Camera error:', err); }
-}
 
 document.getElementById('codeInput').addEventListener('input', function(e) {
   e.target.value = e.target.value.replace(/[^0-9]/g, '');
@@ -335,8 +141,8 @@ async function joinRoom() {
   var errEl = document.getElementById('joinError');
   errEl.classList.remove('show');
 
-  if (!code || code.length < 5) {
-    errEl.textContent = 'Please enter the 5-digit room code';
+  if (code.length < 5) {
+    errEl.textContent = 'Please enter the 5-digit room code.';
     errEl.classList.add('show');
     return;
   }
@@ -346,7 +152,7 @@ async function joinRoom() {
   btn.textContent = 'Joining...';
 
   try {
-    var resp = await fetch(API_BASE + '?action=join-room', {
+    var resp = await fetch(API_BASE, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'join-room', room_code: code })
@@ -354,23 +160,18 @@ async function joinRoom() {
     var data = await resp.json();
 
     if (!data.success) {
-      errEl.textContent = data.message || 'Room not found. Check the code and try again.';
+      errEl.textContent = data.message || 'Room not found. Check your code and try again.';
       errEl.classList.add('show');
       btn.disabled = false;
       btn.textContent = 'Join Call';
       return;
     }
 
-    roomCode = code;
-    document.getElementById('loNameDisplay').textContent = data.room.lo_name;
-    document.getElementById('myLabel').textContent = name;
+    document.getElementById('loNameDisplay').textContent = data.lo_name || 'your loan officer';
+    document.getElementById('dailyFrame').src = data.room_url;
 
     document.getElementById('joinLobby').classList.add('hidden');
-    document.getElementById('callActive').classList.add('active');
-    document.getElementById('localVid').srcObject = localStream;
-
-    await sendSignal('join', { name: name });
-    startPolling();
+    document.getElementById('callView').classList.add('active');
 
   } catch (err) {
     errEl.textContent = 'Connection error. Please try again.';
@@ -380,209 +181,19 @@ async function joinRoom() {
   }
 }
 
-function startPolling() {
-  pollInterval = setInterval(async function() {
-    try {
-      var resp = await fetch(API_BASE + '?action=poll-signals&room_code=' + encodeURIComponent(roomCode) + '&for_user=borrower&after=' + encodeURIComponent(lastSignalTime));
-      var data = await resp.json();
-      if (data.success && data.signals.length > 0) {
-        for (var i = 0; i < data.signals.length; i++) {
-          await handleSignal(data.signals[i]);
-          lastSignalTime = data.signals[i].created_at;
-        }
-      }
-    } catch (err) { console.error('Poll error:', err); }
-  }, 1500);
-}
-
-async function handleSignal(signal) {
-  var sigData = JSON.parse(signal.signal_data);
-
-  if (signal.signal_type === 'offer') {
-    await setupPeer();
-    await peerConnection.setRemoteDescription(new RTCSessionDescription(sigData));
-    var answer = await peerConnection.createAnswer();
-    await peerConnection.setLocalDescription(answer);
-    await sendSignal('answer', answer);
-  }
-
-  if (signal.signal_type === 'ice-candidate') {
-    if (peerConnection) {
-      try { await peerConnection.addIceCandidate(new RTCIceCandidate(sigData)); }
-      catch (e) { console.log('ICE error:', e); }
-    }
-  }
-
-  if (signal.signal_type === 'screen-share-permission') {
-    screenShareAllowed = sigData.allowed;
-    var btn = document.getElementById('bScreen');
-    if (!screenShareAllowed) {
-      btn.classList.add('disabled-by-host');
-      btn.title = 'Screen sharing disabled by host';
-      if (bScreenSharing) bStopScreen();
-    } else {
-      btn.classList.remove('disabled-by-host');
-      btn.title = 'Share Screen';
-    }
-  }
-}
-
-async function setupPeer() {
-  peerConnection = new RTCPeerConnection({ iceServers: iceServers });
-
-  localStream.getTracks().forEach(function(track) {
-    peerConnection.addTrack(track, localStream);
-  });
-
-  peerConnection.onicecandidate = function(event) {
-    if (event.candidate) sendSignal('ice-candidate', event.candidate.toJSON());
-  };
-
-  peerConnection.ontrack = function(event) {
-    var rv = document.getElementById('remoteVid');
-    if (rv.srcObject !== event.streams[0]) {
-      rv.srcObject = event.streams[0];
-    }
-  };
-}
-
-async function sendSignal(type, data) {
-  try {
-    await fetch(API_BASE + '?action=signal', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'signal', room_code: roomCode, signal_type: type, signal_data: data, sender: 'borrower' })
-    });
-  } catch (err) { console.error('Signal error:', err); }
-}
-
-function bToggleMic() {
-  bMuted = !bMuted;
-  localStream.getAudioTracks().forEach(function(t) { t.enabled = !bMuted; });
-  document.getElementById('bMic').classList.toggle('muted', bMuted);
-}
-
-function bToggleCam() {
-  bCamOff = !bCamOff;
-  localStream.getVideoTracks().forEach(function(t) { t.enabled = !bCamOff; });
-  document.getElementById('bCam').classList.toggle('muted', bCamOff);
-}
-
-async function bToggleScreen() {
-  if (!screenShareAllowed) return;
-  if (!bScreenSharing) {
-    try {
-      screenStream = await navigator.mediaDevices.getDisplayMedia({
-        video: { displaySurface: 'monitor' },
-        audio: false,
-        selfBrowserSurface: 'exclude',
-        surfaceSwitching: 'exclude'
-      });
-      var screenTrack = screenStream.getVideoTracks()[0];
-      if (peerConnection) {
-        var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
-        if (sender) sender.replaceTrack(screenTrack);
-      }
-
-      // Don't change local display - borrower already sees their own screen
-      document.getElementById('bScreen').classList.add('active');
-      bScreenSharing = true;
-      screenTrack.onended = function() { bStopScreen(); };
-    } catch (err) { console.log('Screen share cancelled'); }
-  } else {
-    bStopScreen();
-  }
-}
-
-function bStopScreen() {
-  if (screenStream) {
-    screenStream.getTracks().forEach(function(t) { t.stop(); });
-    screenStream = null;
-  }
-
-  var camTrack = localStream.getVideoTracks()[0];
-  if (peerConnection && camTrack) {
-    var sender = peerConnection.getSenders().find(function(s) { return s.track && s.track.kind === 'video'; });
-    if (sender) sender.replaceTrack(camTrack);
-  }
-
-  document.getElementById('bScreen').classList.remove('active');
-  bScreenSharing = false;
-}
-
 function leaveCall() {
-  if (pollInterval) clearInterval(pollInterval);
-  if (peerConnection) { peerConnection.close(); peerConnection = null; }
-  if (localStream) localStream.getTracks().forEach(function(t) { t.stop(); });
-  if (screenStream) screenStream.getTracks().forEach(function(t) { t.stop(); });
-
-  document.getElementById('callActive').classList.remove('active');
+  document.getElementById('dailyFrame').src = '';
+  document.getElementById('callView').classList.remove('active');
   document.getElementById('joinLobby').classList.remove('hidden');
 
   var card = document.querySelector('.join-card');
-  card.innerHTML = '<div class="join-logo">Agent Edge</div>' +
+  card.innerHTML =
+    '<div class="join-logo">Kristy Flach · Agent Edge</div>' +
     '<h1 class="join-title">Call Ended</h1>' +
-    '<p class="join-subtitle" style="margin-bottom:30px;">Thank you for connecting with your loan officer.</p>' +
+    '<p class="join-subtitle" style="margin-bottom:30px;">Thank you for connecting with Kristy.</p>' +
     '<a href="index.html" class="join-btn" style="display:block;text-align:center;text-decoration:none;">Back to Main Website</a>' +
     '<button class="join-btn" onclick="location.reload()" style="background:transparent;color:#6e7f77;border:2px solid #6e7f77;margin-top:10px;">Rejoin a Call</button>';
 }
-
-initCam();
-
-// ===== DRAGGABLE PIP =====
-(function() {
-  var pip = document.getElementById('pipBox');
-  var isDragging = false;
-  var offsetX, offsetY;
-
-  pip.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    offsetX = e.clientX - pip.getBoundingClientRect().left;
-    offsetY = e.clientY - pip.getBoundingClientRect().top;
-    pip.style.transition = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!isDragging) return;
-    var parent = document.getElementById('vidArea').getBoundingClientRect();
-    var x = e.clientX - parent.left - offsetX;
-    var y = e.clientY - parent.top - offsetY;
-    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
-    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
-    pip.style.left = x + 'px';
-    pip.style.top = y + 'px';
-    pip.style.right = 'auto';
-    pip.style.bottom = 'auto';
-  });
-
-  document.addEventListener('mouseup', function() { isDragging = false; pip.style.transition = ''; });
-
-  pip.addEventListener('touchstart', function(e) {
-    isDragging = true;
-    var touch = e.touches[0];
-    offsetX = touch.clientX - pip.getBoundingClientRect().left;
-    offsetY = touch.clientY - pip.getBoundingClientRect().top;
-    pip.style.transition = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!isDragging) return;
-    var touch = e.touches[0];
-    var parent = document.getElementById('vidArea').getBoundingClientRect();
-    var x = touch.clientX - parent.left - offsetX;
-    var y = touch.clientY - parent.top - offsetY;
-    x = Math.max(0, Math.min(x, parent.width - pip.offsetWidth));
-    y = Math.max(0, Math.min(y, parent.height - pip.offsetHeight));
-    pip.style.left = x + 'px';
-    pip.style.top = y + 'px';
-    pip.style.right = 'auto';
-    pip.style.bottom = 'auto';
-  });
-
-  document.addEventListener('touchend', function() { isDragging = false; pip.style.transition = ''; });
-})();
 </script>
 </body>
 </html>
