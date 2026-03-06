@@ -134,9 +134,10 @@
     .nav-dropdown-menu {
       display: none;
       position: absolute;
-      top: calc(100% + 8px);
+      top: 100%;
       left: 50%;
       transform: translateX(-50%);
+      padding-top: 8px;
       background: white;
       border: 1px solid rgba(0,0,0,0.08);
       border-radius: 10px;
@@ -158,6 +159,14 @@
     .nav-dropdown-menu a:hover { background: #f3f6f9; opacity: 1; }
     .nav-dropdown:hover .nav-dropdown-menu,
     .nav-dropdown-menu:hover { display: block; }
+    .nav-dropdown-menu::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 8px;
+    }
 
     .phone-btn {
       margin-right: 10px;
