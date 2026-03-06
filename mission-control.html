@@ -2562,21 +2562,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;"></div>
     </div>
 
-    <!-- CARD: Blog Management -->
-    <div class="um-card">
-      <div class="um-card-header">
-        <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
-        <div class="um-card-title">Blog Management</div>
-      </div>
-      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
-      <div style="display:flex;gap:10px;margin-bottom:16px;">
-        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
-      </div>
-      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
-        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
-      </div>
-    </div>
-
     <!-- CARD: Import Contacts -->
     <div class="um-card">
       <div class="um-card-header">
@@ -2594,6 +2579,21 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </a>
       </div>
       <div id="importStatus" style="margin-top:12px;display:none;"></div>
+    </div>
+
+    <!-- CARD: Blog Management -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
+        <div class="um-card-title">Blog Management</div>
+      </div>
+      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
+      </div>
+      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
+      </div>
     </div>
 
     <!-- CARD: Video Call Studio -->
