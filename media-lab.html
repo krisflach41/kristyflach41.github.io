@@ -77,7 +77,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .camera-feed{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block;}
 .camera-offline{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:rgba(255,255,255,0.3);}
 .camera-offline i{font-size:40px;}
-.teleprompter-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.85));padding:20px 24px 16px;display:none;}
+.teleprompter-overlay{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.82);padding:0;display:none;border-radius:8px;border:1px solid rgba(255,255,255,0.15);overflow:hidden;resize:both;min-width:200px;min-height:80px;cursor:default;}
+.tp-drag-handle{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:rgba(255,255,255,0.08);cursor:grab;user-select:none;border-bottom:1px solid rgba(255,255,255,0.1);}
+.tp-drag-handle:active{cursor:grabbing;}
+.tp-drag-label{font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1px;}
+.tp-drag-dots{font-size:12px;color:rgba(255,255,255,0.3);}
+.tp-inner{padding:14px 18px 14px;overflow:hidden;height:calc(100% - 30px);}
 .teleprompter-text{color:white;font-size:18px;line-height:1.6;max-height:160px;overflow:hidden;}
 .rec-indicator{position:absolute;top:14px;left:14px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.6);padding:5px 10px;border-radius:20px;display:none;}
 .rec-dot{width:9px;height:9px;border-radius:50%;background:#ef4444;animation:recPulse 1s ease infinite;}
@@ -240,8 +245,14 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <i class="fas fa-video-slash"></i>
           <span style="font-size:13px;">Camera off</span>
         </div>
-        <div class="teleprompter-overlay" id="tpOverlay">
-          <div class="teleprompter-text" id="tpDisplay"></div>
+        <div class="teleprompter-overlay" id="tpOverlay" style="width:100%;bottom:0;left:0;">
+          <div class="tp-drag-handle" id="tpDragHandle">
+            <span class="tp-drag-label">&#9654; Teleprompter — drag to move</span>
+            <span class="tp-drag-dots">&#8942;</span>
+          </div>
+          <div class="tp-inner">
+            <div class="teleprompter-text" id="tpDisplay"></div>
+          </div>
         </div>
         <div class="rec-indicator" id="recIndicator" style="display:none;">
           <div class="rec-dot"></div>
@@ -1322,6 +1333,40 @@ function showStatus(el, msg, type) {
   el.className = 'status-msg show ' + type;
   setTimeout(function(){el.classList.remove('show');}, 8000);
 }
+
+// ===== TELEPROMPTER DRAG =====
+(function() {
+  var overlay, handle, isDragging = false, startX, startY, startLeft, startTop;
+  function initTpDrag() {
+    overlay = document.getElementById('tpOverlay');
+    handle = document.getElementById('tpDragHandle');
+    handle.addEventListener('mousedown', function(e) {
+      isDragging = true;
+      var rect = overlay.getBoundingClientRect();
+      var stage = document.getElementById('cameraWrap').getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left - stage.left;
+      startTop = rect.top - stage.top;
+      overlay.style.bottom = 'auto';
+      overlay.style.right = 'auto';
+      overlay.style.left = startLeft + 'px';
+      overlay.style.top = startTop + 'px';
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      var stage = document.getElementById('cameraWrap').getBoundingClientRect();
+      var newLeft = Math.max(0, Math.min(startLeft + (e.clientX - startX), stage.width - overlay.offsetWidth));
+      var newTop = Math.max(0, Math.min(startTop + (e.clientY - startY), stage.height - overlay.offsetHeight));
+      overlay.style.left = newLeft + 'px';
+      overlay.style.top = newTop + 'px';
+    });
+    document.addEventListener('mouseup', function() { isDragging = false; });
+  }
+  document.addEventListener('DOMContentLoaded', initTpDrag);
+  setTimeout(initTpDrag, 500);
+})();
 
 // ===== DRAG & DROP UPLOAD =====
 var uploadFile = null;
