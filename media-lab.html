@@ -345,8 +345,8 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;padding:12px;background:var(--bg-deep);border-radius:8px;border:1px solid var(--border);">
           <div style="display:flex;align-items:center;gap:8px;">
             <label class="form-label" style="min-width:60px;">Speed</label>
-            <input type="range" id="tpSpeed" min="1" max="10" value="3" oninput="updateTpSpeed()" style="flex:1;">
-            <span style="font-size:12px;color:var(--text-muted);min-width:20px;text-align:right;" id="tpSpeedLabel">3</span>
+            <input type="range" id="tpSpeed" min="1" max="20" value="5" step="1" oninput="updateTpSpeed()" style="flex:1;">
+            <span style="font-size:12px;color:var(--text-muted);min-width:20px;text-align:right;" id="tpSpeedLabel">5</span>
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <label class="form-label" style="min-width:60px;">Spacing</label>
@@ -1047,12 +1047,16 @@ function toggleTeleprompter() {
     overlay.style.display = 'block';
     btn.innerHTML = '<i class="fas fa-stop"></i> Stop Teleprompter';
     btn.classList.add('primary');
-    startTpScroll();
+    startCountdown(5, function() {
+      if (tpRunning) startTpScroll();
+    });
   } else {
     overlay.style.display = 'none';
     btn.innerHTML = '<i class="fas fa-scroll"></i> Teleprompter';
     btn.classList.remove('primary');
     stopTpScroll();
+    clearCountdown();
+  }
   }
 }
 
@@ -1078,7 +1082,7 @@ function startTpScroll() {
   var display = document.getElementById('tpDisplay');
   if (!display) return;
   var speed = parseInt(document.getElementById('tpSpeed').value);
-  var pixelsPerSecond = speed * 20;
+  var pixelsPerSecond = speed * 5; // 1=5px/s (very slow) ... 20=100px/s (fast)
   var pos = 0;
   var lastTime = null;
 
@@ -1094,12 +1098,48 @@ function startTpScroll() {
   tpAnimFrame = requestAnimationFrame(step);
 }
 
+var countdownInterval = null;
+
+function startCountdown(seconds, callback) {
+  clearCountdown();
+  var display = document.getElementById('tpDisplay');
+  var remaining = seconds;
+
+  // Show countdown overlay on camera
+  var countEl = document.getElementById('tpCountdown');
+  if (!countEl) {
+    countEl = document.createElement('div');
+    countEl.id = 'tpCountdown';
+    countEl.style.cssText = 'position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:20;pointer-events:none;';
+    document.getElementById('cameraWrap').appendChild(countEl);
+  }
+
+  function tick() {
+    countEl.innerHTML = '<div style="font-size:120px;font-weight:700;color:white;text-shadow:0 0 40px rgba(0,0,0,0.8);opacity:0.9;line-height:1;">' + remaining + '</div>';
+    if (remaining <= 0) {
+      clearCountdown();
+      callback();
+    } else {
+      remaining--;
+      countdownInterval = setTimeout(tick, 1000);
+    }
+  }
+  tick();
+}
+
+function clearCountdown() {
+  if (countdownInterval) { clearTimeout(countdownInterval); countdownInterval = null; }
+  var countEl = document.getElementById('tpCountdown');
+  if (countEl) countEl.innerHTML = '';
+}
+
 function stopTpScroll() {
   if (tpAnimFrame) { cancelAnimationFrame(tpAnimFrame); tpAnimFrame = null; }
 }
 
 function resetTeleprompter() {
   stopTpScroll();
+  clearCountdown();
   var display = document.getElementById('tpDisplay');
   if (display) display.style.transform = 'translateY(0)';
   if (tpRunning) startTpScroll();
