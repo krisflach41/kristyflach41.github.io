@@ -431,8 +431,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
               <input type="text" class="form-input" id="unsplashQuery" placeholder="Search photos... e.g. house keys, family home, mortgage" style="flex:1;font-size:13px;" onkeydown="if(event.key==='Enter')searchUnsplash()">
               <button class="btn sage" onclick="searchUnsplash()" style="padding:4px 12px;font-size:12px;">Go</button>
             </div>
-            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:220px;overflow-y:auto;"></div>
-            <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);margin-top:4px;"></div>
+            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:420px;overflow-y:auto;"></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+              <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);"></div>
+              <button id="unsplashLoadMore" onclick="searchUnsplash(true)" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;">Load more</button>
+            </div>
           </div>
 
           <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()">
@@ -478,6 +481,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
             </div>
             <div class="preview-text" id="previewText">Your caption will appear here...</div>
             <img class="preview-img" id="previewImg" src="" alt="">
+            <div id="changeImageBtn" style="display:none;margin-top:6px;text-align:center;">
+              <button onclick="openUnsplashToChange()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-images"></i> Change image</button>
+            </div>
           </div>
         </div>
 
@@ -1173,6 +1179,18 @@ function clearScript() {
   document.getElementById('tpDisplay').textContent = '';
 }
 
+function openUnsplashToChange() {
+  // Clear current photo and open Unsplash panel with last results still showing
+  uploadedPhotos = [];
+  renderPhotoPreview();
+  document.getElementById('previewImg').style.display = 'none';
+  var panel = document.getElementById('unsplashPanel');
+  panel.style.display = 'block';
+  // Scroll up to the panel
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('unsplashQuery').focus();
+}
+
 // ===== UNSPLASH IMAGE SEARCH =====
 function toggleUnsplashSearch() {
   var panel = document.getElementById('unsplashPanel');
@@ -1180,34 +1198,56 @@ function toggleUnsplashSearch() {
   if (panel.style.display === 'block') document.getElementById('unsplashQuery').focus();
 }
 
-async function searchUnsplash() {
+var unsplashPage = 1;
+var unsplashLastQuery = '';
+
+async function searchUnsplash(loadMore) {
   var query = document.getElementById('unsplashQuery').value.trim();
   if (!query) return;
   var results = document.getElementById('unsplashResults');
   var status = document.getElementById('unsplashStatus');
-  results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Searching...</div>';
-  status.textContent = '';
+  var loadMoreBtn = document.getElementById('unsplashLoadMore');
+
+  if (!loadMore) {
+    unsplashPage = 1;
+    unsplashLastQuery = query;
+    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Searching...</div>';
+  } else {
+    unsplashPage++;
+    loadMoreBtn.textContent = 'Loading...';
+    loadMoreBtn.disabled = true;
+  }
+
   try {
-    var resp = await fetch(API_BASE + '/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=12');
+    var resp = await fetch(API_BASE + '/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=18&page=' + unsplashPage);
     var data = await resp.json();
+    if (!loadMore) results.innerHTML = '';
+
     if (!data.results || data.results.length === 0) {
-      results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">No results found.</div>';
+      if (!loadMore) results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">No results found.</div>';
+      loadMoreBtn.style.display = 'none';
       return;
     }
-    results.innerHTML = '';
+
     data.results.forEach(function(photo) {
       var thumb = document.createElement('div');
-      thumb.style.cssText = 'cursor:pointer;border-radius:6px;overflow:hidden;aspect-ratio:1;position:relative;border:2px solid transparent;transition:border 0.2s;';
+      thumb.style.cssText = 'cursor:pointer;border-radius:6px;overflow:hidden;aspect-ratio:4/3;position:relative;border:2px solid transparent;transition:border 0.2s;';
       thumb.innerHTML = '<img src="' + photo.urls.small + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
-      thumb.title = photo.alt_description || photo.user.name;
+      thumb.title = (photo.alt_description || photo.user.name) + ' — click to use';
       thumb.onclick = function() { selectUnsplashPhoto(photo); };
       thumb.onmouseover = function() { this.style.borderColor = 'var(--sage)'; };
       thumb.onmouseout = function() { this.style.borderColor = 'transparent'; };
       results.appendChild(thumb);
     });
-    status.textContent = 'Photos by Unsplash. Click one to use it.';
+
+    var total = data.total || 0;
+    status.textContent = total.toLocaleString() + ' photos found. Click one to use it.';
+    loadMoreBtn.style.display = data.results.length === 18 ? 'block' : 'none';
+    loadMoreBtn.textContent = 'Load more';
+    loadMoreBtn.disabled = false;
   } catch(err) {
-    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Search failed. Try again.</div>';
+    if (!loadMore) results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Search failed. Try again.</div>';
+    loadMoreBtn.style.display = 'none';
   }
 }
 
@@ -1396,6 +1436,7 @@ function renderPhotoPreview() {
   var grid = document.getElementById('photoPreviewGrid');
   grid.innerHTML = '';
   grid.style.display = uploadedPhotos.length ? 'grid' : 'none';
+  var changeBtn = document.getElementById('changeImageBtn');
   uploadedPhotos.forEach(function(src, i) {
     var thumb = document.createElement('div');
     thumb.className = 'photo-thumb';
@@ -1404,8 +1445,10 @@ function renderPhotoPreview() {
     if (i === 0) {
       document.getElementById('previewImg').src = src;
       document.getElementById('previewImg').style.display = 'block';
+      if (changeBtn) changeBtn.style.display = 'block';
     }
   });
+  if (!uploadedPhotos.length && changeBtn) changeBtn.style.display = 'none';
 }
 
 function handlePhotoUpload(e) {
