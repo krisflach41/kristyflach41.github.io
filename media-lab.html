@@ -420,7 +420,21 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
         <!-- Photo upload -->
         <div class="form-group">
-          <label class="form-label">Photos / Images</label>
+          <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>Photos / Images</span>
+            <button class="btn" onclick="toggleUnsplashSearch()" id="btnUnsplash" style="padding:3px 10px;font-size:11px;"><i class="fas fa-search"></i> Search Unsplash</button>
+          </label>
+
+          <!-- Unsplash search panel -->
+          <div id="unsplashPanel" style="display:none;margin-bottom:10px;">
+            <div style="display:flex;gap:6px;margin-bottom:8px;">
+              <input type="text" class="form-input" id="unsplashQuery" placeholder="Search photos... e.g. house keys, family home, mortgage" style="flex:1;font-size:13px;" onkeydown="if(event.key==='Enter')searchUnsplash()">
+              <button class="btn sage" onclick="searchUnsplash()" style="padding:4px 12px;font-size:12px;">Go</button>
+            </div>
+            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-height:220px;overflow-y:auto;"></div>
+            <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);margin-top:4px;"></div>
+          </div>
+
           <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()">
             <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event)">
             <i class="fas fa-images" style="font-size:24px;color:var(--text-muted);margin-bottom:6px;"></i>
@@ -1159,7 +1173,68 @@ function clearScript() {
   document.getElementById('tpDisplay').textContent = '';
 }
 
-// ===== AI SCRIPT GENERATOR =====
+// ===== UNSPLASH IMAGE SEARCH =====
+function toggleUnsplashSearch() {
+  var panel = document.getElementById('unsplashPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') document.getElementById('unsplashQuery').focus();
+}
+
+async function searchUnsplash() {
+  var query = document.getElementById('unsplashQuery').value.trim();
+  if (!query) return;
+  var results = document.getElementById('unsplashResults');
+  var status = document.getElementById('unsplashStatus');
+  results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Searching...</div>';
+  status.textContent = '';
+  try {
+    var resp = await fetch(API_BASE + '/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=12');
+    var data = await resp.json();
+    if (!data.results || data.results.length === 0) {
+      results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">No results found.</div>';
+      return;
+    }
+    results.innerHTML = '';
+    data.results.forEach(function(photo) {
+      var thumb = document.createElement('div');
+      thumb.style.cssText = 'cursor:pointer;border-radius:6px;overflow:hidden;aspect-ratio:1;position:relative;border:2px solid transparent;transition:border 0.2s;';
+      thumb.innerHTML = '<img src="' + photo.urls.small + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
+      thumb.title = photo.alt_description || photo.user.name;
+      thumb.onclick = function() { selectUnsplashPhoto(photo); };
+      thumb.onmouseover = function() { this.style.borderColor = 'var(--sage)'; };
+      thumb.onmouseout = function() { this.style.borderColor = 'transparent'; };
+      results.appendChild(thumb);
+    });
+    status.textContent = 'Photos by Unsplash. Click one to use it.';
+  } catch(err) {
+    results.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:12px;">Search failed. Try again.</div>';
+  }
+}
+
+function selectUnsplashPhoto(photo) {
+  // Convert to blob and add to uploadedPhotos
+  fetch(photo.urls.regular)
+    .then(r => r.blob())
+    .then(blob => {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedPhotos.push(e.target.result);
+        renderPhotoPreview();
+        document.getElementById('unsplashPanel').style.display = 'none';
+        document.getElementById('unsplashResults').innerHTML = '';
+        document.getElementById('unsplashQuery').value = '';
+      };
+      reader.readAsDataURL(blob);
+    })
+    .catch(function() {
+      // Fallback: just store the URL directly
+      uploadedPhotos.push(photo.urls.regular);
+      renderPhotoPreview();
+      document.getElementById('unsplashPanel').style.display = 'none';
+    });
+  // Trigger Unsplash download endpoint (required by API terms)
+  fetch(API_BASE + '/unsplash-search?download=' + photo.id);
+}
 async function generateScript() {
   var topic = document.getElementById('scriptTopic').value.trim();
   var directions = document.getElementById('scriptDirections').value.trim();
@@ -1303,6 +1378,22 @@ function addNMLS() {
     document.getElementById('postCaption').value = current + disclaimer;
     onCaptionInput();
   }
+}
+
+function renderPhotoPreview() {
+  var grid = document.getElementById('photoPreviewGrid');
+  grid.innerHTML = '';
+  grid.style.display = uploadedPhotos.length ? 'grid' : 'none';
+  uploadedPhotos.forEach(function(src, i) {
+    var thumb = document.createElement('div');
+    thumb.className = 'photo-thumb';
+    thumb.innerHTML = '<img src="'+src+'"><button class="remove-photo" onclick="removePhoto('+i+')"><i class="fas fa-times"></i></button>';
+    grid.appendChild(thumb);
+    if (i === 0) {
+      document.getElementById('previewImg').src = src;
+      document.getElementById('previewImg').style.display = 'block';
+    }
+  });
 }
 
 function handlePhotoUpload(e) {
