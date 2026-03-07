@@ -431,7 +431,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
               <input type="text" class="form-input" id="unsplashQuery" placeholder="Search photos... e.g. house keys, family home, mortgage" style="flex:1;font-size:13px;" onkeydown="if(event.key==='Enter')searchUnsplash()">
               <button class="btn sage" onclick="searchUnsplash()" style="padding:4px 12px;font-size:12px;">Go</button>
             </div>
-            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:90px;gap:6px;max-height:420px;overflow-y:auto;"></div>
+            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
               <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);"></div>
               <button id="unsplashLoadMore" onclick="searchUnsplash(true)" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;">Load more</button>
@@ -1219,7 +1219,7 @@ async function searchUnsplash(loadMore) {
   }
 
   try {
-    var resp = await fetch(API_BASE + '/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=18&page=' + unsplashPage);
+    var resp = await fetch(API_BASE + '/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=6&page=' + unsplashPage);
     var data = await resp.json();
     if (!loadMore) results.innerHTML = '';
 
@@ -1231,8 +1231,8 @@ async function searchUnsplash(loadMore) {
 
     data.results.forEach(function(photo) {
       var thumb = document.createElement('div');
-      thumb.style.cssText = 'cursor:pointer;border-radius:6px;overflow:hidden;width:100%;height:100px;position:relative;border:2px solid transparent;transition:border 0.2s;flex-shrink:0;';
-      thumb.innerHTML = '<img src="' + photo.urls.thumb + '" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">';
+      thumb.style.cssText = 'cursor:pointer;border-radius:8px;overflow:hidden;position:relative;padding-bottom:66%;border:2px solid transparent;transition:border-color 0.2s;';
+      thumb.innerHTML = '<img src="' + photo.urls.small + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;" loading="lazy">';
       thumb.title = (photo.alt_description || photo.user.name) + ' — click to use';
       thumb.onclick = function() { selectUnsplashPhoto(photo); };
       thumb.onmouseover = function() { this.style.borderColor = 'var(--sage)'; };
@@ -1242,7 +1242,7 @@ async function searchUnsplash(loadMore) {
 
     var total = data.total || 0;
     status.textContent = total.toLocaleString() + ' photos found. Click one to use it.';
-    loadMoreBtn.style.display = data.results.length === 18 ? 'block' : 'none';
+    loadMoreBtn.style.display = data.results.length === 6 ? 'block' : 'none';
     loadMoreBtn.textContent = 'Load more';
     loadMoreBtn.disabled = false;
   } catch(err) {
