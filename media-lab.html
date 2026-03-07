@@ -129,13 +129,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 /* Post preview */
 .post-preview{background:#f9fafb;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
 .preview-header{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
-.preview-body{padding:14px;}
-.preview-profile{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
-.preview-avatar{width:36px;height:36px;border-radius:50%;background:var(--sage);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0;}
-.preview-name{font-weight:600;font-size:13px;}
-.preview-handle{font-size:11px;color:var(--text-muted);}
-.preview-text{font-size:13px;line-height:1.5;color:var(--text-primary);white-space:pre-wrap;word-break:break-word;}
-.preview-img{width:100%;border-radius:8px;display:none;}
+.preview-img{display:none;}
 
 /* Platform switcher tabs */
 .preview-platform-tabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:#fff;}
@@ -147,61 +141,57 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .preview-platform-tab.tab-tt{border-color:#010101;}.preview-platform-tab.tab-tt.active{background:#010101;}
 .preview-platform-tab.tab-yt{border-color:#ff0000;}.preview-platform-tab.tab-yt.active{background:#ff0000;}
 
-/* Facebook preview */
-.pv-fb{background:#fff;font-family:'Helvetica Neue',Arial,sans-serif;}
-.pv-fb .pv-top{display:flex;align-items:center;gap:8px;padding:10px 12px;}
-.pv-fb .pv-avatar{width:40px;height:40px;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0;}
-.pv-fb .pv-name{font-weight:700;font-size:13.5px;color:#050505;}
-.pv-fb .pv-meta{font-size:12px;color:#65676b;display:flex;align-items:center;gap:4px;}
-.pv-fb .pv-caption{padding:0 12px 10px;font-size:14px;line-height:1.4;color:#050505;white-space:pre-wrap;word-break:break-word;}
-.pv-fb .pv-img{width:100%;display:block;}
-.pv-fb .pv-actions{display:flex;justify-content:space-around;padding:4px 12px;border-top:1px solid #e4e6eb;margin-top:4px;}
-.pv-fb .pv-action{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;color:#65676b;cursor:default;}
-.pv-fb .pv-reactions{padding:6px 12px;font-size:13px;color:#65676b;border-bottom:1px solid #e4e6eb;display:flex;align-items:center;gap:4px;}
+/* Shared platform chrome */
+.pv-wrap{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;}
+.pv-profile-row{display:flex;align-items:center;gap:8px;padding:10px 12px;}
+.pv-avatar-circle{border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;flex-shrink:0;}
+.pv-screen-name{font-weight:700;font-size:13px;}
+.pv-sub{font-size:11px;color:#888;}
 
-/* Instagram preview */
-.pv-ig{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #dbdbdb;border-radius:4px;}
-.pv-ig .pv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;}
-.pv-ig .pv-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:2px;flex-shrink:0;}
-.pv-ig .pv-avatar-inner{width:100%;height:100%;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;border:2px solid #fff;}
-.pv-ig .pv-username{font-weight:700;font-size:13px;color:#000;}
-.pv-ig .pv-img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;}
-.pv-ig .pv-img-placeholder{width:100%;aspect-ratio:1/1;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;}
-.pv-ig .pv-icons{display:flex;gap:14px;padding:10px 12px 4px;align-items:center;}
-.pv-ig .pv-icons i{font-size:22px;color:#262626;cursor:default;}
-.pv-ig .pv-icons i.fa-heart{color:#262626;}
-.pv-ig .pv-likes{padding:0 12px 4px;font-size:13px;font-weight:700;color:#000;}
-.pv-ig .pv-caption-row{padding:0 12px 10px;font-size:13px;color:#000;white-space:pre-wrap;word-break:break-word;}
-.pv-ig .pv-caption-row strong{font-weight:700;}
-.pv-ig .pv-timestamp{padding:0 12px 10px;font-size:10px;color:#8e8e8e;text-transform:uppercase;}
+/* --- THE GRAPHIC --- image with hook text overlaid */
+.pv-graphic{position:relative;width:100%;overflow:hidden;background:#001a3a;}
+.pv-graphic.square{aspect-ratio:1/1;}
+.pv-graphic.portrait{aspect-ratio:4/5;}
+.pv-graphic.vertical{aspect-ratio:9/16;max-height:380px;}
+.pv-graphic.landscape{aspect-ratio:1.91/1;}
+.pv-graphic-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.pv-graphic-overlay{position:absolute;inset:0;background:linear-gradient(160deg,rgba(0,10,30,0.55) 0%,rgba(0,10,30,0.25) 50%,rgba(0,10,30,0.7) 100%);}
+.pv-graphic-content{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:18px 20px;}
+.pv-hook{font-family:'Georgia',serif;font-size:clamp(15px,4.5cqw,26px);font-weight:700;color:#fff;line-height:1.25;letter-spacing:-0.01em;text-shadow:0 2px 12px rgba(0,0,0,0.5);margin-bottom:10px;max-width:88%;}
+.pv-hook-accent{display:inline-block;width:32px;height:3px;background:#baa370;border-radius:2px;margin-bottom:10px;}
+.pv-byline{font-size:11px;color:rgba(255,255,255,0.75);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;}
+.pv-no-img-bg{position:absolute;inset:0;background:linear-gradient(135deg,#001a3a 0%,#002556 60%,#0a3060 100%);}
+/* gold geometric accent */
+.pv-no-img-bg::after{content:'';position:absolute;bottom:-20px;right:-20px;width:120px;height:120px;border-radius:50%;border:2px solid rgba(186,163,112,0.2);}
+.pv-no-img-bg::before{content:'';position:absolute;top:16px;right:20px;width:60px;height:60px;border-radius:50%;border:1.5px solid rgba(186,163,112,0.15);}
 
-/* LinkedIn preview */
-.pv-li{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;}
-.pv-li .pv-top{display:flex;align-items:flex-start;gap:8px;padding:12px 14px 8px;}
-.pv-li .pv-avatar{width:48px;height:48px;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0;}
-.pv-li .pv-name{font-weight:700;font-size:14px;color:#000;}
-.pv-li .pv-title{font-size:12px;color:#666;line-height:1.3;}
-.pv-li .pv-meta{font-size:11px;color:#666;display:flex;align-items:center;gap:4px;margin-top:2px;}
-.pv-li .pv-caption{padding:0 14px 10px;font-size:14px;line-height:1.5;color:#000;white-space:pre-wrap;word-break:break-word;}
-.pv-li .pv-img{width:100%;display:block;}
-.pv-li .pv-actions{display:flex;gap:0;padding:4px 6px;border-top:1px solid #e0e0e0;margin-top:4px;}
-.pv-li .pv-action{display:flex;align-items:center;gap:4px;padding:8px 10px;border-radius:4px;font-size:13px;font-weight:600;color:#666;cursor:default;}
+/* Post caption below graphic */
+.pv-caption-block{padding:10px 12px 6px;font-size:13px;line-height:1.5;color:#111;white-space:pre-wrap;word-break:break-word;}
+.pv-caption-block .pv-caption-more{color:#888;font-size:12px;}
 
-/* TikTok preview */
-.pv-tt{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:9/16;max-height:420px;}
-.pv-tt .pv-img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0.75;}
-.pv-tt .pv-img-placeholder{width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;position:absolute;top:0;left:0;}
-.pv-tt .pv-overlay{position:absolute;bottom:0;left:0;right:0;padding:14px 12px 20px;background:linear-gradient(transparent,rgba(0,0,0,0.8));}
-.pv-tt .pv-username{font-weight:700;font-size:14px;margin-bottom:6px;}
-.pv-tt .pv-caption{font-size:13px;line-height:1.4;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
-.pv-tt .pv-right{position:absolute;right:10px;bottom:60px;display:flex;flex-direction:column;align-items:center;gap:18px;}
-.pv-tt .pv-right i{font-size:24px;color:#fff;}
-.pv-tt .pv-right span{font-size:10px;color:#fff;text-align:center;}
-.pv-tt .pv-avatar-tt{width:44px;height:44px;border-radius:50%;background:#6e7f77;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+/* Engagement bars */
+.pv-eng-bar{display:flex;align-items:center;gap:16px;padding:6px 12px 8px;font-size:13px;color:#666;border-top:1px solid #f0f0f0;margin-top:4px;}
+.pv-eng-bar i{font-size:18px;}
+.pv-eng-bar .pv-save{margin-left:auto;}
+.pv-reactions-row{padding:4px 12px 6px;font-size:12px;color:#666;border-top:1px solid #e4e6eb;}
+.pv-fb-actions{display:flex;justify-content:space-around;padding:2px 12px 8px;border-top:1px solid #e4e6eb;}
+.pv-fb-action{display:flex;align-items:center;gap:5px;padding:6px 8px;font-size:13px;font-weight:600;color:#65676b;cursor:default;}
+.pv-li-actions{display:flex;gap:0;padding:2px 6px 6px;border-top:1px solid #e0e0e0;}
+.pv-li-action{display:flex;align-items:center;gap:4px;padding:6px 8px;font-size:12px;font-weight:600;color:#666;cursor:default;}
+
+/* TikTok sidebar */
+.pv-tt-sidebar{position:absolute;right:8px;bottom:60px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+.pv-tt-sidebar-item{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.pv-tt-sidebar-item i{font-size:22px;color:#fff;}
+.pv-tt-sidebar-item span{font-size:10px;color:#fff;}
+.pv-tt-avt{width:40px;height:40px;border-radius:50%;background:#6e7f77;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;}
+.pv-tt-bottom{position:absolute;bottom:0;left:0;right:60px;padding:12px 12px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.7));}
+.pv-tt-user{font-weight:700;font-size:13px;color:#fff;margin-bottom:4px;}
+.pv-tt-cap{font-size:12px;color:#fff;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
 
 /* No platform selected */
-.pv-empty{padding:30px 14px;text-align:center;color:var(--text-muted);}
-.pv-empty i{font-size:28px;margin-bottom:8px;display:block;opacity:0.3;}
+.pv-empty{padding:36px 14px;text-align:center;color:var(--text-muted);}
+.pv-empty i{font-size:28px;margin-bottom:8px;display:block;opacity:0.25;}
 .pv-empty p{font-size:13px;margin:0;}
 
 /* Compliance badge */
@@ -1444,7 +1434,6 @@ function renderPreview() {
     activePreviewPlatform = selectedPlatforms[0] || null;
   }
 
-  // Show change image button if image loaded
   if (changeBtn) changeBtn.style.display = imgSrc ? 'block' : 'none';
 
   var platform = activePreviewPlatform;
@@ -1454,93 +1443,106 @@ function renderPreview() {
     return;
   }
 
-  var imgHtml = imgSrc
-    ? '<img src="'+imgSrc+'" style="width:100%;display:block;">'
-    : '';
+  // Hook = first non-empty line; rest = everything after
+  var lines = caption.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var hook = lines[0] || 'Your hook will appear here...';
+  var rest = lines.slice(1).join('\n');
+  var restDisplay = rest.length > 200 ? rest.substring(0,200)+'...' : rest;
 
-  if (platform === 'facebook') {
-    mount.innerHTML =
-      '<div class="pv-fb">' +
-        '<div class="pv-top">' +
-          '<div class="pv-avatar">K</div>' +
-          '<div>' +
-            '<div class="pv-name">Kristy Flach</div>' +
-            '<div class="pv-meta"><span>Just now</span> · <i class="fas fa-globe-americas" style="font-size:10px;"></i></div>' +
-          '</div>' +
-        '</div>' +
-        (caption ? '<div class="pv-caption">'+escPv(caption)+'</div>' : '') +
-        (imgSrc ? '<img class="pv-img" src="'+imgSrc+'">' : '') +
-        '<div class="pv-reactions"><span>👍 ❤️ 😮</span>&nbsp; 12 reactions · 3 comments</div>' +
-        '<div class="pv-actions">' +
-          '<div class="pv-action"><i class="far fa-thumbs-up"></i> Like</div>' +
-          '<div class="pv-action"><i class="far fa-comment"></i> Comment</div>' +
-          '<div class="pv-action"><i class="fas fa-share"></i> Share</div>' +
-        '</div>' +
-      '</div>';
+  // Shared graphic block — hook text over image (or navy bg if no image)
+  function graphic(aspectClass) {
+    var bg = imgSrc
+      ? '<img class="pv-graphic-bg" src="'+imgSrc+'">'
+      : '<div class="pv-no-img-bg"></div>';
+    return '<div class="pv-graphic '+aspectClass+'">'
+      + bg
+      + '<div class="pv-graphic-overlay"></div>'
+      + '<div class="pv-graphic-content">'
+      +   '<div class="pv-hook-accent"></div>'
+      +   '<div class="pv-hook">'+escPv(hook)+'</div>'
+      +   '<div class="pv-byline">Kristy Flach · Mortgage Advisor</div>'
+      + '</div>'
+      + '</div>';
+  }
 
-  } else if (platform === 'instagram') {
+  if (platform === 'instagram') {
     mount.innerHTML =
-      '<div class="pv-ig">' +
-        '<div class="pv-top">' +
-          '<div class="pv-avatar"><div class="pv-avatar-inner">K</div></div>' +
-          '<div style="flex:1;"><div class="pv-username">kristyflach</div></div>' +
-          '<i class="fas fa-ellipsis-h" style="color:#262626;font-size:16px;padding:4px;"></i>' +
-        '</div>' +
-        (imgSrc
-          ? '<img class="pv-img" src="'+imgSrc+'" style="aspect-ratio:1/1;object-fit:cover;">'
-          : '<div class="pv-img-placeholder"><i class="fas fa-image" style="font-size:40px;opacity:0.2;"></i></div>') +
-        '<div class="pv-icons">' +
-          '<i class="far fa-heart"></i>' +
-          '<i class="far fa-comment" style="margin-left:2px;"></i>' +
-          '<i class="far fa-paper-plane" style="margin-left:2px;"></i>' +
-          '<i class="far fa-bookmark" style="margin-left:auto;"></i>' +
-        '</div>' +
-        '<div class="pv-likes">47 likes</div>' +
-        '<div class="pv-caption-row"><strong>kristyflach</strong> ' + (caption ? escPv(caption) : '<span style="color:#aaa;">Your caption will appear here...</span>') + '</div>' +
-        '<div class="pv-timestamp">Just now</div>' +
-      '</div>';
+      '<div class="pv-wrap" style="border:1px solid #dbdbdb;">'
+      + '<div class="pv-profile-row">'
+      +   '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:2px;flex-shrink:0;">'
+      +     '<div style="width:100%;height:100%;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:11px;border:2px solid #fff;">K</div>'
+      +   '</div>'
+      +   '<div style="flex:1;padding-left:8px;"><div class="pv-screen-name" style="font-size:13px;">kristyflach</div></div>'
+      +   '<i class="fas fa-ellipsis-h" style="color:#262626;font-size:16px;"></i>'
+      + '</div>'
+      + graphic('square')
+      + '<div class="pv-eng-bar">'
+      +   '<i class="far fa-heart"></i><i class="far fa-comment"></i><i class="far fa-paper-plane"></i>'
+      +   '<i class="far fa-bookmark pv-save"></i>'
+      + '</div>'
+      + '<div style="padding:0 12px 4px;font-size:13px;font-weight:700;color:#000;">47 likes</div>'
+      + '<div class="pv-caption-block"><strong>kristyflach</strong> '+(restDisplay ? escPv(restDisplay) : (caption ? escPv(caption) : '<span style="color:#aaa;">Caption will appear here...</span>'))+'</div>'
+      + '<div style="padding:0 12px 10px;font-size:10px;color:#8e8e8e;text-transform:uppercase;">Just now</div>'
+      + '</div>';
+
+  } else if (platform === 'facebook') {
+    mount.innerHTML =
+      '<div class="pv-wrap">'
+      + '<div class="pv-profile-row">'
+      +   '<div class="pv-avatar-circle" style="width:40px;height:40px;font-size:15px;">K</div>'
+      +   '<div style="padding-left:4px;"><div class="pv-screen-name">Kristy Flach</div><div class="pv-sub">Just now · <i class="fas fa-globe-americas" style="font-size:9px;"></i></div></div>'
+      + '</div>'
+      + (caption ? '<div class="pv-caption-block" style="padding-top:0;padding-bottom:8px;">'+escPv(caption)+'</div>' : '')
+      + graphic('landscape')
+      + '<div class="pv-reactions-row">👍 ❤️ 😮 &nbsp;12 reactions · 3 comments</div>'
+      + '<div class="pv-fb-actions">'
+      +   '<div class="pv-fb-action"><i class="far fa-thumbs-up"></i> Like</div>'
+      +   '<div class="pv-fb-action"><i class="far fa-comment"></i> Comment</div>'
+      +   '<div class="pv-fb-action"><i class="fas fa-share"></i> Share</div>'
+      + '</div>'
+      + '</div>';
 
   } else if (platform === 'linkedin') {
     mount.innerHTML =
-      '<div class="pv-li">' +
-        '<div class="pv-top">' +
-          '<div class="pv-avatar">K</div>' +
-          '<div>' +
-            '<div class="pv-name">Kristy Flach</div>' +
-            '<div class="pv-title">Certified Mortgage Advisor | NMLS #2632259</div>' +
-            '<div class="pv-meta"><span>Just now</span> · <i class="fas fa-globe-americas" style="font-size:10px;"></i></div>' +
-          '</div>' +
-        '</div>' +
-        (caption ? '<div class="pv-caption">'+escPv(caption)+'</div>' : '') +
-        (imgSrc ? '<img class="pv-img" src="'+imgSrc+'">' : '') +
-        '<div class="pv-actions">' +
-          '<div class="pv-action"><i class="fas fa-thumbs-up" style="color:#0a66c2;"></i> Like</div>' +
-          '<div class="pv-action"><i class="far fa-comment-dots"></i> Comment</div>' +
-          '<div class="pv-action"><i class="fas fa-retweet"></i> Repost</div>' +
-          '<div class="pv-action"><i class="fas fa-share"></i> Send</div>' +
-        '</div>' +
-      '</div>';
+      '<div class="pv-wrap" style="border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;">'
+      + '<div class="pv-profile-row" style="align-items:flex-start;padding:12px 14px 8px;">'
+      +   '<div class="pv-avatar-circle" style="width:48px;height:48px;font-size:18px;">K</div>'
+      +   '<div style="padding-left:4px;"><div class="pv-screen-name" style="font-size:14px;">Kristy Flach</div>'
+      +   '<div class="pv-sub">Certified Mortgage Advisor · NMLS #2632259</div>'
+      +   '<div class="pv-sub">Just now · <i class="fas fa-globe-americas" style="font-size:9px;"></i></div></div>'
+      + '</div>'
+      + (caption ? '<div class="pv-caption-block" style="padding-top:0;">'+escPv(restDisplay||caption)+(rest.length>200?'<span class="pv-caption-more"> ...see more</span>':'')+'</div>' : '')
+      + graphic('landscape')
+      + '<div class="pv-li-actions">'
+      +   '<div class="pv-li-action"><i class="fas fa-thumbs-up" style="color:#0a66c2;"></i> Like</div>'
+      +   '<div class="pv-li-action"><i class="far fa-comment-dots"></i> Comment</div>'
+      +   '<div class="pv-li-action"><i class="fas fa-retweet"></i> Repost</div>'
+      +   '<div class="pv-li-action"><i class="fas fa-share"></i> Send</div>'
+      + '</div>'
+      + '</div>';
 
   } else if (platform === 'tiktok') {
+    var ttbg = imgSrc
+      ? '<img style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;" src="'+imgSrc+'">'
+      : '<div style="position:absolute;inset:0;background:linear-gradient(135deg,#001a3a,#002556);"></div>';
     mount.innerHTML =
-      '<div class="pv-tt">' +
-        (imgSrc
-          ? '<img class="pv-img" src="'+imgSrc+'">'
-          : '<div class="pv-img-placeholder"><i class="fas fa-video" style="font-size:40px;color:rgba(255,255,255,0.15);"></i></div>') +
-        '<div class="pv-right">' +
-          '<div style="text-align:center;"><div class="pv-avatar-tt">K</div><div style="font-size:9px;color:#fff;margin-top:4px;">+</div></div>' +
-          '<div style="text-align:center;"><i class="fas fa-heart"></i><div style="font-size:10px;color:#fff;margin-top:2px;">47.2K</div></div>' +
-          '<div style="text-align:center;"><i class="fas fa-comment-dots"></i><div style="font-size:10px;color:#fff;margin-top:2px;">1,204</div></div>' +
-          '<div style="text-align:center;"><i class="fas fa-share"></i><div style="font-size:10px;color:#fff;margin-top:2px;">Share</div></div>' +
-        '</div>' +
-        '<div class="pv-overlay">' +
-          '<div class="pv-username">@kristyflach</div>' +
-          '<div class="pv-caption">'+(caption ? escPv(caption) : 'Your caption will appear here...')+'</div>' +
-        '</div>' +
-      '</div>';
+      '<div style="position:relative;aspect-ratio:9/16;max-height:380px;background:#000;border-radius:10px;overflow:hidden;color:#fff;font-family:-apple-system,sans-serif;">'
+      + ttbg
+      + '<div style="position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,0.75) 100%);"></div>'
+      + '<div class="pv-tt-sidebar">'
+      +   '<div class="pv-tt-sidebar-item"><div class="pv-tt-avt">K</div></div>'
+      +   '<div class="pv-tt-sidebar-item"><i class="fas fa-heart"></i><span>47.2K</span></div>'
+      +   '<div class="pv-tt-sidebar-item"><i class="fas fa-comment-dots"></i><span>1.2K</span></div>'
+      +   '<div class="pv-tt-sidebar-item"><i class="fas fa-share"></i><span>Share</span></div>'
+      + '</div>'
+      + '<div class="pv-tt-bottom">'
+      +   '<div class="pv-tt-user">@kristyflach</div>'
+      +   '<div class="pv-tt-cap">'+(caption ? escPv(caption) : 'Your caption here...')+'</div>'
+      + '</div>'
+      + '</div>';
 
   } else {
-    mount.innerHTML = '<div class="pv-empty"><i class="'+PLATFORM_META[platform].icon+'"></i><p>Preview for '+PLATFORM_META[platform].label+' coming soon</p></div>';
+    mount.innerHTML = '<div class="pv-empty"><i class="fas fa-share-alt"></i><p>Preview not available for this platform yet</p></div>';
   }
 }
 
