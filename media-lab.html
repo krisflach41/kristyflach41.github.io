@@ -137,6 +137,73 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .preview-text{font-size:13px;line-height:1.5;color:var(--text-primary);white-space:pre-wrap;word-break:break-word;}
 .preview-img{width:100%;border-radius:8px;display:none;}
 
+/* Platform switcher tabs */
+.preview-platform-tabs{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap;background:#fff;}
+.preview-platform-tab{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;background:none;color:var(--text-muted);}
+.preview-platform-tab.active{color:#fff;}
+.preview-platform-tab.tab-fb{border-color:#1877f2;}.preview-platform-tab.tab-fb.active{background:#1877f2;}
+.preview-platform-tab.tab-ig{border-color:#e1306c;}.preview-platform-tab.tab-ig.active{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);}
+.preview-platform-tab.tab-li{border-color:#0a66c2;}.preview-platform-tab.tab-li.active{background:#0a66c2;}
+.preview-platform-tab.tab-tt{border-color:#010101;}.preview-platform-tab.tab-tt.active{background:#010101;}
+.preview-platform-tab.tab-yt{border-color:#ff0000;}.preview-platform-tab.tab-yt.active{background:#ff0000;}
+
+/* Facebook preview */
+.pv-fb{background:#fff;font-family:'Helvetica Neue',Arial,sans-serif;}
+.pv-fb .pv-top{display:flex;align-items:center;gap:8px;padding:10px 12px;}
+.pv-fb .pv-avatar{width:40px;height:40px;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;flex-shrink:0;}
+.pv-fb .pv-name{font-weight:700;font-size:13.5px;color:#050505;}
+.pv-fb .pv-meta{font-size:12px;color:#65676b;display:flex;align-items:center;gap:4px;}
+.pv-fb .pv-caption{padding:0 12px 10px;font-size:14px;line-height:1.4;color:#050505;white-space:pre-wrap;word-break:break-word;}
+.pv-fb .pv-img{width:100%;display:block;}
+.pv-fb .pv-actions{display:flex;justify-content:space-around;padding:4px 12px;border-top:1px solid #e4e6eb;margin-top:4px;}
+.pv-fb .pv-action{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:4px;font-size:13px;font-weight:600;color:#65676b;cursor:default;}
+.pv-fb .pv-reactions{padding:6px 12px;font-size:13px;color:#65676b;border-bottom:1px solid #e4e6eb;display:flex;align-items:center;gap:4px;}
+
+/* Instagram preview */
+.pv-ig{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #dbdbdb;border-radius:4px;}
+.pv-ig .pv-top{display:flex;align-items:center;gap:10px;padding:10px 12px;}
+.pv-ig .pv-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);padding:2px;flex-shrink:0;}
+.pv-ig .pv-avatar-inner{width:100%;height:100%;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;border:2px solid #fff;}
+.pv-ig .pv-username{font-weight:700;font-size:13px;color:#000;}
+.pv-ig .pv-img{width:100%;display:block;aspect-ratio:1/1;object-fit:cover;}
+.pv-ig .pv-img-placeholder{width:100%;aspect-ratio:1/1;background:#f0f0f0;display:flex;align-items:center;justify-content:center;color:#aaa;font-size:12px;}
+.pv-ig .pv-icons{display:flex;gap:14px;padding:10px 12px 4px;align-items:center;}
+.pv-ig .pv-icons i{font-size:22px;color:#262626;cursor:default;}
+.pv-ig .pv-icons i.fa-heart{color:#262626;}
+.pv-ig .pv-likes{padding:0 12px 4px;font-size:13px;font-weight:700;color:#000;}
+.pv-ig .pv-caption-row{padding:0 12px 10px;font-size:13px;color:#000;white-space:pre-wrap;word-break:break-word;}
+.pv-ig .pv-caption-row strong{font-weight:700;}
+.pv-ig .pv-timestamp{padding:0 12px 10px;font-size:10px;color:#8e8e8e;text-transform:uppercase;}
+
+/* LinkedIn preview */
+.pv-li{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border:1px solid #e0e0e0;border-radius:8px;overflow:hidden;}
+.pv-li .pv-top{display:flex;align-items:flex-start;gap:8px;padding:12px 14px 8px;}
+.pv-li .pv-avatar{width:48px;height:48px;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;flex-shrink:0;}
+.pv-li .pv-name{font-weight:700;font-size:14px;color:#000;}
+.pv-li .pv-title{font-size:12px;color:#666;line-height:1.3;}
+.pv-li .pv-meta{font-size:11px;color:#666;display:flex;align-items:center;gap:4px;margin-top:2px;}
+.pv-li .pv-caption{padding:0 14px 10px;font-size:14px;line-height:1.5;color:#000;white-space:pre-wrap;word-break:break-word;}
+.pv-li .pv-img{width:100%;display:block;}
+.pv-li .pv-actions{display:flex;gap:0;padding:4px 6px;border-top:1px solid #e0e0e0;margin-top:4px;}
+.pv-li .pv-action{display:flex;align-items:center;gap:4px;padding:8px 10px;border-radius:4px;font-size:13px;font-weight:600;color:#666;cursor:default;}
+
+/* TikTok preview */
+.pv-tt{background:#000;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;border-radius:10px;overflow:hidden;position:relative;aspect-ratio:9/16;max-height:420px;}
+.pv-tt .pv-img{width:100%;height:100%;object-fit:cover;position:absolute;top:0;left:0;opacity:0.75;}
+.pv-tt .pv-img-placeholder{width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;position:absolute;top:0;left:0;}
+.pv-tt .pv-overlay{position:absolute;bottom:0;left:0;right:0;padding:14px 12px 20px;background:linear-gradient(transparent,rgba(0,0,0,0.8));}
+.pv-tt .pv-username{font-weight:700;font-size:14px;margin-bottom:6px;}
+.pv-tt .pv-caption{font-size:13px;line-height:1.4;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.pv-tt .pv-right{position:absolute;right:10px;bottom:60px;display:flex;flex-direction:column;align-items:center;gap:18px;}
+.pv-tt .pv-right i{font-size:24px;color:#fff;}
+.pv-tt .pv-right span{font-size:10px;color:#fff;text-align:center;}
+.pv-tt .pv-avatar-tt{width:44px;height:44px;border-radius:50%;background:#6e7f77;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;}
+
+/* No platform selected */
+.pv-empty{padding:30px 14px;text-align:center;color:var(--text-muted);}
+.pv-empty i{font-size:28px;margin-bottom:8px;display:block;opacity:0.3;}
+.pv-empty p{font-size:13px;margin:0;}
+
 /* Compliance badge */
 .compliance-banner{display:none;align-items:center;gap:8px;padding:10px 14px;background:rgba(186,163,112,0.1);border:1px solid rgba(186,163,112,0.3);border-radius:8px;margin-bottom:14px;font-size:13px;color:#92670a;}
 .compliance-banner.show{display:flex;}
@@ -471,19 +538,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <div class="ml-card-title"><i class="fas fa-eye"></i> Preview</div>
         <div class="post-preview">
           <div class="preview-header">How it'll look</div>
-          <div class="preview-body">
-            <div class="preview-profile">
-              <div class="preview-avatar">K</div>
-              <div>
-                <div class="preview-name">Kristy Flach</div>
-                <div class="preview-handle">@kristyflach · Just now</div>
-              </div>
-            </div>
-            <img class="preview-img" id="previewImg" src="" alt="" style="margin-bottom:10px;margin-top:8px;">
-            <div id="changeImageBtn" style="display:none;margin-bottom:8px;text-align:center;">
-              <button onclick="openUnsplashToChange()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-images"></i> Change image</button>
-            </div>
-            <div class="preview-text" id="previewText">Your caption will appear here...</div>
+          <div id="previewPlatformTabs" class="preview-platform-tabs" style="display:none;"></div>
+          <div id="previewMount"></div>
+          <!-- Hidden inputs kept for backward compat with existing JS -->
+          <img id="previewImg" src="" alt="" style="display:none;">
+          <div id="previewText" style="display:none;"></div>
+          <div id="changeImageBtn" style="display:none;margin:8px 12px;text-align:center;">
+            <button onclick="openUnsplashToChange()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-images"></i> Change image</button>
           </div>
         </div>
 
@@ -1349,6 +1410,143 @@ async function rewriteScript() {
 
 
 var selectedPlatforms = [];
+var activePreviewPlatform = null;
+
+var PLATFORM_META = {
+  facebook: { label:'Facebook', icon:'fab fa-facebook', cls:'tab-fb' },
+  instagram:{ label:'Instagram', icon:'fab fa-instagram', cls:'tab-ig' },
+  linkedin: { label:'LinkedIn',  icon:'fab fa-linkedin', cls:'tab-li' },
+  tiktok:   { label:'TikTok',    icon:'fab fa-tiktok',   cls:'tab-tt' },
+  youtube:  { label:'YouTube',   icon:'fab fa-youtube',  cls:'tab-yt' }
+};
+
+function renderPreview() {
+  var caption = (document.getElementById('postCaption') ? document.getElementById('postCaption').value : '') || '';
+  var imgSrc = uploadedPhotos.length ? uploadedPhotos[0] : null;
+  var mount = document.getElementById('previewMount');
+  var tabsEl = document.getElementById('previewPlatformTabs');
+  var changeBtn = document.getElementById('changeImageBtn');
+
+  // Platform tabs
+  if (selectedPlatforms.length > 1) {
+    tabsEl.style.display = 'flex';
+    tabsEl.innerHTML = '';
+    selectedPlatforms.forEach(function(p) {
+      var meta = PLATFORM_META[p] || {label:p, icon:'fas fa-globe', cls:''};
+      var btn = document.createElement('button');
+      btn.className = 'preview-platform-tab ' + meta.cls + (p === activePreviewPlatform ? ' active' : '');
+      btn.innerHTML = '<i class="'+meta.icon+'"></i> ' + meta.label;
+      btn.onclick = function() { activePreviewPlatform = p; renderPreview(); };
+      tabsEl.appendChild(btn);
+    });
+  } else {
+    tabsEl.style.display = 'none';
+    activePreviewPlatform = selectedPlatforms[0] || null;
+  }
+
+  // Show change image button if image loaded
+  if (changeBtn) changeBtn.style.display = imgSrc ? 'block' : 'none';
+
+  var platform = activePreviewPlatform;
+
+  if (!platform) {
+    mount.innerHTML = '<div class="pv-empty"><i class="fas fa-share-alt"></i><p>Select a platform above to see your preview</p></div>';
+    return;
+  }
+
+  var imgHtml = imgSrc
+    ? '<img src="'+imgSrc+'" style="width:100%;display:block;">'
+    : '';
+
+  if (platform === 'facebook') {
+    mount.innerHTML =
+      '<div class="pv-fb">' +
+        '<div class="pv-top">' +
+          '<div class="pv-avatar">K</div>' +
+          '<div>' +
+            '<div class="pv-name">Kristy Flach</div>' +
+            '<div class="pv-meta"><span>Just now</span> · <i class="fas fa-globe-americas" style="font-size:10px;"></i></div>' +
+          '</div>' +
+        '</div>' +
+        (caption ? '<div class="pv-caption">'+escPv(caption)+'</div>' : '') +
+        (imgSrc ? '<img class="pv-img" src="'+imgSrc+'">' : '') +
+        '<div class="pv-reactions"><span>👍 ❤️ 😮</span>&nbsp; 12 reactions · 3 comments</div>' +
+        '<div class="pv-actions">' +
+          '<div class="pv-action"><i class="far fa-thumbs-up"></i> Like</div>' +
+          '<div class="pv-action"><i class="far fa-comment"></i> Comment</div>' +
+          '<div class="pv-action"><i class="fas fa-share"></i> Share</div>' +
+        '</div>' +
+      '</div>';
+
+  } else if (platform === 'instagram') {
+    mount.innerHTML =
+      '<div class="pv-ig">' +
+        '<div class="pv-top">' +
+          '<div class="pv-avatar"><div class="pv-avatar-inner">K</div></div>' +
+          '<div style="flex:1;"><div class="pv-username">kristyflach</div></div>' +
+          '<i class="fas fa-ellipsis-h" style="color:#262626;font-size:16px;padding:4px;"></i>' +
+        '</div>' +
+        (imgSrc
+          ? '<img class="pv-img" src="'+imgSrc+'" style="aspect-ratio:1/1;object-fit:cover;">'
+          : '<div class="pv-img-placeholder"><i class="fas fa-image" style="font-size:40px;opacity:0.2;"></i></div>') +
+        '<div class="pv-icons">' +
+          '<i class="far fa-heart"></i>' +
+          '<i class="far fa-comment" style="margin-left:2px;"></i>' +
+          '<i class="far fa-paper-plane" style="margin-left:2px;"></i>' +
+          '<i class="far fa-bookmark" style="margin-left:auto;"></i>' +
+        '</div>' +
+        '<div class="pv-likes">47 likes</div>' +
+        '<div class="pv-caption-row"><strong>kristyflach</strong> ' + (caption ? escPv(caption) : '<span style="color:#aaa;">Your caption will appear here...</span>') + '</div>' +
+        '<div class="pv-timestamp">Just now</div>' +
+      '</div>';
+
+  } else if (platform === 'linkedin') {
+    mount.innerHTML =
+      '<div class="pv-li">' +
+        '<div class="pv-top">' +
+          '<div class="pv-avatar">K</div>' +
+          '<div>' +
+            '<div class="pv-name">Kristy Flach</div>' +
+            '<div class="pv-title">Certified Mortgage Advisor | NMLS #2632259</div>' +
+            '<div class="pv-meta"><span>Just now</span> · <i class="fas fa-globe-americas" style="font-size:10px;"></i></div>' +
+          '</div>' +
+        '</div>' +
+        (caption ? '<div class="pv-caption">'+escPv(caption)+'</div>' : '') +
+        (imgSrc ? '<img class="pv-img" src="'+imgSrc+'">' : '') +
+        '<div class="pv-actions">' +
+          '<div class="pv-action"><i class="fas fa-thumbs-up" style="color:#0a66c2;"></i> Like</div>' +
+          '<div class="pv-action"><i class="far fa-comment-dots"></i> Comment</div>' +
+          '<div class="pv-action"><i class="fas fa-retweet"></i> Repost</div>' +
+          '<div class="pv-action"><i class="fas fa-share"></i> Send</div>' +
+        '</div>' +
+      '</div>';
+
+  } else if (platform === 'tiktok') {
+    mount.innerHTML =
+      '<div class="pv-tt">' +
+        (imgSrc
+          ? '<img class="pv-img" src="'+imgSrc+'">'
+          : '<div class="pv-img-placeholder"><i class="fas fa-video" style="font-size:40px;color:rgba(255,255,255,0.15);"></i></div>') +
+        '<div class="pv-right">' +
+          '<div style="text-align:center;"><div class="pv-avatar-tt">K</div><div style="font-size:9px;color:#fff;margin-top:4px;">+</div></div>' +
+          '<div style="text-align:center;"><i class="fas fa-heart"></i><div style="font-size:10px;color:#fff;margin-top:2px;">47.2K</div></div>' +
+          '<div style="text-align:center;"><i class="fas fa-comment-dots"></i><div style="font-size:10px;color:#fff;margin-top:2px;">1,204</div></div>' +
+          '<div style="text-align:center;"><i class="fas fa-share"></i><div style="font-size:10px;color:#fff;margin-top:2px;">Share</div></div>' +
+        '</div>' +
+        '<div class="pv-overlay">' +
+          '<div class="pv-username">@kristyflach</div>' +
+          '<div class="pv-caption">'+(caption ? escPv(caption) : 'Your caption will appear here...')+'</div>' +
+        '</div>' +
+      '</div>';
+
+  } else {
+    mount.innerHTML = '<div class="pv-empty"><i class="'+PLATFORM_META[platform].icon+'"></i><p>Preview for '+PLATFORM_META[platform].label+' coming soon</p></div>';
+  }
+}
+
+function escPv(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
 var uploadedPhotos = [];
 var drafts = [];
 
@@ -1373,6 +1571,11 @@ function updatePlatformToggle(checkbox, labelId) {
     label.classList.remove('selected');
     selectedPlatforms = selectedPlatforms.filter(function(p){return p!==checkbox.value;});
   }
+  // Reset active preview platform if it was deselected
+  if (!selectedPlatforms.includes(activePreviewPlatform)) {
+    activePreviewPlatform = selectedPlatforms[0] || null;
+  }
+  renderPreview();
 }
 
 function onCaptionInput() {
@@ -1385,6 +1588,8 @@ function onCaptionInput() {
   // Compliance check
   var rateTerms = /\b(rate|rates|apr|mortgage rate|interest rate|30.year|15.year|fha|va loan|down payment|payment|qualify|qualified|pre.approv)\b/i;
   document.getElementById('complianceBanner').classList.toggle('show', rateTerms.test(val));
+
+  renderPreview();
 }
 
 async function aiCaptionHelper() {
@@ -1449,6 +1654,7 @@ function renderPhotoPreview() {
     }
   });
   if (!uploadedPhotos.length && changeBtn) changeBtn.style.display = 'none';
+  renderPreview();
 }
 
 function handlePhotoUpload(e) {
@@ -1471,6 +1677,7 @@ function handlePhotoUpload(e) {
       if (i === 0) {
         document.getElementById('previewImg').src = ev.target.result;
         document.getElementById('previewImg').style.display = 'block';
+        renderPreview();
       }
     };
     reader.readAsDataURL(file);
