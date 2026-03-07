@@ -1052,6 +1052,7 @@ function loadToTeleprompter() {
   if (!tpText) { alert('No script to load. Write or generate a script first.'); return; }
   var display = document.getElementById('tpDisplay');
   display.textContent = tpText;
+  display.style.transform = 'translateY(0)';
   var spacing = document.getElementById('tpLineSpacing') ? document.getElementById('tpLineSpacing').value : '1.7';
   display.style.lineHeight = spacing;
   document.getElementById('tpOverlay').style.display = 'block';
@@ -1065,11 +1066,11 @@ function updateLineSpacing() {
 
 function startTpScroll() {
   stopTpScroll();
-  var inner = document.querySelector('.tp-inner');
-  if (!inner) return;
-  inner.scrollTop = 0;
+  var display = document.getElementById('tpDisplay');
+  if (!display) return;
   var speed = parseInt(document.getElementById('tpSpeed').value);
-  var pixelsPerSecond = speed * 20; // 1=20px/s ... 10=200px/s
+  var pixelsPerSecond = speed * 20;
+  var pos = 0;
   var lastTime = null;
 
   function step(timestamp) {
@@ -1077,10 +1078,9 @@ function startTpScroll() {
     if (!lastTime) lastTime = timestamp;
     var delta = (timestamp - lastTime) / 1000;
     lastTime = timestamp;
-    inner.scrollTop += pixelsPerSecond * delta;
-    if (inner.scrollTop < inner.scrollHeight - inner.clientHeight) {
-      tpAnimFrame = requestAnimationFrame(step);
-    }
+    pos += pixelsPerSecond * delta;
+    display.style.transform = 'translateY(-' + pos + 'px)';
+    tpAnimFrame = requestAnimationFrame(step);
   }
   tpAnimFrame = requestAnimationFrame(step);
 }
@@ -1090,9 +1090,10 @@ function stopTpScroll() {
 }
 
 function resetTeleprompter() {
-  var inner = document.querySelector('.tp-inner');
-  if (inner) inner.scrollTop = 0;
-  if (tpRunning) { stopTpScroll(); startTpScroll(); }
+  stopTpScroll();
+  var display = document.getElementById('tpDisplay');
+  if (display) display.style.transform = 'translateY(0)';
+  if (tpRunning) startTpScroll();
 }
 
 function updateTpSpeed() {
