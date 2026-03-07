@@ -1310,7 +1310,19 @@ async function rewriteScript() {
 
 var selectedPlatforms = [];
 var uploadedPhotos = [];
-var drafts = JSON.parse(localStorage.getItem('mediaLab_drafts') || '[]');
+var drafts = [];
+
+// Load drafts from Supabase on init
+async function loadDraftsFromSupabase() {
+  try {
+    var resp = await fetch(API_BASE + '/media-drafts');
+    var data = await resp.json();
+    if (data.success && Array.isArray(data.drafts)) {
+      drafts = data.drafts;
+      renderDrafts();
+    }
+  } catch(e) { console.warn('Could not load drafts', e); }
+}
 
 function updatePlatformToggle(checkbox, labelId) {
   var label = document.getElementById(labelId);
@@ -1427,40 +1439,69 @@ function removePhoto(i) {
   handlePhotoUpload({target:{files: []}});
 }
 
-function savePostDraft() {
+async function savePostDraft() {
   var caption = document.getElementById('postCaption').value.trim();
   if (!caption) { alert('Nothing to save.'); return; }
-  var draft = {
-    id: Date.now().toString(),
-    caption: caption,
-    platforms: selectedPlatforms.slice(),
-    photo: uploadedPhotos[0] || null,
-    created: new Date().toISOString(),
-    status: 'draft'
-  };
-  drafts.unshift(draft);
-  if (drafts.length > 20) drafts.pop();
-  localStorage.setItem('mediaLab_drafts', JSON.stringify(drafts));
-  addToLibrary({type:'post', title:caption.substring(0,60)+'...', platforms:selectedPlatforms.slice(), photo:uploadedPhotos[0]||null, status:'draft'});
-  renderDrafts();
-  showStatus(document.getElementById('postStatus'), 'Draft saved.', 'success');
+  var status = document.getElementById('postStatus');
+  showStatus(status, 'Saving draft...', 'info');
+  try {
+    var resp = await fetch(API_BASE + '/media-drafts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        caption: caption,
+        platforms: selectedPlatforms.slice(),
+        photo_url: uploadedPhotos[0] || null,
+        scheduled_time: document.getElementById('scheduleTime') ? document.getElementById('scheduleTime').value || null : null
+      })
+    });
+    var data = await resp.json();
+    if (data.success) {
+      addToLibrary({type:'post', title:caption.substring(0,60)+'...', platforms:selectedPlatforms.slice(), photo:uploadedPhotos[0]||null, status:'draft'});
+      await loadDraftsFromSupabase();
+      showStatus(status, 'Draft saved.', 'success');
+    } else {
+      showStatus(status, 'Save failed.', 'error');
+    }
+  } catch(e) {
+    showStatus(status, 'Save failed.', 'error');
+  }
+}
+
+async function deleteDraft(id, e) {
+  e.stopPropagation();
+  try {
+    await fetch(API_BASE + '/media-drafts?id=' + id, { method: 'DELETE' });
+    await loadDraftsFromSupabase();
+  } catch(e) { console.warn('Delete failed', e); }
 }
 
 function renderDrafts() {
   var el = document.getElementById('draftsList');
   if (!drafts.length) { el.innerHTML = '<span style="color:var(--text-muted);">No drafts saved yet.</span>'; return; }
-  el.innerHTML = drafts.slice(0,5).map(function(d) {
-    var date = new Date(d.created).toLocaleDateString('en-US',{month:'short',day:'numeric'});
-    return '<div style="padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;" onclick="loadDraft(\''+d.id+'\')">'+
-      '<div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+d.caption.substring(0,50)+'...</div>'+
-      '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">'+date+' &middot; '+(d.platforms.join(', ')||'no platforms')+'</div></div>';
+  el.innerHTML = drafts.slice(0,10).map(function(d) {
+    var date = new Date(d.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    var platforms = Array.isArray(d.platforms) ? d.platforms.join(', ') : 'no platforms';
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;">' +
+      '<div style="flex:1;cursor:pointer;" onclick="loadDraft(\''+d.id+'\')">'+
+      '<div style="font-size:12px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;">'+(d.caption||'').substring(0,50)+'...</div>'+
+      '<div style="font-size:11px;color:var(--text-muted);margin-top:2px;">'+date+' &middot; '+platforms+'</div></div>'+
+      '<button onclick="deleteDraft(\''+d.id+'\',event)" style="background:none;border:none;color:var(--text-muted);cursor:pointer;padding:2px 4px;font-size:11px;" title="Delete draft"><i class="fas fa-trash"></i></button>'+
+      '</div>';
   }).join('');
 }
 
 function loadDraft(id) {
   var draft = drafts.find(function(d){return d.id===id;});
   if (!draft) return;
-  document.getElementById('postCaption').value = draft.caption;
+  document.getElementById('postCaption').value = draft.caption || '';
+  if (draft.photo_url) {
+    uploadedPhotos = [draft.photo_url];
+    renderPhotoPreview();
+  }
+  if (draft.scheduled_time && document.getElementById('scheduleTime')) {
+    document.getElementById('scheduleTime').value = draft.scheduled_time.substring(0,16);
+  }
   onCaptionInput();
 }
 
@@ -1847,6 +1888,7 @@ function updateProgress(label, pct) {
 
 // Init
 renderDrafts();
+loadDraftsFromSupabase();
 renderYtSaved();
 </script>
 </body>
