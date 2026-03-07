@@ -289,6 +289,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <input type="text" class="form-input" id="scriptTopic" placeholder="e.g. Why rates dropped this week, FHA vs Conventional...">
         </div>
         <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Your Directions <span style="font-size:10px;color:var(--sage);font-weight:400;text-transform:none;letter-spacing:0;">(overrides everything below)</span></label>
+          <textarea class="form-textarea" id="scriptDirections" style="min-height:90px;font-size:13px;" placeholder="Tell it exactly what you want. e.g. make it funny, keep it under 45 seconds, end with 'text me at 614-555-1234', talk to first-time buyers who are nervous about rates..."></textarea>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
             <label class="form-label">Format</label>
             <select class="form-select" id="scriptFormat">
               <option value="60-second">60-second reel</option>
@@ -1057,7 +1061,6 @@ function toggleTeleprompter() {
     stopTpScroll();
     clearCountdown();
   }
-
 }
 
 function loadToTeleprompter() {
@@ -1159,7 +1162,8 @@ function clearScript() {
 // ===== AI SCRIPT GENERATOR =====
 async function generateScript() {
   var topic = document.getElementById('scriptTopic').value.trim();
-  if (!topic) { alert('Enter a topic first.'); return; }
+  var directions = document.getElementById('scriptDirections').value.trim();
+  if (!topic && !directions) { alert('Enter a topic or directions first.'); return; }
   var format = document.getElementById('scriptFormat').value;
   var audience = document.getElementById('scriptAudience').value;
   var tone = document.getElementById('scriptTone') ? document.getElementById('scriptTone').value : 'conversational and warm';
@@ -1174,7 +1178,7 @@ async function generateScript() {
     var resp = await fetch(API_BASE + '/generate-script', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic: topic, format: format, audience: audience, tone: tone })
+      body: JSON.stringify({ topic, directions, format, audience, tone })
     });
     var data = await resp.json();
     if (data.success && data.script) {
