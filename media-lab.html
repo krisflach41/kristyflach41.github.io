@@ -288,19 +288,18 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <label class="form-label">Topic / Video Idea</label>
           <input type="text" class="form-input" id="scriptTopic" placeholder="e.g. Why rates dropped this week, FHA vs Conventional...">
         </div>
-        <div class="form-row single">
+        <div class="form-row">
           <div class="form-group">
             <label class="form-label">Format</label>
             <select class="form-select" id="scriptFormat">
-              <option>60-second reel</option>
-              <option>2-3 minute explainer</option>
-              <option>Market update</option>
-              <option>Myth buster</option>
-              <option>How-to walkthrough</option>
+              <option value="60-second">60-second reel</option>
+              <option value="90-second">90-second reel</option>
+              <option value="2-minute">2-minute explainer</option>
+              <option value="3-minute">3-minute deep dive</option>
+              <option value="hook only">Hook only (first 3 sec)</option>
+              <option value="CTA only">Call to action only</option>
             </select>
           </div>
-        </div>
-        <div class="form-row single" style="margin-bottom:14px;">
           <div class="form-group">
             <label class="form-label">Audience</label>
             <select class="form-select" id="scriptAudience">
@@ -308,8 +307,20 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
               <option>Realtors / Partners</option>
               <option>Refinance leads</option>
               <option>General / Mixed</option>
+              <option>Investors</option>
+              <option>Move-up buyers</option>
             </select>
           </div>
+        </div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Tone</label>
+          <select class="form-select" id="scriptTone">
+            <option value="conversational and warm">Conversational & warm</option>
+            <option value="playful and funny">Playful & funny</option>
+            <option value="direct and urgent">Direct & urgent</option>
+            <option value="educational and clear">Educational & clear</option>
+            <option value="storytelling">Storytelling</option>
+          </select>
         </div>
         <button class="ai-script-btn" onclick="generateScript()" id="generateScriptBtn">
           <i class="fas fa-sparkles"></i> Generate Script
@@ -1113,6 +1124,7 @@ async function generateScript() {
   if (!topic) { alert('Enter a topic first.'); return; }
   var format = document.getElementById('scriptFormat').value;
   var audience = document.getElementById('scriptAudience').value;
+  var tone = document.getElementById('scriptTone') ? document.getElementById('scriptTone').value : 'conversational and warm';
   var btn = document.getElementById('generateScriptBtn');
   var status = document.getElementById('scriptStatus');
 
@@ -1124,7 +1136,7 @@ async function generateScript() {
     var resp = await fetch(API_BASE + '/generate-script', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ topic: topic, format: format, audience: audience })
+      body: JSON.stringify({ topic: topic, format: format, audience: audience, tone: tone })
     });
     var data = await resp.json();
     if (data.success && data.script) {
