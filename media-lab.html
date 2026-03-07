@@ -135,7 +135,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .preview-name{font-weight:600;font-size:13px;}
 .preview-handle{font-size:11px;color:var(--text-muted);}
 .preview-text{font-size:13px;line-height:1.5;color:var(--text-primary);white-space:pre-wrap;word-break:break-word;}
-.preview-img{width:100%;border-radius:8px;margin-top:10px;display:none;}
+.preview-img{width:100%;border-radius:8px;display:none;}
 
 /* Compliance badge */
 .compliance-banner{display:none;align-items:center;gap:8px;padding:10px 14px;background:rgba(186,163,112,0.1);border:1px solid rgba(186,163,112,0.3);border-radius:8px;margin-bottom:14px;font-size:13px;color:#92670a;}
@@ -479,11 +479,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
                 <div class="preview-handle">@kristyflach · Just now</div>
               </div>
             </div>
-            <div class="preview-text" id="previewText">Your caption will appear here...</div>
-            <img class="preview-img" id="previewImg" src="" alt="">
-            <div id="changeImageBtn" style="display:none;margin-top:6px;text-align:center;">
+            <img class="preview-img" id="previewImg" src="" alt="" style="margin-bottom:10px;margin-top:8px;">
+            <div id="changeImageBtn" style="display:none;margin-bottom:8px;text-align:center;">
               <button onclick="openUnsplashToChange()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-images"></i> Change image</button>
             </div>
+            <div class="preview-text" id="previewText">Your caption will appear here...</div>
           </div>
         </div>
 
