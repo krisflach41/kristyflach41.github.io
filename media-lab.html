@@ -70,7 +70,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .status-msg.info{background:rgba(37,99,235,0.08);color:#1d4ed8;border:1px solid rgba(37,99,235,0.2);}
 
 /* ===================== STUDIO TAB ===================== */
-.studio-layout{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start;}
+.studio-layout{display:block;padding-right:400px;}
 .teleprompter-panel-wrap{position:fixed;top:50%;right:24px;transform:translateY(-50%);width:360px;z-index:100;max-height:90vh;overflow-y:auto;}
 
 /* Camera */
@@ -205,7 +205,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 @keyframes tpScroll{from{transform:translateY(0);}to{transform:translateY(-100%);}}
 .tp-scrolling{animation:tpScroll linear;}
 
-/* Recording saved alert */
+/* Video player modal */
+.video-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.video-modal-inner{background:#0a0f1a;border-radius:12px;overflow:hidden;width:80vw;max-width:900px;}
+.video-modal video{width:100%;display:block;max-height:70vh;}
+.video-modal-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#111827;}
+.video-modal-title{color:white;font-weight:600;font-size:14px;}
+
 .recording-saved{display:none;align-items:center;gap:10px;padding:12px 16px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);border-radius:8px;margin-top:12px;}
 .recording-saved.show{display:flex;}
 </style>
@@ -752,6 +758,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   </div>
 </div>
 
+<!-- VIDEO PLAYER MODAL -->
+<div class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
+  <div class="video-modal-inner">
+    <div class="video-modal-bar">
+      <span class="video-modal-title" id="videoModalTitle"></span>
+      <button onclick="closeVideoModal()" style="background:none;border:none;color:rgba(255,255,255,0.6);font-size:20px;cursor:pointer;padding:0 4px;">&times;</button>
+    </div>
+    <video id="videoPlayer" controls style="width:100%;display:block;max-height:70vh;background:#000;"></video>
+  </div>
+</div>
+
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 var ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -800,24 +817,91 @@ function renderLibrary() {
     return;
   }
   grid.innerHTML = filtered.map(function(item) {
-    var thumb = item.type === 'youtube'
-      ? '<img src="https://img.youtube.com/vi/'+item.videoId+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;">'
-      : item.type === 'video'
-      ? '<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-circle-play" style="font-size:36px;color:rgba(255,255,255,0.4);"></i></div>'
-      : item.photo
-      ? '<img src="'+item.photo+'" style="width:100%;height:100%;object-fit:cover;">'
-      : '<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-pen-nib" style="font-size:36px;color:rgba(255,255,255,0.3);"></i></div>';
-    var badgeLabel = item.type === 'youtube' ? 'youtube' : item.type === 'video' ? 'video' : item.status === 'draft' ? 'draft' : 'post';
     var date = new Date(item.created).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
-    var platforms = item.platforms ? item.platforms.join(', ') : '—';
-    return '<div class="lib-item"><div class="lib-thumb" style="background:#0a0f1a;">'+thumb+'<span class="lib-type-badge '+badgeLabel+'">'+badgeLabel+'</span></div>'+
-      '<div class="lib-body"><div class="lib-title">'+(item.title||'Untitled')+'</div><div class="lib-meta">'+date+' &middot; '+platforms+'</div></div>'+
-      '<div class="lib-actions">'+
-      (item.type==='youtube'?'<a href="https://youtube.com/watch?v='+item.videoId+'" target="_blank" class="btn" style="padding:5px 10px;font-size:11px;text-decoration:none;"><i class="fas fa-play"></i> Watch</a>':'')+
-      '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="copyEmbedCode(\''+item.id+'\')"><i class="fas fa-code"></i> Embed</button>'+
-      '<button class="btn danger" style="padding:5px 10px;font-size:11px;" onclick="deleteLibItem(\''+item.id+'\')"><i class="fas fa-trash"></i></button>'+
-      '</div></div>';
+    var badgeLabel = item.type === 'youtube' ? 'YouTube' : item.type === 'video' ? 'Recording' : item.status === 'draft' ? 'Draft' : 'Post';
+    var badgeCls = item.type === 'youtube' ? 'youtube' : item.type === 'video' ? 'video' : 'post';
+
+    // Thumbnail
+    var thumb = '';
+    if (item.type === 'youtube') {
+      thumb = '<img src="https://img.youtube.com/vi/'+item.videoId+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover;" draggable="true" ondragstart="dragItem(event,\''+item.id+'\')">';
+    } else if (item.type === 'video' && item.url) {
+      thumb = '<video src="'+item.url+'" style="width:100%;height:100%;object-fit:cover;" preload="metadata" draggable="true" ondragstart="dragItem(event,\''+item.id+'\')"></video>'+
+              '<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer;" onclick="playVideo(\''+item.id+'\')">'+
+              '<div style="width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;">'+
+              '<i class="fas fa-play" style="color:white;font-size:18px;margin-left:3px;"></i></div></div>';
+    } else if (item.photo) {
+      thumb = '<img src="'+item.photo+'" style="width:100%;height:100%;object-fit:cover;">';
+    } else {
+      thumb = '<div style="display:flex;align-items:center;justify-content:center;height:100%;"><i class="fas fa-pen-nib" style="font-size:36px;color:rgba(255,255,255,0.3);"></i></div>';
+    }
+
+    // Action buttons per type
+    var actions = '';
+    if (item.type === 'video') {
+      actions += '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="playVideo(\''+item.id+'\')"><i class="fas fa-play"></i> Play</button>';
+      if (item.url) actions += '<a href="'+item.url+'" download="recording.webm" class="btn" style="padding:5px 10px;font-size:11px;text-decoration:none;"><i class="fas fa-download"></i> Download</a>';
+    } else if (item.type === 'youtube') {
+      actions += '<a href="https://youtube.com/watch?v='+item.videoId+'" target="_blank" class="btn" style="padding:5px 10px;font-size:11px;text-decoration:none;"><i class="fas fa-play"></i> Watch</a>';
+      actions += '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="copyEmbedCode(\''+item.id+'\')"><i class="fas fa-code"></i> Embed</button>';
+    } else {
+      actions += '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="previewPost(\''+item.id+'\')"><i class="fas fa-eye"></i> Preview</button>';
+    }
+    actions += '<button class="btn" style="padding:5px 10px;font-size:11px;" onclick="renameLibItem(\''+item.id+'\')"><i class="fas fa-pencil"></i></button>';
+    actions += '<button class="btn danger" style="padding:5px 10px;font-size:11px;" onclick="deleteLibItem(\''+item.id+'\')"><i class="fas fa-trash"></i></button>';
+
+    return '<div class="lib-item" draggable="true" ondragstart="dragItem(event,\''+item.id+'\')">'+
+      '<div class="lib-thumb" style="background:#0a0f1a;position:relative;">'+thumb+
+      '<span class="lib-type-badge '+badgeCls+'" style="position:absolute;top:8px;left:8px;">'+badgeLabel+'</span></div>'+
+      '<div class="lib-body">'+
+        '<div class="lib-title" title="'+(item.title||'Untitled')+'">'+(item.title||'Untitled')+'</div>'+
+        '<div class="lib-meta">'+date+'</div>'+
+      '</div>'+
+      '<div class="lib-actions">'+actions+'</div>'+
+    '</div>';
   }).join('');
+}
+
+function playVideo(id) {
+  var item = getLibrary().find(function(i){return i.id===id;});
+  if (!item || !item.url) { alert('Video file is no longer available. Download a fresh recording to keep it.'); return; }
+  var modal = document.getElementById('videoModal');
+  var player = document.getElementById('videoPlayer');
+  var title = document.getElementById('videoModalTitle');
+  player.src = item.url;
+  title.textContent = item.title || 'Recording';
+  modal.style.display = 'flex';
+  player.play();
+}
+
+function closeVideoModal() {
+  var modal = document.getElementById('videoModal');
+  var player = document.getElementById('videoPlayer');
+  player.pause();
+  player.src = '';
+  modal.style.display = 'none';
+}
+
+function renameLibItem(id) {
+  var lib = getLibrary();
+  var item = lib.find(function(i){return i.id===id;});
+  if (!item) return;
+  var newName = prompt('Rename:', item.title || '');
+  if (newName === null || !newName.trim()) return;
+  item.title = newName.trim();
+  saveLibrary(lib);
+  renderLibrary();
+}
+
+function dragItem(event, id) {
+  event.dataTransfer.setData('text/plain', id);
+  event.dataTransfer.effectAllowed = 'copy';
+}
+
+function previewPost(id) {
+  var item = getLibrary().find(function(i){return i.id===id;});
+  if (!item) return;
+  alert('Caption:\n\n' + (item.title || 'No caption'));
 }
 
 function deleteLibItem(id) {
