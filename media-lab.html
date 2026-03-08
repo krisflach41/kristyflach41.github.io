@@ -1707,23 +1707,58 @@ async function publishPost() {
   btn.disabled = true;
   btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
 
+  // If there's a photo, upload it to Supabase Storage first to get a public URL
+  var photoUrl = null;
+  if (uploadedPhotos[0]) {
+    var rawPhoto = uploadedPhotos[0];
+    if (rawPhoto.startsWith('http')) {
+      // Already a URL (e.g. Unsplash fallback) — use directly
+      photoUrl = rawPhoto;
+    } else if (rawPhoto.startsWith('data:')) {
+      // Base64 — upload to Supabase Storage
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading image...';
+      try {
+        var uploadResp = await fetch(API_BASE + '/upload-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: rawPhoto, filename: 'social-post' })
+        });
+        var uploadData = await uploadResp.json();
+        if (uploadData.success && uploadData.url) {
+          photoUrl = uploadData.url;
+        } else {
+          showStatus(status, 'Image upload failed: ' + (uploadData.error || 'Unknown error'), 'error');
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish Now';
+          return;
+        }
+      } catch (uploadErr) {
+        showStatus(status, 'Image upload failed: ' + uploadErr.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish Now';
+        return;
+      }
+    }
+  }
+
   // Save to library
   addToLibrary({
     type:'post',
     title: caption.substring(0,60),
     platforms: selectedPlatforms.slice(),
-    photo: uploadedPhotos[0] || null,
+    photo: photoUrl || null,
     status: scheduleTime ? 'scheduled' : 'published',
     scheduledFor: scheduleTime || null
   });
 
-  // Attempt real publish via backend
+  // Publish via backend
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Publishing...';
   try {
     var payload = {
       action: 'publish',
       caption: caption,
       platforms: selectedPlatforms,
-      photo: uploadedPhotos[0] || null,
+      photo: photoUrl,
       scheduledFor: scheduleTime || null
     };
     var resp = await fetch(API_BASE + '/social-publish', {
@@ -1731,13 +1766,27 @@ async function publishPost() {
       body: JSON.stringify(payload)
     });
     var data = await resp.json();
+
+    // Build detailed result message
+    var msgs = [];
+    if (data.results) {
+      Object.keys(data.results).forEach(function(p) {
+        msgs.push(p.charAt(0).toUpperCase() + p.slice(1) + ': Published');
+      });
+    }
+    if (data.errors) {
+      Object.keys(data.errors).forEach(function(p) {
+        msgs.push(p.charAt(0).toUpperCase() + p.slice(1) + ': ' + data.errors[p]);
+      });
+    }
+
     if (data.success) {
-      showStatus(status, scheduleTime ? 'Post scheduled for '+new Date(scheduleTime).toLocaleString()+'.' : 'Post published successfully!', 'success');
+      showStatus(status, (scheduleTime ? 'Scheduled. ' : 'Published. ') + msgs.join(' | '), 'success');
     } else {
-      showStatus(status, (data.message || 'Could not publish directly. Post saved to library — use platform apps to publish.') + ' Saved to Media Library.', 'info');
+      showStatus(status, 'Publishing issues: ' + msgs.join(' | '), 'error');
     }
   } catch(e) {
-    showStatus(status, 'Direct publishing failed. Post saved to Media Library.', 'info');
+    showStatus(status, 'Publishing failed: ' + e.message, 'error');
   }
 
   btn.disabled = false;
