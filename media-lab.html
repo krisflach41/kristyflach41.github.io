@@ -295,7 +295,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <button class="tab-btn" onclick="switchTab('composer',this)"><i class="fas fa-pen-nib"></i> Post Composer</button>
   <button class="tab-btn" onclick="switchTab('youtube',this)"><i class="fab fa-youtube"></i> YouTube</button>
   <button class="tab-btn" onclick="switchTab('library',this)"><i class="fas fa-photo-film"></i> Media Library</button>
-  <button class="tab-btn" onclick="switchTab('connections',this)"><i class="fas fa-plug"></i> Connections</button>
+
 </div>
 
 <!-- ==================== STUDIO TAB ==================== -->
@@ -778,69 +778,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   </div>
 </div>
 
-<!-- ==================== CONNECTIONS TAB ==================== -->
-<div class="tab-content" id="tab-connections">
-  <div class="ml-card">
-    <div class="ml-card-title"><i class="fas fa-plug"></i> Platform Connections</div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">Connect your social platforms to publish directly from Media Lab. You'll need your platform credentials and API access for each.</p>
-    <div class="platform-status-grid" id="platformStatusGrid">
-      <!-- rendered by JS -->
-    </div>
-  </div>
 
-  <div class="ml-card">
-    <div class="ml-card-title"><i class="fas fa-key"></i> API Configuration</div>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Enter your platform API credentials. These are stored securely in your Vercel environment variables.</p>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Meta App ID <span class="nmls-tag">Facebook + Instagram</span></label>
-        <input type="text" class="form-input" id="metaAppId" placeholder="Your Meta App ID">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Meta App Secret</label>
-        <input type="password" class="form-input" id="metaAppSecret" placeholder="••••••••••••">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Facebook Page Access Token</label>
-        <input type="password" class="form-input" id="fbPageToken" placeholder="••••••••••••">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Instagram Business Account ID</label>
-        <input type="text" class="form-input" id="igAccountId" placeholder="Your IG Business Account ID">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">LinkedIn Access Token</label>
-        <input type="password" class="form-input" id="liToken" placeholder="••••••••••••">
-      </div>
-      <div class="form-group">
-        <label class="form-label">TikTok Access Token</label>
-        <input type="password" class="form-input" id="ttToken" placeholder="••••••••••••">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">YouTube Data API Key</label>
-        <input type="password" class="form-input" id="ytApiKey" placeholder="••••••••••••">
-      </div>
-    </div>
-    <button class="btn primary" onclick="saveApiKeys()"><i class="fas fa-floppy-disk"></i> Save Configuration</button>
-    <div class="status-msg" id="apiStatus"></div>
-  </div>
-
-  <div class="ml-card">
-    <div class="ml-card-title"><i class="fas fa-circle-info"></i> Setup Guide</div>
-    <div style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
-      <p style="margin-bottom:8px;"><strong>Facebook + Instagram (Meta):</strong> You need a Meta Business account with a connected Facebook Page and Instagram Business profile. Create a Meta Developer App at developers.facebook.com, add the Pages API and Instagram Graph API permissions, and generate a long-lived Page Access Token.</p>
-      <p style="margin-bottom:8px;"><strong>LinkedIn:</strong> Create an app at linkedin.com/developers with the "Share on LinkedIn" and "Sign In with LinkedIn" products. Generate an access token with w_member_social scope.</p>
-      <p style="margin-bottom:8px;"><strong>TikTok:</strong> Apply for TikTok for Business API access at developers.tiktok.com. Requires business verification — approval typically takes 1-2 weeks.</p>
-      <p><strong>YouTube:</strong> Enable the YouTube Data API v3 in Google Cloud Console and create an API key. For posting, you'll also need OAuth 2.0 credentials.</p>
-    </div>
-  </div>
-</div>
 
 <!-- VIDEO PLAYER MODAL -->
 <div class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
@@ -864,7 +802,7 @@ function switchTab(name, btn) {
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if (name === 'library') renderLibrary();
-  if (name === 'connections') renderPlatformStatus();
+
   if (name === 'youtube') renderYtSaved();
 }
 
@@ -1799,7 +1737,7 @@ async function publishPost() {
       showStatus(status, (data.message || 'Could not publish directly. Post saved to library — use platform apps to publish.') + ' Saved to Media Library.', 'info');
     }
   } catch(e) {
-    showStatus(status, 'Direct publishing not connected yet. Post saved to Media Library — copy caption and post manually or set up API credentials in Connections.', 'info');
+    showStatus(status, 'Direct publishing failed. Post saved to Media Library.', 'info');
   }
 
   btn.disabled = false;
@@ -1878,44 +1816,7 @@ function renderYtSaved() {
 }
 
 // ===== PLATFORM CONNECTIONS =====
-var platformConfig = [
-  {key:'facebook', label:'Facebook', icon:'fab fa-facebook', cls:'fb', note:'Meta Business required'},
-  {key:'instagram', label:'Instagram', icon:'fab fa-instagram', cls:'ig', note:'IG Business account required'},
-  {key:'linkedin', label:'LinkedIn', icon:'fab fa-linkedin', cls:'li', note:'LinkedIn Developer App required'},
-  {key:'tiktok', label:'TikTok', icon:'fab fa-tiktok', cls:'tt', note:'TikTok for Business required'},
-  {key:'youtube', label:'YouTube', icon:'fab fa-youtube', cls:'yt', note:'YouTube Data API v3 required'},
-];
 
-function renderPlatformStatus() {
-  var saved = JSON.parse(localStorage.getItem('mediaLab_connections') || '{}');
-  document.getElementById('platformStatusGrid').innerHTML = platformConfig.map(function(p) {
-    var connected = saved[p.key] === true;
-    return '<div class="platform-card">'+
-      '<div class="platform-icon '+p.cls+'"><i class="'+p.icon+'"></i></div>'+
-      '<div class="platform-info">'+
-        '<div class="platform-name">'+p.label+'</div>'+
-        '<div class="platform-connected '+(connected?'yes':'no')+'">'+(connected?'Connected':'Not connected')+'</div>'+
-        '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">'+p.note+'</div>'+
-      '</div>'+
-      '<button class="connect-btn '+(connected?'connected':'')+'" onclick="toggleConnection(\''+p.key+'\',this)">'+
-        (connected?'Connected':'Connect')+
-      '</button>'+
-    '</div>';
-  }).join('');
-}
-
-function toggleConnection(key, btn) {
-  var saved = JSON.parse(localStorage.getItem('mediaLab_connections') || '{}');
-  saved[key] = !saved[key];
-  localStorage.setItem('mediaLab_connections', JSON.stringify(saved));
-  renderPlatformStatus();
-}
-
-function saveApiKeys() {
-  var status = document.getElementById('apiStatus');
-  // In production these would go to Vercel env via backend
-  showStatus(status, 'Configuration saved. Add these keys to your Vercel environment variables (META_APP_ID, META_APP_SECRET, FB_PAGE_TOKEN, IG_ACCOUNT_ID, LI_TOKEN, TT_TOKEN, YT_API_KEY) for live publishing to activate.', 'info');
-}
 
 // ===== UTILITY =====
 function showStatus(el, msg, type) {
@@ -2094,10 +1995,10 @@ async function uploadVideo() {
         updateProgress('YouTube upload complete.', 90);
         addToLibrary({type:'youtube', videoId:ytData.videoId, title:title, category:category, description:description, visibility:siteVisibility, platforms:['youtube']});
       } else {
-        results.push('YouTube: ' + (ytData.message || 'upload failed — check YouTube API credentials in Connections'));
+        results.push('YouTube: ' + (ytData.message || 'upload failed'));
       }
     } catch(e) {
-      results.push('YouTube: endpoint not yet deployed — add YT_API_KEY and OAuth credentials in Connections tab');
+      results.push('YouTube: endpoint not yet deployed');
     }
   }
 
@@ -2116,10 +2017,10 @@ async function uploadVideo() {
       if (sfResult.success) {
         results.push(socialPlatforms.join(', ') + ' published ✓');
       } else {
-        results.push(socialPlatforms.join(', ') + ': ' + (sfResult.message || 'check API credentials in Connections'));
+        results.push(socialPlatforms.join(', ') + ': ' + (sfResult.message || 'publishing failed'));
       }
     } catch(e) {
-      results.push(socialPlatforms.join(', ') + ': connect platforms in Connections tab to enable direct publishing');
+      results.push(socialPlatforms.join(', ') + ': platform not yet configured for direct publishing');
     }
   }
 
