@@ -1729,13 +1729,25 @@ async function publishPost() {
       // Already a URL (e.g. Unsplash fallback) — use directly
       photoUrl = rawPhoto;
     } else if (rawPhoto.startsWith('data:')) {
-      // Base64 — upload to Supabase Storage
+      // Base64 — convert to file and upload via FormData
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading image...';
       try {
+        // Convert base64 data URL to Blob
+        var parts = rawPhoto.split(',');
+        var mime = parts[0].match(/:(.*?);/)[1];
+        var bstr = atob(parts[1]);
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while(n--) u8arr[n] = bstr.charCodeAt(n);
+        var blob = new Blob([u8arr], {type: mime});
+
+        var formData = new FormData();
+        formData.append('file', blob, 'social-post.' + (mime.split('/')[1] === 'jpeg' ? 'jpg' : mime.split('/')[1]));
+        formData.append('filename', 'social-post');
+
         var uploadResp = await fetch(API_BASE + '/upload-image', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: rawPhoto, filename: 'social-post' })
+          body: formData
         });
         var uploadData = await uploadResp.json();
         if (uploadData.success && uploadData.url) {
