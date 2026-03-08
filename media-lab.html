@@ -1626,7 +1626,21 @@ function handlePhotoUpload(e) {
 
 function removePhoto(i) {
   uploadedPhotos.splice(i, 1);
-  handlePhotoUpload({target:{files: []}});
+  // Clear the photo preview grid
+  var grid = document.getElementById('photoPreviewGrid');
+  grid.innerHTML = '';
+  grid.style.display = uploadedPhotos.length ? 'grid' : 'none';
+  // Clear the platform preview image
+  var previewImg = document.getElementById('previewImg');
+  if (previewImg) { previewImg.src = ''; previewImg.style.display = 'none'; }
+  // If there are remaining photos, re-render them
+  if (uploadedPhotos.length) {
+    renderPhotoPreview();
+  } else {
+    var changeBtn = document.getElementById('changeImageBtn');
+    if (changeBtn) changeBtn.style.display = 'none';
+  }
+  renderPreview();
 }
 
 async function savePostDraft() {
