@@ -1220,6 +1220,10 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
       <span class="nav-badge purple">PRO</span>
     </div>
+    <div class="nav-item" onclick="switchView('propertywebsites', this)">
+      <span class="nav-icon"><i class="fas fa-globe"></i></span> Property Websites
+      <span class="nav-badge" style="background:rgba(186,163,112,0.2);color:#baa370;">NEW</span>
+    </div>
 
     <div class="nav-section-label">Insights</div>
     <div class="nav-item" onclick="switchView('scenarios', this)">
@@ -2021,6 +2025,119 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 <!-- ========================================== -->
 <!-- PROSPECTING VIEW -->
 <!-- ========================================== -->
+<div class="view-panel" id="view-propertywebsites">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Property Website Builder</div><div class="topbar-subtitle">Look up property data, manage photos, build and preview sites</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" onclick="pwNewLookup()"><i class="fas fa-plus"></i> New Lookup</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- STEP 1: Lookup -->
+    <div class="mc-card" id="pwStep1">
+      <div class="mc-card-title"><i class="fas fa-search" style="color:var(--sage);"></i> Property Lookup</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;">
+        <div>
+          <label class="form-label">Property Address</label>
+          <input type="text" class="form-input" id="pwAddress" placeholder="789 Dorgene Ln, Cincinnati, OH 45244">
+        </div>
+        <div>
+          <label class="form-label">MLS #</label>
+          <input type="text" class="form-input" id="pwMls" placeholder="1870625">
+        </div>
+        <button class="topbar-btn primary" onclick="pwLookup()" id="pwLookupBtn" style="height:38px;">
+          <i class="fas fa-search"></i> Look Up
+        </button>
+      </div>
+      <div class="status-msg" id="pwLookupStatus" style="margin-top:10px;"></div>
+    </div>
+
+    <!-- STEP 2: Property Data (hidden until lookup) -->
+    <div class="mc-card" id="pwStep2" style="display:none;">
+      <div class="mc-card-title"><i class="fas fa-building" style="color:var(--sage);"></i> Property Data</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div><label class="form-label">Address</label><input class="form-input" id="pwDataAddress"></div>
+        <div><label class="form-label">City</label><input class="form-input" id="pwDataCity"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div><label class="form-label">State</label><input class="form-input" id="pwDataState"></div>
+          <div><label class="form-label">ZIP</label><input class="form-input" id="pwDataZip"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:12px;margin-top:12px;">
+        <div><label class="form-label">Price</label><input class="form-input" id="pwDataPrice"></div>
+        <div><label class="form-label">Beds</label><input class="form-input" id="pwDataBeds"></div>
+        <div><label class="form-label">Baths</label><input class="form-input" id="pwDataBaths"></div>
+        <div><label class="form-label">Sqft</label><input class="form-input" id="pwDataSqft"></div>
+        <div><label class="form-label">Lot Size</label><input class="form-input" id="pwDataLot"></div>
+        <div><label class="form-label">Year Built</label><input class="form-input" id="pwDataYear"></div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="form-label">Description</label>
+        <textarea class="form-input" id="pwDataDesc" style="min-height:80px;resize:vertical;"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
+        <div><label class="form-label">Listing Agent</label><input class="form-input" id="pwDataAgent"></div>
+        <div><label class="form-label">Property Type</label><input class="form-input" id="pwDataType"></div>
+        <div><label class="form-label">Status</label><input class="form-input" id="pwDataStatus"></div>
+      </div>
+      <div style="margin-top:12px;">
+        <label class="form-label">Listing URL</label>
+        <div style="display:flex;gap:8px;">
+          <input class="form-input" id="pwDataUrl" style="flex:1;">
+          <a id="pwOpenListing" href="#" target="_blank" class="topbar-btn" style="text-decoration:none;display:flex;align-items:center;gap:4px;height:38px;"><i class="fas fa-external-link-alt"></i> Open Listing</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Photos -->
+    <div class="mc-card" id="pwStep3" style="display:none;">
+      <div class="mc-card-title"><i class="fas fa-images" style="color:var(--sage);"></i> Property Photos</div>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Open the listing URL above, right-click and save property photos, then upload them here. Select which photos to include and assign their placement.</p>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <label class="topbar-btn" style="cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <i class="fas fa-upload"></i> Upload Photos
+          <input type="file" accept="image/*" multiple onchange="pwUploadPhotos(event)" style="display:none;">
+        </label>
+        <button class="topbar-btn" onclick="pwSelectAll()" id="pwSelectAllBtn">Select All</button>
+        <button class="topbar-btn" onclick="pwDeselectAll()">Deselect All</button>
+      </div>
+      <div id="pwPhotoGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
+    </div>
+
+    <!-- STEP 4: Generate & Preview -->
+    <div class="mc-card" id="pwStep4" style="display:none;">
+      <div class="mc-card-title"><i class="fas fa-eye" style="color:var(--sage);"></i> Preview & Generate</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div>
+          <label class="form-label">Template</label>
+          <select class="form-input" id="pwTemplate">
+            <option>Cavallo</option><option>Stylish</option><option>Vertical</option><option>Sleek</option><option>Impact</option><option>Modern</option><option>Contemporary</option>
+          </select>
+        </div>
+        <div>
+          <label class="form-label">Color Scheme</label>
+          <select class="form-input" id="pwColor">
+            <option>Blue</option><option>Navy</option><option>Black</option><option>Green</option><option>Red</option><option>Gold</option><option>Charcoal</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="topbar-btn primary" onclick="pwPreview()"><i class="fas fa-eye"></i> Preview Site</button>
+        <button class="topbar-btn sage" onclick="pwGenerate()" id="pwGenerateBtn"><i class="fas fa-rocket"></i> Generate & Publish</button>
+      </div>
+      <div id="pwPreviewFrame" style="margin-top:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:none;">
+        <iframe id="pwIframe" style="width:100%;height:600px;border:none;"></iframe>
+      </div>
+      <div class="status-msg" id="pwGenerateStatus" style="margin-top:10px;"></div>
+    </div>
+
+  </div>
+</div>
+
 <div class="view-panel" id="view-prospecting">
   <div class="topbar">
     <div class="topbar-left">
@@ -7202,6 +7319,202 @@ function runProspectSearch() {
   var q = document.getElementById('prospectSearch').value.trim();
   if (!q) return;
   showToast('Prospecting coming soon - will search: ' + q);
+}
+
+// ===== PROPERTY WEBSITES =====
+var pwPhotos = [];
+var pwPropertyData = {};
+
+function pwNewLookup() {
+  document.getElementById('pwAddress').value = '';
+  document.getElementById('pwMls').value = '';
+  document.getElementById('pwStep2').style.display = 'none';
+  document.getElementById('pwStep3').style.display = 'none';
+  document.getElementById('pwStep4').style.display = 'none';
+  document.getElementById('pwPreviewFrame').style.display = 'none';
+  pwPhotos = [];
+  pwPropertyData = {};
+  var status = document.getElementById('pwLookupStatus');
+  status.style.display = 'none';
+}
+
+async function pwLookup() {
+  var address = document.getElementById('pwAddress').value.trim();
+  var mls = document.getElementById('pwMls').value.trim();
+  if (!address && !mls) { alert('Enter an address or MLS #.'); return; }
+  
+  var btn = document.getElementById('pwLookupBtn');
+  var status = document.getElementById('pwLookupStatus');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Looking up...';
+  status.className = 'status-msg show info';
+  status.textContent = 'Searching property databases... this may take 15-30 seconds.';
+  
+  try {
+    var params = [];
+    if (address) params.push('address=' + encodeURIComponent(address));
+    if (mls) params.push('mls=' + encodeURIComponent(mls));
+    var resp = await fetch(API_BASE + '/property-lookup?' + params.join('&'));
+    var data = await resp.json();
+    
+    if (data.success && data.property) {
+      pwPropertyData = data.property;
+      document.getElementById('pwDataAddress').value = data.property.address || '';
+      document.getElementById('pwDataCity').value = data.property.city || '';
+      document.getElementById('pwDataState').value = data.property.state || '';
+      document.getElementById('pwDataZip').value = data.property.zip || '';
+      document.getElementById('pwDataPrice').value = data.property.price || '';
+      document.getElementById('pwDataBeds').value = data.property.beds || '';
+      document.getElementById('pwDataBaths').value = data.property.baths || '';
+      document.getElementById('pwDataSqft').value = data.property.sqft || '';
+      document.getElementById('pwDataLot').value = data.property.lotSize || '';
+      document.getElementById('pwDataYear').value = data.property.yearBuilt || '';
+      document.getElementById('pwDataDesc').value = data.property.description || '';
+      document.getElementById('pwDataAgent').value = data.property.listingAgent || '';
+      document.getElementById('pwDataType').value = data.property.propertyType || '';
+      document.getElementById('pwDataStatus').value = data.property.status || '';
+      document.getElementById('pwDataUrl').value = data.property.url || '';
+      var openBtn = document.getElementById('pwOpenListing');
+      if (data.property.url) {
+        openBtn.href = data.property.url;
+        openBtn.style.display = 'flex';
+      } else {
+        openBtn.style.display = 'none';
+      }
+      
+      document.getElementById('pwStep2').style.display = 'block';
+      document.getElementById('pwStep3').style.display = 'block';
+      document.getElementById('pwStep4').style.display = 'block';
+      status.className = 'status-msg show success';
+      status.textContent = 'Property found! Review data below, then upload photos from the listing.';
+    } else {
+      status.className = 'status-msg show error';
+      status.textContent = data.error || 'Property not found. Check the address or MLS #.';
+    }
+  } catch(e) {
+    status.className = 'status-msg show error';
+    status.textContent = 'Lookup failed: ' + e.message;
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-search"></i> Look Up';
+}
+
+function pwUploadPhotos(e) {
+  var files = Array.from(e.target.files);
+  files.forEach(function(file) {
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      pwPhotos.push({ src: ev.target.result, selected: true, role: 'gallery', file: file });
+      pwRenderPhotos();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function pwRenderPhotos() {
+  var grid = document.getElementById('pwPhotoGrid');
+  grid.innerHTML = '';
+  pwPhotos.forEach(function(photo, i) {
+    var div = document.createElement('div');
+    div.style.cssText = 'position:relative;border-radius:8px;overflow:hidden;border:3px solid ' + (photo.selected ? 'var(--sage)' : 'var(--border)') + ';cursor:pointer;';
+    div.innerHTML = '<img src="' + photo.src + '" style="width:100%;height:140px;object-fit:cover;display:block;">' +
+      '<div style="padding:8px;background:white;">' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
+      '<input type="checkbox" ' + (photo.selected ? 'checked' : '') + ' onchange="pwTogglePhoto(' + i + ',this.checked)" style="margin:0;">' +
+      '<span style="font-size:11px;font-weight:600;color:var(--text-secondary);">Photo ' + (i+1) + '</span>' +
+      '</div>' +
+      '<select onchange="pwSetRole(' + i + ',this.value)" style="width:100%;font-size:11px;padding:3px;border:1px solid var(--border);border-radius:4px;">' +
+      '<option value="hero"' + (photo.role==='hero'?' selected':'') + '>Hero Image</option>' +
+      '<option value="gallery"' + (photo.role==='gallery'?' selected':'') + '>Gallery</option>' +
+      '<option value="parallax"' + (photo.role==='parallax'?' selected':'') + '>Parallax Background</option>' +
+      '</select>' +
+      '</div>' +
+      '<button onclick="pwRemovePhoto(' + i + ')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>';
+    grid.appendChild(div);
+  });
+}
+
+function pwTogglePhoto(i, checked) { pwPhotos[i].selected = checked; pwRenderPhotos(); }
+function pwSetRole(i, role) { pwPhotos[i].role = role; }
+function pwRemovePhoto(i) { pwPhotos.splice(i, 1); pwRenderPhotos(); }
+function pwSelectAll() { pwPhotos.forEach(function(p) { p.selected = true; }); pwRenderPhotos(); }
+function pwDeselectAll() { pwPhotos.forEach(function(p) { p.selected = false; }); pwRenderPhotos(); }
+
+function pwPreview() {
+  var selectedPhotos = pwPhotos.filter(function(p) { return p.selected; });
+  var heroPhoto = selectedPhotos.find(function(p) { return p.role === 'hero'; }) || selectedPhotos[0];
+  var parallaxPhoto = selectedPhotos.find(function(p) { return p.role === 'parallax'; });
+  var galleryPhotos = selectedPhotos.filter(function(p) { return p.role === 'gallery' || (!heroPhoto || p !== heroPhoto); });
+  
+  var addr = document.getElementById('pwDataAddress').value || 'Property Address';
+  var city = document.getElementById('pwDataCity').value || '';
+  var state = document.getElementById('pwDataState').value || '';
+  var zip = document.getElementById('pwDataZip').value || '';
+  var price = document.getElementById('pwDataPrice').value || '';
+  var beds = document.getElementById('pwDataBeds').value || '';
+  var baths = document.getElementById('pwDataBaths').value || '';
+  var sqft = document.getElementById('pwDataSqft').value || '';
+  var desc = document.getElementById('pwDataDesc').value || '';
+  var color = document.getElementById('pwColor').value || 'Navy';
+  
+  var colorMap = {Blue:'#2563eb',Navy:'#002556',Black:'#111',Green:'#166534',Red:'#991b1b',Gold:'#92700c',Charcoal:'#374151'};
+  var c = colorMap[color] || '#002556';
+  
+  var heroSrc = heroPhoto ? heroPhoto.src : '';
+  var parallaxSrc = parallaxPhoto ? parallaxPhoto.src : heroSrc;
+  
+  var galleryHtml = '';
+  galleryPhotos.forEach(function(p) {
+    galleryHtml += '<img src="' + p.src + '" style="width:100%;border-radius:8px;margin-bottom:12px;">';
+  });
+  
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+    '<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Georgia,serif;color:#222;}' +
+    '.hero{position:relative;height:100vh;background:url(' + heroSrc + ') center/cover;display:flex;align-items:center;justify-content:center;text-align:center;}' +
+    '.hero-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.35);}' +
+    '.hero-text{position:relative;z-index:1;color:white;padding:40px;}' +
+    '.hero-text h1{font-size:clamp(28px,5vw,56px);letter-spacing:3px;margin-bottom:12px;text-transform:uppercase;}' +
+    '.hero-text h2{font-size:clamp(16px,2.5vw,24px);font-weight:400;letter-spacing:2px;opacity:0.9;}' +
+    'nav{display:flex;justify-content:flex-end;gap:24px;padding:16px 40px;background:' + c + ';position:fixed;top:0;width:100%;z-index:10;}' +
+    'nav a{color:white;text-decoration:none;font-size:14px;letter-spacing:1px;font-family:sans-serif;}' +
+    '.section{max-width:900px;margin:0 auto;padding:60px 24px;}' +
+    '.section h3{font-size:28px;color:' + c + ';margin-bottom:20px;letter-spacing:1px;}' +
+    '.stats{display:flex;gap:32px;margin-bottom:24px;flex-wrap:wrap;}' +
+    '.stat{text-align:center;}.stat-val{font-size:28px;font-weight:700;color:' + c + ';}.stat-label{font-size:12px;color:#888;text-transform:uppercase;letter-spacing:1px;}' +
+    '.parallax{height:50vh;background:url(' + parallaxSrc + ') center/cover fixed;position:relative;}' +
+    '.parallax-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.2);}' +
+    '.gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}' +
+    '.social{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:8px;z-index:10;}' +
+    '.social a{width:36px;height:36px;border-radius:50%;background:' + c + ';color:white;display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:14px;}' +
+    '</style></head><body>' +
+    '<nav><a href="#overview">OVERVIEW</a><a href="#photos">PHOTOS</a><a href="#contact">CONNECT</a></nav>' +
+    '<div class="hero"><div class="hero-overlay"></div><div class="hero-text"><h1>' + addr.toUpperCase() + '</h1><h2>' + city.toUpperCase() + ' ' + state.toUpperCase() + '</h2></div></div>' +
+    '<div class="section" id="overview"><h3>Overview</h3>' +
+    '<div class="stats">' +
+    (price ? '<div class="stat"><div class="stat-val">$' + Number(price).toLocaleString() + '</div><div class="stat-label">Price</div></div>' : '') +
+    (beds ? '<div class="stat"><div class="stat-val">' + beds + '</div><div class="stat-label">Bedrooms</div></div>' : '') +
+    (baths ? '<div class="stat"><div class="stat-val">' + baths + '</div><div class="stat-label">Bathrooms</div></div>' : '') +
+    (sqft ? '<div class="stat"><div class="stat-val">' + Number(sqft).toLocaleString() + '</div><div class="stat-label">Sq Ft</div></div>' : '') +
+    '</div>' +
+    (desc ? '<p style="line-height:1.7;color:#555;">' + desc + '</p>' : '') +
+    '</div>' +
+    (parallaxSrc ? '<div class="parallax"><div class="parallax-overlay"></div></div>' : '') +
+    '<div class="section" id="photos"><h3>Photos</h3><div class="gallery-grid">' + galleryHtml + '</div></div>' +
+    '<div class="section" id="contact" style="text-align:center;padding:80px 24px;background:' + c + ';color:white;max-width:100%;">' +
+    '<h3 style="color:white;">Interested in this property?</h3><p style="opacity:0.8;margin-top:12px;">Contact the listing agent for more information or to schedule a showing.</p></div>' +
+    '</body></html>';
+  
+  var frame = document.getElementById('pwPreviewFrame');
+  frame.style.display = 'block';
+  var iframe = document.getElementById('pwIframe');
+  iframe.srcdoc = html;
+}
+
+function pwGenerate() {
+  var status = document.getElementById('pwGenerateStatus');
+  status.className = 'status-msg show info';
+  status.textContent = 'Site generation coming soon. Use Preview to review the site, then we will wire up publishing in the next session.';
 }
 
 // ===== CREDIT ANALYSIS =====
