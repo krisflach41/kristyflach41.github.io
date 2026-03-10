@@ -7523,7 +7523,8 @@ function pwPreview() {
   var frame = document.getElementById('pwPreviewFrame');
   frame.style.display = 'block';
   var iframe = document.getElementById('pwIframe');
-  iframe.srcdoc = html;
+  var blob = new Blob([html], {type: 'text/html'});
+  iframe.src = URL.createObjectURL(blob);
 }
 
 function pwGenerate() {
