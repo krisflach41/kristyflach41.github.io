@@ -77,7 +77,8 @@ body {
 }
 
 .property-row input,
-.property-row textarea {
+.property-row textarea,
+.property-row select {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
@@ -85,6 +86,9 @@ body {
   margin-bottom: 12px;
   box-sizing: border-box;
   font-family: inherit;
+  font-size: 14px;
+  color: #0b1f3a;
+  background: white;
 }
 
 .property-row textarea {
@@ -523,7 +527,7 @@ function renderProperties() {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
             <div class="section-label">Template Style</div>
-            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:inherit;margin-bottom:12px;" onchange="properties[${i}].template = this.value">
+            <select onchange="properties[${i}].template = this.value">
               <option value="Cavallo" ${prop.template==='Cavallo'?'selected':''}>Cavallo</option>
               <option value="Stylish" ${prop.template==='Stylish'?'selected':''}>Stylish</option>
               <option value="Vertical" ${prop.template==='Vertical'?'selected':''}>Vertical</option>
@@ -535,7 +539,7 @@ function renderProperties() {
           </div>
           <div>
             <div class="section-label">Color Scheme</div>
-            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:inherit;margin-bottom:12px;" onchange="properties[${i}].colorScheme = this.value">
+            <select onchange="properties[${i}].colorScheme = this.value">
               <option value="Blue" ${prop.colorScheme==='Blue'?'selected':''}>Blue</option>
               <option value="Navy" ${prop.colorScheme==='Navy'?'selected':''}>Navy</option>
               <option value="Black" ${prop.colorScheme==='Black'?'selected':''}>Black</option>
