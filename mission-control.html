@@ -728,7 +728,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 
 .pp-tpl-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .pp-tpl-card { display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 8px; cursor: pointer; background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.04); transition: all 0.2s; }
-.pp-tpl-card:hover { border-color: rgba(59,130,246,0.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+.pp-tpl-card:hover { border-color: rgba(59,130,246,0.25); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
 .pp-tpl-icon { font-size: 28px; flex-shrink: 0; }
 .pp-tpl-body { flex: 1; min-width: 0; }
 .pp-tpl-name { font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-bottom: 3px; }
@@ -742,18 +742,18 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .pp-order-name { font-size: 14px; font-weight: 700; color: var(--text-primary); }
 .pp-order-meta { font-size: 11px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-weight: 600; margin-top: 2px; }
 .pp-order-tag { padding: 4px 12px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; font-family: 'DM Sans', sans-serif; font-weight: 600; flex-shrink: 0; }
-.pp-order-btn { padding: 8px 18px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: var(--text-primary); font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; transition: all 0.2s; flex-shrink: 0; }
+.pp-order-btn { padding: 8px 18px; border-radius: 6px; cursor: pointer; background: linear-gradient(135deg, #3b82f6, #2563eb); border: 1px solid rgba(59,130,246,0.4); color: #ffffff; font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; transition: all 0.2s; flex-shrink: 0; }
 .pp-order-btn:hover {  }
 .pp-email-btn { padding: 8px 16px; border-radius: 6px; cursor: pointer; background: transparent; border: 1px solid rgba(34,197,94,0.25); color: #22c55e; font-size: 11px; font-family: 'DM Sans', sans-serif; font-weight: 600; letter-spacing: 1px; transition: all 0.2s; flex-shrink: 0; }
 .pp-email-btn:hover { background: rgba(34,197,94,0.05); border-color: #22c55e; box-shadow: 0 0 12px rgba(34,197,94,0.15); }
 
 /* ===== ORDER DETAIL PANEL ===== */
 .pp-order-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); backdrop-filter: blur(4px); z-index: 9998; display: none; }
-.pp-order-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 92%; max-width: 680px; max-height: 85vh; overflow-y: auto; background: #0f1923; border: 1px solid var(--border-light); border-radius: 16px; padding: 0; z-index: 9999; display: none; box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.03); }
+.pp-order-panel { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 92%; max-width: 680px; max-height: 85vh; overflow-y: auto; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 0; z-index: 9999; display: none; box-shadow: 0 30px 80px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.03); }
 .pp-order-panel::-webkit-scrollbar { width: 6px; }
 .pp-order-panel::-webkit-scrollbar-track { background: transparent; }
 .pp-order-panel::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
-.pp-od-header { padding: 26px 28px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #0f1923; z-index: 2; }
+.pp-od-header { padding: 26px 28px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #ffffff; z-index: 2; }
 .pp-od-topline { display: flex; justify-content: space-between; align-items: flex-start; }
 .pp-od-title { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-primary); letter-spacing: 2px; }
 .pp-od-close { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border-light); background: #fafbfc; color: var(--text-muted); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.15s; }
@@ -787,13 +787,13 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
 .pp-od-notes { margin-top: 16px; padding: 12px 14px; border-radius: 8px; background: rgba(201,168,76,0.04); border: 1px solid rgba(201,168,76,0.12); }
 .pp-od-notes-label { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; color: #c9a84c; font-family: 'DM Sans', sans-serif; font-weight: 600; margin-bottom: 4px; }
 .pp-od-notes-text { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
-.pp-od-footer { padding: 18px 28px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; position: sticky; bottom: 0; background: #0f1923; z-index: 2; }
+.pp-od-footer { padding: 18px 28px; border-top: 1px solid var(--border); display: flex; gap: 10px; align-items: center; position: sticky; bottom: 0; background: #ffffff; z-index: 2; }
 .pp-od-count { flex: 1; font-size: 12px; color: var(--text-muted); font-family: 'DM Sans', sans-serif; font-weight: 600; }
 .pp-od-btn { padding: 10px 22px; border-radius: 6px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; border: none; transition: all 0.2s; }
-.pp-od-btn.generate { background: linear-gradient(135deg, #3b82f6, #2563eb); color: var(--text-primary); }
+.pp-od-btn.generate { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #ffffff; }
 .pp-od-btn.generate:hover {  }
 .pp-od-btn.generate.disabled { opacity: 0.25; cursor: not-allowed; box-shadow: none; }
-.pp-od-btn.complete { background: #22c55e; color: var(--text-primary); }
+.pp-od-btn.complete { background: #22c55e; color: #ffffff; }
 .pp-od-btn.complete:hover {  }
 .pp-od-btn.cancel { background: transparent; border: 1px solid var(--border-light); color: var(--text-muted); }
 .pp-od-btn.cancel:hover { border-color: rgba(0,0,0,0.08); color: var(--text-muted); }
@@ -1220,11 +1220,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
       <span class="nav-badge purple">PRO</span>
     </div>
-    <div class="nav-item" onclick="switchView('propertywebsites', this)">
-      <span class="nav-icon"><i class="fas fa-globe"></i></span> Property Websites
-      <span class="nav-badge" style="background:rgba(186,163,112,0.2);color:#baa370;">NEW</span>
-    </div>
-
     <div class="nav-section-label">Insights</div>
     <div class="nav-item" onclick="switchView('scenarios', this)">
       <span class="nav-icon"><i class="fas fa-fire"></i></span> Scenarios
@@ -1708,7 +1703,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
       <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
         <div class="pp-tpl-grid">
-          <div class="pp-tpl-card"><div class="pp-tpl-icon">🌐</div><div class="pp-tpl-body"><div class="pp-tpl-name">Single Property Website</div><div class="pp-tpl-desc">Custom listing site with photos, data, and agent branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">ACTIVE</div></div>
+          <div class="pp-tpl-card" onclick="ppShowWebsiteBuilder()" style="cursor:pointer;"><div class="pp-tpl-icon">🌐</div><div class="pp-tpl-body"><div class="pp-tpl-name">Single Property Website</div><div class="pp-tpl-desc">Custom listing site with photos, data, and agent branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">ACTIVE</div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🏡</div><div class="pp-tpl-body"><div class="pp-tpl-name">Open House</div><div class="pp-tpl-desc">Professional open house flyer with co-branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🔥</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Listed</div><div class="pp-tpl-desc">New listing announcement with co-brand</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">📉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Drop Alert</div><div class="pp-tpl-desc">Announce rate drops with customizable data</div></div></div>
@@ -1716,6 +1711,133 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div class="pp-tpl-card"><div class="pp-tpl-icon">✨</div><div class="pp-tpl-body"><div class="pp-tpl-name">Co-Branded Header</div><div class="pp-tpl-desc">Dual-branded header for emails and social</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🎉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Sold</div><div class="pp-tpl-desc">Celebrate closings — showcase partnership success</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
         </div>
+      </div>
+    </div>
+
+    <!-- ===== PROPERTY WEBSITE BUILDER SUB-VIEW ===== -->
+    <div id="ppWebsiteBuilder" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <button onclick="ppHideWebsiteBuilder()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s;">
+          <i class="fas fa-arrow-left" style="font-size:10px;"></i> BACK TO FLYERS
+        </button>
+        <span style="margin-left:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary);">Property Website Builder</span>
+      </div>
+
+      <!-- STEP 1: Lookup -->
+      <div class="mc-panel" id="pwStep1b">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-blue);"></div><div class="mc-panel-title">PROPERTY LOOKUP</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Street Address</label>
+            <input type="text" id="pwStreet" placeholder="123 Main St" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">MLS #</label>
+            <input type="text" id="pwMls" placeholder="e.g. 1870625" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">City</label>
+            <input type="text" id="pwCity" placeholder="Cincinnati" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">State</label>
+            <input type="text" id="pwState" placeholder="OH" maxlength="2" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;text-transform:uppercase;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">ZIP</label>
+            <input type="text" id="pwZip" placeholder="45244" maxlength="10" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+          <button onclick="pwLookup()" id="pwLookupBtn" style="padding:9px 20px;border-radius:6px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-search"></i> LOOK UP
+          </button>
+          <button onclick="pwNewLookup()" style="padding:9px 20px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;">
+            CLEAR
+          </button>
+          <div id="pwLookupStatus" style="font-size:12px;color:var(--text-muted);display:none;"></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Property Data (hidden until lookup) -->
+      <div class="mc-panel" id="pwStep2" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-green);"></div><div class="mc-panel-title">PROPERTY DATA</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Address</label><input class="form-input" id="pwDataAddress" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">City</label><input class="form-input" id="pwDataCity" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">State</label><input class="form-input" id="pwDataState" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">ZIP</label><input class="form-input" id="pwDataZip" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Price</label><input class="form-input" id="pwDataPrice" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Beds</label><input class="form-input" id="pwDataBeds" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Baths</label><input class="form-input" id="pwDataBaths" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Sqft</label><input class="form-input" id="pwDataSqft" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Lot Size</label><input class="form-input" id="pwDataLot" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Year Built</label><input class="form-input" id="pwDataYear" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Description</label>
+          <textarea class="form-input" id="pwDataDesc" style="min-height:80px;resize:vertical;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Listing Agent</label><input class="form-input" id="pwDataAgent" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Property Type</label><input class="form-input" id="pwDataType" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Status</label><input class="form-input" id="pwDataStatus" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Listing URL</label>
+          <div style="display:flex;gap:8px;">
+            <input class="form-input" id="pwDataUrl" style="flex:1;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;box-sizing:border-box;">
+            <a id="pwOpenListing" href="#" target="_blank" style="display:flex;align-items:center;gap:4px;padding:9px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-external-link-alt"></i> Open Listing</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Photos -->
+      <div class="mc-panel" id="pwStep3" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-purple);"></div><div class="mc-panel-title">PROPERTY PHOTOS</div></div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Open the listing URL above, right-click and save property photos, then upload them here. Select which photos to include and assign their placement.</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <label style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">
+            <i class="fas fa-upload"></i> Upload Photos
+            <input type="file" accept="image/*" multiple onchange="pwUploadPhotos(event)" style="display:none;">
+          </label>
+          <button onclick="pwSelectAll()" id="pwSelectAllBtn" style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Select All</button>
+          <button onclick="pwDeselectAll()" style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Deselect All</button>
+        </div>
+        <div id="pwPhotoGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
+      </div>
+
+      <!-- STEP 4: Generate & Preview -->
+      <div class="mc-panel" id="pwStep4" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-teal);"></div><div class="mc-panel-title">PREVIEW & GENERATE</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Template</label>
+            <select id="pwTemplate" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option>Cavallo</option><option>Stylish</option><option>Vertical</option><option>Sleek</option><option>Impact</option><option>Modern</option><option>Contemporary</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Color Scheme</label>
+            <select id="pwColor" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option>Blue</option><option>Navy</option><option>Black</option><option>Green</option><option>Red</option><option>Gold</option><option>Charcoal</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="pwPreview()" style="padding:9px 20px;border-radius:6px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-eye"></i> PREVIEW SITE</button>
+          <button onclick="pwGenerate()" id="pwGenerateBtn" style="padding:9px 20px;border-radius:6px;border:none;background:#16a34a;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-rocket"></i> GENERATE & PUBLISH</button>
+        </div>
+        <div id="pwPreviewFrame" style="margin-top:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:none;">
+          <iframe id="pwIframe" style="width:100%;height:600px;border:none;"></iframe>
+        </div>
+        <div id="pwGenerateStatus" style="margin-top:10px;font-size:12px;color:var(--text-muted);display:none;"></div>
       </div>
     </div>
 
@@ -2026,146 +2148,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 <!-- ========================================== -->
 <!-- PROSPECTING VIEW -->
 <!-- ========================================== -->
-<div class="view-panel" id="view-propertywebsites">
-  <style>
-    #view-propertywebsites .form-input,
-    #view-propertywebsites input[type="text"],
-    #view-propertywebsites textarea,
-    #view-propertywebsites select {
-      padding:9px 12px;font-size:14px;border:1px solid #e2e5ed;border-radius:8px;font-family:'DM Sans',system-ui,sans-serif;color:#1a2332;background:#ffffff;width:100%;box-sizing:border-box;-webkit-appearance:none;appearance:none;
-    }
-    #view-propertywebsites select {
-      background:#ffffff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E") no-repeat right 12px center;
-      padding-right:32px;cursor:pointer;position:relative;z-index:5;
-    }
-    #view-propertywebsites select option {
-      background:#ffffff;color:#1a2332;padding:8px;font-size:14px;
-    }
-    #view-propertywebsites .form-input:focus,
-    #view-propertywebsites input:focus,
-    #view-propertywebsites textarea:focus,
-    #view-propertywebsites select:focus { outline:none;border-color:#6e7f77; }
-    #view-propertywebsites .form-label { font-size:11px;font-weight:600;color:#5a6578;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block; }
-    #view-propertywebsites .mc-card { background:white;border:1px solid #e2e5ed;border-radius:12px;padding:24px;margin-bottom:20px; }
-    #view-propertywebsites .mc-card-title { font-weight:600;font-size:15px;color:#002556;margin-bottom:16px;display:flex;align-items:center;gap:8px; }
-  </style>
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Property Website Builder</div><div class="topbar-subtitle">Look up property data, manage photos, build and preview sites</div></div>
-    </div>
-    <div class="topbar-right">
-      <button class="topbar-btn primary" onclick="pwNewLookup()"><i class="fas fa-plus"></i> New Lookup</button>
-    </div>
-  </div>
-  <div class="content-area" style="padding:24px;">
-
-    <!-- ORDERS INBOX -->
-    <div class="mc-card" id="pwOrders">
-      <div class="mc-card-title"><i class="fas fa-inbox" style="color:var(--sage);"></i> Website Orders <span id="pwOrderCount" style="background:var(--accent-red);color:white;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:8px;display:none;">0</span></div>
-      <div id="pwOrdersList" style="font-size:13px;color:var(--text-muted);">Loading orders...</div>
-    </div>
-
-    <!-- STEP 1: Lookup -->
-    <div class="mc-card" id="pwStep1">
-      <div class="mc-card-title"><i class="fas fa-search" style="color:var(--sage);"></i> Property Lookup</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end;">
-        <div>
-          <label class="form-label">Property Address</label>
-          <input type="text" class="form-input" id="pwAddress" placeholder="" style="font-size:14px;">
-        </div>
-        <div>
-          <label class="form-label">MLS #</label>
-          <input type="text" class="form-input" id="pwMls" placeholder="" style="font-size:14px;">
-        </div>
-        <button class="topbar-btn primary" onclick="pwLookup()" id="pwLookupBtn" style="height:38px;">
-          <i class="fas fa-search"></i> Look Up
-        </button>
-      </div>
-      <div class="status-msg" id="pwLookupStatus" style="margin-top:10px;"></div>
-    </div>
-
-    <!-- STEP 2: Property Data (hidden until lookup) -->
-    <div class="mc-card" id="pwStep2" style="display:none;">
-      <div class="mc-card-title"><i class="fas fa-building" style="color:var(--sage);"></i> Property Data</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
-        <div><label class="form-label">Address</label><input class="form-input" id="pwDataAddress"></div>
-        <div><label class="form-label">City</label><input class="form-input" id="pwDataCity"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-          <div><label class="form-label">State</label><input class="form-input" id="pwDataState"></div>
-          <div><label class="form-label">ZIP</label><input class="form-input" id="pwDataZip"></div>
-        </div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:12px;margin-top:12px;">
-        <div><label class="form-label">Price</label><input class="form-input" id="pwDataPrice"></div>
-        <div><label class="form-label">Beds</label><input class="form-input" id="pwDataBeds"></div>
-        <div><label class="form-label">Baths</label><input class="form-input" id="pwDataBaths"></div>
-        <div><label class="form-label">Sqft</label><input class="form-input" id="pwDataSqft"></div>
-        <div><label class="form-label">Lot Size</label><input class="form-input" id="pwDataLot"></div>
-        <div><label class="form-label">Year Built</label><input class="form-input" id="pwDataYear"></div>
-      </div>
-      <div style="margin-top:12px;">
-        <label class="form-label">Description</label>
-        <textarea class="form-input" id="pwDataDesc" style="min-height:80px;resize:vertical;"></textarea>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
-        <div><label class="form-label">Listing Agent</label><input class="form-input" id="pwDataAgent"></div>
-        <div><label class="form-label">Property Type</label><input class="form-input" id="pwDataType"></div>
-        <div><label class="form-label">Status</label><input class="form-input" id="pwDataStatus"></div>
-      </div>
-      <div style="margin-top:12px;">
-        <label class="form-label">Listing URL</label>
-        <div style="display:flex;gap:8px;">
-          <input class="form-input" id="pwDataUrl" style="flex:1;">
-          <a id="pwOpenListing" href="#" target="_blank" class="topbar-btn" style="text-decoration:none;display:flex;align-items:center;gap:4px;height:38px;"><i class="fas fa-external-link-alt"></i> Open Listing</a>
-        </div>
-      </div>
-    </div>
-
-    <!-- STEP 3: Photos -->
-    <div class="mc-card" id="pwStep3" style="display:none;">
-      <div class="mc-card-title"><i class="fas fa-images" style="color:var(--sage);"></i> Property Photos</div>
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Open the listing URL above, right-click and save property photos, then upload them here. Select which photos to include and assign their placement.</p>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <label class="topbar-btn" style="cursor:pointer;display:flex;align-items:center;gap:6px;">
-          <i class="fas fa-upload"></i> Upload Photos
-          <input type="file" accept="image/*" multiple onchange="pwUploadPhotos(event)" style="display:none;">
-        </label>
-        <button class="topbar-btn" onclick="pwSelectAll()" id="pwSelectAllBtn">Select All</button>
-        <button class="topbar-btn" onclick="pwDeselectAll()">Deselect All</button>
-      </div>
-      <div id="pwPhotoGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
-    </div>
-
-    <!-- STEP 4: Generate & Preview -->
-    <div class="mc-card" id="pwStep4" style="display:none;">
-      <div class="mc-card-title"><i class="fas fa-eye" style="color:var(--sage);"></i> Preview & Generate</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-        <div>
-          <label class="form-label">Template</label>
-          <select class="form-input" id="pwTemplate">
-            <option>Cavallo</option><option>Stylish</option><option>Vertical</option><option>Sleek</option><option>Impact</option><option>Modern</option><option>Contemporary</option>
-          </select>
-        </div>
-        <div>
-          <label class="form-label">Color Scheme</label>
-          <select class="form-input" id="pwColor">
-            <option>Blue</option><option>Navy</option><option>Black</option><option>Green</option><option>Red</option><option>Gold</option><option>Charcoal</option>
-          </select>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="topbar-btn primary" onclick="pwPreview()"><i class="fas fa-eye"></i> Preview Site</button>
-        <button class="topbar-btn sage" onclick="pwGenerate()" id="pwGenerateBtn"><i class="fas fa-rocket"></i> Generate & Publish</button>
-      </div>
-      <div id="pwPreviewFrame" style="margin-top:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:none;">
-        <iframe id="pwIframe" style="width:100%;height:600px;border:none;"></iframe>
-      </div>
-      <div class="status-msg" id="pwGenerateStatus" style="margin-top:10px;"></div>
-    </div>
-
-  </div>
-</div>
 
 <div class="view-panel" id="view-prospecting">
   <div class="topbar">
@@ -3409,7 +3391,6 @@ function switchView(viewId, navEl) {
   if (viewId === 'settings') initSettingsView();
   if (viewId === 'email') loadEmailCenter();
   if (viewId === 'users') loadBlogPosts();
-  if (viewId === 'propertywebsites') pwLoadOrders();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -7363,6 +7344,21 @@ function runProspectSearch() {
 var pwPhotos = [];
 var pwPropertyData = {};
 
+function ppShowWebsiteBuilder() {
+  // Hide the main flyers content (orders + templates)
+  var flyersTab = document.getElementById('ppFlyers');
+  var panels = flyersTab.querySelectorAll(':scope > .mc-panel');
+  panels.forEach(function(p) { p.style.display = 'none'; });
+  document.getElementById('ppWebsiteBuilder').style.display = 'block';
+}
+
+function ppHideWebsiteBuilder() {
+  document.getElementById('ppWebsiteBuilder').style.display = 'none';
+  var flyersTab = document.getElementById('ppFlyers');
+  var panels = flyersTab.querySelectorAll(':scope > .mc-panel');
+  panels.forEach(function(p) { p.style.display = ''; });
+}
+
 async function pwLoadOrders() {
   var list = document.getElementById('pwOrdersList');
   var badge = document.getElementById('pwOrderCount');
@@ -7436,15 +7432,29 @@ async function pwLoadOrders() {
 }
 
 function pwLoadOrder(address, mls, template, colorScheme) {
-  document.getElementById('pwAddress').value = address;
+  // Parse address into parts if it's a full address string
+  var parts = (address || '').split(',').map(function(s){return s.trim();});
+  var street = parts[0] || address || '';
+  var city = parts[1] || '';
+  var stateZip = (parts[2] || '').trim().split(/\s+/);
+  var state = stateZip[0] || '';
+  var zip = stateZip[1] || '';
+  document.getElementById('pwStreet').value = street;
+  document.getElementById('pwCity').value = city;
+  document.getElementById('pwState').value = state;
+  document.getElementById('pwZip').value = zip;
   document.getElementById('pwMls').value = mls;
   if (template) document.getElementById('pwTemplate').value = template;
   if (colorScheme) document.getElementById('pwColor').value = colorScheme;
+  ppShowWebsiteBuilder();
   pwLookup();
 }
 
 function pwNewLookup() {
-  document.getElementById('pwAddress').value = '';
+  document.getElementById('pwStreet').value = '';
+  document.getElementById('pwCity').value = '';
+  document.getElementById('pwState').value = '';
+  document.getElementById('pwZip').value = '';
   document.getElementById('pwMls').value = '';
   document.getElementById('pwStep2').style.display = 'none';
   document.getElementById('pwStep3').style.display = 'none';
@@ -7457,7 +7467,11 @@ function pwNewLookup() {
 }
 
 async function pwLookup() {
-  var address = document.getElementById('pwAddress').value.trim();
+  var street = document.getElementById('pwStreet').value.trim();
+  var city = document.getElementById('pwCity').value.trim();
+  var state = document.getElementById('pwState').value.trim();
+  var zip = document.getElementById('pwZip').value.trim();
+  var address = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   var mls = document.getElementById('pwMls').value.trim();
   if (!address && !mls) { alert('Enter an address or MLS #.'); return; }
   
