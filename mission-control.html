@@ -1708,6 +1708,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
       <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
         <div class="pp-tpl-grid">
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🌐</div><div class="pp-tpl-body"><div class="pp-tpl-name">Single Property Website</div><div class="pp-tpl-desc">Custom listing site with photos, data, and agent branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">ACTIVE</div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🏡</div><div class="pp-tpl-body"><div class="pp-tpl-name">Open House</div><div class="pp-tpl-desc">Professional open house flyer with co-branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🔥</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Listed</div><div class="pp-tpl-desc">New listing announcement with co-brand</div></div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">📉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Drop Alert</div><div class="pp-tpl-desc">Announce rate drops with customizable data</div></div></div>
@@ -4233,7 +4234,14 @@ function ppParseOrderItems(raw){
     }
     if(obj.websites&&obj.websites.length>0){
       obj.websites.forEach(function(w){
-        lineItems.push({type:'website',name:w,icon:'🌐',detail:'Website',data:{name:w},category:'WEBSITE'});
+        var wName=typeof w==='object'?(w.address||'Property Website'):w;
+        var wDets=[];
+        if(typeof w==='object'){
+          if(w.mls)wDets.push('MLS: '+w.mls);
+          if(w.template)wDets.push(w.template);
+          if(w.colorScheme)wDets.push(w.colorScheme);
+        }
+        lineItems.push({type:'website',name:wName,icon:'🌐',detail:wDets.length>0?wDets.join(' · '):'Property Website',data:w,category:'WEBSITE'});
       });
       parts.push(obj.websites.length+' Website(s)');
     }
@@ -4552,11 +4560,12 @@ function ppBuildFlyerOrders(){
       var items=o.items||o.cartJson||'';
       var obj=typeof items==='object'?items:JSON.parse(typeof items==='string'?items:JSON.stringify(items));
       if(obj.marketing&&Array.isArray(obj.marketing)&&obj.marketing.length>0)return true;
+      if(obj.websites&&Array.isArray(obj.websites)&&obj.websites.length>0)return true;
     }catch(e){}
     // Fallback string check for flyer-specific terms only
     var str=typeof o.items==='string'?o.items:JSON.stringify(o.items||{});
     str=str.toLowerCase();
-    return str.indexOf('flyer')>=0||str.indexOf('open house')>=0||str.indexOf('just listed')>=0||str.indexOf('just sold')>=0;
+    return str.indexOf('flyer')>=0||str.indexOf('open house')>=0||str.indexOf('just listed')>=0||str.indexOf('just sold')>=0||str.indexOf('website')>=0;
   }).filter(function(o){
     var isActive=(o.status||'').toLowerCase()!=='complete';
     return isActive;
