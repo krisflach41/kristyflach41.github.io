@@ -2052,6 +2052,12 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   </div>
   <div class="content-area" style="padding:24px;">
 
+    <!-- ORDERS INBOX -->
+    <div class="mc-card" id="pwOrders">
+      <div class="mc-card-title"><i class="fas fa-inbox" style="color:var(--sage);"></i> Website Orders <span id="pwOrderCount" style="background:var(--accent-red);color:white;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:8px;display:none;">0</span></div>
+      <div id="pwOrdersList" style="font-size:13px;color:var(--text-muted);">Loading orders...</div>
+    </div>
+
     <!-- STEP 1: Lookup -->
     <div class="mc-card" id="pwStep1">
       <div class="mc-card-title"><i class="fas fa-search" style="color:var(--sage);"></i> Property Lookup</div>
@@ -3395,6 +3401,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'settings') initSettingsView();
   if (viewId === 'email') loadEmailCenter();
   if (viewId === 'users') loadBlogPosts();
+  if (viewId === 'propertywebsites') pwLoadOrders();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
@@ -7339,6 +7346,64 @@ function runProspectSearch() {
 // ===== PROPERTY WEBSITES =====
 var pwPhotos = [];
 var pwPropertyData = {};
+
+async function pwLoadOrders() {
+  var list = document.getElementById('pwOrdersList');
+  var badge = document.getElementById('pwOrderCount');
+  try {
+    var resp = await fetch(API_BASE + '/get-orders');
+    var data = await resp.json();
+    var orders = (data.orders || []).filter(function(o) {
+      var cart = o.cart || o.order_data || {};
+      var items = cart.websites || cart.items || [];
+      if (Array.isArray(items) && items.length) return true;
+      // Check if any item mentions website
+      var str = JSON.stringify(cart).toLowerCase();
+      return str.includes('website') || str.includes('property');
+    });
+    
+    if (!orders.length) {
+      list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">No property website orders yet.</div>';
+      badge.style.display = 'none';
+      return;
+    }
+    
+    badge.textContent = orders.length;
+    badge.style.display = 'inline';
+    
+    var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
+    orders.forEach(function(o) {
+      var cart = o.cart || o.order_data || {};
+      var websites = cart.websites || [];
+      var name = o.name || 'Unknown';
+      var date = o.created_at ? new Date(o.created_at).toLocaleDateString() : '';
+      var branding = o.branding || cart.branding || '';
+      
+      websites.forEach(function(w) {
+        html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-hover);border-radius:8px;cursor:pointer;" onclick="pwLoadOrder(\'' + 
+          (w.address||'').replace(/'/g,"\\'") + '\',\'' + 
+          (w.mls||'').replace(/'/g,"\\'") + '\',\'' + 
+          (w.template||'Cavallo').replace(/'/g,"\\'") + '\',\'' + 
+          (w.colorScheme||'Blue').replace(/'/g,"\\'") + '\')">' +
+          '<div><div style="font-weight:600;color:var(--text-primary);">' + (w.address || 'No address') + '</div>' +
+          '<div style="font-size:12px;color:var(--text-muted);">' + (w.mls ? 'MLS #' + w.mls : '') + ' | ' + name + ' | ' + date + ' | ' + branding + '</div></div>' +
+          '<div style="font-size:12px;color:var(--sage);font-weight:600;">Build <i class="fas fa-arrow-right"></i></div></div>';
+      });
+    });
+    html += '</div>';
+    list.innerHTML = html;
+  } catch(e) {
+    list.innerHTML = '<div style="color:var(--accent-red);">Failed to load orders.</div>';
+  }
+}
+
+function pwLoadOrder(address, mls, template, colorScheme) {
+  document.getElementById('pwAddress').value = address;
+  document.getElementById('pwMls').value = mls;
+  if (template) document.getElementById('pwTemplate').value = template;
+  if (colorScheme) document.getElementById('pwColor').value = colorScheme;
+  pwLookup();
+}
 
 function pwNewLookup() {
   document.getElementById('pwAddress').value = '';
