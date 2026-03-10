@@ -7360,47 +7360,69 @@ async function pwLoadOrders() {
   try {
     var resp = await fetch(API_BASE + '/get-orders');
     var data = await resp.json();
-    var orders = (data.orders || []).filter(function(o) {
-      var cart = o.cart || o.order_data || {};
-      var items = cart.websites || cart.items || [];
-      if (Array.isArray(items) && items.length) return true;
-      // Check if any item mentions website
-      var str = JSON.stringify(cart).toLowerCase();
-      return str.includes('website') || str.includes('property');
+    var allOrders = data.orders || data || [];
+    
+    // Filter to orders that have websites in items
+    var websiteOrders = [];
+    allOrders.forEach(function(o) {
+      var items = o.items || {};
+      var websites = items.websites || [];
+      if (websites.length) {
+        websites.forEach(function(w) {
+          websiteOrders.push({
+            orderId: o.order_id || o.id,
+            userName: o.user_name || '',
+            email: o.user_email || '',
+            brokerage: o.brokerage || '',
+            status: o.status || 'new',
+            coBranding: items.cobrand && items.cobrand.enabled,
+            cobrandLayout: items.cobrand ? items.cobrand.layout : '',
+            date: o.created_at || '',
+            address: w.address || '',
+            mls: w.mls || '',
+            comments: w.comments || '',
+            template: w.template || 'Cavallo',
+            colorScheme: w.colorScheme || 'Blue'
+          });
+        });
+      }
     });
     
-    if (!orders.length) {
+    if (!websiteOrders.length) {
       list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--text-muted);">No property website orders yet.</div>';
       badge.style.display = 'none';
       return;
     }
     
-    badge.textContent = orders.length;
+    badge.textContent = websiteOrders.length;
     badge.style.display = 'inline';
     
     var html = '<div style="display:flex;flex-direction:column;gap:8px;">';
-    orders.forEach(function(o) {
-      var cart = o.cart || o.order_data || {};
-      var websites = cart.websites || [];
-      var name = o.name || 'Unknown';
-      var date = o.created_at ? new Date(o.created_at).toLocaleDateString() : '';
-      var branding = o.branding || cart.branding || '';
-      
-      websites.forEach(function(w) {
-        html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-hover);border-radius:8px;cursor:pointer;" onclick="pwLoadOrder(\'' + 
-          (w.address||'').replace(/'/g,"\\'") + '\',\'' + 
-          (w.mls||'').replace(/'/g,"\\'") + '\',\'' + 
-          (w.template||'Cavallo').replace(/'/g,"\\'") + '\',\'' + 
-          (w.colorScheme||'Blue').replace(/'/g,"\\'") + '\')">' +
-          '<div><div style="font-weight:600;color:var(--text-primary);">' + (w.address || 'No address') + '</div>' +
-          '<div style="font-size:12px;color:var(--text-muted);">' + (w.mls ? 'MLS #' + w.mls : '') + ' | ' + name + ' | ' + date + ' | ' + branding + '</div></div>' +
-          '<div style="font-size:12px;color:var(--sage);font-weight:600;">Build <i class="fas fa-arrow-right"></i></div></div>';
-      });
+    websiteOrders.forEach(function(o) {
+      var statusColor = o.status === 'new' ? 'var(--accent-blue)' : o.status === 'in progress' ? 'var(--gold)' : 'var(--accent-green)';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg-hover);border-radius:8px;cursor:pointer;" onclick="pwLoadOrder(\'' + 
+        (o.address||'').replace(/'/g,"\\'") + '\',\'' + 
+        (o.mls||'').replace(/'/g,"\\'") + '\',\'' + 
+        (o.template||'Cavallo').replace(/'/g,"\\'") + '\',\'' + 
+        (o.colorScheme||'Blue').replace(/'/g,"\\'") + '\')">' +
+        '<div><div style="font-weight:600;color:var(--text-primary);">' + (o.address || 'No address') + '</div>' +
+        '<div style="font-size:12px;color:var(--text-muted);">' + 
+        (o.mls ? 'MLS #' + o.mls + ' | ' : '') + 
+        o.userName + 
+        (o.brokerage ? ' | ' + o.brokerage : '') + 
+        ' | ' + (o.date ? new Date(o.date).toLocaleDateString() : '') + 
+        (o.coBranding ? ' | Co-branded (' + o.cobrandLayout + ')' : '') +
+        (o.comments ? ' | "' + o.comments + '"' : '') +
+        '</div></div>' +
+        '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<span style="font-size:11px;padding:3px 10px;border-radius:10px;background:' + statusColor + '22;color:' + statusColor + ';font-weight:600;text-transform:uppercase;">' + o.status + '</span>' +
+        '<span style="font-size:12px;color:var(--sage);font-weight:600;">Build <i class="fas fa-arrow-right"></i></span>' +
+        '</div></div>';
     });
     html += '</div>';
     list.innerHTML = html;
   } catch(e) {
-    list.innerHTML = '<div style="color:var(--accent-red);">Failed to load orders.</div>';
+    list.innerHTML = '<div style="color:var(--accent-red);">Failed to load orders: ' + e.message + '</div>';
   }
 }
 
