@@ -507,18 +507,52 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
       <!-- Schedule / Post -->
       <div class="ml-card">
-        <div class="ml-card-title"><i class="fas fa-calendar-clock"></i> Schedule &amp; Publish</div>
-        <div class="schedule-row">
-          <div class="form-group" style="flex:1;">
-            <label class="form-label">Schedule For (optional)</label>
-            <input type="datetime-local" class="form-input" id="scheduleTime">
-          </div>
-          <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px;">
-            <button class="btn" onclick="savePostDraft()"><i class="fas fa-floppy-disk"></i> Save Draft</button>
-            <button class="btn primary" onclick="publishPost()" id="publishBtn"><i class="fas fa-paper-plane"></i> Publish Now</button>
-          </div>
+        <div class="ml-card-title"><i class="fas fa-share-nodes"></i> Share Your Post</div>
+
+        <!-- Copy & Download row -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <button class="btn primary" onclick="copyCaption()"><i class="fas fa-copy"></i> Copy Caption</button>
+          <button class="btn sage" onclick="downloadPostImage()" id="downloadImgBtn" style="display:none;"><i class="fas fa-download"></i> Download Image</button>
         </div>
-        <div class="status-msg" id="postStatus"></div>
+        <div class="status-msg" id="copyStatus"></div>
+
+        <!-- Platform quick links -->
+        <div class="form-label" style="margin-bottom:8px;">OPEN &amp; PASTE</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <a href="https://www.facebook.com/100407459637787" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook
+          </a>
+          <a href="https://www.instagram.com/kristy_prmg/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fab fa-instagram" style="color:#e1306c;"></i> Instagram
+          </a>
+          <a href="https://www.linkedin.com/in/kristy-flach-057470174/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fab fa-linkedin" style="color:#0a66c2;"></i> LinkedIn
+          </a>
+          <a href="https://www.tiktok.com/@kflach_cma" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fab fa-tiktok"></i> TikTok
+          </a>
+          <a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+            <i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube
+          </a>
+        </div>
+
+        <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Copy your caption, download the image, then paste into each platform.</div>
+
+        <!-- Keep the direct publish for Facebook (which works) -->
+        <div style="border-top:1px solid var(--border);padding-top:16px;">
+          <div class="form-label" style="margin-bottom:8px;">DIRECT PUBLISH (Facebook only)</div>
+          <div class="schedule-row">
+            <div class="form-group" style="flex:1;">
+              <label class="form-label">Schedule For (optional)</label>
+              <input type="datetime-local" class="form-input" id="scheduleTime">
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px;">
+              <button class="btn" onclick="savePostDraft()"><i class="fas fa-floppy-disk"></i> Save Draft</button>
+              <button class="btn primary" onclick="publishPost()" id="publishBtn"><i class="fas fa-paper-plane"></i> Publish to Facebook</button>
+            </div>
+          </div>
+          <div class="status-msg" id="postStatus"></div>
+        </div>
       </div>
     </div>
 
@@ -1594,6 +1628,8 @@ function renderPhotoPreview() {
     }
   });
   if (!uploadedPhotos.length && changeBtn) changeBtn.style.display = 'none';
+  var dlBtn = document.getElementById('downloadImgBtn');
+  if (dlBtn) dlBtn.style.display = uploadedPhotos.length ? 'inline-flex' : 'none';
   renderPreview();
 }
 
@@ -1639,6 +1675,8 @@ function removePhoto(i) {
   } else {
     var changeBtn = document.getElementById('changeImageBtn');
     if (changeBtn) changeBtn.style.display = 'none';
+    var dlBtn = document.getElementById('downloadImgBtn');
+    if (dlBtn) dlBtn.style.display = 'none';
   }
   renderPreview();
 }
@@ -1709,10 +1747,46 @@ function loadDraft(id) {
   onCaptionInput();
 }
 
+function copyCaption() {
+  var caption = document.getElementById('postCaption').value.trim();
+  if (!caption) { alert('Write a caption first.'); return; }
+  navigator.clipboard.writeText(caption).then(function() {
+    var status = document.getElementById('copyStatus');
+    showStatus(status, 'Caption copied to clipboard!', 'success');
+  }).catch(function() {
+    // Fallback for older browsers
+    var ta = document.createElement('textarea');
+    ta.value = caption;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    var status = document.getElementById('copyStatus');
+    showStatus(status, 'Caption copied to clipboard!', 'success');
+  });
+}
+
+function downloadPostImage() {
+  if (!uploadedPhotos.length) return;
+  var src = uploadedPhotos[0];
+  var link = document.createElement('a');
+  link.download = 'social-post-image.jpg';
+  if (src.startsWith('data:')) {
+    link.href = src;
+  } else {
+    // For URL-based images, fetch and convert to blob
+    fetch(src).then(function(r){return r.blob();}).then(function(blob) {
+      link.href = URL.createObjectURL(blob);
+      link.click();
+    });
+    return;
+  }
+  link.click();
+}
+
 async function publishPost() {
   var caption = document.getElementById('postCaption').value.trim();
   if (!caption) { alert('Write a caption first.'); return; }
-  if (!selectedPlatforms.length) { alert('Select at least one platform.'); return; }
 
   var scheduleTime = document.getElementById('scheduleTime').value;
   var btn = document.getElementById('publishBtn');
@@ -1783,7 +1857,7 @@ async function publishPost() {
     var payload = {
       action: 'publish',
       caption: caption,
-      platforms: selectedPlatforms,
+      platforms: ['facebook'],
       photo: photoUrl,
       scheduledFor: scheduleTime || null
     };
