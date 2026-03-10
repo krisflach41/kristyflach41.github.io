@@ -416,9 +416,9 @@ html, body {
 <div class="page-wrap">
 <section class="gallery-card">
 
-<h2 class="section-title">Property Websites</h2>
+<h2 class="section-title">Single Property Websites</h2>
 <p class="section-subtitle">
-  Custom single-property websites to showcase your listings with professional design and essential details.
+  Custom single-property websites to showcase your listings with professional design. Provide the property details and we'll build your site.
 </p>
 
 <div id="properties"></div>
@@ -480,7 +480,7 @@ html, body {
 let properties = [];
 
 function addNewProperty() {
-  properties.push({ address: "", mls: "", comments: "" });
+  properties.push({ address: "", mls: "", comments: "", template: "Cavallo", colorScheme: "Blue" });
   renderProperties();
 }
 
@@ -499,11 +499,11 @@ function renderProperties() {
   }
   
   properties.forEach((prop, i) => {
-    container.innerHTML += `
+      container.innerHTML += `
       <div class="property-row">
         <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
         
-        <div class="section-label">Property Address</div>
+        <div class="section-label">Property Address *</div>
         <input 
           type="text"
           placeholder="123 Main St, City, State ZIP"
@@ -515,12 +515,39 @@ function renderProperties() {
         <div class="section-label">MLS #</div>
         <input 
           type="text"
-          placeholder="MLS12345"
+          placeholder="e.g. 1870625"
           value="${prop.mls || ""}"
           oninput="properties[${i}].mls = this.value"
         >
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div class="section-label">Template Style</div>
+            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:inherit;margin-bottom:12px;" onchange="properties[${i}].template = this.value">
+              <option value="Cavallo" ${prop.template==='Cavallo'?'selected':''}>Cavallo</option>
+              <option value="Stylish" ${prop.template==='Stylish'?'selected':''}>Stylish</option>
+              <option value="Vertical" ${prop.template==='Vertical'?'selected':''}>Vertical</option>
+              <option value="Sleek" ${prop.template==='Sleek'?'selected':''}>Sleek</option>
+              <option value="Impact" ${prop.template==='Impact'?'selected':''}>Impact</option>
+              <option value="Modern" ${prop.template==='Modern'?'selected':''}>Modern</option>
+              <option value="Contemporary" ${prop.template==='Contemporary'?'selected':''}>Contemporary</option>
+            </select>
+          </div>
+          <div>
+            <div class="section-label">Color Scheme</div>
+            <select style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-family:inherit;margin-bottom:12px;" onchange="properties[${i}].colorScheme = this.value">
+              <option value="Blue" ${prop.colorScheme==='Blue'?'selected':''}>Blue</option>
+              <option value="Navy" ${prop.colorScheme==='Navy'?'selected':''}>Navy</option>
+              <option value="Black" ${prop.colorScheme==='Black'?'selected':''}>Black</option>
+              <option value="Green" ${prop.colorScheme==='Green'?'selected':''}>Green</option>
+              <option value="Red" ${prop.colorScheme==='Red'?'selected':''}>Red</option>
+              <option value="Gold" ${prop.colorScheme==='Gold'?'selected':''}>Gold</option>
+              <option value="Charcoal" ${prop.colorScheme==='Charcoal'?'selected':''}>Charcoal</option>
+            </select>
+          </div>
+        </div>
         
-        <div class="section-label">Special Comments or Text</div>
+        <div class="section-label">Special Instructions</div>
         <textarea 
           placeholder="e.g., Open House Sunday 2/15 from 10-2pm, Just Listed, Price Reduced, etc."
           oninput="properties[${i}].comments = this.value"
