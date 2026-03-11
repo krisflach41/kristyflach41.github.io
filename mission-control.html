@@ -7894,77 +7894,105 @@ function pwGenerate() {
   var btn = document.getElementById('pwGenerateBtn');
   status.style.display = 'block';
   status.className = 'status-msg show info';
-  status.textContent = 'Publishing site...';
+  status.textContent = 'Preparing site...';
   btn.disabled = true;
   btn.style.opacity = '0.6';
 
   // First run preview to build the HTML
   pwPreview();
 
-  // Wait for iframe to load, then grab its HTML
   var iframe = document.getElementById('pwIframe');
-  setTimeout(function() {
-    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-    var siteHtml = '<!DOCTYPE html>' + iframeDoc.documentElement.outerHTML;
+  setTimeout(async function() {
+    try {
+      var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+      var siteHtml = '<!DOCTYPE html>' + iframeDoc.documentElement.outerHTML;
 
-    // Build slug from address
-    var addr = document.getElementById('pwDataAddress').value || 'property';
-    var city = document.getElementById('pwDataCity').value || '';
-    var slug = (addr + '-' + city).toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '')
-      .substring(0, 60);
+      // Build slug from address
+      var addr = document.getElementById('pwDataAddress').value || 'property';
+      var city = document.getElementById('pwDataCity').value || '';
+      var slug = (addr + '-' + city).toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+        .substring(0, 60);
 
-    // Collect photos that need uploading (base64 data URLs)
-    var selectedPhotos = pwPhotos.filter(function(p) { return p.selected; });
-    var photosToUpload = [];
-    var photoMap = {}; // old src -> placeholder
+      // Collect photos that need uploading (base64 data URLs)
+      var selectedPhotos = pwPhotos.filter(function(p) { return p.selected; });
+      var photosToUpload = [];
 
-    selectedPhotos.forEach(function(p, i) {
-      if (p.src && p.src.startsWith('data:')) {
-        var placeholder = 'PHOTO_URL_' + i;
-        photosToUpload.push({ base64: p.src, role: p.role, index: i });
-        photoMap[p.src] = placeholder;
+      selectedPhotos.forEach(function(p, i) {
+        if (p.src && p.src.startsWith('data:')) {
+          photosToUpload.push({ src: p.src, role: p.role, index: i });
+        }
+      });
+
+      // Upload photos one at a time using existing upload-image endpoint
+      var totalPhotos = photosToUpload.length;
+      var photoUrlMap = {}; // base64 src -> permanent supabase url
+
+      for (var i = 0; i < totalPhotos; i++) {
+        var photo = photosToUpload[i];
+        status.textContent = 'Uploading photo ' + (i + 1) + ' of ' + totalPhotos + '...';
+
+        try {
+          var resp = await fetch('https://agent-edge-backend.vercel.app/api/upload-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              image: photo.src,
+              filename: slug + '-' + photo.role + '-' + photo.index
+            })
+          });
+          var data = await resp.json();
+          if (data.success && data.url) {
+            photoUrlMap[photo.src] = data.url;
+          }
+        } catch (uploadErr) {
+          console.error('Photo ' + i + ' upload failed:', uploadErr);
+        }
       }
-    });
 
-    // Replace base64 data URLs in HTML with placeholders
-    // The backend will replace placeholders with real Supabase URLs after upload
-    Object.keys(photoMap).forEach(function(oldSrc) {
-      // base64 strings can be huge, split/join is safer than regex
-      siteHtml = siteHtml.split(oldSrc).join(photoMap[oldSrc]);
-    });
+      status.textContent = 'Building site...';
 
-    // Send to backend
-    fetch('https://agent-edge-backend.vercel.app/api/publish-site', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        slug: slug,
-        photos: photosToUpload,
-        html: siteHtml
-      })
-    })
-    .then(function(resp) { return resp.json(); })
-    .then(function(data) {
+      // Replace all base64 data URLs in the HTML with permanent Supabase URLs
+      Object.keys(photoUrlMap).forEach(function(oldSrc) {
+        siteHtml = siteHtml.split(oldSrc).join(photoUrlMap[oldSrc]);
+      });
+
+      // Now upload just the HTML file (small) to publish-site endpoint
+      status.textContent = 'Publishing...';
+
+      var publishResp = await fetch('https://agent-edge-backend.vercel.app/api/publish-site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: slug,
+          photos: [],
+          html: siteHtml
+        })
+      });
+      var publishData = await publishResp.json();
+
       btn.disabled = false;
       btn.style.opacity = '1';
-      if (data.success && data.url) {
+
+      if (publishData.success && publishData.url) {
         status.className = 'status-msg show success';
-        status.innerHTML = '<i class="fas fa-check-circle"></i> Published! <a href="' + data.url + '" target="_blank" style="color:#16a34a;font-weight:700;text-decoration:underline;">' + data.url + '</a>' +
-          '<br><button onclick="navigator.clipboard.writeText(\'' + data.url + '\');this.textContent=\'Copied!\';setTimeout(function(){this.textContent=\'Copy Link\';}.bind(this),1500);" style="margin-top:8px;padding:6px 16px;border-radius:6px;border:1px solid #16a34a;background:white;color:#16a34a;font-family:\'DM Sans\',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">Copy Link</button>';
+        status.innerHTML = '<i class="fas fa-check-circle" style="margin-right:6px;"></i> Published! ' + totalPhotos + ' photos uploaded.<br>' +
+          '<a href="' + publishData.url + '" target="_blank" style="color:#16a34a;font-weight:700;text-decoration:underline;word-break:break-all;">' + publishData.url + '</a>' +
+          '<br><button onclick="navigator.clipboard.writeText(\'' + publishData.url + '\');this.textContent=\'Copied!\';var b=this;setTimeout(function(){b.textContent=\'Copy Link\';},1500);" style="margin-top:8px;padding:6px 16px;border-radius:6px;border:1px solid #16a34a;background:white;color:#16a34a;font-family:\'DM Sans\',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">Copy Link</button>';
       } else {
         status.className = 'status-msg show error';
-        status.textContent = 'Publish failed: ' + (data.error || 'Unknown error');
+        status.textContent = 'Publish failed: ' + (publishData.error || 'Unknown error');
       }
-    })
-    .catch(function(err) {
+
+    } catch (err) {
       btn.disabled = false;
       btn.style.opacity = '1';
       status.className = 'status-msg show error';
       status.textContent = 'Publish failed: ' + err.message;
-    });
-  }, 1500); // give iframe time to render
+      console.error('pwGenerate error:', err);
+    }
+  }, 1500);
 }
 
 // ===== CREDIT ANALYSIS =====
