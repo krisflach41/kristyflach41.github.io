@@ -70,53 +70,102 @@ body {
   margin: 0 auto;
 }
 
-.monitor-screen { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.monitor-screen { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-.tpl-hero {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 12px;
-  position: relative;
-}
-.tpl-hero .tpl-addr { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.9); margin-bottom: 4px; }
-.tpl-hero .tpl-price { font-size: 18px; font-weight: 800; color: #fff; }
-.tpl-hero .tpl-details { font-size: 8px; color: rgba(255,255,255,0.6); letter-spacing: 1px; margin-top: 4px; }
-.tpl-bar { height: 3px; width: 30%; border-radius: 2px; margin: 6px auto 0; }
+/* ===== CAVALLO — Fullscreen hero, centered text, decorative lines, parallax stats ===== */
+.tpl-cavallo { background: linear-gradient(135deg, #1a3a5c 0%, #0d2137 100%); font-family: 'Raleway', sans-serif; }
+.tpl-cavallo .tpl-nav { height: 4px; background: rgba(0,0,0,0.5); }
+.tpl-cavallo .tpl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8px; }
+.tpl-cavallo .tpl-label { font-size: 5px; letter-spacing: 2px; color: rgba(255,255,255,0.5); margin-bottom: 2px; }
+.tpl-cavallo .tpl-line { width: 20px; height: 1px; background: rgba(255,255,255,0.3); margin: 2px auto; }
+.tpl-cavallo .tpl-addr { font-size: 10px; font-weight: 700; color: #fff; letter-spacing: 1px; margin: 2px 0; }
+.tpl-cavallo .tpl-city { font-size: 6px; color: rgba(255,255,255,0.6); letter-spacing: 1.5px; }
+.tpl-cavallo .tpl-btns { display: flex; gap: 3px; margin-top: 4px; }
+.tpl-cavallo .tpl-btn { padding: 2px 6px; border: 1px solid rgba(255,255,255,0.3); font-size: 4px; color: rgba(255,255,255,0.7); letter-spacing: 0.5px; }
+.tpl-cavallo .tpl-stats { display: flex; justify-content: space-around; background: rgba(0,0,0,0.6); padding: 5px 4px; }
+.tpl-cavallo .tpl-stat-num { font-size: 8px; font-weight: 700; color: #fff; text-align: center; }
+.tpl-cavallo .tpl-stat-label { font-size: 3.5px; color: rgba(255,255,255,0.5); text-align: center; letter-spacing: 1px; text-transform: uppercase; }
 
-/* Template Styles */
-.tpl-cavallo { background: linear-gradient(135deg, #1a3a5c 0%, #0d2137 100%); }
-.tpl-cavallo .tpl-bar { background: #4a90d9; }
+/* ===== STYLISH — Side menu, big hero with overlay, icon stats ===== */
+.tpl-stylish { background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%); font-family: 'Source Sans Pro', sans-serif; }
+.tpl-stylish .tpl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8px; position: relative; }
+.tpl-stylish .tpl-hamburger { position: absolute; top: 5px; left: 6px; width: 8px; height: 6px; display: flex; flex-direction: column; justify-content: space-between; }
+.tpl-stylish .tpl-hamburger span { display: block; height: 1px; background: #fff; }
+.tpl-stylish .tpl-label { font-size: 5px; letter-spacing: 2px; color: rgba(255,255,255,0.5); }
+.tpl-stylish .tpl-addr { font-size: 10px; font-weight: 700; color: #fff; margin: 2px 0; }
+.tpl-stylish .tpl-city { font-size: 6px; color: rgba(255,255,255,0.5); }
+.tpl-stylish .tpl-line { width: 24px; height: 1px; background: rgba(255,255,255,0.2); margin: 3px auto; }
+.tpl-stylish .tpl-btn { padding: 2px 8px; background: #3498db; font-size: 4px; color: #fff; border-radius: 1px; margin-top: 4px; text-align: center; }
+.tpl-stylish .tpl-stats { display: flex; justify-content: space-around; background: #3498db; padding: 6px 4px; }
+.tpl-stylish .tpl-stat-num { font-size: 7px; font-weight: 700; color: #fff; text-align: center; }
+.tpl-stylish .tpl-stat-label { font-size: 3.5px; color: rgba(255,255,255,0.7); text-align: center; }
 
-.tpl-stylish { background: linear-gradient(180deg, #1c1c2e 0%, #2a2a4a 100%); }
-.tpl-stylish .tpl-bar { background: #c9a84c; width: 50%; }
-.tpl-stylish .tpl-price { color: #c9a84c; }
+/* ===== VERTICAL — Dot nav on left, full-section scroll, Ubuntu font ===== */
+.tpl-vertical { background: linear-gradient(160deg, #0f2027, #203a43, #2c5364); font-family: 'Ubuntu', sans-serif; }
+.tpl-vertical .tpl-dotnav { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 4px; z-index: 2; }
+.tpl-vertical .tpl-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+.tpl-vertical .tpl-dot.active { background: #5bb5a2; }
+.tpl-vertical .tpl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 8px 8px 8px 16px; }
+.tpl-vertical .tpl-addr { font-size: 10px; font-weight: 700; color: #fff; }
+.tpl-vertical .tpl-city { font-size: 6px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+.tpl-vertical .tpl-scroll { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 3px; }
+.tpl-vertical .tpl-scroll::after { content: ''; position: absolute; top: 2px; left: 50%; transform: translateX(-50%); width: 1.5px; height: 2.5px; background: rgba(255,255,255,0.5); border-radius: 1px; }
 
-.tpl-vertical { background: linear-gradient(160deg, #0f2027, #203a43, #2c5364); }
-.tpl-vertical .tpl-hero { align-items: flex-start; padding-left: 16px; }
-.tpl-vertical .tpl-bar { margin: 6px 0 0 0; background: #5bb5a2; }
+/* ===== SLEEK — Sticky top nav, dark theme, red accents, clean sections ===== */
+.tpl-sleek { background: #111; font-family: 'PT Sans', sans-serif; }
+.tpl-sleek .tpl-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 8px 10px; position: relative; }
+.tpl-sleek .tpl-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.7)); }
+.tpl-sleek .tpl-hero-content { position: relative; z-index: 1; }
+.tpl-sleek .tpl-addr { font-size: 11px; font-weight: 700; color: #fff; }
+.tpl-sleek .tpl-city { font-size: 6px; color: rgba(255,255,255,0.6); margin-top: 1px; }
+.tpl-sleek .tpl-btn { display: inline-block; padding: 2px 6px; border: 1px solid #e74c3c; font-size: 4px; color: #e74c3c; margin-top: 3px; }
+.tpl-sleek .tpl-nav { display: flex; justify-content: center; gap: 6px; padding: 3px 0; background: #1a1a1a; border-bottom: 1px solid #222; }
+.tpl-sleek .tpl-nav span { font-size: 3.5px; color: rgba(255,255,255,0.5); font-weight: 700; letter-spacing: 0.5px; }
+.tpl-sleek .tpl-section { padding: 4px 10px; }
+.tpl-sleek .tpl-section-title { font-size: 5px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-bottom: 2px; }
+.tpl-sleek .tpl-section-line { width: 100%; height: 1px; background: #222; }
 
-.tpl-sleek { background: #0a0a0a; }
-.tpl-sleek .tpl-hero { border-left: 2px solid #e74c3c; margin-left: 12px; padding-left: 10px; align-items: flex-start; }
-.tpl-sleek .tpl-bar { background: #e74c3c; width: 20%; margin: 6px 0 0 0; }
+/* ===== IMPACT — Full-bleed slideshow, split layout, orange CTAs ===== */
+.tpl-impact { background: #1a1a2e; font-family: 'Noto Sans', sans-serif; }
+.tpl-impact .tpl-hero { flex: 1; display: flex; position: relative; }
+.tpl-impact .tpl-slideshow { flex: 1; background: linear-gradient(135deg, #2d3a4a, #1a2636); position: relative; }
+.tpl-impact .tpl-slideshow .tpl-slide-dots { position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); display: flex; gap: 2px; }
+.tpl-impact .tpl-slideshow .tpl-slide-dot { width: 2px; height: 2px; border-radius: 50%; background: rgba(255,255,255,0.3); }
+.tpl-impact .tpl-slideshow .tpl-slide-dot.active { background: #e67e22; }
+.tpl-impact .tpl-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); }
+.tpl-impact .tpl-label { font-size: 4px; color: rgba(255,255,255,0.4); letter-spacing: 1.5px; }
+.tpl-impact .tpl-addr { font-size: 10px; font-weight: 700; color: #fff; }
+.tpl-impact .tpl-city { font-size: 5px; color: rgba(255,255,255,0.5); }
+.tpl-impact .tpl-stats { display: flex; justify-content: space-around; padding: 5px 4px; background: rgba(0,0,0,0.4); }
+.tpl-impact .tpl-stat-num { font-size: 7px; font-weight: 700; color: #fff; text-align: center; }
+.tpl-impact .tpl-stat-label { font-size: 3px; color: rgba(255,255,255,0.4); text-align: center; }
 
-.tpl-impact { background: linear-gradient(135deg, #1a1a2e, #16213e); }
-.tpl-impact .tpl-price { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
-.tpl-impact .tpl-addr { font-size: 9px; letter-spacing: 3px; }
-.tpl-impact .tpl-bar { background: #3498db; width: 60%; height: 2px; }
+/* ===== MODERN — Split screen, slideshow left, details right, Oswald font ===== */
+.tpl-modern { background: #1a1a2e; font-family: 'Oswald', sans-serif; position: relative; }
+.tpl-modern .tpl-hero { flex: 1; display: flex; }
+.tpl-modern .tpl-slide-area { flex: 1; background: linear-gradient(90deg, #1e3c72, #2a5298); position: relative; }
+.tpl-modern .tpl-detail-area { width: 40%; background: #fff; display: flex; flex-direction: column; justify-content: center; padding: 6px; }
+.tpl-modern .tpl-label { font-size: 4px; color: #999; letter-spacing: 1px; }
+.tpl-modern .tpl-addr { font-size: 8px; font-weight: 700; color: #1a1a2e; margin: 2px 0; }
+.tpl-modern .tpl-city { font-size: 5px; color: #666; }
+.tpl-modern .tpl-btn { display: inline-block; padding: 2px 5px; background: #e67e22; font-size: 3.5px; color: #fff; margin-top: 3px; }
+.tpl-modern .tpl-stats { display: flex; justify-content: space-around; padding: 4px; background: #f5f5f5; }
+.tpl-modern .tpl-stat-num { font-size: 6px; font-weight: 700; color: #1a1a2e; text-align: center; }
+.tpl-modern .tpl-stat-label { font-size: 3px; color: #999; text-align: center; }
 
-.tpl-modern { background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%); position: relative; }
-.tpl-modern::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 35%; background: rgba(255,255,255,0.05); }
-.tpl-modern .tpl-hero { align-items: flex-start; padding-left: 14px; }
-.tpl-modern .tpl-bar { background: #fff; opacity: 0.3; margin: 6px 0 0 0; }
-
-.tpl-contemporary { background: #f8f8f0; }
-.tpl-contemporary .tpl-addr { color: #333; font-size: 10px; }
-.tpl-contemporary .tpl-price { color: #1a1a1a; font-size: 16px; }
-.tpl-contemporary .tpl-details { color: #888; }
-.tpl-contemporary .tpl-bar { background: #002556; width: 25%; }
+/* ===== CONTEMPORARY — Light, editorial, big type, Libre Baskerville + Montserrat ===== */
+.tpl-contemporary { background: #f8f8f0; position: relative; }
+.tpl-contemporary .tpl-nav { display: flex; justify-content: flex-end; gap: 6px; padding: 3px 6px; }
+.tpl-contemporary .tpl-nav span { font-size: 3px; color: #666; letter-spacing: 0.5px; text-transform: uppercase; }
+.tpl-contemporary .tpl-hero { flex: 0 0 45%; background: linear-gradient(180deg, #8a9aa0, #6b7b82); display: flex; flex-direction: column; justify-content: flex-end; padding: 6px 8px; }
+.tpl-contemporary .tpl-addr { font-size: 10px; font-weight: 700; color: #fff; font-family: 'Anton', sans-serif; }
+.tpl-contemporary .tpl-city { font-size: 6px; color: rgba(255,255,255,0.7); }
+.tpl-contemporary .tpl-stats { display: flex; justify-content: space-around; background: #4a5568; padding: 5px 4px; }
+.tpl-contemporary .tpl-stat-num { font-size: 8px; font-weight: 300; color: #fff; text-align: center; font-family: 'Libre Baskerville', serif; }
+.tpl-contemporary .tpl-stat-label { font-size: 3px; color: rgba(255,255,255,0.6); text-align: center; letter-spacing: 1px; text-transform: uppercase; }
+.tpl-contemporary .tpl-body { flex: 1; padding: 5px 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+.tpl-contemporary .tpl-offered { font-size: 4px; color: #999; letter-spacing: 2px; text-transform: uppercase; }
+.tpl-contemporary .tpl-price { font-size: 12px; font-weight: 300; color: #1a1a1a; font-family: 'Libre Baskerville', serif; }
 
 .template-name { font-size: 16px; font-weight: 700; color: #002556; margin: 14px 0 10px; }
 .template-select-btn {
@@ -137,10 +186,12 @@ body {
   width: 120px; aspect-ratio: 16 / 10; border-radius: 6px; overflow: hidden; flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
-.selected-template-mini .tpl-hero .tpl-addr { font-size: 6px; letter-spacing: 1px; }
-.selected-template-mini .tpl-hero .tpl-price { font-size: 10px; }
-.selected-template-mini .tpl-hero .tpl-details { font-size: 5px; }
-.selected-template-mini .tpl-bar { height: 2px; margin-top: 3px; }
+.selected-template-mini .tpl-addr { font-size: 5px !important; }
+.selected-template-mini .tpl-city { font-size: 3px !important; }
+.selected-template-mini .tpl-stat-num { font-size: 4px !important; }
+.selected-template-mini .tpl-stat-label { font-size: 2px !important; }
+.selected-template-mini .tpl-label { font-size: 3px !important; }
+.selected-template-mini .tpl-price { font-size: 6px !important; }
 
 .selected-template-info { flex: 1; }
 .selected-template-info h3 { margin: 0 0 4px; font-size: 18px; color: #002556; }
@@ -259,43 +310,119 @@ html, body { overflow-x: hidden; }
 
   <div class="template-grid">
     <div class="template-card" onclick="selectTemplate('Cavallo')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-cavallo"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-cavallo">
+        <div class="tpl-nav"></div>
+        <div class="tpl-hero">
+          <div class="tpl-line"></div>
+          <div class="tpl-label">THE PROPERTY</div>
+          <div class="tpl-line"></div>
+          <div class="tpl-addr">123 Main Street</div>
+          <div class="tpl-line"></div>
+          <div class="tpl-city">CINCINNATI OH</div>
+          <div class="tpl-line"></div>
+          <div class="tpl-btns"><div class="tpl-btn">View Details</div><div class="tpl-btn">Gallery</div><div class="tpl-btn">Schedule</div></div>
+        </div>
+        <div class="tpl-stats"><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">2,412</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1991</div><div class="tpl-stat-label">Built</div></div></div>
+      </div></div>
       <div class="template-name">Cavallo</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Stylish')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-stylish"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-stylish">
+        <div class="tpl-hero">
+          <div class="tpl-hamburger"><span></span><span></span><span></span></div>
+          <div class="tpl-label">THE PROPERTY</div>
+          <div class="tpl-line"></div>
+          <div class="tpl-addr">123 Main Street</div>
+          <div class="tpl-city">Cincinnati OH</div>
+          <div class="tpl-line"></div>
+          <div class="tpl-btn">View Details</div>
+        </div>
+        <div class="tpl-stats"><div><div class="tpl-stat-num">$549K</div><div class="tpl-stat-label">Price</div></div><div><div class="tpl-stat-num">3 / 2</div><div class="tpl-stat-label">Bed/Bath</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
+      </div></div>
       <div class="template-name">Stylish</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Vertical')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-vertical"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-vertical">
+        <div class="tpl-dotnav"><div class="tpl-dot active"></div><div class="tpl-dot"></div><div class="tpl-dot"></div><div class="tpl-dot"></div><div class="tpl-dot"></div></div>
+        <div class="tpl-hero">
+          <div class="tpl-addr">123 Main Street,</div>
+          <div class="tpl-city">Cincinnati OH</div>
+        </div>
+        <div class="tpl-scroll"></div>
+      </div></div>
       <div class="template-name">Vertical</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Sleek')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-sleek"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-sleek">
+        <div class="tpl-hero">
+          <div class="tpl-overlay"></div>
+          <div class="tpl-hero-content">
+            <div class="tpl-addr">123 Main Street</div>
+            <div class="tpl-city">Cincinnati OH</div>
+            <div class="tpl-btn">Virtual Tour</div>
+          </div>
+        </div>
+        <div class="tpl-nav"><span>Overview</span><span>Gallery</span><span>Details</span><span>Map</span><span>Contact</span></div>
+        <div class="tpl-section"><div class="tpl-section-title">RESIDENCE</div><div class="tpl-section-line"></div></div>
+      </div></div>
       <div class="template-name">Sleek</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Impact')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-impact"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-impact">
+        <div class="tpl-hero">
+          <div class="tpl-slideshow">
+            <div class="tpl-slide-dots"><div class="tpl-slide-dot active"></div><div class="tpl-slide-dot"></div><div class="tpl-slide-dot"></div><div class="tpl-slide-dot"></div></div>
+          </div>
+          <div class="tpl-info">
+            <div class="tpl-label">THE PROPERTY</div>
+            <div class="tpl-addr">123 Main Street</div>
+            <div class="tpl-city">Cincinnati OH &nbsp;|&nbsp; $549,000</div>
+          </div>
+        </div>
+        <div class="tpl-stats"><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">sqft</div></div><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
+      </div></div>
       <div class="template-name">Impact</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Modern')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-modern"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-modern">
+        <div class="tpl-hero">
+          <div class="tpl-slide-area"></div>
+          <div class="tpl-detail-area">
+            <div class="tpl-label">THE PROPERTY</div>
+            <div class="tpl-addr">123 Main St</div>
+            <div class="tpl-city">Cincinnati OH</div>
+            <div class="tpl-btn">Schedule a Visit</div>
+          </div>
+        </div>
+        <div class="tpl-stats"><div><div class="tpl-stat-num">$549K</div><div class="tpl-stat-label">Price</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div></div>
+      </div></div>
       <div class="template-name">Modern</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Contemporary')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-contemporary"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="monitor-frame"><div class="monitor-screen tpl-contemporary">
+        <div class="tpl-nav"><span>Overview</span><span>Photos</span><span>Connect</span><span>Map</span></div>
+        <div class="tpl-hero">
+          <div class="tpl-addr">123 Main Street</div>
+          <div class="tpl-city">Cincinnati OH</div>
+        </div>
+        <div class="tpl-stats"><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
+        <div class="tpl-body">
+          <div class="tpl-offered">OFFERED AT</div>
+          <div class="tpl-price">$549,000</div>
+        </div>
+      </div></div>
       <div class="template-name">Contemporary</div>
       <button class="template-select-btn">Select Template</button>
     </div>
@@ -396,12 +523,15 @@ html, body { overflow-x: hidden; }
 var selectedTemplate = '';
 
 function getTemplatePreviewHTML(template) {
-  var cls = 'tpl-' + template.toLowerCase();
-  return '<div class="monitor-screen ' + cls + '"><div class="tpl-hero">' +
-    '<div class="tpl-addr">123 MAIN STREET</div>' +
-    '<div class="tpl-price">$549,000</div>' +
-    '<div class="tpl-details">4 BD &middot; 3 BA &middot; 2,400 SQFT</div>' +
-    '<div class="tpl-bar"></div></div></div>';
+  var t = template.toLowerCase();
+  if (t === 'cavallo') return '<div class="monitor-screen tpl-cavallo"><div class="tpl-hero"><div class="tpl-line"></div><div class="tpl-label">THE PROPERTY</div><div class="tpl-line"></div><div class="tpl-addr">123 Main St</div><div class="tpl-city">CINCINNATI OH</div></div><div class="tpl-stats"><div><div class="tpl-stat-num">3</div></div><div><div class="tpl-stat-num">2</div></div><div><div class="tpl-stat-num">2,412</div></div></div></div>';
+  if (t === 'stylish') return '<div class="monitor-screen tpl-stylish"><div class="tpl-hero"><div class="tpl-label">THE PROPERTY</div><div class="tpl-addr">123 Main St</div><div class="tpl-city">Cincinnati OH</div></div><div class="tpl-stats"><div><div class="tpl-stat-num">$549K</div></div><div><div class="tpl-stat-num">3/2</div></div><div><div class="tpl-stat-num">2,400</div></div></div></div>';
+  if (t === 'vertical') return '<div class="monitor-screen tpl-vertical"><div class="tpl-dotnav"><div class="tpl-dot active"></div><div class="tpl-dot"></div><div class="tpl-dot"></div></div><div class="tpl-hero"><div class="tpl-addr">123 Main St,</div><div class="tpl-city">Cincinnati OH</div></div></div>';
+  if (t === 'sleek') return '<div class="monitor-screen tpl-sleek"><div class="tpl-hero"><div class="tpl-overlay"></div><div class="tpl-hero-content"><div class="tpl-addr">123 Main St</div><div class="tpl-city">Cincinnati OH</div></div></div><div class="tpl-nav"><span>Overview</span><span>Gallery</span><span>Details</span></div></div>';
+  if (t === 'impact') return '<div class="monitor-screen tpl-impact"><div class="tpl-hero"><div class="tpl-slideshow"></div><div class="tpl-info"><div class="tpl-addr">123 Main St</div><div class="tpl-city">Cincinnati OH</div></div></div><div class="tpl-stats"><div><div class="tpl-stat-num">2,400</div></div><div><div class="tpl-stat-num">3</div></div><div><div class="tpl-stat-num">2</div></div></div></div>';
+  if (t === 'modern') return '<div class="monitor-screen tpl-modern"><div class="tpl-hero"><div class="tpl-slide-area"></div><div class="tpl-detail-area"><div class="tpl-addr">123 Main</div><div class="tpl-city">Cincinnati</div></div></div></div>';
+  if (t === 'contemporary') return '<div class="monitor-screen tpl-contemporary"><div class="tpl-hero"><div class="tpl-addr">123 Main St</div><div class="tpl-city">Cincinnati OH</div></div><div class="tpl-stats"><div><div class="tpl-stat-num">3</div></div><div><div class="tpl-stat-num">2</div></div><div><div class="tpl-stat-num">2,400</div></div></div><div class="tpl-body"><div class="tpl-offered">OFFERED AT</div><div class="tpl-price">$549K</div></div></div>';
+  return '<div class="monitor-screen" style="background:#1a1a2e;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10px;">' + template + '</div>';
 }
 
 function selectTemplate(template) {
