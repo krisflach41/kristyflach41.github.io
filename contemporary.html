@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2417 Quail Run Farm Lane, Green Twp OH 45233</title>
+<meta name="description" content="Gorgeous Dennis Ott resale! Beautifully maintained with big bright rooms!">
+<meta property="og:title" content="2417 Quail Run Farm Lane, Green Twp OH 45233">
+<meta property="og:image" content="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/fd983d98-f13f-4665-bfd0-03a0e4fe71f0.jpg">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;color:#333;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+img{max-width:100%;height:auto;display:block;}
+a{text-decoration:none;color:inherit;}
+
+:root{--accent:#4a5568;--text-dark:#1a1a1a;--text-light:#fff;--bg-warm:#f8f7f2;}
+
+/* ===== TOP NAV ===== */
+.top-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:transparent;padding:16px 30px;display:flex;justify-content:flex-end;gap:24px;transition:background 0.3s;}
+.top-nav.scrolled{background:rgba(255,255,255,0.95);box-shadow:0 1px 8px rgba(0,0,0,0.06);}
+.top-nav a{font-size:11px;letter-spacing:3px;font-weight:500;color:rgba(255,255,255,0.7);text-transform:uppercase;transition:color 0.3s;}
+.top-nav.scrolled a{color:#555;}
+.top-nav a:hover{color:#fff;}
+.top-nav.scrolled a:hover{color:#000;}
+
+/* ===== HERO ===== */
+.hero{position:relative;height:85vh;min-height:500px;background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:flex-end;padding:60px 50px;}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.5) 100%);}
+.hero-content{position:relative;z-index:2;}
+.hero-street{font-family:'Libre Baskerville',serif;font-size:clamp(36px,7vw,72px);font-weight:400;color:#fff;line-height:1.05;}
+.hero-city{font-size:20px;font-weight:300;color:rgba(255,255,255,0.7);margin-top:8px;letter-spacing:2px;}
+
+/* ===== BANNER ===== */
+.banner-badge{position:absolute;top:80px;left:50px;z-index:10;padding:10px 24px;font-size:12px;letter-spacing:3px;font-weight:600;text-transform:uppercase;color:#fff;background:var(--accent);box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+
+/* ===== STATS BAR ===== */
+.stats{background:var(--accent);padding:40px 20px;}
+.stats-grid{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center;}
+.stat-number{font-family:'Libre Baskerville',serif;font-size:clamp(36px,5vw,56px);font-weight:400;color:#fff;line-height:1;}
+.stat-label{font-size:10px;letter-spacing:3px;color:rgba(255,255,255,0.5);text-transform:uppercase;margin-top:8px;font-weight:500;}
+
+/* ===== PRICE & DESCRIPTION ===== */
+.description{padding:80px 20px;text-align:center;background:var(--bg-warm);}
+.desc-inner{max-width:800px;margin:0 auto;}
+.desc-offered{font-size:14px;letter-spacing:6px;color:#999;font-weight:300;text-transform:uppercase;}
+.desc-price{font-family:'Libre Baskerville',serif;font-size:clamp(40px,6vw,64px);font-weight:400;color:var(--text-dark);font-style:italic;margin:12px 0 30px;}
+.desc-heading{font-size:16px;letter-spacing:6px;font-weight:400;color:#999;text-transform:uppercase;margin-bottom:20px;}
+.desc-text{font-family:'Libre Baskerville',serif;font-size:15px;line-height:2;color:#555;font-weight:400;}
+
+/* ===== PHOTO GRID ===== */
+.photos{padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;}
+.photos img{width:100%;height:250px;object-fit:cover;cursor:pointer;transition:opacity 0.3s;}
+.photos img:hover{opacity:0.85;}
+
+/* Lightbox */
+.lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:300;align-items:center;justify-content:center;}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:90%;max-height:85vh;object-fit:contain;}
+.lightbox-close{position:absolute;top:20px;right:30px;color:#fff;font-size:32px;cursor:pointer;}
+.lightbox-nav{position:absolute;top:50%;transform:translateY(-50%);color:#fff;font-size:28px;cursor:pointer;padding:20px;}
+.lightbox-prev{left:10px;}
+.lightbox-next{right:10px;}
+
+/* ===== TEAM ===== */
+.team{padding:80px 20px;background:#fff;text-align:center;}
+.team-inner{max-width:1000px;margin:0 auto;}
+.team-heading{font-family:'Libre Baskerville',serif;font-size:32px;font-weight:400;color:var(--text-dark);margin-bottom:50px;letter-spacing:4px;}
+.team-grid{display:flex;justify-content:center;align-items:flex-start;gap:60px;flex-wrap:wrap;}
+.team-member{flex:1;min-width:280px;max-width:400px;text-align:center;}
+.team-photo{width:150px;height:150px;border-radius:50%;object-fit:cover;margin:0 auto 20px;box-shadow:0 6px 30px rgba(0,0,0,0.1);}
+.team-photo-placeholder{width:150px;height:150px;border-radius:50%;margin:0 auto 20px;background:#eee;display:flex;align-items:center;justify-content:center;font-size:40px;color:#ccc;}
+.team-name{font-family:'Libre Baskerville',serif;font-size:20px;color:var(--text-dark);}
+.team-title{font-size:13px;color:#888;margin-top:4px;font-weight:300;}
+.team-license{font-size:12px;color:#aaa;}
+.team-company{font-size:13px;color:#666;margin-top:6px;}
+.team-contact-line{font-size:13px;color:#555;margin-top:3px;}
+.team-contact-line a{color:var(--accent);}
+.team-website{font-size:12px;margin-top:3px;}
+.team-website a{color:var(--accent);}
+.team-logos{display:flex;justify-content:center;align-items:center;gap:30px;margin-top:40px;flex-wrap:wrap;}
+.team-logos img{height:50px;object-fit:contain;opacity:0.7;}
+
+/* ===== CONTACT ===== */
+.contact{padding:80px 20px;background:var(--accent);color:#fff;}
+.contact-inner{max-width:900px;margin:0 auto;}
+.contact-heading{text-align:center;font-family:'Libre Baskerville',serif;font-size:28px;font-weight:400;margin-bottom:40px;letter-spacing:4px;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.contact-left{display:flex;flex-direction:column;gap:14px;}
+.contact-input{padding:14px 18px;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.3);color:#fff;font-size:15px;font-family:'Montserrat',sans-serif;font-weight:300;width:100%;}
+.contact-input:focus{outline:none;border-bottom-color:#fff;}
+.contact-input::placeholder{color:rgba(255,255,255,0.4);text-transform:uppercase;font-size:12px;letter-spacing:2px;}
+textarea.contact-input{resize:vertical;min-height:100%;border:1px solid rgba(255,255,255,0.2);padding:14px 18px;}
+.contact-right{display:flex;}
+.contact-right textarea{flex:1;}
+.contact-disclaimer{grid-column:1/-1;font-size:9px;color:rgba(255,255,255,0.3);line-height:1.5;}
+.contact-submit{grid-column:1/-1;justify-self:center;padding:14px 50px;background:transparent;border:1px solid rgba(255,255,255,0.4);color:#fff;font-size:12px;letter-spacing:4px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all 0.3s;margin-top:10px;}
+.contact-submit:hover{background:rgba(255,255,255,0.1);border-color:#fff;}
+
+/* ===== SOCIAL ===== */
+.social-row{padding:20px;background:#fff;text-align:center;display:flex;justify-content:center;gap:16px;}
+.social-row a{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;transition:opacity 0.3s;}
+.social-row a:hover{opacity:0.7;}
+
+/* ===== LOCATION ===== */
+.map iframe{width:100%;height:450px;border:none;display:block;}
+
+/* ===== SOCIAL SIDEBAR ===== */
+.social-sidebar{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:90;display:flex;flex-direction:column;}
+.social-sidebar a{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;transition:opacity 0.3s;}
+.social-sidebar a:hover{opacity:0.7;}
+.social-fb{background:#3b5998;}.social-x{background:#000;}.social-li{background:#0077b5;}.social-pi{background:#bd081c;}.social-em{background:#555;}
+
+.footer{padding:20px;text-align:center;background:#2d3436;font-size:11px;color:rgba(255,255,255,0.25);}
+
+@media(max-width:768px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px;}
+  .photos{grid-template-columns:repeat(2,1fr);}
+  .contact-grid{grid-template-columns:1fr;}
+  .team-grid{flex-direction:column;align-items:center;}
+  .hero{padding:40px 24px;}
+  .top-nav{display:none;}
+}
+@media(max-width:480px){
+  .photos{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="social-sidebar">
+  <a href="#" class="social-fb"><i class="fab fa-facebook-f"></i></a>
+  <a href="#" class="social-x"><i class="fab fa-x-twitter"></i></a>
+  <a href="#" class="social-li"><i class="fab fa-linkedin-in"></i></a>
+  <a href="#" class="social-pi"><i class="fab fa-pinterest-p"></i></a>
+  <a href="#" class="social-em"><i class="fas fa-envelope"></i></a>
+</div>
+
+<nav class="top-nav" id="topNav">
+  <a href="#desc">Overview</a>
+  <a href="#photos">Photos</a>
+  <a href="#contact">Connect</a>
+  <a href="#map">Map</a>
+</nav>
+
+<section class="hero" id="home" style="background-image:url('https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/fd983d98-f13f-4665-bfd0-03a0e4fe71f0.jpg');">
+  <div class="hero-overlay"></div>
+  <div class="banner-badge">Just Listed</div>
+  <div class="hero-content">
+    <h1 class="hero-street">2417 Quail Run Farm Lane</h1>
+    <div class="hero-city">Green Twp OH</div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stats-grid">
+    <div><div class="stat-number">4</div><div class="stat-label">Beds</div></div>
+    <div><div class="stat-number">4</div><div class="stat-label">Baths</div></div>
+    <div><div class="stat-number">2,912</div><div class="stat-label">Sqft</div></div>
+    <div><div class="stat-number">1993</div><div class="stat-label">Year Built</div></div>
+  </div>
+</section>
+
+<section class="description" id="desc">
+  <div class="desc-inner">
+    <div class="desc-offered">Offered At</div>
+    <div class="desc-price">$869,900</div>
+    <div class="desc-heading">Residence</div>
+    <p class="desc-text">Gorgeous Dennis Ott resale! Beautifully maintained with big bright rooms! Lovely 2 story foyer, formal living room plus a great room with a beautiful fireplace, huge kitchen w/Loads of cabinets, elegant granite counter tops plus a pantry! 1st floor laundry, 3 car side entry garage. Full finished basement with a full kitchen, room size separate laundry that doubles as an art studio, lovely family room w/fireplace, full walkout. Study is currently used as a bedroom with a full bath to make it an en suite! Perfect for generational living.</p>
+  </div>
+</section>
+
+<section class="photos" id="photos">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/fd983d98-f13f-4665-bfd0-03a0e4fe71f0.jpg" onclick="openLB(0)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/d69f5e7a-cd9b-4db2-b6f5-4f9e014e7d35.jpg" onclick="openLB(1)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/8e8b159f-c500-4a45-ab7c-62ba5e8cd875.jpg" onclick="openLB(2)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/ec6d32fa-e0f9-471c-98f8-36b6659aea6b.jpg" onclick="openLB(3)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/3654f418-ac38-46a9-9921-cb3b0932dd9c.jpg" onclick="openLB(4)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/4623b5b4-4821-4700-b570-faa79485f078.jpg" onclick="openLB(5)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/fad0744b-245b-459e-a884-8008f45a3872.jpg" onclick="openLB(6)" alt="">
+  <img src="https://mediall.rapmls.com/cincy/listingpics/bigphoto/2026/03/09/58345cd4-6f9c-4891-865b-223aca3a4135.jpg" onclick="openLB(7)" alt="">
+</section>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-close" onclick="closeLB()">&times;</div>
+  <div class="lightbox-nav lightbox-prev" onclick="lbPrev()"><i class="fas fa-chevron-left"></i></div>
+  <img id="lbImg" src="" alt="">
+  <div class="lightbox-nav lightbox-next" onclick="lbNext()"><i class="fas fa-chevron-right"></i></div>
+</div>
+
+<section class="team" id="team">
+  <div class="team-inner">
+    <h2 class="team-heading">Who Are We Anyway?</h2>
+    <div class="team-grid">
+      <div class="team-member">
+        <div class="team-photo-placeholder"><i class="fas fa-user"></i></div>
+        <div class="team-name">Adam Sullivan</div>
+        <div class="team-title">Realtor</div>
+        <div class="team-company">Windermere Real Estate</div>
+        <div class="team-contact-line"><a href="mailto:adam@example.com">adam@example.com</a></div>
+      </div>
+      <div class="team-member">
+        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <div class="team-name">Kristy Flach</div>
+        <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
+        <div class="team-license">NMLS #2632259</div>
+        <div class="team-company">Paramount Residential Mortgage Group, Inc.</div>
+        <div class="team-contact-line"><i class="fas fa-phone" style="font-size:11px;margin-right:4px;"></i> (513) 268-3891</div>
+        <div class="team-contact-line"><a href="mailto:kflach@prmg.net">kflach@prmg.net</a></div>
+        <div class="team-contact-line"><a href="mailto:kflach@kristyflach.com">kflach@kristyflach.com</a></div>
+        <div class="team-website"><a href="https://kristyflach.com" target="_blank">kristyflach.com</a></div>
+        <div class="team-website"><a href="https://kflach.myprmg.net" target="_blank">kflach.myprmg.net</a></div>
+      </div>
+    </div>
+    <div class="team-logos">
+      <img src="PRMG-Logo.png" alt="PRMG">
+      <img src="CMA%20Logo.png" alt="CMA">
+      <img src="equal-housing-logo.png" alt="Equal Housing">
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <h2 class="contact-heading">Contact</h2>
+    <form class="contact-grid">
+      <div class="contact-left">
+        <input type="text" class="contact-input" placeholder="Name" required>
+        <input type="email" class="contact-input" placeholder="Email" required>
+        <input type="tel" class="contact-input" placeholder="Phone">
+      </div>
+      <div class="contact-right"><textarea class="contact-input" placeholder="Message"></textarea></div>
+      <div class="contact-disclaimer">By submitting your email address and mobile number, you consent to receiving email and SMS messages from Kristy Flach using an automatic system. Consent to receive SMS messages is not a condition of purchase. Message and data rates may apply. You may unsubscribe at any time.</div>
+      <button type="submit" class="contact-submit">Send</button>
+    </form>
+  </div>
+</section>
+
+<section class="map" id="map">
+  <iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1s2417%20Quail%20Run%20Farm%20Lane%20Green%20Twp%20OH%2045233"></iframe>
+</section>
+
+<footer class="footer">&copy; 2026 Paramount Residential Mortgage Group, Inc. ("PRMG") NMLS #75243. Equal Housing Opportunity.</footer>
+
+<script>
+// Nav scroll effect
+var nav=document.getElementById('topNav');
+window.addEventListener('scroll',function(){nav.classList.toggle('scrolled',window.scrollY>100);});
+
+// Lightbox
+var lbPhotos=document.querySelectorAll('.photos img');
+var lbUrls=[];lbPhotos.forEach(function(p){lbUrls.push(p.src);});
+var lbIdx=0;
+function openLB(i){lbIdx=i;document.getElementById('lbImg').src=lbUrls[lbIdx];document.getElementById('lightbox').classList.add('open');}
+function closeLB(){document.getElementById('lightbox').classList.remove('open');}
+function lbNext(){lbIdx=(lbIdx+1)%lbUrls.length;document.getElementById('lbImg').src=lbUrls[lbIdx];}
+function lbPrev(){lbIdx=(lbIdx-1+lbUrls.length)%lbUrls.length;document.getElementById('lbImg').src=lbUrls[lbIdx];}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeLB();if(e.key==='ArrowRight')lbNext();if(e.key==='ArrowLeft')lbPrev();});
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener('click',function(e){var t=document.querySelector(this.getAttribute('href'));if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});}});});
+</script>
+</body>
+</html>
