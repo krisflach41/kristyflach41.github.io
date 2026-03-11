@@ -3,11 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Property Websites</title>
+<title>Single Property Websites — Agent Edge</title>
 <script src="universal-cart.js"></script>
 <style>
 
-/* ===== BACKGROUND (PORTAL STYLE) ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -18,397 +17,228 @@ body {
   color: #0b1f3a;
 }
 
-/* ===== PAGE WIDTH ===== */
-.page-wrap {
-  max-width: 1150px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
+.page-wrap { max-width: 1150px; margin: 0 auto; padding: 0 24px; }
 
-/* ===== GLASS CONTAINER ===== */
 .gallery-card {
   padding: 60px 50px;
   border-radius: 22px;
   background: rgba(255,255,255,0.58);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-/* ===== TITLES ===== */
-.section-title {
-  font-size: 34px;
+.section-title { font-size: 34px; text-align: center; margin-bottom: 10px; color: #002556; font-weight: 700; }
+.section-subtitle { text-align: center; max-width: 650px; margin: 0 auto 50px auto; color: #555; line-height: 1.6; }
+
+/* ===== TEMPLATE GALLERY ===== */
+.template-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+.template-card {
   text-align: center;
-  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border-radius: 14px;
+  padding: 20px 16px 22px;
+  background: rgba(255,255,255,0.45);
+  border: 2px solid transparent;
+}
+.template-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px rgba(0,0,0,0.12);
+  border-color: rgba(0,37,86,0.15);
 }
 
-.section-subtitle {
-  text-align: center;
-  max-width: 650px;
-  margin: 0 auto 50px auto;
-  color: #555;
-}
-
-/* ===== PROPERTY INPUT ROWS ===== */
-.property-row {
-  background: rgba(11,78,162,0.04);
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 16px;
+/* Monitor Frame */
+.monitor-frame {
   position: relative;
-}
-
-.remove-prop {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  color: #c0392b;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.section-label {
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.property-row input,
-.property-row textarea,
-.property-row select {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 14px;
-  color: #0b1f3a;
-  background: white;
+  aspect-ratio: 16 / 10;
+  background: #0b1a2e;
+  border-radius: 10px 10px 4px 4px;
+  overflow: hidden;
+  margin-bottom: 4px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
-
-.property-row textarea {
-  height: 80px;
-  resize: vertical;
-}
-
-/* ===== ADD TO CART BUTTON ===== */
-.add-to-cart-btn {
+.monitor-frame::after {
+  content: '';
   display: block;
-  margin: 30px auto;
-  padding: 14px 32px;
-  background: #0b4ea2;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
+  width: 40%;
+  height: 6px;
+  background: #1a2a42;
+  border-radius: 0 0 4px 4px;
+  margin: 0 auto;
 }
 
-.add-to-cart-btn:hover {
-  background: #0a3d7f;
-}
+.monitor-screen { width: 100%; height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 
-.add-to-cart-btn:disabled {
-  background: #999;
-  cursor: not-allowed;
-}
-
-/* ===== ADD ANOTHER PROPERTY BUTTON ===== */
-.add-property-btn {
-  display: block;
-  margin: 20px auto;
-  padding: 10px 20px;
-  background: transparent;
-  border: 2px dashed #0b4ea2;
-  color: #0b4ea2;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.add-property-btn:hover {
-  background: rgba(11,78,162,0.05);
-}
-
-/* ===== BACK BUTTON ===== */
-.back-btn {
-  display: inline-block;
-  margin-top: 50px;
-  padding: 10px 20px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-}
-
-/* ===== FLOATING RETURN LINK ===== */
-.return-main {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-}
-
-/* ===== CART SYSTEM ===== */
-.cart-icon {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  z-index: 10000;
-}
-
-.cart-icon:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.95);
-}
-
-.cart-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #0b4ea2;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #c0392b;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-}
-
-.cart-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  z-index: 9998;
-}
-
-.cart-overlay.active {
-  display: block;
-}
-
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  right: -500px;
-  transform: translateY(-50%);
-  width: 90%;
-  max-width: 480px;
-  max-height: 85vh;
-  background: white;
-  border-radius: 18px 0 0 18px;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+.tpl-hero {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 9999;
-}
-
-.cart-modal.active {
-  right: 0;
-}
-
-.cart-header {
-  padding: 24px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #0b1f3a;
-}
-
-.cart-close {
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
   justify-content: center;
-}
-
-.cart-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-}
-
-.cart-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-}
-
-.cart-empty svg {
-  width: 64px;
-  height: 64px;
-  fill: #ddd;
-  margin-bottom: 16px;
-}
-
-.cart-section {
-  margin-bottom: 32px;
-}
-
-.cart-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #0b4ea2;
-  margin-bottom: 12px;
-}
-
-.cart-item {
-  background: rgba(11,78,162,0.04);
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 12px;
+  position: relative;
+}
+.tpl-hero .tpl-addr { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.9); margin-bottom: 4px; }
+.tpl-hero .tpl-price { font-size: 18px; font-weight: 800; color: #fff; }
+.tpl-hero .tpl-details { font-size: 8px; color: rgba(255,255,255,0.6); letter-spacing: 1px; margin-top: 4px; }
+.tpl-bar { height: 3px; width: 30%; border-radius: 2px; margin: 6px auto 0; }
+
+/* Template Styles */
+.tpl-cavallo { background: linear-gradient(135deg, #1a3a5c 0%, #0d2137 100%); }
+.tpl-cavallo .tpl-bar { background: #4a90d9; }
+
+.tpl-stylish { background: linear-gradient(180deg, #1c1c2e 0%, #2a2a4a 100%); }
+.tpl-stylish .tpl-bar { background: #c9a84c; width: 50%; }
+.tpl-stylish .tpl-price { color: #c9a84c; }
+
+.tpl-vertical { background: linear-gradient(160deg, #0f2027, #203a43, #2c5364); }
+.tpl-vertical .tpl-hero { align-items: flex-start; padding-left: 16px; }
+.tpl-vertical .tpl-bar { margin: 6px 0 0 0; background: #5bb5a2; }
+
+.tpl-sleek { background: #0a0a0a; }
+.tpl-sleek .tpl-hero { border-left: 2px solid #e74c3c; margin-left: 12px; padding-left: 10px; align-items: flex-start; }
+.tpl-sleek .tpl-bar { background: #e74c3c; width: 20%; margin: 6px 0 0 0; }
+
+.tpl-impact { background: linear-gradient(135deg, #1a1a2e, #16213e); }
+.tpl-impact .tpl-price { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
+.tpl-impact .tpl-addr { font-size: 9px; letter-spacing: 3px; }
+.tpl-impact .tpl-bar { background: #3498db; width: 60%; height: 2px; }
+
+.tpl-modern { background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%); position: relative; }
+.tpl-modern::before { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 35%; background: rgba(255,255,255,0.05); }
+.tpl-modern .tpl-hero { align-items: flex-start; padding-left: 14px; }
+.tpl-modern .tpl-bar { background: #fff; opacity: 0.3; margin: 6px 0 0 0; }
+
+.tpl-contemporary { background: #f8f8f0; }
+.tpl-contemporary .tpl-addr { color: #333; font-size: 10px; }
+.tpl-contemporary .tpl-price { color: #1a1a1a; font-size: 16px; }
+.tpl-contemporary .tpl-details { color: #888; }
+.tpl-contemporary .tpl-bar { background: #002556; width: 25%; }
+
+.template-name { font-size: 16px; font-weight: 700; color: #002556; margin: 14px 0 10px; }
+.template-select-btn {
+  display: inline-block; padding: 8px 24px; border: 1.5px solid #002556; border-radius: 20px;
+  background: transparent; color: #002556; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+}
+.template-select-btn:hover { background: #002556; color: white; }
+
+/* ===== ORDER FORM ===== */
+#orderFormView { display: none; }
+
+.selected-template-banner {
+  display: flex; align-items: center; gap: 20px; padding: 18px 22px;
+  background: rgba(0,37,86,0.04); border: 1px solid rgba(0,37,86,0.1); border-radius: 12px; margin-bottom: 30px;
 }
 
-.cart-item-info {
-  flex: 1;
+.selected-template-mini {
+  width: 120px; aspect-ratio: 16 / 10; border-radius: 6px; overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.selected-template-mini .tpl-hero .tpl-addr { font-size: 6px; letter-spacing: 1px; }
+.selected-template-mini .tpl-hero .tpl-price { font-size: 10px; }
+.selected-template-mini .tpl-hero .tpl-details { font-size: 5px; }
+.selected-template-mini .tpl-bar { height: 2px; margin-top: 3px; }
+
+.selected-template-info { flex: 1; }
+.selected-template-info h3 { margin: 0 0 4px; font-size: 18px; color: #002556; }
+.selected-template-info p { margin: 0; font-size: 13px; color: #666; }
+
+.back-to-templates {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 20px;
+  border: 1px solid rgba(0,37,86,0.15); background: white; color: #002556; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; text-decoration: none; margin-bottom: 24px;
+}
+.back-to-templates:hover { background: rgba(0,37,86,0.04); border-color: rgba(0,37,86,0.25); }
+
+/* Form Fields */
+.form-grid { display: grid; gap: 16px; }
+.form-row-2 { grid-template-columns: 1fr 1fr; }
+.form-row-3 { grid-template-columns: 2fr 1fr 1fr; }
+
+.form-group label { display: block; font-size: 13px; font-weight: 600; color: #0b1f3a; margin-bottom: 6px; }
+.form-group label span.req { color: #c0392b; }
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 11px 14px; border: 1px solid #d0d4dc; border-radius: 8px;
+  font-family: inherit; font-size: 14px; color: #0b1f3a; background: white; box-sizing: border-box; transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: #002556; box-shadow: 0 0 0 3px rgba(0,37,86,0.08);
+}
+.form-group textarea { min-height: 80px; resize: vertical; }
+.form-group select {
+  -webkit-appearance: none; appearance: none;
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 14px center;
+  padding-right: 36px; cursor: pointer;
+}
+.form-group select option { background: white; color: #0b1f3a; }
+
+.add-to-cart-btn {
+  display: block; margin: 30px auto 0; padding: 14px 40px; background: #002556; color: white;
+  border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; transition: 0.25s ease;
+}
+.add-to-cart-btn:hover { background: #001a3d; }
+
+/* Navigation */
+.back-btn {
+  display: inline-block; margin-top: 50px; padding: 10px 20px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none; color: #0b1f3a; font-weight: 600;
 }
 
-.cart-item-name {
-  font-weight: 600;
-  color: #0b1f3a;
-  margin-bottom: 2px;
+.return-main {
+  position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none; color: #0b1f3a; font-weight: 600;
 }
 
-.cart-item-meta {
-  font-size: 13px;
-  color: #666;
+/* Cart */
+.cart-icon {
+  position: fixed; top: 20px; right: 20px; width: 50px; height: 50px;
+  background: rgba(255,255,255,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12); transition: all 0.25s ease; z-index: 10000;
+}
+.cart-icon:hover { transform: scale(1.08); background: rgba(255,255,255,0.95); }
+.cart-icon svg { width: 24px; height: 24px; fill: #002556; }
+.cart-badge {
+  position: absolute; top: -4px; right: -4px; background: #c0392b; color: white; font-size: 11px; font-weight: 700;
+  width: 20px; height: 20px; border-radius: 50%; display: none; align-items: center; justify-content: center; border: 2px solid white;
 }
 
-.cart-item-remove {
-  background: none;
-  border: none;
-  color: #c0392b;
-  cursor: pointer;
-  font-size: 20px;
-  padding: 4px 8px;
+.cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 9998; }
+.cart-overlay.active { display: block; }
+.cart-modal {
+  position: fixed; top: 50%; right: -500px; transform: translateY(-50%); width: 90%; max-width: 480px; max-height: 85vh;
+  background: white; border-radius: 18px 0 0 18px; box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+  display: flex; flex-direction: column; transition: right 0.3s ease; z-index: 9999;
 }
+.cart-modal.active { right: 0; }
+.cart-header { padding: 24px; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: space-between; align-items: center; }
+.cart-header h2 { margin: 0; font-size: 22px; color: #0b1f3a; }
+.cart-close { background: none; border: none; font-size: 28px; color: #666; cursor: pointer; padding: 0; }
+.cart-body { flex: 1; overflow-y: auto; padding: 24px; }
+.cart-empty { text-align: center; padding: 60px 20px; color: #999; }
+.cart-empty svg { width: 64px; height: 64px; fill: #ddd; margin-bottom: 16px; }
+.cart-section { margin-bottom: 32px; }
+.cart-section-title { font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #002556; margin-bottom: 12px; }
+.cart-item { background: rgba(0,37,86,0.04); padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+.cart-item-info { flex: 1; }
+.cart-item-name { font-weight: 600; color: #0b1f3a; margin-bottom: 2px; }
+.cart-item-meta { font-size: 13px; color: #666; }
+.cart-item-remove { background: none; border: none; color: #c0392b; cursor: pointer; font-size: 20px; padding: 4px 8px; }
+.cart-footer { padding: 20px 24px; border-top: 1px solid #e0e0e0; }
+.cart-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 700; margin-bottom: 16px; color: #0b1f3a; }
+.cart-checkout-btn { width: 100%; padding: 14px; background: #002556; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 16px; cursor: pointer; }
+.cart-checkout-btn:hover { background: #001a3d; }
+.cart-clear-btn { width: 100%; padding: 10px; background: transparent; color: #c0392b; border: 1px solid #c0392b; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; margin-top: 10px; }
 
-.cart-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #0b1f3a;
-}
-
-.cart-checkout-btn {
-  width: 100%;
-  padding: 14px;
-  background: #0b4ea2;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.cart-checkout-btn:hover {
-  background: #0a3d7f;
-}
-
-.cart-clear-btn {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  color: #c0392b;
-  border: 1px solid #c0392b;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.25s ease;
-}
-
-.cart-clear-btn:hover {
-  background: rgba(192,57,43,0.05);
-}
-
-/* ===== RESPONSIVE ===== */
-html, body {
-  overflow-x: hidden;
-}
-
-@media (max-width: 640px) {
-  .gallery-card {
-    padding: 40px 25px;
-  }
-  
-  .section-title {
-    font-size: 28px;
-  }
-  
-  .property-row {
-    padding: 15px;
-  }
-}
+html, body { overflow-x: hidden; }
+@media (max-width: 800px) { .template-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } .gallery-card { padding: 40px 25px; } .section-title { font-size: 28px; } }
+@media (max-width: 500px) { .template-grid { grid-template-columns: 1fr; } .form-row-2, .form-row-3 { grid-template-columns: 1fr; } .selected-template-banner { flex-direction: column; text-align: center; } }
 
 </style>
 <script src="tracking.js"></script>
@@ -420,55 +250,141 @@ html, body {
 <div class="page-wrap">
 <section class="gallery-card">
 
-<h2 class="section-title">Single Property Websites</h2>
-<p class="section-subtitle">
-  Custom single-property websites to showcase your listings with professional design. Provide the property details and we'll build your site.
-</p>
+<!-- ===== TEMPLATE GALLERY VIEW ===== -->
+<div id="templateGalleryView">
+  <h2 class="section-title">Single Property Websites</h2>
+  <p class="section-subtitle">
+    Choose a template style for your listing website. Each design is custom-built with your property details, photos, and branding.
+  </p>
 
-<div id="properties"></div>
+  <div class="template-grid">
+    <div class="template-card" onclick="selectTemplate('Cavallo')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-cavallo"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Cavallo</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
 
-<button type="button" class="add-property-btn" onclick="addNewProperty()">+ Add Another Property</button>
+    <div class="template-card" onclick="selectTemplate('Stylish')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-stylish"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Stylish</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
 
-<button type="button" class="add-to-cart-btn" onclick="addToCart()" id="addCartBtn">Add to Cart</button>
+    <div class="template-card" onclick="selectTemplate('Vertical')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-vertical"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Vertical</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
+
+    <div class="template-card" onclick="selectTemplate('Sleek')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-sleek"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Sleek</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
+
+    <div class="template-card" onclick="selectTemplate('Impact')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-impact"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Impact</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
+
+    <div class="template-card" onclick="selectTemplate('Modern')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-modern"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Modern</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
+
+    <div class="template-card" onclick="selectTemplate('Contemporary')">
+      <div class="monitor-frame"><div class="monitor-screen tpl-contemporary"><div class="tpl-hero"><div class="tpl-addr">123 MAIN STREET</div><div class="tpl-price">$549,000</div><div class="tpl-details">4 BD &nbsp;&middot;&nbsp; 3 BA &nbsp;&middot;&nbsp; 2,400 SQFT</div><div class="tpl-bar"></div></div></div></div>
+      <div class="template-name">Contemporary</div>
+      <button class="template-select-btn">Select Template</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ORDER FORM VIEW ===== -->
+<div id="orderFormView">
+  
+  <button class="back-to-templates" onclick="showGallery()">&larr; Back to Templates</button>
+
+  <div class="selected-template-banner">
+    <div class="selected-template-mini" id="selectedTemplateMini"></div>
+    <div class="selected-template-info">
+      <h3 id="selectedTemplateName">Cavallo</h3>
+      <p>Your selected template style</p>
+    </div>
+  </div>
+
+  <div class="form-grid form-row-2" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Street Address <span class="req">*</span></label>
+      <input type="text" id="propStreet" placeholder="123 Main St">
+    </div>
+    <div class="form-group">
+      <label>MLS #</label>
+      <input type="text" id="propMls" placeholder="e.g. 1870625">
+    </div>
+  </div>
+
+  <div class="form-grid form-row-3" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>City <span class="req">*</span></label>
+      <input type="text" id="propCity" placeholder="Cincinnati">
+    </div>
+    <div class="form-group">
+      <label>State <span class="req">*</span></label>
+      <input type="text" id="propState" placeholder="OH" maxlength="2" style="text-transform:uppercase;">
+    </div>
+    <div class="form-group">
+      <label>ZIP <span class="req">*</span></label>
+      <input type="text" id="propZip" placeholder="45244" maxlength="10">
+    </div>
+  </div>
+
+  <div class="form-grid form-row-2" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Color Scheme</label>
+      <select id="propColor">
+        <option value="Blue">Blue</option>
+        <option value="Navy">Navy</option>
+        <option value="Black">Black</option>
+        <option value="Green">Green</option>
+        <option value="Red">Red</option>
+        <option value="Gold">Gold</option>
+        <option value="Charcoal">Charcoal</option>
+      </select>
+    </div>
+    <div class="form-group"></div>
+  </div>
+
+  <div class="form-grid" style="margin-bottom:0;">
+    <div class="form-group">
+      <label>Special Instructions</label>
+      <textarea id="propComments" placeholder="e.g., Open House Sunday 2/15 from 10-2pm, Just Listed, Price Reduced, etc."></textarea>
+    </div>
+  </div>
+
+  <button class="add-to-cart-btn" onclick="addToCart()" id="addCartBtn">Add to Cart</button>
+</div>
 
 <div style="text-align:center;">
-  <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Collection</a>
+  <a href="realtor-marketing-studio.html" class="back-btn">&larr; Back to Marketing Collection</a>
 </div>
 
 </section>
 </div>
 
-<!-- CART MODAL -->
+<!-- CART -->
 <div class="cart-icon" onclick="openCart()">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-  </svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
   <span class="cart-badge" id="cartBadge">0</span>
 </div>
-
 <div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-
 <div class="cart-modal" id="cartModal">
-  <div class="cart-header">
-    <h2>My Kit</h2>
-    <button class="cart-close" onclick="closeCart()">×</button>
-  </div>
-  
-  <div class="cart-body" id="cartBody">
-    <div class="cart-empty">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-      </svg>
-      <p>Your kit is empty</p>
-      <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
-    </div>
-  </div>
-  
-  <div class="cart-footer" id="cartFooter" style="display: none;">
-    <div class="cart-total">
-      <span>Total Items:</span>
-      <span id="cartTotalCount">0</span>
-    </div>
+  <div class="cart-header"><h2>My Kit</h2><button class="cart-close" onclick="closeCart()">&times;</button></div>
+  <div class="cart-body" id="cartBody"><div class="cart-empty"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><p>Your kit is empty</p></div></div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="cart-total"><span>Total Items:</span><span id="cartTotalCount">0</span></div>
     <button class="cart-checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
     <button class="cart-clear-btn" onclick="clearCart()">Clear Cart</button>
   </div>
@@ -477,120 +393,73 @@ html, body {
 <a href="portal.html" class="return-main">Return to Agent Edge Partner Portal</a>
 
 <script>
-/* ===========================
-   PROPERTY WEBSITE SYSTEM
-=========================== */
 
-let properties = [];
+var selectedTemplate = '';
 
-function addNewProperty() {
-  properties.push({ address: "", mls: "", comments: "", template: "Cavallo", colorScheme: "Blue" });
-  renderProperties();
+function getTemplatePreviewHTML(template) {
+  var cls = 'tpl-' + template.toLowerCase();
+  return '<div class="monitor-screen ' + cls + '"><div class="tpl-hero">' +
+    '<div class="tpl-addr">123 MAIN STREET</div>' +
+    '<div class="tpl-price">$549,000</div>' +
+    '<div class="tpl-details">4 BD &middot; 3 BA &middot; 2,400 SQFT</div>' +
+    '<div class="tpl-bar"></div></div></div>';
 }
 
-function removeProperty(index) {
-  properties.splice(index, 1);
-  renderProperties();
+function selectTemplate(template) {
+  selectedTemplate = template;
+  document.getElementById('templateGalleryView').style.display = 'none';
+  document.getElementById('orderFormView').style.display = 'block';
+  document.getElementById('selectedTemplateName').textContent = template;
+  document.getElementById('selectedTemplateMini').innerHTML = getTemplatePreviewHTML(template);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function renderProperties() {
-  const container = document.getElementById("properties");
-  container.innerHTML = "";
-  
-  if (properties.length === 0) {
-    addNewProperty();
-    return;
-  }
-  
-  properties.forEach((prop, i) => {
-      container.innerHTML += `
-      <div class="property-row">
-        <span class="remove-prop" onclick="removeProperty(${i})">Remove</span>
-        
-        <div class="section-label">Property Address *</div>
-        <input 
-          type="text"
-          placeholder="123 Main St, City, State ZIP"
-          value="${prop.address || ""}"
-          oninput="properties[${i}].address = this.value"
-          required
-        >
-        
-        <div class="section-label">MLS #</div>
-        <input 
-          type="text"
-          placeholder="e.g. 1870625"
-          value="${prop.mls || ""}"
-          oninput="properties[${i}].mls = this.value"
-        >
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div>
-            <div class="section-label">Template Style</div>
-            <select onchange="properties[${i}].template = this.value">
-              <option value="Cavallo" ${prop.template==='Cavallo'?'selected':''}>Cavallo</option>
-              <option value="Stylish" ${prop.template==='Stylish'?'selected':''}>Stylish</option>
-              <option value="Vertical" ${prop.template==='Vertical'?'selected':''}>Vertical</option>
-              <option value="Sleek" ${prop.template==='Sleek'?'selected':''}>Sleek</option>
-              <option value="Impact" ${prop.template==='Impact'?'selected':''}>Impact</option>
-              <option value="Modern" ${prop.template==='Modern'?'selected':''}>Modern</option>
-              <option value="Contemporary" ${prop.template==='Contemporary'?'selected':''}>Contemporary</option>
-            </select>
-          </div>
-          <div>
-            <div class="section-label">Color Scheme</div>
-            <select onchange="properties[${i}].colorScheme = this.value">
-              <option value="Blue" ${prop.colorScheme==='Blue'?'selected':''}>Blue</option>
-              <option value="Navy" ${prop.colorScheme==='Navy'?'selected':''}>Navy</option>
-              <option value="Black" ${prop.colorScheme==='Black'?'selected':''}>Black</option>
-              <option value="Green" ${prop.colorScheme==='Green'?'selected':''}>Green</option>
-              <option value="Red" ${prop.colorScheme==='Red'?'selected':''}>Red</option>
-              <option value="Gold" ${prop.colorScheme==='Gold'?'selected':''}>Gold</option>
-              <option value="Charcoal" ${prop.colorScheme==='Charcoal'?'selected':''}>Charcoal</option>
-            </select>
-          </div>
-        </div>
-        
-        <div class="section-label">Special Instructions</div>
-        <textarea 
-          placeholder="e.g., Open House Sunday 2/15 from 10-2pm, Just Listed, Price Reduced, etc."
-          oninput="properties[${i}].comments = this.value"
-        >${prop.comments || ""}</textarea>
-      </div>
-    `;
-  });
+function showGallery() {
+  document.getElementById('orderFormView').style.display = 'none';
+  document.getElementById('templateGalleryView').style.display = 'block';
+  document.getElementById('propStreet').value = '';
+  document.getElementById('propCity').value = '';
+  document.getElementById('propState').value = '';
+  document.getElementById('propZip').value = '';
+  document.getElementById('propMls').value = '';
+  document.getElementById('propColor').value = 'Blue';
+  document.getElementById('propComments').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function addToCart() {
-  const validProperties = properties.filter(p => p.address.trim() !== "");
+  var street = document.getElementById('propStreet').value.trim();
+  var city = document.getElementById('propCity').value.trim();
+  var state = document.getElementById('propState').value.trim().toUpperCase();
+  var zip = document.getElementById('propZip').value.trim();
   
-  if (validProperties.length === 0) {
-    alert("Please add at least one property address.");
+  if (!street || !city || !state || !zip) {
+    alert('Please fill in the full property address (street, city, state, zip).');
     return;
   }
   
-  // Add properties to universal cart
-  universalCart.setWebsites(validProperties);
+  var fullAddress = street + ', ' + city + ', ' + state + ' ' + zip;
   
-  // Clear local properties and reset form
-  properties = [];
-  renderProperties();
+  var property = {
+    address: fullAddress,
+    street: street,
+    city: city,
+    state: state,
+    zip: zip,
+    mls: document.getElementById('propMls').value.trim(),
+    template: selectedTemplate,
+    colorScheme: document.getElementById('propColor').value,
+    comments: document.getElementById('propComments').value.trim()
+  };
   
-  // Show success feedback
-  const btn = document.getElementById('addCartBtn');
-  const originalText = btn.textContent;
-  btn.textContent = "Added to Cart! ✓";
-  btn.style.background = "#28a745";
+  universalCart.setWebsites([property]);
   
-  setTimeout(() => {
-    btn.textContent = originalText;
-    btn.style.background = "#0b4ea2";
-  }, 2000);
+  var btn = document.getElementById('addCartBtn');
+  btn.textContent = 'Added to Cart! \u2713';
+  btn.style.background = '#28a745';
+  setTimeout(function() { btn.textContent = 'Add to Cart'; btn.style.background = '#002556'; }, 2000);
 }
 
-/* ===========================
-   CART FUNCTIONS
-=========================== */
 function openCart() {
   document.getElementById('cartOverlay').classList.add('active');
   document.getElementById('cartModal').classList.add('active');
@@ -603,65 +472,31 @@ function closeCart() {
 }
 
 function renderCart() {
-  const body = document.getElementById('cartBody');
-  const footer = document.getElementById('cartFooter');
-  const totalCount = document.getElementById('cartTotalCount');
-  
-  const summary = universalCart.getSummary();
-  const count = universalCart.getTotalCount();
+  var body = document.getElementById('cartBody');
+  var footer = document.getElementById('cartFooter');
+  var totalCount = document.getElementById('cartTotalCount');
+  var summary = universalCart.getSummary();
+  var count = universalCart.getTotalCount();
   
   if (count === 0) {
-    body.innerHTML = `
-      <div class="cart-empty">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-        </svg>
-        <p>Your kit is empty</p>
-        <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
-      </div>
-    `;
+    body.innerHTML = '<div class="cart-empty"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><p>Your kit is empty</p></div>';
     footer.style.display = 'none';
     return;
   }
   
-  let html = '';
-  
-  summary.forEach(section => {
-    html += `<div class="cart-section">`;
-    html += `<div class="cart-section-title">${section.collection}</div>`;
-    
-    section.items.forEach(item => {
-      if (item.type === 'flyer') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-            </div>
-            <button class="cart-item-remove" onclick="removeMarketingItem('${item.name}')">×</button>
-          </div>
-        `;
+  var html = '';
+  summary.forEach(function(section) {
+    html += '<div class="cart-section"><div class="cart-section-title">' + section.collection + '</div>';
+    section.items.forEach(function(item) {
+      if (item.type === 'website') {
+        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div>' + (item.mls ? '<div class="cart-item-meta">MLS: ' + item.mls + '</div>' : '') + '</div></div>';
+      } else if (item.type === 'flyer') {
+        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div></div></div>';
       } else if (item.type === 'report') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-              <div class="cart-item-meta">${item.count} ${item.count === 1 ? 'property' : 'properties'}</div>
-            </div>
-          </div>
-        `;
-      } else if (item.type === 'website') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-              ${item.mls ? `<div class="cart-item-meta">MLS: ${item.mls}</div>` : ''}
-            </div>
-          </div>
-        `;
+        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div><div class="cart-item-meta">' + item.count + ' properties</div></div></div>';
       }
     });
-    
-    html += `</div>`;
+    html += '</div>';
   });
   
   body.innerHTML = html;
@@ -669,16 +504,8 @@ function renderCart() {
   totalCount.textContent = count;
 }
 
-function removeMarketingItem(name) {
-  universalCart.removeMarketingItem(name);
-  renderCart();
-}
-
 function clearCart() {
-  if (confirm('Are you sure you want to clear your entire cart?')) {
-    universalCart.clear();
-    renderCart();
-  }
+  if (confirm('Clear your entire cart?')) { universalCart.clear(); renderCart(); }
 }
 
 function proceedToCheckout() {
@@ -686,16 +513,8 @@ function proceedToCheckout() {
   window.location.href = 'checkout.html';
 }
 
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeCart();
-  }
-});
-
-// Initialize with one property row
-addNewProperty();
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeCart(); });
 
 </script>
-
 </body>
 </html>
