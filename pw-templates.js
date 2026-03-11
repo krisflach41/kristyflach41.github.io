@@ -234,7 +234,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Lato',sans-s
 <section class="hero" id="home">
   <!-- Left: Slideshow -->
   <div class="hero-slide-area">
-    <div class="hero-slides" id="heroSlides">HERO_SLIDES_HTML</div><div class="hero-slide-dots" id="heroDots"></div>
+    <div class="hero-slides" id="heroSlides">HERO_SLIDES_HTML</div>
   </div>
 
   <!-- Right: Details -->
@@ -439,38 +439,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Lato',sans-s
     body = body.replace(/<a href="#"[^>]*class="hero-btn-outline">Virtual Tour<\/a>/, '');
   }
 
-  var scriptContent = `// Hero slideshow
-var heroIdx=0;
-var heroSlides=document.getElementById('heroSlides');
-var heroTotal=heroSlides?heroSlides.children.length:0;
-var heroDots=document.getElementById('heroDots');
-
-function buildHeroDots(){
-  if(!heroDots||!heroTotal)return;
-  for(var i=0;i<heroTotal;i++){
-    var d=document.createElement('div');
-    d.className='hero-slide-dot'+(i===0?' active':'');
-    d.setAttribute('data-i',i);
-    d.onclick=function(){heroGoTo(parseInt(this.getAttribute('data-i')));};
-    heroDots.appendChild(d);
-  }
-}
-function updateHeroDots(){
-  if(!heroDots)return;
-  var dots=heroDots.querySelectorAll('.hero-slide-dot');
-  dots.forEach(function(d,i){d.className='hero-slide-dot'+(i===heroIdx?' active':'');});
-}
-function heroGoTo(n){
-  heroIdx=n;
-  if(heroIdx>=heroTotal)heroIdx=0;
-  if(heroIdx<0)heroIdx=heroTotal-1;
-  heroSlides.style.transform='translateX(-'+heroIdx*100+'%)';
-  updateHeroDots();
-}
-buildHeroDots();
-setInterval(function(){heroGoTo(heroIdx+1);},5000);
-
-// Gallery
+  var scriptContent = `// Gallery slider
 var currentSlide=0;
 var track=document.getElementById('galleryTrack');
 var imgs=track?track.querySelectorAll('img'):[];
