@@ -220,6 +220,20 @@ body {
   outline: none; border-color: #002556; box-shadow: 0 0 0 3px rgba(0,37,86,0.08);
 }
 .form-group textarea { min-height: 80px; resize: vertical; }
+
+/* Form section dividers */
+.form-section-label {
+  font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px;
+  color: #002556; margin-bottom: 16px; padding-bottom: 8px;
+  border-bottom: 2px solid rgba(0,37,86,0.1);
+}
+.form-hint {
+  display: block; font-size: 12px; color: #888; margin-top: 4px; line-height: 1.4;
+}
+.form-optional {
+  font-weight: 400; color: #999; font-size: 12px;
+}
+
 .form-group select {
   -webkit-appearance: none; appearance: none;
   background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23555'/%3E%3C/svg%3E") no-repeat right 14px center;
@@ -442,6 +456,9 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- SECTION: Property Address -->
+  <div class="form-section-label">Property Address</div>
+
   <div class="form-grid" style="margin-bottom:16px;">
     <div class="form-group">
       <label>Street Address <span class="req">*</span></label>
@@ -483,10 +500,74 @@ html, body { overflow-x: hidden; }
     </div>
   </div>
 
+  <!-- SECTION: Website Customization -->
+  <div class="form-section-label" style="margin-top:30px;">Website Customization</div>
+
+  <div class="form-grid form-row-2" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Banner</label>
+      <select id="propBanner">
+        <option value="None">None</option>
+        <option value="Just Listed" selected>Just Listed</option>
+        <option value="Sold">Sold</option>
+        <option value="Coming Soon">Coming Soon</option>
+        <option value="Under Contract">Under Contract</option>
+        <option value="Open House Weekend">Open House Weekend</option>
+        <option value="Open House Tomorrow">Open House Tomorrow</option>
+        <option value="Price Reduced">Price Reduced</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tagline / Hero Text</label>
+      <input type="text" id="propTagline" placeholder="e.g. One of a Kind, Dream Home Awaits">
+    </div>
+  </div>
+
+  <div class="form-grid" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Virtual Tour Link</label>
+      <input type="url" id="propVirtualTour" placeholder="https://www.zillow.com/view-3d-home/...">
+      <span class="form-hint">Paste the full URL for the virtual tour (Zillow, Matterport, etc.)</span>
+    </div>
+  </div>
+
+  <div class="form-grid" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Meta Description <span class="form-optional">(SEO)</span></label>
+      <textarea id="propMetaDesc" placeholder="A short description of the property for search engines (Google, Facebook link previews, etc.)" style="min-height:60px;"></textarea>
+      <span class="form-hint">Shows up in Google search results and when someone shares the link on social media</span>
+    </div>
+  </div>
+
+  <!-- SECTION: Settings -->
+  <div class="form-section-label" style="margin-top:30px;">Settings</div>
+
+  <div class="form-grid form-row-2" style="margin-bottom:16px;">
+    <div class="form-group">
+      <label>Force Registration</label>
+      <select id="propForceReg">
+        <option value="No">No — Anyone can view</option>
+        <option value="Yes">Yes — Visitors must register to view</option>
+      </select>
+      <span class="form-hint">Require visitors to enter their name and email before seeing the site</span>
+    </div>
+    <div class="form-group">
+      <label>Website Status</label>
+      <select id="propStatus">
+        <option value="Active" selected>Active</option>
+        <option value="Inactive">Inactive — Take down / remove photos</option>
+      </select>
+      <span class="form-hint">Set to Inactive when listing is closed to take the site down</span>
+    </div>
+  </div>
+
+  <!-- SECTION: Special Instructions -->
+  <div class="form-section-label" style="margin-top:30px;">Additional Notes</div>
+
   <div class="form-grid" style="margin-bottom:0;">
     <div class="form-group">
       <label>Special Instructions</label>
-      <textarea id="propComments" placeholder="e.g., Open House Sunday 2/15 from 10-2pm, Just Listed, Price Reduced, etc."></textarea>
+      <textarea id="propComments" placeholder="e.g., Open House Sunday 2/15 from 10-2pm, specific photo requests, special features to highlight, etc."></textarea>
     </div>
   </div>
 
@@ -552,6 +633,12 @@ function showGallery() {
   document.getElementById('propZip').value = '';
   document.getElementById('propMls').value = '';
   document.getElementById('propColor').value = 'Blue';
+  document.getElementById('propBanner').value = 'Just Listed';
+  document.getElementById('propTagline').value = '';
+  document.getElementById('propVirtualTour').value = '';
+  document.getElementById('propMetaDesc').value = '';
+  document.getElementById('propForceReg').value = 'No';
+  document.getElementById('propStatus').value = 'Active';
   document.getElementById('propComments').value = '';
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -578,6 +665,12 @@ function addToCart() {
     mls: document.getElementById('propMls').value.trim(),
     template: selectedTemplate,
     colorScheme: document.getElementById('propColor').value,
+    banner: document.getElementById('propBanner').value,
+    tagline: document.getElementById('propTagline').value.trim(),
+    virtualTour: document.getElementById('propVirtualTour').value.trim(),
+    metaDescription: document.getElementById('propMetaDesc').value.trim(),
+    forceRegistration: document.getElementById('propForceReg').value,
+    status: document.getElementById('propStatus').value,
     comments: document.getElementById('propComments').value.trim()
   };
   
@@ -618,7 +711,12 @@ function renderCart() {
     html += '<div class="cart-section"><div class="cart-section-title">' + section.collection + '</div>';
     section.items.forEach(function(item) {
       if (item.type === 'website') {
-        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div>' + (item.mls ? '<div class="cart-item-meta">MLS: ' + item.mls + '</div>' : '') + '</div></div>';
+        var meta = [];
+        if (item.mls) meta.push('MLS: ' + item.mls);
+        if (item.template) meta.push(item.template + ' template');
+        if (item.banner && item.banner !== 'None') meta.push('Banner: ' + item.banner);
+        if (item.status === 'Inactive') meta.push('<span style="color:#c0392b;">Inactive</span>');
+        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div>' + (meta.length ? '<div class="cart-item-meta">' + meta.join(' &middot; ') + '</div>' : '') + '</div></div>';
       } else if (item.type === 'flyer') {
         html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div></div></div>';
       } else if (item.type === 'report') {
