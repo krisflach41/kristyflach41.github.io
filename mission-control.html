@@ -7966,8 +7966,10 @@ function pwGenerate() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           slug: slug,
-          photos: [],
-          html: siteHtml
+          html: siteHtml,
+          address: (document.getElementById('pwDataAddress').value || '') + ', ' + (document.getElementById('pwDataCity').value || '') + ' ' + (document.getElementById('pwDataState').value || '') + ' ' + (document.getElementById('pwDataZip').value || ''),
+          agent: document.getElementById('pwDataAgent').value || '',
+          template: document.getElementById('pwTemplate').value || ''
         })
       });
       var publishData = await publishResp.json();
