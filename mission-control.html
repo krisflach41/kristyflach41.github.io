@@ -711,11 +711,11 @@ table.mc-table { width: 100%; border-collapse: collapse; font-size: 13px; font-f
 .mc-table th .col-filter input:focus, .mc-table th .col-filter select:focus { border-color: rgba(59,130,246,0.4); }
 .mc-table th .col-filter select { appearance: auto; }
 
-/* Dark dropdowns globally */
-select, select option { background: #0a1628; color: var(--text-primary); }
-.qb-filter-select { background: #0a1628 !important; color: #fff !important; border: 1px solid rgba(59,130,246,0.15); padding: 6px 10px; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 12px; outline: none; }
+/* Dropdown styling */
+select, select option { background: #ffffff; color: var(--text-primary); }
+.qb-filter-select { background: #ffffff !important; color: var(--text-primary) !important; border: 1px solid var(--border); padding: 6px 10px; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 12px; outline: none; }
 .qb-filter-select:focus { border-color: rgba(59,130,246,0.4); }
-.qb-filter-select option { background: #0a1628; color: var(--text-primary); }
+.qb-filter-select option { background: #ffffff; color: var(--text-primary); }
 .qb-date-input { background: #fafbfc; border: 1px solid var(--border-light); color: var(--text-primary); padding: 8px 14px; border-radius: 4px; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 12px; outline: none; }
 .qb-date-input:focus { border-color: rgba(59,130,246,0.3); }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
@@ -944,7 +944,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   border-radius:6px; padding:10px 12px; color:var(--text-primary); font-size:14px; font-family:inherit;
 }
 .fc-field input:focus, .fc-field select:focus { outline:none; border-color:var(--accent-blue); }
-.fc-field select option { background:#1a2332; color:var(--text-primary); }
+.fc-field select option { background:#ffffff; color:var(--text-primary); }
 .fc-computed {
   background:rgba(59,130,246,0.08); border:1px solid rgba(59,130,246,0.2);
   border-radius:6px; padding:10px 12px; font-size:14px; color:#93c5fd;
@@ -1009,7 +1009,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   background:rgba(0,0,0,0.03); border:1px solid var(--border-light);
   border-radius:6px; padding:6px 8px; color:var(--text-primary); font-size:11px; font-family:inherit;
 }
-.fc-task-form select option { background:#1a2332; color:var(--text-primary); }
+.fc-task-form select option { background:#ffffff; color:var(--text-primary); }
 .fc-task-form-full { grid-column:1/-1; }
 
 /* Loan History Banner */
@@ -4488,6 +4488,15 @@ function ppGenerateLineItem(item,order){
       if(order.cobrandLayout)p.push('cobrandLayout='+encodeURIComponent(order.cobrandLayout));
     }
     window.open('neighborhood-blueprint.html'+(p.length?'?'+p.join('&'):''),'_blank');
+  } else if(item.type==='website'){
+    var addr=typeof data==='object'?(data.address||''):data;
+    var mls=typeof data==='object'?(data.mls||''):'';
+    var tpl=typeof data==='object'?(data.template||'Cavallo'):'Cavallo';
+    var clr=typeof data==='object'?(data.colorScheme||'Blue'):'Blue';
+    ppCloseOrderPanel();
+    var flyersTabBtn=document.querySelector('.pp-tab[onclick*="flyers"]');
+    if(flyersTabBtn)flyersTabBtn.click();
+    pwLoadOrder(addr,mls,tpl,clr);
   } else {
     showToast('Generator for '+item.name+' coming soon');
   }
