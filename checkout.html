@@ -599,6 +599,7 @@ function renderOrderSummary() {
           <div class="summary-item-info">
             <strong>${prop.address}</strong>
             ${prop.mls ? `<div class="meta">MLS: ${prop.mls}</div>` : ''}
+            ${prop.template ? `<div class="meta">${prop.template} · ${prop.colorScheme || 'Blue'}</div>` : ''}
           </div>
           <button class="remove-item-btn" onclick="removeWebsite(${index})">Remove</button>
         </div>
@@ -606,6 +607,9 @@ function renderOrderSummary() {
       totalCount++;
     });
     
+    html += `<div style="padding:10px 14px;margin-top:8px;background:rgba(11,78,162,0.04);border:1px solid rgba(11,78,162,0.08);border-radius:8px;font-size:12px;color:#555;line-height:1.5;">
+      <strong style="color:#0b1f3a;">Note:</strong> Property websites are standalone sites and are not affected by co-branding selections above.
+    </div>`;
     html += `</div>`;
   }
   
