@@ -1849,7 +1849,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <!-- STEP 4: Generate & Preview -->
       <div class="mc-panel" id="pwStep4" style="display:none;">
         <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-teal);"></div><div class="mc-panel-title">PREVIEW & GENERATE</div></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Template</label>
             <select id="pwTemplate" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
@@ -1860,6 +1860,12 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Color Scheme</label>
             <select id="pwColor" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
               <option>Blue</option><option>Navy</option><option>Black</option><option>Green</option><option>Red</option><option>Gold</option><option>Charcoal</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Banner</label>
+            <select id="pwBanner" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option value="None">None</option><option value="Just Listed">Just Listed</option><option value="Sold">Sold</option><option value="Coming Soon">Coming Soon</option><option value="Under Contract">Under Contract</option><option value="Open House Weekend">Open House Weekend</option><option value="Open House Tomorrow">Open House Tomorrow</option><option value="Price Reduced">Price Reduced</option>
             </select>
           </div>
         </div>
@@ -7822,28 +7828,30 @@ function pwPreview() {
       '</body></html>';
 
   } else if (template === 'Modern') {
-    // Uses pw-templates.js pwBuildModern() — full split-screen Oswald template
+    // Full split-screen Oswald template from pw-templates.js
     var colorAccentMap = {Blue:'#3a7bd5',Navy:'#002556',Black:'#111111',Green:'#166534',Red:'#991b1b',Gold:'#92700c',Charcoal:'#374151'};
     var colorDarkMap = {Blue:'#2a5fa0',Navy:'#001a3d',Black:'#000000',Green:'#14532d',Red:'#7f1d1d',Gold:'#78590a',Charcoal:'#1f2937'};
-    var heroSlidesHtml = '';
-    var slidePhotos = galleryPhotos.slice(0, 4);
-    if (slidePhotos.length === 0 && heroSrc) slidePhotos = [{src:heroSrc}];
-    slidePhotos.forEach(function(p) { heroSlidesHtml += '<div class="hero-slide" style="background-image:url(\''+p.src+'\');"></div>'; });
-    if (heroPhoto && slidePhotos.indexOf(heroPhoto) === -1) {
-      heroSlidesHtml = '<div class="hero-slide" style="background-image:url(\''+heroSrc+'\');"></div>' + heroSlidesHtml;
-    }
+    var bannerVal = document.getElementById('pwBanner') ? document.getElementById('pwBanner').value : 'None';
+    // Hero = single static hero photo, NOT a slideshow
+    var modernHeroHtml = heroSrc ? '<div class="hero-slide" style="background-image:url(\'' + heroSrc + '\');"></div>' : '';
+    // Gallery = all selected photos except parallax
+    var modernGalleryHtml = '';
+    selectedPhotos.forEach(function(p) {
+      if (p.role !== 'parallax') modernGalleryHtml += '<img src="' + p.src + '" alt="Property Photo">';
+    });
     var mapAddr = encodeURIComponent(fullAddr);
     html = pwBuildModern({
       addr: addr, city: city, state: state, zip: zip, fullAddr: fullAddr,
-      priceF: price ? '$'+Number(price).toLocaleString() : '',
+      priceF: price ? '$' + Number(price).toLocaleString() : '',
       beds: beds, baths: baths, sqftF: sqft ? Number(sqft).toLocaleString() : '', year: year, lot: lot,
       desc: desc, agent: agent, agentCompany: '', agentEmail: '',
       heroSrc: heroSrc, parallaxSrc: parallaxSrc,
-      heroSlidesHtml: heroSlidesHtml,
-      galleryTrackHtml: (function(){ var gt=''; if(heroSrc) gt+='<img src="'+heroSrc+'" alt="Property Photo">'; galleryPhotos.forEach(function(p){if(p.src!==heroSrc) gt+='<img src="'+p.src+'" alt="Property Photo">';}); return gt; })(),
-      mapEmbed: '<iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1s'+mapAddr+'"></iframe>',
-      mapLink: 'https://maps.google.com/maps?q='+mapAddr,
-      bannerText: 'Just Listed', virtualTour: '',
+      heroSlidesHtml: modernHeroHtml,
+      galleryTrackHtml: modernGalleryHtml,
+      mapEmbed: '<iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1s' + mapAddr + '"></iframe>',
+      mapLink: 'https://maps.google.com/maps?q=' + mapAddr,
+      bannerText: bannerVal,
+      virtualTour: '',
       accentColor: colorAccentMap[color] || '#e67e22',
       accentDark: colorDarkMap[color] || '#d35400'
     });
@@ -7883,8 +7891,80 @@ function pwPreview() {
 
 function pwGenerate() {
   var status = document.getElementById('pwGenerateStatus');
+  var btn = document.getElementById('pwGenerateBtn');
+  status.style.display = 'block';
   status.className = 'status-msg show info';
-  status.textContent = 'Site generation coming soon. Use Preview to review the site, then we will wire up publishing in the next session.';
+  status.textContent = 'Publishing site...';
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+
+  // First run preview to build the HTML
+  pwPreview();
+
+  // Wait for iframe to load, then grab its HTML
+  var iframe = document.getElementById('pwIframe');
+  setTimeout(function() {
+    var iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+    var siteHtml = '<!DOCTYPE html>' + iframeDoc.documentElement.outerHTML;
+
+    // Build slug from address
+    var addr = document.getElementById('pwDataAddress').value || 'property';
+    var city = document.getElementById('pwDataCity').value || '';
+    var slug = (addr + '-' + city).toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 60);
+
+    // Collect photos that need uploading (base64 data URLs)
+    var selectedPhotos = pwPhotos.filter(function(p) { return p.selected; });
+    var photosToUpload = [];
+    var photoMap = {}; // old src -> placeholder
+
+    selectedPhotos.forEach(function(p, i) {
+      if (p.src && p.src.startsWith('data:')) {
+        var placeholder = 'PHOTO_URL_' + i;
+        photosToUpload.push({ base64: p.src, role: p.role, index: i });
+        photoMap[p.src] = placeholder;
+      }
+    });
+
+    // Replace base64 data URLs in HTML with placeholders
+    // The backend will replace placeholders with real Supabase URLs after upload
+    Object.keys(photoMap).forEach(function(oldSrc) {
+      // base64 strings can be huge, split/join is safer than regex
+      siteHtml = siteHtml.split(oldSrc).join(photoMap[oldSrc]);
+    });
+
+    // Send to backend
+    fetch('https://agent-edge-backend.vercel.app/api/publish-site', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        slug: slug,
+        photos: photosToUpload,
+        html: siteHtml
+      })
+    })
+    .then(function(resp) { return resp.json(); })
+    .then(function(data) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      if (data.success && data.url) {
+        status.className = 'status-msg show success';
+        status.innerHTML = '<i class="fas fa-check-circle"></i> Published! <a href="' + data.url + '" target="_blank" style="color:#16a34a;font-weight:700;text-decoration:underline;">' + data.url + '</a>' +
+          '<br><button onclick="navigator.clipboard.writeText(\'' + data.url + '\');this.textContent=\'Copied!\';setTimeout(function(){this.textContent=\'Copy Link\';}.bind(this),1500);" style="margin-top:8px;padding:6px 16px;border-radius:6px;border:1px solid #16a34a;background:white;color:#16a34a;font-family:\'DM Sans\',sans-serif;font-size:11px;font-weight:700;cursor:pointer;">Copy Link</button>';
+      } else {
+        status.className = 'status-msg show error';
+        status.textContent = 'Publish failed: ' + (data.error || 'Unknown error');
+      }
+    })
+    .catch(function(err) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      status.className = 'status-msg show error';
+      status.textContent = 'Publish failed: ' + err.message;
+    });
+  }, 1500); // give iframe time to render
 }
 
 // ===== CREDIT ANALYSIS =====
