@@ -1178,6 +1178,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 </style>
 <link rel="stylesheet" href="crm-cards.css">
 <script src="tracking.js"></script>
+<script src="pw-templates.js"></script>
 </head>
 <body>
 
@@ -7821,27 +7822,31 @@ function pwPreview() {
       '</body></html>';
 
   } else if (template === 'Modern') {
-    // Clean white space, card-based layout, rounded corners
-    html = base +
-      'body{font-family:"Segoe UI",system-ui,sans-serif;color:#333;background:#f5f5f5;}' +
-      '.hero{height:65vh;background:url('+heroSrc+') center/cover;border-radius:0 0 24px 24px;margin:0 16px;}' +
-      '.info-card{max-width:800px;margin:-60px auto 0;background:#fff;border-radius:16px;padding:40px;box-shadow:0 8px 32px rgba(0,0,0,0.08);position:relative;z-index:1;}' +
-      '.info-card h1{font-size:24px;font-weight:600;color:'+c+';margin-bottom:4px;}' +
-      '.info-card h2{font-size:14px;color:#999;font-weight:400;margin-bottom:24px;}' +
-      '.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:16px;margin-bottom:24px;}' +
-      '.stat{background:#f8f8f8;padding:16px;border-radius:12px;text-align:center;}' +
-      '.stat-val{font-size:20px;font-weight:700;color:'+c+';}.stat-lbl{font-size:10px;color:#aaa;text-transform:uppercase;letter-spacing:1px;margin-top:4px;}' +
-      '.sec{max-width:800px;margin:0 auto;padding:40px 24px;}' +
-      '.sec h3{font-size:20px;color:'+c+';margin-bottom:16px;font-weight:600;}' +
-      '.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;}.gal-img{border-radius:12px;width:100%;height:200px;object-fit:cover;}' +
-      '.contact{max-width:800px;margin:40px auto;background:'+c+';color:#fff;border-radius:16px;text-align:center;padding:48px;}' +
-      '.contact h3{color:#fff;font-size:20px;}' +
-      '</style></head><body>' +
-      '<div class="hero"></div>' +
-      '<div class="info-card"><h1>'+addr+'</h1><h2>'+city+', '+state+' '+zip+'</h2><div class="stats">'+statsHtml+'</div>'+(desc?'<p style="line-height:1.8;color:#666;font-size:14px;">'+desc+'</p>':'')+'</div>' +
-      '<div class="sec"><h3>Gallery</h3><div class="gal">'+galleryHtml+'</div></div>' +
-      '<div class="contact" id="contact"><h3>Interested in This Home?</h3><p style="opacity:0.8;margin-top:8px;font-size:14px;">Contact '+(agent||'the listing agent')+' to schedule a visit.</p></div>' +
-      '</body></html>';
+    // Uses pw-templates.js pwBuildModern() — full split-screen Oswald template
+    var colorAccentMap = {Blue:'#3a7bd5',Navy:'#002556',Black:'#111111',Green:'#166534',Red:'#991b1b',Gold:'#92700c',Charcoal:'#374151'};
+    var colorDarkMap = {Blue:'#2a5fa0',Navy:'#001a3d',Black:'#000000',Green:'#14532d',Red:'#7f1d1d',Gold:'#78590a',Charcoal:'#1f2937'};
+    var heroSlidesHtml = '';
+    var slidePhotos = galleryPhotos.slice(0, 4);
+    if (slidePhotos.length === 0 && heroSrc) slidePhotos = [{src:heroSrc}];
+    slidePhotos.forEach(function(p) { heroSlidesHtml += '<div class="hero-slide" style="background-image:url(\''+p.src+'\');"></div>'; });
+    if (heroPhoto && slidePhotos.indexOf(heroPhoto) === -1) {
+      heroSlidesHtml = '<div class="hero-slide" style="background-image:url(\''+heroSrc+'\');"></div>' + heroSlidesHtml;
+    }
+    var mapAddr = encodeURIComponent(fullAddr);
+    html = pwBuildModern({
+      addr: addr, city: city, state: state, zip: zip, fullAddr: fullAddr,
+      priceF: price ? '$'+Number(price).toLocaleString() : '',
+      beds: beds, baths: baths, sqftF: sqft ? Number(sqft).toLocaleString() : '', year: year, lot: lot,
+      desc: desc, agent: agent, agentCompany: '', agentEmail: '',
+      heroSrc: heroSrc, parallaxSrc: parallaxSrc,
+      heroSlidesHtml: heroSlidesHtml,
+      galleryTrackHtml: (function(){ var gt=''; if(heroSrc) gt+='<img src="'+heroSrc+'" alt="Property Photo">'; galleryPhotos.forEach(function(p){if(p.src!==heroSrc) gt+='<img src="'+p.src+'" alt="Property Photo">';}); return gt; })(),
+      mapEmbed: '<iframe src="https://www.google.com/maps/embed?origin=mfe&pb=!1m2!2m1!1s'+mapAddr+'"></iframe>',
+      mapLink: 'https://maps.google.com/maps?q='+mapAddr,
+      bannerText: 'Just Listed', virtualTour: '',
+      accentColor: colorAccentMap[color] || '#e67e22',
+      accentDark: colorDarkMap[color] || '#d35400'
+    });
 
   } else if (template === 'Contemporary') {
     // Asymmetric grid, mixed font weights, editorial magazine style
