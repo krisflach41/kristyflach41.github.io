@@ -84,11 +84,17 @@ body {
   background: linear-gradient(135deg, #e3e8ef, #cfd8e3);
   border-radius: 6px;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+  object-fit: cover;
 }
 
 .thumb:hover {
   transform: scale(1.08);
   box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+
+img.thumb {
+  background: none;
+  border: 1px solid rgba(0,0,0,0.08);
 }
 
 
@@ -160,8 +166,8 @@ body {
 
       <div class="studio-panel">
         <div class="panel-thumbs">
-          <div class="thumb"></div>
-          <div class="thumb"></div>
+          <img class="thumb" src="flyer-previews/preview-seller-ready-to-sell.png" alt="Ready to Sell">
+          <img class="thumb" src="flyer-previews/preview-seller-build-grade-standards.png" alt="Builder Grade Standards">
         </div>
         <h3>Sellers</h3>
         <p>Net sheets, prep guides, and listing support materials.</p>
