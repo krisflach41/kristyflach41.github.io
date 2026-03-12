@@ -1745,7 +1745,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🎉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Sold</div><div class="pp-tpl-desc">Celebrate closings — showcase partnership success</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
         </div>
       </div>
-    </div>
 
     <!-- ===== PROPERTY WEBSITE BUILDER SUB-VIEW ===== -->
     <div id="ppWebsiteBuilder" style="display:none;">
@@ -1878,6 +1877,7 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
         </div>
         <div id="pwGenerateStatus" style="margin-top:10px;font-size:12px;color:var(--text-muted);display:none;"></div>
       </div>
+    </div>
     </div>
 
     <!-- ===== ACTIVITY TAB ===== -->
@@ -4109,7 +4109,7 @@ function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');i
 
 
 // ===== PARTNER PORTAL =====
-function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();if(tab==='history')ppBuildOrderHistory('all');}
+function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();if(tab==='history')ppBuildOrderHistory('all');}
 
 var ppPartners=[
   {name:'Jessica Rivera',brokerage:'RE/MAX Premier',email:'jrivera@remax.com',color:'#f472b6',orders:18,visits:24,lastLogin:'2 hrs ago',totalTime:'4h 32m'},
