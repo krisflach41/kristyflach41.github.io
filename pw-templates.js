@@ -1563,7 +1563,7 @@ document.querySelectorAll('a[href^="#"]').forEach(function(a){a.addEventListener
 function pwBuildVertical(d) {
   var css = `/* ===== RESET & BASE ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;scroll-snap-type:y mandatory;}
+html{scroll-behavior:smooth;}
 body{font-family:'Ubuntu',sans-serif;color:#333;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
 img{max-width:100%;height:auto;display:block;}
 a{text-decoration:none;color:inherit;}
@@ -1582,7 +1582,7 @@ a{text-decoration:none;color:inherit;}
 }
 
 /* ===== FULL-SECTION SCROLL PANELS ===== */
-.panel{min-height:100vh;scroll-snap-align:start;position:relative;}
+.panel{min-height:100vh;position:relative;}
 
 /* ===== DOT NAVIGATION (Left Side) ===== */
 .dot-nav{
@@ -1747,7 +1747,6 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Ubuntu',sans
 
 /* ===== RESPONSIVE ===== */
 @media(max-width:768px){
-  html{scroll-snap-type:none;}
   .dot-nav{display:none;}
   .hero{padding:0 30px;}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:30px;}
