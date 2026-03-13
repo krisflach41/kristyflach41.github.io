@@ -169,10 +169,10 @@ body {
 
 .template-name { font-size: 16px; font-weight: 700; color: #002556; margin: 14px 0 10px; }
 .template-select-btn {
-  display: inline-block; padding: 8px 24px; border: 1.5px solid #002556; border-radius: 20px;
-  background: transparent; color: #002556; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease;
+  display: inline-block; padding: 8px 24px; border: 1.5px solid #6e7f77; border-radius: 20px;
+  background: transparent; color: #6e7f77; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease;
 }
-.template-select-btn:hover { background: #002556; color: white; }
+.template-select-btn:hover { background: #6e7f77; color: white; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(110,127,119,0.3); }
 
 /* ===== ORDER FORM ===== */
 #orderFormView { display: none; }
@@ -324,119 +324,43 @@ html, body { overflow-x: hidden; }
 
   <div class="template-grid">
     <div class="template-card" onclick="selectTemplate('Cavallo')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-cavallo">
-        <div class="tpl-nav"></div>
-        <div class="tpl-hero">
-          <div class="tpl-line"></div>
-          <div class="tpl-label">THE PROPERTY</div>
-          <div class="tpl-line"></div>
-          <div class="tpl-addr">123 Main Street</div>
-          <div class="tpl-line"></div>
-          <div class="tpl-city">CINCINNATI OH</div>
-          <div class="tpl-line"></div>
-          <div class="tpl-btns"><div class="tpl-btn">View Details</div><div class="tpl-btn">Gallery</div><div class="tpl-btn">Schedule</div></div>
-        </div>
-        <div class="tpl-stats"><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">2,412</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1991</div><div class="tpl-stat-label">Built</div></div></div>
-      </div></div>
+      <img src="flyer-previews/pw-cavallo.png" alt="Cavallo" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Cavallo</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Stylish')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-stylish">
-        <div class="tpl-hero">
-          <div class="tpl-hamburger"><span></span><span></span><span></span></div>
-          <div class="tpl-label">THE PROPERTY</div>
-          <div class="tpl-line"></div>
-          <div class="tpl-addr">123 Main Street</div>
-          <div class="tpl-city">Cincinnati OH</div>
-          <div class="tpl-line"></div>
-          <div class="tpl-btn">View Details</div>
-        </div>
-        <div class="tpl-stats"><div><div class="tpl-stat-num">$549K</div><div class="tpl-stat-label">Price</div></div><div><div class="tpl-stat-num">3 / 2</div><div class="tpl-stat-label">Bed/Bath</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
-      </div></div>
+      <img src="flyer-previews/pw-stylish.png" alt="Stylish" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Stylish</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Vertical')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-vertical">
-        <div class="tpl-dotnav"><div class="tpl-dot active"></div><div class="tpl-dot"></div><div class="tpl-dot"></div><div class="tpl-dot"></div><div class="tpl-dot"></div></div>
-        <div class="tpl-hero">
-          <div class="tpl-addr">123 Main Street,</div>
-          <div class="tpl-city">Cincinnati OH</div>
-        </div>
-        <div class="tpl-scroll"></div>
-      </div></div>
+      <img src="flyer-previews/pw-vertical.png" alt="Vertical" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Vertical</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Sleek')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-sleek">
-        <div class="tpl-hero">
-          <div class="tpl-overlay"></div>
-          <div class="tpl-hero-content">
-            <div class="tpl-addr">123 Main Street</div>
-            <div class="tpl-city">Cincinnati OH</div>
-            <div class="tpl-btn">Virtual Tour</div>
-          </div>
-        </div>
-        <div class="tpl-nav"><span>Overview</span><span>Gallery</span><span>Details</span><span>Map</span><span>Contact</span></div>
-        <div class="tpl-section"><div class="tpl-section-title">RESIDENCE</div><div class="tpl-section-line"></div></div>
-      </div></div>
+      <img src="flyer-previews/pw-sleek.png" alt="Sleek" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Sleek</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Impact')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-impact">
-        <div class="tpl-hero">
-          <div class="tpl-slideshow">
-            <div class="tpl-slide-dots"><div class="tpl-slide-dot active"></div><div class="tpl-slide-dot"></div><div class="tpl-slide-dot"></div><div class="tpl-slide-dot"></div></div>
-          </div>
-          <div class="tpl-info">
-            <div class="tpl-label">THE PROPERTY</div>
-            <div class="tpl-addr">123 Main Street</div>
-            <div class="tpl-city">Cincinnati OH &nbsp;|&nbsp; $549,000</div>
-          </div>
-        </div>
-        <div class="tpl-stats"><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">sqft</div></div><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
-      </div></div>
+      <img src="flyer-previews/pw-impact.png" alt="Impact" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Impact</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Modern')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-modern">
-        <div class="tpl-hero">
-          <div class="tpl-slide-area"></div>
-          <div class="tpl-detail-area">
-            <div class="tpl-label">THE PROPERTY</div>
-            <div class="tpl-addr">123 Main St</div>
-            <div class="tpl-city">Cincinnati OH</div>
-            <div class="tpl-btn">Schedule a Visit</div>
-          </div>
-        </div>
-        <div class="tpl-stats"><div><div class="tpl-stat-num">$549K</div><div class="tpl-stat-label">Price</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div></div>
-      </div></div>
+      <img src="flyer-previews/pw-modern.png" alt="Modern" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Modern</div>
       <button class="template-select-btn">Select Template</button>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Contemporary')">
-      <div class="monitor-frame"><div class="monitor-screen tpl-contemporary">
-        <div class="tpl-nav"><span>Overview</span><span>Photos</span><span>Connect</span><span>Map</span></div>
-        <div class="tpl-hero">
-          <div class="tpl-addr">123 Main Street</div>
-          <div class="tpl-city">Cincinnati OH</div>
-        </div>
-        <div class="tpl-stats"><div><div class="tpl-stat-num">3</div><div class="tpl-stat-label">Beds</div></div><div><div class="tpl-stat-num">2</div><div class="tpl-stat-label">Baths</div></div><div><div class="tpl-stat-num">2,400</div><div class="tpl-stat-label">Sqft</div></div><div><div class="tpl-stat-num">1993</div><div class="tpl-stat-label">Built</div></div></div>
-        <div class="tpl-body">
-          <div class="tpl-offered">OFFERED AT</div>
-          <div class="tpl-price">$549,000</div>
-        </div>
-      </div></div>
+      <img src="flyer-previews/pw-contemporary.png" alt="Contemporary" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Contemporary</div>
       <button class="template-select-btn">Select Template</button>
     </div>
