@@ -108,6 +108,35 @@ body {
   border-color: #0b4ea2;
 }
 
+.thumb-placeholder {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8ecf2, #d1d9e6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb-placeholder::after {
+  content: 'COMING SOON';
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(11,31,58,0.25);
+}
+
+.flyer-card.placeholder {
+  opacity: 0.6;
+}
+
+.flyer-card.placeholder h3 {
+  color: #999;
+}
+
 /* ===== NAV BUTTON ===== */
 .back-btn {
   display: inline-block;
@@ -379,17 +408,18 @@ body {
 
 .lightbox-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 520px;
+  max-height: 85vh;
   overflow: auto;
   padding: 10px;
 }
 
 .lightbox-content img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 85vh;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  object-fit: contain;
 }
 
 .lightbox-close {
@@ -458,51 +488,47 @@ html, body {
 
     <div class="flyer-grid">
 
-      <div class="flyer-card" data-name="Construction Flyer 1">
-        <img src="images/construction/flyer1.jpg" alt="Construction Flyer 1">
+      <div class="flyer-card" data-name="Builder Perks">
+        <img src="flyer-previews/preview-construction-builder-perks.png" alt="Builder Perks">
         <div class="flyer-info">
-          <h3>Construction Flyer 1</h3>
+          <h3>Builder Perks</h3>
           <button type="button" class="add-btn">Add to My Kit</button>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Construction Flyer 2">
-        <img src="images/construction/flyer2.jpg" alt="Construction Flyer 2">
+      <div class="flyer-card" data-name="Construction to Permanent">
+        <img src="flyer-previews/preview-construction-to-perm.png" alt="Construction to Permanent">
         <div class="flyer-info">
-          <h3>Construction Flyer 2</h3>
+          <h3>Construction to Permanent</h3>
           <button type="button" class="add-btn">Add to My Kit</button>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Construction Flyer 3">
-        <img src="images/construction/flyer3.jpg" alt="Construction Flyer 3">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Construction Flyer 3</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Construction Flyer 4">
-        <img src="images/construction/flyer4.jpg" alt="Construction Flyer 4">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Construction Flyer 4</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Construction Flyer 5">
-        <img src="images/construction/flyer5.jpg" alt="Construction Flyer 5">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Construction Flyer 5</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Construction Flyer 6">
-        <img src="images/construction/flyer6.jpg" alt="Construction Flyer 6">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Construction Flyer 6</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
@@ -740,5 +766,3 @@ document.addEventListener("keydown", e => {
 
 </body>
 </html>
-
-
