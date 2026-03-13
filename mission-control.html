@@ -7613,13 +7613,35 @@ async function pwLookup() {
 function pwUploadPhotos(e) {
   var files = Array.from(e.target.files);
   files.forEach(function(file) {
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      pwPhotos.push({ src: ev.target.result, selected: true, role: 'gallery', file: file });
+    pwCompressImage(file, function(compressedSrc) {
+      pwPhotos.push({ src: compressedSrc, selected: true, role: 'gallery', file: file });
       pwRenderPhotos();
-    };
-    reader.readAsDataURL(file);
+    });
   });
+}
+
+function pwCompressImage(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var img = new Image();
+    img.onload = function() {
+      var maxW = 1920;
+      var maxH = 1440;
+      var w = img.width;
+      var h = img.height;
+      if (w > maxW) { h = h * (maxW / w); w = maxW; }
+      if (h > maxH) { w = w * (maxH / h); h = maxH; }
+      var canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var compressed = canvas.toDataURL('image/jpeg', 0.80);
+      callback(compressed);
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function pwRenderPhotos() {
