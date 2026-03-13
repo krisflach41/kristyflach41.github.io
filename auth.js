@@ -26,6 +26,18 @@ function getCurrentUserBrokerage() {
   return sessionStorage.getItem('agentEdgeUserBrokerage') || '';
 }
 
+function getCurrentUserPhone() {
+  return sessionStorage.getItem('agentEdgeUserPhone') || '';
+}
+
+function getCurrentUserTitle() {
+  return sessionStorage.getItem('agentEdgeUserTitle') || '';
+}
+
+function getCurrentUserWebsite() {
+  return sessionStorage.getItem('agentEdgeUserWebsite') || '';
+}
+
 // Keep backward compatibility — old code references agentEdgeUser
 function getCurrentUser() {
   return getCurrentUserEmail();
@@ -36,6 +48,9 @@ function setUserSession(user) {
   sessionStorage.setItem('agentEdgeUserEmail', user.email);
   sessionStorage.setItem('agentEdgeUserName', user.name);
   sessionStorage.setItem('agentEdgeUserBrokerage', user.brokerage || '');
+  sessionStorage.setItem('agentEdgeUserPhone', user.phone || '');
+  sessionStorage.setItem('agentEdgeUserTitle', user.title || '');
+  sessionStorage.setItem('agentEdgeUserWebsite', user.website || '');
   // Backward compatibility keys
   sessionStorage.setItem('agentEdgeUser', user.email);
   sessionStorage.setItem('agentEdgeName', user.name);
