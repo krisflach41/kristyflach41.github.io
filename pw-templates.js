@@ -339,7 +339,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Lato',sans-s
       </div>
       <!-- LENDER (Right — always Kristy) -->
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -352,9 +352,9 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Lato',sans-s
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="Certified Mortgage Advisor">
-      <img src="equal-housing-logo.png" alt="Equal Housing Opportunity">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="Certified Mortgage Advisor">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing Opportunity">
     </div>
   </div>
 </section>
@@ -817,7 +817,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Raleway',san
 
       <!-- LENDER (Right position — always Kristy) -->
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -832,9 +832,9 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Raleway',san
 
     <!-- Logos -->
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="Certified Mortgage Advisor">
-      <img src="equal-housing-logo.png" alt="Equal Housing Opportunity">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="Certified Mortgage Advisor">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing Opportunity">
     </div>
   </div>
 </section>
@@ -1208,7 +1208,7 @@ textarea.contact-input{resize:vertical;min-height:100%;}
         <div class="team-contact-line"><a href="mailto:AGENT_EMAIL">AGENT_EMAIL</a></div>
       </div>
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -1221,9 +1221,9 @@ textarea.contact-input{resize:vertical;min-height:100%;}
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="CMA">
-      <img src="equal-housing-logo.png" alt="Equal Housing">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="CMA">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing">
     </div>
   </div>
 </section>
@@ -1460,7 +1460,7 @@ textarea.contact-input{resize:vertical;min-height:100%;border:1px solid rgba(255
         <div class="team-contact-line"><a href="mailto:AGENT_EMAIL">AGENT_EMAIL</a></div>
       </div>
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -1473,9 +1473,9 @@ textarea.contact-input{resize:vertical;min-height:100%;border:1px solid rgba(255
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="CMA">
-      <img src="equal-housing-logo.png" alt="Equal Housing">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="CMA">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing">
     </div>
   </div>
 </section>
@@ -1876,7 +1876,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Ubuntu',sans
       </div>
       <!-- LENDER (Right — always Kristy) -->
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -1889,9 +1889,9 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Ubuntu',sans
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="Certified Mortgage Advisor">
-      <img src="equal-housing-logo.png" alt="Equal Housing Opportunity">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="Certified Mortgage Advisor">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing Opportunity">
     </div>
   </div>
 </section>
@@ -2315,7 +2315,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'PT Sans',san
       </div>
       <!-- LENDER (Right — always Kristy) -->
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -2328,9 +2328,9 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'PT Sans',san
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="Certified Mortgage Advisor">
-      <img src="equal-housing-logo.png" alt="Equal Housing Opportunity">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="Certified Mortgage Advisor">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing Opportunity">
     </div>
   </div>
 </section>
@@ -2733,7 +2733,7 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Noto Sans',s
       </div>
       <!-- LENDER (Right — always Kristy) -->
       <div class="team-member">
-        <img src="hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
+        <img src="https://kristyflach.com/hero-headshot.jpg" alt="Kristy Flach" class="team-photo">
         <div class="team-name">Kristy Flach</div>
         <div class="team-title">Certified Mortgage Advisor &amp; Loan Originator</div>
         <div class="team-license">NMLS #2632259</div>
@@ -2746,9 +2746,9 @@ textarea.contact-input{resize:vertical;min-height:100%;font-family:'Noto Sans',s
       </div>
     </div>
     <div class="team-logos">
-      <img src="PRMG-Logo.png" alt="PRMG">
-      <img src="CMA%20Logo.png" alt="Certified Mortgage Advisor">
-      <img src="equal-housing-logo.png" alt="Equal Housing Opportunity">
+      <img src="https://kristyflach.com/PRMG-Logo.png" alt="PRMG">
+      <img src="https://kristyflach.com/CMA%20Logo.png" alt="Certified Mortgage Advisor">
+      <img src="https://kristyflach.com/equal-housing-logo.png" alt="Equal Housing Opportunity">
     </div>
   </div>
 </section>
