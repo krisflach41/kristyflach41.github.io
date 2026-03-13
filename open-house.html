@@ -87,25 +87,57 @@ body {
 
 .add-btn {
   margin-top: 10px;
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 20px;
-  border: 1px solid #0b4ea2;
+  border: 1.5px solid #6e7f77;
   background: transparent;
-  color: #0b4ea2;
+  color: #6e7f77;
   font-weight: 600;
+  font-size: 13px;
   cursor: pointer;
   transition: 0.25s ease;
 }
 
 .add-btn:hover {
-  background: #0b4ea2;
+  background: #6e7f77;
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(110,127,119,0.3);
 }
 
 .add-btn.added {
-  background: #0b4ea2;
+  background: #6e7f77;
   color: white;
-  border-color: #0b4ea2;
+  border-color: #6e7f77;
+}
+
+.thumb-placeholder {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8ecf2, #d1d9e6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb-placeholder::after {
+  content: 'COMING SOON';
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(11,31,58,0.25);
+}
+
+.flyer-card.placeholder {
+  opacity: 0.6;
+}
+
+.flyer-card.placeholder h3 {
+  color: #999;
 }
 
 /* ===== NAV BUTTON ===== */
@@ -379,17 +411,18 @@ body {
 
 .lightbox-content {
   position: relative;
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 520px;
+  max-height: 85vh;
   overflow: auto;
   padding: 10px;
 }
 
 .lightbox-content img {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 85vh;
   border-radius: 12px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  object-fit: contain;
 }
 
 .lightbox-close {
@@ -458,51 +491,48 @@ html, body {
 
     <div class="flyer-grid">
 
-      <div class="flyer-card" data-name="Open House Flyer 1">
-        <img src="images/open-house/flyer1.jpg" alt="Open House Flyer 1">
+      <div class="flyer-card" data-name="Open House - Payment Comparison">
+        <img src="flyer-previews/preview-open-house-1.png" alt="Open House - Payment Comparison">
         <div class="flyer-info">
-          <h3>Open House Flyer 1</h3>
+          <h3>Open House - Payment Comparison</h3>
           <button type="button" class="add-btn">Add to My Kit</button>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Open House Flyer 2">
-        <img src="images/open-house/flyer2.jpg" alt="Open House Flyer 2">
+      <div class="flyer-card" data-name="Open House - Luxury Listing">
+        <img src="flyer-previews/preview-open-house-2.png" alt="Open House - Luxury Listing">
         <div class="flyer-info">
-          <h3>Open House Flyer 2</h3>
+          <h3>Open House - Luxury Listing</h3>
           <button type="button" class="add-btn">Add to My Kit</button>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Open House Flyer 3">
-        <img src="images/open-house/flyer3.jpg" alt="Open House Flyer 3">
+      <div class="flyer-card" data-name="Open House - 2-1 Buydown">
+        <img src="flyer-previews/preview-open-house-3.png" alt="Open House - 2-1 Buydown">
         <div class="flyer-info">
-          <h3>Open House Flyer 3</h3>
+          <h3>Open House - 2-1 Buydown</h3>
           <button type="button" class="add-btn">Add to My Kit</button>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Open House Flyer 4">
-        <img src="images/open-house/flyer4.jpg" alt="Open House Flyer 4">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Open House Flyer 4</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Open House Flyer 5">
-        <img src="images/open-house/flyer5.jpg" alt="Open House Flyer 5">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Open House Flyer 5</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
-      <div class="flyer-card" data-name="Open House Flyer 6">
-        <img src="images/open-house/flyer6.jpg" alt="Open House Flyer 6">
+      <div class="flyer-card placeholder" data-name="">
+        <div class="thumb-placeholder"></div>
         <div class="flyer-info">
-          <h3>Open House Flyer 6</h3>
-          <button type="button" class="add-btn">Add to My Kit</button>
+          <h3>Coming Soon</h3>
         </div>
       </div>
 
