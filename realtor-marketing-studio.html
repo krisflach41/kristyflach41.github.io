@@ -102,11 +102,21 @@ img.thumb {
   display: inline-block;
   margin-top: 10px;
   padding: 8px 16px;
-  background: #0b4ea2;
-  color: white;
+  background: transparent;
+  color: #6e7f77;
+  border: 1.5px solid #6e7f77;
   border-radius: 20px;
   text-decoration: none;
   font-weight: 600;
+  font-size: 13px;
+  transition: 0.25s ease;
+}
+
+.panel-btn:hover {
+  background: #6e7f77;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(110,127,119,0.3);
 }
 
 /* ===== FLOATING RETURN LINK ===== */
@@ -144,9 +154,9 @@ img.thumb {
 
       <div class="studio-panel">
         <div class="panel-thumbs">
-          <div class="thumb"></div>
-          <div class="thumb"></div>
-          <div class="thumb"></div>
+          <img class="thumb" src="flyer-previews/preview-open-house-1.png" alt="Open House - Payment Comparison">
+          <img class="thumb" src="flyer-previews/preview-open-house-2.png" alt="Open House - Luxury Listing">
+          <img class="thumb" src="flyer-previews/preview-open-house-3.png" alt="Open House - 2-1 Buydown">
         </div>
         <h3>Open House</h3>
         <p>Sign-in sheets, buyer guides, and event-ready materials.</p>
