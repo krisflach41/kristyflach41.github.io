@@ -174,6 +174,13 @@ body {
 }
 .template-select-btn:hover { background: #6e7f77; color: white; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(110,127,119,0.3); }
 
+.template-demo-btn {
+  display: inline-block; padding: 8px 24px; border: 1.5px solid #6e7f77; border-radius: 20px;
+  background: transparent; color: #6e7f77; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.25s ease;
+  text-decoration: none;
+}
+.template-demo-btn:hover { background: #6e7f77; color: white; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(110,127,119,0.3); }
+
 /* ===== ORDER FORM ===== */
 #orderFormView { display: none; }
 
@@ -326,43 +333,64 @@ html, body { overflow-x: hidden; }
     <div class="template-card" onclick="selectTemplate('Cavallo')">
       <img src="flyer-previews/pw-cavallo.png" alt="Cavallo" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Cavallo</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-cavallo-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Stylish')">
       <img src="flyer-previews/pw-stylish.png" alt="Stylish" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Stylish</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-stylish-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Vertical')">
       <img src="flyer-previews/pw-vertical.png" alt="Vertical" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Vertical</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-vertical-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Sleek')">
       <img src="flyer-previews/pw-sleek.png" alt="Sleek" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Sleek</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-sleek-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Impact')">
       <img src="flyer-previews/pw-impact.png" alt="Impact" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Impact</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-impact-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Modern')">
       <img src="flyer-previews/pw-modern.png" alt="Modern" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Modern</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-modern-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
 
     <div class="template-card" onclick="selectTemplate('Contemporary')">
       <img src="flyer-previews/pw-contemporary.png" alt="Contemporary" style="width:100%;border-radius:8px;margin-bottom:4px;">
       <div class="template-name">Contemporary</div>
-      <button class="template-select-btn">Select Template</button>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <a href="https://agent-edge-backend.vercel.app/api/serve-site?slug=123-main-street-contemporary-anywhere" target="_blank" class="template-demo-btn" onclick="event.stopPropagation();">View Demo</a>
+        <button class="template-select-btn">Select Template</button>
+      </div>
     </div>
   </div>
 </div>
