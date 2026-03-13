@@ -307,6 +307,39 @@ body {
     </div>
 
     <div class="form-group">
+      <label class="form-label" for="agentTitle">Title</label>
+      <input 
+        type="text" 
+        id="agentTitle" 
+        class="form-input" 
+        placeholder="e.g. Realtor, Broker Associate, Agent"
+      >
+      <div class="form-helper">Used on your co-branded materials.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="phone">Phone</label>
+      <input 
+        type="tel" 
+        id="phone" 
+        class="form-input" 
+        placeholder="(555) 555-5555"
+      >
+      <div class="form-helper">Used on your co-branded materials.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="website">Website</label>
+      <input 
+        type="text" 
+        id="website" 
+        class="form-input" 
+        placeholder="yourwebsite.com"
+      >
+      <div class="form-helper">Used on your co-branded materials.</div>
+    </div>
+
+    <div class="form-group">
       <label class="form-label" for="newPassword">Create Password *</label>
       <input 
         type="password" 
@@ -401,6 +434,9 @@ signupForm.addEventListener('submit', async function(e) {
   var fullName = document.getElementById('fullName').value.trim();
   var email = document.getElementById('email').value.trim().toLowerCase();
   var brokerage = document.getElementById('brokerage').value.trim();
+  var agentTitle = document.getElementById('agentTitle').value.trim();
+  var phone = document.getElementById('phone').value.trim();
+  var website = document.getElementById('website').value.trim();
   var password = document.getElementById('newPassword').value;
   var confirmPassword = document.getElementById('confirmPassword').value;
   var agreeTerms = document.getElementById('agreeTerms').checked;
@@ -441,6 +477,9 @@ signupForm.addEventListener('submit', async function(e) {
         fullName: fullName,
         email: email,
         brokerage: brokerage,
+        title: agentTitle,
+        phone: phone,
+        website: website,
         password: password
       })
     });
