@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Education Marketing Materials</title>
+<script src="universal-cart.js"></script>
+<style>
+
+/* ===== BACKGROUND (PORTAL STYLE) ===== */
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 80px 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+
+/* ===== PAGE WIDTH ===== */
+.page-wrap {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== GLASS CONTAINER ===== */
+.gallery-card {
+  padding: 60px 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow:
+    0 20px 55px rgba(0,0,0,0.10),
+    0 6px 18px rgba(0,0,0,0.05);
+}
+
+/* ===== TITLES ===== */
+.section-title {
+  font-size: 34px;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-subtitle {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 50px auto;
+  color: #555;
+}
+
+/* ===== FLYER GRID ===== */
+.flyer-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 35px;
+}
+
+/* ===== FLYER THUMBNAIL CARD ===== */
+.flyer-card {
+  text-align: center;
+  min-width: 0;
+}
+
+.flyer-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.flyer-card img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
+}
+
+.flyer-info h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+/* ===== NAV BUTTON ===== */
+.back-btn {
+  display: inline-block;
+  margin-top: 50px;
+  padding: 10px 20px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+/* ===== FLOATING EXIT LINK ===== */
+.return-main {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  border-radius: 25px;
+  background: rgba(255,255,255,0.35);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none;
+  color: #0b1f3a;
+  font-weight: 600;
+}
+
+.add-btn {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #0b4ea2;
+  background: transparent;
+  color: #0b4ea2;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.add-btn:hover {
+  background: #0b4ea2;
+  color: white;
+}
+
+.add-btn.added {
+  background: #0b4ea2;
+  color: white;
+  border-color: #0b4ea2;
+}
+
+.thumb-placeholder {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #e8ecf2, #d1d9e6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.thumb-placeholder::after {
+  content: 'COMING SOON';
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: rgba(11,31,58,0.25);
+}
+
+.flyer-card.placeholder {
+  opacity: 0.6;
+}
+
+.flyer-card.placeholder h3 {
+  color: #999;
+}
+
+/* ===== CART SYSTEM ===== */
+.cart-icon {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transition: all 0.25s ease;
+  z-index: 10000;
+}
+
+.cart-icon:hover {
+  transform: scale(1.08);
+  background: rgba(255,255,255,0.95);
+}
+
+.cart-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: #0b4ea2;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #c0392b;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  z-index: 9998;
+}
+
+.cart-overlay.active {
+  display: block;
+}
+
+.cart-modal {
+  position: fixed;
+  top: 50%;
+  right: -500px;
+  transform: translateY(-50%);
+  width: 90%;
+  max-width: 480px;
+  max-height: 85vh;
+  background: white;
+  border-radius: 18px 0 0 18px;
+  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.3s ease;
+  z-index: 9999;
+}
+
+.cart-modal.active {
+  right: 0;
+}
+
+.cart-header {
+  padding: 24px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #0b1f3a;
+}
+
+.cart-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.cart-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+}
+
+.cart-empty svg {
+  width: 64px;
+  height: 64px;
+  fill: #ddd;
+  margin-bottom: 16px;
+}
+
+.cart-section {
+  margin-bottom: 32px;
+}
+
+.cart-section-title {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #0b4ea2;
+  margin-bottom: 12px;
+}
+
+.cart-item {
+  background: rgba(11,78,162,0.04);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-item-info {
+  flex: 1;
+}
+
+.cart-item-name {
+  font-weight: 600;
+  color: #0b1f3a;
+  margin-bottom: 2px;
+}
+
+.cart-item-meta {
+  font-size: 13px;
+  color: #666;
+}
+
+.cart-item-remove {
+  background: none;
+  border: none;
+  color: #c0392b;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 4px 8px;
+}
+
+.cart-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #0b1f3a;
+}
+
+.cart-checkout-btn {
+  width: 100%;
+  padding: 14px;
+  background: #0b4ea2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+.cart-checkout-btn:hover {
+  background: #0a3d7f;
+}
+
+.cart-clear-btn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #c0392b;
+  border: 1px solid #c0392b;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.25s ease;
+}
+
+.cart-clear-btn:hover {
+  background: rgba(192,57,43,0.05);
+}
+
+/* ===== IMAGE LIGHTBOX ===== */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+}
+
+.lightbox.active {
+  display: flex;
+}
+
+.lightbox-content {
+  position: relative;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow: auto;
+  padding: 10px;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 85vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  object-fit: contain;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 34px;
+  height: 34px;
+  background: #ffffff;
+  color: #0b1f3a;
+  border-radius: 50%;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+}
+
+/* ===== RESPONSIVE ===== */
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 980px) {
+  body {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .flyer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 16px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  h1 { font-size: 28px; }
+  h2 { font-size: 18px; }
+
+  .flyer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+}
+
+</style>
+<script src="tracking.js"></script>
+<script src="feature-gate.js"></script>
+</head>
+
+<body>
+
+<div class="page-wrap">
+  <section class="gallery-card">
+
+    <h2 class="section-title">Education Materials</h2>
+    <p class="section-subtitle">
+      Process explainers, credit education, and client-ready financial resources.
+    </p>
+
+    <div class="flyer-grid">
+
+      <div class="flyer-card" data-name="Document Checklist">
+        <img src="flyer-previews/preview-ed-checklist.png" alt="Document Checklist">
+        <div class="flyer-info">
+          <h3>Document Checklist</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Client Wealth - Financial Advisors">
+        <img src="flyer-previews/preview-ed-client-wealth.png" alt="Client Wealth - Financial Advisors">
+        <div class="flyer-info">
+          <h3>Client Wealth - Financial Advisors</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Understanding Closing Costs">
+        <img src="flyer-previews/preview-ed-closing-costs.png" alt="Understanding Closing Costs">
+        <div class="flyer-info">
+          <h3>Understanding Closing Costs</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Control Your Credit & Debt">
+        <img src="flyer-previews/preview-ed-control-debt.png" alt="Control Your Credit & Debt">
+        <div class="flyer-info">
+          <h3>Control Your Credit & Debt</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Credit Holding Back The Purchase?">
+        <img src="flyer-previews/preview-ed-credit-holding-you-back.png" alt="Credit Holding Back The Purchase?">
+        <div class="flyer-info">
+          <h3>Credit Holding Back The Purchase?</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Credit Problems - No Problem">
+        <img src="flyer-previews/preview-ed-credit-problems.png" alt="Credit Problems - No Problem">
+        <div class="flyer-info">
+          <h3>Credit Problems - No Problem</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="How Important Is Your Credit Score?">
+        <img src="flyer-previews/preview-ed-credit-score.png" alt="How Important Is Your Credit Score?">
+        <div class="flyer-info">
+          <h3>How Important Is Your Credit Score?</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Reverse Mortgage - HECM">
+        <img src="flyer-previews/preview-ed-reverse-mortgage.png" alt="Reverse Mortgage - HECM">
+        <div class="flyer-info">
+          <h3>Reverse Mortgage - HECM</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+      <div class="flyer-card" data-name="Prepared for Retirement?">
+        <img src="flyer-previews/preview-ed-reverse-mortgage2.png" alt="Prepared for Retirement?">
+        <div class="flyer-info">
+          <h3>Prepared for Retirement?</h3>
+          <button type="button" class="add-btn">Add to My Kit</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="text-align:center;">
+      <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Collection</a>
+    </div>
+
+  </section>
+</div>
+
+<!-- CART & LIGHTBOX -->
+<div class="cart-icon" onclick="openCart()">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+  </svg>
+  <span class="cart-badge" id="cartBadge">0</span>
+</div>
+
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+
+<div class="cart-modal" id="cartModal">
+  <div class="cart-header">
+    <h2>My Kit</h2>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+      </svg>
+      <p>Your kit is empty</p>
+      <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
+    </div>
+  </div>
+  
+  <div class="cart-footer" id="cartFooter" style="display: none;">
+    <div class="cart-total">
+      <span>Total Items:</span>
+      <span id="cartTotalCount">0</span>
+    </div>
+    <button class="cart-checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+    <button class="cart-clear-btn" onclick="clearCart()">Clear Cart</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <div class="lightbox-content">
+    <span class="lightbox-close" id="lightboxClose">×</span>
+    <img id="lightboxImg" src="" alt="">
+  </div>
+</div>
+
+<a href="index.html" class="return-main">Return to Main Website</a>
+
+<script>
+/* ===========================
+   CART FUNCTIONS
+=========================== */
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('active');
+  document.getElementById('cartModal').classList.add('active');
+  renderCart();
+}
+
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('active');
+  document.getElementById('cartModal').classList.remove('active');
+}
+
+function renderCart() {
+  const body = document.getElementById('cartBody');
+  const footer = document.getElementById('cartFooter');
+  const totalCount = document.getElementById('cartTotalCount');
+  
+  const summary = universalCart.getSummary();
+  const count = universalCart.getTotalCount();
+  
+  if (count === 0) {
+    body.innerHTML = `
+      <div class="cart-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+        </svg>
+        <p>Your kit is empty</p>
+        <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
+      </div>
+    `;
+    footer.style.display = 'none';
+    return;
+  }
+  
+  let html = '';
+  
+  summary.forEach(section => {
+    html += `<div class="cart-section">`;
+    html += `<div class="cart-section-title">${section.collection}</div>`;
+    
+    section.items.forEach(item => {
+      if (item.type === 'flyer') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+            </div>
+            <button class="cart-item-remove" onclick="removeMarketingItem('${item.name}')">×</button>
+          </div>
+        `;
+      } else if (item.type === 'report') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              <div class="cart-item-meta">${item.count} ${item.count === 1 ? 'property' : 'properties'}</div>
+            </div>
+          </div>
+        `;
+      } else if (item.type === 'website') {
+        html += `
+          <div class="cart-item">
+            <div class="cart-item-info">
+              <div class="cart-item-name">${item.name}</div>
+              ${item.mls ? `<div class="cart-item-meta">MLS: ${item.mls}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }
+    });
+    
+    html += `</div>`;
+  });
+  
+  body.innerHTML = html;
+  footer.style.display = 'block';
+  totalCount.textContent = count;
+}
+
+function removeMarketingItem(name) {
+  universalCart.removeMarketingItem(name);
+  renderCart();
+  
+  const card = document.querySelector(`[data-name="${name}"]`);
+  if (card) {
+    const btn = card.querySelector('.add-btn');
+    if (btn) {
+      btn.textContent = 'Add to My Kit';
+      btn.classList.remove('added');
+    }
+  }
+}
+
+function clearCart() {
+  if (confirm('Are you sure you want to clear your entire cart?')) {
+    universalCart.clear();
+    renderCart();
+    
+    document.querySelectorAll('.add-btn.added').forEach(btn => {
+      btn.textContent = 'Add to My Kit';
+      btn.classList.remove('added');
+    });
+  }
+}
+
+function proceedToCheckout() {
+  sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
+  window.location.href = 'checkout.html';
+}
+
+/* ===========================
+   ADD TO KIT BUTTONS
+=========================== */
+document.querySelectorAll('.add-btn').forEach(button => {
+  button.addEventListener('click', function() {
+    const card = this.closest('.flyer-card');
+    const name = card.dataset.name;
+
+    if (!universalCart.hasMarketingItem(name)) {
+      universalCart.addMarketingItem(name);
+      this.textContent = "Added ✓";
+      this.classList.add("added");
+    } else {
+      universalCart.removeMarketingItem(name);
+      this.textContent = "Add to My Kit";
+      this.classList.remove("added");
+    }
+  });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.flyer-card').forEach(card => {
+    const name = card.dataset.name;
+    const btn = card.querySelector('.add-btn');
+    
+    if (universalCart.hasMarketingItem(name)) {
+      btn.textContent = "Added ✓";
+      btn.classList.add("added");
+    }
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeCart();
+  }
+});
+
+/* ===========================
+   IMAGE LIGHTBOX
+=========================== */
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxClose = document.getElementById("lightboxClose");
+
+document.querySelectorAll(".flyer-card img").forEach(img => {
+  img.addEventListener("click", () => {
+    lightboxImg.src = img.src;
+    lightbox.classList.add("active");
+  });
+});
+
+lightboxClose.addEventListener("click", () => {
+  lightbox.classList.remove("active");
+});
+
+lightbox.addEventListener("click", e => {
+  if (e.target === lightbox) {
+    lightbox.classList.remove("active");
+  }
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    lightbox.classList.remove("active");
+  }
+});
+</script>
+
+</body>
+</html>
