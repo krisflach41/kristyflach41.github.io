@@ -1393,14 +1393,16 @@ async function generateBuydownPDF() {
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(0, 37, 86);
       if (i === 2) pdf.setTextColor(192, 57, 43); // red for year 3-30 (full rate)
-      pdf.text(formatCurrency(yr.pi), cx, sectionY);
+      var amountStr = formatCurrency(yr.pi);
+      pdf.text(amountStr, cx, sectionY);
 
-      // "Estimated Payment" label
+      // "Estimated Payment" label — anchored right after dollar amount
+      var amountWidth = pdf.getTextWidth(amountStr);
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(102, 102, 102);
-      pdf.text('Estimated', cx + colW - 30, sectionY - 8);
-      pdf.text('Payment', cx + colW - 30, sectionY);
+      pdf.text('Estimated', cx + amountWidth + 4, sectionY - 8);
+      pdf.text('Payment', cx + amountWidth + 4, sectionY);
     });
 
     sectionY += 14;
