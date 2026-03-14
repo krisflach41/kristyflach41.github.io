@@ -11,6 +11,8 @@ var PRMG_DISCLAIMER='\u00A92025 Paramount Residential Mortgage Group, Inc. (\u20
 
 var BUYDOWN_DISCLAIMER='For illustrative purposes only. This is not an offer to lend, a loan commitment, or a guarantee of rates or terms. Example assumes a 2-1 temporary buydown on a 30-year conventional mortgage with 20% down at an assumed note rate of 6.0% (Year 1: 4.0%, Year 2: 5.0%, Years 3\u201330: 6.0%). Not all loan programs allow buydowns. Actual rates, terms, and payments may vary based on creditworthiness, loan program, and market conditions. Taxes, insurance, and MI not included. Contact your loan officer for a personalized quote.';
 
+var FLYER_DISCLAIMER='For illustrative purposes only. This is not an offer to lend, a loan commitment, or a guarantee of rates or terms. Actual rates, terms, and payments may vary based on creditworthiness, loan program, and market conditions. Contact your loan officer for a personalized quote.';
+
 /* ===== PHOTO STORAGE ===== */
 var _photos={cmp:null,bd:null,lux1:null,lux2:null,lux3:null};
 
@@ -208,6 +210,11 @@ async function generateComparisonPDF(){
       y+=rowH;
     });
 
+    // Flyer disclaimer
+    y+=12;pdf.setFontSize(8);pdf.setFont('helvetica','normal');pdf.setTextColor(68,68,68);
+    var flyerDiscLines=pdf.splitTextToSize(FLYER_DISCLAIMER,W-40);
+    flyerDiscLines.forEach(function(line){pdf.text(line,20,y);y+=11});
+
     // Branding + disclaimer
     var brandY=H-BRANDING_H-DISCLAIMER_H;
     drawBrandingFooter(pdf,'cmp',headshotImg,prmgImg,W,brandY,BRANDING_H);
@@ -290,6 +297,11 @@ async function generateLuxuryPDF(){
       pdf.text(row.label,tX+8,y+12);pdf.text(row.val,tX+c0W+c1W/2,y+12,{align:'center'});
       y+=rowH;
     });
+
+    // Flyer disclaimer
+    y+=12;pdf.setFontSize(8);pdf.setFont('helvetica','normal');pdf.setTextColor(68,68,68);
+    var flyerDiscLines=pdf.splitTextToSize(FLYER_DISCLAIMER,W-40);
+    flyerDiscLines.forEach(function(line){pdf.text(line,20,y);y+=11});
 
     // Branding + disclaimer
     var brandY=H-BRANDING_H-DISCLAIMER_H;
