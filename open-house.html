@@ -4,1645 +4,223 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Open House Marketing Materials</title>
-<script src="universal-cart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-
-/* ===== BACKGROUND (PORTAL STYLE) ===== */
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-}
-
-/* ===== PAGE WIDTH ===== */
-.page-wrap {
-  max-width: 1150px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-/* ===== GLASS CONTAINER ===== */
-.gallery-card {
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
-}
-
-/* ===== TITLES ===== */
-.section-title {
-  font-size: 34px;
-  text-align: center;
-  margin-bottom: 10px;
-}
-
-.section-subtitle {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto 50px auto;
-  color: #555;
-}
-
-/* ===== FLYER GRID ===== */
-.flyer-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 35px;
-}
-
-/* ===== FLYER THUMBNAIL CARD ===== */
-.flyer-card {
-  text-align: center;
-  min-width: 0;
-}
-
-.flyer-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  border-radius: 10px;
-  margin-bottom: 12px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  cursor: pointer;
-}
-
-.flyer-card img:hover {
-  transform: scale(1.03);
-  box-shadow: 0 10px 28px rgba(0,0,0,0.18);
-}
-
-.flyer-info h3 {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
-
-/* ===== GENERATE FLYER BUTTON (sage green) ===== */
-.generate-btn {
-  margin-top: 10px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1.5px solid #6e7f77;
-  background: transparent;
-  color: #6e7f77;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.generate-btn:hover {
-  background: #6e7f77;
-  color: white;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(110,127,119,0.3);
-}
-
-/* ===== NAV BUTTON ===== */
-.back-btn {
-  display: inline-block;
-  margin-top: 50px;
-  padding: 10px 20px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-}
-
-/* ===== FLOATING EXIT LINK ===== */
-.return-main {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-}
-
-/* ===== CART SYSTEM ===== */
-.cart-icon {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  z-index: 10000;
-}
-
-.cart-icon:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.95);
-}
-
-.cart-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #0b4ea2;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #c0392b;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-}
-
-.cart-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  z-index: 9998;
-}
-
-.cart-overlay.active {
-  display: block;
-}
-
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  right: -500px;
-  transform: translateY(-50%);
-  width: 90%;
-  max-width: 480px;
-  max-height: 85vh;
-  background: white;
-  border-radius: 18px 0 0 18px;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 9999;
-}
-
-.cart-modal.active {
-  right: 0;
-}
-
-.cart-header {
-  padding: 24px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #0b1f3a;
-}
-
-.cart-close {
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-}
-
-.cart-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-}
-
-.cart-empty svg {
-  width: 64px;
-  height: 64px;
-  fill: #ddd;
-  margin-bottom: 16px;
-}
-
-.cart-section {
-  margin-bottom: 32px;
-}
-
-.cart-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #0b4ea2;
-  margin-bottom: 12px;
-}
-
-.cart-item {
-  background: rgba(11,78,162,0.04);
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-item-info {
-  flex: 1;
-}
-
-.cart-item-name {
-  font-weight: 600;
-  color: #0b1f3a;
-  margin-bottom: 2px;
-}
-
-.cart-item-meta {
-  font-size: 13px;
-  color: #666;
-}
-
-.cart-item-remove {
-  background: none;
-  border: none;
-  color: #c0392b;
-  cursor: pointer;
-  font-size: 20px;
-  padding: 4px 8px;
-}
-
-.cart-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #0b1f3a;
-}
-
-.cart-checkout-btn {
-  width: 100%;
-  padding: 14px;
-  background: #0b4ea2;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.cart-checkout-btn:hover {
-  background: #0a3d7f;
-}
-
-.cart-clear-btn {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  color: #c0392b;
-  border: 1px solid #c0392b;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.25s ease;
-}
-
-.cart-clear-btn:hover {
-  background: rgba(192,57,43,0.05);
-}
-
-/* ===== IMAGE LIGHTBOX ===== */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.65);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.lightbox.active {
-  display: flex;
-}
-
-.lightbox-content {
-  position: relative;
-  max-width: 520px;
-  max-height: 85vh;
-  overflow: auto;
-  padding: 10px;
-}
-
-.lightbox-content img {
-  max-width: 100%;
-  max-height: 85vh;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  object-fit: contain;
-}
-
-.lightbox-close {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 34px;
-  height: 34px;
-  background: #ffffff;
-  color: #0b1f3a;
-  border-radius: 50%;
-  font-size: 18px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-}
-
-/* ===== BUYDOWN POPUP ===== */
-#buydownPopup {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-}
-
-.bd-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-}
-
-.bd-modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 92%;
-  max-width: 540px;
-  max-height: 90vh;
-  overflow-y: auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.bd-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.bd-header h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #0b1f3a;
-}
-
-.bd-close {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.bd-body {
-  padding: 24px;
-}
-
-.bd-section-label {
-  font-size: 11px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #0b1f3a;
-  margin: 0 0 10px 0;
-}
-
-.bd-field-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 8px;
-}
-
-.bd-field-row input,
-.bd-field-row textarea {
-  flex: 1;
-  padding: 10px 12px;
-  border: 1px solid rgba(110,127,119,0.3);
-  border-radius: 6px;
-  font-size: 13px;
-  font-family: inherit;
-  background: rgba(255,255,255,0.8);
-}
-
-.bd-field-row input:focus,
-.bd-field-row textarea:focus {
-  outline: none;
-  border-color: #6e7f77;
-  box-shadow: 0 0 0 2px rgba(110,127,119,0.15);
-}
-
-.bd-field-row textarea {
-  min-height: 70px;
-  resize: vertical;
-}
-
-.bd-photo-upload {
-  margin-bottom: 16px;
-}
-
-.bd-photo-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  border: 2px dashed rgba(110,127,119,0.35);
-  border-radius: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-  background: rgba(110,127,119,0.03);
-}
-
-.bd-photo-label:hover {
-  border-color: #6e7f77;
-  background: rgba(110,127,119,0.06);
-}
-
-.bd-photo-label.has-photo {
-  border-style: solid;
-  border-color: #6e7f77;
-  padding: 8px;
-}
-
-.bd-photo-label img {
-  max-width: 100%;
-  max-height: 160px;
-  border-radius: 6px;
-  object-fit: contain;
-}
-
-.bd-photo-text {
-  font-size: 13px;
-  color: #888;
-  text-align: center;
-}
-
-.bd-photo-text span {
-  display: block;
-  font-size: 11px;
-  margin-top: 4px;
-  color: #aaa;
-}
-
-.bd-divider {
-  height: 1px;
-  background: #e5e7eb;
-  margin: 20px 0;
-}
-
-/* ===== CO-BRAND OPTIONS (sage green themed) ===== */
-.bd-brand-options {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.bd-brand-opt {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: 2px solid #ddd;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.bd-brand-opt.active {
-  border-color: #6e7f77;
-  background: rgba(110,127,119,0.06);
-}
-
-.bd-brand-opt .bd-opt-preview {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.bd-brand-opt .bd-you {
-  padding: 4px 12px;
-  background: rgba(110,127,119,0.15);
-  border-radius: 4px;
-  font-size: 9px;
-  font-weight: 700;
-  color: #5a6b63;
-}
-
-.bd-brand-opt .bd-kristy {
-  padding: 4px 12px;
-  background: rgba(110,127,119,0.08);
-  border-radius: 4px;
-  font-size: 9px;
-  font-weight: 700;
-  color: #6e7f77;
-}
-
-.bd-brand-opt .bd-opt-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: #555;
-}
-
-.bd-brand-opt.active .bd-opt-label {
-  color: #6e7f77;
-}
-
-/* ===== LAYOUT OPTIONS ===== */
-.bd-layout-options {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.bd-layout-opt {
-  flex: 1;
-  padding: 12px;
-  border-radius: 10px;
-  border: 2px solid #ddd;
-  text-align: center;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.bd-layout-opt.active {
-  border-color: #6e7f77;
-  background: rgba(110,127,119,0.06);
-}
-
-.bd-layout-opt .bd-layout-preview {
-  display: flex;
-  justify-content: center;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-
-.bd-layout-opt .bd-you-sm {
-  padding: 3px 10px;
-  background: rgba(110,127,119,0.15);
-  border-radius: 3px;
-  font-size: 8px;
-  font-weight: 700;
-  color: #5a6b63;
-}
-
-.bd-layout-opt .bd-kristy-sm {
-  padding: 3px 10px;
-  background: rgba(110,127,119,0.08);
-  border-radius: 3px;
-  font-size: 8px;
-  font-weight: 700;
-  color: #6e7f77;
-}
-
-/* ===== COBRAND FIELDS ===== */
-.bd-cobrand-fields {
-  margin-bottom: 16px;
-}
-
-/* ===== GENERATE BUTTON (sage green) ===== */
-.bd-generate-btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 8px;
-  background: #6e7f77;
-  color: white;
-  font-weight: 700;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.bd-generate-btn:hover:not(:disabled) {
-  background: #5a6b63;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(110,127,119,0.3);
-}
-
-.bd-generate-btn:disabled {
-  background: #999;
-  cursor: not-allowed;
-}
-
-.bd-status {
-  text-align: center;
-  margin-top: 12px;
-  font-size: 13px;
-  font-weight: 600;
-  min-height: 20px;
-}
-
-/* ===== COMING SOON POPUP ===== */
-#comingSoonPopup {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 10001;
-}
-
-.cs-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(4px);
-}
-
-.cs-modal {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%;
-  max-width: 380px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  padding: 40px;
-  text-align: center;
-}
-
-.cs-modal h3 {
-  font-size: 20px;
-  color: #0b1f3a;
-  margin: 0 0 10px 0;
-}
-
-.cs-modal p {
-  color: #666;
-  font-size: 14px;
-  margin: 0 0 24px 0;
-}
-
-.cs-close-btn {
-  padding: 10px 28px;
-  border-radius: 20px;
-  border: 1.5px solid #6e7f77;
-  background: transparent;
-  color: #6e7f77;
-  font-weight: 600;
-  font-size: 13px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.cs-close-btn:hover {
-  background: #6e7f77;
-  color: white;
-}
-
-/* =========================================================
-   RESPONSIVE RULES
-   ========================================================= */
-html, body {
-  overflow-x: hidden;
-}
-
-/* Tablet */
-@media (max-width: 980px) {
-  body {
-    padding-left: 18px;
-    padding-right: 18px;
-  }
-
-  .flyer-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 16px !important;
-  }
-}
-
-/* Mobile */
-@media (max-width: 640px) {
-  h1 { font-size: 28px; }
-  h2 { font-size: 18px; }
-
-  .flyer-grid {
-    grid-template-columns: 1fr !important;
-    gap: 14px !important;
-  }
-
-  .bd-field-row {
-    flex-direction: column;
-  }
-}
-
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;margin:0;padding:80px 0;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),url("portal-bg.jpg") center/cover no-repeat fixed;color:#0b1f3a}
+.page-wrap{max-width:1150px;margin:0 auto;padding:0 24px}
+.gallery-card{padding:60px 50px;border-radius:22px;background:rgba(255,255,255,0.58);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);box-shadow:0 20px 55px rgba(0,0,0,0.10),0 6px 18px rgba(0,0,0,0.05)}
+.section-title{font-size:34px;text-align:center;margin-bottom:10px}
+.section-subtitle{text-align:center;max-width:600px;margin:0 auto 50px auto;color:#555}
+.flyer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:35px}
+.flyer-card{text-align:center;min-width:0}
+.flyer-card img{width:100%;height:220px;object-fit:cover;border-radius:10px;margin-bottom:12px;transition:transform 0.25s ease,box-shadow 0.25s ease;cursor:pointer}
+.flyer-card img:hover{transform:scale(1.03);box-shadow:0 10px 28px rgba(0,0,0,0.18)}
+.flyer-info h3{font-size:16px;margin-bottom:8px}
+.generate-btn{margin-top:10px;padding:8px 16px;border-radius:20px;border:1.5px solid #6e7f77;background:transparent;color:#6e7f77;font-weight:600;font-size:13px;cursor:pointer;transition:0.25s ease}
+.generate-btn:hover{background:#6e7f77;color:white;transform:translateY(-1px);box-shadow:0 4px 14px rgba(110,127,119,0.3)}
+.back-btn{display:inline-block;margin-top:50px;padding:10px 20px;border-radius:25px;background:rgba(255,255,255,0.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.6);text-decoration:none;color:#0b1f3a;font-weight:600}
+.return-main{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:25px;background:rgba(255,255,255,0.35);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.6);text-decoration:none;color:#0b1f3a;font-weight:600}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.65);display:none;align-items:center;justify-content:center;z-index:10000}
+.lightbox.active{display:flex}
+.lightbox-content{position:relative;max-width:520px;max-height:85vh;overflow:auto;padding:10px}
+.lightbox-content img{max-width:100%;max-height:85vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.4);object-fit:contain}
+.lightbox-close{position:absolute;top:-8px;right:-8px;width:34px;height:34px;background:#fff;color:#0b1f3a;border-radius:50%;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,0.3)}
+.oh-popup{display:none;position:fixed;inset:0;z-index:10001}
+.oh-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.55);backdrop-filter:blur(4px)}
+.oh-modal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:92%;max-width:560px;max-height:90vh;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
+.oh-header{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid #e5e7eb}
+.oh-header h3{margin:0;font-size:18px;color:#0b1f3a}
+.oh-close{background:none;border:none;font-size:24px;color:#666;cursor:pointer;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center}
+.oh-body{padding:24px}
+.oh-section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#0b1f3a;margin:0 0 10px 0}
+.oh-field-row{display:flex;gap:8px;margin-bottom:8px}
+.oh-field-row input,.oh-field-row textarea,.oh-field-row select{flex:1;padding:10px 12px;border:1px solid rgba(110,127,119,0.3);border-radius:6px;font-size:13px;font-family:inherit;background:rgba(255,255,255,0.8)}
+.oh-field-row input:focus,.oh-field-row textarea:focus,.oh-field-row select:focus{outline:none;border-color:#6e7f77;box-shadow:0 0 0 2px rgba(110,127,119,0.15)}
+.oh-field-row textarea{min-height:70px;resize:vertical}
+.oh-photo-upload{margin-bottom:16px}
+.oh-photo-label{display:flex;align-items:center;justify-content:center;padding:20px;border:2px dashed rgba(110,127,119,0.35);border-radius:10px;cursor:pointer;transition:0.2s;background:rgba(110,127,119,0.03)}
+.oh-photo-label:hover{border-color:#6e7f77;background:rgba(110,127,119,0.06)}
+.oh-photo-label.has-photo{border-style:solid;border-color:#6e7f77;padding:8px}
+.oh-photo-label img{max-width:100%;max-height:120px;border-radius:6px;object-fit:contain}
+.oh-photo-text{font-size:13px;color:#888;text-align:center}
+.oh-photo-text span{display:block;font-size:11px;margin-top:4px;color:#aaa}
+.oh-divider{height:1px;background:#e5e7eb;margin:20px 0}
+.oh-program-block{background:rgba(110,127,119,0.04);border:1px solid rgba(110,127,119,0.15);border-radius:10px;padding:16px;margin-bottom:12px}
+.oh-program-block .oh-program-title{font-size:12px;font-weight:700;color:#6e7f77;margin:0 0 10px 0}
+.oh-brand-options{display:flex;gap:10px;margin-bottom:20px}
+.oh-brand-opt{flex:1;padding:14px;border-radius:10px;border:2px solid #ddd;text-align:center;cursor:pointer;transition:0.2s}
+.oh-brand-opt.active{border-color:#6e7f77;background:rgba(110,127,119,0.06)}
+.oh-brand-opt .oh-opt-preview{display:flex;justify-content:center;gap:6px;margin-bottom:6px}
+.oh-brand-opt .oh-you{padding:4px 12px;background:rgba(110,127,119,0.15);border-radius:4px;font-size:9px;font-weight:700;color:#5a6b63}
+.oh-brand-opt .oh-kristy{padding:4px 12px;background:rgba(110,127,119,0.08);border-radius:4px;font-size:9px;font-weight:700;color:#6e7f77}
+.oh-brand-opt .oh-opt-label{font-size:11px;font-weight:600;color:#555}
+.oh-brand-opt.active .oh-opt-label{color:#6e7f77}
+.oh-layout-options{display:flex;gap:10px;margin-bottom:20px}
+.oh-layout-opt{flex:1;padding:12px;border-radius:10px;border:2px solid #ddd;text-align:center;cursor:pointer;transition:0.2s}
+.oh-layout-opt.active{border-color:#6e7f77;background:rgba(110,127,119,0.06)}
+.oh-layout-opt .oh-layout-preview{display:flex;justify-content:center;gap:6px;margin-bottom:4px}
+.oh-layout-opt .oh-you-sm{padding:3px 10px;background:rgba(110,127,119,0.15);border-radius:3px;font-size:8px;font-weight:700;color:#5a6b63}
+.oh-layout-opt .oh-kristy-sm{padding:3px 10px;background:rgba(110,127,119,0.08);border-radius:3px;font-size:8px;font-weight:700;color:#6e7f77}
+.oh-generate-btn{width:100%;padding:14px;border:none;border-radius:8px;background:#6e7f77;color:white;font-weight:700;font-size:15px;cursor:pointer;transition:0.2s}
+.oh-generate-btn:hover:not(:disabled){background:#5a6b63;transform:translateY(-1px);box-shadow:0 4px 16px rgba(110,127,119,0.3)}
+.oh-generate-btn:disabled{background:#999;cursor:not-allowed}
+.oh-status{text-align:center;margin-top:12px;font-size:13px;font-weight:600;min-height:20px}
+.oh-multi-photo{display:flex;gap:8px;margin-bottom:16px}
+.oh-multi-photo .oh-photo-slot{flex:1;display:flex;align-items:center;justify-content:center;padding:14px 8px;border:2px dashed rgba(110,127,119,0.35);border-radius:10px;cursor:pointer;transition:0.2s;background:rgba(110,127,119,0.03);min-height:80px}
+.oh-multi-photo .oh-photo-slot:hover{border-color:#6e7f77;background:rgba(110,127,119,0.06)}
+.oh-multi-photo .oh-photo-slot.has-photo{border-style:solid;border-color:#6e7f77;padding:4px}
+.oh-multi-photo .oh-photo-slot img{max-width:100%;max-height:80px;border-radius:6px;object-fit:contain}
+.oh-multi-photo .oh-photo-slot .oh-slot-text{font-size:10px;color:#aaa;text-align:center}
+html,body{overflow-x:hidden}
+@media(max-width:980px){body{padding-left:18px;padding-right:18px}.flyer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:16px!important}}
+@media(max-width:640px){h1{font-size:28px}h2{font-size:18px}.flyer-grid{grid-template-columns:1fr!important;gap:14px!important}.oh-field-row{flex-direction:column}.oh-multi-photo{flex-direction:column}}
 </style>
 <script src="tracking.js"></script>
 <script src="feature-gate.js"></script>
 </head>
-
 <body>
-
 <div class="page-wrap">
-  <section class="gallery-card">
-
-    <h2 class="section-title">Open House Marketing Materials</h2>
-    <p class="section-subtitle">
-      Tools to help agents promote open houses and capture buyer interest.
-    </p>
-
-    <div class="flyer-grid">
-
-      <!-- FLYER 1: Payment Comparison -->
-      <div class="flyer-card" data-name="Open House - Payment Comparison" data-type="comparison">
-        <img src="flyer-previews/preview-open-house-1.png" alt="Open House - Payment Comparison">
-        <div class="flyer-info">
-          <h3>Payment Comparison</h3>
-          <button type="button" class="generate-btn" onclick="openComingSoon('Payment Comparison')">Generate Flyer</button>
-        </div>
-      </div>
-
-      <!-- FLYER 2: Luxury Listing -->
-      <div class="flyer-card" data-name="Open House - Luxury Listing" data-type="luxury">
-        <img src="flyer-previews/preview-open-house-2.png" alt="Open House - Luxury Listing">
-        <div class="flyer-info">
-          <h3>Luxury Listing</h3>
-          <button type="button" class="generate-btn" onclick="openComingSoon('Luxury Listing')">Generate Flyer</button>
-        </div>
-      </div>
-
-      <!-- FLYER 3: 2-1 Buydown -->
-      <div class="flyer-card" data-name="Open House - 2-1 Buydown" data-type="buydown">
-        <img src="flyer-previews/preview-open-house-3.png" alt="Open House - 2-1 Buydown">
-        <div class="flyer-info">
-          <h3>2-1 Buydown</h3>
-          <button type="button" class="generate-btn" onclick="openBuydownForm()">Generate Flyer</button>
-        </div>
-      </div>
-
-    </div>
-
-    <div style="text-align:center;">
-      <a href="realtor-marketing-studio.html" class="back-btn">← Back to Marketing Collection</a>
-    </div>
-
-  </section>
+<section class="gallery-card">
+<h2 class="section-title">Open House Marketing Materials</h2>
+<p class="section-subtitle">Tools to help agents promote open houses and capture buyer interest.</p>
+<div class="flyer-grid">
+<div class="flyer-card" data-name="Open House - Payment Comparison">
+<img src="flyer-previews/preview-open-house-1.png" alt="Open House - Payment Comparison">
+<div class="flyer-info"><h3>Payment Comparison</h3>
+<button type="button" class="generate-btn" onclick="openComparisonForm()">Generate Flyer</button></div></div>
+<div class="flyer-card" data-name="Open House - Luxury Listing">
+<img src="flyer-previews/preview-open-house-2.png" alt="Open House - Luxury Listing">
+<div class="flyer-info"><h3>Luxury Listing</h3>
+<button type="button" class="generate-btn" onclick="openLuxuryForm()">Generate Flyer</button></div></div>
+<div class="flyer-card" data-name="Open House - 2-1 Buydown">
+<img src="flyer-previews/preview-open-house-3.png" alt="Open House - 2-1 Buydown">
+<div class="flyer-info"><h3>2-1 Buydown</h3>
+<button type="button" class="generate-btn" onclick="openBuydownForm()">Generate Flyer</button></div></div>
 </div>
+<div style="text-align:center;">
+<a href="realtor-marketing-studio.html" class="back-btn">&larr; Back to Marketing Collection</a></div>
+</section></div>
 
-<!-- CART ICON -->
-<div class="cart-icon" onclick="openCart()">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-  </svg>
-  <span class="cart-badge" id="cartBadge">0</span>
-</div>
+<div class="lightbox" id="lightbox"><div class="lightbox-content">
+<span class="lightbox-close" id="lightboxClose">&times;</span>
+<img id="lightboxImg" src="" alt=""></div></div>
 
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<!-- ===== PAYMENT COMPARISON POPUP ===== -->
+<div class="oh-popup" id="comparisonPopup"><div class="oh-overlay" onclick="closePopup('comparisonPopup')"></div>
+<div class="oh-modal"><div class="oh-header"><h3>Payment Comparison Flyer</h3><button class="oh-close" onclick="closePopup('comparisonPopup')">&times;</button></div>
+<div class="oh-body">
+<div class="oh-section-label">Property Information</div>
+<div class="oh-field-row"><input type="text" id="cmpAddress" placeholder="Property Address"></div>
+<div class="oh-field-row"><input type="text" id="cmpPrice" placeholder="List Price (e.g. 579000)" inputmode="numeric"><input type="text" id="cmpSqft" placeholder="Square Feet" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpBeds" placeholder="Bedrooms" inputmode="numeric"><input type="text" id="cmpBaths" placeholder="Bathrooms" inputmode="numeric"><input type="text" id="cmpYear" placeholder="Year Built" inputmode="numeric"></div>
+<div class="oh-section-label" style="margin-top:16px">Property Photo</div>
+<div class="oh-photo-upload"><label class="oh-photo-label" id="cmpPhotoLabel" for="cmpPhotoInput"><div class="oh-photo-text">Click to upload a photo<span>JPG or PNG recommended</span></div></label>
+<input type="file" id="cmpPhotoInput" accept="image/*" style="display:none" onchange="handlePhoto('cmp',this)"></div>
+<div class="oh-divider"></div>
+<div class="oh-section-label">Loan Programs</div>
+<div class="oh-program-block"><div class="oh-program-title">Program 1</div>
+<div class="oh-field-row"><select id="cmpProg1Name"><option value="">Select Program...</option><option value="Conventional 30yr Fixed">Conventional 30yr Fixed</option><option value="Conventional 15yr Fixed">Conventional 15yr Fixed</option><option value="FHA 30yr Fixed">FHA 30yr Fixed</option><option value="VA 30yr Fixed">VA 30yr Fixed</option><option value="USDA 30yr Fixed">USDA 30yr Fixed</option><option value="Jumbo 30yr Fixed">Jumbo 30yr Fixed</option><option value="ARM 5/1">ARM 5/1</option><option value="ARM 7/1">ARM 7/1</option><option value="other">Other (type below)</option></select><input type="text" id="cmpProg1Custom" placeholder="Custom program name" style="display:none"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg1Down" placeholder="Down Payment" inputmode="numeric"><input type="text" id="cmpProg1Loan" placeholder="Total Loan Amount" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg1Rate" placeholder="Interest Rate %" inputmode="decimal"><input type="text" id="cmpProg1Term" placeholder="Term (years)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg1MI" placeholder="MI (monthly)" inputmode="numeric"><input type="text" id="cmpProg1Tax" placeholder="Taxes (monthly)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg1Ins" placeholder="Insurance (monthly)" inputmode="numeric"><input type="text" id="cmpProg1HOA" placeholder="HOA Dues (annual)" inputmode="numeric"></div></div>
+<div class="oh-program-block"><div class="oh-program-title">Program 2</div>
+<div class="oh-field-row"><select id="cmpProg2Name"><option value="">Select Program...</option><option value="Conventional 30yr Fixed">Conventional 30yr Fixed</option><option value="Conventional 15yr Fixed">Conventional 15yr Fixed</option><option value="FHA 30yr Fixed">FHA 30yr Fixed</option><option value="VA 30yr Fixed">VA 30yr Fixed</option><option value="USDA 30yr Fixed">USDA 30yr Fixed</option><option value="Jumbo 30yr Fixed">Jumbo 30yr Fixed</option><option value="ARM 5/1">ARM 5/1</option><option value="ARM 7/1">ARM 7/1</option><option value="other">Other (type below)</option></select><input type="text" id="cmpProg2Custom" placeholder="Custom program name" style="display:none"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg2Down" placeholder="Down Payment" inputmode="numeric"><input type="text" id="cmpProg2Loan" placeholder="Total Loan Amount" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg2Rate" placeholder="Interest Rate %" inputmode="decimal"><input type="text" id="cmpProg2Term" placeholder="Term (years)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg2MI" placeholder="MI (monthly)" inputmode="numeric"><input type="text" id="cmpProg2Tax" placeholder="Taxes (monthly)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg2Ins" placeholder="Insurance (monthly)" inputmode="numeric"><input type="text" id="cmpProg2HOA" placeholder="HOA Dues (annual)" inputmode="numeric"></div></div>
+<div class="oh-program-block"><div class="oh-program-title">Program 3</div>
+<div class="oh-field-row"><select id="cmpProg3Name"><option value="">Select Program...</option><option value="Conventional 30yr Fixed">Conventional 30yr Fixed</option><option value="Conventional 15yr Fixed">Conventional 15yr Fixed</option><option value="FHA 30yr Fixed">FHA 30yr Fixed</option><option value="VA 30yr Fixed">VA 30yr Fixed</option><option value="USDA 30yr Fixed">USDA 30yr Fixed</option><option value="Jumbo 30yr Fixed">Jumbo 30yr Fixed</option><option value="ARM 5/1">ARM 5/1</option><option value="ARM 7/1">ARM 7/1</option><option value="other">Other (type below)</option></select><input type="text" id="cmpProg3Custom" placeholder="Custom program name" style="display:none"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg3Down" placeholder="Down Payment" inputmode="numeric"><input type="text" id="cmpProg3Loan" placeholder="Total Loan Amount" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg3Rate" placeholder="Interest Rate %" inputmode="decimal"><input type="text" id="cmpProg3Term" placeholder="Term (years)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg3MI" placeholder="MI (monthly)" inputmode="numeric"><input type="text" id="cmpProg3Tax" placeholder="Taxes (monthly)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="cmpProg3Ins" placeholder="Insurance (monthly)" inputmode="numeric"><input type="text" id="cmpProg3HOA" placeholder="HOA Dues (annual)" inputmode="numeric"></div></div>
+<div class="oh-divider"></div>
+<div class="oh-section-label">Branding Option</div>
+<div class="oh-brand-options"><label class="oh-brand-opt active" id="cmpOptCobrand" onclick="pickBrand('cmp','cobrand')"><div class="oh-opt-preview"><span class="oh-you">YOU</span><span class="oh-kristy">KRISTY</span></div><div class="oh-opt-label">Co-branded</div></label><label class="oh-brand-opt" id="cmpOptSingle" onclick="pickBrand('cmp','single')"><div class="oh-opt-preview"><span class="oh-kristy">KRISTY ONLY</span></div><div class="oh-opt-label">Kristy-branded</div></label></div>
+<div id="cmpCobrandFields">
+<div class="oh-section-label">Your Layout</div>
+<div class="oh-layout-options"><label class="oh-layout-opt active" id="cmpLayoutLeft" onclick="pickLayout('cmp','left')"><div class="oh-layout-preview"><span class="oh-you-sm">YOU</span><span class="oh-kristy-sm">KRISTY</span></div><div class="oh-opt-label">You on Left</div></label><label class="oh-layout-opt" id="cmpLayoutRight" onclick="pickLayout('cmp','right')"><div class="oh-layout-preview"><span class="oh-kristy-sm">KRISTY</span><span class="oh-you-sm">YOU</span></div><div class="oh-opt-label">You on Right</div></label></div>
+<div class="oh-section-label">Your Info</div>
+<div class="oh-field-row"><input type="text" id="cmpRName" placeholder="Your Name"><input type="text" id="cmpRTitle" placeholder="Title (e.g. Realtor)"></div>
+<div class="oh-field-row"><input type="text" id="cmpRBrokerage" placeholder="Brokerage"><input type="tel" id="cmpRPhone" placeholder="Phone"></div>
+<div class="oh-field-row"><input type="email" id="cmpREmail" placeholder="Email"><input type="text" id="cmpRWebsite" placeholder="Website"></div></div>
+<button class="oh-generate-btn" id="cmpGenBtn" onclick="generateComparisonPDF()">Generate &amp; Download PDF</button>
+<div class="oh-status" id="cmpStatus"></div></div></div></div>
 
-<div class="cart-modal" id="cartModal">
-  <div class="cart-header">
-    <h2>My Kit</h2>
-    <button class="cart-close" onclick="closeCart()">×</button>
-  </div>
-  
-  <div class="cart-body" id="cartBody">
-    <div class="cart-empty">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-      </svg>
-      <p>Your kit is empty</p>
-      <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
-    </div>
-  </div>
-  
-  <div class="cart-footer" id="cartFooter" style="display: none;">
-    <div class="cart-total">
-      <span>Total Items:</span>
-      <span id="cartTotalCount">0</span>
-    </div>
-    <button class="cart-checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
-    <button class="cart-clear-btn" onclick="clearCart()">Clear Cart</button>
-  </div>
-</div>
+<!-- ===== LUXURY LISTING POPUP ===== -->
+<div class="oh-popup" id="luxuryPopup"><div class="oh-overlay" onclick="closePopup('luxuryPopup')"></div>
+<div class="oh-modal"><div class="oh-header"><h3>Luxury Listing Flyer</h3><button class="oh-close" onclick="closePopup('luxuryPopup')">&times;</button></div>
+<div class="oh-body">
+<div class="oh-section-label">Property Information</div>
+<div class="oh-field-row"><input type="text" id="luxAddress" placeholder="Property Address"></div>
+<div class="oh-field-row"><input type="text" id="luxPrice" placeholder="List Price (e.g. 400000)" inputmode="numeric"><input type="text" id="luxSqft" placeholder="Square Feet" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="luxBeds" placeholder="Bedrooms" inputmode="numeric"><input type="text" id="luxBaths" placeholder="Bathrooms" inputmode="numeric"><input type="text" id="luxYear" placeholder="Year Built" inputmode="numeric"></div>
+<div class="oh-section-label" style="margin-top:16px">Property Photos (3)</div>
+<div class="oh-multi-photo">
+<label class="oh-photo-slot" id="luxPhoto1Label" for="luxPhoto1Input"><div class="oh-slot-text">Hero Photo</div></label>
+<input type="file" id="luxPhoto1Input" accept="image/*" style="display:none" onchange="handleMultiPhoto('lux',1,this)">
+<label class="oh-photo-slot" id="luxPhoto2Label" for="luxPhoto2Input"><div class="oh-slot-text">Side Photo 1</div></label>
+<input type="file" id="luxPhoto2Input" accept="image/*" style="display:none" onchange="handleMultiPhoto('lux',2,this)">
+<label class="oh-photo-slot" id="luxPhoto3Label" for="luxPhoto3Input"><div class="oh-slot-text">Side Photo 2</div></label>
+<input type="file" id="luxPhoto3Input" accept="image/*" style="display:none" onchange="handleMultiPhoto('lux',3,this)"></div>
+<div class="oh-divider"></div>
+<div class="oh-section-label">Loan Program</div>
+<div class="oh-program-block">
+<div class="oh-field-row"><select id="luxProgName"><option value="">Select Program...</option><option value="Conventional 30yr Fixed">Conventional 30yr Fixed</option><option value="Conventional 15yr Fixed">Conventional 15yr Fixed</option><option value="FHA 30yr Fixed">FHA 30yr Fixed</option><option value="VA 30yr Fixed">VA 30yr Fixed</option><option value="USDA 30yr Fixed">USDA 30yr Fixed</option><option value="Jumbo 30yr Fixed">Jumbo 30yr Fixed</option><option value="ARM 5/1">ARM 5/1</option><option value="ARM 7/1">ARM 7/1</option><option value="other">Other (type below)</option></select><input type="text" id="luxProgCustom" placeholder="Custom program name" style="display:none"></div>
+<div class="oh-field-row"><input type="text" id="luxProgDown" placeholder="Down Payment" inputmode="numeric"><input type="text" id="luxProgLoan" placeholder="Total Loan Amount" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="luxProgRate" placeholder="Interest Rate %" inputmode="decimal"><input type="text" id="luxProgTerm" placeholder="Term (years)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="luxProgMI" placeholder="MI (monthly)" inputmode="numeric"><input type="text" id="luxProgTax" placeholder="Taxes (monthly)" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="luxProgIns" placeholder="Insurance (monthly)" inputmode="numeric"><input type="text" id="luxProgHOA" placeholder="HOA Dues (annual)" inputmode="numeric"></div></div>
+<div class="oh-divider"></div>
+<div class="oh-section-label">Branding Option</div>
+<div class="oh-brand-options"><label class="oh-brand-opt active" id="luxOptCobrand" onclick="pickBrand('lux','cobrand')"><div class="oh-opt-preview"><span class="oh-you">YOU</span><span class="oh-kristy">KRISTY</span></div><div class="oh-opt-label">Co-branded</div></label><label class="oh-brand-opt" id="luxOptSingle" onclick="pickBrand('lux','single')"><div class="oh-opt-preview"><span class="oh-kristy">KRISTY ONLY</span></div><div class="oh-opt-label">Kristy-branded</div></label></div>
+<div id="luxCobrandFields">
+<div class="oh-section-label">Your Layout</div>
+<div class="oh-layout-options"><label class="oh-layout-opt active" id="luxLayoutLeft" onclick="pickLayout('lux','left')"><div class="oh-layout-preview"><span class="oh-you-sm">YOU</span><span class="oh-kristy-sm">KRISTY</span></div><div class="oh-opt-label">You on Left</div></label><label class="oh-layout-opt" id="luxLayoutRight" onclick="pickLayout('lux','right')"><div class="oh-layout-preview"><span class="oh-kristy-sm">KRISTY</span><span class="oh-you-sm">YOU</span></div><div class="oh-opt-label">You on Right</div></label></div>
+<div class="oh-section-label">Your Info</div>
+<div class="oh-field-row"><input type="text" id="luxRName" placeholder="Your Name"><input type="text" id="luxRTitle" placeholder="Title (e.g. Realtor)"></div>
+<div class="oh-field-row"><input type="text" id="luxRBrokerage" placeholder="Brokerage"><input type="tel" id="luxRPhone" placeholder="Phone"></div>
+<div class="oh-field-row"><input type="email" id="luxREmail" placeholder="Email"><input type="text" id="luxRWebsite" placeholder="Website"></div></div>
+<button class="oh-generate-btn" id="luxGenBtn" onclick="generateLuxuryPDF()">Generate &amp; Download PDF</button>
+<div class="oh-status" id="luxStatus"></div></div></div></div>
 
-<!-- LIGHTBOX -->
-<div class="lightbox" id="lightbox">
-  <div class="lightbox-content">
-    <span class="lightbox-close" id="lightboxClose">×</span>
-    <img id="lightboxImg" src="" alt="">
-  </div>
-</div>
-
-<!-- COMING SOON POPUP (for Payment Comparison & Luxury Listing) -->
-<div id="comingSoonPopup">
-  <div class="cs-overlay" onclick="closeComingSoon()"></div>
-  <div class="cs-modal">
-    <h3 id="csTitle">Coming Soon</h3>
-    <p>This flyer generator is currently being built and will be available soon.</p>
-    <button class="cs-close-btn" onclick="closeComingSoon()">Got It</button>
-  </div>
-</div>
-
-<!-- 2-1 BUYDOWN POPUP -->
-<div id="buydownPopup">
-  <div class="bd-overlay" onclick="closeBuydownForm()"></div>
-  <div class="bd-modal">
-    <div class="bd-header">
-      <h3>2-1 Buydown Flyer</h3>
-      <button class="bd-close" onclick="closeBuydownForm()">&times;</button>
-    </div>
-    <div class="bd-body">
-
-      <!-- PROPERTY INFO -->
-      <div class="bd-section-label">Property Information</div>
-      <div class="bd-field-row">
-        <input type="text" id="bdAddress" placeholder="Property Address">
-      </div>
-      <div class="bd-field-row">
-        <input type="text" id="bdPrice" placeholder="List Price (e.g. 450000)" inputmode="numeric">
-        <input type="text" id="bdSqft" placeholder="Square Feet" inputmode="numeric">
-      </div>
-      <div class="bd-field-row">
-        <input type="text" id="bdBeds" placeholder="Bedrooms" inputmode="numeric">
-        <input type="text" id="bdBaths" placeholder="Bathrooms" inputmode="numeric">
-        <input type="text" id="bdYear" placeholder="Year Built" inputmode="numeric">
-      </div>
-
-      <div class="bd-section-label" style="margin-top:16px;">Property Description</div>
-      <div class="bd-field-row">
-        <textarea id="bdDescription" placeholder="Enter property description for the flyer..."></textarea>
-      </div>
-
-      <div class="bd-section-label" style="margin-top:16px;">Property Photo</div>
-      <div class="bd-photo-upload">
-        <label class="bd-photo-label" id="bdPhotoLabel" for="bdPhotoInput">
-          <div class="bd-photo-text">Click to upload a photo<span>JPG or PNG recommended</span></div>
-        </label>
-        <input type="file" id="bdPhotoInput" accept="image/*" style="display:none;" onchange="handleBuydownPhoto(this)">
-      </div>
-
-      <div class="bd-divider"></div>
-
-      <!-- CO-BRANDING -->
-      <div class="bd-section-label">Branding Option</div>
-      <div class="bd-brand-options">
-        <label class="bd-brand-opt active" id="bdOptCobrand" onclick="bdPickBrand('cobrand')">
-          <div class="bd-opt-preview"><span class="bd-you">YOU</span><span class="bd-kristy">KRISTY</span></div>
-          <div class="bd-opt-label">Co-branded</div>
-        </label>
-        <label class="bd-brand-opt" id="bdOptSingle" onclick="bdPickBrand('single')">
-          <div class="bd-opt-preview"><span class="bd-kristy">KRISTY ONLY</span></div>
-          <div class="bd-opt-label">Kristy-branded</div>
-        </label>
-      </div>
-
-      <div id="bdCobrandFields" class="bd-cobrand-fields">
-        <div class="bd-section-label">Your Layout</div>
-        <div class="bd-layout-options">
-          <label class="bd-layout-opt active" id="bdLayoutLeft" onclick="bdPickLayout('left')">
-            <div class="bd-layout-preview"><span class="bd-you-sm">YOU</span><span class="bd-kristy-sm">KRISTY</span></div>
-            <div class="bd-opt-label">You on Left</div>
-          </label>
-          <label class="bd-layout-opt" id="bdLayoutRight" onclick="bdPickLayout('right')">
-            <div class="bd-layout-preview"><span class="bd-kristy-sm">KRISTY</span><span class="bd-you-sm">YOU</span></div>
-            <div class="bd-opt-label">You on Right</div>
-          </label>
-        </div>
-
-        <div class="bd-section-label">Your Info</div>
-        <div class="bd-field-row">
-          <input type="text" id="bdRName" placeholder="Your Name">
-          <input type="text" id="bdRTitle" placeholder="Title (e.g. Realtor)">
-        </div>
-        <div class="bd-field-row">
-          <input type="text" id="bdRBrokerage" placeholder="Brokerage">
-          <input type="tel" id="bdRPhone" placeholder="Phone">
-        </div>
-        <div class="bd-field-row">
-          <input type="email" id="bdREmail" placeholder="Email">
-          <input type="text" id="bdRWebsite" placeholder="Website">
-        </div>
-      </div>
-
-      <button class="bd-generate-btn" id="bdGenBtn" onclick="generateBuydownPDF()">Generate & Download PDF</button>
-      <div class="bd-status" id="bdStatus"></div>
-
-    </div>
-  </div>
-</div>
+<!-- ===== 2-1 BUYDOWN POPUP ===== -->
+<div class="oh-popup" id="buydownPopup"><div class="oh-overlay" onclick="closePopup('buydownPopup')"></div>
+<div class="oh-modal"><div class="oh-header"><h3>2-1 Buydown Flyer</h3><button class="oh-close" onclick="closePopup('buydownPopup')">&times;</button></div>
+<div class="oh-body">
+<div class="oh-section-label">Property Information</div>
+<div class="oh-field-row"><input type="text" id="bdAddress" placeholder="Property Address"></div>
+<div class="oh-field-row"><input type="text" id="bdPrice" placeholder="List Price (e.g. 450000)" inputmode="numeric"><input type="text" id="bdSqft" placeholder="Square Feet" inputmode="numeric"></div>
+<div class="oh-field-row"><input type="text" id="bdBeds" placeholder="Bedrooms" inputmode="numeric"><input type="text" id="bdBaths" placeholder="Bathrooms" inputmode="numeric"><input type="text" id="bdYear" placeholder="Year Built" inputmode="numeric"></div>
+<div class="oh-section-label" style="margin-top:16px">Property Description</div>
+<div class="oh-field-row"><textarea id="bdDescription" placeholder="Enter property description for the flyer..."></textarea></div>
+<div class="oh-section-label" style="margin-top:16px">Property Photo</div>
+<div class="oh-photo-upload"><label class="oh-photo-label" id="bdPhotoLabel" for="bdPhotoInput"><div class="oh-photo-text">Click to upload a photo<span>JPG or PNG recommended</span></div></label>
+<input type="file" id="bdPhotoInput" accept="image/*" style="display:none" onchange="handlePhoto('bd',this)"></div>
+<div class="oh-divider"></div>
+<div class="oh-section-label">Branding Option</div>
+<div class="oh-brand-options"><label class="oh-brand-opt active" id="bdOptCobrand" onclick="pickBrand('bd','cobrand')"><div class="oh-opt-preview"><span class="oh-you">YOU</span><span class="oh-kristy">KRISTY</span></div><div class="oh-opt-label">Co-branded</div></label><label class="oh-brand-opt" id="bdOptSingle" onclick="pickBrand('bd','single')"><div class="oh-opt-preview"><span class="oh-kristy">KRISTY ONLY</span></div><div class="oh-opt-label">Kristy-branded</div></label></div>
+<div id="bdCobrandFields">
+<div class="oh-section-label">Your Layout</div>
+<div class="oh-layout-options"><label class="oh-layout-opt active" id="bdLayoutLeft" onclick="pickLayout('bd','left')"><div class="oh-layout-preview"><span class="oh-you-sm">YOU</span><span class="oh-kristy-sm">KRISTY</span></div><div class="oh-opt-label">You on Left</div></label><label class="oh-layout-opt" id="bdLayoutRight" onclick="pickLayout('bd','right')"><div class="oh-layout-preview"><span class="oh-kristy-sm">KRISTY</span><span class="oh-you-sm">YOU</span></div><div class="oh-opt-label">You on Right</div></label></div>
+<div class="oh-section-label">Your Info</div>
+<div class="oh-field-row"><input type="text" id="bdRName" placeholder="Your Name"><input type="text" id="bdRTitle" placeholder="Title (e.g. Realtor)"></div>
+<div class="oh-field-row"><input type="text" id="bdRBrokerage" placeholder="Brokerage"><input type="tel" id="bdRPhone" placeholder="Phone"></div>
+<div class="oh-field-row"><input type="email" id="bdREmail" placeholder="Email"><input type="text" id="bdRWebsite" placeholder="Website"></div></div>
+<button class="oh-generate-btn" id="bdGenBtn" onclick="generateBuydownPDF()">Generate &amp; Download PDF</button>
+<div class="oh-status" id="bdStatus"></div></div></div></div>
 
 <a href="index.html" class="return-main">Return to Main Website</a>
 
+<script src="open-house-generators.js"></script>
 <script>
-/* ===========================
-   KRISTY'S INFO (shared)
-=========================== */
-var KRISTY_INFO = {
-  name: 'Kristy Flach',
-  title: 'Certified Mortgage Advisor\n& Loan Officer',
-  nmls: 'NMLS ID# 2632259',
-  phone: 'M: (206) 313-5883',
-  email: 'kflach@prmg.net',
-  web1: 'kflach.myprmg.net',
-  web2: 'kristyflach.com'
-};
-
-var PRMG_DISCLAIMER = '\u00A92025 Paramount Residential Mortgage Group, Inc. (\u201CPRMG\u201D) is a mortgage lender. NMLS ID# 75243 (www.nmlsconsumeraccess.org). 1265 Corona Pointe Court, Suite 301, Corona, CA 92879. 866-776-4937. AZ Mortgage Banker License #910387. Licensed by the Department of Financial Protection and Innovation under the California Residential Mortgage Lending Act. Massachusetts Lender/Broker Licenses #MC75243. Licensed by the N.J. Department of Banking and Insurance. OH #RM.804171.000. Rhode Island Licensed Lender. Equal Housing Opportunity.';
-
-var BUYDOWN_DISCLAIMER = 'For illustrative purposes only. This is not an offer to lend, a loan commitment, or a guarantee of rates or terms. Example assumes a 2-1 temporary buydown on a 30-year conventional mortgage with 20% down at an assumed note rate of 6.0% (Year 1: 4.0%, Year 2: 5.0%, Years 3\u201330: 6.0%). Not all loan programs allow buydowns. Actual rates, terms, and payments may vary based on creditworthiness, loan program, and market conditions. Taxes, insurance, and MI not included. Contact your loan officer for a personalized quote.';
-
-/* ===========================
-   CART FUNCTIONS (unchanged)
-=========================== */
-function openCart() {
-  document.getElementById('cartOverlay').classList.add('active');
-  document.getElementById('cartModal').classList.add('active');
-  renderCart();
-}
-
-function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('active');
-  document.getElementById('cartModal').classList.remove('active');
-}
-
-function renderCart() {
-  var body = document.getElementById('cartBody');
-  var footer = document.getElementById('cartFooter');
-  var totalCount = document.getElementById('cartTotalCount');
-  
-  var summary = universalCart.getSummary();
-  var count = universalCart.getTotalCount();
-  
-  if (count === 0) {
-    body.innerHTML = '<div class="cart-empty"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg><p>Your kit is empty</p><p style="font-size:14px;margin-top:8px;">Browse collections to add materials</p></div>';
-    footer.style.display = 'none';
-    return;
-  }
-  
-  var html = '';
-  summary.forEach(function(section) {
-    html += '<div class="cart-section"><div class="cart-section-title">' + section.collection + '</div>';
-    section.items.forEach(function(item) {
-      if (item.type === 'flyer') {
-        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div></div><button class="cart-item-remove" onclick="removeMarketingItem(\'' + item.name + '\')">×</button></div>';
-      } else if (item.type === 'report') {
-        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div><div class="cart-item-meta">' + item.count + (item.count === 1 ? ' property' : ' properties') + '</div></div></div>';
-      } else if (item.type === 'website') {
-        html += '<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">' + item.name + '</div>' + (item.mls ? '<div class="cart-item-meta">MLS: ' + item.mls + '</div>' : '') + '</div></div>';
-      }
-    });
-    html += '</div>';
-  });
-  
-  body.innerHTML = html;
-  footer.style.display = 'block';
-  totalCount.textContent = count;
-}
-
-function removeMarketingItem(name) {
-  universalCart.removeMarketingItem(name);
-  renderCart();
-}
-
-function clearCart() {
-  if (confirm('Are you sure you want to clear your entire cart?')) {
-    universalCart.clear();
-    renderCart();
-  }
-}
-
-function proceedToCheckout() {
-  sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
-  window.location.href = 'checkout.html';
-}
-
-/* ===========================
-   COMING SOON POPUP
-=========================== */
-function openComingSoon(name) {
-  document.getElementById('csTitle').textContent = name + ' — Coming Soon';
-  document.getElementById('comingSoonPopup').style.display = 'block';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeComingSoon() {
-  document.getElementById('comingSoonPopup').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-/* ===========================
-   2-1 BUYDOWN FORM
-=========================== */
-var _bdPhotoData = null;
-
-function openBuydownForm() {
-  // Pre-fill realtor info from session
-  var fields = {
-    bdRName: 'agentEdgeUserName',
-    bdRTitle: 'agentEdgeUserTitle',
-    bdRBrokerage: 'agentEdgeUserBrokerage',
-    bdRPhone: 'agentEdgeUserPhone',
-    bdREmail: 'agentEdgeUserEmail',
-    bdRWebsite: 'agentEdgeUserWebsite'
-  };
-  for (var id in fields) {
-    var el = document.getElementById(id);
-    if (el) el.value = sessionStorage.getItem(fields[id]) || '';
-  }
-
-  document.getElementById('buydownPopup').style.display = 'block';
-  document.body.style.overflow = 'hidden';
-}
-
-function closeBuydownForm() {
-  document.getElementById('buydownPopup').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function bdPickBrand(mode) {
-  document.getElementById('bdOptCobrand').classList.toggle('active', mode === 'cobrand');
-  document.getElementById('bdOptSingle').classList.toggle('active', mode === 'single');
-  document.getElementById('bdCobrandFields').style.display = mode === 'cobrand' ? 'block' : 'none';
-}
-
-function bdPickLayout(side) {
-  document.getElementById('bdLayoutLeft').classList.toggle('active', side === 'left');
-  document.getElementById('bdLayoutRight').classList.toggle('active', side === 'right');
-}
-
-function handleBuydownPhoto(input) {
-  if (input.files && input.files[0]) {
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      _bdPhotoData = e.target.result;
-      var label = document.getElementById('bdPhotoLabel');
-      label.innerHTML = '<img src="' + _bdPhotoData + '" alt="Property Photo">';
-      label.classList.add('has-photo');
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-}
-
-/* ===========================
-   BUYDOWN CALCULATOR
-=========================== */
-function calcMonthlyPI(principal, annualRate, termYears) {
-  var r = annualRate / 100 / 12;
-  var n = termYears * 12;
-  if (r === 0) return principal / n;
-  return principal * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
-}
-
-function formatCurrency(num) {
-  return '$' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
-function formatCurrencyWhole(num) {
-  return '$' + Math.round(num).toLocaleString();
-}
-
-/* ===========================
-   PDF GENERATION — 2-1 BUYDOWN
-=========================== */
-async function generateBuydownPDF() {
-  var btn = document.getElementById('bdGenBtn');
-  var status = document.getElementById('bdStatus');
-  btn.disabled = true;
-  btn.textContent = 'Generating...';
-  status.textContent = '';
-
-  try {
-    // Gather inputs
-    var address = document.getElementById('bdAddress').value.trim();
-    var price = parseFloat(document.getElementById('bdPrice').value.replace(/[^0-9.]/g, ''));
-    var sqft = document.getElementById('bdSqft').value.trim();
-    var beds = document.getElementById('bdBeds').value.trim();
-    var baths = document.getElementById('bdBaths').value.trim();
-    var yearBuilt = document.getElementById('bdYear').value.trim();
-    var description = document.getElementById('bdDescription').value.trim();
-
-    // Validate required fields
-    if (!address) { throw new Error('Please enter a property address.'); }
-    if (!price || isNaN(price)) { throw new Error('Please enter a valid list price.'); }
-    if (!_bdPhotoData) { throw new Error('Please upload a property photo.'); }
-
-    // Calculate buydown numbers
-    var noteRate = 6.0;
-    var downPct = 0.20;
-    var downAmt = price * downPct;
-    var loanAmt = price - downAmt;
-    var termYears = 30;
-
-    var rate1 = noteRate - 2; // 4.0%
-    var rate2 = noteRate - 1; // 5.0%
-    var rate3 = noteRate;     // 6.0%
-
-    var pi1 = calcMonthlyPI(loanAmt, rate1, termYears);
-    var pi2 = calcMonthlyPI(loanAmt, rate2, termYears);
-    var pi3 = calcMonthlyPI(loanAmt, rate3, termYears);
-
-    var savings1 = pi3 - pi1; // monthly savings year 1
-    var savings2 = pi3 - pi2; // monthly savings year 2
-
-    // Co-brand info
-    var isCobrand = document.getElementById('bdOptCobrand').classList.contains('active');
-    var isLeft = document.getElementById('bdLayoutLeft').classList.contains('active');
-
-    var rInfo = null;
-    if (isCobrand) {
-      rInfo = {
-        name: document.getElementById('bdRName').value.trim() || 'Your Name',
-        title: document.getElementById('bdRTitle').value.trim(),
-        brokerage: document.getElementById('bdRBrokerage').value.trim(),
-        phone: document.getElementById('bdRPhone').value.trim(),
-        email: document.getElementById('bdREmail').value.trim(),
-        website: document.getElementById('bdRWebsite').value.trim()
-      };
-      // Save to session
-      if (rInfo.name !== 'Your Name') sessionStorage.setItem('agentEdgeUserName', rInfo.name);
-      if (rInfo.title) sessionStorage.setItem('agentEdgeUserTitle', rInfo.title);
-      if (rInfo.brokerage) sessionStorage.setItem('agentEdgeUserBrokerage', rInfo.brokerage);
-      if (rInfo.phone) sessionStorage.setItem('agentEdgeUserPhone', rInfo.phone);
-      if (rInfo.email) sessionStorage.setItem('agentEdgeUserEmail', rInfo.email);
-      if (rInfo.website) sessionStorage.setItem('agentEdgeUserWebsite', rInfo.website);
-    }
-
-    // Load images
-    var headshotImg = await loadImage('hero-headshot.jpg');
-    var prmgImg = await loadImage('PRMG-Logo.png');
-    var ehImg = await loadImage('equal-housing-logo.png');
-
-    // Create PDF (letter size: 612 x 792 points)
-    var pdf = new jspdf.jsPDF({ orientation: 'portrait', unit: 'pt', format: 'letter' });
-    var W = 612;
-    var H = 792;
-
-    // ===== LAYOUT ZONES =====
-    var BRANDING_H = 120;
-    var DISCLAIMER_H = 52;
-    var CONTENT_H = H - BRANDING_H - DISCLAIMER_H;
-
-    // White background
-    pdf.setFillColor(255, 255, 255);
-    pdf.rect(0, 0, W, H, 'F');
-
-    // ===== TOP HEADER BAR (dark navy) =====
-    var headerH = 36;
-    pdf.setFillColor(0, 37, 86); // #002556
-    pdf.rect(0, 0, W, headerH, 'F');
-
-    // Price in header
-    pdf.setFontSize(18);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(255, 255, 255);
-    pdf.text(formatCurrencyWhole(price), 20, 25);
-
-    // Address in header
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(address.toUpperCase(), W / 2, 25, { align: 'center' });
-
-    // ===== TWO-COLUMN LAYOUT =====
-    var colLeft = 20;
-    var colMid = W * 0.55;
-    var colRight = W - 20;
-    var topY = headerH + 10;
-
-    // LEFT COLUMN: Property photo
-    var photoW = colMid - colLeft - 15;
-    var photoH = 210;
-    
-    // Draw photo
-    pdf.addImage(_bdPhotoData, 'JPEG', colLeft, topY, photoW, photoH);
-
-    // RIGHT COLUMN: Property description + details
-    var rX = colMid;
-    var rW = colRight - colMid;
-    var rY = topY + 5;
-
-    // Property details box
-    pdf.setFontSize(9);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(0, 37, 86);
-
-    if (sqft) {
-      pdf.text('SQ Feet: ' + Number(sqft).toLocaleString(), rX, rY);
-      rY += 14;
-    }
-    if (beds) {
-      pdf.text('Bedrooms: ' + beds, rX, rY);
-      rY += 14;
-    }
-    if (baths) {
-      pdf.text('Bath: ' + baths, rX, rY);
-      rY += 14;
-    }
-    if (yearBuilt) {
-      pdf.text('Year Built: ' + yearBuilt, rX, rY);
-      rY += 14;
-    }
-
-    // Divider line
-    rY += 4;
-    pdf.setDrawColor(0, 37, 86);
-    pdf.setLineWidth(1.5);
-    pdf.line(rX, rY, rX + rW, rY);
-    rY += 14;
-
-    // Property Description header
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(0, 37, 86);
-    pdf.text('Property Description:', rX, rY);
-    rY += 14;
-
-    // Description text
-    if (description) {
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(51, 51, 51);
-      var descLines = pdf.splitTextToSize(description, rW);
-      descLines.forEach(function(line) {
-        if (rY < topY + photoH) {
-          pdf.text(line, rX, rY);
-          rY += 11;
-        }
-      });
-    }
-
-    // ===== HOW A 2-1 BUYDOWN WORKS SECTION =====
-    var sectionY = topY + photoH + 18;
-
-    // Section divider
-    pdf.setDrawColor(0, 37, 86);
-    pdf.setLineWidth(2);
-    pdf.line(colLeft, sectionY, colLeft + 80, sectionY);
-    sectionY += 14;
-
-    pdf.setFontSize(11);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(0, 37, 86);
-    pdf.text('How a 2-1 Buy down works:', colLeft, sectionY);
-    sectionY += 16;
-
-    // Bullet points
-    var bullets = [
-      'Buy down option must be paid by builder, seller or third-party',
-      'Borrower cannot pay for buy down',
-      'Home buyer\u2019s interest rate is lowered by 2% in year 1 and 1% in year 2',
-      'After two years, original interest rate continues for the life of the loan'
-    ];
-
-    pdf.setFontSize(8);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(51, 51, 51);
-    bullets.forEach(function(b) {
-      pdf.text('\u2022  ' + b, colLeft + 8, sectionY);
-      sectionY += 13;
-    });
-
-    // ===== BUYDOWN SCENARIO TABLE =====
-    sectionY += 10;
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'bold');
-    pdf.setTextColor(0, 37, 86);
-    pdf.text('2-1 Buy Down Scenario Example:', colLeft, sectionY);
-    sectionY += 18;
-
-    // Three columns for Year 1, Year 2, Year 3-30
-    var col1X = colLeft + 20;
-    var col2X = W / 3 + 20;
-    var col3X = (W / 3) * 2 + 20;
-    var colW = (W - 60) / 3;
-
-    // Estimated Payment headers
-    var years = [
-      { label: '2-1 Buy down | Year 1', rate: rate1, pi: pi1, savings: savings1 },
-      { label: '2-1 Buy down | Year 2', rate: rate2, pi: pi2, savings: savings2 },
-      { label: '2-1 Buy down | Year 3-30', rate: rate3, pi: pi3, savings: 0 }
-    ];
-
-    var colXs = [col1X, col2X, col3X];
-
-    years.forEach(function(yr, i) {
-      var cx = colXs[i];
-      
-      // Big payment amount
-      pdf.setFontSize(16);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(0, 37, 86);
-      if (i === 2) pdf.setTextColor(192, 57, 43); // red for year 3-30 (full rate)
-      var amountStr = formatCurrency(yr.pi);
-      pdf.text(amountStr, cx, sectionY);
-
-      // "Estimated Payment" label — anchored right after dollar amount
-      var amountWidth = pdf.getTextWidth(amountStr);
-      pdf.setFontSize(6);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(102, 102, 102);
-      pdf.text('Estimated', cx + amountWidth + 4, sectionY - 8);
-      pdf.text('Payment', cx + amountWidth + 4, sectionY);
-    });
-
-    sectionY += 14;
-
-    // Year labels
-    years.forEach(function(yr, i) {
-      pdf.setFontSize(7);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(0, 37, 86);
-      pdf.text(yr.label, colXs[i], sectionY);
-    });
-
-    sectionY += 16;
-
-    // Detail rows
-    var detailRows = [
-      { label: 'Loan Amount:', vals: [formatCurrencyWhole(loanAmt), formatCurrencyWhole(loanAmt), formatCurrencyWhole(loanAmt)] },
-      { label: 'Interest Rate:', vals: [rate1.toFixed(3) + '%', rate2.toFixed(3) + '%', rate3.toFixed(3) + '%'] },
-      { label: 'Principal & Interest:', vals: [formatCurrency(pi1), formatCurrency(pi2), formatCurrency(pi3)] },
-      { label: 'Monthly Savings:', vals: [formatCurrency(savings1), formatCurrency(savings2), '$0.00'] }
-    ];
-
-    detailRows.forEach(function(row) {
-      pdf.setFontSize(7);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(68, 68, 68);
-
-      years.forEach(function(yr, i) {
-        pdf.text(row.label, colXs[i], sectionY);
-        pdf.setFont('helvetica', 'normal');
-        pdf.text(row.vals[i], colXs[i] + 2, sectionY + 10);
-        pdf.setFont('helvetica', 'bold');
-      });
-      sectionY += 22;
-    });
-
-    // ===== BUYDOWN DISCLAIMER =====
-    sectionY += 12;
-    pdf.setFontSize(8);
-    pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(68, 68, 68);
-    var bdDiscLines = pdf.splitTextToSize(BUYDOWN_DISCLAIMER, W - 40);
-    bdDiscLines.forEach(function(line) {
-      pdf.text(line, colLeft, sectionY);
-      sectionY += 11;
-    });
-
-    // ===== CO-BRANDING FOOTER =====
-    var brandY = H - BRANDING_H - DISCLAIMER_H;
-    pdf.setFillColor(255, 255, 255);
-    pdf.rect(0, brandY, W, BRANDING_H, 'F');
-
-    // Thin separator line
-    pdf.setDrawColor(220, 220, 220);
-    pdf.setLineWidth(0.5);
-    pdf.line(20, brandY, W - 20, brandY);
-
-    var sectionTop = brandY + 12;
-
-    if (isCobrand && rInfo) {
-      if (isLeft) {
-        drawRealtorBlock(pdf, rInfo, 36, sectionTop);
-        drawKristyBlock(pdf, headshotImg, W - 36 - 200, sectionTop);
-      } else {
-        drawKristyBlock(pdf, headshotImg, 36, sectionTop);
-        drawRealtorBlock(pdf, rInfo, W - 36 - 200, sectionTop);
-      }
-      // PRMG logo bottom center
-      var prmgW = 90;
-      var prmgH = prmgW * (3529 / 9000);
-      pdf.addImage(prmgImg, 'PNG', (W - prmgW) / 2, brandY + BRANDING_H - 38, prmgW, prmgH);
-      pdf.setFontSize(5.5);
-      pdf.setTextColor(51, 51, 51);
-      pdf.text('Paramount Residential Mortgage Group, Inc.', W / 2, brandY + BRANDING_H - 6, { align: 'center' });
-    } else {
-      drawKristyBlock(pdf, headshotImg, 36, sectionTop);
-      var prmgW2 = 150;
-      var prmgH2 = prmgW2 * (3529 / 9000);
-      pdf.addImage(prmgImg, 'PNG', W - 48 - prmgW2, sectionTop - 5, prmgW2, prmgH2);
-      pdf.setFontSize(8);
-      pdf.setTextColor(51, 51, 51);
-      pdf.text('Paramount Residential Mortgage Group, Inc.', W - 48, sectionTop + prmgH2 + 5, { align: 'right' });
-    }
-
-    // ===== DISCLAIMER BAR =====
-    var disclaimerY = H - DISCLAIMER_H;
-    pdf.setFillColor(26, 26, 26);
-    pdf.rect(0, disclaimerY, W, DISCLAIMER_H, 'F');
-
-    // Equal Housing logo
-    var ehW = 28 * (270 / 148);
-    pdf.addImage(ehImg, 'PNG', 14, disclaimerY + (DISCLAIMER_H - 28) / 2, ehW, 28);
-
-    // PRMG disclaimer text
-    pdf.setFontSize(4.5);
-    pdf.setTextColor(187, 187, 187);
-    var txtLeft = 14 + ehW + 10;
-    var txtWidth = W - txtLeft - 14;
-    var lines = pdf.splitTextToSize(PRMG_DISCLAIMER, txtWidth);
-    var dStartY = disclaimerY + (DISCLAIMER_H - lines.length * 6.5) / 2 + 5;
-    lines.forEach(function(line, i) {
-      pdf.text(line, txtLeft, dStartY + i * 6.5);
-    });
-
-    // Download
-    var filename = 'buydown-' + address.replace(/[^a-zA-Z0-9]/g, '-').toLowerCase().substring(0, 40) + '.pdf';
-    pdf.save(filename);
-
-    status.textContent = 'PDF downloaded!';
-    status.style.color = '#22c55e';
-    btn.textContent = 'Generate & Download PDF';
-    btn.disabled = false;
-    setTimeout(closeBuydownForm, 1500);
-
-  } catch (err) {
-    console.error('PDF generation error:', err);
-    status.textContent = err.message || 'Error generating PDF. Please try again.';
-    status.style.color = '#ef4444';
-    btn.textContent = 'Generate & Download PDF';
-    btn.disabled = false;
-  }
-}
-
-/* ===========================
-   SHARED PDF HELPERS
-=========================== */
-function drawKristyBlock(pdf, headshotImg, x, top) {
-  var hsW = 58, hsH = 70;
-  pdf.addImage(headshotImg, 'JPEG', x, top, hsW, hsH);
-  pdf.setDrawColor(204, 204, 204);
-  pdf.setLineWidth(0.5);
-  pdf.rect(x, top, hsW, hsH);
-
-  var tx = x + hsW + 8;
-  var ly = top + 9;
-
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(26, 26, 26);
-  pdf.text(KRISTY_INFO.name, tx, ly); ly += 11;
-
-  pdf.setFontSize(6.5);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(68, 68, 68);
-  pdf.text('Certified Mortgage Advisor', tx, ly); ly += 9;
-  pdf.text('& Loan Officer', tx, ly); ly += 9;
-  pdf.text(KRISTY_INFO.nmls, tx, ly); ly += 11;
-
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(37, 99, 160);
-  pdf.text(KRISTY_INFO.phone, tx, ly); ly += 9;
-  pdf.setFont('helvetica', 'normal');
-  pdf.text(KRISTY_INFO.email, tx, ly); ly += 9;
-  pdf.text(KRISTY_INFO.web1, tx, ly);
-}
-
-function drawRealtorBlock(pdf, info, x, top) {
-  var hsW = 58, hsH = 70;
-  pdf.setFillColor(240, 243, 247);
-  pdf.setDrawColor(170, 187, 204);
-  pdf.setLineWidth(1);
-  pdf.rect(x, top, hsW, hsH, 'FD');
-
-  var initials = info.name.split(' ').map(function(w) { return w[0] || ''; }).join('').toUpperCase().substring(0, 2);
-  pdf.setFontSize(16);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(136, 153, 170);
-  pdf.text(initials, x + hsW / 2, top + hsH / 2 + 6, { align: 'center' });
-
-  var tx = x + hsW + 8;
-  var ly = top + 9;
-
-  pdf.setFontSize(9);
-  pdf.setFont('helvetica', 'bold');
-  pdf.setTextColor(26, 26, 26);
-  pdf.text(info.name, tx, ly); ly += 11;
-
-  pdf.setFontSize(6.5);
-  pdf.setFont('helvetica', 'normal');
-  pdf.setTextColor(68, 68, 68);
-  if (info.title) { pdf.text(info.title, tx, ly); ly += 9; }
-  if (info.brokerage) { pdf.text(info.brokerage, tx, ly); ly += 9; }
-  ly += 2;
-
-  pdf.setTextColor(37, 99, 160);
-  if (info.phone) { pdf.text(info.phone, tx, ly); ly += 9; }
-  if (info.email) { pdf.text(info.email, tx, ly); ly += 9; }
-  if (info.website) { pdf.text(info.website, tx, ly); }
-}
-
-function loadImage(src) {
-  return new Promise(function(resolve, reject) {
-    var img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = function() {
-      var canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      var ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
-      resolve(canvas.toDataURL('image/png'));
-    };
-    img.onerror = function() {
-      reject(new Error('Failed to load image: ' + src));
-    };
-    img.src = src;
-  });
-}
-
-/* ===========================
-   IMAGE LIGHTBOX
-=========================== */
-var lightbox = document.getElementById('lightbox');
-var lightboxImg = document.getElementById('lightboxImg');
-var lightboxClose = document.getElementById('lightboxClose');
-
-document.querySelectorAll('.flyer-card img').forEach(function(img) {
-  img.addEventListener('click', function() {
-    lightboxImg.src = img.src;
-    lightbox.classList.add('active');
-  });
-});
-
-lightboxClose.addEventListener('click', function() {
-  lightbox.classList.remove('active');
-});
-
-lightbox.addEventListener('click', function(e) {
-  if (e.target === lightbox) lightbox.classList.remove('active');
-});
-
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    lightbox.classList.remove('active');
-    closeCart();
-    closeBuydownForm();
-    closeComingSoon();
-  }
-});
+var lightbox=document.getElementById('lightbox'),lightboxImg=document.getElementById('lightboxImg'),lightboxClose=document.getElementById('lightboxClose');
+document.querySelectorAll('.flyer-card img').forEach(function(img){img.addEventListener('click',function(){lightboxImg.src=img.src;lightbox.classList.add('active')})});
+lightboxClose.addEventListener('click',function(){lightbox.classList.remove('active')});
+lightbox.addEventListener('click',function(e){if(e.target===lightbox)lightbox.classList.remove('active')});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){lightbox.classList.remove('active');closePopup('comparisonPopup');closePopup('luxuryPopup');closePopup('buydownPopup')}});
 </script>
-
 </body>
 </html>
