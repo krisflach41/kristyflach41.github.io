@@ -1440,14 +1440,14 @@ async function generateBuydownPDF() {
     });
 
     // ===== BUYDOWN DISCLAIMER =====
-    sectionY += 8;
-    pdf.setFontSize(5);
+    sectionY += 12;
+    pdf.setFontSize(8);
     pdf.setFont('helvetica', 'normal');
-    pdf.setTextColor(120, 120, 120);
+    pdf.setTextColor(68, 68, 68);
     var bdDiscLines = pdf.splitTextToSize(BUYDOWN_DISCLAIMER, W - 40);
     bdDiscLines.forEach(function(line) {
       pdf.text(line, colLeft, sectionY);
-      sectionY += 7;
+      sectionY += 11;
     });
 
     // ===== CO-BRANDING FOOTER =====
