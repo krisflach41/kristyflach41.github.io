@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agent Edge Realtor Portal</title>
+<title>Agent Edge — For Real Estate Professionals</title>
 <style>
 body {
   margin: 0;
@@ -17,7 +17,6 @@ body {
   padding: 20px;
 }
 
-/* Frosted Glass Card */
 .login-box {
   background: rgba(255,255,255,0.58);
   padding: 55px;
@@ -27,13 +26,12 @@ body {
     0 6px 18px rgba(0,0,0,0.05);
   text-align: center;
   width: 100%;
-  max-width: 450px;
+  max-width: 480px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
 }
 
-/* Header */
 .login-box h2 {
   margin-bottom: 10px;
   color: #0b1f3a;
@@ -43,107 +41,63 @@ body {
 .subtext {
   font-size: 14px;
   color: #555;
-  margin-bottom: 25px;
-  line-height: 1.5;
+  margin-bottom: 30px;
+  line-height: 1.6;
 }
 
-/* Tabs */
-.tabs {
-  display: flex;
-  margin-bottom: 25px;
-}
-
-.tab {
-  flex: 1;
-  padding: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  border-bottom: 2px solid transparent;
-  color: #555;
-  transition: 0.25s ease;
-}
-
-.tab.active {
-  border-bottom: 2px solid #0b4ea2;
-  color: #0b4ea2;
-}
-
-.tab:hover {
-  color: #0b4ea2;
-}
-
-/* Buttons */
-.btn {
+/* ===== PATH BUTTONS ===== */
+.path-btn {
   width: 100%;
-  padding: 14px;
-  margin-bottom: 12px;
-  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+  border-radius: 10px;
   border: none;
-  background: #0b4ea2;
-  color: white;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   cursor: pointer;
   transition: 0.25s ease;
   text-decoration: none;
-  display: inline-block;
-  box-sizing: border-box;
-}
-
-.btn:hover {
-  background: #083a7a;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
-}
-
-.btn-secondary {
-  background: rgba(11,78,162,0.1);
-  color: #0b4ea2;
-  border: 2px solid #0b4ea2;
-  padding: 12px;
-}
-
-.btn-secondary:hover {
-  background: rgba(11,78,162,0.2);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(11,78,162,0.2);
-}
-
-/* Inputs */
-input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 18px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  box-sizing: border-box;
-}
-
-input:focus {
-  outline: none;
-  border-color: #0b4ea2;
-  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
-}
-
-.footer-note {
-  font-size: 11px;
-  margin-top: 20px;
-  color: #777;
-}
-
-.form-section {
-  display: none;
-}
-
-.form-section.active {
   display: block;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.path-btn:hover {
+  transform: translateY(-2px);
+}
+
+.path-partner {
+  background: #6e7f77;
+  color: white;
+}
+
+.path-partner:hover {
+  background: #5a6b63;
+  box-shadow: 0 6px 20px rgba(110,127,119,0.35);
+}
+
+.path-explore {
+  background: rgba(110,127,119,0.08);
+  color: #6e7f77;
+  border: 2px solid #6e7f77;
+}
+
+.path-explore:hover {
+  background: rgba(110,127,119,0.15);
+  box-shadow: 0 4px 15px rgba(110,127,119,0.2);
+}
+
+.path-desc {
+  font-size: 12px;
+  color: #777;
+  margin: -6px 0 18px 0;
+  line-height: 1.5;
 }
 
 .divider {
   display: flex;
   align-items: center;
-  margin: 20px 0;
+  margin: 22px 0;
   color: #999;
   font-size: 13px;
 }
@@ -156,19 +110,35 @@ input:focus {
   background: rgba(0,0,0,0.1);
 }
 
-.divider::before {
-  margin-right: 10px;
+.divider::before { margin-right: 10px; }
+.divider::after { margin-left: 10px; }
+
+.signin-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #6e7f77;
+  text-decoration: none;
+  font-weight: 600;
+  transition: 0.2s;
 }
 
-.divider::after {
-  margin-left: 10px;
+.signin-link:hover {
+  color: #5a6b63;
+  text-decoration: underline;
+}
+
+.footer-note {
+  font-size: 11px;
+  margin-top: 25px;
+  color: #999;
+  line-height: 1.5;
 }
 
 @media (max-width: 500px) {
   .login-box {
-    padding: 40px 30px;
+    padding: 40px 28px;
   }
-  
   .login-box h2 {
     font-size: 22px;
   }
@@ -179,63 +149,27 @@ input:focus {
 <body>
 
 <div class="login-box">
-  <h2>Agent Edge Partner Portal</h2>
+  <h2>Agent Edge</h2>
   <div class="subtext">
-    A private platform for approved Realtor partners.<br>
-    Market briefs, tools, and support resources.
+    A professional resource platform for real estate agents.<br>
+    Marketing tools, market intelligence, and client-ready materials — all in one place.
   </div>
 
-  <div class="tabs">
-    <div class="tab active" onclick="showTab('access')">Partner Access</div>
-    <div class="tab" onclick="showTab('request')">Become a Partner</div>
-  </div>
+  <a href="signup.html?path=partner" class="path-btn path-partner">Become a Partner</a>
+  <p class="path-desc">Full access to all tools, co-branded materials, and direct support.</p>
 
-  <!-- PARTNER ACCESS -->
-  <div id="access" class="form-section active">
-    <a href="login.html" class="btn">Sign In to Portal</a>
-    
-    <div class="divider">OR</div>
-    
-    <a href="signup.html" class="btn btn-secondary">Create New Account</a>
-    
-    <p style="font-size: 13px; color: #666; margin-top: 20px;">
-      New partners can create an account instantly and start accessing resources right away.
-    </p>
-  </div>
+  <a href="signup.html?path=explore" class="path-btn path-explore">Take a Spin</a>
+  <p class="path-desc">Explore the platform with limited access. Premium features available with full partnership.</p>
 
-  <!-- PARTNER APPLICATION -->
-  <div id="request" class="form-section">
-    <form action="https://formspree.io/f/mojlojor" method="POST">
-      <input type="hidden" name="_redirect" value="thank-you.html">
-      <input type="text" name="name" placeholder="Your Name" required>
-      <input type="text" name="brokerage" placeholder="Brokerage" required>
-      <input type="email" name="email" placeholder="Email Address" required>
-      <button type="submit" class="btn">Apply for Partner Access</button>
-    </form>
-    <p style="font-size: 13px; color: #666; margin-top: 15px;">
-      Prefer to apply first? Submit your info and Kristy will reach out directly.
-    </p>
-  </div>
+  <div class="divider">already have an account?</div>
+
+  <a href="login.html" class="signin-link">Sign In →</a>
 
   <div class="footer-note">
-    Exclusive tools, briefs, and support materials for Realtor partners.
+    Agent Edge is independently operated by Kristy Flach, NMLS #2632259.<br>
+    Equal Housing Opportunity.
   </div>
 </div>
-
-<script>
-function showTab(tab) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.form-section').forEach(f => f.classList.remove('active'));
-  
-  if (tab === 'access') {
-    document.querySelectorAll('.tab')[0].classList.add('active');
-  } else {
-    document.querySelectorAll('.tab')[1].classList.add('active');
-  }
-  
-  document.getElementById(tab).classList.add('active');
-}
-</script>
 
 </body>
 </html>
