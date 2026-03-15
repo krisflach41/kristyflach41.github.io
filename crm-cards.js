@@ -21,10 +21,9 @@ document.addEventListener('blur', function(e) {
 }, true); // useCapture so it fires before other blur handlers
 
 // ===== TYPE DEFINITIONS =====
+// ROOT TYPES — permanent, set at creation
 var CONTACT_TYPES = {
   client:      { label: 'Client',      icon: 'fa-user',              color: 'var(--type-client)' },
-  borrower:    { label: 'Borrower',    icon: 'fa-file-invoice-dollar', color: 'var(--type-borrower)' },
-  past_client: { label: 'Past Client', icon: 'fa-user-check',        color: '#22c55e' },
   realtor:     { label: 'Realtor',     icon: 'fa-handshake',         color: 'var(--type-realtor)' },
   title:       { label: 'Title',       icon: 'fa-building',          color: 'var(--type-title)' },
   appraiser:   { label: 'Appraiser',   icon: 'fa-search-dollar',     color: 'var(--type-appraiser)' },
@@ -32,6 +31,33 @@ var CONTACT_TYPES = {
   vendor:      { label: 'Vendor',      icon: 'fa-store',             color: 'var(--type-vendor)' },
   other:       { label: 'Other',       icon: 'fa-ellipsis-h',        color: 'var(--type-other)' }
 };
+// DESIGNATIONS — layered on/off, not permanent
+var DESIGNATION_TYPES = {
+  borrower:    { label: 'Borrower',    icon: 'fa-file-invoice-dollar', color: 'var(--type-borrower)' },
+  past_client: { label: 'Past Client', icon: 'fa-user-check',        color: '#22c55e' }
+};
+// Combined lookup for backward compat
+var ALL_TYPES = Object.assign({}, CONTACT_TYPES, DESIGNATION_TYPES);
+
+// Helper: check if a contact has a designation
+function hasDesignation(c, d) {
+  if (!c) return false;
+  var desigs = c.designations || [];
+  return desigs.indexOf(d) !== -1;
+}
+// Helper: check if contact is borrower or past_client (by designation OR legacy type)
+function isBorrowerLike(c) {
+  if (!c) return false;
+  var desigs = c.designations || [];
+  if (desigs.indexOf('borrower') !== -1 || desigs.indexOf('past_client') !== -1) return true;
+  // Legacy fallback
+  if (c.type === 'borrower' || c.type === 'past_client') return true;
+  return false;
+}
+// Helper: get the effective display type (root_type preferred)
+function getEffectiveType(c) {
+  return c.root_type || c.type || 'other';
+}
 var PIPELINE_STAGES = [
   { id: 'warm', label: 'Warm Leads' }, { id: 'active', label: 'Active Conversations' },
   { id: 'credit', label: 'Credit Repair' }, { id: 'preapproval', label: 'Started Pre-Approval' },
@@ -48,7 +74,12 @@ function sourceOptions() {
 }
 
 // ===== FIELD DEFINITIONS PER TYPE =====
-function getFieldsForType(type) {
+function getFieldsForType(type, designations) {
+  // If contact has borrower or past_client designation, use borrower card
+  var desigs = designations || [];
+  if (desigs.indexOf('borrower') !== -1 || desigs.indexOf('past_client') !== -1) return 'borrower';
+  // Legacy fallback
+  if (type === 'borrower' || type === 'past_client') return 'borrower';
   var contactFields = [
     {id:'name',label:'Name',type:'text',required:true},
     {id:'phone',label:'Phone',type:'tel'},
@@ -82,10 +113,6 @@ function getFieldsForType(type) {
         ]},
         {section:'Tags & Notes',fields:noteFields}
       ];
-    case 'borrower':
-      return 'borrower'; // handled by renderBorrowerCard
-    case 'past_client':
-      return 'borrower'; // uses same card as borrower
     case 'realtor':
       return [
         {section:'Brokerage',fields:[
@@ -435,7 +462,7 @@ function renderBorrowerCard(container, data) {
   // LOAN HISTORY TAB
   html+='<div class="card-tab-content" id="btab_loanhistory">';
   html+='<div class="card-section"><div class="card-section-title">Completed Loans</div>';
-  html+='<div id="borrowerLoanHistoryList" style="font-size:12px;color:rgba(255,255,255,0.3);padding:8px 0;">Loading...</div>';
+  html+='<div id="borrowerLoanHistoryList" style="font-size:12px;color:#999;padding:8px 0;">Loading...</div>';
   html+='</div></div>';
 
   container.innerHTML=html;
@@ -871,14 +898,14 @@ function removeAsset(idx){
 function renderBorrowerLoanHistory(){
   var el=document.getElementById('borrowerLoanHistoryList');
   if(!el||!crmCurrentId)return;
-  el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:8px 0;">Loading loan history...</div>';
+  el.innerHTML='<div style="color:#999;font-size:13px;padding:8px 0;">Loading loan history...</div>';
   fetch(CRM_API+'/ae-loans-api',{
     method:'POST',headers:{'Content-Type':'application/json'},
     body:JSON.stringify({action:'getHistory',crm_contact_id:crmCurrentId})
   }).then(function(r){return r.json();})
   .then(function(data){
     if(!data.success||!data.history||data.history.length===0){
-      el.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:13px;padding:8px 0;">No completed loans on record</div>';
+      el.innerHTML='<div style="color:#999;font-size:13px;padding:8px 0;">No completed loans on record</div>';
       return;
     }
     var icons={funded:'fa-trophy',denied:'fa-times-circle',suspended:'fa-pause-circle',withdrawn:'fa-undo'};
@@ -908,28 +935,28 @@ function renderBorrowerLoanHistory(){
       // AE ID badge
       var aeIdBadge = loan.ae_id ? '<span style="font-family:monospace;font-size:12px;font-weight:600;color:#0ea5e9;background:rgba(14,165,233,0.1);padding:3px 10px;border-radius:4px;">' + loan.ae_id + '</span>' : '';
 
-      h+='<div style="background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-left:3px solid '+color+';border-radius:8px;padding:16px 18px;margin-bottom:12px;">';
+      h+='<div style="background:rgba(0,0,0,0.02);border:1px solid #e5e7eb;border-left:3px solid '+color+';border-radius:8px;padding:16px 18px;margin-bottom:12px;">';
       // Header row: outcome badge + AE ID + loan number + date
       h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">';
       h+='<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">';
       h+='<span style="display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:'+color+';"><i class="fas '+icon+'"></i> '+outcomeLabel+'</span>';
       h+=aeIdBadge;
       if(loan.loan_number){
-        h+='<span style="font-family:monospace;font-size:12px;font-weight:600;color:rgba(255,255,255,0.6);background:rgba(255,255,255,0.05);padding:3px 10px;border-radius:4px;">Loan #'+loan.loan_number+'</span>';
+        h+='<span style="font-family:monospace;font-size:12px;font-weight:600;color:#666;background:rgba(0,0,0,0.03);padding:3px 10px;border-radius:4px;">Loan #'+loan.loan_number+'</span>';
       }
       h+='</div>';
-      h+='<span style="font-size:12px;color:rgba(255,255,255,0.4);">'+dt+'</span>';
+      h+='<span style="font-size:12px;color:#888;">'+dt+'</span>';
       h+='</div>';
       // Details grid
       h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Type</span><div style="margin-top:3px;">'+loanType+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Interest Rate</span><div style="margin-top:3px;">'+rate+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</span><div style="margin-top:3px;">'+amt+'</div></div>';
-      h+='<div><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Strike Rate</span><div style="margin-top:3px;">'+(loan.strike_rate||'—')+'</div></div>';
-      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Property</span><div style="margin-top:3px;">'+addr+'</div></div>';
-      h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Borrowers on Loan</span><div style="margin-top:3px;">'+borrowerNames+'</div></div>';
+      h+='<div><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Type</span><div style="margin-top:3px;">'+loanType+'</div></div>';
+      h+='<div><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Interest Rate</span><div style="margin-top:3px;">'+rate+'</div></div>';
+      h+='<div><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Loan Amount</span><div style="margin-top:3px;">'+amt+'</div></div>';
+      h+='<div><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Strike Rate</span><div style="margin-top:3px;">'+(loan.strike_rate||'—')+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Property</span><div style="margin-top:3px;">'+addr+'</div></div>';
+      h+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Borrowers on Loan</span><div style="margin-top:3px;">'+borrowerNames+'</div></div>';
       if(loan.notes){
-        h+='<div style="grid-column:1/-1;"><span style="color:rgba(255,255,255,0.35);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Notes</span><div style="margin-top:3px;font-style:italic;opacity:0.6;">'+loan.notes+'</div></div>';
+        h+='<div style="grid-column:1/-1;"><span style="color:#888;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Notes</span><div style="margin-top:3px;font-style:italic;opacity:0.6;">'+loan.notes+'</div></div>';
       }
       h+='</div></div>';
     });
@@ -962,7 +989,7 @@ function fetchActiveLoanRelationships(crmId) {
 
     // Active loans
     if (data.active_loans && data.active_loans.length > 0) {
-      h += '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:rgba(255,255,255,0.4);margin-bottom:10px;"><i class="fas fa-funnel-dollar" style="margin-right:6px;"></i> Active Loan' + (data.active_loans.length > 1 ? 's' : '') + '</div>';
+      h += '<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#888;margin-bottom:10px;"><i class="fas fa-funnel-dollar" style="margin-right:6px;"></i> Active Loan' + (data.active_loans.length > 1 ? 's' : '') + '</div>';
 
       data.active_loans.forEach(function(loan) {
         var stageLabel = stageLabels[loan.pipeline_stage] || loan.pipeline_stage || '—';
@@ -997,24 +1024,24 @@ function fetchActiveLoanRelationships(crmId) {
 
         var address = [loan.subject_street, loan.subject_city, loan.subject_state].filter(Boolean).join(', ');
 
-        h += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + roleColor + ';border-radius:8px;padding:14px 16px;margin-bottom:8px;">';
+        h += '<div style="background:rgba(0,0,0,0.02);border:1px solid #f0f0f0;border-left:3px solid ' + roleColor + ';border-radius:8px;padding:14px 16px;margin-bottom:8px;">';
         // Top row: AE ID + role + stage
         h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">';
         h += '<div style="display:flex;align-items:center;gap:8px;">';
         h += '<span style="font-family:monospace;font-size:12px;font-weight:700;color:#0ea5e9;background:rgba(14,165,233,0.1);padding:3px 10px;border-radius:4px;">' + loan.ae_id + '</span>';
         h += '<span style="font-size:12px;font-weight:700;color:' + roleColor + ';"><i class="fas fa-user"></i> ' + myRoleLabel + '</span>';
         h += '</div>';
-        h += '<span style="font-size:12px;padding:3px 10px;border-radius:5px;background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);font-weight:600;">' + stageLabel + '</span>';
+        h += '<span style="font-size:12px;padding:3px 10px;border-radius:5px;background:#e5e7eb;color:#666;font-weight:600;">' + stageLabel + '</span>';
         h += '</div>';
         // Details
         if (address || details.length > 0) {
-          h += '<div style="margin-top:8px;font-size:13px;color:rgba(255,255,255,0.6);">';
+          h += '<div style="margin-top:8px;font-size:13px;color:#666;">';
           if (address) h += '<div><i class="fas fa-map-marker-alt" style="margin-right:4px;font-size:10px;"></i>' + address + '</div>';
           if (details.length > 0) h += '<div style="margin-top:3px;">' + details.join(' · ') + '</div>';
           h += '</div>';
         }
         if (otherBorrowers.length > 0) {
-          h += '<div style="margin-top:8px;font-size:11px;color:rgba(255,255,255,0.35);font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Also on this loan:</div>';
+          h += '<div style="margin-top:8px;font-size:11px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;">Also on this loan:</div>';
           h += othersHtml;
         }
         h += '</div>';
@@ -1084,19 +1111,24 @@ function setPipelineStage(contactId,stage){
       var displayName = buildDisplayName();
       showToast(displayName+' pushed to pipeline — '+result.ae_id);
       if(typeof loadPipeline==='function')loadPipeline();
-      // Auto-convert to borrower
-      if(crmCurrentType!=='borrower'){
-        crmCurrentType='borrower';
-        fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crm:{id:contactId,type:'borrower'}})}).catch(function(){});
-        if(typeof crmContacts!=='undefined'){var idx=crmContacts.findIndex(function(c){return c.id===contactId;});if(idx>=0)crmContacts[idx].type='borrower';}
-        var ti=CONTACT_TYPES.borrower;
-        document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+      // Add borrower designation
+      if(!hasDesignation({designations:window._currentDesignations||[]},'borrower')){
+        if(!window._currentDesignations) window._currentDesignations=[];
+        window._currentDesignations.push('borrower');
+        fetch(CRM_API+'/crm-api?action=addDesignation',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({crm_id:contactId,designation:'borrower'})}).catch(function(){});
+        if(typeof crmContacts!=='undefined'){var idx=crmContacts.findIndex(function(c){return c.id===contactId;});if(idx>=0){if(!crmContacts[idx].designations)crmContacts[idx].designations=[];crmContacts[idx].designations.push('borrower');}}
+        // Rebuild badge with designation
+        var rootTi=CONTACT_TYPES[window._currentRootType||crmCurrentType]||CONTACT_TYPES.other;
+        var badgeHtml='<span class="card-type-badge" style="background:'+rootTi.color+'22;color:'+rootTi.color+';"><i class="fas '+rootTi.icon+'"></i> '+rootTi.label+'</span>';
+        (window._currentDesignations||[]).forEach(function(d){var dt=DESIGNATION_TYPES[d];if(dt)badgeHtml+=' <span class="card-desig-badge" style="background:'+dt.color+'18;color:'+dt.color+';border:1px solid '+dt.color+'33;"><i class="fas '+dt.icon+'"></i> '+dt.label+'</span>';});
+        document.getElementById('crmDTypeBadge').innerHTML=badgeHtml;
         var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display='block';
         var fc=document.getElementById('crmCardForm');
-        var cd=collectAllCardData();cd.type='borrower';
+        var cd=collectAllCardData();
         renderBorrowerCard(fc,cd);
+        renderCoBorrowerTabs();
         if(typeof crmRenderList==='function')crmRenderList();
-        showToast('Converted to Borrower');
+        showToast('Borrower designation added');
       }
     } else {
       showToast('Error: '+(result.message||'Unknown'));
@@ -1164,7 +1196,7 @@ function buildCalcSidePanel(){
     '<div class="calc-side-action-bar">'+
       '<div class="calc-save-row">'+
         '<label class="calc-save-label">Qualifying Income:</label>'+
-        '<input type="number" id="calcQualifyingInput" placeholder="0.00" step="0.01" min="0" style="width:140px;padding:8px 12px;border-radius:7px;font-size:14px;font-weight:700;background:rgba(255,255,255,0.08);border:1px solid rgba(34,197,94,0.3);color:#22c55e;">'+
+        '<input type="number" id="calcQualifyingInput" placeholder="0.00" step="0.01" min="0" style="width:140px;padding:8px 12px;border-radius:7px;font-size:14px;font-weight:700;background:#f0f0f0;border:1px solid rgba(34,197,94,0.3);color:#22c55e;">'+
         '<button class="card-action-btn primary" onclick="saveCalcToEmployer()" style="padding:8px 14px;"><i class="fas fa-save"></i> Save to Card</button>'+
         '<button class="card-action-btn" onclick="exportCalcToDoc()" style="padding:8px 14px;"><i class="fas fa-folder-plus"></i> Save to Docs</button>'+
       '</div>'+
@@ -1449,7 +1481,7 @@ function checkCBPhoneDuplicate() {
   var match = findContactByPhone(phone, crmCurrentId);
   if (match) {
     _cbPhoneMatch = match;
-    var typeBadge = (CONTACT_TYPES[match.type] || CONTACT_TYPES.other);
+    var typeBadge = (ALL_TYPES[match.root_type||match.type] || CONTACT_TYPES.other);
     banner.innerHTML =
       '<div class="cb-match-info">' +
         '<i class="fas fa-exclamation-triangle"></i> ' +
@@ -1457,7 +1489,7 @@ function checkCBPhoneDuplicate() {
       '</div>' +
       '<div class="cb-match-actions">' +
         '<button class="card-action-btn primary" style="padding:5px 12px;font-size:11px;" onclick="linkExistingAsCoBorrower()"><i class="fas fa-link"></i> Link Existing Contact</button>' +
-        '<span style="font-size:10px;color:rgba(255,255,255,0.35);">or continue to add new</span>' +
+        '<span style="font-size:10px;color:#888;">or continue to add new</span>' +
       '</div>';
     banner.style.display = 'block';
     // Only auto-fill name/email if user hasn't typed anything yet
@@ -1660,7 +1692,9 @@ function createCBContact(cbIdx) {
   contactData.name = cb.name;
   contactData.phone = cb.phone;
   contactData.email = cb.email;
-  contactData.type = 'borrower';
+  contactData.type = 'client';
+  contactData.root_type = 'client';
+  contactData.designations = ['borrower'];
   contactData.linked_to = crmCurrentId;
   contactData.relationship = cb.relationship;
   // Remove nested objects that shouldn't go to the API as top-level
@@ -1739,27 +1773,35 @@ function showTypeChanger(){
     if(newType===crmCurrentType) return;
     var oldType=crmCurrentType;
     crmCurrentType=newType;
-    // Update in database
+    window._currentRootType=newType;
+    // Update root_type in database
     if(crmCurrentId){
       fetch(CRM_API+'/crm-api?action=save',{method:'POST',headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({crm:{id:crmCurrentId,type:newType}})}).catch(function(){});
+        body:JSON.stringify({crm:{id:crmCurrentId,root_type:newType,type:newType}})}).catch(function(){});
       if(typeof crmContacts!=='undefined'){
         var idx=crmContacts.findIndex(function(c){return c.id===crmCurrentId;});
-        if(idx>=0) crmContacts[idx].type=newType;
+        if(idx>=0) { crmContacts[idx].root_type=newType; crmContacts[idx].type=newType; }
       }
     }
     // Update badge
     var ti=CONTACT_TYPES[newType]||CONTACT_TYPES.other;
-    document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+    var badgeHtml='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+    (window._currentDesignations||[]).forEach(function(d){
+      var dt=DESIGNATION_TYPES[d];
+      if(dt) badgeHtml+=' <span class="card-desig-badge" style="background:'+dt.color+'18;color:'+dt.color+';border:1px solid '+dt.color+'33;"><i class="fas '+dt.icon+'"></i> '+dt.label+'</span>';
+    });
+    document.getElementById('crmDTypeBadge').innerHTML=badgeHtml;
     // Qualifying total visibility
-    var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(newType==='borrower'?'block':'none');
+    var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(hasDesignation({designations:window._currentDesignations},'borrower')?'block':'none');
     // Re-render form
     var fc=document.getElementById('crmCardForm');
     var currentData=collectAllCardData();
     currentData.type=newType;
-    if(newType==='borrower'||newType==='past_client'){
-      if(oldType!=='borrower'&&oldType!=='past_client'){
-        // Coming from a non-borrower type — reset co-borrower state
+    currentData.root_type=newType;
+    currentData.designations=window._currentDesignations||[];
+    var bl=isBorrowerLike(currentData);
+    if(bl){
+      if(oldType!=='borrower'&&oldType!=='past_client'&&!isBorrowerLike({type:oldType,designations:window._currentDesignations||[]})){
         borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];
         coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};
         window._primaryBorrowerData=null;primaryBorrowerName=currentData.name||'';
@@ -1767,10 +1809,9 @@ function showTypeChanger(){
       renderBorrowerCard(fc,currentData);
       renderCoBorrowerTabs();
     } else {
-      // Switching away from borrower — hide co-borrower tabs
       var cbTabs=document.getElementById('coBorrowerTabs');
       if(cbTabs)cbTabs.style.display='none';
-      var secs=getFieldsForType(newType);
+      var secs=getFieldsForType(newType,window._currentDesignations);
       renderStandardForm(fc,secs,currentData);
     }
     if(typeof crmRenderList==='function') crmRenderList();
@@ -1800,7 +1841,7 @@ function removeDocument(docId){
 }
 function renderDocList(){
   var list=document.getElementById('docList');if(!list)return;
-  if(cardDocuments.length===0){list.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:8px 0;">No documents yet</div>';return;}
+  if(cardDocuments.length===0){list.innerHTML='<div style="color:#999;font-size:12px;padding:8px 0;">No documents yet</div>';return;}
   var h='';
   cardDocuments.forEach(function(d){
     var icon='fa-file';if(d.type&&d.type.includes('pdf'))icon='fa-file-pdf';
@@ -1827,7 +1868,9 @@ function collectAllCardData(){
   data.name = buildDisplayName();
   // Clean phone to raw digits for storage, keep formatted for display
   if(data.phone) data.phone = data.phone.replace(/\D/g,'');
-  if(crmCurrentType==='borrower'||crmCurrentType==='past_client'){
+  data.root_type = window._currentRootType || crmCurrentType;
+  data.designations = window._currentDesignations || [];
+  if(isBorrowerLike({designations:data.designations,type:crmCurrentType})){
     data.employers=borrowerEmployers;
     data.education=borrowerEducation;
     data.assets=borrowerAssets;
@@ -1843,50 +1886,38 @@ function collectAllCardData(){
 var crmCurrentType='client';
 
 function crmAddNew(){
-  // Clear ALL state from any previously open card first
   crmCurrentId=null;crmDirty=false;
   borrowerEmployers=[];borrowerEducation=[];borrowerAssets=[];borrowerREOs=[];cardDocuments=[];
   coBorrowers=[];activeCoBorrowerIdx=0;sharedLoanData={};window._primaryBorrowerData=null;primaryBorrowerName='';
-  // Clear banners and co-borrower tabs from previous card
+  window._currentDesignations=[];window._currentRootType='client';
   var bannerPre=document.getElementById('crmLoanHistoryBanner');
   if(bannerPre){bannerPre.style.display='none';bannerPre.innerHTML='';}
   var cbTabsPre=document.getElementById('coBorrowerTabs');
   if(cbTabsPre){cbTabsPre.style.display='none';cbTabsPre.innerHTML='';}
-  // Deselect in list
   if(typeof crmRenderList==='function') crmRenderList();
 
   showTypePicker(function(type){
     crmCurrentType=type;
+    window._currentRootType=type;
     document.getElementById('crmDetailEmpty').style.display='none';
     document.getElementById('crmDetailContent').style.display='flex';
-    // Hide New Contact button while card is open
     var newBtn=document.getElementById('crmNewContactBtn');if(newBtn)newBtn.style.display='none';
-    var ti=CONTACT_TYPES[type];
+    var ti=CONTACT_TYPES[type]||CONTACT_TYPES.other;
     document.getElementById('crmDName').textContent='New '+ti.label;
     document.getElementById('crmDMeta').textContent='';
     document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
     document.getElementById('cardPipelineBtn').innerHTML='';
-    var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
+    var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display='none';
     var fc=document.getElementById('crmCardForm');
-    if(type==='borrower'||type==='past_client'){
-      renderBorrowerCard(fc,{});
-      var cbTabs=document.getElementById('coBorrowerTabs');
-      if(cbTabs) cbTabs.style.display='flex';
-      renderCoBorrowerTabs();
-    } else {
-      var cbTabs=document.getElementById('coBorrowerTabs');
-      if(cbTabs) cbTabs.style.display='none';
-      var secs=getFieldsForType(type);renderStandardForm(fc,secs,{});
-    }
-    // Clear and wire header fields
+    var cbTabs=document.getElementById('coBorrowerTabs');
+    if(cbTabs) cbTabs.style.display='none';
+    var secs=getFieldsForType(type,[]);renderStandardForm(fc,secs,{});
     var firstEl=document.getElementById('cf_first_name');if(firstEl)firstEl.value='';
     var miEl=document.getElementById('cf_middle_initial');if(miEl)miEl.value='';
     var lastEl=document.getElementById('cf_last_name');if(lastEl)lastEl.value='';
     var phoneEl=document.getElementById('cf_phone');if(phoneEl)phoneEl.value='';
     var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value='';
     wireHeaderFields();
-    
-    
     crmSwitchTab('details');
   });
 }
@@ -1908,26 +1939,39 @@ function crmSelectContact(id){
     .then(function(data){
       if(data.success!==false){
         var c=data.contact||data;
-        crmCurrentType=c.type||'client';
+        crmCurrentType=getEffectiveType(c);
         crmPopulateCard(c,data.activity||[]);
       }
     }).catch(function(err){console.error('CRM get error:',err);});
 }
 
 function crmPopulateCard(c,activity){
-  var type=c.type||'other';
-  var ti=CONTACT_TYPES[type]||CONTACT_TYPES.other;
+  var rootType=getEffectiveType(c);
+  var ti=CONTACT_TYPES[rootType]||CONTACT_TYPES.other;
+  var bl=isBorrowerLike(c);
+  // Store designations on current card context
+  window._currentDesignations=c.designations||[];
+  window._currentRootType=rootType;
+
   document.getElementById('crmDName').textContent=c.name||'Unnamed';
   var metaParts=[c.email,formatPhoneDisplay(c.phone),c.company].filter(Boolean);
-  if(c.ae_id&&(type==='realtor'))metaParts.push(c.ae_id);
-  document.getElementById('crmDMeta').textContent=metaParts.join(' – ');
-  document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
-  // Show qualifying income for borrowers (not past clients)
-  var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
-  // Co-borrower tabs — show for borrower and past_client (data is still there)
+  if(c.ae_id)metaParts.push(c.ae_id);
+  document.getElementById('crmDMeta').textContent=metaParts.join(' \u2013 ');
+
+  // Build badge HTML: root type + designation badges
+  var badgeHtml='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
+  (c.designations||[]).forEach(function(d){
+    var dt=DESIGNATION_TYPES[d];
+    if(dt) badgeHtml+=' <span class="card-desig-badge" style="background:'+dt.color+'18;color:'+dt.color+';border:1px solid '+dt.color+'33;"><i class="fas '+dt.icon+'"></i> '+dt.label+'</span>';
+  });
+  document.getElementById('crmDTypeBadge').innerHTML=badgeHtml;
+
+  // Show qualifying income for active borrowers
+  var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(hasDesignation(c,'borrower')?'block':'none');
+  // Co-borrower tabs — show for borrower-like contacts
   var cbTabs=document.getElementById('coBorrowerTabs');
-  if(cbTabs) cbTabs.style.display=(type==='borrower'||type==='past_client'?'flex':'none');
-  if(type==='borrower'||type==='past_client'){
+  if(cbTabs) cbTabs.style.display=(bl?'flex':'none');
+  if(bl){
     initCoBorrowers(c);
     window._primaryBorrowerData=Object.assign({},c);
     if(c.employers) window._primaryBorrowerData.employers=JSON.parse(JSON.stringify(c.employers));
@@ -1936,7 +1980,7 @@ function crmPopulateCard(c,activity){
     if(c.reos) window._primaryBorrowerData.reos=JSON.parse(JSON.stringify(c.reos));
     if(c.documents) window._primaryBorrowerData.documents=(c.documents||[]).slice();
   }
-  // Pipeline button — check if this contact is on an active AE loan
+  // Pipeline button
   var pBtn=document.getElementById('cardPipelineBtn');
   var fs=null;
   if(typeof pipelineLoans!=='undefined'&&typeof pipelineBorrowers!=='undefined'){
@@ -1950,25 +1994,20 @@ function crmPopulateCard(c,activity){
   // Active Loan Relationships banner
   var banner=document.getElementById('crmLoanHistoryBanner');
   if(banner){banner.style.display='none';banner.innerHTML='';}
-  if(type==='borrower'||type==='past_client'||type==='client'){
-    fetchActiveLoanRelationships(c.id);
-  }
-  // Form — borrower and past_client both use borrower card (past_client keeps data visible)
+  fetchActiveLoanRelationships(c.id);
+  // Form — borrower-like contacts use borrower card
   var fc=document.getElementById('crmCardForm');
-  if(type==='borrower'||type==='past_client'){renderBorrowerCard(fc,c);}
-  else{var secs=getFieldsForType(type);renderStandardForm(fc,secs,c);}
-  if(type==='borrower'||type==='past_client') renderCoBorrowerTabs();
+  if(bl){renderBorrowerCard(fc,c);}
+  else{var secs=getFieldsForType(rootType,c.designations);renderStandardForm(fc,secs,c);}
+  if(bl) renderCoBorrowerTabs();
   // Populate header fields
   populateNameFields(c);
   var phoneEl=document.getElementById('cf_phone');
   if(phoneEl) { phoneEl.value=c.phone||''; formatPhoneInput(phoneEl); }
   var emailEl=document.getElementById('cf_email');if(emailEl)emailEl.value=c.email||'';
-  // Wire header fields for dirty tracking (they live outside crmCardForm)
   wireHeaderFields();
   renderActivity(activity);
   crmDirty=false;
-  // Enable delete for existing contacts
-  
   crmSwitchTab('details');
 }
 
@@ -1979,7 +2018,7 @@ function renderActivity(activity){
     var h='';activity.forEach(function(a){
       h+='<div class="activity-item"><div class="activity-icon"><i class="fas '+(icons[a.type]||'fa-sticky-note')+'"></i></div><div><div class="activity-text">'+(a.subject||a.body||a.type)+'</div><div class="activity-date">'+(a.type||'')+' - '+new Date(a.date).toLocaleDateString()+'</div></div></div>';
     });tl.innerHTML=h;
-  } else {tl.innerHTML='<div style="color:rgba(255,255,255,0.3);font-size:12px;padding:12px;">No activity yet</div>';}
+  } else {tl.innerHTML='<div style="color:#999;font-size:12px;padding:12px;">No activity yet</div>';}
 }
 
 function crmSwitchTab(tab){
@@ -1999,40 +2038,43 @@ function crmSaveContact(){
   // Capture state at call time to prevent race conditions when user switches contacts
   var saveId = crmCurrentId;
   var saveType = crmCurrentType;
+  var saveDesignations = window._currentDesignations || [];
+  var saveBorrowerLike = isBorrowerLike({designations:saveDesignations,type:saveType});
   var saveCoBorrowerIdx = activeCoBorrowerIdx;
   var savePrimaryName = primaryBorrowerName;
 
   console.log('=== SAVE CONTACT START ===');
   console.log('saveId:', saveId);
   console.log('saveType:', saveType);
+  console.log('saveDesignations:', saveDesignations);
   console.log('activeCoBorrowerIdx:', saveCoBorrowerIdx);
   console.log('coBorrowers count:', coBorrowers.length);
 
   // Step 1: Save current co-borrower state into memory
-  if((saveType==='borrower'||saveType==='past_client') && coBorrowers.length>0) {
+  if(saveBorrowerLike && coBorrowers.length>0) {
     console.log('Saving co-borrower state...');
     saveCoBorrowerState();
   }
 
   // Step 2: Build the data object — always use primary borrower as the contact record
   var data = {};
-  if((saveType==='borrower'||saveType==='past_client') && saveCoBorrowerIdx > 0 && window._primaryBorrowerData) {
-    // On a co-borrower tab — pull primary's data from stored state
+  if(saveBorrowerLike && saveCoBorrowerIdx > 0 && window._primaryBorrowerData) {
     console.log('On co-borrower tab, using _primaryBorrowerData');
     data = JSON.parse(JSON.stringify(window._primaryBorrowerData));
   } else {
-    // On primary tab or non-borrower — read from DOM
     console.log('On primary/standard tab, collecting from DOM');
     data = collectAllCardData();
   }
 
-  // Step 3: Always attach co-borrower and shared loan data for borrowers and past_clients
-  if(saveType==='borrower'||saveType==='past_client') {
+  // Step 3: Always attach co-borrower and shared loan data for borrower-like contacts
+  if(saveBorrowerLike) {
     data.co_borrowers = JSON.parse(JSON.stringify(coBorrowers));
     data.shared_loan = JSON.parse(JSON.stringify(sharedLoanData));
   }
 
   data.type = saveType;
+  data.root_type = window._currentRootType || saveType;
+  data.designations = saveDesignations;
   // Debug: log assets state at save time
   console.log('=== ASSET DEBUG ===');
   console.log('borrowerAssets:', JSON.stringify(borrowerAssets));
@@ -2085,7 +2127,7 @@ function crmSaveContact(){
       crmRenderList();
       // Only update header if user is still on the same card
       if(crmCurrentId === saveId || crmCurrentId === result.id) {
-        if(saveType==='borrower' && saveCoBorrowerIdx > 0) {
+        if(saveBorrowerLike && saveCoBorrowerIdx > 0) {
           document.getElementById('crmDName').textContent = savePrimaryName || data.name || 'Unnamed';
         } else {
           document.getElementById('crmDName').textContent = data.name || 'Unnamed';
