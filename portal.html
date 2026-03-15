@@ -15,7 +15,7 @@
 .profile-icon {
   position: fixed;
   top: 20px;
-  right: 165px;
+  right: 200px;
   width: 50px;
   height: 50px;
   background: rgba(255,255,255,0.85);
@@ -34,6 +34,25 @@
 .profile-icon:hover {
   transform: scale(1.08);
   background: rgba(255,255,255,0.95);
+}
+.profile-icon .profile-tooltip {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0b1f3a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.profile-icon:hover .profile-tooltip {
+  opacity: 1;
 }
 
 .logout-btn {
@@ -693,6 +712,7 @@ h1 {
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
     <circle cx="12" cy="7" r="4"/>
   </svg>
+  <span class="profile-tooltip">My Profile</span>
 </a>
 
 <!-- LOGOUT BUTTON -->
