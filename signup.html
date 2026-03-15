@@ -779,9 +779,11 @@ signupForm.addEventListener('submit', async function(e) {
 
     // Show success and redirect
     successMessage.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    submitBtn.textContent = 'Account Created!';
     setTimeout(function() {
       window.location.href = 'portal.html';
-    }, 2000);
+    }, 3500);
 
   } catch (error) {
     console.error('Signup error:', error);
