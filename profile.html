@@ -3,273 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Profile - Agent Edge Partner Portal</title>
+<title>My Profile - Agent Edge</title>
 <script src="auth.js"></script>
 <style>
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+  margin: 0; padding: 80px 0;
+  background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
     url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-  line-height: 1.7;
+  color: #0b1f3a; line-height: 1.7;
 }
-
-.page-wrap {
-  max-width: 700px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
+.page-wrap { max-width: 660px; margin: 0 auto; padding: 0 24px; }
 .profile-card {
-  padding: 50px 45px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
+  padding: 45px 40px; border-radius: 22px;
+  background: rgba(255,255,255,0.58); backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
 }
 
-.profile-header {
-  text-align: center;
-  margin-bottom: 35px;
-}
-
-.profile-title {
-  font-size: 28px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  color: #0b1f3a;
-}
-
-.profile-subtitle {
-  font-size: 14px;
-  color: #555;
-}
-
+/* Header */
+.profile-header { text-align: center; margin-bottom: 30px; }
+.profile-title { font-size: 26px; font-weight: 500; margin-bottom: 6px; }
+.profile-subtitle { font-size: 14px; color: #666; }
 .role-badge {
-  display: inline-block;
-  padding: 4px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-top: 10px;
+  display: inline-block; padding: 4px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.5px; margin-top: 10px;
 }
+.role-partner { background: #6e7f77; color: white; }
+.role-trial { background: #6e7f77; color: white; }
+.role-admin { background: linear-gradient(135deg, #7c3aed, #5b21b6); color: white; }
 
-.role-partner {
-  background: #6e7f77;
-  color: white;
-}
-
-.role-trial {
-  background: linear-gradient(135deg, #6e7f77, #5a6b63);
-  color: white;
-}
-
-.role-admin {
-  background: linear-gradient(135deg, #7c3aed, #5b21b6);
-  color: white;
-}
-
-/* ===== HEADSHOT SECTION ===== */
-.headshot-section {
-  text-align: center;
-  margin-bottom: 35px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid rgba(110,127,119,0.1);
-}
-
+/* Headshot */
+.headshot-section { text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 0.5px solid rgba(110,127,119,0.15); }
 .headshot-circle {
-  width: 140px;
-  height: 140px;
-  border-radius: 50%;
-  margin: 0 auto 14px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: 0.25s ease;
-  position: relative;
+  width: 130px; height: 130px; border-radius: 50%; margin: 0 auto 12px;
+  overflow: hidden; cursor: pointer; transition: 0.25s ease; position: relative;
 }
-
-.headshot-circle.has-photo {
-  border: 4px solid #6e7f77;
-}
-
+.headshot-circle.has-photo { border: 3px solid #6e7f77; }
 .headshot-circle.no-photo {
-  border: 3px dashed rgba(110,127,119,0.25);
-  background: rgba(110,127,119,0.04);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px dashed rgba(110,127,119,0.25); background: rgba(110,127,119,0.04);
+  display: flex; align-items: center; justify-content: center;
 }
-
-.headshot-circle:hover {
-  transform: scale(1.03);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-}
-
-.headshot-circle img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.headshot-placeholder-text {
-  font-size: 12px;
-  color: #888;
-  line-height: 1.4;
-  text-align: center;
-  padding: 10px;
-}
-
-.headshot-helper {
-  font-size: 13px;
-  color: #666;
-}
-
-.headshot-status {
-  font-size: 12px;
-  margin-top: 6px;
-  font-weight: 600;
-}
-
+.headshot-circle:hover { transform: scale(1.03); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+.headshot-circle img { width: 100%; height: 100%; object-fit: cover; }
+.headshot-placeholder-text { font-size: 12px; color: #999; line-height: 1.4; padding: 10px; }
+.headshot-helper { font-size: 12px; color: #888; }
+.headshot-status { font-size: 12px; margin-top: 4px; font-weight: 500; }
 .headshot-status.uploaded { color: #6e7f77; }
-.headshot-status.missing { color: #f59e0b; }
-
+.headshot-status.missing { color: #c0392b; }
 .headshot-input { display: none; }
 
-/* ===== FORM SECTIONS ===== */
+/* Sections */
 .form-section-title {
-  font-size: 12px;
-  font-weight: 700;
-  color: #6e7f77;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 30px 0 15px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(110,127,119,0.1);
+  font-size: 11px; font-weight: 500; color: #6e7f77; text-transform: uppercase;
+  letter-spacing: 1px; margin: 28px 0 14px; padding-bottom: 8px;
+  border-bottom: 0.5px solid rgba(110,127,119,0.15);
 }
 
-.form-group {
-  margin-bottom: 18px;
-}
-
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: #0b1f3a;
-}
-
+/* Fields */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-weight: 500; margin-bottom: 5px; font-size: 13px; color: #0b1f3a; }
 .form-input {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1px solid rgba(110,127,119,0.2);
-  border-radius: 8px;
-  font-size: 14px;
-  background: rgba(255,255,255,0.6);
-  transition: all 0.25s ease;
-  box-sizing: border-box;
+  width: 100%; padding: 11px 14px; border: 0.5px solid rgba(110,127,119,0.2);
+  border-radius: 8px; font-size: 14px; background: #fff;
+  transition: all 0.25s ease; box-sizing: border-box;
 }
-
-.form-input:focus {
-  outline: none;
-  border-color: #6e7f77;
-  background: rgba(255,255,255,0.8);
-  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
-}
-
-.form-input:read-only {
-  background: rgba(110,127,119,0.03);
-  color: #666;
-  cursor: default;
-}
-
-.form-row {
-  display: flex;
-  gap: 12px;
-}
-
+.form-input:focus { outline: none; border-color: #6e7f77; box-shadow: 0 0 0 2px rgba(110,127,119,0.08); }
+.form-helper { font-size: 11px; color: #999; margin-top: 3px; }
+.form-row { display: flex; gap: 12px; }
 .form-row .form-group { flex: 1; }
 
-/* ===== BUTTONS ===== */
+/* Buttons */
 .save-btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #6e7f77, #5a6b63);
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
-  margin-top: 25px;
+  width: 100%; padding: 14px; border: none; border-radius: 10px;
+  background: #6e7f77; color: white; font-weight: 600; font-size: 16px;
+  cursor: pointer; transition: 0.25s ease; margin-top: 20px;
 }
+.save-btn:hover:not(:disabled) { background: #5a6b63; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(110,127,119,0.3); }
+.save-btn:disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
 
-.save-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(110,127,119,0.3);
+.pw-btn {
+  width: 100%; padding: 12px; border: 0.5px solid rgba(110,127,119,0.25);
+  border-radius: 10px; background: transparent; color: #6e7f77;
+  font-weight: 600; font-size: 14px; cursor: pointer; transition: 0.25s ease;
 }
+.pw-btn:hover:not(:disabled) { background: rgba(110,127,119,0.06); }
+.pw-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.save-btn:disabled {
-  background: #999;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-/* ===== MESSAGES ===== */
+/* Messages */
 .success-message {
-  background: rgba(46,204,113,0.1);
-  border: 1px solid rgba(46,204,113,0.3);
-  color: #27ae60;
-  padding: 14px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  display: none;
-  text-align: center;
+  background: rgba(46,204,113,0.1); border: 1px solid rgba(46,204,113,0.3);
+  color: #27ae60; padding: 14px; border-radius: 8px; margin-bottom: 16px;
+  font-size: 14px; display: none; text-align: center;
 }
-
 .success-message.show { display: block; }
-
 .error-message {
-  background: rgba(192,57,43,0.1);
-  border: 1px solid rgba(192,57,43,0.3);
-  color: #c0392b;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 14px;
-  display: none;
+  background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.3);
+  color: #c0392b; padding: 12px; border-radius: 8px; margin-bottom: 16px;
+  font-size: 14px; display: none;
 }
-
 .error-message.show { display: block; }
 
-/* ===== NAV ===== */
-.back-link {
-  text-align: center;
-  margin-top: 25px;
-  font-size: 14px;
-}
-
-.back-link a {
-  color: #6e7f77;
-  text-decoration: none;
-  font-weight: 600;
-}
-
+/* Nav */
+.back-link { text-align: center; margin-top: 25px; font-size: 14px; }
+.back-link a { color: #6e7f77; text-decoration: none; font-weight: 600; }
 .back-link a:hover { text-decoration: underline; }
 
+/* Password section toggle */
+.pw-section { display: none; margin-top: 16px; padding: 20px; border-radius: 10px; background: rgba(110,127,119,0.04); border: 0.5px solid rgba(110,127,119,0.12); }
+.pw-section.show { display: block; }
+.pw-toggle { font-size: 13px; color: #6e7f77; cursor: pointer; font-weight: 500; margin-top: 12px; display: inline-block; }
+.pw-toggle:hover { text-decoration: underline; }
+
 @media (max-width: 480px) {
-  .profile-card { padding: 35px 25px; }
-  .profile-title { font-size: 24px; }
+  .profile-card { padding: 35px 22px; }
+  .profile-title { font-size: 22px; }
   .form-row { flex-direction: column; gap: 0; }
 }
 </style>
@@ -284,59 +133,67 @@ body {
 <div class="profile-card">
   <div class="profile-header">
     <h1 class="profile-title">My Profile</h1>
-    <p class="profile-subtitle">Manage your account and co-branding info</p>
+    <p class="profile-subtitle">Manage your account and co-branding information</p>
     <div class="role-badge" id="roleBadge"></div>
   </div>
 
-  <div class="success-message" id="successMessage">&#10003; Profile updated!</div>
+  <div class="success-message" id="successMessage"></div>
   <div class="error-message" id="errorMessage"></div>
 
   <!-- HEADSHOT -->
-  <div class="headshot-section">
+  <div class="headshot-section" id="headshotSection">
     <div class="headshot-circle no-photo" id="headshotCircle" onclick="document.getElementById('headshotFile').click()">
       <span class="headshot-placeholder-text" id="headshotPlaceholder">Click to upload<br>your headshot</span>
     </div>
     <input type="file" id="headshotFile" class="headshot-input" accept="image/*">
-    <p class="headshot-helper">Used for co-branded materials. Square crop works best.</p>
+    <p class="headshot-helper">Used on co-branded materials. Square crop works best.</p>
     <p class="headshot-status missing" id="headshotStatus">No headshot uploaded</p>
   </div>
 
   <form id="profileForm">
-    <!-- BASIC INFO (read-only — set at signup) -->
-    <div class="form-section-title">Account Info</div>
-    
+    <!-- PERSONAL INFO -->
+    <div class="form-section-title">Personal information</div>
+
     <div class="form-group">
       <label class="form-label">Full Name</label>
-      <input type="text" class="form-input" id="profileName" readonly>
+      <input type="text" class="form-input" id="profileName" placeholder="Your full name">
     </div>
 
     <div class="form-group">
-      <label class="form-label">Email (login)</label>
+      <label class="form-label">Email</label>
       <input type="email" class="form-input" id="profileEmail" readonly>
+      <div class="form-helper">Contact support to change your login email.</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="profilePhone" placeholder="(555) 123-4567">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-input" id="profileTitle" placeholder="e.g. Realtor, Broker">
+      </div>
+    </div>
+
+    <!-- BROKERAGE -->
+    <div class="form-section-title">Brokerage</div>
+
+    <div class="form-group">
+      <label class="form-label">Brokerage Name</label>
+      <input type="text" class="form-input" id="profileBrokerage" placeholder="Your brokerage">
     </div>
 
     <div class="form-group">
-      <label class="form-label">Brokerage</label>
-      <input type="text" class="form-input" id="profileBrokerage" readonly>
-    </div>
-
-    <!-- EDITABLE PARTNER INFO -->
-    <div class="form-section-title">Partner Credentials</div>
-
-    <div class="form-group">
-      <label class="form-label">Real Estate License Number</label>
+      <label class="form-label">License Number</label>
       <input type="text" class="form-input" id="profileLicense" placeholder="Your state license number">
     </div>
 
-    <div class="form-group">
-      <label class="form-label">Phone Number</label>
-      <input type="tel" class="form-input" id="profilePhone" placeholder="(555) 123-4567">
-    </div>
-
-    <div class="form-section-title">Brokerage Address</div>
+    <!-- ADDRESS -->
+    <div class="form-section-title">Brokerage address</div>
 
     <div class="form-group">
-      <label class="form-label">Street Address</label>
+      <label class="form-label">Street</label>
       <input type="text" class="form-input" id="profileAddress" placeholder="123 Main Street">
     </div>
 
@@ -355,8 +212,58 @@ body {
       </div>
     </div>
 
+    <!-- WEB & SOCIAL -->
+    <div class="form-section-title">Web and social</div>
+
+    <div class="form-group">
+      <label class="form-label">Website</label>
+      <input type="text" class="form-input" id="profileWebsite" placeholder="yourwebsite.com">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Facebook</label>
+        <input type="text" class="form-input" id="profileFacebook" placeholder="Profile URL">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram</label>
+        <input type="text" class="form-input" id="profileInstagram" placeholder="@handle">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">LinkedIn</label>
+        <input type="text" class="form-input" id="profileLinkedin" placeholder="Profile URL">
+      </div>
+      <div class="form-group">
+        <label class="form-label">TikTok</label>
+        <input type="text" class="form-input" id="profileTiktok" placeholder="@handle">
+      </div>
+    </div>
+
     <button type="submit" class="save-btn" id="saveBtn">Save Changes</button>
   </form>
+
+  <!-- PASSWORD -->
+  <div class="form-section-title">Security</div>
+  <span class="pw-toggle" onclick="togglePwSection()">Change my password</span>
+
+  <div class="pw-section" id="pwSection">
+    <div class="form-group">
+      <label class="form-label">Current Password</label>
+      <input type="password" class="form-input" id="pwCurrent" placeholder="Enter current password" autocomplete="current-password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">New Password</label>
+      <input type="password" class="form-input" id="pwNew" placeholder="At least 6 characters" autocomplete="new-password">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Confirm New Password</label>
+      <input type="password" class="form-input" id="pwConfirm" placeholder="Re-enter new password" autocomplete="new-password">
+    </div>
+    <button type="button" class="pw-btn" id="pwBtn" onclick="changePassword()">Update Password</button>
+  </div>
 
   <div class="back-link">
     <a href="portal.html">&larr; Back to Portal</a>
@@ -365,10 +272,7 @@ body {
 </div>
 
 <script>
-/* ===========================
-   PROFILE PAGE LOGIC
-=========================== */
-
+var PROFILE_API = 'https://agent-edge-backend.vercel.app/api/profile';
 var successMessage = document.getElementById('successMessage');
 var errorMessage = document.getElementById('errorMessage');
 var saveBtn = document.getElementById('saveBtn');
@@ -378,92 +282,69 @@ var headshotPlaceholder = document.getElementById('headshotPlaceholder');
 var headshotStatus = document.getElementById('headshotStatus');
 var headshotData = null;
 
-// ===== POPULATE BASIC INFO =====
-document.getElementById('profileName').value = sessionStorage.getItem('agentEdgeUserName') || sessionStorage.getItem('agentEdgeName') || '';
-document.getElementById('profileEmail').value = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser') || '';
-document.getElementById('profileBrokerage').value = sessionStorage.getItem('agentEdgeUserBrokerage') || '';
+// ===== POPULATE FROM SESSION =====
+var userEmail = sessionStorage.getItem('agentEdgeUserEmail') || sessionStorage.getItem('agentEdgeUser') || '';
+document.getElementById('profileEmail').value = userEmail;
 
-// Show role badge
+// Role badge
 var role = sessionStorage.getItem('agentEdgeRole') || 'trial';
 var roleBadge = document.getElementById('roleBadge');
-if (role === 'partner') {
-  roleBadge.textContent = 'PARTNER';
-  roleBadge.className = 'role-badge role-partner';
-} else if (sessionStorage.getItem('agentEdgeAdmin') === 'true') {
-  roleBadge.textContent = 'ADMIN';
-  roleBadge.className = 'role-badge role-admin';
-} else {
-  roleBadge.textContent = 'EXPLORER';
-  roleBadge.className = 'role-badge role-trial';
-  // Disable headshot upload for explorers
-  headshotCircle.onclick = null;
-  headshotCircle.style.cursor = 'default';
-  headshotCircle.style.opacity = '0.5';
-  headshotCircle.style.borderStyle = 'dashed';
-  headshotCircle.style.borderColor = 'rgba(0,0,0,0.1)';
+if (role === 'partner') { roleBadge.textContent = 'PARTNER'; roleBadge.className = 'role-badge role-partner'; }
+else if (sessionStorage.getItem('agentEdgeAdmin') === 'true') { roleBadge.textContent = 'ADMIN'; roleBadge.className = 'role-badge role-admin'; }
+else {
+  roleBadge.textContent = 'EXPLORER'; roleBadge.className = 'role-badge role-trial';
+  headshotCircle.onclick = null; headshotCircle.style.cursor = 'default'; headshotCircle.style.opacity = '0.5';
   headshotPlaceholder.innerHTML = 'Available with<br>full partnership';
-  document.querySelector('.headshot-section').insertAdjacentHTML('beforeend',
-    '<p style="font-size:12px;color:#6e7f77;margin-top:8px;"><a href="convert-membership.html" style="color:#6e7f77;font-weight:600;text-decoration:none;">Become a Partner</a> to upload your headshot and unlock co-branded materials.</p>');
 }
 
-// ===== LOAD EXISTING PROFILE FROM SUPABASE =====
+// ===== LOAD PROFILE =====
 (async function loadProfile() {
-  var email = document.getElementById('profileEmail').value;
-  if (!email) return;
-
+  if (!userEmail) return;
   try {
-    var response = await fetch('https://agent-edge-backend.vercel.app/api/profile?email=' + encodeURIComponent(email));
-    var data = await response.json();
-
+    var r = await fetch(PROFILE_API + '?email=' + encodeURIComponent(userEmail));
+    var data = await r.json();
     if (data.success && data.profile) {
       var p = data.profile;
-      if (p.license_number) document.getElementById('profileLicense').value = p.license_number;
-      if (p.phone) document.getElementById('profilePhone').value = p.phone;
-      if (p.address) document.getElementById('profileAddress').value = p.address;
-      if (p.city) document.getElementById('profileCity').value = p.city;
-      if (p.state) document.getElementById('profileState').value = p.state;
-      if (p.zip) document.getElementById('profileZip').value = p.zip;
+      document.getElementById('profileName').value = p.name || p.user_name || '';
+      document.getElementById('profilePhone').value = p.phone || '';
+      document.getElementById('profileTitle').value = p.title || p.user_title || '';
+      document.getElementById('profileBrokerage').value = p.company || p.user_brokerage || '';
+      document.getElementById('profileLicense').value = p.license_number || '';
+      document.getElementById('profileAddress').value = p.address || '';
+      document.getElementById('profileCity').value = p.city || '';
+      document.getElementById('profileState').value = p.state || '';
+      document.getElementById('profileZip').value = p.zip || '';
+      document.getElementById('profileWebsite').value = p.website || '';
+      document.getElementById('profileFacebook').value = p.facebook || '';
+      document.getElementById('profileInstagram').value = p.instagram || '';
+      document.getElementById('profileLinkedin').value = p.linkedin || '';
+      document.getElementById('profileTiktok').value = p.tiktok || '';
 
-      // Show headshot if exists
       if (p.headshot_url) {
-        headshotCircle.classList.remove('no-photo');
-        headshotCircle.classList.add('has-photo');
+        headshotCircle.classList.remove('no-photo'); headshotCircle.classList.add('has-photo');
         headshotPlaceholder.style.display = 'none';
-        var img = document.createElement('img');
-        img.src = p.headshot_url;
-        headshotCircle.appendChild(img);
-        headshotStatus.textContent = 'Headshot uploaded ✓';
-        headshotStatus.className = 'headshot-status uploaded';
-        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
+        var img = document.createElement('img'); img.src = p.headshot_url; headshotCircle.appendChild(img);
+        headshotStatus.textContent = 'Headshot uploaded'; headshotStatus.className = 'headshot-status uploaded';
       }
+
+      // Format phone
+      var phoneEl = document.getElementById('profilePhone');
+      if (phoneEl.value) formatPhone(phoneEl);
     }
-  } catch (e) {
-    console.error('Failed to load profile:', e);
-  }
+  } catch (e) { console.error('Failed to load profile:', e); }
 })();
 
 // ===== HEADSHOT PREVIEW =====
 headshotFile.addEventListener('change', function(e) {
-  var file = e.target.files[0];
-  if (!file) return;
-
-  if (file.size > 2 * 1024 * 1024) {
-    errorMessage.textContent = 'Headshot must be under 2MB.';
-    errorMessage.classList.add('show');
-    return;
-  }
-
+  var file = e.target.files[0]; if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showError('Headshot must be under 2MB.'); return; }
   var reader = new FileReader();
-  reader.onload = function(event) {
-    headshotData = event.target.result;
-    headshotCircle.classList.remove('no-photo');
-    headshotCircle.classList.add('has-photo');
+  reader.onload = function(ev) {
+    headshotData = ev.target.result;
+    headshotCircle.classList.remove('no-photo'); headshotCircle.classList.add('has-photo');
     headshotPlaceholder.style.display = 'none';
-    var existingImg = headshotCircle.querySelector('img');
-    if (existingImg) existingImg.remove();
-    var img = document.createElement('img');
-    img.src = headshotData;
-    headshotCircle.appendChild(img);
+    var existing = headshotCircle.querySelector('img'); if (existing) existing.remove();
+    var img = document.createElement('img'); img.src = headshotData; headshotCircle.appendChild(img);
     headshotStatus.textContent = 'New headshot selected — save to apply';
     headshotStatus.className = 'headshot-status missing';
   };
@@ -472,70 +353,91 @@ headshotFile.addEventListener('change', function(e) {
 
 // ===== SAVE PROFILE =====
 document.getElementById('profileForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  errorMessage.classList.remove('show');
-  successMessage.classList.remove('show');
-
-  var email = document.getElementById('profileEmail').value;
-  if (!email) {
-    errorMessage.textContent = 'Session expired. Please log in again.';
-    errorMessage.classList.add('show');
-    return;
-  }
-
-  saveBtn.disabled = true;
-  saveBtn.textContent = 'Saving...';
+  e.preventDefault(); clearMessages();
+  saveBtn.disabled = true; saveBtn.textContent = 'Saving...';
 
   try {
-    var response = await fetch('https://agent-edge-backend.vercel.app/api/profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    var r = await fetch(PROFILE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email: email,
+        email: userEmail,
+        name: document.getElementById('profileName').value.trim(),
+        phone: document.getElementById('profilePhone').value.replace(/\D/g, ''),
+        title: document.getElementById('profileTitle').value.trim(),
+        company: document.getElementById('profileBrokerage').value.trim(),
         licenseNumber: document.getElementById('profileLicense').value.trim(),
-        phone: document.getElementById('profilePhone').value.trim(),
         address: document.getElementById('profileAddress').value.trim(),
         city: document.getElementById('profileCity').value.trim(),
-        state: document.getElementById('profileState').value.trim().toUpperCase(),
+        state: document.getElementById('profileState').value.trim(),
         zip: document.getElementById('profileZip').value.trim(),
+        website: document.getElementById('profileWebsite').value.trim(),
+        facebook: document.getElementById('profileFacebook').value.trim(),
+        instagram: document.getElementById('profileInstagram').value.trim(),
+        linkedin: document.getElementById('profileLinkedin').value.trim(),
+        tiktok: document.getElementById('profileTiktok').value.trim(),
         headshot: headshotData || null
       })
     });
-
-    var data = await response.json();
-
-    if (!response.ok || !data.success) {
-      errorMessage.textContent = data.message || 'Failed to save. Try again.';
-      errorMessage.classList.add('show');
-    } else {
-      successMessage.classList.add('show');
-      if (headshotData) {
-        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
-        headshotStatus.textContent = 'Headshot uploaded ✓';
-        headshotStatus.className = 'headshot-status uploaded';
-      }
-      setTimeout(function() { successMessage.classList.remove('show'); }, 3000);
+    var data = await r.json();
+    if (!r.ok || !data.success) { showError(data.message || 'Failed to save.'); }
+    else {
+      showSuccess('Profile updated!');
+      if (headshotData) { headshotStatus.textContent = 'Headshot uploaded'; headshotStatus.className = 'headshot-status uploaded'; headshotData = null; }
+      // Sync session
+      sessionStorage.setItem('agentEdgeName', document.getElementById('profileName').value.trim());
+      sessionStorage.setItem('agentEdgeUserBrokerage', document.getElementById('profileBrokerage').value.trim());
     }
-  } catch (error) {
-    console.error('Profile save error:', error);
-    errorMessage.textContent = 'Connection error. Try again.';
-    errorMessage.classList.add('show');
-  } finally {
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Changes';
-  }
+  } catch (err) { console.error('Save error:', err); showError('Connection error. Try again.'); }
+  finally { saveBtn.disabled = false; saveBtn.textContent = 'Save Changes'; }
 });
 
-// Phone formatting
-document.getElementById('profilePhone').addEventListener('input', function(e) {
-  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-});
+// ===== PASSWORD CHANGE =====
+function togglePwSection() {
+  document.getElementById('pwSection').classList.toggle('show');
+}
 
-// State uppercase
-document.getElementById('profileState').addEventListener('input', function(e) {
-  e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
-});
+async function changePassword() {
+  clearMessages();
+  var current = document.getElementById('pwCurrent').value;
+  var newPw = document.getElementById('pwNew').value;
+  var confirm = document.getElementById('pwConfirm').value;
+
+  if (!current || !newPw) { showError('Please fill in all password fields.'); return; }
+  if (newPw.length < 6) { showError('New password must be at least 6 characters.'); return; }
+  if (newPw !== confirm) { showError('New passwords do not match.'); return; }
+
+  var pwBtn = document.getElementById('pwBtn');
+  pwBtn.disabled = true; pwBtn.textContent = 'Updating...';
+
+  try {
+    var r = await fetch(PROFILE_API, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'changePassword', email: userEmail, currentPassword: current, newPassword: newPw })
+    });
+    var data = await r.json();
+    if (!r.ok || !data.success) { showError(data.message || 'Password change failed.'); }
+    else {
+      showSuccess('Password updated!');
+      document.getElementById('pwCurrent').value = '';
+      document.getElementById('pwNew').value = '';
+      document.getElementById('pwConfirm').value = '';
+    }
+  } catch (err) { showError('Connection error.'); }
+  finally { pwBtn.disabled = false; pwBtn.textContent = 'Update Password'; }
+}
+
+// ===== HELPERS =====
+function showSuccess(msg) { successMessage.textContent = msg; successMessage.classList.add('show'); setTimeout(function() { successMessage.classList.remove('show'); }, 4000); }
+function showError(msg) { errorMessage.textContent = msg; errorMessage.classList.add('show'); }
+function clearMessages() { successMessage.classList.remove('show'); errorMessage.classList.remove('show'); }
+
+function formatPhone(el) {
+  var x = el.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  el.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+}
+
+document.getElementById('profilePhone').addEventListener('input', function(e) { formatPhone(e.target); });
+document.getElementById('profileState').addEventListener('input', function(e) { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, ''); });
 </script>
 
 </body>
