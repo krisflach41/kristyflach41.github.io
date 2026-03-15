@@ -91,8 +91,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 @keyframes recPulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .rec-timer{color:white;font-size:13px;font-family:'Courier New',monospace;}
 .camera-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--bg-panel);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;flex-wrap:wrap;}
-.vb-mode-btn{font-size:11px !important;padding:6px 12px !important;}
-.vb-mode-btn.active{background:var(--sage) !important;border-color:var(--sage) !important;color:white !important;}
 
 /* Teleprompter panel */
 .teleprompter-panel{display:flex;flex-direction:column;gap:14px;}
@@ -308,7 +306,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
     <div>
       <div class="camera-wrap" id="cameraWrap">
         <video id="cameraFeed" class="camera-feed" autoplay muted playsinline style="display:none;"></video>
-        <canvas id="vbCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;"></canvas>
         <div class="camera-offline" id="cameraOffline">
           <i class="fas fa-video-slash"></i>
           <span style="font-size:13px;">Camera off</span>
@@ -332,16 +329,6 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <button class="btn" id="btnTeleprompter" onclick="toggleTeleprompter()" disabled><i class="fas fa-scroll"></i> Teleprompter</button>
         <button class="btn primary" id="btnRecord" onclick="toggleRecord()" disabled><i class="fas fa-circle"></i> Record</button>
         <button class="btn danger" id="btnStopSave" onclick="stopAndSave()" style="display:none;"><i class="fas fa-stop"></i> Stop &amp; Save</button>
-        <span style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
-        <button class="btn vb-mode-btn active" id="vbNone" onclick="setVbMode('none')" title="No background">
-          <i class="fas fa-ban"></i> None
-        </button>
-        <button class="btn vb-mode-btn" id="vbBlur" onclick="setVbMode('blur')" title="Blur background">
-          <i class="fas fa-eye-slash"></i> Blur
-        </button>
-        <button class="btn vb-mode-btn" id="vbImage" onclick="setVbMode('image')" title="Virtual background">
-          <i class="fas fa-image"></i> Background
-        </button>
       </div>
       <div class="recording-saved" id="recordingSaved">
         <i class="fas fa-check-circle" style="color:var(--accent-green);"></i>
@@ -1001,139 +988,6 @@ var tpInterval = null;
 var tpRunning = false;
 var tpAnimFrame = null;
 
-// ===== VIRTUAL BACKGROUND =====
-var vbMode = 'none'; // 'none', 'blur', 'image'
-var vbSegmenter = null;
-var vbAnimFrame = null;
-var vbBgImage = null;
-var vbCanvas = null;
-var vbCtx = null;
-var vbLoaded = false;
-
-// Preload background image
-(function(){
-  vbBgImage = new Image();
-  vbBgImage.src = 'video-background.jpg';
-})();
-
-function setVbMode(mode) {
-  var prevMode = vbMode;
-  vbMode = mode;
-  document.querySelectorAll('.vb-mode-btn').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('vb' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
-
-  var feed = document.getElementById('cameraFeed');
-  var canvas = document.getElementById('vbCanvas');
-
-  if (!mediaStream) return; // camera not started yet
-
-  // If switching between none and VB, restart camera at proper resolution
-  var needsRestart = (prevMode === 'none' && mode !== 'none') || (prevMode !== 'none' && mode === 'none');
-
-  if (mode === 'none') {
-    if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
-    feed.style.display = 'block';
-    canvas.style.display = 'none';
-    if (needsRestart) { stopCamera(); startCamera(); }
-  } else {
-    feed.style.display = 'none';
-    canvas.style.display = 'block';
-    if (needsRestart) {
-      stopCamera();
-      startCamera();
-    } else {
-      // Already in a VB mode, just keep going (blur <-> image switch)
-      // No restart needed
-    }
-  }
-}
-
-async function loadSegmenterAndStart() {
-  if (!vbLoaded) {
-    // Load MediaPipe SelfieSegmentation via CDN
-    try {
-      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/selfie_segmentation.js');
-      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js');
-      vbLoaded = true;
-    } catch(e) {
-      console.error('Failed to load MediaPipe:', e);
-      alert('Could not load virtual background library.');
-      setVbMode('none');
-      return;
-    }
-  }
-
-  if (!vbSegmenter) {
-    vbSegmenter = new SelfieSegmentation({locateFile: function(file) {
-      return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/' + file;
-    }});
-    vbSegmenter.setOptions({ modelSelection: 1, selfieMode: true });
-    vbSegmenter.onResults(onVbResults);
-  }
-
-  var feed = document.getElementById('cameraFeed');
-  vbCanvas = document.getElementById('vbCanvas');
-  vbCanvas.width = feed.videoWidth || 1280;
-  vbCanvas.height = feed.videoHeight || 720;
-  vbCtx = vbCanvas.getContext('2d');
-
-  processVbFrame();
-}
-
-var vbProcessing = false;
-
-function processVbFrame() {
-  if (vbMode === 'none' || !vbSegmenter || !mediaStream) return;
-  var feed = document.getElementById('cameraFeed');
-  if (feed.readyState >= 2) {
-    vbSegmenter.send({image: feed}).catch(function(){
-      // On error, try again next frame
-      if (vbMode !== 'none') vbAnimFrame = requestAnimationFrame(processVbFrame);
-    });
-  } else {
-    // Video not ready yet, try again
-    vbAnimFrame = requestAnimationFrame(processVbFrame);
-  }
-}
-
-function onVbResults(results) {
-  if (!vbCtx || !vbCanvas) return;
-  var w = vbCanvas.width;
-  var h = vbCanvas.height;
-
-  vbCtx.save();
-  vbCtx.clearRect(0, 0, w, h);
-
-  // Draw mask, cut person, draw background behind
-  vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
-  vbCtx.globalCompositeOperation = 'source-in';
-  vbCtx.drawImage(results.image, 0, 0, w, h);
-  vbCtx.globalCompositeOperation = 'destination-over';
-  if (vbMode === 'image' && vbBgImage && vbBgImage.complete) {
-    vbCtx.drawImage(vbBgImage, 0, 0, w, h);
-  } else if (vbMode === 'blur') {
-    vbCtx.filter = 'blur(14px)';
-    vbCtx.drawImage(results.image, 0, 0, w, h);
-    vbCtx.filter = 'none';
-  }
-
-  vbCtx.restore();
-
-  // Schedule next frame AFTER this one is done — no pileup
-  if (vbMode !== 'none' && mediaStream) {
-    vbAnimFrame = requestAnimationFrame(processVbFrame);
-  }
-}
-
-function loadScript(src) {
-  return new Promise(function(resolve, reject) {
-    if (document.querySelector('script[src="'+src+'"]')) { resolve(); return; }
-    var s = document.createElement('script');
-    s.src = src; s.onload = resolve; s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-
 function toggleCamera() {
   if (mediaStream) {
     stopCamera();
@@ -1144,27 +998,10 @@ function toggleCamera() {
 
 async function startCamera() {
   try {
-    // Use lower resolution when VB is active for smoother segmentation
-    var videoConstraints = (vbMode !== 'none')
-      ? {width:{ideal:1280},height:{ideal:720}}
-      : {width:{ideal:1280},height:{ideal:720}};
-    mediaStream = await navigator.mediaDevices.getUserMedia({video:videoConstraints, audio:true});
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}}, audio:true});
     var feed = document.getElementById('cameraFeed');
     feed.srcObject = mediaStream;
-    await feed.play();
-
-    var canvas = document.getElementById('vbCanvas');
-    canvas.width = feed.videoWidth || 1280;
-    canvas.height = feed.videoHeight || 720;
-
-    if (vbMode === 'none') {
-      feed.style.display = 'block';
-      canvas.style.display = 'none';
-    } else {
-      feed.style.display = 'none';
-      canvas.style.display = 'block';
-      loadSegmenterAndStart();
-    }
+    feed.style.display = 'block';
     document.getElementById('cameraOffline').style.display = 'none';
     document.getElementById('btnCamera').innerHTML = '<i class="fas fa-video-slash"></i> Stop Camera';
     document.getElementById('btnRecord').disabled = false;
@@ -1175,13 +1012,11 @@ async function startCamera() {
 }
 
 function stopCamera() {
-  if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
   if (mediaStream) {
     mediaStream.getTracks().forEach(function(t){t.stop();});
     mediaStream = null;
   }
   document.getElementById('cameraFeed').style.display = 'none';
-  document.getElementById('vbCanvas').style.display = 'none';
   document.getElementById('cameraOffline').style.display = 'flex';
   document.getElementById('btnCamera').innerHTML = '<i class="fas fa-video"></i> Start Camera';
   document.getElementById('btnRecord').disabled = true;
@@ -1198,21 +1033,7 @@ function toggleRecord() {
 
 function startRecording() {
   recordedChunks = [];
-
-  // If virtual background is on, record from canvas + audio
-  var recordStream;
-  if (vbMode !== 'none') {
-    var canvas = document.getElementById('vbCanvas');
-    var canvasStream = canvas.captureStream(30);
-    // Add audio track from original mediaStream
-    var audioTrack = mediaStream.getAudioTracks()[0];
-    if (audioTrack) canvasStream.addTrack(audioTrack);
-    recordStream = canvasStream;
-  } else {
-    recordStream = mediaStream;
-  }
-
-  mediaRecorder = new MediaRecorder(recordStream, {mimeType:'video/webm;codecs=vp9,opus'});
+  mediaRecorder = new MediaRecorder(mediaStream, {mimeType:'video/webm;codecs=vp9,opus'});
   mediaRecorder.ondataavailable = function(e){if(e.data.size>0)recordedChunks.push(e.data);};
   mediaRecorder.onstop = saveRecording;
   mediaRecorder.start(100);
