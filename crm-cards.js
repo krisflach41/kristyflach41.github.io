@@ -1918,7 +1918,9 @@ function crmPopulateCard(c,activity){
   var type=c.type||'other';
   var ti=CONTACT_TYPES[type]||CONTACT_TYPES.other;
   document.getElementById('crmDName').textContent=c.name||'Unnamed';
-  document.getElementById('crmDMeta').textContent=[c.email,formatPhoneDisplay(c.phone),c.company].filter(Boolean).join(' – ');
+  var metaParts=[c.email,formatPhoneDisplay(c.phone),c.company].filter(Boolean);
+  if(c.ae_id&&(type==='realtor'))metaParts.push(c.ae_id);
+  document.getElementById('crmDMeta').textContent=metaParts.join(' – ');
   document.getElementById('crmDTypeBadge').innerHTML='<span class="card-type-badge" style="background:'+ti.color+'22;color:'+ti.color+';"><i class="fas '+ti.icon+'"></i> '+ti.label+'</span>';
   // Show qualifying income for borrowers (not past clients)
   var qt=document.getElementById('cardQualifyingWrap');if(qt)qt.style.display=(type==='borrower'?'block':'none');
