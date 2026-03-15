@@ -56,6 +56,10 @@ function setUserSession(user) {
   sessionStorage.setItem('agentEdgeName', user.name);
 }
 
+function getAeId() {
+  return sessionStorage.getItem('agentEdgeAeId') || '';
+}
+
 function logout() {
   sessionStorage.clear();
   window.location.href = 'login.html';
@@ -130,6 +134,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Store headshot flag for co-brand gating
         sessionStorage.setItem('agentEdgeHasHeadshot', data.hasHeadshot ? 'true' : 'false');
+        
+        // Store AE ID
+        if (data.aeId) {
+          sessionStorage.setItem('agentEdgeAeId', data.aeId);
+        }
         
         // Store lender/admin name for cheat sheets
         if (data.lenderName) {
