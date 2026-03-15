@@ -1096,67 +1096,18 @@ function processVbFrame() {
   }
 }
 
-// Off-screen canvas for mask smoothing
-var vbMaskCanvas = null;
-var vbMaskCtx = null;
-var vbPrevMask = null;
-var VB_SMOOTH = 0.6; // blend factor: 0 = no smoothing, 1 = full previous frame (0.6 = strong smoothing)
-var VB_FEATHER = 4; // edge blur radius in px
-
 function onVbResults(results) {
   if (!vbCtx || !vbCanvas) return;
   var w = vbCanvas.width;
   var h = vbCanvas.height;
 
-  // Create mask canvas on first use
-  if (!vbMaskCanvas) {
-    vbMaskCanvas = document.createElement('canvas');
-    vbMaskCanvas.width = w;
-    vbMaskCanvas.height = h;
-    vbMaskCtx = vbMaskCanvas.getContext('2d', {willReadFrequently: true});
-  }
-  if (vbMaskCanvas.width !== w || vbMaskCanvas.height !== h) {
-    vbMaskCanvas.width = w;
-    vbMaskCanvas.height = h;
-    vbPrevMask = null;
-  }
-
-  // Draw new mask to mask canvas
-  vbMaskCtx.clearRect(0, 0, w, h);
-  vbMaskCtx.drawImage(results.segmentationMask, 0, 0, w, h);
-
-  // Temporal smoothing — blend with previous mask to reduce flickering
-  var newMaskData = vbMaskCtx.getImageData(0, 0, w, h);
-  if (vbPrevMask) {
-    var nd = newMaskData.data;
-    var pd = vbPrevMask.data;
-    var s = VB_SMOOTH;
-    var ns = 1 - s;
-    for (var i = 0; i < nd.length; i += 4) {
-      nd[i]     = Math.round(nd[i] * ns + pd[i] * s);
-      nd[i + 1] = Math.round(nd[i + 1] * ns + pd[i + 1] * s);
-      nd[i + 2] = Math.round(nd[i + 2] * ns + pd[i + 2] * s);
-      nd[i + 3] = Math.round(nd[i + 3] * ns + pd[i + 3] * s);
-    }
-    vbMaskCtx.putImageData(newMaskData, 0, 0);
-  }
-  // Store for next frame
-  vbPrevMask = vbMaskCtx.getImageData(0, 0, w, h);
-
-  // Apply edge feathering — slight blur on the mask softens jagged edges
   vbCtx.save();
   vbCtx.clearRect(0, 0, w, h);
 
-  // Draw smoothed + feathered mask
-  vbCtx.filter = 'blur(' + VB_FEATHER + 'px)';
-  vbCtx.drawImage(vbMaskCanvas, 0, 0, w, h);
-  vbCtx.filter = 'none';
-
-  // Cut person from original image using feathered mask
+  // Draw mask, cut person, draw background behind
+  vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
   vbCtx.globalCompositeOperation = 'source-in';
   vbCtx.drawImage(results.image, 0, 0, w, h);
-
-  // Draw background behind the person
   vbCtx.globalCompositeOperation = 'destination-over';
   if (vbMode === 'image' && vbBgImage && vbBgImage.complete) {
     vbCtx.drawImage(vbBgImage, 0, 0, w, h);
@@ -1195,7 +1146,7 @@ async function startCamera() {
   try {
     // Use lower resolution when VB is active for smoother segmentation
     var videoConstraints = (vbMode !== 'none')
-      ? {width:{ideal:960},height:{ideal:540}}
+      ? {width:{ideal:1280},height:{ideal:720}}
       : {width:{ideal:1280},height:{ideal:720}};
     mediaStream = await navigator.mediaDevices.getUserMedia({video:videoConstraints, audio:true});
     var feed = document.getElementById('cameraFeed');
@@ -1203,8 +1154,8 @@ async function startCamera() {
     await feed.play();
 
     var canvas = document.getElementById('vbCanvas');
-    canvas.width = feed.videoWidth || 960;
-    canvas.height = feed.videoHeight || 540;
+    canvas.width = feed.videoWidth || 1280;
+    canvas.height = feed.videoHeight || 720;
 
     if (vbMode === 'none') {
       feed.style.display = 'block';
