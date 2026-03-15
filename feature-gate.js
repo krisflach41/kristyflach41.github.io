@@ -142,7 +142,7 @@
           ' Upgrade to unlock full access to everything Agent Edge has to offer.' +
         '</p>' +
         '<div class="premium-modal-buttons">' +
-          '<a href="convert-membership.html" class="premium-modal-upgrade">Upgrade to Partner</a>' +
+          '<a href="convert-membership.html" class="premium-modal-upgrade">Become a Partner</a>' +
           '<button onclick="document.getElementById(\'premiumModal\').remove()" class="premium-modal-close">Maybe Later</button>' +
         '</div>' +
       '</div>';
@@ -167,11 +167,11 @@
         '<div class="premium-modal-icon">&#9889;</div>' +
         '<h3 class="premium-modal-title">Free Limit Reached</h3>' +
         '<p class="premium-modal-message">' + 
-          'You\'ve used all <strong>' + limit + ' free ' + toolName + '</strong> in your trial. ' +
-          'Upgrade to Partner for unlimited access!' +
+          'You\'ve used all <strong>' + limit + ' free ' + toolName + '</strong> in your explorer account. ' +
+          'Become a Partner for unlimited access!' +
         '</p>' +
         '<div class="premium-modal-buttons">' +
-          '<a href="convert-membership.html" class="premium-modal-upgrade">Upgrade to Partner</a>' +
+          '<a href="convert-membership.html" class="premium-modal-upgrade">Become a Partner</a>' +
           '<button onclick="document.getElementById(\'premiumModal\').remove()" class="premium-modal-close">Maybe Later</button>' +
         '</div>' +
       '</div>';
@@ -195,9 +195,9 @@
         '<div class="usage-banner-text">' +
           '<span class="usage-banner-icon">&#9889;</span>' +
           '<strong>' + remaining + ' of ' + limit + ' free ' + toolName + ' remaining</strong>' +
-          '<span class="usage-banner-sub">in your trial</span>' +
+          '<span class="usage-banner-sub">in your explorer account</span>' +
         '</div>' +
-        '<a href="convert-membership.html" class="usage-banner-btn">Upgrade for Unlimited Access</a>' +
+        '<a href="convert-membership.html" class="usage-banner-btn">Become a Partner for Full Access</a>' +
       '</div>';
 
     document.body.insertBefore(banner, document.body.firstChild);
@@ -231,7 +231,7 @@
           'color:white; border-radius:10px; text-decoration:none;' +
           'font-weight:700; font-size:16px;' +
           'box-shadow:0 4px 15px rgba(11,78,162,0.3);' +
-        '">Upgrade to Partner</a>' +
+        '">Become a Partner</a>' +
         '<br><a href="portal.html" style="' +
           'display:inline-block; margin-top:16px; color:#999;' +
           'text-decoration:none; font-size:14px;' +
@@ -398,7 +398,7 @@
         if (used >= limitConfig.limit) {
           applyPageOverlay(
             'Free Limit Reached',
-            'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your trial. Upgrade to Partner for unlimited access!'
+            'You\'ve used all ' + limitConfig.limit + ' free ' + limitConfig.name + ' in your explorer account. Become a Partner for unlimited access!'
           );
         } else {
           showUsageBanner(limitConfig.name, used, limitConfig.limit);

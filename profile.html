@@ -393,8 +393,17 @@ if (role === 'partner') {
   roleBadge.textContent = 'ADMIN';
   roleBadge.className = 'role-badge role-admin';
 } else {
-  roleBadge.textContent = 'TRIAL';
+  roleBadge.textContent = 'EXPLORER';
   roleBadge.className = 'role-badge role-trial';
+  // Disable headshot upload for explorers
+  headshotCircle.onclick = null;
+  headshotCircle.style.cursor = 'default';
+  headshotCircle.style.opacity = '0.5';
+  headshotCircle.style.borderStyle = 'dashed';
+  headshotCircle.style.borderColor = 'rgba(0,0,0,0.1)';
+  headshotPlaceholder.innerHTML = 'Available with<br>full partnership';
+  document.querySelector('.headshot-section').insertAdjacentHTML('beforeend',
+    '<p style="font-size:12px;color:#6e7f77;margin-top:8px;"><a href="convert-membership.html" style="color:#6e7f77;font-weight:600;text-decoration:none;">Become a Partner</a> to upload your headshot and unlock co-branded materials.</p>');
 }
 
 // ===== LOAD EXISTING PROFILE FROM SUPABASE =====
