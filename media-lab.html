@@ -7,7 +7,6 @@
 <script src="auth.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.js" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -1004,7 +1003,7 @@ var tpInterval = null;
 var tpRunning = false;
 var tpAnimFrame = null;
 
-// ===== VIRTUAL BACKGROUND (New Tasks Vision API) =====
+// ===== VIRTUAL BACKGROUND (MediaPipe Selfie Segmentation) =====
 var vbMode = 'none'; // 'none', 'blur', 'image'
 var vbSegmenter = null;
 var vbAnimFrame = null;
@@ -1013,8 +1012,7 @@ var vbCanvas = null;
 var vbCtx = null;
 var vbLoaded = false;
 var vbLoading = false;
-var vbLastMask = null; // cache last mask for frame interpolation
-var vbFrameSkip = 0;   // process every other frame for performance
+var vbFrameSkip = 0;
 
 // Preload background image
 (function(){
@@ -1037,7 +1035,6 @@ function setVbMode(mode) {
 
   if (mode === 'none') {
     if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
-    vbLastMask = null;
     feed.style.display = 'block';
     canvas.style.display = 'none';
   } else {
@@ -1049,43 +1046,37 @@ function setVbMode(mode) {
 
 async function loadSegmenterAndStart() {
   if (vbLoading) return;
+  var msg = document.getElementById('vbLoadingMsg');
 
   if (!vbLoaded) {
     vbLoading = true;
-    var msg = document.getElementById('vbLoadingMsg');
     msg.style.display = 'inline';
     msg.textContent = 'Loading background engine...';
 
-    // Check if the Tasks Vision library loaded from the head script tag
-    if (typeof FilesetResolver === 'undefined' || typeof ImageSegmenter === 'undefined') {
-      console.error('Tasks Vision library not loaded');
-      msg.textContent = 'Background library failed to load.';
+    try {
+      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/selfie_segmentation.js');
+      vbLoaded = true;
+    } catch(e) {
+      console.error('Failed to load MediaPipe:', e);
+      msg.textContent = 'Failed to load.';
       msg.style.color = 'var(--accent-red)';
       vbLoading = false;
       setTimeout(function(){ msg.style.display = 'none'; }, 3000);
       setVbMode('none');
       return;
     }
-    vbLoaded = true;
   }
 
   if (!vbSegmenter) {
     try {
-      var vision = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
-      );
-      vbSegmenter = await ImageSegmenter.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter_landscape/float16/latest/selfie_segmenter_landscape.tflite'
-        },
-        runningMode: 'VIDEO',
-        outputConfidenceMasks: true,
-        outputCategoryMask: false
-      });
+      vbSegmenter = new SelfieSegmentation({locateFile: function(file) {
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/' + file;
+      }});
+      vbSegmenter.setOptions({ modelSelection: 1, selfieMode: true });
+      vbSegmenter.onResults(onVbResults);
     } catch(e) {
       console.error('Segmenter init failed:', e);
-      var msg = document.getElementById('vbLoadingMsg');
-      msg.textContent = 'Background engine failed. Using raw camera.';
+      msg.textContent = 'Background engine failed.';
       msg.style.color = 'var(--accent-red)';
       vbLoading = false;
       setTimeout(function(){ msg.style.display = 'none'; }, 3000);
@@ -1094,7 +1085,6 @@ async function loadSegmenterAndStart() {
     }
   }
 
-  var msg = document.getElementById('vbLoadingMsg');
   msg.style.display = 'none';
   vbLoading = false;
 
@@ -1102,11 +1092,9 @@ async function loadSegmenterAndStart() {
   vbCanvas = document.getElementById('vbCanvas');
   vbCanvas.width = feed.videoWidth || 1280;
   vbCanvas.height = feed.videoHeight || 720;
-  vbCtx = vbCanvas.getContext('2d', { willReadFrequently: false });
-  vbLastMask = null;
+  vbCtx = vbCanvas.getContext('2d');
   vbFrameSkip = 0;
 
-  // Start processing loop
   if (vbAnimFrame) cancelAnimationFrame(vbAnimFrame);
   processVbFrame();
 }
@@ -1118,50 +1106,14 @@ function processVbFrame() {
     vbAnimFrame = requestAnimationFrame(processVbFrame);
     return;
   }
-
-  // Process every frame but use cached mask on odd frames for smoothness
-  vbFrameSkip++;
-  var runSegmentation = (vbFrameSkip % 2 === 0);
-
-  if (runSegmentation) {
-    try {
-      var timestamp = performance.now();
-      var result = vbSegmenter.segmentForVideo(feed, timestamp);
-      if (result && result.confidenceMasks && result.confidenceMasks.length > 0) {
-        // Get the confidence mask as a Float32Array
-        var mask = result.confidenceMasks[0];
-        var maskData = mask.getAsFloat32Array();
-        // Cache a copy for interpolation frames
-        vbLastMask = new Float32Array(maskData);
-        compositeFrame(feed, vbLastMask);
-        mask.close();
-      } else {
-        // No mask, draw raw feed
-        vbCtx.drawImage(feed, 0, 0, vbCanvas.width, vbCanvas.height);
-      }
-      if (result) result.close();
-    } catch(e) {
-      // On error just draw raw frame
-      vbCtx.drawImage(feed, 0, 0, vbCanvas.width, vbCanvas.height);
-    }
-  } else {
-    // Interpolation frame: reuse cached mask
-    if (vbLastMask) {
-      compositeFrame(feed, vbLastMask);
-    } else {
-      vbCtx.drawImage(feed, 0, 0, vbCanvas.width, vbCanvas.height);
-    }
-  }
-
-  if (vbMode !== 'none' && mediaStream) {
-    vbAnimFrame = requestAnimationFrame(processVbFrame);
-  }
+  vbSegmenter.send({image: feed}).catch(function(){
+    if (vbMode !== 'none') vbAnimFrame = requestAnimationFrame(processVbFrame);
+  });
 }
 
-// Reusable temp canvases for compositing (avoids GC thrashing)
+// Reusable temp canvas for blur/image compositing
 var _tempCanvas = null;
 var _tempCtx = null;
-
 function getOrCreateTempCanvas(w, h) {
   if (!_tempCanvas || _tempCanvas.width !== w || _tempCanvas.height !== h) {
     _tempCanvas = document.createElement('canvas');
@@ -1172,57 +1124,34 @@ function getOrCreateTempCanvas(w, h) {
   return _tempCtx;
 }
 
-function compositeFrame(feed, maskData) {
+function onVbResults(results) {
+  if (!vbCtx || !vbCanvas) return;
   var w = vbCanvas.width;
   var h = vbCanvas.height;
 
-  // Draw the camera frame first
-  vbCtx.drawImage(feed, 0, 0, w, h);
+  vbCtx.save();
+  vbCtx.clearRect(0, 0, w, h);
 
-  // Get the pixel data
-  var frameData = vbCtx.getImageData(0, 0, w, h);
-  var pixels = frameData.data;
+  // Draw segmentation mask, then use compositing to separate person from bg
+  vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
+  vbCtx.globalCompositeOperation = 'source-in';
+  vbCtx.drawImage(results.image, 0, 0, w, h);
+  vbCtx.globalCompositeOperation = 'destination-over';
 
-  // Prepare background pixels
-  var bgPixels = null;
   if (vbMode === 'image' && vbBgImage && vbBgImage.complete && vbBgImage.naturalWidth > 0) {
-    var tempCtx = getOrCreateTempCanvas(w, h);
-    tempCtx.drawImage(vbBgImage, 0, 0, w, h);
-    bgPixels = tempCtx.getImageData(0, 0, w, h).data;
+    vbCtx.drawImage(vbBgImage, 0, 0, w, h);
   } else if (vbMode === 'blur') {
-    var tempCtx = getOrCreateTempCanvas(w, h);
-    tempCtx.filter = 'blur(16px)';
-    tempCtx.drawImage(feed, 0, 0, w, h);
-    tempCtx.filter = 'none';
-    bgPixels = tempCtx.getImageData(0, 0, w, h).data;
+    vbCtx.filter = 'blur(14px)';
+    vbCtx.drawImage(results.image, 0, 0, w, h);
+    vbCtx.filter = 'none';
   }
 
-  if (!bgPixels) return; // no background to composite
+  vbCtx.restore();
 
-  // Blend: mask value = person confidence (1.0 = person, 0.0 = background)
-  // Use smooth threshold for cleaner edges
-  var maskW = vbCanvas.width;
-  for (var i = 0; i < maskData.length; i++) {
-    var confidence = maskData[i];
-    // Smooth threshold: ramp from 0.3 to 0.7 for soft edges
-    var alpha;
-    if (confidence > 0.65) {
-      alpha = 1.0; // definitely person
-    } else if (confidence < 0.35) {
-      alpha = 0.0; // definitely background
-    } else {
-      alpha = (confidence - 0.35) / 0.3; // soft blend zone
-    }
-
-    var pi = i * 4;
-    if (alpha < 1.0) {
-      pixels[pi]     = pixels[pi]     * alpha + bgPixels[pi]     * (1 - alpha);
-      pixels[pi + 1] = pixels[pi + 1] * alpha + bgPixels[pi + 1] * (1 - alpha);
-      pixels[pi + 2] = pixels[pi + 2] * alpha + bgPixels[pi + 2] * (1 - alpha);
-    }
+  // Schedule next frame AFTER this one is done — no pileup
+  if (vbMode !== 'none' && mediaStream) {
+    vbAnimFrame = requestAnimationFrame(processVbFrame);
   }
-
-  vbCtx.putImageData(frameData, 0, 0);
 }
 
 function loadScript(src) {
@@ -1272,7 +1201,6 @@ async function startCamera() {
 
 function stopCamera() {
   if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
-  vbLastMask = null;
   if (mediaStream) {
     mediaStream.getTracks().forEach(function(t){t.stop();});
     mediaStream = null;
