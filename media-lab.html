@@ -90,7 +90,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .rec-dot{width:9px;height:9px;border-radius:50%;background:#ef4444;animation:recPulse 1s ease infinite;}
 @keyframes recPulse{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .rec-timer{color:white;font-size:13px;font-family:'Courier New',monospace;}
-.camera-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--bg-panel);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;}
+.camera-controls{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px;background:var(--bg-panel);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;flex-wrap:wrap;}
+.vb-mode-btn{font-size:11px !important;padding:6px 12px !important;}
+.vb-mode-btn.active{background:var(--sage) !important;border-color:var(--sage) !important;color:white !important;}
 
 /* Teleprompter panel */
 .teleprompter-panel{display:flex;flex-direction:column;gap:14px;}
@@ -306,6 +308,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
     <div>
       <div class="camera-wrap" id="cameraWrap">
         <video id="cameraFeed" class="camera-feed" autoplay muted playsinline style="display:none;"></video>
+        <canvas id="vbCanvas" style="display:none;position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;"></canvas>
         <div class="camera-offline" id="cameraOffline">
           <i class="fas fa-video-slash"></i>
           <span style="font-size:13px;">Camera off</span>
@@ -329,6 +332,16 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <button class="btn" id="btnTeleprompter" onclick="toggleTeleprompter()" disabled><i class="fas fa-scroll"></i> Teleprompter</button>
         <button class="btn primary" id="btnRecord" onclick="toggleRecord()" disabled><i class="fas fa-circle"></i> Record</button>
         <button class="btn danger" id="btnStopSave" onclick="stopAndSave()" style="display:none;"><i class="fas fa-stop"></i> Stop &amp; Save</button>
+        <span style="width:1px;height:24px;background:var(--border);margin:0 4px;"></span>
+        <button class="btn vb-mode-btn active" id="vbNone" onclick="setVbMode('none')" title="No background">
+          <i class="fas fa-ban"></i> None
+        </button>
+        <button class="btn vb-mode-btn" id="vbBlur" onclick="setVbMode('blur')" title="Blur background">
+          <i class="fas fa-eye-slash"></i> Blur
+        </button>
+        <button class="btn vb-mode-btn" id="vbImage" onclick="setVbMode('image')" title="Virtual background">
+          <i class="fas fa-image"></i> Background
+        </button>
       </div>
       <div class="recording-saved" id="recordingSaved">
         <i class="fas fa-check-circle" style="color:var(--accent-green);"></i>
@@ -988,6 +1001,177 @@ var tpInterval = null;
 var tpRunning = false;
 var tpAnimFrame = null;
 
+// ===== VIRTUAL BACKGROUND =====
+var vbMode = 'none'; // 'none', 'blur', 'image'
+var vbSegmenter = null;
+var vbAnimFrame = null;
+var vbBgImage = null;
+var vbCanvas = null;
+var vbCtx = null;
+var vbLoaded = false;
+
+// Preload background image
+(function(){
+  vbBgImage = new Image();
+  vbBgImage.src = 'video-background.jpg';
+})();
+
+function setVbMode(mode) {
+  vbMode = mode;
+  document.querySelectorAll('.vb-mode-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('vb' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+
+  var feed = document.getElementById('cameraFeed');
+  var canvas = document.getElementById('vbCanvas');
+
+  if (mode === 'none') {
+    // Show raw video, hide canvas
+    if (mediaStream) feed.style.display = 'block';
+    canvas.style.display = 'none';
+    if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
+  } else {
+    // Show canvas, hide video element (still playing for frame source)
+    feed.style.display = 'none';
+    canvas.style.display = 'block';
+    loadSegmenterAndStart();
+  }
+}
+
+async function loadSegmenterAndStart() {
+  if (!vbLoaded) {
+    // Load MediaPipe SelfieSegmentation via CDN
+    try {
+      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/selfie_segmentation.js');
+      await loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js');
+      vbLoaded = true;
+    } catch(e) {
+      console.error('Failed to load MediaPipe:', e);
+      alert('Could not load virtual background library.');
+      setVbMode('none');
+      return;
+    }
+  }
+
+  if (!vbSegmenter) {
+    vbSegmenter = new SelfieSegmentation({locateFile: function(file) {
+      return 'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation@0.1/' + file;
+    }});
+    vbSegmenter.setOptions({ modelSelection: 1, selfieMode: true });
+    vbSegmenter.onResults(onVbResults);
+  }
+
+  var feed = document.getElementById('cameraFeed');
+  vbCanvas = document.getElementById('vbCanvas');
+  vbCanvas.width = feed.videoWidth || 1280;
+  vbCanvas.height = feed.videoHeight || 720;
+  vbCtx = vbCanvas.getContext('2d');
+
+  processVbFrame();
+}
+
+function processVbFrame() {
+  if (vbMode === 'none' || !vbSegmenter || !mediaStream) return;
+  var feed = document.getElementById('cameraFeed');
+  if (feed.readyState >= 2) {
+    vbSegmenter.send({image: feed});
+  }
+  vbAnimFrame = requestAnimationFrame(processVbFrame);
+}
+
+function onVbResults(results) {
+  if (!vbCtx || !vbCanvas) return;
+  var w = vbCanvas.width;
+  var h = vbCanvas.height;
+
+  vbCtx.save();
+  vbCtx.clearRect(0, 0, w, h);
+
+  // Draw the segmentation mask
+  vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
+
+  // Get mask data and dilate it for more room to move
+  var maskData = vbCtx.getImageData(0, 0, w, h);
+  dilateMask(maskData, 8); // 8px dilation = more breathing room
+
+  vbCtx.clearRect(0, 0, w, h);
+
+  if (vbMode === 'image' && vbBgImage && vbBgImage.complete) {
+    // Draw background image
+    vbCtx.drawImage(vbBgImage, 0, 0, w, h);
+  } else if (vbMode === 'blur') {
+    // Draw blurred video
+    vbCtx.filter = 'blur(16px)';
+    vbCtx.drawImage(results.image, 0, 0, w, h);
+    vbCtx.filter = 'none';
+  }
+
+  // Apply dilated mask — cut out person area
+  var bgData = vbCtx.getImageData(0, 0, w, h);
+  for (var i = 0; i < maskData.data.length; i += 4) {
+    // maskData alpha channel: 255 = person, 0 = background
+    // We want to KEEP background where mask says background, KEEP person where mask says person
+    var personAlpha = maskData.data[i]; // red channel from dilated mask
+    if (personAlpha > 128) {
+      // This is a person pixel — make background transparent here
+      bgData.data[i + 3] = 0;
+    }
+  }
+  vbCtx.putImageData(bgData, 0, 0);
+
+  // Now draw the sharp person on top
+  vbCtx.globalCompositeOperation = 'destination-over';
+  vbCtx.drawImage(results.image, 0, 0, w, h);
+  vbCtx.globalCompositeOperation = 'source-over';
+
+  // Soft edge: draw a very slight blur at mask boundaries
+  vbCtx.restore();
+}
+
+// Dilate the mask to give more room around the person
+function dilateMask(imageData, radius) {
+  var w = imageData.width;
+  var h = imageData.height;
+  var src = new Uint8Array(w * h);
+  var dst = new Uint8Array(w * h);
+
+  // Extract red channel as mask (person confidence)
+  for (var i = 0; i < w * h; i++) {
+    src[i] = imageData.data[i * 4] > 100 ? 255 : 0;
+  }
+
+  // Dilate: if any pixel in radius is person, mark as person
+  for (var y = 0; y < h; y++) {
+    for (var x = 0; x < w; x++) {
+      var idx = y * w + x;
+      if (src[idx] === 255) { dst[idx] = 255; continue; }
+      var found = false;
+      for (var dy = -radius; dy <= radius && !found; dy++) {
+        for (var dx = -radius; dx <= radius && !found; dx++) {
+          var nx = x + dx, ny = y + dy;
+          if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+            if (src[ny * w + nx] === 255) { found = true; }
+          }
+        }
+      }
+      dst[idx] = found ? 255 : 0;
+    }
+  }
+
+  // Write back
+  for (var i = 0; i < w * h; i++) {
+    imageData.data[i * 4] = dst[i];
+  }
+}
+
+function loadScript(src) {
+  return new Promise(function(resolve, reject) {
+    if (document.querySelector('script[src="'+src+'"]')) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
 function toggleCamera() {
   if (mediaStream) {
     stopCamera();
@@ -998,10 +1182,24 @@ function toggleCamera() {
 
 async function startCamera() {
   try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({video:true, audio:true});
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}}, audio:true});
     var feed = document.getElementById('cameraFeed');
     feed.srcObject = mediaStream;
-    feed.style.display = 'block';
+    await feed.play();
+
+    // Set canvas size to match video
+    var canvas = document.getElementById('vbCanvas');
+    canvas.width = feed.videoWidth || 1280;
+    canvas.height = feed.videoHeight || 720;
+
+    if (vbMode === 'none') {
+      feed.style.display = 'block';
+      canvas.style.display = 'none';
+    } else {
+      feed.style.display = 'none';
+      canvas.style.display = 'block';
+      loadSegmenterAndStart();
+    }
     document.getElementById('cameraOffline').style.display = 'none';
     document.getElementById('btnCamera').innerHTML = '<i class="fas fa-video-slash"></i> Stop Camera';
     document.getElementById('btnRecord').disabled = false;
@@ -1012,11 +1210,13 @@ async function startCamera() {
 }
 
 function stopCamera() {
+  if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
   if (mediaStream) {
     mediaStream.getTracks().forEach(function(t){t.stop();});
     mediaStream = null;
   }
   document.getElementById('cameraFeed').style.display = 'none';
+  document.getElementById('vbCanvas').style.display = 'none';
   document.getElementById('cameraOffline').style.display = 'flex';
   document.getElementById('btnCamera').innerHTML = '<i class="fas fa-video"></i> Start Camera';
   document.getElementById('btnRecord').disabled = true;
@@ -1033,7 +1233,21 @@ function toggleRecord() {
 
 function startRecording() {
   recordedChunks = [];
-  mediaRecorder = new MediaRecorder(mediaStream, {mimeType:'video/webm;codecs=vp9,opus'});
+
+  // If virtual background is on, record from canvas + audio
+  var recordStream;
+  if (vbMode !== 'none') {
+    var canvas = document.getElementById('vbCanvas');
+    var canvasStream = canvas.captureStream(30);
+    // Add audio track from original mediaStream
+    var audioTrack = mediaStream.getAudioTracks()[0];
+    if (audioTrack) canvasStream.addTrack(audioTrack);
+    recordStream = canvasStream;
+  } else {
+    recordStream = mediaStream;
+  }
+
+  mediaRecorder = new MediaRecorder(recordStream, {mimeType:'video/webm;codecs=vp9,opus'});
   mediaRecorder.ondataavailable = function(e){if(e.data.size>0)recordedChunks.push(e.data);};
   mediaRecorder.onstop = saveRecording;
   mediaRecorder.start(100);
