@@ -12,6 +12,30 @@
 <style>
 
 /* ===== LOGOUT BUTTON (NEXT TO CART) ===== */
+.profile-icon {
+  position: fixed;
+  top: 20px;
+  right: 165px;
+  width: 50px;
+  height: 50px;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  transition: all 0.25s ease;
+  z-index: 10000;
+  text-decoration: none;
+}
+.profile-icon:hover {
+  transform: scale(1.08);
+  background: rgba(255,255,255,0.95);
+}
+
 .logout-btn {
   position: fixed;
   top: 20px;
@@ -662,6 +686,14 @@ h1 {
 </head>
 
 <body>
+
+<!-- PROFILE ICON -->
+<a href="profile.html" class="profile-icon" title="My Profile">
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6e7f77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+</a>
 
 <!-- LOGOUT BUTTON -->
 <button class="logout-btn" onclick="logout()">Logout →</button>
