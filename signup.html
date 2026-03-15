@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Start Your Free Trial - Agent Edge Partner Portal</title>
+<title>Join Agent Edge</title>
 <style>
-/* ===== BACKGROUND (PORTAL STYLE) ===== */
+/* ===== BACKGROUND ===== */
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -20,7 +20,7 @@ body {
 /* ===== SIGNUP CONTAINER ===== */
 .signup-card {
   width: 90%;
-  max-width: 520px;
+  max-width: 620px;
   margin: 0 auto;
   padding: 50px 40px;
   border-radius: 22px;
@@ -36,12 +36,12 @@ body {
 /* ===== HEADER ===== */
 .signup-header {
   text-align: center;
-  margin-bottom: 35px;
+  margin-bottom: 30px;
 }
 
 .signup-title {
   font-size: 28px;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 8px;
   color: #0b1f3a;
 }
@@ -50,12 +50,11 @@ body {
   font-size: 14px;
   color: #555;
   font-weight: 400;
+  line-height: 1.6;
 }
 
-.trial-badge {
+.path-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #0b4ea2, #1e6fd4);
-  color: white;
   padding: 6px 18px;
   border-radius: 20px;
   font-size: 13px;
@@ -64,83 +63,111 @@ body {
   letter-spacing: 0.5px;
 }
 
-/* ===== FORM INPUTS ===== */
-.form-group {
-  margin-bottom: 18px;
+.badge-partner {
+  background: #6e7f77;
+  color: white;
 }
 
-.form-label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  font-size: 14px;
+.badge-explore {
+  background: rgba(110,127,119,0.15);
+  color: #6e7f77;
+  border: 1px solid rgba(110,127,119,0.3);
+}
+
+/* ===== EXPLORER NOTICE ===== */
+.explore-notice {
+  background: rgba(110,127,119,0.06);
+  border: 1px solid rgba(110,127,119,0.2);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 25px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.explore-notice strong {
   color: #0b1f3a;
 }
 
-.form-input {
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid rgba(11,78,162,0.2);
-  border-radius: 8px;
-  font-size: 15px;
-  background: rgba(255,255,255,0.6);
-  backdrop-filter: blur(4px);
-  transition: all 0.25s ease;
-  box-sizing: border-box;
-}
-
-.form-input:focus {
-  outline: none;
-  border-color: #0b4ea2;
-  background: rgba(255,255,255,0.8);
-  box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
-}
-
-.form-helper {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-}
-
-/* ===== TERMS & CONDITIONS BOX ===== */
-.terms-box {
-  background: rgba(11,78,162,0.04);
-  border: 1px solid rgba(11,78,162,0.15);
-  border-radius: 8px;
-  padding: 20px;
-  margin: 25px 0;
-  max-height: 200px;
+/* ===== SCROLLABLE BOXES ===== */
+.scroll-box {
+  border: 1px solid rgba(110,127,119,0.2);
+  border-radius: 10px;
+  padding: 24px;
+  margin: 0 0 10px 0;
+  max-height: 300px;
   overflow-y: auto;
+  background: rgba(255,255,255,0.4);
 }
 
-.terms-box h3 {
+.scroll-box h3 {
   margin-top: 0;
-  font-size: 16px;
+  font-size: 18px;
   color: #0b1f3a;
 }
 
-.terms-box p {
-  font-size: 13px;
-  line-height: 1.6;
+.scroll-box p {
+  font-size: 14px;
+  line-height: 1.7;
   color: #333;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
-.terms-box ul {
-  font-size: 13px;
-  line-height: 1.6;
-  color: #333;
-  padding-left: 20px;
+.scroll-box strong {
+  color: #0b1f3a;
 }
 
-/* ===== CHECKBOX ===== */
+/* T&C specific styling */
+.tc-box h3 {
+  font-size: 16px;
+}
+
+.tc-box p {
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.tc-box .tc-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b1f3a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 16px 0 6px 0;
+}
+
+.tc-box .tc-caps {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Signature line in benefits */
+.sig-line {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0,0,0,0.08);
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.sig-line strong {
+  color: #0b1f3a;
+  display: block;
+}
+
+/* ===== CHECKBOXES ===== */
 .checkbox-group {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin: 20px 0;
-  padding: 15px;
-  background: rgba(255,255,255,0.4);
+  margin: 12px 0 20px 0;
+  padding: 12px 15px;
+  background: rgba(255,255,255,0.5);
   border-radius: 8px;
 }
 
@@ -150,13 +177,143 @@ body {
   height: 18px;
   cursor: pointer;
   flex-shrink: 0;
+  accent-color: #6e7f77;
 }
 
 .checkbox-group label {
-  font-size: 14px;
+  font-size: 13px;
   color: #0b1f3a;
   cursor: pointer;
   line-height: 1.5;
+}
+
+/* ===== DIVIDER ===== */
+.section-divider {
+  height: 1px;
+  background: rgba(110,127,119,0.15);
+  margin: 28px 0;
+}
+
+/* ===== FORM INPUTS ===== */
+.form-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6e7f77;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin: 0 0 12px 0;
+}
+
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: #0b1f3a;
+}
+
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid rgba(110,127,119,0.25);
+  border-radius: 8px;
+  font-size: 14px;
+  background: rgba(255,255,255,0.6);
+  transition: all 0.25s ease;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #6e7f77;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
+}
+
+.form-helper {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* ===== HEADSHOT ===== */
+.headshot-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.headshot-circle {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: 0.25s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.headshot-circle.active {
+  border: 3px dashed rgba(110,127,119,0.35);
+  background: rgba(110,127,119,0.04);
+}
+
+.headshot-circle.active:hover {
+  border-color: #6e7f77;
+  background: rgba(110,127,119,0.08);
+}
+
+.headshot-circle.has-photo {
+  border: 3px solid #6e7f77;
+}
+
+.headshot-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.headshot-circle.disabled {
+  border: 3px dashed rgba(0,0,0,0.1);
+  background: rgba(0,0,0,0.03);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.headshot-placeholder {
+  font-size: 11px;
+  color: #aaa;
+  text-align: center;
+  line-height: 1.3;
+  padding: 8px;
+}
+
+.headshot-helper {
+  font-size: 12px;
+  color: #888;
+}
+
+.headshot-disabled-note {
+  font-size: 11px;
+  color: #999;
+  font-style: italic;
+  margin-top: 4px;
 }
 
 /* ===== BUTTONS ===== */
@@ -164,10 +321,10 @@ body {
   width: 100%;
   padding: 14px;
   border: none;
-  border-radius: 8px;
-  background: #0b4ea2;
+  border-radius: 10px;
+  background: #6e7f77;
   color: white;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
   cursor: pointer;
   transition: 0.25s ease;
@@ -175,9 +332,9 @@ body {
 }
 
 .signup-btn:hover:not(:disabled) {
-  background: #0a3d7f;
+  background: #5a6b63;
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(11,78,162,0.3);
+  box-shadow: 0 6px 20px rgba(110,127,119,0.3);
 }
 
 .signup-btn:disabled {
@@ -186,7 +343,7 @@ body {
   opacity: 0.6;
 }
 
-/* ===== SUCCESS MESSAGE ===== */
+/* ===== MESSAGES ===== */
 .success-message {
   background: rgba(46,204,113,0.1);
   border: 1px solid rgba(46,204,113,0.3);
@@ -199,11 +356,8 @@ body {
   text-align: center;
 }
 
-.success-message.show {
-  display: block;
-}
+.success-message.show { display: block; }
 
-/* ===== ERROR MESSAGE ===== */
 .error-message {
   background: rgba(192,57,43,0.1);
   border: 1px solid rgba(192,57,43,0.3);
@@ -215,9 +369,7 @@ body {
   display: none;
 }
 
-.error-message.show {
-  display: block;
-}
+.error-message.show { display: block; }
 
 /* ===== LINKS ===== */
 .back-link {
@@ -227,30 +379,23 @@ body {
 }
 
 .back-link a {
-  color: #0b4ea2;
+  color: #6e7f77;
   text-decoration: none;
   font-weight: 600;
-  transition: 0.25s ease;
+  transition: 0.2s;
 }
 
 .back-link a:hover {
-  color: #0a3d7f;
+  color: #5a6b63;
   text-decoration: underline;
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 480px) {
-  .signup-card {
-    padding: 40px 25px;
-  }
-  
-  .signup-title {
-    font-size: 24px;
-  }
-  
-  .terms-box {
-    padding: 15px;
-  }
+  .signup-card { padding: 35px 22px; }
+  .signup-title { font-size: 24px; }
+  .scroll-box { padding: 18px; }
+  .form-row { flex-direction: column; gap: 0; }
 }
 </style>
 <script src="tracking.js"></script>
@@ -260,177 +405,300 @@ body {
 
 <div class="signup-card">
   <div class="signup-header">
-    <h1 class="signup-title">Start Your Free Trial</h1>
-    <p class="signup-subtitle">Get full access to Agent Edge for 7 days</p>
-    <div class="trial-badge">7-DAY FREE TRIAL</div>
+    <h1 class="signup-title" id="pageTitle">Join Agent Edge</h1>
+    <p class="signup-subtitle" id="pageSubtitle">Create your profile to get started.</p>
+    <div class="path-badge" id="pathBadge"></div>
   </div>
 
-  <div class="success-message" id="successMessage">
-    &#10003; Account created! Redirecting to portal...
+  <!-- EXPLORER NOTICE (hidden for partners) -->
+  <div class="explore-notice" id="exploreNotice" style="display:none;">
+    <strong>You're creating an explorer account.</strong> You'll have access to many of Agent Edge's tools, but some premium features — like co-branded materials — are available with a full partnership. Ready to unlock everything? <a href="signup.html?path=partner" style="color:#6e7f77;font-weight:700;">Switch to Partner →</a>
   </div>
 
+  <div class="success-message" id="successMessage">&#10003; Account created! Redirecting to portal...</div>
   <div class="error-message" id="errorMessage"></div>
 
+  <!-- ===== PARTNERSHIP BENEFITS ===== -->
+  <div class="scroll-box" id="benefitsBox">
+    <h3>Working with Kristy Flach</h3>
+
+    <p>I built Agent Edge because I believe the best partnerships start with value — not promises, not obligations, just real tools that help you do your job better.</p>
+
+    <p>I've spent two decades in the mortgage industry. I started as a senior underwriter, where I learned every rule, guideline, and exception that determines whether a loan gets approved or denied. I earned my real estate license in Washington State. I owned and operated a loan signing company. I've sat on every side of the closing table.</p>
+
+    <p>That 360-degree experience is what I bring to you — and it's exactly what I poured into Agent Edge.</p>
+
+    <p>I'm always a phone call away — that doesn't change. But sometimes it's 10pm and you just need a quick answer, or you're sitting across from a client and want to pull up a comparison on the spot, or you're prepping for an open house and need materials ready now. Agent Edge is there for those moments. It's an extension of me — available whenever you need it, working alongside the direct support you already get.</p>
+
+    <p>And here's what your clients see — an agent who has answers. Not one who says "let me check with my lender and get back to you." When you can pull up a payment comparison while you're still sitting at the kitchen table, or walk a seller through a buydown strategy with real numbers on the spot, that changes how they see you. You become the agent who just knows. That's the edge.</p>
+
+    <p>Everything on Agent Edge is free. There's no catch, no subscription, no hidden fees. Here's what you get:</p>
+
+    <p><strong>Morning Briefings</strong> — real-time market intelligence delivered to you daily. What's happening with rates, what's moving the market, and why it matters to your clients. Plus a client-friendly version you can share directly — keeping you top of mind and positioned as the expert they trust.</p>
+
+    <p><strong>A complete marketing library</strong> — over 40 professionally designed, co-branded flyers covering buyers, sellers, financing, construction, education, and open house materials. Self-serve PDF generators with built-in mortgage calculators so you can create property-specific flyers on the spot. Seven custom single property website templates you can deploy for any listing.</p>
+
+    <p><strong>Social media tools</strong> — a library of ready-to-post content organized by category, an AI-powered custom post generator, a professional image library, and direct publishing to Facebook with quick-share tools for Instagram, LinkedIn, TikTok, and YouTube.</p>
+
+    <p><strong>Client-ready reports</strong> — seven analytical reports that help your clients understand their buying power, home equity, investment potential, and more. These aren't generic handouts — they're data-driven tools that make you look like the expert you are.</p>
+
+    <p><strong>Decision tools</strong> — a Scenario Desk where you can search lending guidelines across five major agencies and submit complex scenarios for expert review and a callback. A Market Pulse tracker with interactive home value trends across all 50 states. A Seller Strategies calculator that shows clients smarter alternatives to price reductions.</p>
+
+    <p><strong>Educational resources your clients can use</strong> — detailed loan program guides for Conventional, FHA, VA, USDA, Non-Conforming, Non-Qualifying, and Reverse Mortgages. A Credit Score Simulator. Financial calculators. All written in plain English so your clients can actually understand what they're getting into.</p>
+
+    <p><strong>A credit analysis pipeline</strong> — submit client credit scenarios for review and guidance.</p>
+
+    <p>Everything is co-branded with your name and information. When your clients see these materials, they see you — backed by a lending team that knows what they're doing.</p>
+
+    <p>I built this because strong agents deserve strong support. When you succeed, I succeed. It's that simple.</p>
+
+    <div class="sig-line">
+      <strong>— Kristy Flach</strong>
+      Certified Mortgage Advisor &amp; Loan Officer<br>
+      NMLS #2632259
+    </div>
+  </div>
+
+  <div class="checkbox-group">
+    <input type="checkbox" id="agreeBenefits">
+    <label for="agreeBenefits">I have read and understand the Partnership Benefits described above.</label>
+  </div>
+
+  <!-- ===== TERMS & CONDITIONS ===== -->
+  <div class="scroll-box tc-box">
+    <h3>Terms &amp; Conditions</h3>
+
+    <p><em>Last Updated: March 2026</em></p>
+
+    <p>Agent Edge is an independently created and operated professional resource platform designed to support licensed real estate professionals with tools, marketing materials, and educational resources — all provided at no cost. Agent Edge is maintained by Kristy Flach, a licensed loan officer (NMLS #2632259) who originates mortgage loans through a licensed mortgage lender.</p>
+
+    <p><strong>Agent Edge is not owned, operated, endorsed, or approved by any mortgage lender or financial institution.</strong> Licensing and lender information displayed on co-branded materials reflects the originating lender through which mortgage loans are processed, as required by applicable law, and does not imply sponsorship or endorsement of this platform.</p>
+
+    <p>By creating an account, you agree to be bound by these Terms &amp; Conditions. We reserve the right to amend these Terms &amp; Conditions at any time. Changes become effective upon posting. Continued use constitutes acceptance.</p>
+
+    <div class="tc-section-title">1. Eligibility</div>
+    <p>Agent Edge is available exclusively to licensed real estate professionals operating in the United States. By creating an account, you represent and warrant that you are at least eighteen (18) years of age and hold an active, valid real estate license in your state of practice. You agree to provide true, accurate, current, and complete information during registration and to maintain and update that information.</p>
+
+    <div class="tc-section-title">2. Account Responsibility</div>
+    <p>Your login credentials are personal and may not be shared, transferred, assigned, or sold to any other individual. You are responsible for maintaining the confidentiality of your password and for all activity that occurs under your account.</p>
+
+    <div class="tc-section-title">3. Acceptable Use</div>
+    <p>You agree to use Agent Edge solely for legitimate professional real estate business purposes. You may not resell, redistribute, or share any tools, materials, or content from the platform; use it for any purpose that violates any law or regulation; misrepresent the source of any materials or remove required branding, disclaimers, or disclosures; or use automated systems to scrape or extract data.</p>
+
+    <div class="tc-section-title">4. Co-Branded Materials</div>
+    <p>Certain materials will include your professional information alongside lender branding as required by federal and state mortgage advertising regulations. You may not alter, obscure, or remove any compliance disclosures, NMLS identifiers, or Equal Housing designations from any materials generated through the platform.</p>
+
+    <div class="tc-section-title">5. Not a Substitute for Professional Advice</div>
+    <p>All tools, calculators, reports, and educational content are for informational and illustrative purposes only. Nothing on this platform constitutes an offer to lend, a loan commitment, a guarantee of rates or terms, or financial, legal, or tax advice. No tool or calculator replaces or supersedes a licensed lender's approval process, underwriting guidelines, or official loan disclosures required under law. You are responsible for verifying all information before presenting it to clients.</p>
+
+    <div class="tc-section-title">6. Regulatory Compliance</div>
+    <p>You agree that your use of Agent Edge materials will comply with all applicable laws including RESPA, TILA/Regulation Z, the Fair Housing Act, ECOA, TCPA, CAN-SPAM, GLBA, Regulation N, and all applicable state regulations. You agree not to represent Agent Edge, Kristy Flach, or any originating lender as your "preferred lender" or "exclusive lender."</p>
+
+    <div class="tc-section-title">7. User Content</div>
+    <p>By uploading content to the platform, you grant Agent Edge a non-exclusive, royalty-free license to use and display that content solely within the platform and materials generated through it. You represent that you own or have rights to any content you upload.</p>
+
+    <div class="tc-section-title">8. Intellectual Property</div>
+    <p>All content, tools, designs, templates, code, and branding on Agent Edge are the property of Kristy Flach and Agent Edge. Your account grants you a limited, non-exclusive, non-transferable, revocable license to use the platform for its intended purpose.</p>
+
+    <div class="tc-section-title">9. Electronic Communications &amp; SMS</div>
+    <p>By creating an account, you consent to receive communications electronically, including via email and SMS. Message frequency varies. Message and data rates may apply. You may opt out of text messages at any time by replying STOP. Carriers are not liable for delayed or undelivered messages.</p>
+
+    <div class="tc-section-title">10. Privacy &amp; Data</div>
+    <p>Agent Edge collects information you provide during signup and tracks usage activity to improve the experience. Your information will not be sold to third parties.</p>
+
+    <div class="tc-section-title">11. Disclaimer of Warranties</div>
+    <p class="tc-caps">AGENT EDGE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.</p>
+
+    <div class="tc-section-title">12. Limitation of Liability</div>
+    <p class="tc-caps">IN NO EVENT SHALL KRISTY FLACH, AGENT EDGE, OR ANY AFFILIATED PARTIES BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE PLATFORM. IN STATES THAT DO NOT ALLOW SUCH LIMITATIONS, LIABILITY IS LIMITED TO THE GREATEST EXTENT PERMITTED BY LAW.</p>
+
+    <div class="tc-section-title">13. Indemnification</div>
+    <p>You agree to defend, indemnify, and hold harmless Kristy Flach, Agent Edge, and their affiliates from any claims, losses, or expenses arising from your use of the platform, breach of these terms, or violation of applicable law.</p>
+
+    <div class="tc-section-title">14. Termination</div>
+    <p>We may suspend or terminate your account at any time for any reason. You may close your account at any time by contacting us directly.</p>
+
+    <div class="tc-section-title">15. Governing Law</div>
+    <p>These Terms shall be governed by the laws of the State of Ohio. You consent to the exclusive jurisdiction of courts in Ohio. Any claim must be filed within one (1) year or be forever barred.</p>
+
+    <div class="tc-section-title">16. General</div>
+    <p>You may not assign your rights under these terms without written consent. If any provision is found invalid, the remainder survives. These terms constitute the entire agreement between you and Agent Edge.</p>
+
+    <p style="margin-top:16px;font-size:11px;color:#888;"><em>Kristy Flach, Certified Mortgage Advisor &amp; Loan Officer, NMLS #2632259. Loans originated through Paramount Residential Mortgage Group, Inc., NMLS #75243. Equal Housing Opportunity.</em></p>
+  </div>
+
+  <div class="checkbox-group">
+    <input type="checkbox" id="agreeTerms">
+    <label for="agreeTerms">I have read and agree to the Terms &amp; Conditions. I confirm that I am a licensed real estate professional.</label>
+  </div>
+
+  <!-- ===== PROFILE FORM ===== -->
+  <div class="section-divider"></div>
+
   <form id="signupForm">
+    <div class="form-section-label">Create Your Profile</div>
+
     <div class="form-group">
       <label class="form-label" for="fullName">Full Name *</label>
-      <input 
-        type="text" 
-        id="fullName" 
-        class="form-input" 
-        placeholder="Your full name"
-        required
-      >
+      <input type="text" id="fullName" class="form-input" placeholder="Your full name" required>
     </div>
 
     <div class="form-group">
       <label class="form-label" for="email">Email Address *</label>
-      <input 
-        type="email" 
-        id="email" 
-        class="form-input" 
-        placeholder="your@email.com"
-        required
-      >
+      <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
       <div class="form-helper">This will be your login email.</div>
     </div>
 
     <div class="form-group">
       <label class="form-label" for="brokerage">Brokerage *</label>
-      <input 
-        type="text" 
-        id="brokerage" 
-        class="form-input" 
-        placeholder="Your brokerage name"
-        required
-      >
+      <input type="text" id="brokerage" class="form-input" placeholder="Your brokerage name" required>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="agentTitle">Title</label>
-      <input 
-        type="text" 
-        id="agentTitle" 
-        class="form-input" 
-        placeholder="e.g. Realtor, Broker Associate, Agent"
-      >
-      <div class="form-helper">Used on your co-branded materials.</div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" for="phone">Phone</label>
-      <input 
-        type="tel" 
-        id="phone" 
-        class="form-input" 
-        placeholder="(555) 555-5555"
-      >
-      <div class="form-helper">Used on your co-branded materials.</div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="agentTitle">Title</label>
+        <input type="text" id="agentTitle" class="form-input" placeholder="e.g. Realtor, Broker">
+        <div class="form-helper">Used on co-branded materials.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="phone">Phone</label>
+        <input type="tel" id="phone" class="form-input" placeholder="(555) 555-5555">
+        <div class="form-helper">Used on co-branded materials.</div>
+      </div>
     </div>
 
     <div class="form-group">
       <label class="form-label" for="website">Website</label>
-      <input 
-        type="text" 
-        id="website" 
-        class="form-input" 
-        placeholder="yourwebsite.com"
-      >
-      <div class="form-helper">Used on your co-branded materials.</div>
+      <input type="text" id="website" class="form-input" placeholder="yourwebsite.com">
+      <div class="form-helper">Used on co-branded materials.</div>
     </div>
 
-    <div class="form-group">
-      <label class="form-label" for="newPassword">Create Password *</label>
-      <input 
-        type="password" 
-        id="newPassword" 
-        class="form-input" 
-        placeholder="Choose a strong password"
-        autocomplete="new-password"
-        required
-      >
-      <div class="form-helper">At least 8 characters recommended.</div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" for="confirmPassword">Confirm Password *</label>
-      <input 
-        type="password" 
-        id="confirmPassword" 
-        class="form-input" 
-        placeholder="Re-enter your password"
-        autocomplete="new-password"
-        required
-      >
-    </div>
-
-    <!-- TERMS & CONDITIONS -->
-    <div class="terms-box">
-      <h3>Terms &amp; Conditions</h3>
-      <p><strong>Welcome to the Agent Edge Partner Portal!</strong></p>
-      
-      <!-- HIGHLIGHTED SOFT LEAD REQUIREMENT -->
-      <div style="
-        background: linear-gradient(135deg, #fff9e6 0%, #ffe6cc 100%);
-        border: 3px solid #ff9800;
-        border-radius: 8px;
-        padding: 18px;
-        margin: 20px 0;
-        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
-      ">
-        <p style="margin: 0; font-size: 15px; font-weight: 700; color: #e65100; text-align: center; line-height: 1.6;">
-          &#9733; VIP PARTNER REQUIREMENT:<br>
-          To maintain access to this portal and its resources, you must provide<br>
-          <span style="font-size: 18px; color: #ff5722;">ONE SOFT LEAD PER MONTH</span><br>
-          to Kristy Flach / Agent Edge
-        </p>
+    <!-- HEADSHOT (disabled for explorers) -->
+    <div class="headshot-section" id="headshotSection">
+      <div class="headshot-circle active" id="headshotCircle">
+        <span class="headshot-placeholder" id="headshotPlaceholder">Click to upload<br>headshot</span>
       </div>
-      
-      <p>By creating an account, you agree to the following:</p>
-      <ul>
-        <li><strong>Authorized Use:</strong> This portal is exclusively for real estate professionals partnering with Kristy Flach / Agent Edge.</li>
-        <li><strong>Professional Purpose:</strong> All materials and resources are provided for legitimate business purposes in serving your clients.</li>
-        <li><strong>Confidentiality:</strong> Portal access credentials are personal and should not be shared with unauthorized individuals.</li>
-        <li><strong>Content Usage:</strong> Marketing materials may be customized with your branding as indicated. Co-branded materials require setup.</li>
-        <li><strong>Accuracy:</strong> You are responsible for verifying all information provided to clients, including rates, terms, and property details.</li>
-        <li><strong>Compliance:</strong> All use must comply with applicable real estate and mortgage lending regulations.</li>
-        <li><strong>Account Responsibility:</strong> You are responsible for all activity under your account.</li>
-        <li><strong>Termination:</strong> Access may be revoked at any time for misuse or violation of these terms.</li>
-      </ul>
-      <p>Questions? Contact Kristy directly.</p>
+      <input type="file" id="headshotFile" accept="image/*" style="display:none;">
+      <p class="headshot-helper" id="headshotHelper">Used for co-branded materials. Square crop works best.</p>
+      <p class="headshot-disabled-note" id="headshotDisabledNote" style="display:none;">Headshot upload available with full partnership.</p>
     </div>
 
-    <div class="checkbox-group">
-      <input type="checkbox" id="agreeTerms" required>
-      <label for="agreeTerms">
-        I have read and agree to the Terms &amp; Conditions above, <strong>including the requirement to provide ONE soft lead per month.</strong> I confirm that I am a licensed real estate professional. *
-      </label>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label" for="newPassword">Create Password *</label>
+        <input type="password" id="newPassword" class="form-input" placeholder="Choose a strong password" autocomplete="new-password" required>
+        <div class="form-helper">At least 8 characters recommended.</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="confirmPassword">Confirm Password *</label>
+        <input type="password" id="confirmPassword" class="form-input" placeholder="Re-enter password" autocomplete="new-password" required>
+      </div>
     </div>
 
-    <button type="submit" class="signup-btn" id="submitBtn">Start My Free Trial</button>
+    <button type="submit" class="signup-btn" id="submitBtn" disabled>Create My Profile</button>
   </form>
 
   <div class="back-link">
-    <a href="login.html">&larr; Already have an account? Sign In</a>
+    <a href="realtor.html">&larr; Back</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="login.html">Already have an account? Sign In</a>
   </div>
 </div>
 
 <script src="auth.js"></script>
 <script>
 /* ===========================
-   SIGNUP FORM HANDLER
-   Trial signup — email is username
+   SIGNUP PAGE LOGIC
+   Handles both partner and explore paths
 =========================== */
 
+// Detect path from URL
+var urlParams = new URLSearchParams(window.location.search);
+var accountPath = urlParams.get('path') || 'explore';
+var isPartnerPath = (accountPath === 'partner');
+
+// ===== CONFIGURE PAGE BASED ON PATH =====
+var pageTitle = document.getElementById('pageTitle');
+var pageSubtitle = document.getElementById('pageSubtitle');
+var pathBadge = document.getElementById('pathBadge');
+var exploreNotice = document.getElementById('exploreNotice');
+var headshotCircle = document.getElementById('headshotCircle');
+var headshotFile = document.getElementById('headshotFile');
+var headshotHelper = document.getElementById('headshotHelper');
+var headshotDisabledNote = document.getElementById('headshotDisabledNote');
+var headshotPlaceholder = document.getElementById('headshotPlaceholder');
+
+if (isPartnerPath) {
+  pageTitle.textContent = 'Become a Partner';
+  pageSubtitle.textContent = 'Full access to all Agent Edge tools and co-branded materials.';
+  pathBadge.textContent = 'PARTNER';
+  pathBadge.className = 'path-badge badge-partner';
+
+  // Headshot active
+  headshotCircle.addEventListener('click', function() {
+    headshotFile.click();
+  });
+} else {
+  pageTitle.textContent = 'Take a Spin';
+  pageSubtitle.textContent = 'Explore Agent Edge and see what it can do for your business.';
+  pathBadge.textContent = 'EXPLORER';
+  pathBadge.className = 'path-badge badge-explore';
+  exploreNotice.style.display = 'block';
+
+  // Headshot disabled
+  headshotCircle.classList.remove('active');
+  headshotCircle.classList.add('disabled');
+  headshotPlaceholder.innerHTML = 'Available with<br>full partnership';
+  headshotHelper.style.display = 'none';
+  headshotDisabledNote.style.display = 'block';
+}
+
+// ===== HEADSHOT PREVIEW =====
+var headshotData = null;
+
+headshotFile.addEventListener('change', function(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    document.getElementById('errorMessage').textContent = 'Headshot must be under 2MB.';
+    document.getElementById('errorMessage').classList.add('show');
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    headshotData = ev.target.result;
+    headshotCircle.classList.remove('active');
+    headshotCircle.classList.add('has-photo');
+    headshotPlaceholder.style.display = 'none';
+    var existing = headshotCircle.querySelector('img');
+    if (existing) existing.remove();
+    var img = document.createElement('img');
+    img.src = headshotData;
+    headshotCircle.appendChild(img);
+  };
+  reader.readAsDataURL(file);
+});
+
+// ===== CHECKBOX GATING =====
+var agreeBenefits = document.getElementById('agreeBenefits');
+var agreeTerms = document.getElementById('agreeTerms');
+var submitBtn = document.getElementById('submitBtn');
+
+function updateSubmitState() {
+  submitBtn.disabled = !(agreeBenefits.checked && agreeTerms.checked);
+}
+
+agreeBenefits.addEventListener('change', updateSubmitState);
+agreeTerms.addEventListener('change', updateSubmitState);
+
+// ===== FORM SUBMISSION =====
 var signupForm = document.getElementById('signupForm');
 var errorMessage = document.getElementById('errorMessage');
 var successMessage = document.getElementById('successMessage');
-var submitBtn = document.getElementById('submitBtn');
 
 signupForm.addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  // Get form values
   var fullName = document.getElementById('fullName').value.trim();
   var email = document.getElementById('email').value.trim().toLowerCase();
   var brokerage = document.getElementById('brokerage').value.trim();
@@ -439,13 +707,10 @@ signupForm.addEventListener('submit', async function(e) {
   var website = document.getElementById('website').value.trim();
   var password = document.getElementById('newPassword').value;
   var confirmPassword = document.getElementById('confirmPassword').value;
-  var agreeTerms = document.getElementById('agreeTerms').checked;
 
-  // Clear previous messages
   errorMessage.classList.remove('show');
   successMessage.classList.remove('show');
 
-  // Client-side validation
   if (password.length < 6) {
     errorMessage.textContent = 'Password must be at least 6 characters long.';
     errorMessage.classList.add('show');
@@ -459,15 +724,8 @@ signupForm.addEventListener('submit', async function(e) {
     return;
   }
 
-  if (!agreeTerms) {
-    errorMessage.textContent = 'You must agree to the Terms & Conditions to continue.';
-    errorMessage.classList.add('show');
-    return;
-  }
-
-  // Disable button while processing
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Creating Account...';
+  submitBtn.textContent = 'Creating Your Profile...';
 
   try {
     var response = await fetch('https://agent-edge-backend.vercel.app/api/signup', {
@@ -480,7 +738,8 @@ signupForm.addEventListener('submit', async function(e) {
         title: agentTitle,
         phone: phone,
         website: website,
-        password: password
+        password: password,
+        accountType: isPartnerPath ? 'partner' : 'explore'
       })
     });
 
@@ -490,20 +749,36 @@ signupForm.addEventListener('submit', async function(e) {
       errorMessage.textContent = data.message || 'Registration failed. Please try again.';
       errorMessage.classList.add('show');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Start My Free Trial';
+      submitBtn.textContent = 'Create My Profile';
       return;
     }
 
-    // Auto-login by setting session
+    // Set session
     setUserSession(data.user);
     sessionStorage.setItem('agentEdgeAdmin', 'false');
-    sessionStorage.setItem('agentEdgeRole', 'trial');
-    sessionStorage.setItem('agentEdgeTrialStart', data.trialStart || new Date().toISOString());
+    sessionStorage.setItem('agentEdgeRole', data.role || 'trial');
+    if (data.aeId) sessionStorage.setItem('agentEdgeAeId', data.aeId);
+    if (data.trialStart) sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
 
-    // Show success
+    // If partner and has headshot, upload it via profile endpoint
+    if (isPartnerPath && headshotData) {
+      try {
+        await fetch('https://agent-edge-backend.vercel.app/api/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            headshot: headshotData
+          })
+        });
+        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
+      } catch (hsErr) {
+        console.error('Headshot upload failed:', hsErr);
+      }
+    }
+
+    // Show success and redirect
     successMessage.classList.add('show');
-
-    // Redirect to portal
     setTimeout(function() {
       window.location.href = 'portal.html';
     }, 2000);
@@ -513,18 +788,20 @@ signupForm.addEventListener('submit', async function(e) {
     errorMessage.textContent = 'Connection error. Please try again.';
     errorMessage.classList.add('show');
     submitBtn.disabled = false;
-    submitBtn.textContent = 'Start My Free Trial';
+    submitBtn.textContent = 'Create My Profile';
   }
 });
 
 // Password match indicator
 document.getElementById('confirmPassword').addEventListener('input', function() {
-  var password = document.getElementById('newPassword').value;
-  if (this.value && password !== this.value) {
-    this.style.borderColor = '#c0392b';
-  } else {
-    this.style.borderColor = 'rgba(11,78,162,0.2)';
-  }
+  var pw = document.getElementById('newPassword').value;
+  this.style.borderColor = (this.value && pw !== this.value) ? '#c0392b' : 'rgba(110,127,119,0.25)';
+});
+
+// Phone formatting
+document.getElementById('phone').addEventListener('input', function(e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
 });
 </script>
 
