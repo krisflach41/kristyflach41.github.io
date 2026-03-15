@@ -1069,11 +1069,19 @@ async function loadSegmenterAndStart() {
   processVbFrame();
 }
 
+var vbProcessing = false;
+
 function processVbFrame() {
   if (vbMode === 'none' || !vbSegmenter || !mediaStream) return;
+  if (vbProcessing) { vbAnimFrame = requestAnimationFrame(processVbFrame); return; }
   var feed = document.getElementById('cameraFeed');
   if (feed.readyState >= 2) {
-    vbSegmenter.send({image: feed});
+    vbProcessing = true;
+    vbSegmenter.send({image: feed}).then(function(){
+      vbProcessing = false;
+    }).catch(function(){
+      vbProcessing = false;
+    });
   }
   vbAnimFrame = requestAnimationFrame(processVbFrame);
 }
@@ -1086,81 +1094,25 @@ function onVbResults(results) {
   vbCtx.save();
   vbCtx.clearRect(0, 0, w, h);
 
-  // Draw the segmentation mask
+  // Step 1: Draw the person (original image masked by segmentation)
+  // First draw the mask — white = person, black = background
   vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
 
-  // Get mask data and dilate it for more room to move
-  var maskData = vbCtx.getImageData(0, 0, w, h);
-  dilateMask(maskData, 8); // 8px dilation = more breathing room
+  // Use the mask as a stencil: only draw where mask is white (person)
+  vbCtx.globalCompositeOperation = 'source-in';
+  vbCtx.drawImage(results.image, 0, 0, w, h);
 
-  vbCtx.clearRect(0, 0, w, h);
-
+  // Step 2: Draw background behind the person
+  vbCtx.globalCompositeOperation = 'destination-over';
   if (vbMode === 'image' && vbBgImage && vbBgImage.complete) {
-    // Draw background image
     vbCtx.drawImage(vbBgImage, 0, 0, w, h);
   } else if (vbMode === 'blur') {
-    // Draw blurred video
-    vbCtx.filter = 'blur(16px)';
+    vbCtx.filter = 'blur(14px)';
     vbCtx.drawImage(results.image, 0, 0, w, h);
     vbCtx.filter = 'none';
   }
 
-  // Apply dilated mask — cut out person area
-  var bgData = vbCtx.getImageData(0, 0, w, h);
-  for (var i = 0; i < maskData.data.length; i += 4) {
-    // maskData alpha channel: 255 = person, 0 = background
-    // We want to KEEP background where mask says background, KEEP person where mask says person
-    var personAlpha = maskData.data[i]; // red channel from dilated mask
-    if (personAlpha > 128) {
-      // This is a person pixel — make background transparent here
-      bgData.data[i + 3] = 0;
-    }
-  }
-  vbCtx.putImageData(bgData, 0, 0);
-
-  // Now draw the sharp person on top
-  vbCtx.globalCompositeOperation = 'destination-over';
-  vbCtx.drawImage(results.image, 0, 0, w, h);
-  vbCtx.globalCompositeOperation = 'source-over';
-
-  // Soft edge: draw a very slight blur at mask boundaries
   vbCtx.restore();
-}
-
-// Dilate the mask to give more room around the person
-function dilateMask(imageData, radius) {
-  var w = imageData.width;
-  var h = imageData.height;
-  var src = new Uint8Array(w * h);
-  var dst = new Uint8Array(w * h);
-
-  // Extract red channel as mask (person confidence)
-  for (var i = 0; i < w * h; i++) {
-    src[i] = imageData.data[i * 4] > 100 ? 255 : 0;
-  }
-
-  // Dilate: if any pixel in radius is person, mark as person
-  for (var y = 0; y < h; y++) {
-    for (var x = 0; x < w; x++) {
-      var idx = y * w + x;
-      if (src[idx] === 255) { dst[idx] = 255; continue; }
-      var found = false;
-      for (var dy = -radius; dy <= radius && !found; dy++) {
-        for (var dx = -radius; dx <= radius && !found; dx++) {
-          var nx = x + dx, ny = y + dy;
-          if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
-            if (src[ny * w + nx] === 255) { found = true; }
-          }
-        }
-      }
-      dst[idx] = found ? 255 : 0;
-    }
-  }
-
-  // Write back
-  for (var i = 0; i < w * h; i++) {
-    imageData.data[i * 4] = dst[i];
-  }
 }
 
 function loadScript(src) {
