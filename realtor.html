@@ -113,19 +113,29 @@ body {
 .divider::before { margin-right: 10px; }
 .divider::after { margin-left: 10px; }
 
-.signin-link {
-  display: inline-block;
+.signin-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
   margin-top: 8px;
-  font-size: 14px;
-  color: #6e7f77;
+  border-radius: 10px;
+  border: 2px solid #0b1f3a;
+  background: transparent;
+  color: #0b1f3a;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.25s ease;
   text-decoration: none;
-  font-weight: 600;
-  transition: 0.2s;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-.signin-link:hover {
-  color: #5a6b63;
-  text-decoration: underline;
+.signin-btn:hover {
+  background: #0b1f3a;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(11,31,58,0.25);
 }
 
 .footer-note {
@@ -163,7 +173,7 @@ body {
 
   <div class="divider">already have an account?</div>
 
-  <a href="login.html" class="signin-link">Sign In →</a>
+  <a href="login.html" class="signin-btn">Sign In</a>
 
   <div class="footer-note">
     Agent Edge is independently operated by Kristy Flach, NMLS #2632259.<br>
