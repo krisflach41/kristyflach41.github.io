@@ -255,7 +255,7 @@ body {
 
 /* ===== CRM ===== */
 .crm-layout { display: flex; gap: 0; flex: 1; height: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
-.crm-list-panel { width: 320px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: #f5f6f7; }
+.crm-list-panel { width: 320px; border-right: 1px solid var(--border); display: flex; flex-direction: column; background: #f0f2ef; }
 .crm-list-head { padding: 10px; border-bottom: 1px solid var(--border); }
 .crm-list-head-row { display: flex; gap: 6px; align-items: center; }
 .crm-list-head-row input { flex: 1; padding: 8px 10px; border-radius: 6px; background: #f8f9fb; border: 1px solid var(--border-light); color: var(--text-primary); font-size: 12px; font-family: inherit; }
@@ -270,9 +270,9 @@ body {
 .crm-list-stat { padding: 8px 12px; font-size: 13px; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 600; }
 .crm-contact-item {
   display: flex; align-items: center; gap: 8px; padding: 8px 10px; cursor: pointer;
-  border-bottom: 1px solid var(--border); border-left: 3px solid transparent;
+  border-bottom: 0.5px solid rgba(110,127,119,0.08); border-left: 3px solid transparent;
 }
-.crm-contact-item:hover { background: #fafbfc; }
+.crm-contact-item:hover { background: rgba(110,127,119,0.05); }
 .crm-contact-item.active { background: rgba(110,127,119,0.10); border-left: 3px solid #6e7f77; }
 .crm-contact-item:not(.active).t-client { border-left-color: rgba(59,130,246,0.35); }
 .crm-contact-item:not(.active).t-borrower { border-left-color: rgba(14,165,233,0.35); }
@@ -293,7 +293,7 @@ body {
 }
 
 /* CRM DETAIL */
-.crm-detail-panel { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: #fff; }
+.crm-detail-panel { flex: 1; overflow-y: auto; display: flex; flex-direction: column; background: #fafbf9; }
 .crm-detail-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-secondary); font-size: 14px; }
 .crm-detail-content { display: none; flex-direction: column; }
 .crm-detail-top { padding: 20px 24px; border-bottom: 1px solid var(--border); }
