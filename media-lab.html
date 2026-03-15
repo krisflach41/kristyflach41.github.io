@@ -1017,6 +1017,7 @@ var vbLoaded = false;
 })();
 
 function setVbMode(mode) {
+  var prevMode = vbMode;
   vbMode = mode;
   document.querySelectorAll('.vb-mode-btn').forEach(function(b){b.classList.remove('active');});
   document.getElementById('vb' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
@@ -1024,16 +1025,26 @@ function setVbMode(mode) {
   var feed = document.getElementById('cameraFeed');
   var canvas = document.getElementById('vbCanvas');
 
+  if (!mediaStream) return; // camera not started yet
+
+  // If switching between none and VB, restart camera at proper resolution
+  var needsRestart = (prevMode === 'none' && mode !== 'none') || (prevMode !== 'none' && mode === 'none');
+
   if (mode === 'none') {
-    // Show raw video, hide canvas
-    if (mediaStream) feed.style.display = 'block';
-    canvas.style.display = 'none';
     if (vbAnimFrame) { cancelAnimationFrame(vbAnimFrame); vbAnimFrame = null; }
+    feed.style.display = 'block';
+    canvas.style.display = 'none';
+    if (needsRestart) { stopCamera(); startCamera(); }
   } else {
-    // Show canvas, hide video element (still playing for frame source)
     feed.style.display = 'none';
     canvas.style.display = 'block';
-    loadSegmenterAndStart();
+    if (needsRestart) {
+      stopCamera();
+      startCamera();
+    } else {
+      // Already in a VB mode, just keep going (blur <-> image switch)
+      // No restart needed
+    }
   }
 }
 
@@ -1073,17 +1084,16 @@ var vbProcessing = false;
 
 function processVbFrame() {
   if (vbMode === 'none' || !vbSegmenter || !mediaStream) return;
-  if (vbProcessing) { vbAnimFrame = requestAnimationFrame(processVbFrame); return; }
   var feed = document.getElementById('cameraFeed');
   if (feed.readyState >= 2) {
-    vbProcessing = true;
-    vbSegmenter.send({image: feed}).then(function(){
-      vbProcessing = false;
-    }).catch(function(){
-      vbProcessing = false;
+    vbSegmenter.send({image: feed}).catch(function(){
+      // On error, try again next frame
+      if (vbMode !== 'none') vbAnimFrame = requestAnimationFrame(processVbFrame);
     });
+  } else {
+    // Video not ready yet, try again
+    vbAnimFrame = requestAnimationFrame(processVbFrame);
   }
-  vbAnimFrame = requestAnimationFrame(processVbFrame);
 }
 
 function onVbResults(results) {
@@ -1094,15 +1104,14 @@ function onVbResults(results) {
   vbCtx.save();
   vbCtx.clearRect(0, 0, w, h);
 
-  // Step 1: Draw the person (original image masked by segmentation)
-  // First draw the mask — white = person, black = background
+  // Draw the mask — white = person
   vbCtx.drawImage(results.segmentationMask, 0, 0, w, h);
 
-  // Use the mask as a stencil: only draw where mask is white (person)
+  // Cut person from original image using mask
   vbCtx.globalCompositeOperation = 'source-in';
   vbCtx.drawImage(results.image, 0, 0, w, h);
 
-  // Step 2: Draw background behind the person
+  // Draw background behind the person
   vbCtx.globalCompositeOperation = 'destination-over';
   if (vbMode === 'image' && vbBgImage && vbBgImage.complete) {
     vbCtx.drawImage(vbBgImage, 0, 0, w, h);
@@ -1113,6 +1122,11 @@ function onVbResults(results) {
   }
 
   vbCtx.restore();
+
+  // Schedule next frame AFTER this one is done — no pileup
+  if (vbMode !== 'none' && mediaStream) {
+    vbAnimFrame = requestAnimationFrame(processVbFrame);
+  }
 }
 
 function loadScript(src) {
@@ -1134,15 +1148,18 @@ function toggleCamera() {
 
 async function startCamera() {
   try {
-    mediaStream = await navigator.mediaDevices.getUserMedia({video:{width:{ideal:1280},height:{ideal:720}}, audio:true});
+    // Use lower resolution when VB is active for smoother segmentation
+    var videoConstraints = (vbMode !== 'none')
+      ? {width:{ideal:640},height:{ideal:480}}
+      : {width:{ideal:1280},height:{ideal:720}};
+    mediaStream = await navigator.mediaDevices.getUserMedia({video:videoConstraints, audio:true});
     var feed = document.getElementById('cameraFeed');
     feed.srcObject = mediaStream;
     await feed.play();
 
-    // Set canvas size to match video
     var canvas = document.getElementById('vbCanvas');
-    canvas.width = feed.videoWidth || 1280;
-    canvas.height = feed.videoHeight || 720;
+    canvas.width = feed.videoWidth || 640;
+    canvas.height = feed.videoHeight || 480;
 
     if (vbMode === 'none') {
       feed.style.display = 'block';
