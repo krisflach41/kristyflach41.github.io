@@ -29,7 +29,8 @@
       name: sessionStorage.getItem('agentEdgeName') || sessionStorage.getItem('agentEdgeUser') || 'Unknown',
       email: sessionStorage.getItem('agentEdgeUser') || '',
       isAdmin: sessionStorage.getItem('agentEdgeAdmin') === 'true',
-      loUserId: sessionStorage.getItem('agentEdgeLoUserId') || 'default'
+      loUserId: sessionStorage.getItem('agentEdgeLoUserId') || 'default',
+      aeId: sessionStorage.getItem('agentEdgeAeId') || ''
     };
   }
 
@@ -113,6 +114,7 @@
       sessionId: getSessionId(),
       userName: user.name,
       userEmail: user.email,
+      aeId: user.aeId,
       loUserId: user.loUserId,
       isAdmin: user.isAdmin,
       collection: collection,
@@ -175,6 +177,7 @@
           sessionId: getSessionId(),
           userName: user.name,
           userEmail: user.email,
+          aeId: user.aeId,
           loUserId: user.loUserId,
           isAdmin: user.isAdmin,
           collection: page.collection,
