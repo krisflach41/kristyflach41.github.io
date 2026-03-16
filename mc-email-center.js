@@ -305,7 +305,7 @@ function emLoadCampaignDetail(id) {
     var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
 
     document.getElementById('emDetailName').textContent = c.name;
-    document.getElementById('emDetailMeta').textContent = (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + (c.steps || []).length + ' emails · ' + (c.description || '');
+    document.getElementById('emDetailMeta').textContent = (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + (c.steps || []).length + ' steps · ' + (c.description || '');
 
     var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
     var statusEl = document.getElementById('emDetailStatus');
@@ -326,42 +326,50 @@ function emLoadCampaignDetail(id) {
     var timelineEl = document.getElementById('emDetailTimeline');
     var steps = c.steps || [];
     if (steps.length === 0) {
-      timelineEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:16px;">No emails in this campaign yet.</div>';
+      timelineEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:16px;">No steps in this campaign yet.</div>';
     } else {
       var th = '';
       var cumulativeDays = 0;
       steps.forEach(function(s, i) {
         cumulativeDays += (s.delay_days || 0);
+        var isSms = (s.step_type || 'email') === 'sms';
+        var stepColor = isSms ? '#22c55e' : '#3b82f6';
+        var stepIcon = isSms ? 'fa-sms' : 'fa-envelope';
         var tpl = emTemplates.find(function(t) { return t.id === s.template_id; });
-        var subject = s.subject_override || (tpl ? tpl.subject : 'Untitled');
+        var subject = isSms ? ('SMS: ' + (s.sms_body || '').substring(0, 60) + ((s.sms_body || '').length > 60 ? '...' : '')) : (s.subject_override || (tpl ? tpl.subject : 'Untitled'));
         var dayLabel = i === 0 ? (s.delay_days === 0 ? 'Immediately' : 'Day ' + s.delay_days) : 'Day ' + cumulativeDays;
 
         th += '<div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:4px;">';
         // Timeline connector
         th += '<div style="display:flex;flex-direction:column;align-items:center;">';
-        th += '<div style="width:28px;height:28px;border-radius:50%;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3b82f6;">' + (i+1) + '</div>';
-        if (i < steps.length - 1) th += '<div style="width:2px;height:100%;min-height:40px;background:rgba(59,130,246,0.1);"></div>';
+        th += '<div style="width:28px;height:28px;border-radius:50%;background:' + stepColor + '20;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:' + stepColor + ';"><i class="fas ' + stepIcon + '" style="font-size:10px;"></i></div>';
+        if (i < steps.length - 1) th += '<div style="width:2px;height:100%;min-height:40px;background:' + stepColor + '15;"></div>';
         th += '</div>';
         // Content
         th += '<div style="flex:1;padding:4px 0 16px;" id="emStepDetail_' + i + '">';
         th += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
-        th += '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;font-weight:600;">' + dayLabel + '</span>';
+        th += '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:' + stepColor + '15;color:' + stepColor + ';font-weight:600;">' + dayLabel + '</span>';
+        th += '<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:' + stepColor + '10;color:' + stepColor + ';">' + (isSms ? 'SMS' : 'EMAIL') + '</span>';
         if (s.delay_days > 0 && i > 0) th += '<span style="font-size:9px;color:var(--text-muted);">(' + s.delay_days + ' days after previous)</span>';
         th += '</div>';
-        th += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">' + subject.replace(/\{\{first_name\}\}/g, '{{first_name}}') + '</div>';
-        th += '<div style="font-size:10px;color:var(--text-muted);">' + (tpl ? tpl.name : 'Custom') + '</div>';
-        th += '<button class="topbar-btn" style="font-size:10px;padding:3px 8px;margin-top:6px;" onclick="emToggleEmailPreview(' + i + ')"><i class="fas fa-eye"></i> Preview</button>';
-        th += '<div id="emEmailPreview_' + i + '" style="display:none;margin-top:8px;padding:12px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-secondary);line-height:1.6;"></div>';
+        th += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">' + subject + '</div>';
+        if (!isSms) {
+          th += '<div style="font-size:10px;color:var(--text-muted);">' + (tpl ? tpl.name : 'Custom') + '</div>';
+          th += '<button class="topbar-btn" style="font-size:10px;padding:3px 8px;margin-top:6px;" onclick="emToggleEmailPreview(' + i + ')"><i class="fas fa-eye"></i> Preview</button>';
+          th += '<div id="emEmailPreview_' + i + '" style="display:none;margin-top:8px;padding:12px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--text-secondary);line-height:1.6;"></div>';
+        }
         th += '</div></div>';
       });
       timelineEl.innerHTML = th;
 
-      // Pre-load preview content
+      // Pre-load preview content for email steps
       steps.forEach(function(s, i) {
-        var tpl = emTemplates.find(function(t) { return t.id === s.template_id; });
-        if (tpl) {
-          var previewEl = document.getElementById('emEmailPreview_' + i);
-          if (previewEl) previewEl.innerHTML = tpl.body_html.replace(/\{\{first_name\}\}/g, '<span style="color:#3b82f6;">Jane</span>').replace(/\{\{name\}\}/g, '<span style="color:#3b82f6;">Jane Smith</span>');
+        if ((s.step_type || 'email') === 'email') {
+          var tpl = emTemplates.find(function(t) { return t.id === s.template_id; });
+          if (tpl) {
+            var previewEl = document.getElementById('emEmailPreview_' + i);
+            if (previewEl) previewEl.innerHTML = tpl.body_html.replace(/\{\{first_name\}\}/g, '<span style="color:#3b82f6;">Jane</span>').replace(/\{\{name\}\}/g, '<span style="color:#3b82f6;">Jane Smith</span>');
+          }
         }
       });
     }
@@ -627,13 +635,14 @@ function emEditCampaign(id) {
   document.getElementById('emCampDesc').value = c.description || '';
   document.getElementById('emCampEditId').value = c.id;
   emEditSteps = (c.steps || []).map(function(s) {
-    return { delay_days: s.delay_days, template_id: s.template_id, subject_override: s.subject_override || '', body_override: s.body_override || '' };
+    return { step_type: s.step_type || 'email', delay_days: s.delay_days, template_id: s.template_id, subject_override: s.subject_override || '', body_override: s.body_override || '', sms_body: s.sms_body || '' };
   });
   emRenderSteps();
 }
 
-function emAddStep() {
-  emEditSteps.push({ delay_days: emEditSteps.length === 0 ? 0 : 3, template_id: '', subject_override: '', body_override: '' });
+function emAddStep(type) {
+  var stepType = type || 'email';
+  emEditSteps.push({ step_type: stepType, delay_days: emEditSteps.length === 0 ? 0 : 3, template_id: '', subject_override: '', body_override: '', sms_body: '' });
   emRenderSteps();
 }
 
@@ -645,7 +654,7 @@ function emRemoveStep(idx) {
 function emRenderSteps() {
   var el = document.getElementById('emStepsList');
   if (emEditSteps.length === 0) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;border:1px dashed var(--border);border-radius:8px;">No emails in this sequence yet. Click "Add Email Step" to build your drip.</div>';
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;border:1px dashed var(--border);border-radius:8px;">No steps yet. Add an Email or SMS step to build your campaign.</div>';
     return;
   }
   var tplOpts = '<option value="">— Select a template —</option>';
@@ -654,18 +663,33 @@ function emRenderSteps() {
   });
   var h = '';
   emEditSteps.forEach(function(s, i) {
+    var isEmail = (s.step_type || 'email') === 'email';
+    var stepColor = isEmail ? '#3b82f6' : '#22c55e';
+    var stepIcon = isEmail ? 'fa-envelope' : 'fa-sms';
+    var stepLabel = isEmail ? 'EMAIL' : 'SMS';
+
     h += '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
     // Timeline dot
-    h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;"><div style="width:24px;height:24px;border-radius:50%;background:rgba(59,130,246,0.15);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#3b82f6;">' + (i+1) + '</div>';
-    if (i < emEditSteps.length - 1) h += '<div style="width:2px;height:20px;background:rgba(59,130,246,0.15);margin-top:4px;"></div>';
+    h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;"><div style="width:24px;height:24px;border-radius:50%;background:' + stepColor + '20;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:' + stepColor + ';">' + (i+1) + '</div>';
+    if (i < emEditSteps.length - 1) h += '<div style="width:2px;height:20px;background:' + stepColor + '20;margin-top:4px;"></div>';
     h += '</div>';
     // Step content
     h += '<div style="flex:1;">';
-    h += '<div style="display:grid;grid-template-columns:120px 1fr;gap:8px;margin-bottom:8px;">';
-    h += '<div class="fc-field"><div class="fc-lbl" title="' + (i === 0 ? 'How many days after the trigger event to send this email. 0 = send immediately when triggered.' : 'How many days after the PREVIOUS email to send this one.') + '" style="cursor:help;border-bottom:1px dotted var(--border);">' + (i === 0 ? 'Days after trigger' : 'Days after prev') + ' <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
-    h += '<div class="fc-field"><div class="fc-lbl" title="Choose which pre-written email template to send at this step. Create templates in the Templates tab first." style="cursor:help;border-bottom:1px dotted var(--border);">Email Template <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
-    h += '</div>';
-    h += '<div class="fc-field"><div class="fc-lbl" title="Optional: override the template\'s subject line for this specific step. Leave blank to use the template\'s original subject." style="cursor:help;border-bottom:1px dotted var(--border);">Subject Override (optional) <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+    // Step type badge
+    h += '<div style="margin-bottom:8px;"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + stepColor + '15;color:' + stepColor + ';font-weight:600;"><i class="fas ' + stepIcon + '" style="margin-right:4px;"></i>' + stepLabel + '</span></div>';
+    // Delay field
+    h += '<div class="fc-field" style="margin-bottom:8px;max-width:180px;"><div class="fc-lbl">' + (i === 0 ? 'Days after trigger' : 'Days after prev') + '</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
+
+    if (isEmail) {
+      // Email step — template picker and subject override
+      h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Email Template</div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
+      h += '<div class="fc-field"><div class="fc-lbl">Subject Override (optional)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+    } else {
+      // SMS step — text message body
+      h += '<div class="fc-field"><div class="fc-lbl">Text Message</div><textarea rows="3" style="width:100%;resize:vertical;" onchange="emEditSteps[' + i + '].sms_body=this.value" placeholder="Hi {{first_name}}, just wanted to check in...">' + (s.sms_body || '').replace(/</g, '&lt;') + '</textarea></div>';
+      h += '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Use {{first_name}}, {{name}}, or {{email}} for personalization. 160 chars per SMS segment.</div>';
+    }
+
     h += '</div>';
     h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;margin-top:4px;" onclick="emRemoveStep(' + i + ')"><i class="fas fa-times"></i></button>';
     h += '</div>';

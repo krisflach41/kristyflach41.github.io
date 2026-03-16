@@ -996,10 +996,13 @@
 
         <!-- Steps -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text-primary);" title="Each step is one email in the sequence. They fire in order based on the delay you set. The first email's delay counts from the trigger event." style="cursor:help;">EMAIL SEQUENCE <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">CAMPAIGN SEQUENCE</div>
         </div>
         <div id="emStepsList" style="margin-bottom:12px;"></div>
-        <button class="topbar-btn" onclick="emAddStep()" style="font-size:11px;margin-bottom:16px;"><i class="fas fa-plus"></i> Add Email Step</button>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button class="topbar-btn" onclick="emAddStep('email')" style="font-size:11px;"><i class="fas fa-envelope"></i> Add Email Step</button>
+          <button class="topbar-btn" onclick="emAddStep('sms')" style="font-size:11px;"><i class="fas fa-sms"></i> Add SMS Step</button>
+        </div>
 
         <div style="display:flex;gap:8px;">
           <button class="topbar-btn" onclick="emCloseCampaignBuilder()">Cancel</button>
