@@ -228,6 +228,43 @@
         </div>
       </div>
     </div>
+
+    <!-- PRODUCTION METRICS (moved from Analytics) -->
+    <div style="margin-top:16px;">
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">PRODUCTION METRICS</div>
+          <div class="mc-status" id="anaProdStatus">LOADING</div>
+        </div>
+        <div class="mc-grid-3" style="margin-bottom:20px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedVol" style="color:#22c55e;">—</div><div class="mc-kpi-label">FUNDED VOLUME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedCount" style="color:#3b82f6;">—</div><div class="mc-kpi-label">LOANS FUNDED</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaAvgSize" style="color:#f472b6;">—</div><div class="mc-kpi-label">AVG LOAN SIZE</div></div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">MONTHLY FUNDED VOLUME</div>
+        <div class="mc-vbar-wrap" id="anaMonthlyBars"></div>
+      </div>
+    </div>
+
+    <!-- PIPELINE VELOCITY (moved from Analytics) -->
+    <div style="margin-top:16px;">
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
+          <div class="mc-panel-title">PIPELINE VELOCITY</div>
+          <div class="mc-status" id="anaVelocityStatus">—</div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
+        <div id="anaVelocityBars"></div>
+        <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1099,50 +1136,34 @@
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Intelligence & Opportunity Center</div></div>
+      <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Loan Intelligence & Opportunity Scanner</div></div>
     </div>
   </div>
   <div class="content-area">
 
     <!-- Tabs -->
     <div class="ana-tabs">
-      <div class="ana-tab active" onclick="anaShowTab('dashboard',this)">DASHBOARD</div>
+      <div class="ana-tab active" onclick="anaShowTab('dashboard',this)">INTELLIGENCE</div>
       <div class="ana-tab" onclick="anaShowTab('reports',this)">CUSTOM REPORTS</div>
     </div>
 
-    <!-- ======= DASHBOARD TAB ======= -->
+    <!-- ======= INTELLIGENCE TAB ======= -->
     <div id="anaTabDashboard">
 
-      <!-- PRODUCTION METRICS -->
+      <!-- STRIKE RATE -->
       <div class="mc-panel">
         <div class="mc-panel-head">
-          <div class="mc-blinker green"></div>
-          <div class="mc-panel-title">PRODUCTION METRICS</div>
-          <div class="mc-status" id="anaProdStatus">LOADING</div>
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title">STRIKE RATE ANALYSIS</div>
+          <div class="mc-status" id="anaStrikeStatus">MONITORING</div>
         </div>
-        <div class="mc-grid-3" style="margin-bottom:20px;">
-          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedVol" style="color:#22c55e;">—</div><div class="mc-kpi-label">FUNDED VOLUME</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedCount" style="color:#3b82f6;">—</div><div class="mc-kpi-label">LOANS FUNDED</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" id="anaAvgSize" style="color:#f472b6;">—</div><div class="mc-kpi-label">AVG LOAN SIZE</div></div>
+        <div class="mc-grid-3" style="margin-bottom:16px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#3b82f6;" id="anaAvgRate">—</div><div class="mc-kpi-label">AVG FUNDED RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaMktRate">—</div><div class="mc-kpi-label">CURRENT MKT RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaRefiCount">—</div><div class="mc-kpi-label">REFI CANDIDATES</div></div>
         </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">MONTHLY FUNDED VOLUME</div>
-        <div class="mc-vbar-wrap" id="anaMonthlyBars"></div>
-      </div>
-
-      <!-- PIPELINE VELOCITY -->
-      <div class="mc-panel">
-        <div class="mc-panel-head">
-          <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
-          <div class="mc-panel-title">PIPELINE VELOCITY</div>
-          <div class="mc-status" id="anaVelocityStatus">—</div>
-        </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
-        <div id="anaVelocityBars"></div>
-        <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
-        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">CLIENTS ABOVE CURRENT MARKET RATE</div>
+        <div id="anaStrikeCards"><div class="mc-empty-msg">SCANNING...</div></div>
       </div>
 
       <!-- REFI OPPORTUNITIES -->
@@ -1176,22 +1197,6 @@
           </div>
           <div id="anaUpcomingDates"><div class="mc-empty-msg">LOADING...</div></div>
         </div>
-      </div>
-
-      <!-- STRIKE RATE -->
-      <div class="mc-panel">
-        <div class="mc-panel-head">
-          <div class="mc-blinker"></div>
-          <div class="mc-panel-title">STRIKE RATE ANALYSIS</div>
-          <div class="mc-status" id="anaStrikeStatus">MONITORING</div>
-        </div>
-        <div class="mc-grid-3" style="margin-bottom:16px;">
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#3b82f6;" id="anaAvgRate">—</div><div class="mc-kpi-label">AVG FUNDED RATE</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaMktRate">—</div><div class="mc-kpi-label">CURRENT MKT RATE</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaRefiCount">—</div><div class="mc-kpi-label">REFI CANDIDATES</div></div>
-        </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">CLIENTS ABOVE CURRENT MARKET RATE</div>
-        <div id="anaStrikeCards"><div class="mc-empty-msg">SCANNING...</div></div>
       </div>
     </div>
 

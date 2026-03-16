@@ -174,6 +174,9 @@ function updateDashboard() {
   // Render charts
   renderPipelineHTML();
   renderLoanTypeHTML();
+
+  // Load production metrics and pipeline velocity (moved from Analytics)
+  if (typeof loadAnalytics === 'function') loadAnalytics();
 }
 
 // ===== MC PIPELINE BARS (HTML) =====
