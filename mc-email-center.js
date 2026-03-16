@@ -612,6 +612,7 @@ function emDeleteCampaign(id) {
 
 function emOpenCampaignBuilder() {
   document.getElementById('emCampaignBuilder').style.display = 'block';
+  document.getElementById('emCampaignBuilder').scrollIntoView({ behavior: 'smooth', block: 'start' });
   document.getElementById('emBuilderTitle').textContent = 'New Campaign';
   document.getElementById('emCampName').value = '';
   document.getElementById('emCampTrigger').value = 'manual';
@@ -681,9 +682,17 @@ function emRenderSteps() {
     h += '<div class="fc-field" style="margin-bottom:8px;max-width:180px;"><div class="fc-lbl">' + (i === 0 ? 'Days after trigger' : 'Days after prev') + '</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
 
     if (isEmail) {
-      // Email step — template picker and subject override
-      h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Email Template</div><select onchange="emEditSteps[' + i + '].template_id=this.value||null">' + tplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
-      h += '<div class="fc-field"><div class="fc-lbl">Subject Override (optional)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+      // Email step — template picker OR write custom
+      var customTplOpts = '<option value="">— Write Custom —</option>' + tplOpts.replace('— Select a template —', '— Or Pick a Template —');
+      h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Email Content</div><select id="emStepTpl_' + i + '" onchange="emEditSteps[' + i + '].template_id=this.value||null;emRenderSteps()">' + customTplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
+      if (!s.template_id) {
+        // Custom — show subject and body fields
+        h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Subject Line</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Enter your subject line"></div>';
+        h += '<div class="fc-field"><div class="fc-lbl">Email Body</div><textarea rows="4" style="width:100%;resize:vertical;" onchange="emEditSteps[' + i + '].body_override=this.value" placeholder="Write your email here. Use {{first_name}} for personalization.">' + (s.body_override || '').replace(/</g, '&lt;') + '</textarea></div>';
+      } else {
+        // Template selected — optional subject override only
+        h += '<div class="fc-field"><div class="fc-lbl">Subject Override (optional)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
+      }
     } else {
       // SMS step — text message body
       h += '<div class="fc-field"><div class="fc-lbl">Text Message</div><textarea rows="3" style="width:100%;resize:vertical;" onchange="emEditSteps[' + i + '].sms_body=this.value" placeholder="Hi {{first_name}}, just wanted to check in...">' + (s.sms_body || '').replace(/</g, '&lt;') + '</textarea></div>';
