@@ -4283,7 +4283,6 @@ function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
     buttons='<button class="pp-order-btn" onclick="ppViewOrder(\''+orderId+'\')">VIEW ORDER</button>';
   }
   buttons+='<button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button>';
-  buttons+='<button class="pp-order-btn" onclick="ppDeleteOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);margin-left:4px;" title="Delete order"><i class="fas fa-trash"></i></button>';
   return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div>'+buttons+'</div>';
 }
 
