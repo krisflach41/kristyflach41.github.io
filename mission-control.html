@@ -1682,7 +1682,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
       <div class="pp-tab" onclick="ppTab('reports',this)">REPORTS</div>
       <div class="pp-tab" onclick="ppTab('flyers',this)">FLYERS</div>
       <div class="pp-tab" onclick="ppTab('activity',this)">ACTIVITY</div>
-      <div class="pp-tab" onclick="ppTab('settings',this)">SETTINGS</div>
       <div class="pp-tab" onclick="ppTab('history',this)">ORDER HISTORY</div>
     </div>
 
@@ -1911,12 +1910,6 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
     </div>
 
     <!-- ===== SETTINGS TAB ===== -->
-    <div id="ppSettings" style="display:none;">
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">PARTNER ACCESS MANAGEMENT</div><div class="mc-status" id="ppSettingsCount">—</div></div>
-        <div id="ppSettingsTable"></div>
-        <div style="margin-top:16px;"><button class="topbar-btn primary" style="font-family:sans-serif;font-size:12px;letter-spacing:3px;padding:10px 24px;">+ INVITE PARTNER</button></div>
-      </div>
-    </div>
 
     <!-- ===== ORDER HISTORY TAB ===== -->
     <div id="ppHistory" style="display:none;">
@@ -4113,7 +4106,7 @@ function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');i
 
 
 // ===== PARTNER PORTAL =====
-function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppSettings','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',settings:'ppSettings',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='settings')ppBuildSettings();if(tab==='history')ppBuildOrderHistory('all');}
+function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='history')ppBuildOrderHistory('all');}
 
 var ppPartners=[
   {name:'Jessica Rivera',brokerage:'RE/MAX Premier',email:'jrivera@remax.com',color:'#f472b6',orders:18,visits:24,lastLogin:'2 hrs ago',totalTime:'4h 32m'},
@@ -4736,25 +4729,10 @@ function ppActFilter(){
   var ft=document.getElementById('ppActFooter');if(ft)ft.innerHTML='SHOWING <span style="color:#3b82f6;font-weight:700;">'+filtered.length+'</span> OF '+ppActivityLog.length+' TOTAL';
 }
 
-function ppBuildSettings(){
-  var h='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:10px 16px;font-size:11px;color:var(--text-muted);letter-spacing:1.5px;font-weight:600;border-bottom:1px solid rgba(59,130,246,0.08);"><div>PARTNER</div><div>EMAIL</div><div>STATUS</div><div>ACTION</div></div>';
-  ppPartners.forEach(function(p){
-    var active=p.visits>5;
-    h+='<div style="display:grid;grid-template-columns:1fr 1fr auto auto;gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(0,0,0,0.02);font-size:13px;">';
-    h+='<div style="font-weight:700;color:var(--text-secondary);">'+p.name+'</div>';
-    h+='<div style="color:var(--text-muted);font-weight:600;font-size:12px;">'+p.email+'</div>';
-    h+='<div><span style="padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;font-weight:600;background:'+(active?'rgba(34,197,94,0.1)':'rgba(251,191,36,0.1)')+';color:'+(active?'#22c55e':'#fbbf24')+';">'+(active?'ACTIVE':'INACTIVE')+'</span></div>';
-    h+='<div><button style="padding:6px 14px;border-radius:4px;border:1px solid rgba(59,130,246,0.2);background:transparent;color:rgba(59,130,246,0.6);font-size:11px;cursor:pointer;font-weight:600;letter-spacing:1px;">RESET PW</button></div>';
-    h+='</div>';
-  });
-  document.getElementById('ppSettingsTable').innerHTML=h;
-  document.getElementById('ppSettingsCount').textContent=ppPartners.length+' PARTNERS';
-}
-
 function loadPartnerPortal(){
   // Check URL hash for direct tab navigation
   var hash=(window.location.hash||'').replace('#','').toLowerCase();
-  var validTabs=['dashboard','reports','flyers','activity','settings','history'];
+  var validTabs=['dashboard','reports','flyers','activity','history'];
   if(hash&&validTabs.indexOf(hash)>=0){
     var tabEl=document.querySelectorAll('.pp-tab')[validTabs.indexOf(hash)];
     if(tabEl)ppTab(hash,tabEl);
