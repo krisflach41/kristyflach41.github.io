@@ -4283,6 +4283,7 @@ function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
     buttons='<button class="pp-order-btn" onclick="ppViewOrder(\''+orderId+'\')">VIEW ORDER</button>';
   }
   buttons+='<button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button>';
+  buttons+='<button class="pp-order-btn" onclick="ppDeleteOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);margin-left:4px;" title="Delete order"><i class="fas fa-trash"></i></button>';
   return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div>'+buttons+'</div>';
 }
 
@@ -4309,6 +4310,27 @@ function ppCompleteOrder(orderId){
     ppBuildReportOrders();
     ppBuildFlyerOrders();
   });
+}
+
+function ppDeleteOrder(orderId){
+  if(!confirm('Delete this order? This cannot be undone.'))return;
+  fetch('https://agent-edge-backend.vercel.app/api/update-order',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,action:'delete'})
+  }).then(function(r){return r.json();}).then(function(d){
+    if(d.success){
+      allOrders=allOrders.filter(function(o){return o.orderId!==orderId;});
+      showToast('Order deleted');
+      ppCloseOrderPanel();
+      ppBuildReportOrders();
+      ppBuildFlyerOrders();
+      ppBuildOrderHistory(ppHistoryFilterVal||'all');
+      ppBuildDashboard();
+    } else {
+      showToast('Delete failed: '+(d.message||'Unknown error'));
+    }
+  }).catch(function(e){showToast('Delete failed');});
 }
 
 // ===== VIEW ORDER PANEL =====
@@ -4676,7 +4698,7 @@ function ppBuildOrderHistory(filter){
     h+='<td>'+cobrand+'</td>';
     h+='<td style="font-weight:600;">'+ts+'</td>';
     h+='<td><span class="status-badge" style="background:'+statusColor+'15;color:'+statusColor+';">'+statusLabel+'</span></td>';
-    h+='<td><button class="pp-order-btn" onclick="ppViewOrder(\''+o.orderId+'\')" style="padding:5px 12px;font-size:9px;letter-spacing:1px;">VIEW</button></td>';
+    h+='<td><button class="pp-order-btn" onclick="ppViewOrder(\''+o.orderId+'\')" style="padding:5px 12px;font-size:9px;letter-spacing:1px;">VIEW</button> <button class="pp-order-btn" onclick="ppDeleteOrder(\''+o.orderId+'\')" style="padding:5px 8px;font-size:9px;background:transparent;border:1px solid rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);" title="Delete"><i class="fas fa-trash"></i></button></td>';
     h+='</tr>';
   });
   h+='</tbody></table>';
