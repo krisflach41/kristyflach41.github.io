@@ -293,16 +293,24 @@ function ppViewOrder(orderId){
   items.forEach(function(item,i){
     var isGen=genItems.indexOf(i)>=0;
     if(isGen){
-      h+='<div class="pp-od-item generated" data-index="'+i+'" data-type="'+item.type+'">';
-      h+='<input type="checkbox" class="pp-od-cb" checked disabled onclick="event.stopPropagation();">';
+      h+='<div class="pp-od-item generated" data-index="'+i+'" data-type="'+item.type+'" onclick="ppToggleItem(this)">';
+      h+='<input type="checkbox" class="pp-od-cb" onclick="event.stopPropagation();ppUpdateSelCount();">';
     } else {
       h+='<div class="pp-od-item" onclick="ppToggleItem(this)" data-index="'+i+'" data-type="'+item.type+'">';
       h+='<input type="checkbox" class="pp-od-cb" onclick="event.stopPropagation();ppUpdateSelCount();">';
     }
     h+='<div class="pp-od-item-icon">'+item.icon+'</div>';
-    h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+(isGen?' <span class="pp-od-item-check-icon">✓</span>':'')+'</div>';
+    h+='<div class="pp-od-item-info"><div class="pp-od-item-name">'+item.name+(isGen?' <span class="pp-od-item-check-icon">✓ Done</span>':'')+'</div>';
     h+='<div class="pp-od-item-detail">'+item.detail+'</div></div>';
-    h+='<div class="pp-od-item-type">'+item.category+'</div></div>';
+    if(isGen){
+      h+='<div style="display:flex;gap:4px;align-items:center;flex-shrink:0;">';
+      h+='<button class="topbar-btn" onclick="event.stopPropagation();ppOpenGeneratedItem('+i+',\''+orderId+'\')" style="padding:4px 10px;font-size:10px;letter-spacing:0.5px;"><i class="fas fa-eye"></i> Open</button>';
+      h+='<button class="topbar-btn" onclick="event.stopPropagation();ppUndoGenerated('+i+',\''+orderId+'\')" style="padding:4px 10px;font-size:10px;letter-spacing:0.5px;border-color:rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);"><i class="fas fa-undo"></i></button>';
+      h+='</div>';
+    } else {
+      h+='<div class="pp-od-item-type">'+item.category+'</div>';
+    }
+    h+='</div>';
   });
 
   // Notes
@@ -360,7 +368,7 @@ function ppToggleItem(row){
 }
 
 function ppToggleAllItems(isChecked){
-  document.querySelectorAll('.pp-od-cb:not(:disabled)').forEach(function(cb){
+  document.querySelectorAll('.pp-od-cb').forEach(function(cb){
     cb.checked=isChecked;
     cb.closest('.pp-od-item').classList.toggle('checked',isChecked);
   });
@@ -368,8 +376,8 @@ function ppToggleAllItems(isChecked){
 }
 
 function ppUpdateSelCount(){
-  var total=document.querySelectorAll('.pp-od-cb:not(:disabled)').length;
-  var checked=document.querySelectorAll('.pp-od-cb:checked:not(:disabled)').length;
+  var total=document.querySelectorAll('.pp-od-cb').length;
+  var checked=document.querySelectorAll('.pp-od-cb:checked').length;
   var countEl=document.getElementById('ppOdCount');
   if(countEl)countEl.textContent=checked+' of '+total+' selected';
   var btn=document.getElementById('ppOdGenBtn');
@@ -386,8 +394,7 @@ function ppGenerateSelected(orderId){
   if(!order)return;
   var parsed=ppParseOrderItems(order.items||order.cartJson);
   var items=parsed.lineItems;
-  // Only count non-generated, non-disabled checkboxes
-  var checkedEls=document.querySelectorAll('.pp-od-cb:checked:not(:disabled)');
+  var checkedEls=document.querySelectorAll('.pp-od-cb:checked');
   if(checkedEls.length===0){showToast('Select at least one item');return;}
 
   var existingGen=order.generatedItems||[];
@@ -420,6 +427,33 @@ function ppGenerateSelected(orderId){
     // Refresh the panel to show updated state after a short delay
     setTimeout(function(){ppViewOrder(orderId);},500);
   }
+}
+
+function ppUndoGenerated(itemIndex, orderId){
+  if(!confirm('Mark this item as not completed? You can regenerate it.'))return;
+  var order=allOrders.find(function(o){return o.orderId===orderId;});
+  if(!order)return;
+  var gen=order.generatedItems||[];
+  gen=gen.filter(function(idx){return idx!==itemIndex;});
+  order.generatedItems=gen;
+  // Save to backend
+  fetch('https://agent-edge-backend.vercel.app/api/update-order',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({orderId:orderId,generated_items:gen})
+  }).catch(function(e){console.error('Undo generated error:',e);});
+  showToast('Item marked as incomplete');
+  ppViewOrder(orderId);
+}
+
+function ppOpenGeneratedItem(itemIndex, orderId){
+  var order=allOrders.find(function(o){return o.orderId===orderId;});
+  if(!order)return;
+  var parsed=ppParseOrderItems(order.items||order.cartJson);
+  var item=parsed.lineItems[itemIndex];
+  if(!item)return;
+  // Re-run the generate to open the report/tool
+  ppGenerateLineItem(item,order);
 }
 
 function ppGenerateLineItem(item,order){
