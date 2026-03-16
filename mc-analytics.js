@@ -355,6 +355,7 @@ function qrBuildConfig(type){
   else if(type==='strike'){title.textContent='STRIKE RATE CLIENTS';body.innerHTML=mktInput+'<div style="font-size:12px;color:var(--text-muted);margin-top:8px;font-weight:600;">SHOWS SPREAD BETWEEN CLIENT RATES AND CURRENT MARKET</div>';}
   else if(type==='age'){title.textContent='AGE OF LOAN';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">DAYS FROM CREATION TO DECISION</div>'+pp;qrCurrentConfig.period='ytd';}
   else if(type==='fallout'){title.textContent='FALLOUT REPORT';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">WITHDRAWN · SUSPENDED · DENIED</div>'+pp;qrCurrentConfig.period='ytd';}
+  else if(type==='archive'){title.textContent='COMPLIANCE ARCHIVE';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;letter-spacing:1px;font-weight:600;">PULL ARCHIVED ORDERS BY DATE RANGE</div><div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Orders auto-archive after 90 days. Retained for 3 years.</div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;"><span style="font-size:13px;color:var(--text-muted);font-weight:600;">DATE RANGE:</span><input type="date" class="qb-date-input" id="qrArchiveFrom" value="'+yStr+'" style="font-size:13px;"><span style="color:var(--text-muted);">→</span><input type="date" class="qb-date-input" id="qrArchiveTo" value="'+tStr+'" style="font-size:13px;"></div>';}
   else if(type==='realtor'){title.textContent='REALTOR TRACKING';body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);letter-spacing:1px;font-weight:600;">PORTAL ACTIVITY TRACKING — COMING SOON</div>';}
   else if(type.startsWith('user_')){var s=qrUserReports.find(function(r){return r.id===type;});if(s){title.textContent=s.name.toUpperCase();body.innerHTML='<div style="font-size:13px;color:var(--text-secondary);">SAVED REPORT — CLICK RUN</div>';qrCurrentConfig=JSON.parse(JSON.stringify(s.config));}}
 }
@@ -375,6 +376,7 @@ function qrRunReport(){
   else if(type==='refi'||type==='strike'){cols=['BORROWER','FUNDED RATE','MARKET RATE','SPREAD','MONTHLY SAVINGS','LOAN AMOUNT','FUNDED DATE'];anaLoanHistory.forEach(function(h){if(h.outcome!=='funded'||!h.interest_rate)return;var rate=parseFloat(h.interest_rate);if(rate<=mk)return;var sp=rate-mk,amt=parseFloat(h.loan_amount)||0;data.push({'BORROWER':qrNames(h),'FUNDED RATE':rate.toFixed(3)+'%','MARKET RATE':mk.toFixed(3)+'%','SPREAD':'+'+sp.toFixed(3)+'%','MONTHLY SAVINGS':'$'+Math.round((sp/100)*amt/12),'LOAN AMOUNT':'$'+Math.round(amt).toLocaleString(),'FUNDED DATE':h.outcome_date||'—'});});}
   else if(type==='age'){cols=['BORROWER','AE ID','CREATED','DECISIONED','DAYS','OUTCOME'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(!h.outcome_date||!h.created_at)return;if(h.outcome_date<r.from||h.outcome_date>r.to)return;var c=new Date(h.created_at),d=new Date(h.outcome_date),days=Math.round((d-c)/(86400000));data.push({'BORROWER':qrNames(h),'AE ID':h.ae_id||'—','CREATED':h.created_at?h.created_at.split('T')[0]:'—','DECISIONED':h.outcome_date,'DAYS':days,'OUTCOME':(h.outcome||'').toUpperCase()});});}
   else if(type==='fallout'){cols=['BORROWER','AE ID','LOAN AMOUNT','OUTCOME','OUTCOME DATE','LOAN TYPE'];var r=qrGetDateRange(qrCurrentConfig.period);anaLoanHistory.forEach(function(h){if(!h.outcome||h.outcome==='funded')return;if(h.outcome_date&&(h.outcome_date<r.from||h.outcome_date>r.to))return;data.push({'BORROWER':qrNames(h),'AE ID':h.ae_id||'—','LOAN AMOUNT':'$'+Math.round(parseFloat(h.loan_amount)||0).toLocaleString(),'OUTCOME':h.outcome.toUpperCase(),'OUTCOME DATE':h.outcome_date||'—','LOAN TYPE':h.transaction_type||'—'});});}
+  else if(type==='archive'){return qrRunArchiveReport();}
   qrResultData=data;qrResultColumns=cols;qrRenderResults(data,cols);
 }
 
@@ -404,3 +406,62 @@ function anaSaveQuickReport(){var name=prompt('Name this report:');if(!name)retu
 function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');if(!t)return;var csv='';t.querySelectorAll('tr').forEach(function(tr){if(tr.style.display==='none')return;var row=[];tr.querySelectorAll('th,td').forEach(function(cell){row.push('"'+cell.textContent.replace(/"/g,'""').replace(/Filter\.\.\./g,'')+'"');});csv+=row.join(',')+'\n';});var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='agent-edge-report.csv';a.click();}
 
 
+
+// ===== COMPLIANCE ARCHIVE REPORT =====
+async function qrRunArchiveReport() {
+  var fromEl = document.getElementById('qrArchiveFrom');
+  var toEl = document.getElementById('qrArchiveTo');
+  if (!fromEl || !toEl || !fromEl.value || !toEl.value) {
+    showToast('Select a date range');
+    return;
+  }
+
+  var p = document.getElementById('anaResultsPanel');
+  p.style.display = 'block';
+  document.getElementById('anaResultsStatus').textContent = 'LOADING...';
+  document.getElementById('anaResultsTable').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Fetching archived orders...</div>';
+
+  try {
+    var resp = await fetch(API_BASE + '/cron-archive?action=query&start=' + fromEl.value + '&end=' + toEl.value);
+    var data = await resp.json();
+
+    if (!data.success) {
+      document.getElementById('anaResultsTable').innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;">Error: ' + (data.error || 'Unknown') + '</div>';
+      return;
+    }
+
+    var orders = data.orders || [];
+    var cols = ['ORDER ID', 'DATE', 'PARTNER', 'EMAIL', 'BROKERAGE', 'ITEMS', 'STATUS', 'ARCHIVED'];
+    var rows = [];
+
+    orders.forEach(function(o) {
+      var itemList = '';
+      try {
+        var parsed = JSON.parse(o.items || o.cartJson || '{}');
+        if (parsed.advisory) parsed.advisory.forEach(function(i) { itemList += i.name + ', '; });
+        if (parsed.marketing) parsed.marketing.forEach(function(i) { itemList += i.name + ', '; });
+        itemList = itemList.replace(/, $/, '') || (o.itemCount + ' items');
+      } catch (e) { itemList = o.itemCount + ' items'; }
+
+      rows.push({
+        'ORDER ID': o.orderId,
+        'DATE': o.timestamp ? o.timestamp.split('T')[0] : '—',
+        'PARTNER': o.name || '—',
+        'EMAIL': o.email || '—',
+        'BROKERAGE': o.brokerage || '—',
+        'ITEMS': itemList,
+        'STATUS': (o.status || '').toUpperCase(),
+        'ARCHIVED': o.archivedAt ? o.archivedAt.split('T')[0] : '—'
+      });
+    });
+
+    document.getElementById('anaResultsStatus').textContent = rows.length + ' ARCHIVED ORDERS';
+    document.getElementById('anaResultCount2').textContent = rows.length + ' RECORDS';
+    qrResultData = rows;
+    qrResultColumns = cols;
+    qrRenderResults(rows, cols);
+
+  } catch (err) {
+    document.getElementById('anaResultsTable').innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;">Failed to fetch archive: ' + err.message + '</div>';
+  }
+}
