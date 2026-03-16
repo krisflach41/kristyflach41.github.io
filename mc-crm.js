@@ -207,17 +207,24 @@ function handleCrmImport(input) {
           email: String(row['Email'] || row['email'] || '').trim(),
           phone: phone,
           type: type,
+          root_type: type,
+          designations: type === 'realtor' ? ['realtor'] : [],
           company: String(row['Company'] || row['Company / Brokerage'] || row['Brokerage'] || row['company'] || '').trim(),
           source: String(row['Source'] || row['source'] || 'import').trim(),
-          address: String(row['Street'] || row['street'] || '').trim(),
+          address: String(row['Street'] || row['Address'] || row['street'] || row['address'] || '').trim(),
           city: String(row['City'] || row['city'] || '').trim(),
           state: String(row['State'] || row['state'] || '').trim(),
-          zip: String(row['Zip'] || row['zip'] || row['ZIP'] || '').trim(),
+          zip: String(row['Zip'] || row['zip'] || row['ZIP'] || row['Zip Code'] || '').trim(),
+          job_title: String(row['Title'] || row['Job Title'] || row['job_title'] || '').trim(),
           license_number: String(row['License Number'] || row['license_number'] || '').trim(),
-          own_rent: String(row['Own or Rent'] || row['own_rent'] || '').trim().toLowerCase(),
-          monthly_payment: row['Monthly Payment'] || row['monthly_payment'] || '',
-          marital_status: String(row['Marital Status'] || row['marital_status'] || '').trim().toLowerCase(),
-          notes: String(row['Notes'] || row['notes'] || '').trim()
+          website: String(row['Website'] || row['website'] || '').trim(),
+          facebook: String(row['Facebook'] || row['facebook'] || '').trim(),
+          instagram: String(row['Instagram'] || row['instagram'] || '').trim(),
+          linkedin: String(row['LinkedIn'] || row['linkedin'] || '').trim(),
+          tiktok: String(row['TikTok'] || row['tiktok'] || '').trim(),
+          tags: String(row['Tags'] || row['tags'] || '').trim() || null,
+          notes: String(row['Notes'] || row['notes'] || '').trim(),
+          verified: false
         };
 
         var p = fetch(API_BASE + '/crm-api', {
@@ -298,4 +305,3 @@ function confirmDeleteContact(id, name) {
   })
   .catch(function() { showToast('Delete failed'); });
 }
-
