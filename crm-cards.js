@@ -2134,9 +2134,12 @@ function crmSaveContact(){
         }
         crmDirty = false;
       }
-      document.getElementById('navCrmCount').textContent = crmContacts.length;
-      document.getElementById('dashCrm').textContent = crmContacts.length;
-      document.getElementById('crmSubtitle').textContent = crmContacts.length + ' contacts';
+      var navCount = document.getElementById('navCrmCount');
+      if (navCount) navCount.textContent = crmContacts.length;
+      var dashCount = document.getElementById('dashCrm');
+      if (dashCount) dashCount.textContent = crmContacts.length;
+      var subTitle = document.getElementById('crmSubtitle');
+      if (subTitle) subTitle.textContent = crmContacts.length + ' contacts';
       console.log('=== SAVE SUCCESS ===');
       crmSaving = false;
     } else {
