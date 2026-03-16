@@ -792,6 +792,7 @@
     </div>
     <div class="topbar-right">
       <button class="topbar-btn em-tab active" id="emTabDashboard" onclick="emTab('dashboard')">Dashboard</button>
+      <button class="topbar-btn em-tab" id="emTabAudiences" onclick="emTab('audiences')">Audiences</button>
       <button class="topbar-btn em-tab" id="emTabCampaigns" onclick="emTab('campaigns')">Campaigns</button>
       <button class="topbar-btn em-tab" id="emTabTemplates" onclick="emTab('templates')">Templates</button>
       <button class="topbar-btn primary" onclick="emOpenCompose()">+ Compose</button>
@@ -872,6 +873,90 @@
             <div id="emEnrollCount" style="font-size:11px;color:var(--text-muted);">0 selected</div>
             <button class="topbar-btn primary" onclick="emBulkEnroll()"><i class="fas fa-check"></i> Enroll Selected</button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCES -->
+    <div id="emAudiences" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Audiences</div>
+      </div>
+
+      <!-- Saved Groups -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">SAVED GROUPS</div><div class="mc-status" id="audGroupCount">—</div></div>
+        <div id="audGroupList" style="max-height:200px;overflow-y:auto;">
+          <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Loading groups...</div>
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="mc-panel">
+        <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">FIND CONTACTS</div><div class="mc-status" id="audResultCount">—</div></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">TYPE</label>
+            <select id="audFilterType" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+              <option value="">All types</option>
+              <option value="realtor">Realtor</option>
+              <option value="client">Client</option>
+              <option value="past_client">Past Client</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">SOURCE</label>
+            <select id="audFilterSource" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+              <option value="">All sources</option>
+              <option value="modelmatch">ModelMatch</option>
+              <option value="pipeline">Pipeline</option>
+              <option value="import">Import</option>
+              <option value="portal">Portal Signup</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">STATE</label>
+            <input type="text" id="audFilterState" placeholder="e.g. OH" maxlength="2" oninput="this.value=this.value.toUpperCase();audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">ZIP CODE</label>
+            <input type="text" id="audFilterZip" placeholder="e.g. 45244" maxlength="5" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CITY</label>
+            <input type="text" id="audFilterCity" placeholder="e.g. Cincinnati" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">COMPANY</label>
+            <input type="text" id="audFilterCompany" placeholder="e.g. Keller Williams" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          <input type="text" id="audFilterSearch" placeholder="Search name, email, tags..." oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+          <button class="topbar-btn" onclick="audClearFilters()" style="font-size:11px;"><i class="fas fa-times"></i> Clear</button>
+          <button class="topbar-btn primary" onclick="audSearch()" style="font-size:11px;"><i class="fas fa-search"></i> Search</button>
+        </div>
+
+        <!-- Action bar -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input type="checkbox" id="audSelectAll" onchange="audToggleAll(this.checked)" style="width:16px;height:16px;cursor:pointer;">
+          <label for="audSelectAll" style="font-size:12px;color:var(--text-muted);cursor:pointer;">Select all</label>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:8px;" id="audSelectedCount">0 selected</span>
+          <div style="margin-left:auto;display:flex;gap:6px;">
+            <button class="topbar-btn" onclick="audSaveGroup()" style="font-size:11px;" id="audSaveBtn" disabled><i class="fas fa-bookmark"></i> Save as Group</button>
+            <button class="topbar-btn primary" onclick="audEnrollSelected()" style="font-size:11px;" id="audEnrollBtn" disabled><i class="fas fa-paper-plane"></i> Enroll in Campaign</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="audResults" style="max-height:400px;overflow-y:auto;">
+          <div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Use the filters above to find contacts.</div>
         </div>
       </div>
     </div>

@@ -5,17 +5,18 @@ var emEditSteps = [];
 var emLoaded = false;
 
 function emTab(tab) {
-  ['emDashboard','emCampaigns','emCampaignDetail','emTemplates'].forEach(function(id) {
+  ['emDashboard','emAudiences','emCampaigns','emCampaignDetail','emTemplates'].forEach(function(id) {
     var e = document.getElementById(id); if (e) e.style.display = 'none';
   });
-  ['emTabDashboard','emTabCampaigns','emTabTemplates'].forEach(function(id) {
+  ['emTabDashboard','emTabAudiences','emTabCampaigns','emTabTemplates'].forEach(function(id) {
     var e = document.getElementById(id); if (e) e.classList.remove('active');
   });
-  var map = { dashboard:'emDashboard', campaigns:'emCampaigns', templates:'emTemplates' };
-  var tabMap = { dashboard:'emTabDashboard', campaigns:'emTabCampaigns', templates:'emTabTemplates' };
+  var map = { dashboard:'emDashboard', audiences:'emAudiences', campaigns:'emCampaigns', templates:'emTemplates' };
+  var tabMap = { dashboard:'emTabDashboard', audiences:'emTabAudiences', campaigns:'emTabCampaigns', templates:'emTabTemplates' };
   var t = document.getElementById(map[tab]); if (t) t.style.display = 'block';
   var tb = document.getElementById(tabMap[tab]); if (tb) tb.classList.add('active');
   if (tab === 'dashboard') emLoadDashboard();
+  if (tab === 'audiences') audLoadGroups();
   if (tab === 'campaigns') emLoadCampaigns();
   if (tab === 'templates') emLoadTemplates();
 }
@@ -911,3 +912,292 @@ function emSendCompose() {
 // Keep old function name working for CRM cards
 function openComposeEmail() { emOpenCompose(); }
 
+
+// ===== AUDIENCES =====
+var audContacts = [];
+var audSelected = [];
+var audGroups = [];
+var audSearchTimer = null;
+
+function audSearchDebounce() {
+  if (audSearchTimer) clearTimeout(audSearchTimer);
+  audSearchTimer = setTimeout(audSearch, 400);
+}
+
+function audSearch() {
+  var params = [];
+  var type = document.getElementById('audFilterType').value;
+  var source = document.getElementById('audFilterSource').value;
+  var state = document.getElementById('audFilterState').value.trim();
+  var zip = document.getElementById('audFilterZip').value.trim();
+  var city = document.getElementById('audFilterCity').value.trim();
+  var company = document.getElementById('audFilterCompany').value.trim();
+  var q = document.getElementById('audFilterSearch').value.trim();
+
+  if (type) params.push('root_type=' + encodeURIComponent(type));
+  if (source) params.push('source=' + encodeURIComponent(source));
+  if (state) params.push('state=' + encodeURIComponent(state));
+  if (zip) params.push('zip=' + encodeURIComponent(zip));
+  if (city) params.push('city=' + encodeURIComponent(city));
+  if (company) params.push('company=' + encodeURIComponent(company));
+  if (q) params.push('q=' + encodeURIComponent(q));
+
+  if (params.length === 0) {
+    document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Use the filters above to find contacts.</div>';
+    document.getElementById('audResultCount').textContent = '—';
+    return;
+  }
+
+  document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+
+  fetch(API_BASE + '/crm-api?' + params.join('&'))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      audContacts = (data.contacts || []).filter(function(c) { return c.email; });
+      audSelected = [];
+      document.getElementById('audSelectAll').checked = false;
+      audUpdateSelectedCount();
+      audRenderResults();
+    })
+    .catch(function() {
+      document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Search failed.</div>';
+    });
+}
+
+function audRenderResults() {
+  var el = document.getElementById('audResults');
+  var count = audContacts.length;
+  document.getElementById('audResultCount').textContent = count + ' FOUND';
+
+  if (count === 0) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">No contacts match those filters.</div>';
+    return;
+  }
+
+  var h = '';
+  audContacts.forEach(function(c, i) {
+    var name = c.name || ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || c.email;
+    var email = c.email || '';
+    var isSelected = audSelected.indexOf(email.toLowerCase()) >= 0;
+    var meta = [];
+    if (c.company) meta.push(c.company);
+    if (c.city && c.state) meta.push(c.city + ', ' + c.state);
+    else if (c.state) meta.push(c.state);
+    if (c.zip) meta.push(c.zip);
+
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;cursor:pointer;' + (isSelected ? 'background:rgba(110,127,119,0.08);' : '') + '" onclick="audToggleContact(\'' + email.replace(/'/g, "\\'") + '\')" onmouseover="if(!this.style.background||this.style.background===\'none\')this.style.background=\'rgba(0,0,0,0.02)\'" onmouseout="if(' + (!isSelected ? 'true' : 'false') + ')this.style.background=\'none\'">';
+    h += '<input type="checkbox" ' + (isSelected ? 'checked' : '') + ' style="width:15px;height:15px;pointer-events:none;">';
+    h += '<div style="flex:1;min-width:0;">';
+    h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>';
+    h += '<div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + email + (meta.length ? ' · ' + meta.join(' · ') : '') + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(110,127,119,0.08);color:var(--text-muted);">' + (c.root_type || c.type || 'other') + '</div>';
+    h += '</div>';
+  });
+  el.innerHTML = h;
+}
+
+function audToggleContact(email) {
+  var lower = email.toLowerCase();
+  var idx = audSelected.indexOf(lower);
+  if (idx >= 0) audSelected.splice(idx, 1);
+  else audSelected.push(lower);
+  audUpdateSelectedCount();
+  audRenderResults();
+}
+
+function audToggleAll(checked) {
+  if (checked) {
+    audSelected = audContacts.filter(function(c) { return c.email; }).map(function(c) { return c.email.toLowerCase(); });
+  } else {
+    audSelected = [];
+  }
+  audUpdateSelectedCount();
+  audRenderResults();
+}
+
+function audUpdateSelectedCount() {
+  var n = audSelected.length;
+  document.getElementById('audSelectedCount').textContent = n + ' selected';
+  document.getElementById('audSaveBtn').disabled = n === 0;
+  document.getElementById('audEnrollBtn').disabled = n === 0;
+}
+
+function audClearFilters() {
+  document.getElementById('audFilterType').value = '';
+  document.getElementById('audFilterSource').value = '';
+  document.getElementById('audFilterState').value = '';
+  document.getElementById('audFilterZip').value = '';
+  document.getElementById('audFilterCity').value = '';
+  document.getElementById('audFilterCompany').value = '';
+  document.getElementById('audFilterSearch').value = '';
+  audContacts = [];
+  audSelected = [];
+  document.getElementById('audSelectAll').checked = false;
+  audUpdateSelectedCount();
+  document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Use the filters above to find contacts.</div>';
+  document.getElementById('audResultCount').textContent = '—';
+}
+
+// ===== SAVED GROUPS =====
+function audLoadGroups() {
+  fetch(API_BASE + '/crm-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'listGroups' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    audGroups = data.groups || [];
+    document.getElementById('audGroupCount').textContent = audGroups.length + ' GROUP' + (audGroups.length !== 1 ? 'S' : '');
+    var el = document.getElementById('audGroupList');
+    if (audGroups.length === 0) {
+      el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">No saved groups yet. Search for contacts and save a group.</div>';
+      return;
+    }
+    var h = '';
+    audGroups.forEach(function(g) {
+      h += '<div style="display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:background 0.15s;" onmouseover="this.style.background=\'rgba(0,0,0,0.02)\'" onmouseout="this.style.background=\'none\'">';
+      h += '<div style="width:36px;height:36px;border-radius:8px;background:rgba(110,127,119,0.1);display:flex;align-items:center;justify-content:center;font-size:14px;color:#6e7f77;"><i class="fas fa-users"></i></div>';
+      h += '<div style="flex:1;min-width:0;" onclick="audLoadGroup(\'' + g.id + '\')">';
+      h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);">' + g.name + '</div>';
+      h += '<div style="font-size:11px;color:var(--text-muted);">' + (g.contact_count || 0) + ' contacts</div>';
+      h += '</div>';
+      h += '<button class="topbar-btn" onclick="event.stopPropagation();audEnrollGroup(\'' + g.id + '\')" style="font-size:10px;padding:4px 10px;"><i class="fas fa-paper-plane"></i> Enroll</button>';
+      h += '<button class="topbar-btn" onclick="event.stopPropagation();audDeleteGroup(\'' + g.id + '\')" style="font-size:10px;padding:4px 8px;border-color:rgba(220,38,38,0.2);color:rgba(220,38,38,0.5);"><i class="fas fa-trash"></i></button>';
+      h += '</div>';
+    });
+    el.innerHTML = h;
+  })
+  .catch(function() {
+    document.getElementById('audGroupList').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Failed to load groups.</div>';
+  });
+}
+
+function audSaveGroup() {
+  if (audSelected.length === 0) { showToast('Select contacts first'); return; }
+  var name = prompt('Name this group:');
+  if (!name) return;
+
+  // Build filters object from current filter state
+  var filters = {
+    type: document.getElementById('audFilterType').value,
+    source: document.getElementById('audFilterSource').value,
+    state: document.getElementById('audFilterState').value.trim(),
+    zip: document.getElementById('audFilterZip').value.trim(),
+    city: document.getElementById('audFilterCity').value.trim(),
+    company: document.getElementById('audFilterCompany').value.trim(),
+    q: document.getElementById('audFilterSearch').value.trim(),
+    emails: audSelected.slice()
+  };
+
+  fetch(API_BASE + '/crm-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'saveGroup', group: { name: name, filters: filters, contact_count: audSelected.length } })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      showToast('Group "' + name + '" saved with ' + audSelected.length + ' contacts');
+      audLoadGroups();
+    }
+  })
+  .catch(function() { showToast('Failed to save group'); });
+}
+
+function audDeleteGroup(id) {
+  if (!confirm('Delete this group?')) return;
+  fetch(API_BASE + '/crm-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'deleteGroup', groupId: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function() { showToast('Group deleted'); audLoadGroups(); })
+  .catch(function() { showToast('Failed to delete'); });
+}
+
+function audLoadGroup(id) {
+  var group = audGroups.find(function(g) { return g.id === id; });
+  if (!group || !group.filters) return;
+  var f = group.filters;
+
+  // Restore filters
+  document.getElementById('audFilterType').value = f.type || '';
+  document.getElementById('audFilterSource').value = f.source || '';
+  document.getElementById('audFilterState').value = f.state || '';
+  document.getElementById('audFilterZip').value = f.zip || '';
+  document.getElementById('audFilterCity').value = f.city || '';
+  document.getElementById('audFilterCompany').value = f.company || '';
+  document.getElementById('audFilterSearch').value = f.q || '';
+
+  // If group has stored emails, use those directly
+  if (f.emails && f.emails.length > 0) {
+    // Re-run the search to get current contact data, then pre-select the stored emails
+    audSearch();
+    setTimeout(function() {
+      audSelected = f.emails.slice();
+      audUpdateSelectedCount();
+      audRenderResults();
+    }, 1000);
+  } else {
+    audSearch();
+  }
+  showToast('Loaded group: ' + group.name);
+}
+
+function audEnrollGroup(id) {
+  var group = audGroups.find(function(g) { return g.id === id; });
+  if (!group || !group.filters || !group.filters.emails) { showToast('Group has no contacts'); return; }
+
+  // Load the group's emails into selection, then prompt for campaign
+  audSelected = group.filters.emails.slice();
+  audUpdateSelectedCount();
+  audEnrollSelected();
+}
+
+function audEnrollSelected() {
+  if (audSelected.length === 0) { showToast('Select contacts first'); return; }
+
+  // Build campaign selection
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_campaigns', lo_user_id: loUser })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var campaigns = (data.campaigns || []).filter(function(c) { return c.status === 'active'; });
+    if (campaigns.length === 0) {
+      showToast('No active campaigns. Create a campaign first.');
+      return;
+    }
+    var names = campaigns.map(function(c, i) { return (i + 1) + '. ' + c.name; }).join('\n');
+    var choice = prompt('Select a campaign to enroll ' + audSelected.length + ' contacts:\n\n' + names + '\n\nEnter the number:');
+    if (!choice) return;
+    var idx = parseInt(choice) - 1;
+    if (isNaN(idx) || idx < 0 || idx >= campaigns.length) { showToast('Invalid selection'); return; }
+
+    var campaign = campaigns[idx];
+    var enrolled = 0;
+    var promises = [];
+
+    // Get contact names from audContacts
+    var contactMap = {};
+    audContacts.forEach(function(c) {
+      if (c.email) contactMap[c.email.toLowerCase()] = c.name || ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || c.email;
+    });
+
+    audSelected.forEach(function(email) {
+      var name = contactMap[email] || email;
+      var p = fetch(API_BASE + '/email-center', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'enroll', campaign_id: campaign.id, contact_email: email, contact_name: name, lo_user_id: loUser })
+      }).then(function() { enrolled++; }).catch(function() {});
+      promises.push(p);
+    });
+
+    Promise.all(promises).then(function() {
+      showToast('Enrolled ' + enrolled + ' contacts into "' + campaign.name + '"');
+    });
+  })
+  .catch(function() { showToast('Failed to load campaigns'); });
+}
