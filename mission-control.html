@@ -2152,6 +2152,73 @@
 <!-- JAVASCRIPT -->
 
 <!-- ========================================== -->
+<!-- TOOL DRAWER -->
+<!-- ========================================== -->
+<div class="drawer-trigger" onclick="toggleDrawer()">
+  <i class="fas fa-wrench"></i>
+  TOOLS
+</div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="toolDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title">Tools</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="drawer-clear-btn" onclick="clearDrawerTool()"><i class="fas fa-rotate-left"></i> Clear Fields</button>
+      <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="drawer-tabs">
+    <div class="drawer-tab active" onclick="switchDrawerTab('reports',this)"><i class="fas fa-file-lines"></i> Reports</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('calc',this)"><i class="fas fa-calculator"></i> Calculators</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('credit',this)"><i class="fas fa-credit-card"></i> Credit Analysis</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('compare',this)"><i class="fas fa-scale-balanced"></i> Loan Compare</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('gus',this)"><i class="fas fa-paw"></i> Ask Gus</div>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-panel active" id="drawer-reports">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="topbar-btn" onclick="loadDrawerReport('neighborhood-blueprint.html')" style="font-size:11px;">Neighborhood Blueprint</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('buy-vs-rent.html')" style="font-size:11px;">Rent to Wealth</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('worth-the-premium.html')" style="font-size:11px;">Worth the Premium</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('wealth-in-motion.html')" style="font-size:11px;">Wealth in Motion</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('amortization-report.html')" style="font-size:11px;">Payoff Accelerator</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('wealth-starts-now.html')" style="font-size:11px;">Wealth Starts Now</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('owner-to-investor.html')" style="font-size:11px;">Owner to Investor</button>
+      </div>
+      <iframe id="drawerReportFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-calc">
+      <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;">
+        <button class="topbar-btn" onclick="loadDrawerCalc('mc-income-calculator.html')" style="font-size:11px;">W-2 Income</button>
+        <button class="topbar-btn" onclick="loadDrawerCalc('mc-self-employed-calculator.html')" style="font-size:11px;">Self-Employed</button>
+      </div>
+      <iframe id="drawerCalcFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-credit">
+      <iframe id="drawerCreditFrame" src="mc-credit-analysis.html" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-compare">
+      <iframe id="drawerCompareFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-gus">
+      <div class="drawer-gus-wrap">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:36px;margin-bottom:6px;">&#128062;</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);">Ask Gus Gus</div>
+          <div style="font-size:12px;color:var(--text-muted);">Search lending guidelines across Fannie, Freddie, FHA, VA, USDA</div>
+        </div>
+        <textarea class="drawer-gus-input" id="drawerGusQuestion" placeholder="e.g. Can a borrower with a 620 score do FHA with 3.5% down after a bankruptcy discharged 3 years ago?"></textarea>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="topbar-btn primary" onclick="drawerAskGus()" id="drawerGusBtn" style="background:#6e7f77;border-color:#6e7f77;"><i class="fas fa-search"></i> Search Guidelines</button>
+          <button class="topbar-btn" onclick="document.getElementById('drawerGusQuestion').value='';document.getElementById('drawerGusResult').innerHTML='';"><i class="fas fa-rotate-left"></i> Clear</button>
+        </div>
+        <div id="drawerGusResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
 <!-- JAVASCRIPT MODULES -->
 <!-- ========================================== -->
 <script src="mc-app.js"></script>
@@ -2168,6 +2235,7 @@
 <script src="mc-alerts.js"></script>
 <script src="mc-settings.js"></script>
 <script src="mc-calendar.js"></script>
+<script src="mc-tools-drawer.js"></script>
 <script src="mc-init.js"></script>
 <script src="mc-briefings.js"></script>
 <script src="mc-blog-import.js"></script>
