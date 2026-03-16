@@ -231,3 +231,82 @@ function initSettingsView() {
   loadSmsSettingsForPerson('self');
 }
 
+
+// ===== PASSWORD RESET TOOL =====
+async function sendPasswordReset() {
+  var email = document.getElementById('pwResetEmail').value.trim().toLowerCase();
+  var resultEl = document.getElementById('pwResetResult');
+  var btn = document.getElementById('pwResetBtn');
+
+  if (!email) { resultEl.innerHTML = '<span style="color:#ef4444;">Enter an email address.</span>'; return; }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+  resultEl.innerHTML = '';
+
+  try {
+    // Look up user in Supabase
+    var lookupResp = await fetch(API_BASE + '/profile?email=' + encodeURIComponent(email));
+    var lookupData = await lookupResp.json();
+
+    if (!lookupData.success || !lookupData.profile) {
+      resultEl.innerHTML = '<span style="color:#ef4444;">No account found for ' + email + '</span>';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset';
+      return;
+    }
+
+    // Generate temporary password
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    var tempPw = '';
+    for (var i = 0; i < 8; i++) tempPw += chars.charAt(Math.floor(Math.random() * chars.length));
+
+    // Update password in Supabase via profile API
+    var updateResp = await fetch(API_BASE + '/profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'adminResetPassword', email: email, newPassword: tempPw })
+    });
+    var updateData = await updateResp.json();
+
+    if (!updateData.success) {
+      resultEl.innerHTML = '<span style="color:#ef4444;">Failed to reset: ' + (updateData.message || 'Unknown error') + '</span>';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset';
+      return;
+    }
+
+    // Send email with temporary password
+    var name = lookupData.profile.name || lookupData.profile.user_name || 'there';
+    var emailBody = '<h2 style="color:#1a2b5a;margin-top:0;">Password Reset</h2>' +
+      '<p>Hi ' + name + ',</p>' +
+      '<p>Your Agent Edge password has been reset. Here is your temporary password:</p>' +
+      '<div style="background:#f0f7ff;border-radius:8px;padding:16px 20px;margin:20px 0;text-align:center;">' +
+      '<span style="font-size:24px;font-weight:bold;letter-spacing:2px;color:#1a2b5a;">' + tempPw + '</span>' +
+      '</div>' +
+      '<p>Please log in and change your password from your <strong>Profile</strong> page.</p>' +
+      '<p style="text-align:center;margin:25px 0;">' +
+      '<a href="https://kristyflach.com/portal.html" style="display:inline-block;padding:12px 32px;background:#1a2b5a;color:white;border-radius:6px;text-decoration:none;font-weight:bold;">Log In to Portal</a>' +
+      '</p>';
+
+    var sendResp = await fetch(API_BASE + '/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to: email, subject: 'Your Agent Edge Password Has Been Reset', body: emailBody })
+    });
+    var sendData = await sendResp.json();
+
+    if (sendData.success) {
+      resultEl.innerHTML = '<span style="color:#22c55e;">Reset email sent to ' + email + '. Temp password: <strong>' + tempPw + '</strong></span>';
+      document.getElementById('pwResetEmail').value = '';
+    } else {
+      resultEl.innerHTML = '<span style="color:#ef4444;">Password was reset but email failed to send. Temp password: <strong>' + tempPw + '</strong> — share it manually.</span>';
+    }
+
+  } catch (err) {
+    resultEl.innerHTML = '<span style="color:#ef4444;">Error: ' + err.message + '</span>';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Reset';
+}

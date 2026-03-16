@@ -1798,6 +1798,23 @@
 
     <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
 
+    <!-- PASSWORD RESET TOOL -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">Password Reset</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Send a temporary password to a realtor via email. They can change it from their profile page after logging in.</div>
+
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+        <div style="flex:1;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Realtor Email</label>
+          <input type="email" id="pwResetEmail" placeholder="realtor@email.com" style="width:100%;padding:12px 14px;border-radius:8px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;">
+        </div>
+        <button class="topbar-btn primary" onclick="sendPasswordReset()" id="pwResetBtn" style="height:46px;font-size:13px;white-space:nowrap;"><i class="fas fa-paper-plane"></i> Send Reset</button>
+      </div>
+      <div id="pwResetResult" style="font-size:13px;"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+
     <!-- FUTURE: API keys, email settings, branding -->
     <div style="max-width:700px;">
       <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">Integrations</div>
