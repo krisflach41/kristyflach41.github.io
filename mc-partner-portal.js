@@ -618,31 +618,53 @@ function ppBuildOrderHistory(filter){
     if(filter==='all')return true;
     return(o.status||'').toLowerCase()===filter.toLowerCase();
   });
-  // Sort newest first
   orders.sort(function(a,b){return new Date(b.timestamp||0)-new Date(a.timestamp||0);});
 
-  var h='<table class="pp-history-table"><thead><tr><th>ORDER ID</th><th>PARTNER</th><th>BROKERAGE</th><th>ITEMS</th><th>CO-BRAND</th><th>DATE</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>';
+  if(orders.length===0){
+    document.getElementById('ppHistoryTable').innerHTML='<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px;">No orders found.</div>';
+    document.getElementById('ppHistoryCount').textContent='0 ORDERS';
+    return;
+  }
+
+  var totalItems=0;
+  var h='';
+
   orders.forEach(function(o){
     var parsed=ppParseOrderItems(o.items||o.cartJson);
+    var items=parsed.lineItems;
     var ts=o.timestamp?new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
-    var sl=(o.status||'').toLowerCase();
-    var statusLabel=sl==='complete'?'COMPLETE':sl==='in progress'?'IN PROGRESS':'NEW';
-    var statusColor=sl==='complete'?'#22c55e':sl==='in progress'?'#f59e0b':'#ef4444';
-    var cobrand=o.branding==='Co-branded'?'Yes · '+(o.cobrandLayout||'left').toUpperCase():'No';
-    var itemSummary=parsed.lineItems.length+' item'+(parsed.lineItems.length!==1?'s':'');
-    h+='<tr>';
-    h+='<td style="font-weight:600;font-size:11px;color:var(--text-muted);">'+o.orderId+'</td>';
-    h+='<td style="font-weight:600;color:var(--text-secondary);">'+(o.name||'Unknown')+'</td>';
-    h+='<td>'+(o.brokerage||'—')+'</td>';
-    h+='<td>'+itemSummary+'</td>';
-    h+='<td>'+cobrand+'</td>';
-    h+='<td style="font-weight:600;">'+ts+'</td>';
-    h+='<td><span class="status-badge" style="background:'+statusColor+'15;color:'+statusColor+';">'+statusLabel+'</span></td>';
-    h+='<td><button class="pp-order-btn" onclick="ppViewOrder(\''+o.orderId+'\')" style="padding:5px 12px;font-size:9px;letter-spacing:1px;">VIEW</button> <button class="pp-order-btn" onclick="ppDeleteOrder(\''+o.orderId+'\')" style="padding:5px 8px;font-size:9px;background:transparent;border:1px solid rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);" title="Delete"><i class="fas fa-trash"></i></button></td>';
-    h+='</tr>';
+    var sl=(o.status||'new').toLowerCase();
+    var statusClass=sl==='complete'?'complete':sl.indexOf('progress')>=0?'inprogress':'new';
+    var statusLabel=sl==='complete'?'Complete':sl.indexOf('progress')>=0?'In progress':'New';
+    totalItems+=items.length;
+
+    h+='<div style="border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-bottom:8px;transition:background 0.15s;cursor:pointer;" onmouseover="this.style.background=\'rgba(0,0,0,0.015)\'" onmouseout="this.style.background=\'transparent\'" onclick="ppViewOrder(\''+o.orderId+'\')">';
+
+    // Header row
+    h+='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">';
+    h+='<div style="display:flex;align-items:center;gap:10px;">';
+    h+='<span style="font-size:13px;font-weight:600;color:var(--text-primary);">'+ts+'</span>';
+    h+='<span class="status-badge status-'+statusClass+'" style="font-size:10px;padding:2px 10px;">'+statusLabel+'</span>';
+    h+='</div>';
+    h+='<div style="display:flex;align-items:center;gap:8px;">';
+    h+='<span style="font-size:12px;color:var(--text-muted);">'+items.length+' item'+(items.length!==1?'s':'')+'</span>';
+    h+='<button onclick="event.stopPropagation();ppDeleteOrder(\''+o.orderId+'\')" style="background:none;border:1px solid rgba(220,38,38,0.15);border-radius:5px;padding:3px 7px;cursor:pointer;color:rgba(220,38,38,0.5);font-size:10px;transition:all 0.15s;" onmouseover="this.style.background=\'rgba(220,38,38,0.05)\'" onmouseout="this.style.background=\'none\'"><i class="fas fa-trash"></i></button>';
+    h+='</div></div>';
+
+    // Partner info
+    h+='<div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">'+(o.name||'Unknown');
+    if(o.brokerage)h+=' · '+o.brokerage;
+    if(o.branding==='Co-branded')h+=' · Co-branded';
+    h+='</div>';
+
+    // Item tags
+    h+='<div style="display:flex;flex-wrap:wrap;gap:4px;">';
+    items.forEach(function(item){
+      h+='<span style="display:inline-block;padding:3px 10px;border-radius:4px;background:rgba(0,0,0,0.03);font-size:11px;color:var(--text-secondary);">'+item.name+'</span>';
+    });
+    h+='</div></div>';
   });
-  h+='</tbody></table>';
-  if(orders.length===0)h='<div style="padding:30px;text-align:center;color:var(--text-muted);font-weight:600;">NO ORDERS FOUND</div>';
+
   document.getElementById('ppHistoryTable').innerHTML=h;
   document.getElementById('ppHistoryCount').textContent=orders.length+' ORDER'+(orders.length!==1?'S':'');
 }
