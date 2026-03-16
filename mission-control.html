@@ -69,10 +69,6 @@
     <div class="nav-item" onclick="switchView('portal', this)">
       <span class="nav-icon"><i class="fas fa-handshake"></i></span> Partner Dashboard
     </div>
-    <div class="nav-item" onclick="switchView('scenarios', this)">
-      <span class="nav-icon"><i class="fas fa-paw"></i></span> Scenario Desk
-      <span class="nav-badge red" id="scenarioNavBadge" style="display:none;">0</span>
-    </div>
 
     <div class="nav-section-label">My Tools</div>
     <div class="nav-item" onclick="switchView('analytics', this)">
@@ -134,7 +130,7 @@
 
     <!-- SCENARIO DESK HOT LEADS -->
     <div id="scenarioAlertBanner" style="display:none; margin-bottom:16px;">
-      <div style="background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.2); border-radius:10px; padding:16px 20px; cursor:pointer;" onclick="switchView('scenarios', document.querySelector('[onclick*=scenarios]'))">
+      <div style="background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.2); border-radius:10px; padding:16px 20px; cursor:pointer;" onclick="switchView('portal', document.querySelector('[onclick*=portal]'));setTimeout(function(){var t=document.querySelector('.pp-tab[onclick*=scenarios]');if(t)ppTab('scenarios',t);},100)">
         <div style="display:flex; align-items:center; gap:12px;">
           <div style="width:40px;height:40px;border-radius:8px;background:rgba(220,38,38,0.1);display:flex;align-items:center;justify-content:center;font-size:18px;">
             <i class="fas fa-bell" style="color:#dc2626;"></i>
@@ -180,17 +176,6 @@
           <div style="margin-left:auto;font-size:12px;font-weight:600;color:#dc2626;" id="dashAlertCount">0 ALERTS</div>
         </div>
         <div id="dashAlertList" style="max-height:280px;overflow-y:auto;"></div>
-      </div>
-    </div>
-
-    <!-- DAILY BRIEFING TICKER -->
-    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:12px 20px;margin-bottom:20px;overflow:hidden;">
-      <div class="mc-ticker-wrap">
-        <div class="mc-ticker-window" style="flex:1;">
-          <div class="mc-ticker-track" id="mcTicker">
-            <div class="mc-ticker-msg">Loading daily briefing...</div>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -498,11 +483,11 @@
       <div class="pp-tab active" onclick="ppTab('dashboard',this)">DASHBOARD</div>
       <div class="pp-tab" onclick="ppTab('reports',this)">REPORTS</div>
       <div class="pp-tab" onclick="ppTab('flyers',this)">FLYERS</div>
-      <div class="pp-tab" onclick="ppTab('activity',this)">ACTIVITY</div>
+      <div class="pp-tab" onclick="ppTab('scenarios',this)">SCENARIOS</div>
       <div class="pp-tab" onclick="ppTab('history',this)">ORDER HISTORY</div>
     </div>
 
-    <!-- ===== DASHBOARD TAB ===== -->
+    <!-- ===== DASHBOARD TAB (merged with Activity) ===== -->
     <div id="ppDashboard">
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
         <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#22c55e;" id="ppKpiPartners">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">ACTIVE PARTNERS</div></div>
@@ -531,6 +516,31 @@
             <div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">TOP FLYERS</div><div class="mc-status">THIS MONTH</div></div>
             <div id="ppTopFlyers"></div>
           </div>
+        </div>
+      </div>
+      <!-- PARTNER ACTIVITY (merged from Activity tab) -->
+      <div style="margin-top:16px;">
+        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#3b82f6;" id="ppDlReports">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">REPORTS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#a855f7;" id="ppDlFlyers">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">FLYERS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#22c55e;" id="ppDlSocial">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">SOCIAL POSTS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#f59e0b;" id="ppDlTotal">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">TOTAL</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mc-panel" style="margin-top:16px;"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+            <input type="text" id="ppActSearch" placeholder="Search by name, action, or tool..." oninput="ppActFilter()" class="qb-filter-val" style="flex:1;font-size:13px;padding:8px 14px;">
+            <select id="ppActTypeFilter" onchange="ppActFilter()" class="qb-filter-select" style="font-size:12px;padding:8px 14px;">
+              <option value="">ALL ACTIONS</option><option value="report">REPORTS</option><option value="flyer">FLYERS</option><option value="tool">TOOLS</option><option value="social">SOCIAL</option><option value="login">LOGINS</option>
+            </select>
+          </div>
+          <div class="mc-table-wrap"><table class="mc-table" id="ppActTable"><thead><tr><th>PARTNER</th><th>ACTION</th><th>DETAIL</th><th>DATE / TIME</th><th>TIME SPENT</th></tr></thead><tbody id="ppActTableBody"></tbody></table></div>
+          <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:var(--text-muted);font-weight:600;"></div>
         </div>
       </div>
     </div>
@@ -700,33 +710,15 @@
     </div>
     </div>
 
-    <!-- ===== ACTIVITY TAB ===== -->
-    <div id="ppActivity" style="display:none;">
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
-        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-            <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#3b82f6;" id="ppDlReports">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">REPORTS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#a855f7;" id="ppDlFlyers">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">FLYERS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#22c55e;" id="ppDlSocial">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">SOCIAL POSTS</div></div>
-            <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#f59e0b;" id="ppDlTotal">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">TOTAL</div></div>
-          </div>
+    <!-- ===== SCENARIOS TAB ===== -->
+    <div id="ppScenarios" style="display:none;">
+      <div id="ppScenarioContent">
+        <div style="text-align:center;padding:40px;color:var(--text-muted);">
+          <div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-family:sans-serif;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
         </div>
-      </div>
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
-        <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
-          <input type="text" id="ppActSearch" placeholder="Search by name, action, or tool..." oninput="ppActFilter()" class="qb-filter-val" style="flex:1;font-size:13px;padding:8px 14px;">
-          <select id="ppActTypeFilter" onchange="ppActFilter()" class="qb-filter-select" style="font-size:12px;padding:8px 14px;">
-            <option value="">ALL ACTIONS</option><option value="report">REPORTS</option><option value="flyer">FLYERS</option><option value="tool">TOOLS</option><option value="social">SOCIAL</option><option value="login">LOGINS</option>
-          </select>
-        </div>
-        <div class="mc-table-wrap"><table class="mc-table" id="ppActTable"><thead><tr><th>PARTNER</th><th>ACTION</th><th>DETAIL</th><th>DATE / TIME</th><th>TIME SPENT</th></tr></thead><tbody id="ppActTableBody"></tbody></table></div>
-        <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:var(--text-muted);font-weight:600;"></div>
       </div>
     </div>
-
-    <!-- ===== SETTINGS TAB ===== -->
 
     <!-- ===== ORDER HISTORY TAB ===== -->
     <div id="ppHistory" style="display:none;">

@@ -167,13 +167,9 @@ function updateDashboard() {
       window._dashDecisionCounts = decisionCounts;
       window._dashFundedVolume = closedTotal;
       renderPipelineHTML();
-      tickerMessages = buildTickerMessages();
     }
   })
   .catch(function() {});
-
-  // Start ticker
-  startTicker();
 
   // Render charts
   renderPipelineHTML();

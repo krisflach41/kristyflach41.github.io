@@ -1,5 +1,5 @@
 // ===== PARTNER PORTAL =====
-function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='history')ppBuildOrderHistory('all');}
+function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppScenarios','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',scenarios:'ppScenarios',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='scenarios')ppLoadScenarios();if(tab==='history')ppBuildOrderHistory('all');}
 
 var ppActivityLog=[];
 var ppActFilterPartner='';
@@ -113,6 +113,9 @@ function ppLoadOnlineUsers() {
       var listEl = document.getElementById('ppOnlineList');
       if (listEl) listEl.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:10px 0;text-align:center;">—</div>';
     });
+
+  // Load activity data (merged into dashboard)
+  ppBuildActivity();
 }
 
 function ppTimeAgo(ts) {
@@ -781,11 +784,108 @@ function ppActFilter(){
 function loadPartnerPortal(){
   // Check URL hash for direct tab navigation
   var hash=(window.location.hash||'').replace('#','').toLowerCase();
-  var validTabs=['dashboard','reports','flyers','activity','history'];
+  var validTabs=['dashboard','reports','flyers','scenarios','history'];
   if(hash&&validTabs.indexOf(hash)>=0){
     var tabEl=document.querySelectorAll('.pp-tab')[validTabs.indexOf(hash)];
     if(tabEl)ppTab(hash,tabEl);
   } else {
     ppBuildDashboard();
   }
+}
+
+// ===== SCENARIOS (inside Partner Portal) =====
+function ppLoadScenarios() {
+  var container = document.getElementById('ppScenarioContent');
+  if (!container) return;
+  container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);"><div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div><div style="font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div></div>';
+
+  fetch(API_BASE + '/scenario-desk')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var scenarios = data.scenarios || [];
+      if (scenarios.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:60px;color:var(--text-muted);"><div style="font-size:48px;margin-bottom:12px;">&#x1F43E;</div><div style="font-size:14px;">No scenarios yet</div><div style="font-size:12px;margin-top:4px;">When realtors ask Gus Gus questions or submit review requests, they\'ll appear here.</div></div>';
+        return;
+      }
+
+      var h = '';
+      // Stat cards
+      var hotCount = scenarios.filter(function(s) { return s.status === 'new' && s.type !== 'ask_gus'; }).length;
+      var intelCount = scenarios.filter(function(s) { return s.type === 'ask_gus'; }).length;
+      var resolvedCount = scenarios.filter(function(s) { return s.status === 'called_back' || s.status === 'closed' || s.status === 'reviewed'; }).length;
+
+      h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;">';
+      h += '<div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px 16px;"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#ef4444;">HOT LEADS</div><div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;">' + hotCount + '</div></div>';
+      h += '<div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:14px 16px;"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#3b82f6;">INTEL FEED</div><div style="font-size:24px;font-weight:700;color:#3b82f6;margin-top:4px;">' + intelCount + '</div></div>';
+      h += '<div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px 16px;"><div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#22c55e;">RESOLVED</div><div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;">' + resolvedCount + '</div></div>';
+      h += '</div>';
+
+      // Scenario cards
+      scenarios.forEach(function(s) {
+        var isHot = s.status === 'new' && s.type !== 'ask_gus';
+        var isIntel = s.type === 'ask_gus';
+        var dotColor = isHot ? '#ef4444' : isIntel ? '#3b82f6' : '#22c55e';
+        var statusLabel = isHot ? 'NEW' : isIntel ? 'INTEL' : 'RESOLVED';
+        var badgeBg = isHot ? 'rgba(239,68,68,0.15)' : isIntel ? 'rgba(59,130,246,0.15)' : 'rgba(34,197,94,0.15)';
+        var ago = s.created_at ? ppTimeAgoScenario(s.created_at) : '';
+
+        h += '<div class="mc-panel" style="margin-bottom:10px;border-left:3px solid ' + dotColor + ';">';
+        h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">';
+        h += '<span style="display:inline-block;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:1px;background:' + badgeBg + ';color:' + dotColor + ';">' + statusLabel + '</span>';
+        h += '<span style="font-size:11px;color:var(--text-muted);font-weight:600;">' + (s.realtor_name || 'Unknown') + ' · ' + ago + '</span>';
+        h += '</div>';
+        h += '<div style="font-size:14px;color:var(--text-primary);line-height:1.6;margin-bottom:10px;">' + (s.question || '').substring(0, 200) + (s.question && s.question.length > 200 ? '...' : '') + '</div>';
+
+        // Action buttons
+        h += '<div style="display:flex;gap:8px;">';
+        if (isHot) {
+          h += '<button class="topbar-btn" onclick="ppScenarioAction(\'' + s.id + '\',\'called_back\')" style="border-color:rgba(34,197,94,0.3);color:#22c55e;font-size:11px;"><i class="fas fa-phone"></i> Called Back</button>';
+        }
+        if (!s.status || s.status === 'new' || s.status === 'auto_resolved') {
+          h += '<button class="topbar-btn" onclick="ppScenarioAction(\'' + s.id + '\',\'reviewed\')" style="font-size:11px;"><i class="fas fa-check"></i> Mark Reviewed</button>';
+        }
+        h += '<button class="topbar-btn" onclick="ppScenarioDelete(\'' + s.id + '\')" style="border-color:rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);font-size:11px;"><i class="fas fa-trash"></i></button>';
+        h += '</div>';
+        h += '</div>';
+      });
+
+      container.innerHTML = h;
+    })
+    .catch(function(err) {
+      container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Failed to load scenarios.</div>';
+    });
+}
+
+function ppScenarioAction(id, status) {
+  fetch(API_BASE + '/scenario-desk', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'update_status', id: id, status: status })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) {
+      showToast('Scenario updated');
+      ppLoadScenarios();
+    }
+  }).catch(function() { showToast('Update failed'); });
+}
+
+function ppScenarioDelete(id) {
+  if (!confirm('Delete this scenario?')) return;
+  fetch(API_BASE + '/scenario-desk', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'update_status', id: id, status: 'deleted' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    showToast('Scenario removed');
+    ppLoadScenarios();
+  }).catch(function() { showToast('Delete failed'); });
+}
+
+function ppTimeAgoScenario(ts) {
+  if (!ts) return '';
+  var diff = Math.round((Date.now() - new Date(ts).getTime()) / 1000);
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  return Math.floor(diff / 86400) + 'd ago';
 }

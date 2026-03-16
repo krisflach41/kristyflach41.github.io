@@ -20,7 +20,7 @@ async function loadHotLeads() {
             name: s.realtor_name || 'Unknown Realtor',
             detail: s.question ? s.question.substring(0, 80) + (s.question.length > 80 ? '...' : '') : 'No details',
             created_at: s.created_at,
-            viewTarget: 'scenarios'
+            viewTarget: 'portal'
           });
         }
       });

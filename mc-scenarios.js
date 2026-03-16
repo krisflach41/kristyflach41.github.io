@@ -21,18 +21,24 @@ function updateScenarioNav() {
   var intelCount = allScenarios.filter(function(s) { return s.type === 'ask_gus' && s.status === 'auto_resolved'; }).length;
   var resolvedCount = allScenarios.filter(function(s) { return s.status === 'called_back' || s.status === 'closed'; }).length;
 
-  // Nav badge
-  var badge = document.getElementById('scenarioNavBadge');
-  if (hotCount > 0) {
-    badge.textContent = hotCount;
-    badge.style.display = '';
-    // Add pulse to nav item
-    var navItem = badge.closest('.nav-item');
-    if (navItem) navItem.classList.add('has-hot-lead');
-  } else {
-    badge.style.display = 'none';
-    var navItem2 = document.querySelector('.nav-item[onclick*="scenarios"]');
-    if (navItem2) navItem2.classList.remove('has-hot-lead');
+  // Nav badge - show on Partner Portal nav item
+  var portalNav = document.querySelector('.nav-item[onclick*="portal"]');
+  if (hotCount > 0 && portalNav) {
+    var existingBadge = portalNav.querySelector('.nav-badge.red');
+    if (!existingBadge) {
+      var b = document.createElement('span');
+      b.className = 'nav-badge red';
+      b.id = 'scenarioNavBadge';
+      portalNav.appendChild(b);
+      existingBadge = b;
+    }
+    existingBadge.textContent = hotCount;
+    existingBadge.style.display = '';
+    portalNav.classList.add('has-hot-lead');
+  } else if (portalNav) {
+    var oldBadge = portalNav.querySelector('.nav-badge.red');
+    if (oldBadge) oldBadge.style.display = 'none';
+    portalNav.classList.remove('has-hot-lead');
   }
 
   // Dashboard alert banner
