@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mission Control - Agent Edge</title>
+<script src="auth.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="mc-styles.css">
+<link rel="stylesheet" href="crm-cards.css">
+<script src="tracking.js"></script>
+<script src="pw-templates.js"></script>
+</head>
+<body>
+
+<!-- PIN GATE -->
+<div id="pinGate" style="display:none; min-height:100vh; align-items:center; justify-content:center; background:linear-gradient(135deg,#070e1a 0%,#0c1829 50%,#070e1a 100%);">
+  <div style="width:90%; max-width:340px; padding:44px 36px; border-radius:18px; background:#f8f9fb; backdrop-filter:blur(20px); border:1px solid var(--border); box-shadow:0 20px 60px rgba(0,0,0,0.4); text-align:center;">
+    <img src="agent-edge-logo.png" alt="Agent Edge" style="width:180px;height:auto;margin:0 auto 20px;display:block;">
+    <h2 style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:6px;color:#fff;">Mission Control</h2>
+    <p id="pinPrompt" style="font-size:12px;color:var(--text-muted);margin-bottom:24px;">Enter your admin PIN to continue</p>
+    <form onsubmit="verifyPin(event)">
+      <input type="password" id="adminPinInput" maxlength="6" autocomplete="off" required placeholder="PIN"
+        style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:22px;letter-spacing:8px;text-align:center;background:#f5f6fa;color:#fff;box-sizing:border-box;font-family:inherit;">
+      <button type="submit" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--accent-blue);color:#fff;font-weight:600;font-size:14px;cursor:pointer;margin-top:12px;font-family:inherit;">Enter</button>
+    </form>
+    <div id="pinError" style="display:none;color:#ef4444;font-size:12px;margin-top:10px;">Invalid PIN. Try again.</div>
+  </div>
+</div>
+
+<div class="app-layout">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-badge">
+      <img src="agent-edge-logo.png" alt="Agent Edge" style="width:100%;height:auto;max-width:200px;">
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-item active" onclick="switchView('dashboard', this)">
+      <span class="nav-icon"><i class="fas fa-chart-line"></i></span> Dashboard
+    </div>
+    <div class="nav-item" onclick="switchView('crm', this)">
+      <span class="nav-icon"><i class="fas fa-address-book"></i></span> Client Database
+      <span class="nav-badge" id="navCrmCount">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('calendar', this)">
+      <span class="nav-icon"><i class="fas fa-calendar-alt"></i></span> Calendar
+    </div>
+    <div class="nav-item" onclick="switchView('email', this)">
+      <span class="nav-icon"><i class="fas fa-envelope"></i></span> Email Center
+    </div>
+
+    <div class="nav-section-label">Pipelines</div>
+    <div class="nav-item" onclick="switchView('pipeline', this)">
+      <span class="nav-icon"><i class="fas fa-funnel-dollar"></i></span> Loan Pipeline
+      <span class="nav-badge green" id="navPipelineCount">0</span>
+    </div>
+    <div class="nav-item" onclick="switchView('webinars', this)">
+      <span class="nav-icon"><i class="fas fa-chalkboard-teacher"></i></span> Webinar Pipeline
+    </div>
+
+    <div class="nav-section-label">Partner Portal</div>
+    <div class="nav-item" onclick="switchView('portal', this)">
+      <span class="nav-icon"><i class="fas fa-handshake"></i></span> Partner Dashboard
+    </div>
+
+    <div class="nav-section-label">My Tools</div>
+    <div class="nav-item" onclick="switchView('analytics', this)">
+      <span class="nav-icon"><i class="fas fa-chart-bar"></i></span> Analytics
+    </div>
+    <div class="nav-item" onclick="window.location.href='media-lab.html'">
+      <span class="nav-icon"><i class="fas fa-photo-film"></i></span> Media Lab
+    </div>
+    <div class="nav-item" onclick="switchView('briefings', this)">
+      <span class="nav-icon"><i class="fas fa-sun"></i></span> Market Briefings
+    </div>
+    <div class="nav-item" onclick="switchView('prospecting', this)">
+      <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
+    </div>
+
+    <div class="nav-section-label">Admin</div>
+    <div class="nav-item" onclick="switchView('users', this)">
+      <span class="nav-icon"><i class="fas fa-users"></i></span> User Management
+    </div>
+    <div class="nav-item" onclick="switchView('settings', this)">
+      <span class="nav-icon"><i class="fas fa-cog"></i></span> Settings
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <a href="portal.html" style="display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;color:var(--text-secondary);font-size:12px;font-weight:500;text-decoration:none;margin-bottom:6px;border:1px solid var(--border);transition:all 0.15s;" onmouseover="this.style.background='var(--bg-hover)';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='var(--text-secondary)'">
+      <span style="width:18px;text-align:center;font-size:14px;"><i class="fas fa-arrow-left"></i></span> Back to Website
+    </a>
+    <div class="sidebar-user">
+      <div class="user-avatar">KF</div>
+      <div>
+        <div class="user-name">Kristy Flach</div>
+        <div class="user-role">NMLS 2632259</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<div class="main-content">
+
+<!-- ========================================== -->
+<!-- DASHBOARD VIEW -->
+<!-- ========================================== -->
+<div class="view-panel active" id="view-dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div>
+        <div class="topbar-title" id="dashGreeting">Good evening, Kristy</div>
+        <div class="topbar-subtitle" id="dashSubtitle">Loading...</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="switchView('settings', document.querySelector('[onclick*=settings]'))"><i class="fas fa-cog"></i> Settings</button>
+    </div>
+  </div>
+  <div class="content-area">
+
+    <!-- SCENARIO DESK HOT LEADS -->
+    <div id="scenarioAlertBanner" style="display:none; margin-bottom:16px;">
+      <div style="background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.2); border-radius:10px; padding:16px 20px; cursor:pointer;" onclick="switchView('portal', document.querySelector('[onclick*=portal]'));setTimeout(function(){var t=document.querySelector('.pp-tab[onclick*=scenarios]');if(t)ppTab('scenarios',t);},100)">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px;height:40px;border-radius:8px;background:rgba(220,38,38,0.1);display:flex;align-items:center;justify-content:center;font-size:18px;">
+            <i class="fas fa-bell" style="color:#dc2626;"></i>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:12px; font-weight:700; color:#dc2626; letter-spacing:1px;">INCOMING SCENARIO</div>
+            <div style="font-size:14px; color:var(--text-primary); margin-top:2px;" id="scenarioAlertText">A realtor has submitted a scenario — click to review</div>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted);" id="scenarioAlertTime"></div>
+          <div style="padding:6px 14px; border-radius:6px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:11px; font-weight:700;">REVIEW NOW &rarr;</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOT LEADS UNIFIED BANNER -->
+    <div id="hotLeadsBanner" style="display:none; margin-bottom:16px;">
+      <div style="background:rgba(220,38,38,0.06); border:1px solid rgba(220,38,38,0.2); border-radius:10px; overflow:hidden;">
+        <div style="padding:16px 20px; cursor:pointer;" onclick="toggleHotLeadsPanel()">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <div style="width:40px;height:40px;border-radius:8px;background:rgba(220,38,38,0.1);display:flex;align-items:center;justify-content:center;font-size:18px;">
+              <i class="fas fa-fire" style="color:#dc2626;"></i>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:12px; font-weight:700; color:#dc2626; letter-spacing:1px;">HOT LEADS</div>
+              <div style="font-size:14px; color:var(--text-primary); margin-top:2px;" id="hotLeadsText">Loading...</div>
+            </div>
+            <div style="font-size:11px; color:var(--text-muted);" id="hotLeadsTime"></div>
+            <div id="hotLeadsToggleArrow" style="padding:6px 14px; border-radius:6px; background:rgba(220,38,38,0.1); color:#dc2626; font-size:11px; font-weight:700;">REVIEW &#9660;</div>
+          </div>
+        </div>
+        <div id="hotLeadsPanel" style="display:none; padding:0 20px 16px; max-height:400px; overflow-y:auto;">
+          <div id="hotLeadsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIPELINE ALERTS -->
+    <div id="dashAlertPanel" style="display:none; margin-bottom:16px;">
+      <div style="background:rgba(220,38,38,0.04); border:1px solid rgba(220,38,38,0.15); border-radius:10px; padding:16px 20px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:#dc2626;"></div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);letter-spacing:1px;">PIPELINE ALERTS</div>
+          <div style="margin-left:auto;font-size:12px;font-weight:600;color:#dc2626;" id="dashAlertCount">0 ALERTS</div>
+        </div>
+        <div id="dashAlertList" style="max-height:280px;overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Active Pipeline $</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text-primary);" id="dashPipelineVol">-</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px;" id="dashPipelineVolSub"></div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Closed This Month</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text-primary);" id="dashClosed">-</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px;" id="dashClosedSub"></div>
+      </div>
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Open Orders</div>
+        <div style="font-size:28px;font-weight:700;color:var(--text-primary);" id="dashOrders">-</div>
+        <div style="font-size:12px;font-weight:600;margin-top:4px;" id="dashOrdersSub"></div>
+      </div>
+    </div>
+
+    <!-- PANELS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <!-- Pipeline Overview -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-blue);"></div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);letter-spacing:1px;">PIPELINE OVERVIEW</div>
+          <div style="margin-left:auto;font-size:11px;font-weight:600;color:var(--accent-blue);" id="mcPipelineStatus">STANDBY</div>
+        </div>
+        <div id="mcPipelineRows"></div>
+        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;">
+        <div id="mcDecisionRows"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
+          <div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:1px;">ACTIVE PIPELINE</div>
+          <div style="font-size:20px;font-weight:700;color:var(--accent-blue);" id="mcTotalValue">0 LOANS</div>
+        </div>
+      </div>
+
+      <!-- Loan Types -->
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-green);"></div>
+          <div style="font-size:13px;font-weight:700;color:var(--text-primary);letter-spacing:1px;">LOAN TYPES</div>
+          <div style="margin-left:auto;font-size:11px;font-weight:600;color:var(--accent-green);" id="mcLoanStatus">STANDBY</div>
+        </div>
+        <div id="mcLoanTypeContent">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">AWAITING DATA</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTION METRICS (moved from Analytics) -->
+    <div style="margin-top:16px;">
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">PRODUCTION METRICS</div>
+          <div class="mc-status" id="anaProdStatus">LOADING</div>
+        </div>
+        <div class="mc-grid-3" style="margin-bottom:20px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedVol" style="color:#22c55e;">—</div><div class="mc-kpi-label">FUNDED VOLUME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaFundedCount" style="color:#3b82f6;">—</div><div class="mc-kpi-label">LOANS FUNDED</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" id="anaAvgSize" style="color:#f472b6;">—</div><div class="mc-kpi-label">AVG LOAN SIZE</div></div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">MONTHLY FUNDED VOLUME</div>
+        <div class="mc-vbar-wrap" id="anaMonthlyBars"></div>
+      </div>
+    </div>
+
+    <!-- PIPELINE VELOCITY (moved from Analytics) -->
+    <div style="margin-top:16px;">
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
+          <div class="mc-panel-title">PIPELINE VELOCITY</div>
+          <div class="mc-status" id="anaVelocityStatus">—</div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
+        <div id="anaVelocityBars"></div>
+        <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PIPELINE VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-pipeline">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div>
+        <div class="topbar-title">Pipeline</div>
+        <div class="topbar-subtitle" id="pipelineSubtitle">Loading...</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" onclick="addNewPipelineContact()">+ Add Contact</button>
+    </div>
+  </div>
+  <div class="content-area" style="overflow-y:auto;padding:12px;">
+    <div class="pipeline-board" id="pipelineBoard"></div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CALENDAR VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-calendar">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Calendar</div><div class="topbar-subtitle">Pipeline Dates & Deadlines</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="calPrevMonth()"><i class="fas fa-chevron-left"></i></button>
+      <span style="font-family:sans-serif;font-size:14px;letter-spacing:2px;color:var(--text-primary);min-width:180px;text-align:center;" id="calMonthLabel">---</span>
+      <button class="topbar-btn" onclick="calNextMonth()"><i class="fas fa-chevron-right"></i></button>
+      <button class="topbar-btn" onclick="calToday()" style="margin-left:8px;"><i class="fas fa-crosshairs"></i> Today</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- Legend -->
+    <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Closing / Final CD</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> CTC / Conditional</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span> EMD / Appraisal / Inspection</div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#a855f7;display:inline-block;"></span> Last Refi Signing (Rescission Cutoff)</div>
+    </div>
+
+    <!-- Calendar grid -->
+    <div class="mc-panel" style="padding:0;overflow:hidden;">
+      <div class="cal-grid">
+        <div class="cal-header-row">
+          <div class="cal-header-cell">SUN</div>
+          <div class="cal-header-cell">MON</div>
+          <div class="cal-header-cell">TUE</div>
+          <div class="cal-header-cell">WED</div>
+          <div class="cal-header-cell">THU</div>
+          <div class="cal-header-cell">FRI</div>
+          <div class="cal-header-cell">SAT</div>
+        </div>
+        <div id="calBody"></div>
+      </div>
+    </div>
+
+    <!-- Upcoming deadlines list -->
+    <div class="mc-panel" style="margin-top:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
+        <div class="mc-panel-title">UPCOMING DEADLINES</div>
+        <div class="mc-status">NEXT 14 DAYS</div>
+      </div>
+      <div id="calUpcoming" style="padding:4px 0;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- CRM VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-crm">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div>
+        <div class="topbar-title">Client Database</div>
+        <div class="topbar-subtitle" id="crmSubtitle">Loading...</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" id="crmNewContactBtn" onclick="crmAddNew()">+ New Contact</button>
+      <input type="file" id="crmImportFile" accept=".csv,.xlsx,.xls" style="display:none;" onchange="handleCrmImport(this)">
+    </div>
+  </div>
+  <div class="content-area" style="padding:0;overflow:hidden;">
+    <div class="crm-layout">
+      <!-- LEFT: Contact List -->
+      <div class="crm-list-panel">
+        <div class="crm-list-head">
+          <div class="crm-list-head-row">
+            <input type="text" id="crmSearch" placeholder="Search..." oninput="crmRenderList()">
+            <select id="crmTypeFilter" onchange="crmRenderList()">
+              <option value="">All</option>
+              <optgroup label="Root Type">
+                <option value="root:client">Clients</option>
+                <option value="root:realtor">Realtors</option>
+                <option value="root:title">Title</option>
+                <option value="root:appraiser">Appraisers</option>
+                <option value="root:contractor">Contractors</option>
+                <option value="root:vendor">Vendors</option>
+                <option value="root:other">Other</option>
+              </optgroup>
+              <optgroup label="Designation">
+                <option value="desig:borrower">Borrowers</option>
+                <option value="desig:past_client">Past Clients</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+        <div class="crm-list-stat"><strong id="crmTotalCount">0</strong> contacts</div>
+        <div class="crm-list-body" id="crmContactList"></div>
+      </div>
+      <!-- RIGHT: Detail -->
+      <div class="crm-detail-panel">
+        <div class="crm-detail-empty" id="crmDetailEmpty" style="display:flex;">
+          <div style="text-align:center;max-width:400px;">
+            <img src="agent-edge-logo.png" alt="Agent Edge" style="width:320px;height:auto;opacity:0.25;margin-bottom:32px;">
+            <div style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--text-secondary);margin-bottom:12px;">Client Database</div>
+            <div style="font-size:15px;color:var(--text-muted);line-height:1.6;">Select a contact from the list<br>or click <strong style="color:var(--text-muted);">+ New Contact</strong> to get started</div>
+          </div>
+        </div>
+        <div class="crm-detail-content" id="crmDetailContent">
+          <div class="card-header">
+            <!-- Row 1: Name + Close/Pipeline -->
+            <div class="card-header-row">
+              <div class="card-name" id="crmDName"></div>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div id="cardPipelineBtn"></div>
+                <button class="card-action-btn" onclick="crmCloseCard()" style="padding:6px 12px;color:var(--text-secondary);font-size:14px;" title="Close card"><i class="fas fa-times"></i></button>
+              </div>
+            </div>
+            <!-- Row 2: Meta -->
+            <div class="card-meta" id="crmDMeta"></div>
+            <!-- Row 3: Type badge + swap -->
+            <div class="card-header-row" style="margin-top:8px;">
+              <div class="card-header-badges">
+                <div id="crmDTypeBadge"></div>
+                <button class="card-action-btn" onclick="showTypeChanger()" style="padding:4px 10px;" title="Change type"><i class="fas fa-exchange-alt"></i></button>
+              </div>
+            </div>
+            <!-- Row 4: Co-borrower tabs — prominent, full width -->
+            <div id="coBorrowerTabs" style="display:none;margin-top:12px;"></div>
+            <!-- Row 5: Loan Relationship Banners -->
+            <div id="crmLoanHistoryBanner" style="display:none;margin-top:10px;"></div>
+            <!-- Row 6: Actions -->
+            <div class="card-actions" style="margin-top:10px;">
+              <button class="card-action-btn" onclick="crmOpenEmailModal()"><i class="fas fa-envelope"></i> Email</button>
+              <button class="card-action-btn primary" onclick="crmSaveContact()" id="crmSaveBtn"><i class="fas fa-save"></i> Save</button>
+              <button class="card-action-btn danger" id="crmUnlinkBtn" style="display:none;" onclick="unlinkActiveCoBorrower()"><i class="fas fa-unlink"></i> Unlink from Loan</button>
+              <span id="cbContactBtn"></span>
+            </div>
+            <!-- Income boxes -->
+            <div id="cardQualifyingWrap" style="display:none;margin-top:10px;">
+              <div style="display:flex;gap:12px;align-items:stretch;">
+                <div class="card-qualifying-total" style="flex:1;">
+                  <div class="card-qualifying-label" id="cardQualifyingLabel">Qualifying Income</div>
+                  <div class="card-qualifying-amount" id="cardTotalQualifying">$0.00</div>
+                </div>
+                <div class="card-qualifying-total" id="cardCombinedWrap" style="flex:1;display:none;background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.35);">
+                  <div class="card-qualifying-label" style="color:#5b9ef5;">Combined Loan Income</div>
+                  <div class="card-qualifying-amount" style="color:#5b9ef5;" id="cardCombinedQualifying">$0.00</div>
+                </div>
+              </div>
+            </div>
+            <!-- Always-visible contact fields -->
+            <div class="card-fields" style="margin-top:14px;">
+              <div class="card-field"><label>First Name</label><input type="text" id="cf_first_name" class="card-tracked" required placeholder="First"></div>
+              <div class="card-field" style="max-width:70px;"><label>MI</label><input type="text" id="cf_middle_initial" class="card-tracked" maxlength="1" placeholder="M" style="text-transform:uppercase;text-align:center;"></div>
+              <div class="card-field"><label>Last Name</label><input type="text" id="cf_last_name" class="card-tracked" required placeholder="Last"></div>
+            </div>
+            <div class="card-fields" style="margin-top:6px;">
+              <div class="card-field"><label>Phone</label><input type="tel" id="cf_phone" class="card-tracked" placeholder="(___) ___-____"></div>
+              <div class="card-field"><label>Email</label><input type="email" id="cf_email" class="card-tracked"></div>
+            </div>
+          </div>
+          <div class="card-tabs">
+            <div class="card-tab active" data-tab="details" onclick="crmSwitchTab('details')">Details</div>
+            <!-- Activity tab hidden - data still collected for reporting -->
+          </div>
+          <div class="crm-tab-content active" id="crmTab_details">
+            <div id="crmCardForm"></div>
+          </div>
+          <div class="crm-tab-content" id="crmTab_activity">
+            <div class="activity-timeline" id="crmActivityTimeline"></div>
+            <div class="activity-add-row">
+              <select id="crmActivityType">
+                <option value="note">Note</option>
+                <option value="call">Call</option>
+                <option value="meeting">Meeting</option>
+                <option value="email_sent">Email</option>
+              </select>
+              <input type="text" id="crmActivityText" placeholder="Add a note...">
+              <button class="card-action-btn primary" onclick="crmAddActivity()">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ORDER QUEUE VIEW -->
+<!-- ========================================== -->
+<!-- ========================================== -->
+<!-- WEBINARS VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-webinars">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Webinars</div><div class="topbar-subtitle">Manage events and registrations</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary">+ Create Webinar</button>
+    </div>
+  </div>
+  <div class="content-area">
+    <div class="webinar-grid" id="webinarGrid">
+      <div class="webinar-card"><div class="wc-banner upcoming"><div class="wc-badge soon">Upcoming</div></div><div class="wc-body"><div class="wc-title">First-Time Homebuyer Workshop</div><div class="wc-date">Saturday, Feb 22  -  11:00 AM EST</div><div class="wc-stat">23 registered</div></div></div>
+      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">VA Loan Benefits Explained</div><div class="wc-date">Feb 8, 2026</div><div class="wc-stat">41 attended  -  8 leads</div></div></div>
+      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">Credit Score Bootcamp</div><div class="wc-date">Jan 25, 2026</div><div class="wc-stat">67 attended  -  12 leads</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PARTNER PORTAL VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-portal">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Partner Portal</div><div class="topbar-subtitle">Realtor Partnership Command Center</div></div>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- PP Tabs -->
+    <div class="pp-tabs">
+      <div class="pp-tab active" onclick="ppTab('dashboard',this)">DASHBOARD</div>
+      <div class="pp-tab" onclick="ppTab('reports',this)">REPORTS</div>
+      <div class="pp-tab" onclick="ppTab('flyers',this)">FLYERS</div>
+      <div class="pp-tab" onclick="ppTab('scenarios',this)">SCENARIOS</div>
+      <div class="pp-tab" onclick="ppTab('history',this)">ORDER HISTORY</div>
+    </div>
+
+    <!-- ===== DASHBOARD TAB (merged with Activity) ===== -->
+    <div id="ppDashboard">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;">
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#22c55e;" id="ppKpiPartners">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">ACTIVE PARTNERS</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#3b82f6;" id="ppKpiOrders">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">ORDERS THIS WEEK</div></div>
+        <div class="mc-panel" style="text-align:center;padding:20px;margin:0;"><div style="font-family:sans-serif;font-size:32px;font-weight:900;color:#a855f7;" id="ppKpiDownloads">--</div><div style="font-size:11px;letter-spacing:2px;color:var(--text-muted);font-weight:600;margin-top:4px;">DOWNLOADS THIS MONTH</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
+        <!-- Leaderboard -->
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">REALTOR LEADERBOARD</div><div class="mc-status">TOP 10</div></div>
+          <div id="ppLeaderboard"></div>
+        </div>
+        <div>
+          <!-- Currently Online -->
+          <div class="mc-panel" id="ppOnlinePanel">
+            <div class="mc-panel-head"><div class="mc-blinker green" style="animation:blink 1.5s infinite;"></div><div class="mc-panel-title">ONLINE NOW</div><div class="mc-status" id="ppOnlineCount">—</div></div>
+            <div id="ppOnlineList" style="max-height:160px;overflow-y:auto;"></div>
+          </div>
+          <!-- Top Reports -->
+          <div class="mc-panel">
+            <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOP REPORTS</div><div class="mc-status">THIS MONTH</div></div>
+            <div id="ppTopReports"></div>
+          </div>
+          <!-- Top Flyers -->
+          <div class="mc-panel">
+            <div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">TOP FLYERS</div><div class="mc-status">THIS MONTH</div></div>
+            <div id="ppTopFlyers"></div>
+          </div>
+        </div>
+      </div>
+      <!-- PARTNER ACTIVITY (merged from Activity tab) -->
+      <div style="margin-top:16px;">
+        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#3b82f6;" id="ppDlReports">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">REPORTS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#a855f7;" id="ppDlFlyers">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">FLYERS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(34,197,94,0.03);border:1px solid rgba(34,197,94,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#22c55e;" id="ppDlSocial">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">SOCIAL POSTS</div></div>
+              <div style="text-align:center;padding:14px;background:rgba(245,158,11,0.03);border:1px solid rgba(245,158,11,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#f59e0b;" id="ppDlTotal">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">TOTAL</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mc-panel" style="margin-top:16px;"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
+          <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
+            <input type="text" id="ppActSearch" placeholder="Search by name, action, or tool..." oninput="ppActFilter()" class="qb-filter-val" style="flex:1;font-size:13px;padding:8px 14px;">
+            <select id="ppActTypeFilter" onchange="ppActFilter()" class="qb-filter-select" style="font-size:12px;padding:8px 14px;">
+              <option value="">ALL ACTIONS</option><option value="report">REPORTS</option><option value="flyer">FLYERS</option><option value="tool">TOOLS</option><option value="social">SOCIAL</option><option value="login">LOGINS</option>
+            </select>
+          </div>
+          <div class="mc-table-wrap"><table class="mc-table" id="ppActTable"><thead><tr><th>PARTNER</th><th>ACTION</th><th>DETAIL</th><th>DATE / TIME</th><th>TIME SPENT</th></tr></thead><tbody id="ppActTableBody"></tbody></table></div>
+          <div id="ppActFooter" style="margin-top:10px;font-size:12px;color:var(--text-muted);font-weight:600;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== REPORTS TAB ===== -->
+    <div id="ppReports" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppReportOrderCount">—</div></div><div id="ppReportOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">REPORT TEMPLATES</div><div class="mc-status">SELECT TO GENERATE</div></div>
+        <div class="pp-tpl-grid">
+          <div class="pp-tpl-card" onclick="window.open('neighborhood-blueprint.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">📊</div><div class="pp-tpl-body"><div class="pp-tpl-name">Neighborhood Blueprint</div><div class="pp-tpl-desc">Zip-level demographics, appreciation, affordability, employment</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
+          <div class="pp-tpl-card" onclick="window.open('buy-vs-rent.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">💎</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rent to Wealth</div><div class="pp-tpl-desc">Own vs Rent: The Wealth Advantage — equity, appreciation, and total wealth comparison</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+          <div class="pp-tpl-card" onclick="window.open('worth-the-premium.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">🏆</div><div class="pp-tpl-body"><div class="pp-tpl-name">Worth the Premium</div><div class="pp-tpl-desc">Why paying above asking is still a winning investment — break-even timeline and 5-year projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+          <div class="pp-tpl-card" onclick="window.open('wealth-in-motion.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">📈</div><div class="pp-tpl-body"><div class="pp-tpl-name">Wealth in Motion</div><div class="pp-tpl-desc">Your home is already building your future — 10-year appreciation projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+          <div class="pp-tpl-card" onclick="window.open('owner-to-investor.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">🏢</div><div class="pp-tpl-body"><div class="pp-tpl-name">Owner to Investor</div><div class="pp-tpl-desc">Full investment property analysis — cash flow, ROI, and 10-year wealth projection</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+          <div class="pp-tpl-card" onclick="window.open('amortization-report.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">☕</div><div class="pp-tpl-body"><div class="pp-tpl-name">Payoff Accelerator</div><div class="pp-tpl-desc">See how a cup of coffee can shorten your mortgage and save you thousands</div></div></div>
+          <div class="pp-tpl-card" onclick="window.open('wealth-starts-now.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">⏰</div><div class="pp-tpl-body"><div class="pp-tpl-name">Your Wealth Starts Now</div><div class="pp-tpl-desc">Why buying today beats waiting — rate scenarios, refi math, and wealth comparison</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FLYERS TAB ===== -->
+    <div id="ppFlyers" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
+        <div class="pp-tpl-grid">
+          <div class="pp-tpl-card" onclick="ppShowWebsiteBuilder()" style="cursor:pointer;"><div class="pp-tpl-icon">🌐</div><div class="pp-tpl-body"><div class="pp-tpl-name">Single Property Website</div><div class="pp-tpl-desc">Custom listing site with photos, data, and agent branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">ACTIVE</div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🏡</div><div class="pp-tpl-body"><div class="pp-tpl-name">Open House</div><div class="pp-tpl-desc">Professional open house flyer with co-branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🔥</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Listed</div><div class="pp-tpl-desc">New listing announcement with co-brand</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">📉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rate Drop Alert</div><div class="pp-tpl-desc">Announce rate drops with customizable data</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🎓</div><div class="pp-tpl-body"><div class="pp-tpl-name">First-Time Buyer Guide</div><div class="pp-tpl-desc">Educational one-pager for new buyers</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">✨</div><div class="pp-tpl-body"><div class="pp-tpl-name">Co-Branded Header</div><div class="pp-tpl-desc">Dual-branded header for emails and social</div></div></div>
+          <div class="pp-tpl-card"><div class="pp-tpl-icon">🎉</div><div class="pp-tpl-body"><div class="pp-tpl-name">Just Sold</div><div class="pp-tpl-desc">Celebrate closings — showcase partnership success</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
+        </div>
+      </div>
+
+    <!-- ===== PROPERTY WEBSITE BUILDER SUB-VIEW ===== -->
+    <div id="ppWebsiteBuilder" style="display:none;">
+      <div style="margin-bottom:20px;">
+        <button onclick="ppHideWebsiteBuilder()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;transition:all 0.15s;">
+          <i class="fas fa-arrow-left" style="font-size:10px;"></i> BACK TO FLYERS
+        </button>
+        <span style="margin-left:12px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;color:var(--text-primary);">Property Website Builder</span>
+      </div>
+
+      <!-- STEP 1: Lookup -->
+      <div class="mc-panel" id="pwStep1b">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-blue);"></div><div class="mc-panel-title">PROPERTY LOOKUP</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Street Address</label>
+            <input type="text" id="pwStreet" placeholder="123 Main St" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">MLS #</label>
+            <input type="text" id="pwMls" placeholder="e.g. 1870625" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">City</label>
+            <input type="text" id="pwCity" placeholder="Cincinnati" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">State</label>
+            <input type="text" id="pwState" placeholder="OH" maxlength="2" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;text-transform:uppercase;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">ZIP</label>
+            <input type="text" id="pwZip" placeholder="45244" maxlength="10" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+          <button onclick="pwLookup()" id="pwLookupBtn" style="padding:9px 20px;border-radius:6px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+            <i class="fas fa-search"></i> LOOK UP
+          </button>
+          <button onclick="pwNewLookup()" style="padding:9px 20px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;letter-spacing:1px;cursor:pointer;">
+            CLEAR
+          </button>
+          <div id="pwLookupStatus" style="font-size:12px;color:var(--text-muted);display:none;"></div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Property Data (hidden until lookup) -->
+      <div class="mc-panel" id="pwStep2" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-green);"></div><div class="mc-panel-title">PROPERTY DATA</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Address</label><input class="form-input" id="pwDataAddress" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">City</label><input class="form-input" id="pwDataCity" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+            <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">State</label><input class="form-input" id="pwDataState" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+            <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">ZIP</label><input class="form-input" id="pwDataZip" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Price</label><input class="form-input" id="pwDataPrice" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Beds</label><input class="form-input" id="pwDataBeds" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Baths</label><input class="form-input" id="pwDataBaths" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Sqft</label><input class="form-input" id="pwDataSqft" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Lot Size</label><input class="form-input" id="pwDataLot" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Year Built</label><input class="form-input" id="pwDataYear" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Description</label>
+          <textarea class="form-input" id="pwDataDesc" style="min-height:80px;resize:vertical;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></textarea>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:12px;">
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Listing Agent</label><input class="form-input" id="pwDataAgent" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Property Type</label><input class="form-input" id="pwDataType" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+          <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Status</label><input class="form-input" id="pwDataStatus" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
+        </div>
+        <div style="margin-top:12px;">
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Listing URL</label>
+          <div style="display:flex;gap:8px;">
+            <input class="form-input" id="pwDataUrl" style="flex:1;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;box-sizing:border-box;">
+            <a id="pwOpenListing" href="#" target="_blank" style="display:flex;align-items:center;gap:4px;padding:9px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;"><i class="fas fa-external-link-alt"></i> Open Listing</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: Photos -->
+      <div class="mc-panel" id="pwStep3" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-purple);"></div><div class="mc-panel-title">PROPERTY PHOTOS</div></div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Open the listing URL above, right-click and save property photos, then upload them here. Select which photos to include and assign their placement.</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <label style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">
+            <i class="fas fa-upload"></i> Upload Photos
+            <input type="file" accept="image/*" multiple onchange="pwUploadPhotos(event)" style="display:none;">
+          </label>
+          <button onclick="pwSelectAll()" id="pwSelectAllBtn" style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Select All</button>
+          <button onclick="pwDeselectAll()" style="padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">Deselect All</button>
+        </div>
+        <div id="pwPhotoGrid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;"></div>
+      </div>
+
+      <!-- STEP 4: Generate & Preview -->
+      <div class="mc-panel" id="pwStep4" style="display:none;">
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-teal);"></div><div class="mc-panel-title">PREVIEW & GENERATE</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Template</label>
+            <select id="pwTemplate" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option>Cavallo</option><option>Stylish</option><option>Vertical</option><option>Sleek</option><option>Impact</option><option>Modern</option><option>Contemporary</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Color Scheme</label>
+            <select id="pwColor" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option>Blue</option><option>Navy</option><option>Black</option><option>Green</option><option>Red</option><option>Gold</option><option>Charcoal</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Banner</label>
+            <select id="pwBanner" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%235a6578'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:32px;width:100%;box-sizing:border-box;cursor:pointer;-webkit-appearance:none;appearance:none;">
+              <option value="None">None</option><option value="Just Listed">Just Listed</option><option value="Sold">Sold</option><option value="Coming Soon">Coming Soon</option><option value="Under Contract">Under Contract</option><option value="Open House Weekend">Open House Weekend</option><option value="Open House Tomorrow">Open House Tomorrow</option><option value="Price Reduced">Price Reduced</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="pwPreview()" style="padding:9px 20px;border-radius:6px;border:none;background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-eye"></i> PREVIEW SITE</button>
+          <button onclick="pwGenerate()" id="pwGenerateBtn" style="padding:9px 20px;border-radius:6px;border:none;background:#16a34a;color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;letter-spacing:1.5px;cursor:pointer;display:flex;align-items:center;gap:6px;"><i class="fas fa-rocket"></i> GENERATE & PUBLISH</button>
+        </div>
+        <div id="pwPreviewFrame" style="margin-top:16px;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:none;">
+          <iframe id="pwIframe" style="width:100%;height:600px;border:none;"></iframe>
+        </div>
+        <div id="pwGenerateStatus" style="margin-top:10px;font-size:12px;color:var(--text-muted);display:none;"></div>
+      </div>
+    </div>
+    </div>
+
+    <!-- ===== SCENARIOS TAB ===== -->
+    <div id="ppScenarios" style="display:none;">
+      <div id="ppScenarioContent">
+        <div style="text-align:center;padding:40px;color:var(--text-muted);">
+          <div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-family:sans-serif;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ORDER HISTORY TAB ===== -->
+    <div id="ppHistory" style="display:none;">
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ORDER HISTORY</div><div class="mc-status" id="ppHistoryCount">—</div></div>
+        <div class="pp-history-filter" id="ppHistoryFilter">
+          <button class="active" onclick="ppFilterHistory('all',this)">ALL</button>
+          <button onclick="ppFilterHistory('complete',this)">COMPLETE</button>
+          <button onclick="ppFilterHistory('in progress',this)">IN PROGRESS</button>
+          <button onclick="ppFilterHistory('new',this)">NEW</button>
+        </div>
+        <div id="ppHistoryTable"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Report Generator and Flyer Studio are now inside Partner Portal -->
+<div class="view-panel" id="view-reports" style="display:none;"></div>
+
+<!-- ===== ORDER DETAIL OVERLAY & PANEL ===== -->
+<div class="pp-order-overlay" id="ppOrderOverlay" onclick="ppCloseOrderPanel()"></div>
+<div class="pp-order-panel" id="ppOrderPanel"></div>
+<div class="pp-order-float-tab" id="ppOrderFloatTab" onclick="ppRestoreOrderPanel()">
+  <i class="fas fa-clipboard-list" style="font-size:12px;"></i>
+  <span id="ppFloatTabLabel">Order</span>
+</div>
+<div class="view-panel" id="view-flyers" style="display:none;"></div>
+<div class="view-panel" id="view-email">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Email Center</div><div class="topbar-subtitle">Campaigns, templates & send history</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn em-tab active" id="emTabDashboard" onclick="emTab('dashboard')">Dashboard</button>
+      <button class="topbar-btn em-tab" id="emTabAudiences" onclick="emTab('audiences')">Audiences</button>
+      <button class="topbar-btn em-tab" id="emTabCampaigns" onclick="emTab('campaigns')">Campaigns</button>
+      <button class="topbar-btn em-tab" id="emTabTemplates" onclick="emTab('templates')">Templates</button>
+      <button class="topbar-btn primary" onclick="emOpenCompose()">+ Compose</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- DASHBOARD -->
+    <div id="emDashboard">
+      <div class="dash-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+        <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value" id="emStatSent">--</div></div>
+        <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value" id="emStatOpen">--</div></div>
+        <div class="stat-card orange"><div class="stat-label">Active Campaigns</div><div class="stat-value" id="emStatCampaigns">--</div></div>
+        <div class="stat-card" style="border-left:3px solid #a855f7;"><div class="stat-label">Total Enrolled</div><div class="stat-value" id="emStatEnrolled">--</div></div>
+      </div>
+
+      <!-- Upcoming Sends -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title">UPCOMING SENDS (next 7 days)</div></div>
+        <div id="emUpcomingSends" style="padding:8px 0;"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <!-- Campaign Performance -->
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">CAMPAIGN PERFORMANCE</div></div>
+          <div id="emCampaignPerf" style="padding:8px 0;"></div>
+        </div>
+        <!-- Recent Activity -->
+        <div class="mc-panel">
+          <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">RECENT ACTIVITY</div></div>
+          <div id="emRecentSends" style="padding:8px 0;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGN DETAIL VIEW -->
+    <div id="emCampaignDetail" style="display:none;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <button class="topbar-btn" onclick="emCloseCampaignDetail()" style="font-size:11px;"><i class="fas fa-arrow-left"></i> Back</button>
+        <div style="flex:1;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);" id="emDetailName"></div>
+          <div style="font-size:11px;color:var(--text-muted);" id="emDetailMeta"></div>
+        </div>
+        <span id="emDetailStatus" style="font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;"></span>
+        <button class="topbar-btn" id="emDetailToggleBtn" onclick="emDetailToggle()" style="font-size:11px;"></button>
+        <button class="topbar-btn" onclick="emDetailEdit()" style="font-size:11px;"><i class="fas fa-edit"></i> Edit</button>
+      </div>
+
+      <!-- Email Timeline -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">EMAIL SEQUENCE</div></div>
+        <div id="emDetailTimeline" style="padding:12px;"></div>
+      </div>
+
+      <!-- Enrollments -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head">
+          <div class="mc-blinker green"></div><div class="mc-panel-title">ENROLLED CONTACTS</div>
+          <div style="margin-left:auto;"><button class="topbar-btn primary" onclick="emOpenEnrollModal()" style="font-size:10px;padding:4px 10px;"><i class="fas fa-user-plus"></i> Add People</button></div>
+        </div>
+        <div id="emDetailEnrollments" style="padding:8px 0;"></div>
+      </div>
+
+      <!-- Enroll Modal -->
+      <div id="emEnrollOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:550px;max-height:70vh;overflow-y:auto;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <div style="font-size:14px;font-weight:700;"><i class="fas fa-user-plus" style="color:#3b82f6;"></i> Enroll Contacts</div>
+            <button class="topbar-btn" onclick="emCloseEnrollModal()" style="font-size:11px;">✕</button>
+          </div>
+          <div class="fc-field" style="margin-bottom:12px;">
+            <div class="fc-lbl">Search your contacts</div>
+            <input id="emEnrollSearch" placeholder="Type a name or email..." oninput="emFilterEnrollList()">
+          </div>
+          <div id="emEnrollList" style="max-height:300px;overflow-y:auto;margin-bottom:12px;"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div id="emEnrollCount" style="font-size:11px;color:var(--text-muted);">0 selected</div>
+            <button class="topbar-btn primary" onclick="emBulkEnroll()"><i class="fas fa-check"></i> Enroll Selected</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AUDIENCES -->
+    <div id="emAudiences" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Audiences</div>
+      </div>
+
+      <!-- Saved Groups -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">SAVED GROUPS</div><div class="mc-status" id="audGroupCount">—</div></div>
+        <div id="audGroupList" style="max-height:200px;overflow-y:auto;">
+          <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Loading groups...</div>
+        </div>
+      </div>
+
+      <!-- Search & Filter -->
+      <div class="mc-panel">
+        <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">FIND CONTACTS</div><div class="mc-status" id="audResultCount">—</div></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">TYPE</label>
+            <select id="audFilterType" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+              <option value="">All types</option>
+              <option value="realtor">Realtor</option>
+              <option value="client">Client</option>
+              <option value="past_client">Past Client</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">SOURCE</label>
+            <select id="audFilterSource" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+              <option value="">All sources</option>
+              <option value="modelmatch">ModelMatch</option>
+              <option value="pipeline">Pipeline</option>
+              <option value="import">Import</option>
+              <option value="portal">Portal Signup</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">STATE</label>
+            <input type="text" id="audFilterState" placeholder="e.g. OH" maxlength="2" oninput="this.value=this.value.toUpperCase();audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">ZIP CODE</label>
+            <input type="text" id="audFilterZip" placeholder="e.g. 45244" maxlength="5" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CITY</label>
+            <input type="text" id="audFilterCity" placeholder="e.g. Cincinnati" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">COMPANY</label>
+            <input type="text" id="audFilterCompany" placeholder="e.g. Keller Williams" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-bottom:14px;">
+          <input type="text" id="audFilterSearch" placeholder="Search name, email, tags..." oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+          <button class="topbar-btn" onclick="audClearFilters()" style="font-size:11px;"><i class="fas fa-times"></i> Clear</button>
+          <button class="topbar-btn primary" onclick="audSearch()" style="font-size:11px;"><i class="fas fa-search"></i> Search</button>
+        </div>
+
+        <!-- Action bar -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+          <input type="checkbox" id="audSelectAll" onchange="audToggleAll(this.checked)" style="width:16px;height:16px;cursor:pointer;">
+          <label for="audSelectAll" style="font-size:12px;color:var(--text-muted);cursor:pointer;">Select all</label>
+          <span style="font-size:12px;color:var(--text-muted);margin-left:8px;" id="audSelectedCount">0 selected</span>
+          <div style="margin-left:auto;display:flex;gap:6px;">
+            <button class="topbar-btn" onclick="audSaveGroup()" style="font-size:11px;" id="audSaveBtn" disabled><i class="fas fa-bookmark"></i> Save as Group</button>
+            <button class="topbar-btn" onclick="emOpenCompose()" style="font-size:11px;" id="audComposeBtn" disabled><i class="fas fa-envelope"></i> Compose</button>
+            <button class="topbar-btn primary" onclick="audEnrollSelected()" style="font-size:11px;" id="audEnrollBtn" disabled><i class="fas fa-paper-plane"></i> Enroll in Campaign</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="audResults" style="max-height:400px;overflow-y:auto;">
+          <div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Use the filters above to find contacts.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGNS -->
+    <div id="emCampaigns" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Drip Campaigns</div>
+        <button class="topbar-btn primary" onclick="emOpenCampaignBuilder()"><i class="fas fa-plus"></i> New Campaign</button>
+      </div>
+      <div id="emCampaignList"></div>
+
+      <!-- Campaign Builder (hidden by default) -->
+      <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emBuilderTitle">New Campaign</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="fc-field">
+            <div class="fc-lbl" title="Give your campaign a short, descriptive name so you can find it later. Example: 'Refi Follow-Up' or 'Birthday Greeting'" style="cursor:help;border-bottom:1px dotted var(--border);">Campaign Name * <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+            <input id="emCampName" placeholder="e.g. Refi Opportunity">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl" title="This controls WHEN the campaign starts automatically. 'Manual' means you add people yourself. Other triggers fire automatically when the event happens." style="cursor:help;border-bottom:1px dotted var(--border);">Trigger <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+            <select id="emCampTrigger">
+              <option value="manual" title="You manually add contacts to this campaign from their CRM card">Manual — you add contacts yourself</option>
+              <option value="signup" title="Fires automatically when a new realtor signs up for the portal">Auto — when a realtor signs up</option>
+              <option value="birthday" title="Fires automatically on the contact's birthday from their CRM card">Auto — on contact's birthday</option>
+              <option value="loan_funded" title="Fires automatically when a loan is marked as funded in your pipeline">Auto — when a loan funds</option>
+              <option value="inactive" title="Fires when a realtor hasn't logged into the portal for 7+ days">Auto — realtor inactive 7+ days</option>
+              <option value="anniversary" title="Fires annually on the anniversary of the client's purchase or refi closing date">Auto — purchase/refi anniversary</option>
+              <option value="rate_drop" title="Fires when you trigger a rate alert, targeting clients who could benefit from refinancing">Manual — rate drop opportunity</option>
+            </select>
+          </div>
+        </div>
+        <div class="fc-field" style="margin-bottom:16px;">
+          <div class="fc-lbl" title="A short note to remind you what this campaign is about. Only you see this." style="cursor:help;border-bottom:1px dotted var(--border);">Description <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+          <input id="emCampDesc" placeholder="e.g. 4 emails over 8 weeks targeting past clients for refi">
+        </div>
+
+        <!-- Steps -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);" title="Each step is one email in the sequence. They fire in order based on the delay you set. The first email's delay counts from the trigger event." style="cursor:help;">EMAIL SEQUENCE <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+        </div>
+        <div id="emStepsList" style="margin-bottom:12px;"></div>
+        <button class="topbar-btn" onclick="emAddStep()" style="font-size:11px;margin-bottom:16px;"><i class="fas fa-plus"></i> Add Email Step</button>
+
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseCampaignBuilder()">Cancel</button>
+          <button class="topbar-btn primary" onclick="emSaveCampaign()"><i class="fas fa-save"></i> Save Campaign</button>
+        </div>
+        <input type="hidden" id="emCampEditId" value="">
+      </div>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div id="emTemplates" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Email Templates</div>
+        <button class="topbar-btn primary" onclick="emOpenTemplateEditor()"><i class="fas fa-plus"></i> New Template</button>
+      </div>
+      <div id="emTemplateList"></div>
+
+      <!-- Template Editor -->
+      <div id="emTemplateEditor" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emTplEditorTitle">New Template</div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px;">
+          <div class="fc-field"><div class="fc-lbl">Template Name *</div><input id="emTplName" placeholder="e.g. Birthday Greeting"></div>
+          <div class="fc-field">
+            <div class="fc-lbl" title="Helps organize your templates. Hover over each option to see examples." style="cursor:help;border-bottom:1px dotted var(--border);">Category <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+            <select id="emTplCategory">
+              <option value="custom" title="Anything that doesn't fit the other categories">Custom</option>
+              <option value="nurture" title="Stay-in-touch emails: past client check-ins, post-close follow-ups, re-engagement">Nurture — check-ins & follow-ups</option>
+              <option value="seasonal" title="Holiday greetings, seasonal tips, end-of-year messages">Seasonal — holidays & time-of-year</option>
+              <option value="milestone" title="Birthday, home anniversary, loan anniversary, congratulations">Milestone — birthdays & anniversaries</option>
+              <option value="educational" title="Rate explanations, credit tips, home buying guides, market updates">Educational — tips & market info</option>
+              <option value="recruitment" title="Emails to attract new realtor partners or referral sources">Recruitment — realtor outreach</option>
+            </select>
+          </div>
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Subject Line *</div>
+          <input id="emTplSubject" placeholder="e.g. Happy Birthday, {{first_name}}!" value="Happy Birthday, {{first_name}}!">
+        </div>
+        <div class="fc-field" style="margin-bottom:4px;">
+          <div class="fc-lbl">Email Body *</div>
+        </div>
+        <!-- Big AI Button -->
+        <div onclick="emAiDraft()" style="cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 20px;margin-bottom:12px;background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12));border:1px dashed rgba(168,85,247,0.4);border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.2),rgba(59,130,246,0.2))';this.style.borderColor='rgba(168,85,247,0.7)';" onmouseout="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12))';this.style.borderColor='rgba(168,85,247,0.4)';">
+          <i class="fas fa-magic" style="font-size:18px;color:#a855f7;"></i>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#a855f7;">Let AI Write This For Me</div>
+            <div style="font-size:11px;color:var(--text-muted);">Describe what you want and AI drafts the email in seconds</div>
+          </div>
+        </div>
+        <textarea id="emTplBody" rows="10" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi {{first_name}},</p>&#10;&#10;<p>Write your email content here...</p>"><p>Hi {{first_name}},</p>
+
+</textarea>
+        <!-- AI Draft Modal -->
+        <div id="emAiOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;">
+            <div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-magic" style="color:#a855f7;"></i> AI Email Writer</div>
+            <div class="fc-field" style="margin-bottom:12px;">
+              <div class="fc-lbl">Describe what you want this email to say</div>
+              <textarea id="emAiPrompt" rows="3" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="e.g. Birthday email, warm and friendly, mention I'm here if they need anything with their mortgage"></textarea>
+            </div>
+            <div class="fc-field" style="margin-bottom:16px;">
+              <div class="fc-lbl">Tone</div>
+              <select id="emAiTone">
+                <option value="warm and professional">Warm & Professional</option>
+                <option value="casual and friendly">Casual & Friendly</option>
+                <option value="formal and polished">Formal & Polished</option>
+                <option value="energetic and upbeat">Energetic & Upbeat</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="topbar-btn" onclick="emAiClose()">Cancel</button>
+              <button class="topbar-btn primary" onclick="emAiGenerate()" id="emAiBtn"><i class="fas fa-magic"></i> Generate</button>
+            </div>
+            <div id="emAiResult" style="font-size:11px;margin-top:8px;color:var(--text-muted);"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseTemplateEditor()">Cancel</button>
+          <button class="topbar-btn" onclick="emPreviewTemplate()" style="font-size:11px;"><i class="fas fa-eye"></i> Preview</button>
+          <button class="topbar-btn primary" onclick="emSaveTemplate()"><i class="fas fa-save"></i> Save Template</button>
+        </div>
+        <input type="hidden" id="emTplEditId" value="">
+      </div>
+    </div>
+
+    <!-- COMPOSE (modal overlay) -->
+    <div id="emComposeOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:600px;max-height:80vh;overflow-y:auto;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:16px;font-weight:700;">Compose Email</div>
+          <button class="topbar-btn" onclick="emCloseCompose()" style="font-size:11px;">✕</button>
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">To *</div><input id="emComposeTo" placeholder="email@example.com"></div>
+        <div class="fc-field" style="margin-bottom:12px;"><div class="fc-lbl">Subject *</div><input id="emComposeSubject" placeholder="Subject line"></div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Template (optional)</div>
+          <select id="emComposeTemplate" onchange="emFillFromTemplate()">
+            <option value="">— Write custom —</option>
+          </select>
+        </div>
+        <div class="fc-field" style="margin-bottom:16px;">
+          <div class="fc-lbl">Message</div>
+          <textarea id="emComposeBody" rows="10" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="<p>Hi there,</p>&#10;<p>Your message here...</p>"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="topbar-btn" onclick="emCloseCompose()">Cancel</button>
+          <button class="topbar-btn primary" onclick="emSendCompose()"><i class="fas fa-paper-plane"></i> Send</button>
+        </div>
+        <div id="emComposeResult" style="font-size:12px;margin-top:8px;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- PROSPECTING VIEW -->
+<!-- ========================================== -->
+
+<div class="view-panel" id="view-prospecting">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Prospecting</div><div class="topbar-subtitle">Find active realtors and untapped opportunities</div></div>
+    </div>
+    <div class="topbar-right">
+      <input type="text" class="topbar-search" placeholder="Search by zip, city, county..." style="width:240px;" id="prospectSearch">
+      <button class="topbar-btn primary" onclick="runProspectSearch()">Search</button>
+    </div>
+  </div>
+  <div class="content-area">
+    <div class="placeholder-center">
+      <div class="placeholder-icon"><i class="fas fa-envelope"></i></div>
+      <div class="placeholder-text">Search for realtors by location to discover partnership opportunities</div>
+      <div class="placeholder-sub">Powered by public records  -  Updated daily</div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- INCOME CALCULATORS VIEW -->
+<!-- ========================================== -->
+<!-- CREDIT ANALYSIS -->
+<div class="view-panel" id="view-creditanalysis">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Credit Analysis</div><div class="topbar-subtitle">Simulator submissions & credit improvement planning</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadCreditSubmissions()"><i class="fas fa-sync-alt"></i> Refresh</button>
+      <button class="topbar-btn primary" onclick="openDirectAnalysis()" style="background:rgba(186,163,112,0.2);color:#baa370;border-color:rgba(186,163,112,0.4);"><i class="fas fa-plus"></i> New Analysis</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="topbar-btn" id="csFilterNew" onclick="filterCreditSubs('new')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">🔴 New <span id="csNewCount"></span></button>
+      <button class="topbar-btn" id="csFilterReviewing" onclick="filterCreditSubs('reviewing')" style="background:rgba(245,158,11,0.15);color:#f59e0b;border-color:rgba(245,158,11,0.3);">🟡 Reviewing <span id="csReviewCount"></span></button>
+      <button class="topbar-btn" id="csFilterPlanSent" onclick="filterCreditSubs('plan_sent')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">✅ Plan Sent <span id="csPlanCount"></span></button>
+      <button class="topbar-btn" id="csFilterAll" onclick="filterCreditSubs('all')" style="background:#f8f9fb;color:var(--text-muted);">All</button>
+    </div>
+    <div id="creditSubList">
+      <div style="text-align:center; padding:40px; color:var(--text-muted);">
+        <div style="font-size:36px; margin-bottom:12px;">📊</div>
+        <div style="font-family:sans-serif; font-size:12px; letter-spacing:1px;">LOADING SUBMISSIONS...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credit Submission Detail Modal -->
+<div class="modal-overlay" id="creditDetailModal">
+  <div class="modal-box" style="width:700px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-title"><i class="fas fa-chart-line" style="margin-right:8px;color:#f59e0b;"></i> Credit Submission Detail</div>
+    <div id="creditDetailContent"></div>
+    <div class="modal-actions" style="margin-top:16px;">
+      <button class="topbar-btn" onclick="document.getElementById('creditDetailModal').style.display='none'">Close</button>
+      <button class="topbar-btn" id="csMarkReviewing" style="border-color:rgba(245,158,11,0.3);color:#f59e0b;" onclick="updateCreditStatus('reviewing')"><i class="fas fa-eye"></i> Mark Reviewing</button>
+      <button class="topbar-btn" style="border-color:rgba(186,163,112,0.4);color:#baa370;background:rgba(186,163,112,0.08);" onclick="openCreditAnalysis()"><i class="fas fa-microscope"></i> Analyze Credit</button>
+      <button class="topbar-btn primary" id="csMarkPlanSent" onclick="updateCreditStatus('plan_sent')"><i class="fas fa-paper-plane"></i> Plan Sent</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREDIT ANALYSIS ENGINE (iframe) -->
+<div class="view-panel" id="view-creditengine">
+  <iframe id="creditEngineFrame" src="" style="width:100%;height:100%;border:none;"></iframe>
+</div>
+
+<!-- ========================================== -->
+<!-- LOAN COMPARISON -->
+<div class="view-panel" id="view-loancompare">
+  <iframe src="loan-comparison.html" style="width:100%;height:100%;border:none;"></iframe>
+</div>
+
+<div class="view-panel" id="view-calculators">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Income Calculators</div><div class="topbar-subtitle">W-2 and Self-Employed income qualification tools</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="switchCalcView('w2')"><i class="fas fa-calculator"></i> W-2</button>
+      <button class="topbar-btn" onclick="switchCalcView('se')"><i class="fas fa-store"></i> Self-Employed</button>
+      <button class="topbar-btn" onclick="switchCalcView('both')"><i class="fas fa-columns"></i> Both</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:0;display:flex;gap:0;height:calc(100vh - 60px);">
+    <iframe id="calcViewW2" src="mc-income-calculator.html" style="flex:1;border:none;height:100%;display:block;"></iframe>
+    <iframe id="calcViewSE" src="mc-self-employed-calculator.html" style="flex:1;border:none;height:100%;display:none;"></iframe>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- ANALYTICS VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-analytics">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Analytics</div><div class="topbar-subtitle">Loan Intelligence & Opportunity Scanner</div></div>
+    </div>
+  </div>
+  <div class="content-area">
+
+    <!-- Tabs -->
+    <div class="ana-tabs">
+      <div class="ana-tab active" onclick="anaShowTab('dashboard',this)">INTELLIGENCE</div>
+      <div class="ana-tab" onclick="anaShowTab('reports',this)">CUSTOM REPORTS</div>
+    </div>
+
+    <!-- ======= INTELLIGENCE TAB ======= -->
+    <div id="anaTabDashboard">
+
+      <!-- STRIKE RATE -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title">STRIKE RATE ANALYSIS</div>
+          <div class="mc-status" id="anaStrikeStatus">MONITORING</div>
+        </div>
+        <div class="mc-grid-3" style="margin-bottom:16px;">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#3b82f6;" id="anaAvgRate">—</div><div class="mc-kpi-label">AVG FUNDED RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaMktRate">—</div><div class="mc-kpi-label">CURRENT MKT RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaRefiCount">—</div><div class="mc-kpi-label">REFI CANDIDATES</div></div>
+        </div>
+        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">CLIENTS ABOVE CURRENT MARKET RATE</div>
+        <div id="anaStrikeCards"><div class="mc-empty-msg">SCANNING...</div></div>
+      </div>
+
+      <!-- REFI OPPORTUNITIES -->
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+          <div class="mc-panel-title">REFI OPPORTUNITIES</div>
+          <div class="mc-status" id="anaRefiStatus" style="color:#f59e0b;">SCANNING</div>
+        </div>
+        <div id="anaRefiCards"><div class="mc-empty-msg">SCANNING LOAN HISTORY...</div></div>
+      </div>
+
+      <div class="mc-grid-2">
+        <!-- SOURCE PERFORMANCE -->
+        <div class="mc-panel">
+          <div class="mc-panel-head">
+            <div class="mc-blinker" style="background:#f472b6;box-shadow:0 0 8px #f472b6;"></div>
+            <div class="mc-panel-title">SOURCE PERFORMANCE</div>
+            <div class="mc-status" id="anaSourceStatus">—</div>
+          </div>
+          <div id="anaSourceBars"></div>
+          <div id="anaSourceFooter" style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);font-size:10px;color:var(--text-muted);letter-spacing:1px;font-family:sans-serif;"></div>
+        </div>
+
+        <!-- BIRTHDAYS & ANNIVERSARIES -->
+        <div class="mc-panel">
+          <div class="mc-panel-head">
+            <div class="mc-blinker" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></div>
+            <div class="mc-panel-title">UPCOMING DATES</div>
+            <div class="mc-status" style="color:#a78bfa;" id="anaDateStatus">NEXT 30 DAYS</div>
+          </div>
+          <div id="anaUpcomingDates"><div class="mc-empty-msg">LOADING...</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======= CUSTOM REPORTS TAB ======= -->
+    <div id="anaTabReports" style="display:none;">
+
+      <!-- QUICK REPORTS -->
+      <div class="mc-panel" style="padding:16px 20px 100px;overflow:visible;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title">QUICK REPORTS</div>
+          <div class="mc-status">SELECT A REPORT</div>
+        </div>
+        <div class="qr-grid" id="qrGrid">
+          <div class="qr-card" onclick="qrSelect('production',this)"><div class="qr-tip"><div class="qr-tip-title">MONTHLY PRODUCTION</div><div class="qr-tip-text">Funded loans by time period — volume, rates, loan types, and totals.</div></div><div class="qr-icon">📊</div><div class="qr-name">Monthly Production</div></div>
+          <div class="qr-card" onclick="qrSelect('refi',this)"><div class="qr-tip"><div class="qr-tip-title">REFI CANDIDATES</div><div class="qr-tip-text">Past clients whose funded rate is above current market — shows potential monthly savings.</div></div><div class="qr-icon">🎯</div><div class="qr-name">Refi Candidates</div></div>
+          <div class="qr-card" onclick="qrSelect('strike',this)"><div class="qr-tip"><div class="qr-tip-title">STRIKE RATE</div><div class="qr-tip-text">Clients with rates above market — shows the spread between their rate and current market.</div></div><div class="qr-icon">⚡</div><div class="qr-name">Strike Rate Clients</div></div>
+          <div class="qr-card" onclick="qrSelect('sources',this)"><div class="qr-tip"><div class="qr-tip-title">SOURCE BREAKDOWN</div><div class="qr-tip-text">Where your contacts come from and how many from each source actually funded. Shows pull-through rate.</div></div><div class="qr-icon">🤝</div><div class="qr-name">Source Breakdown</div></div>
+          <div class="qr-card" onclick="qrSelect('realtor',this)"><div class="qr-tip"><div class="qr-tip-title">REALTOR TRACKING</div><div class="qr-tip-text">Track which tools your realtor partners use in the portal and how often they log in.</div></div><div class="qr-icon">🏠</div><div class="qr-name">Realtor Tracking</div></div>
+          <div class="qr-card" onclick="qrSelect('birthdays',this)"><div class="qr-tip"><div class="qr-tip-title">BIRTHDAYS</div><div class="qr-tip-text">CRM contacts with birthdays in the selected month — includes contact type, phone, and email for easy outreach.</div></div><div class="qr-icon">🎂</div><div class="qr-name">Birthdays</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-purchase',this)"><div class="qr-tip"><div class="qr-tip-title">PURCHASE ANNIVERSARIES</div><div class="qr-tip-text">Purchase loans that closed in the selected month — great for sending anniversary cards to past clients.</div></div><div class="qr-icon">🔑</div><div class="qr-name">Closing Anniv - Purchase</div></div>
+          <div class="qr-card" onclick="qrSelect('anniv-refi',this)"><div class="qr-tip"><div class="qr-tip-title">REFI ANNIVERSARIES</div><div class="qr-tip-text">Refinance loans that closed in the selected month — anniversary touchpoint opportunities.</div></div><div class="qr-icon">🔄</div><div class="qr-name">Closing Anniv - Refi</div></div>
+          <div class="qr-card" onclick="qrSelect('age',this)"><div class="qr-tip"><div class="qr-tip-title">AGE OF LOAN</div><div class="qr-tip-text">How many days each loan took from AE ID creation to final decision — helps identify bottlenecks.</div></div><div class="qr-icon">⏱</div><div class="qr-name">Age of Loan</div></div>
+          <div class="qr-card" onclick="qrSelect('fallout',this)"><div class="qr-tip"><div class="qr-tip-title">FALLOUT REPORT</div><div class="qr-tip-text">Loans that were withdrawn, suspended, or denied — track fallout patterns to improve your pipeline.</div></div><div class="qr-icon">📉</div><div class="qr-name">Fallout Report</div></div>
+          <div class="qr-card" onclick="qrSelect('archive',this)"><div class="qr-tip"><div class="qr-tip-title">COMPLIANCE ARCHIVE</div><div class="qr-tip-text">Pull archived partner orders by date range for compliance audits. Orders auto-archive at 90 days and are retained for 3 years.</div></div><div class="qr-icon">🗄</div><div class="qr-name">Compliance Archive</div></div>
+        </div>
+        <div id="qrUserSaved"></div>
+      </div>
+
+      <!-- MINI CONFIG (appears after selecting a quick report) -->
+      <div class="mc-panel" id="qrConfigPanel" style="display:none;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker"></div>
+          <div class="mc-panel-title" id="qrConfigTitle">CONFIGURE</div>
+        </div>
+        <div id="qrConfigBody"></div>
+        <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
+          <button class="qb-run" onclick="qrRunReport()">▶ RUN REPORT</button>
+          <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
+          <div class="qb-result-count" id="anaResultCount"></div>
+        </div>
+      </div>
+
+      <!-- CUSTOM REPORT (filterable table) -->
+      <div class="mc-panel" id="qrCustomPanel" style="display:none;padding:16px 20px;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+          <div class="mc-panel-title">CUSTOM REPORT</div>
+          <div class="mc-status" style="color:#f59e0b;">BUILD YOUR OWN</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+          <div class="qr-cat" data-cat="loans" onclick="qrCustomCat('loans',this)">📋 ALL LOANS</div>
+          <div class="qr-cat" data-cat="clients" onclick="qrCustomCat('clients',this)">👥 ALL CLIENTS</div>
+          <div class="qr-cat" data-cat="pipeline" onclick="qrCustomCat('pipeline',this)">📊 ACTIVE PIPELINE</div>
+        </div>
+        <div id="qrCustomTable"></div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="mc-panel" id="anaResultsPanel" style="display:none;">
+        <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
+          <div class="mc-blinker green"></div>
+          <div class="mc-panel-title" id="anaResultsTitle">RESULTS</div>
+          <div class="mc-status" id="anaResultsStatus">—</div>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
+          <input type="text" class="qb-filter-val" id="anaSearchBox" placeholder="Search results..." oninput="anaFilterResults()" style="max-width:300px;font-size:13px;padding:8px 14px;">
+          <button class="qb-export" onclick="anaExportCSV()">📄 CSV</button>
+          <button class="qb-export" onclick="anaSaveQuickReport()">⭐ SAVE AS QUICK REPORT</button>
+          <div style="margin-left:auto;font-size:12px;color:rgba(59,130,246,0.5);letter-spacing:1px;font-family:sans-serif;" id="anaResultCount2"></div>
+        </div>
+        <div class="mc-table-wrap" id="anaResultsTable"></div>
+        <div id="anaResultsFooter" style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(59,130,246,0.08);display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);letter-spacing:1px;font-family:sans-serif;"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- DAILY BRIEFINGS VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-briefings">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Briefing Command Center</div><div class="topbar-subtitle">Drop, paste, publish — your realtors see it instantly</div></div>
+    </div>
+  </div>
+  <div class="content-area" style="padding:20px 24px;max-width:960px;">
+
+    <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:sans-serif;letter-spacing:0.5px;"></div>
+
+    <!-- ECONOMIC CALENDAR -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker green"></div>
+        <div class="mc-panel-title">ECONOMIC CALENDAR</div>
+        <div class="mc-status" style="margin-left:auto;">DROP SCREENSHOT</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Drop or Ctrl+V a screenshot of this week's calendar. Claude reads it and builds the portal display.</p>
+
+      <div id="calDropZone" onclick="document.getElementById('calFileInput').click()" style="border:1px dashed rgba(59,130,246,0.3);border-radius:8px;padding:32px 16px;text-align:center;cursor:pointer;background:rgba(59,130,246,0.03);transition:all 0.25s;">
+        <input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">
+        <div id="calDropText" style="color:var(--text-muted);font-size:13px;font-family:sans-serif;">Drop image here or <span style="color:#3b82f6;text-decoration:underline;cursor:pointer;">browse</span></div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button id="parseCalBtn" onclick="parseCalendar()" disabled class="bc-btn" style="opacity:0.4;">Read Calendar</button>
+      </div>
+
+      <div id="calPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(59,130,246,0.04);border:1px solid rgba(59,130,246,0.1);display:none;">
+        <div id="calPreviewTitle" style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;">PREVIEW — CALENDAR DATA</div>
+        <div id="calPreviewContent"></div>
+      </div>
+    </div>
+
+    <!-- MARKET SUMMARIES -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker"></div>
+        <div class="mc-panel-title">MARKET SUMMARIES</div>
+        <div class="mc-status" style="margin-left:auto;">PASTE RAW UPDATE</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Paste the raw market update. Claude rewrites it into Realtor Partner and Client-Friendly formats.</p>
+
+      <textarea id="rawMarketInput" class="bc-textarea" placeholder="Paste the raw market update here..."></textarea>
+
+      <div style="margin-top:12px;">
+        <button id="rewriteBtn" onclick="rewriteSummaries()" class="bc-btn">Rewrite Summaries</button>
+      </div>
+
+      <div id="mktPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(34,197,94,0.04);border:1px solid rgba(34,197,94,0.1);display:none;">
+        <div style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(34,197,94,0.6);margin-bottom:10px;">REALTOR PARTNER SUMMARY</div>
+        <div id="mktPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
+      </div>
+
+      <div id="clientPreview" style="margin-top:10px;padding:16px;border-radius:8px;background:rgba(168,85,247,0.04);border:1px solid rgba(168,85,247,0.1);display:none;">
+        <div style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(168,85,247,0.6);margin-bottom:10px;">CLIENT-FRIENDLY SUMMARY</div>
+        <div id="clientPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
+      </div>
+    </div>
+
+    <!-- WEEK IN REVIEW -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
+        <div class="mc-panel-title">WEEK IN REVIEW</div>
+        <div class="mc-status" style="margin-left:auto;color:#f59e0b;">FRIDAY ONLY</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Generate a weekly recap from this week's daily summaries, or paste your own.</p>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <input type="checkbox" id="wirToggle" style="width:18px;height:18px;cursor:pointer;accent-color:#f59e0b;">
+        <label for="wirToggle" style="font-size:12px;color:var(--text-muted);cursor:pointer;">Include Week in Review in this update</label>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <button id="generateWirBtn" onclick="generateWIR()" class="bc-btn" style="background:rgba(245,158,11,0.12);border-color:rgba(245,158,11,0.3);color:#f59e0b;" disabled>Generate from This Week</button>
+      </div>
+
+      <textarea id="wirInput" class="bc-textarea" style="min-height:120px;" placeholder="Week in review will appear here after generating, or paste your own..." disabled></textarea>
+
+      <div id="wirPreview" style="margin-top:14px;padding:16px;border-radius:8px;background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.1);display:none;">
+        <div id="wirPreviewLabel" style="font-family:sans-serif;font-size:11px;letter-spacing:2px;color:rgba(245,158,11,0.6);margin-bottom:10px;">WEEK IN REVIEW PREVIEW</div>
+        <div id="wirPreviewContent" style="font-size:13px;line-height:1.7;color:var(--text-secondary);"></div>
+      </div>
+    </div>
+
+    <!-- PUBLISH -->
+    <button id="publishBtn" onclick="publishBriefing()" style="width:100%;padding:16px;border:none;border-radius:8px;background:linear-gradient(135deg,rgba(34,197,94,0.2),rgba(34,197,94,0.1));border:1px solid rgba(34,197,94,0.3);color:#22c55e;font-family:sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;cursor:pointer;transition:all 0.25s;text-transform:uppercase;">
+      PUBLISH TO PORTAL
+    </button>
+
+  </div>
+</div>
+
+<style>
+.bc-btn { padding:10px 20px; border:1px solid rgba(59,130,246,0.3); border-radius:6px; background:rgba(59,130,246,0.12); color:#60a5fa; font-family:sans-serif; font-weight:600; font-size:13px; cursor:pointer; transition:all 0.2s; }
+.bc-btn:hover:not(:disabled) { background:rgba(59,130,246,0.2); }
+.bc-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.bc-textarea { width:100%; min-height:160px; padding:14px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:sans-serif; background:#fafbfc; color:var(--text-primary); box-sizing:border-box; resize:vertical; line-height:1.6; transition:all 0.25s; }
+.bc-textarea:focus { outline:none; border-color:rgba(59,130,246,0.3); background:#f8f9fb; }
+.bc-textarea:disabled { opacity:0.4; }
+.bc-spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:currentColor; border-radius:50%; animation:briefSpin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
+@keyframes briefSpin { to { transform: rotate(360deg); } }
+</style>
+
+<script>
+(function() {
+  var calImageData = null, calMediaType = null, parsedCal = null, parsedWeekLabel = null;
+  var rewrittenMkt = null, rewrittenClient = null;
+  var API = 'https://agent-edge-backend.vercel.app/api';
+
+  document.getElementById('wirToggle').addEventListener('change', function() {
+    var on = this.checked;
+    document.getElementById('wirInput').disabled = !on;
+    document.getElementById('generateWirBtn').disabled = !on;
+  });
+
+  var dz = document.getElementById('calDropZone');
+  dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor='rgba(59,130,246,0.6)'; dz.style.background='rgba(59,130,246,0.08)'; });
+  dz.addEventListener('dragleave', function() { dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; });
+  dz.addEventListener('drop', function(e) { e.preventDefault(); dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; var f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) handleCalImg(f); });
+
+  document.addEventListener('paste', function(e) {
+    var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
+    var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
+    for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { e.preventDefault(); handleCalImg(items[i].getAsFile()); break; } }
+  });
+
+  window.handleCalImg = function(file) {
+    if(!file) return; calMediaType=file.type;
+    var r=new FileReader();
+    r.onload=function(e) {
+      var url=e.target.result; calImageData=url.split(',')[1];
+      dz.style.borderColor='rgba(34,197,94,0.4)'; dz.style.borderStyle='solid'; dz.style.padding='10px';
+      dz.innerHTML='<img src="'+url+'" style="max-width:100%;border-radius:6px;display:block;margin:0 auto;"><input type="file" id="calFileInput" accept="image/*" style="display:none;" onchange="handleCalImg(this.files[0])">';
+      var btn=document.getElementById('parseCalBtn'); btn.disabled=false; btn.style.opacity='1';
+    };
+    r.readAsDataURL(file);
+  };
+
+  window.parseCalendar = async function() {
+    if(!calImageData) return;
+    var btn=document.getElementById('parseCalBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Reading...';
+    briefStatus('Reading calendar screenshot...','loading');
+    try {
+      var resp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'parse_calendar',image:calImageData,mediaType:calMediaType})});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Failed');
+      parsedCal=data.portalCalendar; parsedWeekLabel=data.weekLabel;
+      renderCalPreview(parsedCal,parsedWeekLabel);
+      briefStatus('Calendar parsed — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=false; btn.style.opacity='1'; btn.innerHTML='Read Calendar';
+  };
+
+  function renderCalPreview(cal,label) {
+    var panel=document.getElementById('calPreview'), content=document.getElementById('calPreviewContent');
+    if(label) document.getElementById('calPreviewTitle').textContent=label.toUpperCase();
+    var html='';
+    cal.forEach(function(item) {
+      var abbr=item.day.substring(0,3), hasMore=item.additionalEvents&&item.additionalEvents.length>0;
+      html+='<div style="display:flex;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid var(--border-light);">';
+      html+='<span style="font-weight:700;color:#3b82f6;min-width:32px;font-size:13px;">'+abbr+'</span>';
+      html+='<span style="font-weight:500;color:var(--text-primary);font-size:13px;">'+item.mainEvent+'</span>';
+      if(hasMore) html+='<span style="background:#3b82f6;color:white;border-radius:50%;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-left:auto;flex-shrink:0;">+'+item.additionalEvents.length+'</span>';
+      html+='</div>';
+      if(hasMore) { item.additionalEvents.forEach(function(evt) { html+='<div style="color:var(--text-muted);font-size:12px;padding-left:44px;padding-bottom:3px;">'+evt+'</div>'; }); }
+    });
+    content.innerHTML=html; panel.style.display='block';
+  }
+
+  window.rewriteSummaries = async function() {
+    var raw=document.getElementById('rawMarketInput').value.trim();
+    if(!raw){briefStatus('Paste market content first.','error');return;}
+    var btn=document.getElementById('rewriteBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Writing...';
+    briefStatus('Rewriting summaries...','loading');
+    try {
+      var resp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'rewrite_summaries',rawContent:raw})});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Failed');
+      rewrittenMkt=data.marketSummary; rewrittenClient=data.clientFriendly;
+      document.getElementById('mktPreviewContent').innerHTML=fmtText(rewrittenMkt);
+      document.getElementById('clientPreviewContent').innerHTML=fmtText(rewrittenClient);
+      document.getElementById('mktPreview').style.display='block';
+      document.getElementById('clientPreview').style.display='block';
+      briefStatus('Summaries ready — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=false; btn.innerHTML='Rewrite Summaries';
+  };
+
+  function fmtText(text) {
+    if(!text) return '';
+    return text.split(/\n\n+/).map(function(p) {
+      p=p.trim(); if(!p) return '';
+      if(p.match(/^(Market Open|What This Means|Looking Ahead|Bottom Line)/i)) {
+        var lines=p.split('\n');
+        return '<div style="font-weight:600;color:var(--text-primary);margin:12px 0 4px;">'+lines[0]+'</div>'+(lines.length>1?'<div>'+lines.slice(1).join('<br>')+'</div>':'');
+      }
+      return '<div style="margin-bottom:8px;">'+p.replace(/\n/g,'<br>')+'</div>';
+    }).join('');
+  }
+
+  window.generateWIR = async function() {
+    var btn=document.getElementById('generateWirBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Generating...';
+    briefStatus('Pulling this week\'s summaries and generating recap...','loading');
+    try {
+      var histResp=await fetch(API+'/briefing?action=history');
+      var histData=await histResp.json();
+      if(!histData.days||histData.days.length===0) throw new Error('No daily summaries found for this week. Publish some summaries first.');
+      var wirResp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'generate_wir',dailySummaries:histData.days,weekStart:histData.weekStart,weekEnd:histData.weekEnd})});
+      var wirData=await wirResp.json(); if(!wirData.success) throw new Error(wirData.error||'WIR generation failed');
+      document.getElementById('wirInput').value=wirData.weekInReview;
+      document.getElementById('wirPreviewLabel').textContent=(wirData.weekEndingLabel||'WEEK IN REVIEW').toUpperCase();
+      document.getElementById('wirPreviewContent').innerHTML='<div style="margin-bottom:6px;font-weight:600;color:rgba(245,158,11,0.8);">'+(wirData.weekEndingLabel||'')+'</div>'+fmtText(wirData.weekInReview);
+      document.getElementById('wirPreview').style.display='block';
+      briefStatus('Week in Review generated — review below, then publish.','success');
+    } catch(err) { briefStatus('Error: '+err.message,'error'); }
+    btn.disabled=!document.getElementById('wirToggle').checked; btn.innerHTML='Generate from This Week';
+  };
+
+  window.publishBriefing = async function() {
+    var btn=document.getElementById('publishBtn');
+    var hasCal=parsedCal&&parsedCal.length>0, hasMkt=rewrittenMkt||rewrittenClient;
+    var hasWir=document.getElementById('wirToggle').checked&&document.getElementById('wirInput').value.trim();
+    if(!hasCal&&!hasMkt&&!hasWir){briefStatus('Nothing to publish.','error');return;}
+    btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span> PUBLISHING...';
+    briefStatus('Saving to database...','loading');
+    try {
+      var payload={};
+      if(hasCal){payload.economicCalendar=parsedCal; if(parsedWeekLabel) payload.calendarWeek=parsedWeekLabel;}
+      if(rewrittenMkt) payload.marketSummary=rewrittenMkt;
+      if(rewrittenClient) payload.clientFriendly=rewrittenClient;
+      if(hasWir) payload.weekInReview=document.getElementById('wirInput').value.trim();
+      var resp=await fetch(API+'/briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Publish failed');
+      briefStatus('PUBLISHED — your realtors can see the update now.','success');
+    } catch(err) { briefStatus('Publish error: '+err.message,'error'); }
+    btn.disabled=false; btn.innerHTML='PUBLISH TO PORTAL';
+  };
+
+  function briefStatus(msg,type) {
+    var bar=document.getElementById('briefingStatus'); bar.textContent=msg; bar.style.display='block';
+    if(type==='success'){bar.style.background='rgba(34,197,94,0.08)';bar.style.border='1px solid rgba(34,197,94,0.2)';bar.style.color='#22c55e';}
+    else if(type==='error'){bar.style.background='rgba(239,68,68,0.08)';bar.style.border='1px solid rgba(239,68,68,0.2)';bar.style.color='#ef4444';}
+    else{bar.style.background='rgba(59,130,246,0.06)';bar.style.border='1px solid rgba(59,130,246,0.15)';bar.style.color='#60a5fa';}
+  }
+})();
+</script>
+
+<!-- ========================================== -->
+<!-- USER MANAGEMENT VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-users">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">User Management</div><div class="topbar-subtitle">Your profile, blog, and loan team</div></div>
+    </div>
+    <div class="topbar-right"></div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;">
+
+    <!-- ROW 1 -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(37,99,235,0.1);color:#2563eb;"><i class="fas fa-users"></i></div>
+        <div class="um-card-title">My Loan Team</div>
+      </div>
+      <div class="um-card-desc">Add your processor, underwriter, closer, and other team members. They'll be available for task assignments on loan files.</div>
+      <div id="teamRosterList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;"></div>
+      <button class="topbar-btn primary" onclick="openTeamMemberForm()" style="display:inline-flex;align-items:center;gap:6px;"><i class="fas fa-plus"></i> Add Team Member</button>
+      <div id="teamMemberForm" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:12px;font-weight:700;margin-bottom:12px;" id="teamFormTitle">Add Team Member</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div class="fc-field"><div class="fc-lbl">Name *</div><input id="tm_name" placeholder="Jane Smith"></div>
+          <div class="fc-field"><div class="fc-lbl">Role</div>
+            <select id="tm_role"><option value="lo">Loan Officer</option><option value="loa">LOA</option><option value="processor">Processor</option></select>
+          </div>
+          <div class="fc-field"><div class="fc-lbl">Email</div><input id="tm_email" placeholder="jane@lender.com"></div>
+          <div class="fc-field"><div class="fc-lbl">Phone</div><input id="tm_phone" placeholder="555-123-4567"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px;align-items:center;">
+          <button class="topbar-btn" onclick="closeTeamMemberForm()">Cancel</button>
+          <button class="topbar-btn primary" onclick="saveTeamMember()">Save</button>
+          <span id="tmSmsLink" style="display:none;margin-left:auto;font-size:11px;"><a href="#" onclick="goToSmsSettings();return false;" style="color:var(--accent-orange);text-decoration:none;">Manage SMS Alerts &rarr;</a></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(22,163,74,0.1);color:#16a34a;"><i class="fas fa-file-upload"></i></div>
+        <div class="um-card-title">Import Contacts</div>
+      </div>
+      <div class="um-card-desc">Upload an Excel file to bulk import contacts into your Client Database. Use the template to ensure your data maps correctly.</div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <label class="topbar-btn primary" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <i class="fas fa-file-upload"></i> Upload Import File
+          <input type="file" accept=".xlsx,.xls,.csv" onchange="handleCrmImport(this)" style="display:none;">
+        </label>
+        <a href="Agent_Edge_CRM_Import_Template.xlsx" download class="topbar-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;">
+          <i class="fas fa-download"></i> Download Template
+        </a>
+      </div>
+      <div id="importStatus" style="margin-top:12px;display:none;"></div>
+    </div>
+
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(13,148,136,0.1);color:#0d9488;"><i class="fas fa-video"></i></div>
+        <div class="um-card-title">Video Call Studio</div>
+      </div>
+      <div class="um-card-desc">Start a live video call with a borrower. Share your screen to walk them through reports, loan comparisons, and documents in real time. No downloads or apps required.</div>
+      <button class="topbar-btn primary" onclick="window.open('mc-video-call.html','_blank')" style="display:inline-flex;align-items:center;gap:8px;">
+        <i class="fas fa-video"></i> Launch Video Studio
+      </button>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(124,58,237,0.1);color:#7c3aed;"><i class="fas fa-pen-nib"></i></div>
+        <div class="um-card-title">Blog Management</div>
+      </div>
+      <div class="um-card-desc">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
+      </div>
+      <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
+      </div>
+    </div>
+
+    <div class="um-card">
+      <div class="um-card-header">
+        <div class="um-card-icon" style="background:rgba(220,38,38,0.1);color:#dc2626;"><i class="fas fa-trash-alt"></i></div>
+        <div class="um-card-title">Delete Contact</div>
+      </div>
+      <div class="um-card-desc">Permanently remove a contact from your database. This cannot be undone.</div>
+      <div>
+        <div class="fc-lbl">Search Contact</div>
+        <input type="text" id="deleteContactSearch" placeholder="Type name, email, or phone..." oninput="searchDeleteContacts()" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+      </div>
+      <div id="deleteContactResults" style="margin-top:8px;max-height:200px;overflow-y:auto;"></div>
+    </div>
+
+    </div><!-- close grid -->
+
+    <div style="margin-top:16px;">
+    <div style="margin-top:16px;">
+      <div id="blogEditor" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+          <div style="font-size:14px;font-weight:700;" id="blogEditorTitle">New Blog Post</div>
+          <button class="topbar-btn" onclick="closeBlogEditor()" style="padding:4px 10px;font-size:12px;">Close</button>
+        </div>
+        <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:8px;padding:14px;margin-bottom:16px;">
+          <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-wand-magic-sparkles"></i> AI Writing Assistant</div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div style="flex:1;">
+              <input id="blogAiTopic" placeholder="Enter a topic, e.g. 'Why buyers should lock rates early'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+            </div>
+            <button class="topbar-btn primary" onclick="blogAiDraft()" id="blogAiDraftBtn" style="white-space:nowrap;"><i class="fas fa-wand-magic-sparkles"></i> Draft from Topic</button>
+            <button class="topbar-btn" onclick="blogAiPolish()" id="blogAiPolishBtn" style="white-space:nowrap;"><i class="fas fa-sparkles"></i> Polish My Writing</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+          <div>
+            <div class="fc-lbl">Title</div>
+            <input id="blogTitle" placeholder="Post title" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+          </div>
+          <div>
+            <div class="fc-lbl">Category</div>
+            <select id="blogCategory" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+              <option value="Home Buying">Home Buying</option>
+              <option value="Refinance">Refinance</option>
+              <option value="Mortgage Strategy">Mortgage Strategy</option>
+              <option value="Market Update">Market Update</option>
+              <option value="Credit & Finance">Credit & Finance</option>
+              <option value="First-Time Buyers">First-Time Buyers</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="fc-lbl">Summary (shown on homepage card)</div>
+          <input id="blogSummary" placeholder="1-2 sentence summary for the blog card" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+        </div>
+        <div style="margin-bottom:12px;">
+          <div class="fc-lbl">Blog Image</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <button class="topbar-btn" onclick="openBlogImagePicker()" style="display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-image"></i> Choose Image</button>
+            <div id="blogImgPreview" style="display:none;align-items:center;gap:10px;">
+              <img id="blogImgThumb" src="" style="width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+              <div>
+                <div id="blogImgCredit" style="font-size:11px;color:var(--text-secondary);"></div>
+                <button onclick="clearBlogImage()" style="background:none;border:none;color:var(--accent-red);font-size:11px;cursor:pointer;padding:0;margin-top:2px;">Remove</button>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="blogImageUrl" value="">
+        </div>
+        <div style="margin-bottom:16px;">
+          <div class="fc-lbl">Body (HTML)</div>
+          <textarea id="blogBody" rows="14" placeholder="Write your post here... HTML tags like <h3>, <p>, <ul> are supported." style="width:100%;padding:12px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;line-height:1.6;resize:vertical;"></textarea>
+        </div>
+        <input type="hidden" id="blogEditId" value="">
+        <div id="blogPreviewPanel" style="display:none;margin-bottom:16px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:#f8f9fb;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Preview</div>
+            <button class="topbar-btn" onclick="document.getElementById('blogPreviewPanel').style.display='none'" style="padding:3px 8px;font-size:11px;">Close Preview</button>
+          </div>
+          <div id="blogPreviewContent" style="padding:24px;max-height:400px;overflow-y:auto;color:var(--text-primary);font-size:14px;line-height:1.8;"></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <button class="topbar-btn primary" onclick="saveBlogPost('published')"><i class="fas fa-globe"></i> Publish</button>
+          <button class="topbar-btn" onclick="saveBlogPost('draft')"><i class="fas fa-save"></i> Save Draft</button>
+          <button class="topbar-btn" onclick="previewBlogPost()" style="border-color:rgba(124,58,237,0.3);color:#7c3aed;"><i class="fas fa-eye"></i> Preview</button>
+          <button class="topbar-btn" onclick="blogAiRewrite()" id="blogAiRewriteBtn" style="border-color:rgba(234,88,12,0.3);color:#ea580c;"><i class="fas fa-rotate"></i> AI Rewrite</button>
+          <span id="blogSaveStatus" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
+        </div>
+        <div style="margin-top:10px;">
+          <input id="blogRewriteInstructions" placeholder="Rewrite instructions, e.g. 'don't mention specific prices' or 'make it less about me'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+        </div>
+        </div>
+    </div>
+
+  </div>
+</div>
+</div><!-- /view-users -->
+
+<!-- ========================================== -->
+<!-- SETTINGS VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-settings">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Settings</div><div class="topbar-subtitle">Configuration and preferences</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" onclick="saveAlertSettings()"><i class="fas fa-save"></i> Save Settings</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- SMS ALERTS -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">SMS Alerts</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Get text message alerts for upcoming pipeline deadlines. Critical dates like Final CD and Clear to Close are monitored by default.</div>
+
+      <!-- Person Selector -->
+      <div style="margin-bottom:16px;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Managing Alerts For</label>
+        <select id="smsPersonSelect" onchange="switchSmsPerson()" style="width:100%;max-width:320px;padding:12px 14px;border-radius:8px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+          <option value="self">Myself (Loan Officer)</option>
+        </select>
+      </div>
+
+      <!-- Enable SMS -->
+      <div style="display:flex;align-items:center;gap:14px;padding:16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;">
+        <label style="position:relative;display:inline-block;width:48px;height:26px;cursor:pointer;">
+          <input type="checkbox" id="settingSmsEnabled" style="opacity:0;width:0;height:0;" onchange="toggleSmsSection()">
+          <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.04);border-radius:26px;transition:0.3s;" class="sms-slider"></span>
+        </label>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-primary);">Enable SMS Alerts</div>
+          <div style="font-size:12px;color:var(--text-muted);" id="smsEnableDesc">Receive text messages for critical pipeline dates</div>
+        </div>
+      </div>
+
+      <!-- SMS Details (shown when enabled) -->
+      <div id="smsSettingsDetail" style="display:none;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Mobile Number</label>
+            <input type="tel" id="settingAlertPhone" placeholder="(555) 123-4567" style="width:100%;padding:12px 14px;border-radius:8px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Test SMS</label>
+            <button class="topbar-btn" onclick="sendTestSms()" style="margin-top:2px;height:44px;font-size:14px;"><i class="fas fa-paper-plane"></i> Send Test Message</button>
+            <div id="testSmsResult" style="font-size:12px;margin-top:4px;"></div>
+          </div>
+        </div>
+
+        <!-- Alert Schedule (LO only) -->
+        <div id="smsScheduleSection">
+          <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">Alert Schedule</div>
+          <div style="padding:16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+              <input type="checkbox" id="settingMorningAlert" checked style="width:16px;height:16px;cursor:pointer;">
+              <div>
+                <div style="font-size:14px;color:var(--text-primary);">Morning Briefing</div>
+                <div style="font-size:12px;color:var(--text-muted);">Daily summary of all upcoming dates — sent at 7:00 AM</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <input type="checkbox" id="settingNoonEscalation" checked style="width:16px;height:16px;cursor:pointer;">
+              <div>
+                <div style="font-size:14px;color:var(--text-primary);">Noon Escalation</div>
+                <div style="font-size:12px;color:var(--text-muted);">If a same-day critical date hasn't been confirmed by noon — escalation text sent</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Which dates trigger SMS -->
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:10px;">SMS Alert Triggers</div>
+        <div style="padding:16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:20px;">
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Choose which dates send SMS alerts. Dashboard alerts always show for all dates.</div>
+          <div id="smsDateToggles"></div>
+        </div>
+
+        <!-- Save button -->
+        <button class="topbar-btn primary" onclick="saveCurrentPersonSms()" style="font-size:13px;padding:10px 20px;"><i class="fas fa-save"></i> Save SMS Settings</button>
+        <span id="smsSaveResult" style="font-size:12px;margin-left:10px;"></span>
+      </div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+
+    <!-- PASSWORD RESET TOOL -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">Password Reset</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Send a temporary password to a realtor via email. They can change it from their profile page after logging in.</div>
+
+      <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:16px;">
+        <div style="flex:1;">
+          <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Realtor Email</label>
+          <input type="email" id="pwResetEmail" placeholder="realtor@email.com" style="width:100%;padding:12px 14px;border-radius:8px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;">
+        </div>
+        <button class="topbar-btn primary" onclick="sendPasswordReset()" id="pwResetBtn" style="height:46px;font-size:13px;white-space:nowrap;"><i class="fas fa-paper-plane"></i> Send Reset</button>
+      </div>
+      <div id="pwResetResult" style="font-size:13px;"></div>
+    </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:30px 0;">
+
+    <!-- FUTURE: API keys, email settings, branding -->
+    <div style="max-width:700px;">
+      <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:4px;">Integrations</div>
+      <div style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">API keys, email settings, branding, and other integrations.</div>
+      <div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;border:1px dashed var(--border);border-radius:10px;">
+        <i class="fas fa-plug" style="font-size:24px;margin-bottom:8px;display:block;opacity:0.3;"></i>
+        Coming soon — Resend email, Google Calendar sync, Zapier webhooks
+      </div>
+    </div>
+
+  </div>
+</div><!-- /view-settings -->
+
+<!-- ===== SCENARIOS VIEW ===== -->
+<div class="view-panel" id="view-scenarios">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Scenario Desk</div><div class="topbar-subtitle">Realtor Scenario Submissions & Guideline Searches</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="loadScenarios()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:16px 24px;">
+    <!-- STAT CARDS -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#ef4444;text-transform:uppercase;">Hot Leads</div>
+        <div style="font-size:24px;font-weight:700;color:#ef4444;margin-top:4px;" id="scHotStat">0</div>
+      </div>
+      <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#3b82f6;text-transform:uppercase;">Intel Feed</div>
+        <div style="font-size:24px;font-weight:700;color:#3b82f6;margin-top:4px;" id="scIntelStat">0</div>
+      </div>
+      <div style="background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.15);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:#22c55e;text-transform:uppercase;">Resolved</div>
+        <div style="font-size:24px;font-weight:700;color:#22c55e;margin-top:4px;" id="scResolvedStat">0</div>
+      </div>
+      <div style="background:#fafbfc;border:1px solid var(--border-light);border-radius:10px;padding:14px 16px;">
+        <div style="font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--text-muted);text-transform:uppercase;">Total</div>
+        <div style="font-size:24px;font-weight:700;color:#fff;margin-top:4px;" id="scTotalStat">0</div>
+      </div>
+    </div>
+    <!-- FILTER TABS -->
+    <div style="display:flex; gap:8px; margin-bottom:16px;">
+      <button class="topbar-btn" id="filterHot" onclick="filterScenarios('hot')" style="background:rgba(239,68,68,0.15);color:#ef4444;border-color:rgba(239,68,68,0.3);">Hot Leads <span id="filterHotCount"></span></button>
+      <button class="topbar-btn" id="filterIntel" onclick="filterScenarios('intel')" style="background:rgba(59,130,246,0.15);color:#3b82f6;border-color:rgba(59,130,246,0.3);">Intel Feed <span id="filterIntelCount"></span></button>
+      <button class="topbar-btn" id="filterResolved" onclick="filterScenarios('resolved')" style="background:rgba(34,197,94,0.15);color:#22c55e;border-color:rgba(34,197,94,0.3);">Resolved <span id="filterResolvedCount"></span></button>
+      <button class="topbar-btn" id="filterAll" onclick="filterScenarios('all')" style="background:#f8f9fb;color:var(--text-muted);">All</button>
+    </div>
+    <!-- SPLIT LAYOUT -->
+    <div style="display:flex;gap:16px;height:calc(100vh - 300px);">
+      <div style="width:340px;flex-shrink:0;overflow-y:auto;border:1px solid var(--border-light);border-radius:10px;background:#fafbfc;" id="scenarioList">
+        <div style="text-align:center;padding:40px;color:var(--text-muted);">
+          <div style="font-size:36px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-family:sans-serif;font-size:12px;letter-spacing:1px;">LOADING SCENARIOS...</div>
+        </div>
+      </div>
+      <div style="flex:1;overflow-y:auto;border:1px solid var(--border-light);border-radius:10px;background:#fafbfc;padding:20px;" id="scenarioDetailPreview">
+        <div style="text-align:center;padding:60px 20px;color:var(--text-muted);">
+          <div style="font-size:48px;margin-bottom:12px;">&#x1F43E;</div>
+          <div style="font-size:14px;margin-bottom:4px;">Select a scenario to view details</div>
+          <div style="font-size:12px;color:var(--text-muted);">Click any submission from the list</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- EMAIL MODAL -->
+<div class="modal-overlay" id="emailModal">
+  <div class="modal-box">
+    <div class="modal-title"><i class="fas fa-envelope"></i> Send Email</div>
+    <div class="modal-field"><label>To</label><input id="emailTo" readonly></div>
+    <div class="modal-field"><label>Subject</label><input id="emailSubject"></div>
+    <div class="modal-field"><label>Message</label><textarea id="emailBody"></textarea></div>
+    <div class="modal-actions">
+      <button class="topbar-btn" onclick="closeEmailModal()">Cancel</button>
+      <button class="topbar-btn primary" onclick="sendEmail()">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT DETAIL MODAL (for pipeline) -->
+<div class="modal-overlay" id="pipelineContactModal">
+  <div class="modal-box" style="width:600px;">
+    <div class="modal-title" id="pcmTitle">Add Contact</div>
+    <!-- Borrowers on this loan (shown for CRM-linked contacts) -->
+    <div id="pcmBorrowersWrap" style="display:none;margin-bottom:14px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:6px;display:block;">Borrowers on this Loan</label>
+      <div id="pcmBorrowersList" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div class="crm-field-grid">
+      <div class="crm-field"><label>Name *</label><input id="pcm_name"></div>
+      <div class="crm-field"><label>Phone</label><input id="pcm_phone"></div>
+      <div class="crm-field"><label>Email</label><input id="pcm_email"></div>
+      <div class="crm-field">
+        <label>Source</label>
+        <select id="pcm_source"><option value="other">Other</option><option value="webinar">Webinar</option><option value="social">Social Ad</option><option value="organic">Organic</option><option value="realtor">Realtor</option><option value="referral">Referral</option></select>
+      </div>
+      <div class="crm-field"><label>Realtor Name</label><input id="pcm_realtor"></div>
+      <div class="crm-field">
+        <label>Stage</label>
+        <select id="pcm_stage"><option value="warm">Warm Leads</option><option value="active">Active Conversations</option><option value="credit">Credit Repair</option><option value="preapproval">Started Pre-Approval</option><option value="preapproved">Approved</option><option value="ratewatch">Rate Watch</option><option value="underwriting">Underwriting</option></select>
+      </div>
+      <div class="crm-field">
+        <label>Transaction Type</label>
+        <select id="pcm_transType"><option value="">--</option><option value="purchase">Purchase</option><option value="refinance">Refinance</option><option value="new_construction">New Construction</option><option value="heloc">HELOC</option></select>
+      </div>
+      <div class="crm-field">
+        <label>Loan Program</label>
+        <select id="pcm_loanProgram"><option value="">--</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="jumbo">Jumbo</option><option value="land_lot">Land / Lot</option></select>
+      </div>
+      <div class="crm-field">
+        <label>Occupancy</label>
+        <select id="pcm_occupancy"><option value="">--</option><option value="owner_occupied">Owner Occupied</option><option value="investor">Investor</option><option value="second_home">Second Home</option></select>
+      </div>
+      <div class="crm-field"><label>Interest Rate</label><input id="pcm_rate" placeholder="6.25"></div>
+      <div class="crm-field"><label>Loan Amount</label><input id="pcm_loanAmount" placeholder="350000"></div>
+      <div class="crm-field" style="grid-column:1/-1;"><label>Subject Address</label><input id="pcm_address"></div>
+    </div>
+    <div class="modal-footer-bar">
+      <div class="modal-footer-left">
+        <button class="topbar-btn" onclick="closePipelineModal()">Cancel</button>
+        <button class="topbar-btn" id="pcmCrmBtn" style="display:none;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" onclick="openCrmFromPipeline()"><i class="fas fa-address-card"></i> CRM</button>
+        <button class="topbar-btn danger" id="pcmDeleteBtn" style="display:none;" onclick="deletePipelineContact()">Delete</button>
+      </div>
+      <div class="modal-footer-right" id="pcmOutcomeWrap" style="display:none;">
+        <button class="outcome-btn ob-denied" title="Mark as Denied" onclick="closePipelineModal();openFundedModal(editingPipelineId,'denied')"><i class="fas fa-times-circle"></i> Denied</button>
+        <button class="outcome-btn ob-suspended" title="Mark as Suspended" onclick="closePipelineModal();openFundedModal(editingPipelineId,'suspended')"><i class="fas fa-pause-circle"></i> Suspended</button>
+        <button class="outcome-btn ob-withdrawn" title="Mark as Withdrawn" onclick="closePipelineModal();openFundedModal(editingPipelineId,'withdrawn')"><i class="fas fa-undo"></i> Withdrawn</button>
+        <button class="outcome-btn ob-funded" title="Mark as Funded" onclick="closePipelineModal();openFundedModal(editingPipelineId,'funded')"><i class="fas fa-trophy"></i> Funded</button>
+        <button class="topbar-btn primary" style="margin-left:4px;" onclick="savePipelineContact()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOAN OUTCOME MODAL (Funded / Denied / Suspended / Withdrawn) -->
+<div class="modal-overlay" id="fundedModal" style="z-index:300;">
+  <div class="modal-box" style="width:480px;">
+    <div class="modal-title" id="outcomeModalTitle"><i class="fas fa-trophy"></i> Loan Outcome</div>
+    <div class="crm-field-grid">
+      <div class="crm-field">
+        <label>Outcome</label>
+        <select id="funded_outcome" onchange="updateOutcomeUI()">
+          <option value="funded">Funded</option>
+          <option value="denied">Denied</option>
+          <option value="suspended">Suspended</option>
+          <option value="withdrawn">Withdrawn</option>
+        </select>
+      </div>
+      <div class="crm-field"><label>Date</label><input type="date" id="funded_date"></div>
+      <div class="crm-field"><label>Interest Rate</label><input id="funded_rate" placeholder="6.25"></div>
+      <div class="crm-field">
+        <label>Transaction Type</label>
+        <select id="funded_transType">
+          <option value="">--</option>
+          <option value="purchase">Purchase</option>
+          <option value="refinance">Refinance</option>
+          <option value="new_construction">New Construction</option>
+          <option value="heloc">HELOC</option>
+        </select>
+      </div>
+      <div class="crm-field">
+        <label>Loan Program</label>
+        <select id="funded_loanProgram">
+          <option value="">--</option>
+          <option value="fannie">Fannie Mae</option>
+          <option value="freddie">Freddie Mac</option>
+          <option value="fha">FHA</option>
+          <option value="va">VA</option>
+          <option value="usda">USDA</option>
+          <option value="jumbo">Jumbo</option>
+          <option value="land_lot">Land / Lot</option>
+        </select>
+      </div>
+      <div class="crm-field" id="fundedAmountWrap"><label>Loan Amount</label><input id="funded_amount" placeholder="350000"></div>
+      <div class="crm-field" id="fundedStrikeWrap" style="grid-column:1/-1;">
+        <label>Strike Rate (target rate for refi alert)</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input id="funded_strikeRate" placeholder="5.75" style="width:100px;">
+          <span style="font-size:10px;color:var(--text-muted);">When rates hit this, you'll be alerted to call this client</span>
+        </div>
+      </div>
+      <div class="crm-field" style="grid-column:1/-1;"><label>Notes</label><textarea id="funded_notes" rows="2" style="width:100%;padding:8px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:12px;" placeholder="Optional notes about this outcome..."></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="topbar-btn" onclick="closeFundedModal()">Cancel</button>
+      <button class="topbar-btn primary" id="outcomeSubmitBtn" onclick="saveFundedContact()"><i class="fas fa-trophy"></i> Mark as Funded</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ADD BORROWER MODAL ===== -->
+<div class="modal-overlay" id="addBorrowerModal" style="z-index:300;">
+  <div class="modal-box" style="width:440px;">
+    <div class="modal-title"><i class="fas fa-user-plus"></i> Add Borrower to Loan</div>
+    <div style="margin-bottom:12px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;display:block;">Search Existing Contacts</label>
+      <input type="text" id="abSearchInput" placeholder="Type a name..." style="width:100%;padding:10px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;" oninput="abSearchContacts()">
+      <div id="abSearchResults" style="max-height:160px;overflow-y:auto;margin-top:6px;"></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px;">
+      <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:6px;display:block;">Or Create New Contact</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input type="text" id="abNewName" placeholder="Full Name" style="padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:12px;">
+        <input type="text" id="abNewPhone" placeholder="Phone" style="padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:12px;">
+        <input type="email" id="abNewEmail" placeholder="Email" style="padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:12px;grid-column:1/-1;">
+      </div>
+      <div style="margin-top:8px;">
+        <label style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-muted);margin-bottom:4px;display:block;">Role</label>
+        <select id="abRole" style="padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:12px;">
+          <option value="co-borrower">Co-Borrower</option>
+          <option value="spouse">Spouse</option>
+          <option value="non-borrowing_spouse">Non-Borrowing Spouse</option>
+          <option value="parent">Parent</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <button class="topbar-btn primary" style="margin-top:10px;width:100%;" onclick="abCreateAndAdd()"><i class="fas fa-user-plus"></i> Create Contact & Add to Loan</button>
+    </div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="topbar-btn" onclick="abClose()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOAN FACE CARD OVERLAY ===== -->
+<div class="fc-overlay" id="fcOverlay">
+  <div class="fc-topbar">
+    <button class="fc-topbar-back" onclick="closeFaceCard()"><i class="fas fa-arrow-left"></i></button>
+    <div>
+      <div class="fc-topbar-title" id="fcTitle">Loan File</div>
+      <div class="fc-topbar-loan-num" id="fcLoanNumDisplay"></div>
+    </div>
+    <div class="fc-topbar-actions">
+      <button class="topbar-btn" style="font-size:11px;" onclick="saveFaceCard()"><i class="fas fa-save"></i> Save</button>
+      <button class="topbar-btn" style="font-size:11px;border-color:rgba(14,165,233,0.3);color:#0ea5e9;" id="fcCrmBtn" onclick="fcOpenCrm()"><i class="fas fa-address-card"></i> CRM</button>
+      <div style="width:1px;height:20px;background:var(--border);margin:0 4px;"></div>
+      <button class="outcome-btn ob-denied" title="Mark as Denied" onclick="fcOutcome('denied')"><i class="fas fa-times-circle"></i></button>
+      <button class="outcome-btn ob-suspended" title="Mark as Suspended" onclick="fcOutcome('suspended')"><i class="fas fa-pause-circle"></i></button>
+      <button class="outcome-btn ob-withdrawn" title="Mark as Withdrawn" onclick="fcOutcome('withdrawn')"><i class="fas fa-undo"></i></button>
+      <button class="outcome-btn ob-funded" title="Mark as Funded" onclick="fcOutcome('funded')"><i class="fas fa-trophy"></i> Funded</button>
+    </div>
+  </div>
+  <div class="fc-body">
+
+    <!-- ROW 1: Loan # + Borrowers -->
+    <div class="fc-section fc-full" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+      <div class="fc-field" style="width:200px;">
+        <div class="fc-lbl">Lender Loan #</div>
+        <input id="fc_loanNumber" placeholder="Enter loan number" style="font-family:monospace;font-weight:600;font-size:13px;">
+      </div>
+      <div style="flex:1;">
+        <div class="fc-lbl" style="margin-bottom:6px;">Borrowers on this Loan</div>
+        <div id="fcBorrowerChips" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+
+    <!-- LEFT: Loan Details -->
+    <div class="fc-section">
+      <div class="fc-section-title"><i class="fas fa-file-invoice-dollar"></i> Loan Details</div>
+      <div class="fc-grid">
+        <div class="fc-field full">
+          <div class="fc-lbl">Street Address</div>
+          <input id="fc_street" placeholder="123 Main St">
+        </div>
+        <div class="fc-field">
+          <div class="fc-lbl">City</div>
+          <input id="fc_city" placeholder="Columbus">
+        </div>
+        <div class="fc-field" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="fc-field">
+            <div class="fc-lbl">State</div>
+            <input id="fc_state" placeholder="OH" maxlength="2" style="text-transform:uppercase;">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Zip</div>
+            <input id="fc_zip" placeholder="43215" maxlength="10">
+          </div>
+        </div>
+        <div class="fc-field full" style="margin-top:2px;">
+          <a href="#" id="fc_zillowLink" target="_blank" style="font-size:10px;color:#0ea5e9;text-decoration:none;display:none;" onclick="return fcOpenZillow()"><i class="fas fa-external-link-alt"></i> View on Zillow</a>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div class="fc-grid">
+          <div class="fc-field">
+            <div class="fc-lbl">Transaction Type</div>
+            <select id="fc_transType"><option value="">--</option><option value="purchase">Purchase</option><option value="refinance">Refinance</option><option value="new_construction">New Construction</option><option value="heloc">HELOC</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Loan Program</div>
+            <select id="fc_loanProgram"><option value="">--</option><option value="fannie">Fannie Mae</option><option value="freddie">Freddie Mac</option><option value="fha">FHA</option><option value="va">VA</option><option value="usda">USDA</option><option value="jumbo">Jumbo</option><option value="land_lot">Land / Lot</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Occupancy</div>
+            <select id="fc_occupancy"><option value="">--</option><option value="owner_occupied">Owner Occupied</option><option value="investor">Investor</option><option value="second_home">Second Home</option></select>
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Interest Rate (%)</div>
+            <input id="fc_rate" placeholder="0.000" onblur="fcFormatRate(this)">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <div class="fc-grid-3">
+          <div class="fc-field">
+            <div class="fc-lbl">Appraised Value</div>
+            <input id="fc_appraisedValue" placeholder="$0.00" onblur="fcFormatMoney(this);fcCalcLTV()" onfocus="fcUnformatMoney(this)">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Loan Amount</div>
+            <input id="fc_loanAmount" placeholder="$0.00" onblur="fcFormatMoney(this);fcCalcLTV()" onfocus="fcUnformatMoney(this)">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">LTV / PMI</div>
+            <div class="fc-computed" id="fc_ltvDisplay">— %</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Key Dates -->
+    <div class="fc-section">
+      <div class="fc-section-title"><i class="fas fa-calendar-alt"></i> Key Dates</div>
+      <div id="fcDatesContainer"></div>
+    </div>
+
+    <!-- BOTTOM FULL: Tasks & Team -->
+    <div class="fc-section fc-full">
+      <div class="fc-section-title"><i class="fas fa-tasks"></i> Tasks & Team Assignments</div>
+      <div id="fcTasksList"></div>
+      <button class="fc-add-task-btn" onclick="fcShowTaskForm()"><i class="fas fa-plus"></i> Add Task</button>
+      <div id="fcTaskForm" style="display:none;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- JAVASCRIPT -->
+
+<!-- ========================================== -->
+<!-- TOOL DRAWER -->
+<!-- ========================================== -->
+<div class="drawer-trigger" onclick="toggleDrawer()">
+  <i class="fas fa-wrench"></i>
+  TOOLS
+</div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="toolDrawer">
+  <div class="drawer-header">
+    <div class="drawer-title">Tools</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="drawer-clear-btn" onclick="clearDrawerTool()"><i class="fas fa-rotate-left"></i> Clear Fields</button>
+      <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-times"></i></button>
+    </div>
+  </div>
+  <div class="drawer-tabs">
+    <div class="drawer-tab active" onclick="switchDrawerTab('reports',this)"><i class="fas fa-file-lines"></i> Reports</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('calc',this)"><i class="fas fa-calculator"></i> Calculators</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('credit',this)"><i class="fas fa-credit-card"></i> Credit Analysis</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('compare',this)"><i class="fas fa-scale-balanced"></i> Loan Compare</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('gus',this)"><i class="fas fa-paw"></i> Ask Gus</div>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-panel active" id="drawer-reports">
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="topbar-btn" onclick="loadDrawerReport('neighborhood-blueprint.html')" style="font-size:11px;">Neighborhood Blueprint</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('buy-vs-rent.html')" style="font-size:11px;">Rent to Wealth</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('worth-the-premium.html')" style="font-size:11px;">Worth the Premium</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('wealth-in-motion.html')" style="font-size:11px;">Wealth in Motion</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('amortization-report.html')" style="font-size:11px;">Payoff Accelerator</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('wealth-starts-now.html')" style="font-size:11px;">Wealth Starts Now</button>
+        <button class="topbar-btn" onclick="loadDrawerReport('owner-to-investor.html')" style="font-size:11px;">Owner to Investor</button>
+      </div>
+      <iframe id="drawerReportFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-calc">
+      <div style="padding:12px 20px;border-bottom:1px solid var(--border);display:flex;gap:8px;">
+        <button class="topbar-btn" onclick="loadDrawerCalc('mc-income-calculator.html')" style="font-size:11px;">W-2 Income</button>
+        <button class="topbar-btn" onclick="loadDrawerCalc('mc-self-employed-calculator.html')" style="font-size:11px;">Self-Employed</button>
+      </div>
+      <iframe id="drawerCalcFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-credit">
+      <iframe id="drawerCreditFrame" src="mc-credit-analysis.html" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-compare">
+      <iframe id="drawerCompareFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-gus">
+      <div class="drawer-gus-wrap">
+        <div style="text-align:center;margin-bottom:16px;">
+          <div style="font-size:36px;margin-bottom:6px;">&#128062;</div>
+          <div style="font-size:14px;font-weight:600;color:var(--text-primary);">Ask Gus Gus</div>
+          <div style="font-size:12px;color:var(--text-muted);">Search lending guidelines across Fannie, Freddie, FHA, VA, USDA</div>
+        </div>
+        <textarea class="drawer-gus-input" id="drawerGusQuestion" placeholder="e.g. Can a borrower with a 620 score do FHA with 3.5% down after a bankruptcy discharged 3 years ago?"></textarea>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button class="topbar-btn primary" onclick="drawerAskGus()" id="drawerGusBtn" style="background:#6e7f77;border-color:#6e7f77;"><i class="fas fa-search"></i> Search Guidelines</button>
+          <button class="topbar-btn" onclick="document.getElementById('drawerGusQuestion').value='';document.getElementById('drawerGusResult').innerHTML='';"><i class="fas fa-rotate-left"></i> Clear</button>
+        </div>
+        <div id="drawerGusResult"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- JAVASCRIPT MODULES -->
+<!-- ========================================== -->
+<script src="mc-app.js"></script>
+<script src="mc-analytics.js"></script>
+<script src="mc-partner-portal.js"></script>
+<script src="mc-pipeline.js"></script>
+<script src="mc-team.js"></script>
+<script src="mc-crm.js"></script>
+<script src="mc-orders.js"></script>
+<script src="mc-email-center.js"></script>
+<script src="mc-property-websites.js"></script>
+<script src="mc-credit-analysis.js"></script>
+<script src="mc-scenarios.js"></script>
+<script src="mc-alerts.js"></script>
+<script src="mc-settings.js"></script>
+<script src="mc-calendar.js"></script>
+<script src="mc-tools-drawer.js"></script>
+<script src="mc-init.js"></script>
+<script src="mc-briefings.js"></script>
+<script src="mc-blog-import.js"></script>
+
+</body>
+</html>

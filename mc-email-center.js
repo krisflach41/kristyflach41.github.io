@@ -862,7 +862,7 @@ function emAutoEnroll(trigger, email, name) {
 // ===== COMPOSE =====
 function emOpenCompose() {
   document.getElementById('emComposeOverlay').style.display = 'flex';
-  document.getElementById('emComposeTo').value = '';
+  document.getElementById('emComposeTo').value = (audSelected && audSelected.length > 0) ? audSelected.join(', ') : '';
   document.getElementById('emComposeSubject').value = '';
   document.getElementById('emComposeBody').value = '';
   document.getElementById('emComposeResult').textContent = '';
@@ -1020,6 +1020,7 @@ function audUpdateSelectedCount() {
   var n = audSelected.length;
   document.getElementById('audSelectedCount').textContent = n + ' selected';
   document.getElementById('audSaveBtn').disabled = n === 0;
+  document.getElementById('audComposeBtn').disabled = n === 0;
   document.getElementById('audEnrollBtn').disabled = n === 0;
 }
 
