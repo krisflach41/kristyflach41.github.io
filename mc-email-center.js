@@ -39,6 +39,8 @@ function emLoadDashboard() {
     if (data.success) {
       document.getElementById('emStatSent').textContent = data.stats.sent_this_month || 0;
       document.getElementById('emStatOpen').textContent = data.stats.open_rate + '%';
+      document.getElementById('emStatClick').textContent = (data.stats.click_rate || 0) + '%';
+      document.getElementById('emStatBounced').textContent = data.stats.bounced || 0;
     }
   }).catch(function() {});
 
@@ -154,7 +156,93 @@ function emCloseCampaignDetail() {
   emLoadCampaigns();
 }
 
+function emLoadCampaignAnalytics(campaignId) {
+  var el = document.getElementById('emDetailAnalytics');
+  el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px;">Loading analytics...</div>';
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'campaign_stats', campaign_id: campaignId })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (!data.success || !data.stats) {
+      el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px;">No analytics data yet</div>';
+      return;
+    }
+    var s = data.stats;
+    if (s.total === 0) {
+      el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px;">No emails sent yet — analytics will appear after the first send</div>';
+      return;
+    }
+
+    var h = '';
+
+    // Top-level metrics
+    h += '<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:16px;">';
+    h += emStatBox('Sent', s.total, '#3b82f6');
+    h += emStatBox('Delivered', s.delivered, '#22c55e');
+    h += emStatBox('Opened', s.opened, '#f59e0b', s.open_rate + '%');
+    h += emStatBox('Clicked', s.clicked, '#8b5cf6', s.click_rate + '%');
+    h += emStatBox('Bounced', s.bounced, '#ef4444', s.bounce_rate + '%');
+    h += emStatBox('Unsubscribed', s.unsubscribed, '#6b7280');
+    h += '</div>';
+
+    // Visual bar
+    if (s.delivered > 0) {
+      var openW = Math.round((s.opened / s.total) * 100);
+      var clickW = Math.round((s.clicked / s.total) * 100);
+      h += '<div style="margin-bottom:16px;">';
+      h += '<div style="display:flex;gap:4px;height:8px;border-radius:4px;overflow:hidden;background:#f1f5f9;">';
+      if (openW > 0) h += '<div style="width:' + openW + '%;background:#f59e0b;border-radius:4px;" title="Opened ' + openW + '%"></div>';
+      if (clickW > 0) h += '<div style="width:' + clickW + '%;background:#8b5cf6;border-radius:4px;" title="Clicked ' + clickW + '%"></div>';
+      h += '</div>';
+      h += '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:4px;">';
+      h += '<span><span style="display:inline-block;width:8px;height:8px;background:#f59e0b;border-radius:2px;margin-right:4px;"></span>Opens ' + s.open_rate + '%</span>';
+      h += '<span><span style="display:inline-block;width:8px;height:8px;background:#8b5cf6;border-radius:2px;margin-right:4px;"></span>Clicks ' + s.click_rate + '%</span>';
+      h += '</div>';
+      h += '</div>';
+    }
+
+    // Per-step breakdown
+    var steps = s.per_step || {};
+    var stepKeys = Object.keys(steps).sort(function(a, b) { return parseInt(a) - parseInt(b); });
+    if (stepKeys.length > 1) {
+      h += '<div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Per Email Breakdown</div>';
+      h += '<div style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:6px;font-size:10px;color:var(--text-muted);padding:4px 8px;border-bottom:1px solid var(--border);margin-bottom:4px;">';
+      h += '<div>Step</div><div>Sent</div><div>Delivered</div><div>Opened</div><div>Clicked</div><div>Bounced</div></div>';
+      stepKeys.forEach(function(key) {
+        var st = steps[key];
+        var stepOpenRate = st.delivered > 0 ? Math.round((st.opened / st.delivered) * 100) : 0;
+        var stepClickRate = st.delivered > 0 ? Math.round((st.clicked / st.delivered) * 100) : 0;
+        h += '<div style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:6px;font-size:12px;padding:6px 8px;border-radius:4px;align-items:center;">';
+        h += '<div style="font-weight:600;color:var(--text-secondary);">Email ' + key + '</div>';
+        h += '<div>' + st.sent + '</div>';
+        h += '<div>' + st.delivered + '</div>';
+        h += '<div>' + st.opened + ' <span style="font-size:10px;color:var(--text-muted);">(' + stepOpenRate + '%)</span></div>';
+        h += '<div>' + st.clicked + ' <span style="font-size:10px;color:var(--text-muted);">(' + stepClickRate + '%)</span></div>';
+        h += '<div>' + st.bounced + '</div>';
+        h += '</div>';
+      });
+    }
+
+    el.innerHTML = h;
+  }).catch(function() {
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);text-align:center;padding:12px;">Failed to load analytics</div>';
+  });
+}
+
+function emStatBox(label, value, color, subLabel) {
+  var h = '<div style="text-align:center;padding:10px;border-radius:8px;background:' + color + '08;border:1px solid ' + color + '15;">';
+  h += '<div style="font-size:20px;font-weight:700;color:' + color + ';">' + (value || 0) + '</div>';
+  h += '<div style="font-size:10px;color:var(--text-muted);margin-top:2px;">' + label + '</div>';
+  if (subLabel) h += '<div style="font-size:10px;color:' + color + ';margin-top:1px;">' + subLabel + '</div>';
+  h += '</div>';
+  return h;
+}
+
 function emLoadCampaignDetail(id) {
+  // Load campaign analytics
+  emLoadCampaignAnalytics(id);
+
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'get_campaign', campaign_id: id })

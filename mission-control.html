@@ -802,9 +802,11 @@
 
     <!-- DASHBOARD -->
     <div id="emDashboard">
-      <div class="dash-stats" style="grid-template-columns:repeat(4,1fr);margin-bottom:24px;">
+      <div class="dash-stats" style="grid-template-columns:repeat(6,1fr);margin-bottom:24px;">
         <div class="stat-card blue"><div class="stat-label">Sent This Month</div><div class="stat-value" id="emStatSent">--</div></div>
         <div class="stat-card green"><div class="stat-label">Open Rate</div><div class="stat-value" id="emStatOpen">--</div></div>
+        <div class="stat-card" style="border-left:3px solid #3b82f6;"><div class="stat-label">Click Rate</div><div class="stat-value" id="emStatClick">--</div></div>
+        <div class="stat-card" style="border-left:3px solid #ef4444;"><div class="stat-label">Bounced</div><div class="stat-value" id="emStatBounced">--</div></div>
         <div class="stat-card orange"><div class="stat-label">Active Campaigns</div><div class="stat-value" id="emStatCampaigns">--</div></div>
         <div class="stat-card" style="border-left:3px solid #a855f7;"><div class="stat-label">Total Enrolled</div><div class="stat-value" id="emStatEnrolled">--</div></div>
       </div>
@@ -840,6 +842,12 @@
         <span id="emDetailStatus" style="font-size:10px;padding:3px 8px;border-radius:4px;font-weight:600;"></span>
         <button class="topbar-btn" id="emDetailToggleBtn" onclick="emDetailToggle()" style="font-size:11px;"></button>
         <button class="topbar-btn" onclick="emDetailEdit()" style="font-size:11px;"><i class="fas fa-edit"></i> Edit</button>
+      </div>
+
+      <!-- Campaign Analytics -->
+      <div class="mc-panel" style="margin-bottom:16px;">
+        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title">CAMPAIGN ANALYTICS</div></div>
+        <div id="emDetailAnalytics" style="padding:12px;"></div>
       </div>
 
       <!-- Email Timeline -->
@@ -950,6 +958,7 @@
           <span style="font-size:12px;color:var(--text-muted);margin-left:8px;" id="audSelectedCount">0 selected</span>
           <div style="margin-left:auto;display:flex;gap:6px;">
             <button class="topbar-btn" onclick="audSaveGroup()" style="font-size:11px;" id="audSaveBtn" disabled><i class="fas fa-bookmark"></i> Save as Group</button>
+            <button class="topbar-btn" onclick="emOpenCompose()" style="font-size:11px;" id="audComposeBtn" disabled><i class="fas fa-envelope"></i> Compose</button>
             <button class="topbar-btn primary" onclick="audEnrollSelected()" style="font-size:11px;" id="audEnrollBtn" disabled><i class="fas fa-paper-plane"></i> Enroll in Campaign</button>
           </div>
         </div>
