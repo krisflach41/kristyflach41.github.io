@@ -1034,15 +1034,24 @@ function emSendCompose() {
   var body = document.getElementById('emComposeBody').value.trim();
   var result = document.getElementById('emComposeResult');
   if (!to || !subject || !body) { result.style.color = '#ef4444'; result.textContent = 'All fields required'; return; }
-  result.style.color = 'var(--text-muted)'; result.textContent = 'Sending...';
+
+  var recipients = to.split(',').map(function(e) { return e.trim(); }).filter(function(e) { return e; });
+  result.style.color = 'var(--text-muted)';
+  result.textContent = recipients.length > 1 ? 'Sending to ' + recipients.length + ' contacts...' : 'Sending...';
 
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'send_now', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', to: to, subject: subject, body_html: body })
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (data.success) {
-      result.style.color = '#22c55e'; result.textContent = '✓ Sent!';
-      setTimeout(function() { emCloseCompose(); }, 1000);
+      if (data.sent > 1) {
+        result.style.color = '#22c55e'; result.textContent = '✓ Sent to ' + data.sent + ' of ' + data.total + ' contacts';
+      } else {
+        result.style.color = '#22c55e'; result.textContent = '✓ Sent!';
+      }
+      audSelected = [];
+      emPerfLoaded = {};
+      setTimeout(function() { emCloseCompose(); emLoadDashboard(); }, 1500);
     } else {
       result.style.color = '#ef4444'; result.textContent = 'Failed: ' + (data.message || 'Unknown');
     }
