@@ -966,10 +966,9 @@
         <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Drip Campaigns</div>
         <button class="topbar-btn primary" onclick="emOpenCampaignBuilder()"><i class="fas fa-plus"></i> New Campaign</button>
       </div>
-      <div id="emCampaignList"></div>
 
-      <!-- Campaign Builder (hidden by default) -->
-      <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
+      <!-- Campaign Builder (hidden by default) — above the list -->
+      <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
         <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emBuilderTitle">New Campaign</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
           <div class="fc-field">
@@ -1010,6 +1009,8 @@
         </div>
         <input type="hidden" id="emCampEditId" value="">
       </div>
+
+      <div id="emCampaignList"></div>
     </div>
 
     <!-- TEMPLATES -->
@@ -2329,6 +2330,7 @@
 <script src="mc-pipeline.js"></script>
 <script src="mc-team.js"></script>
 <script src="mc-crm.js"></script>
+<script src="crm-cards.js"></script>
 <script src="mc-orders.js"></script>
 <script src="mc-email-center.js"></script>
 <script src="mc-property-websites.js"></script>
