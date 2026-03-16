@@ -4108,66 +4108,76 @@ function anaExportCSV(){var t=document.querySelector('#anaResultsTable table');i
 // ===== PARTNER PORTAL =====
 function ppTab(tab,el){document.querySelectorAll('.pp-tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');['ppDashboard','ppReports','ppFlyers','ppActivity','ppHistory'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none';});var map={dashboard:'ppDashboard',reports:'ppReports',flyers:'ppFlyers',activity:'ppActivity',history:'ppHistory'};var t=document.getElementById(map[tab]);if(t)t.style.display='block';if(tab==='flyers'){var wb=document.getElementById('ppWebsiteBuilder');if(wb)wb.style.display='none';}if(tab==='dashboard')ppBuildDashboard();if(tab==='reports')ppBuildReportOrders();if(tab==='flyers')ppBuildFlyerOrders();if(tab==='activity')ppBuildActivity();if(tab==='history')ppBuildOrderHistory('all');}
 
-var ppPartners=[
-  {name:'Jessica Rivera',brokerage:'RE/MAX Premier',email:'jrivera@remax.com',color:'#f472b6',orders:18,visits:24,lastLogin:'2 hrs ago',totalTime:'4h 32m'},
-  {name:'Mike Brooks',brokerage:'Keller Williams',email:'mbrooks@kw.com',color:'#3b82f6',orders:14,visits:18,lastLogin:'5 hrs ago',totalTime:'3h 15m'},
-  {name:'Sarah Kim',brokerage:'eXp Realty',email:'skim@exp.com',color:'#22c55e',orders:12,visits:15,lastLogin:'Yesterday',totalTime:'2h 48m'},
-  {name:'Amanda Lopez',brokerage:'Berkshire Hathaway',email:'alopez@bhhs.com',color:'#a855f7',orders:10,visits:12,lastLogin:'Yesterday',totalTime:'2h 10m'},
-  {name:'David Wu',brokerage:'Coldwell Banker',email:'dwu@cb.com',color:'#06b6d4',orders:9,visits:6,lastLogin:'4 days ago',totalTime:'0h 55m'},
-  {name:'Tom Petersen',brokerage:'Century 21',email:'tpetersen@c21.com',color:'#f59e0b',orders:7,visits:8,lastLogin:'3 days ago',totalTime:'1h 20m'},
-  {name:'Rachel Green',brokerage:'Compass',email:'rgreen@compass.com',color:'#ef4444',orders:6,visits:5,lastLogin:'5 days ago',totalTime:'0h 45m'},
-  {name:'Carlos Mendez',brokerage:'Howard Hanna',email:'cmendez@hh.com',color:'#34d399',orders:5,visits:4,lastLogin:'1 week ago',totalTime:'0h 30m'},
-  {name:'Lisa Park',brokerage:'Redfin',email:'lpark@redfin.com',color:'#818cf8',orders:4,visits:3,lastLogin:'1 week ago',totalTime:'0h 22m'},
-  {name:'James Wilson',brokerage:'Independent',email:'jwilson@gmail.com',color:'#fb923c',orders:3,visits:2,lastLogin:'2 weeks ago',totalTime:'0h 15m'}
-];
-var ppActivityLog=[
-  {partner:'Jessica Rivera',type:'report',detail:'Market Snapshot',date:'Feb 23, 2026 2:15 PM',time:'8 min'},
-  {partner:'Jessica Rivera',type:'tool',detail:'Market Pulse',date:'Feb 23, 2026 2:05 PM',time:'12 min'},
-  {partner:'Mike Brooks',type:'flyer',detail:'Open House Template',date:'Feb 23, 2026 11:30 AM',time:'5 min'},
-  {partner:'Mike Brooks',type:'tool',detail:'Amortization Calculator',date:'Feb 23, 2026 11:22 AM',time:'6 min'},
-  {partner:'Sarah Kim',type:'login',detail:'Portal Login',date:'Feb 22, 2026 3:45 PM',time:'22 min'},
-  {partner:'Sarah Kim',type:'social',detail:'Rate Drop Post - Instagram',date:'Feb 22, 2026 3:50 PM',time:'2 min'},
-  {partner:'Tom Petersen',type:'tool',detail:'Amortization Calculator',date:'Feb 22, 2026 10:15 AM',time:'9 min'},
-  {partner:'Amanda Lopez',type:'report',detail:'Rate Comparison',date:'Feb 21, 2026 4:30 PM',time:'6 min'},
-  {partner:'Amanda Lopez',type:'social',detail:'Just Listed Post',date:'Feb 21, 2026 4:10 PM',time:'2 min'},
-  {partner:'David Wu',type:'flyer',detail:'Just Listed',date:'Feb 20, 2026 1:00 PM',time:'4 min'},
-  {partner:'David Wu',type:'tool',detail:'Credit Score Simulator',date:'Feb 20, 2026 12:50 PM',time:'11 min'},
-  {partner:'Jessica Rivera',type:'report',detail:'Neighborhood Stats',date:'Feb 20, 2026 9:20 AM',time:'5 min'},
-  {partner:'Mike Brooks',type:'social',detail:'Homebuyer Tips - LinkedIn',date:'Feb 19, 2026 2:00 PM',time:'3 min'},
-  {partner:'Sarah Kim',type:'flyer',detail:'Rate Drop Alert',date:'Feb 19, 2026 11:00 AM',time:'6 min'},
-  {partner:'Tom Petersen',type:'report',detail:'Amortization Schedule',date:'Feb 18, 2026 9:05 AM',time:'4 min'}
-];
+var ppActivityLog=[];
 var ppActFilterPartner='';
+var ppColorPalette=['#f472b6','#3b82f6','#22c55e','#a855f7','#06b6d4','#f59e0b','#ef4444','#34d399','#818cf8','#fb923c','#e879f9','#14b8a6'];
+function ppGetColor(i){return ppColorPalette[i%ppColorPalette.length];}
 
 function ppInit(el){if(el)el.textContent='--';}
 
+var reportNames={amortization:'Payoff Accelerator',bid:'Worth the Premium',buyrent:'Rent to Wealth',costwaiting:'Your Wealth Starts Now',appreciation:'Wealth in Motion',investment:'Owner to Investor',reportcard:'Neighborhood Blueprint'};
+
 function ppBuildDashboard(){
   if(!ordersLoaded){loadOrders();setTimeout(ppBuildDashboard,1500);return;}
-  var e=document.getElementById('ppKpiPartners');if(e)e.textContent=ppPartners.length;
-  var newOrders=allOrders.filter(function(o){return o.status!=='Complete';}).length;
-  var e2=document.getElementById('ppKpiOrders');if(e2)e2.textContent=newOrders||allOrders.length;
+
+  // KPIs from real orders
+  var partnerEmails={};
+  allOrders.forEach(function(o){if(o.email)partnerEmails[o.email.toLowerCase()]=true;});
+  var e=document.getElementById('ppKpiPartners');if(e)e.textContent=Object.keys(partnerEmails).length;
+  var activeOrders=allOrders.filter(function(o){return(o.status||'').toLowerCase()!=='complete';}).length;
+  var e2=document.getElementById('ppKpiOrders');if(e2)e2.textContent=activeOrders;
   var e3=document.getElementById('ppKpiDownloads');if(e3)e3.textContent=allOrders.length;
-  var maxO=ppPartners[0].orders,h='';
-  ppPartners.forEach(function(p,i){
-    var rc=i===0?'gold':i===1?'silver':i===2?'bronze':'normal';
-    var ini=p.name.split(' ').map(function(w){return w[0];}).join('');
-    var pct=(p.orders/maxO)*100;
-    h+='<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;margin-bottom:3px;transition:all 0.2s;">';
-    var colors=['#fbbf24','#94a3b8','#d97706'];
-    h+='<div style="font-family:sans-serif;font-size:16px;font-weight:900;width:30px;text-align:center;color:'+(i<3?colors[i]:'var(--text-muted)')+';">'+(i+1)+'</div>';
-    h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:'+p.color+'20;color:'+p.color+';">'+ini+'</div>';
-    h+='<div style="flex:1;"><div style="font-size:13px;font-weight:700;color:var(--text-primary);font-weight:600;">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);">'+p.brokerage+'</div></div>';
-    h+='<div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+p.color+'30,'+p.color+');border-radius:3px;"></div></div>';
-    h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.orders+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">ORDERS</div></div>';
-    h+='</div>';
+
+  // Leaderboard from real orders
+  var byPartner={};
+  allOrders.forEach(function(o){
+    var key=(o.email||'unknown').toLowerCase();
+    if(!byPartner[key])byPartner[key]={name:o.name||o.email||'Unknown',brokerage:o.brokerage||'',orders:0};
+    byPartner[key].orders++;
+    if(o.name)byPartner[key].name=o.name;
+    if(o.brokerage)byPartner[key].brokerage=o.brokerage;
   });
+  var leaders=Object.values(byPartner).sort(function(a,b){return b.orders-a.orders;}).slice(0,10);
+  var h='';
+  if(leaders.length===0){
+    h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">No orders yet. Leaderboard populates as realtors place orders.</div>';
+  } else {
+    var maxO=leaders[0].orders||1;
+    leaders.forEach(function(p,i){
+      var cl=ppGetColor(i);
+      var ini=p.name.split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2);
+      var pct=(p.orders/maxO)*100;
+      var rankColors=['#fbbf24','#94a3b8','#d97706'];
+      h+='<div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;margin-bottom:3px;">';
+      h+='<div style="font-family:sans-serif;font-size:16px;font-weight:900;width:30px;text-align:center;color:'+(i<3?rankColors[i]:'var(--text-muted)')+';">'+(i+1)+'</div>';
+      h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;background:'+cl+'20;color:'+cl+';">'+ini+'</div>';
+      h+='<div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--text-primary);">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);">'+p.brokerage+'</div></div>';
+      h+='<div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+cl+'30,'+cl+');border-radius:3px;"></div></div>';
+      h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+cl+';">'+p.orders+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">ORDERS</div></div>';
+      h+='</div>';
+    });
+  }
   var lb=document.getElementById('ppLeaderboard');if(lb)lb.innerHTML=h;
-  var topR=[{n:'Market Snapshot',c:14},{n:'Buyer Qualification',c:11},{n:'Rate Comparison',c:8},{n:'Neighborhood Stats',c:6},{n:'Amortization Schedule',c:4}];
-  var topF=[{n:'Open House',c:9},{n:'Just Listed',c:7},{n:'Rate Drop Alert',c:5},{n:'First-Time Buyer',c:4},{n:'Co-Branded Header',c:3}];
-  function top5(data){var h='';data.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(0,0,0,0.01);"><div style="font-family:sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:var(--text-secondary);font-weight:600;flex:1;">'+d.n+'</div><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});return h;}
-  var tr=document.getElementById('ppTopReports');if(tr)tr.innerHTML=top5(topR);
-  var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=top5(topF);
-  // Load who's online
+
+  // Top Reports + Top Flyers from real order items
+  var reportCounts={};var flyerCounts={};
+  allOrders.forEach(function(o){
+    try{
+      var items=o.items||o.cartJson||'';
+      var obj=typeof items==='object'?items:JSON.parse(items);
+      if(obj.advisory){Object.keys(obj.advisory).forEach(function(k){var n=reportNames[k]||(k.charAt(0).toUpperCase()+k.slice(1));reportCounts[n]=(reportCounts[n]||0)+1;});}
+      if(obj.marketing&&Array.isArray(obj.marketing)){obj.marketing.forEach(function(m){var n=typeof m==='string'?m:(m.name||m.type||'Flyer');flyerCounts[n]=(flyerCounts[n]||0)+1;});}
+      if(obj.websites&&Array.isArray(obj.websites)){flyerCounts['Property Website']=(flyerCounts['Property Website']||0)+obj.websites.length;}
+    }catch(e){}
+  });
+  function buildTop5(counts){
+    var arr=Object.keys(counts).map(function(k){return{n:k,c:counts[k]};}).sort(function(a,b){return b.c-a.c;}).slice(0,5);
+    if(arr.length===0)return'<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:12px;">No data yet</div>';
+    var h='';arr.forEach(function(d,i){h+='<div style="display:flex;align-items:center;gap:12px;padding:8px 12px;border-radius:6px;margin-bottom:3px;background:rgba(0,0,0,0.01);"><div style="font-family:sans-serif;font-size:14px;font-weight:900;color:rgba(59,130,246,0.4);width:24px;text-align:center;">'+(i+1)+'</div><div style="font-size:13px;color:var(--text-secondary);font-weight:600;flex:1;">'+d.n+'</div><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:rgba(59,130,246,0.6);">'+d.c+'</div></div>';});
+    return h;
+  }
+  var tr=document.getElementById('ppTopReports');if(tr)tr.innerHTML=buildTop5(reportCounts);
+  var tf=document.getElementById('ppTopFlyers');if(tf)tf.innerHTML=buildTop5(flyerCounts);
   ppLoadOnlineUsers();
 }
 
@@ -4283,6 +4293,7 @@ function ppBuildOrderRow(parsed,partner,meta,status,statusColor,email,orderId){
     buttons='<button class="pp-order-btn" onclick="ppViewOrder(\''+orderId+'\')">VIEW ORDER</button>';
   }
   buttons+='<button class="pp-email-btn" onclick="ppEmailPartner(\''+email+'\',\''+parsed.title.replace(/'/g,'')+'\')"><i class="fas fa-paper-plane"></i> EMAIL</button>';
+  buttons+='<button class="pp-order-btn" onclick="ppDeleteOrder(\''+orderId+'\')" style="background:transparent;border:1px solid rgba(220,38,38,0.2);color:rgba(220,38,38,0.6);margin-left:4px;" title="Delete order"><i class="fas fa-trash"></i></button>';
   return '<div class="pp-order-row"><div class="pp-order-dot" style="background:'+statusColor+';box-shadow:0 0 8px '+statusColor+';"></div><div class="pp-order-info"><div class="pp-order-name">'+parsed.title+' — '+partner+'</div><div class="pp-order-meta">'+(parsed.details?parsed.details+' · ':'')+meta+'</div></div><div class="pp-order-tag" style="background:'+statusColor+'18;color:'+statusColor+';">'+status+'</div>'+buttons+'</div>';
 }
 
@@ -4707,22 +4718,86 @@ function ppBuildOrderHistory(filter){
 }
 
 function ppBuildActivity(){
-  var h='';
-  ppPartners.forEach(function(p){
-    var ini=p.name.split(' ').map(function(w){return w[0];}).join('');
-    var isA=ppActFilterPartner===p.name;
-    h+='<div class="pp-pcard'+(isA?' active':'')+'" onclick="ppTogglePartner(\''+p.name+'\')">';
-    h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:'+p.color+'20;color:'+p.color+';flex-shrink:0;">'+ini+'</div>';
-    h+='<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:700;color:var(--text-primary);font-weight:600;">'+p.name+'</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">'+p.visits+' visits · Last: '+p.lastLogin+'</div></div>';
-    h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+p.color+';">'+p.totalTime+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">TIME</div></div>';
-    h+='</div>';
-  });
-  document.getElementById('ppPartnerCards').innerHTML=h;
-  var tools=[{n:'MARKET PULSE',c:24,cl:'#3b82f6'},{n:'AMORT CALC',c:18,cl:'#22c55e'},{n:'REPORT GEN',c:14,cl:'#a855f7'},{n:'FLYER STUDIO',c:10,cl:'#f472b6'},{n:'CREDIT SIM',c:6,cl:'#fbbf24'},{n:'SOCIAL',c:42,cl:'#06b6d4'}];
-  var mx=Math.max.apply(null,tools.map(function(t){return t.c;}));var th='';
-  tools.forEach(function(t){var pct=(t.c/mx)*100;th+='<div style="display:flex;align-items:center;gap:12px;padding:6px 0;"><div style="width:110px;font-size:11px;color:var(--text-muted);text-align:right;font-weight:600;">'+t.n+'</div><div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+t.cl+'30,'+t.cl+');border-radius:3px;"></div></div><div style="font-family:sans-serif;font-size:13px;font-weight:700;color:'+t.cl+';width:30px;text-align:right;">'+t.c+'</div></div>';});
-  document.getElementById('ppToolBars').innerHTML=th;
-  ppActFilter();
+  var loId=localStorage.getItem('agent_edge_user')||'default';
+  // Fetch real tracking events
+  fetch(API_BASE+'/track?action=active_users&lo_user_id='+loId+'&period=30d')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var users=data.users||[];
+      var h='';
+      if(users.length===0){
+        h='<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">No partner activity in the last 30 days.</div>';
+      } else {
+        users.forEach(function(u,i){
+          var cl=ppGetColor(i);
+          var name=u.user_name||u.user_email||'Unknown';
+          var ini=name.split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+          var visits=u.pages_visited||0;
+          var lastAgo=u.last_active?ppTimeAgo(u.last_active):'—';
+          var isA=ppActFilterPartner===name;
+          h+='<div class="pp-pcard'+(isA?' active':'')+'" onclick="ppTogglePartner(\''+name.replace(/'/g,"\\'")+'\')">';
+          h+='<div style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;background:'+cl+'20;color:'+cl+';flex-shrink:0;">'+ini+'</div>';
+          h+='<div style="flex:1;min-width:0;"><div style="font-size:12px;font-weight:600;color:var(--text-primary);">'+name+'</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">'+visits+' pages · Last: '+lastAgo+'</div></div>';
+          h+='<div style="text-align:right;"><div style="font-family:sans-serif;font-size:14px;font-weight:700;color:'+cl+';">'+visits+'</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;font-weight:600;">PAGES</div></div>';
+          h+='</div>';
+        });
+      }
+      var pc=document.getElementById('ppPartnerCards');if(pc)pc.innerHTML=h;
+
+      // Tool usage from rollups
+      fetch(API_BASE+'/track?action=rollup_stats&lo_user_id='+loId+'&days=30')
+        .then(function(r2){return r2.json();})
+        .then(function(rollData){
+          var rollups=rollData.rollups||[];
+          var toolTotals={};
+          rollups.forEach(function(r){
+            if(r.top_collection){toolTotals[r.top_collection]=(toolTotals[r.top_collection]||0)+r.page_visits;}
+          });
+          var toolArr=Object.keys(toolTotals).map(function(k){return{n:k.toUpperCase(),c:toolTotals[k]};}).sort(function(a,b){return b.c-a.c;}).slice(0,6);
+          if(toolArr.length===0){
+            var tb2=document.getElementById('ppToolBars');if(tb2)tb2.innerHTML='<div style="padding:12px;text-align:center;color:var(--text-muted);font-size:12px;">No tool usage data yet</div>';
+            return;
+          }
+          var mx=Math.max.apply(null,toolArr.map(function(t){return t.c;}));var th='';
+          var toolColors=['#3b82f6','#22c55e','#a855f7','#f472b6','#fbbf24','#06b6d4'];
+          toolArr.forEach(function(t,i){var pct=(t.c/mx)*100;var tcl=toolColors[i%toolColors.length];th+='<div style="display:flex;align-items:center;gap:12px;padding:6px 0;"><div style="width:110px;font-size:11px;color:var(--text-muted);text-align:right;font-weight:600;">'+t.n+'</div><div style="flex:1;height:6px;background:#fafbfc;border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pct+'%;background:linear-gradient(90deg,'+tcl+'30,'+tcl+');border-radius:3px;"></div></div><div style="font-family:sans-serif;font-size:13px;font-weight:700;color:'+tcl+';width:30px;text-align:right;">'+t.c+'</div></div>';});
+          var tb2=document.getElementById('ppToolBars');if(tb2)tb2.innerHTML=th;
+        }).catch(function(){});
+
+      // Load activity log from real events
+      ppLoadActivityLog(loId);
+    })
+    .catch(function(e){
+      console.error('Activity load error:',e);
+      var pc=document.getElementById('ppPartnerCards');if(pc)pc.innerHTML='<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">Could not load activity data.</div>';
+    });
+}
+
+function ppLoadActivityLog(loId){
+  // We need recent events — use the rollup or direct event query
+  // For now, pull from crm_activity which track.js writes to
+  fetch(API_BASE+'/crm-api?action=list&limit=100&lo_user_id='+(loId||'default'))
+    .then(function(){
+      // crm_activity doesn't have a list endpoint, so use tracking events via a simple approach
+      // Pull last 50 events from ae_tracking_events by fetching rollups and building from orders + sessions
+      ppActivityLog=[];
+      // Build activity from real orders
+      allOrders.forEach(function(o){
+        if(!o.timestamp)return;
+        var parsed=ppParseOrderItems(o.items||o.cartJson);
+        ppActivityLog.push({
+          partner:o.name||o.email||'Unknown',
+          type:'order',
+          detail:parsed.title||'Order',
+          date:new Date(o.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}),
+          time:parsed.lineItems.length+' items'
+        });
+      });
+      // Sort newest first
+      ppActivityLog.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+      ppActFilter();
+    })
+    .catch(function(){ppActFilter();});
 }
 
 function ppTogglePartner(n){ppActFilterPartner=ppActFilterPartner===n?'':n;ppBuildActivity();}
@@ -4730,8 +4805,7 @@ function ppTogglePartner(n){ppActFilterPartner=ppActFilterPartner===n?'':n;ppBui
 function ppActFilter(){
   var s=(document.getElementById('ppActSearch')||{}).value||'';s=s.toLowerCase();
   var tf=(document.getElementById('ppActTypeFilter')||{}).value||'';
-  var typeMap={report:'REPORT',flyer:'FLYER',tool:'TOOL',social:'SOCIAL',login:'LOGIN'};
-  var typeCls={report:'cell-tag funded',flyer:'cell-tag ct-active',tool:'cell-tag',social:'cell-tag',login:'cell-tag'};
+  var typeMap={report:'REPORT',flyer:'FLYER',tool:'TOOL',social:'SOCIAL',login:'LOGIN',order:'ORDER'};
   var filtered=ppActivityLog.filter(function(a){
     if(ppActFilterPartner&&a.partner!==ppActFilterPartner)return false;
     if(tf&&a.type!==tf)return false;
@@ -4739,12 +4813,16 @@ function ppActFilter(){
     return true;
   });
   var h='';
-  filtered.forEach(function(a){
-    var p=ppPartners.find(function(x){return x.name===a.partner;});var cl=p?p.color:'#3b82f6';
-    h+='<tr><td style="font-weight:700;color:var(--text-primary);">'+a.partner+'</td>';
-    h+='<td><span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;background:'+cl+'18;color:'+cl+';">'+(typeMap[a.type]||a.type.toUpperCase())+'</span></td>';
-    h+='<td>'+a.detail+'</td><td style="color:var(--text-muted);">'+a.date+'</td><td style="color:'+cl+';font-weight:700;">'+a.time+'</td></tr>';
-  });
+  if(filtered.length===0){
+    h='<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">No activity records found</td></tr>';
+  } else {
+    filtered.forEach(function(a){
+      var cl=ppGetColor(Math.abs(a.partner.charCodeAt(0)-65)%12);
+      h+='<tr><td style="font-weight:700;color:var(--text-primary);">'+a.partner+'</td>';
+      h+='<td><span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;background:'+cl+'18;color:'+cl+';">'+(typeMap[a.type]||a.type.toUpperCase())+'</span></td>';
+      h+='<td>'+a.detail+'</td><td style="color:var(--text-muted);">'+a.date+'</td><td style="color:'+cl+';font-weight:700;">'+a.time+'</td></tr>';
+    });
+  }
   var tb=document.getElementById('ppActTableBody');if(tb)tb.innerHTML=h;
   var ct=document.getElementById('ppActLogCount');if(ct)ct.textContent=filtered.length+' RECORDS';
   var ft=document.getElementById('ppActFooter');if(ft)ft.innerHTML='SHOWING <span style="color:#3b82f6;font-weight:700;">'+filtered.length+'</span> OF '+ppActivityLog.length+' TOTAL';
