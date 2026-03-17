@@ -923,20 +923,20 @@
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">ZIP CODE</label>
-            <input type="text" id="audFilterZip" placeholder="e.g. 45244" maxlength="5" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterZip" placeholder="e.g. 45244" maxlength="5" autocomplete="off" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CITY</label>
-            <input type="text" id="audFilterCity" placeholder="e.g. Cincinnati" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterCity" placeholder="e.g. Cincinnati" autocomplete="off" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">COMPANY</label>
-            <input type="text" id="audFilterCompany" placeholder="e.g. Keller Williams" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterCompany" placeholder="e.g. Keller Williams" autocomplete="off" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
         </div>
 
         <div style="display:flex;gap:10px;margin-bottom:14px;">
-          <input type="text" id="audFilterSearch" placeholder="Search name, email, tags..." oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+          <input type="text" id="audFilterSearch" placeholder="Search name, email, tags..." autocomplete="off" oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
           <button class="topbar-btn" onclick="audClearFilters()" style="font-size:11px;"><i class="fas fa-times"></i> Clear</button>
           <button class="topbar-btn primary" onclick="audSearch()" style="font-size:11px;"><i class="fas fa-search"></i> Search</button>
         </div>
