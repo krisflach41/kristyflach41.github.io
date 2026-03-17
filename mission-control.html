@@ -908,35 +908,37 @@
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">SOURCE</label>
             <select id="audFilterSource" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
               <option value="">All sources</option>
-              <option value="modelmatch">ModelMatch</option>
-              <option value="pipeline">Pipeline</option>
               <option value="import">Import</option>
-              <option value="portal">Portal Signup</option>
+              <option value="referral">Referral</option>
+              <option value="portal">Portal</option>
+              <option value="webinar">Webinar</option>
+              <option value="social_media">Social Media</option>
+              <option value="other">Other</option>
             </select>
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">STATE</label>
-            <input type="text" id="audFilterState" placeholder="e.g. OH" maxlength="2" autocomplete="new-password" oninput="this.value=this.value.toUpperCase();audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterState" maxlength="2" autocomplete="new-password" oninput="this.value=this.value.toUpperCase();audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">ZIP CODE</label>
-            <input type="text" id="audFilterZip" placeholder="e.g. 45244" maxlength="5" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterZip" maxlength="5" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">CITY</label>
-            <input type="text" id="audFilterCity" placeholder="e.g. Cincinnati" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterCity" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">COMPANY</label>
-            <input type="text" id="audFilterCompany" placeholder="e.g. Keller Williams" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
+            <input type="text" id="audFilterCompany" autocomplete="new-password" oninput="audSearchDebounce()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;box-sizing:border-box;">
           </div>
         </div>
 
         <div style="display:flex;gap:10px;margin-bottom:14px;">
-          <input type="text" id="audFilterSearch" placeholder="Search name, email, tags..." autocomplete="new-password" oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+          <input type="text" id="audFilterSearch" placeholder="Search..." autocomplete="new-password" oninput="audSearchDebounce()" style="flex:1;padding:8px 12px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
           <button class="topbar-btn" onclick="audClearFilters()" style="font-size:11px;"><i class="fas fa-times"></i> Clear</button>
           <button class="topbar-btn primary" onclick="audSearch()" style="font-size:11px;"><i class="fas fa-search"></i> Search</button>
         </div>
