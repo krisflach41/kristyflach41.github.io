@@ -1116,18 +1116,27 @@ function audSearch() {
   var company = document.getElementById('audFilterCompany').value.trim();
   var q = document.getElementById('audFilterSearch').value.trim();
 
-  if (type) params.push('root_type=' + encodeURIComponent(type));
-  if (source) params.push('source=' + encodeURIComponent(source));
+  if (type && type !== 'all') params.push('root_type=' + encodeURIComponent(type));
+  if (source && source !== 'all') params.push('source=' + encodeURIComponent(source));
   if (state) params.push('state=' + encodeURIComponent(state));
   if (zip) params.push('zip=' + encodeURIComponent(zip));
   if (city) params.push('city=' + encodeURIComponent(city));
   if (company) params.push('company=' + encodeURIComponent(company));
   if (q) params.push('q=' + encodeURIComponent(q));
 
-  if (params.length === 0) {
-    document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Use the filters above to find contacts.</div>';
+  // If "All Types" or "All Sources" selected, that means show everything (no type/source filter)
+  // but still run the search
+  var hasAnyInput = type || source || state || zip || city || company || q;
+
+  if (!hasAnyInput) {
+    document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;">Select a filter or enter a search term.</div>';
     document.getElementById('audResultCount').textContent = '—';
     return;
+  }
+
+  // If the only selections are "all" with no other filters, fetch everything
+  if (params.length === 0) {
+    // No actual filter params but user picked All Types or All Sources — fetch all
   }
 
   document.getElementById('audResults').innerHTML = '<div style="font-size:12px;color:var(--text-muted);padding:20px;text-align:center;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
