@@ -897,7 +897,8 @@
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">TYPE</label>
             <select id="audFilterType" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
-              <option value="">All types</option>
+              <option value="" selected></option>
+              <option value="all">All Types</option>
               <option value="realtor">Realtor</option>
               <option value="client">Client</option>
               <option value="past_client">Past Client</option>
@@ -907,7 +908,8 @@
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px;">SOURCE</label>
             <select id="audFilterSource" onchange="audSearch()" style="width:100%;padding:8px 10px;border-radius:6px;background:#f8f9fb;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
-              <option value="">All sources</option>
+              <option value="" selected></option>
+              <option value="all">All Sources</option>
               <option value="import">Import</option>
               <option value="referral">Referral</option>
               <option value="portal">Portal</option>
