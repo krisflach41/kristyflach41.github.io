@@ -124,9 +124,9 @@ function getFieldsForType(type, designations) {
           {id:'headshot_url',label:'Headshot',type:'text',placeholder:'URL or uploaded via portal'}
         ]},
         {section:'Web & Social',fields:[
-          {id:'website',label:'Website',type:'text'},{id:'facebook',label:'Facebook',type:'text'},
-          {id:'instagram',label:'Instagram',type:'text'},{id:'linkedin',label:'LinkedIn',type:'text'},
-          {id:'tiktok',label:'TikTok',type:'text'}
+          {id:'website',label:'Website',type:'url'},{id:'facebook',label:'Facebook',type:'url'},
+          {id:'instagram',label:'Instagram',type:'url'},{id:'linkedin',label:'LinkedIn',type:'url'},
+          {id:'tiktok',label:'TikTok',type:'url'}
         ]},
         {section:'Tags & Notes',fields:noteFields}
       ];
@@ -134,7 +134,7 @@ function getFieldsForType(type, designations) {
       return [
         {section:'Company',fields:[{id:'company',label:'Company Name',type:'text'}]},
         {section:'Address',fields:addressFields},
-        {section:'Web',fields:[{id:'website',label:'Website',type:'text'}]},
+        {section:'Web',fields:[{id:'website',label:'Website',type:'url'}]},
         {section:'Tags & Notes',fields:noteFields}
       ];
     default:
@@ -181,6 +181,12 @@ function renderStandardForm(container, sections, data) {
         html+='</select>';
       } else if(f.type==='textarea'){
         html+='<textarea id="cf_'+f.id+'" class="card-tracked" rows="3">'+(val||'')+'</textarea>';
+      } else if(f.type==='url'){
+        html+='<div style="display:flex;gap:4px;align-items:center;"><input type="text" id="cf_'+f.id+'" class="card-tracked" value="'+sv+'" style="flex:1;"';
+        if(f.placeholder)html+=' placeholder="'+f.placeholder+'"';
+        html+='>';
+        if(val)html+='<a href="'+(val.indexOf('http')===0?val:'https://'+val)+'" target="_blank" rel="noopener" style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;text-decoration:none;font-size:12px;" title="Open link"><i class="fas fa-external-link-alt"></i></a>';
+        html+='</div>';
       } else {
         html+='<input type="'+(f.type||'text')+'" id="cf_'+f.id+'" class="card-tracked" value="'+sv+'"';
         if(f.maxlength)html+=' maxlength="'+f.maxlength+'"';if(f.placeholder)html+=' placeholder="'+f.placeholder+'"';if(f.required)html+=' required';
