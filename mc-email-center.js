@@ -960,6 +960,46 @@ function emDeleteTemplate(id) {
   }).then(function() { emLoadTemplates(); showToast('Template deleted'); });
 }
 
+// ===== VIDEO IN EMAIL =====
+function emExtractYouTubeId(url) {
+  if (!url) return null;
+  var m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+function emVideoPreviewFn() {
+  var url = document.getElementById('emVideoUrl').value.trim();
+  var videoId = emExtractYouTubeId(url);
+  if (!videoId) { showToast('Could not find a YouTube video ID in that URL'); return; }
+  var thumb = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+  var inner = document.getElementById('emVideoPreviewInner');
+  inner.innerHTML = '<div style="position:relative;display:inline-block;"><img src="' + thumb + '" style="width:400px;max-width:100%;border-radius:8px;display:block;">' +
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:68px;height:48px;background:rgba(255,0,0,0.85);border-radius:14px;display:flex;align-items:center;justify-content:center;">' +
+    '<div style="width:0;height:0;border-style:solid;border-width:10px 0 10px 20px;border-color:transparent transparent transparent #fff;margin-left:4px;"></div></div></div>';
+  document.getElementById('emVideoPreview').style.display = 'block';
+}
+
+function emInsertVideo() {
+  var url = document.getElementById('emVideoUrl').value.trim();
+  var videoId = emExtractYouTubeId(url);
+  if (!videoId) { showToast('Could not find a YouTube video ID in that URL'); return; }
+  var ytLink = 'https://www.youtube.com/watch?v=' + videoId;
+  var thumb = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
+  var videoHtml = '\n<div style="text-align:center;margin:20px 0;">' +
+    '<a href="' + ytLink + '" target="_blank" style="display:inline-block;position:relative;text-decoration:none;">' +
+    '<img src="' + thumb + '" alt="Watch Video" style="width:100%;max-width:560px;border-radius:10px;display:block;">' +
+    '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:50px;background:rgba(255,0,0,0.9);border-radius:14px;display:flex;align-items:center;justify-content:center;">' +
+    '<div style="width:0;height:0;border-style:solid;border-width:12px 0 12px 22px;border-color:transparent transparent transparent #fff;margin-left:4px;"></div>' +
+    '</div></a></div>\n';
+  var textarea = document.getElementById('emTplBody');
+  var pos = textarea.selectionStart || textarea.value.length;
+  textarea.value = textarea.value.substring(0, pos) + videoHtml + textarea.value.substring(pos);
+  document.getElementById('emVideoOverlay').style.display = 'none';
+  document.getElementById('emVideoUrl').value = '';
+  document.getElementById('emVideoPreview').style.display = 'none';
+  showToast('Video thumbnail inserted!');
+}
+
 function emPreviewTemplate() {
   var subject = document.getElementById('emTplSubject').value;
   var body = document.getElementById('emTplBody').value;
