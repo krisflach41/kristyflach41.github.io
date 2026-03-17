@@ -216,7 +216,7 @@ function handleCrmImport(input) {
       });
 
       function processBatch(idx) {
-        var batch = contacts.slice(idx, idx + 10);
+        var batch = contacts.slice(idx, idx + 500);
         if (batch.length === 0) {
           var sumParts = [];
           if (created > 0) sumParts.push(created + ' created');
@@ -241,7 +241,7 @@ function handleCrmImport(input) {
             else if (d && d.status === 'created') created++;
             else created++;
           }).catch(function() { processed++; skipped++; });
-        })).then(function() { processBatch(idx + 10); });
+        })).then(function() { processBatch(idx + 500); });
       }
       processBatch(0);
     } catch (err) {
