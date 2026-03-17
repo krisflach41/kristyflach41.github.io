@@ -961,10 +961,41 @@ function emDeleteTemplate(id) {
 }
 
 // ===== VIDEO IN EMAIL =====
+var emVideoTargetId = null; // tracks which textarea to insert into
+
 function emExtractYouTubeId(url) {
   if (!url) return null;
   var m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/);
   return m ? m[1] : null;
+}
+
+function emOpenVideoModal(targetId) {
+  // Auto-detect which textarea is active if not specified
+  if (!targetId) {
+    var composeOpen = document.getElementById('emComposeOverlay');
+    if (composeOpen && composeOpen.style.display === 'flex') {
+      targetId = 'emComposeBody';
+    } else if (document.getElementById('emTemplateEditor').style.display !== 'none') {
+      targetId = 'emTplBody';
+    } else if (document.getElementById('emTemplates').style.display !== 'none') {
+      targetId = 'emTplBody';
+    }
+  }
+  emVideoTargetId = targetId;
+  var info = document.getElementById('emVideoTargetInfo');
+  if (info) {
+    if (targetId === 'emComposeBody') info.textContent = 'Video will be inserted into your compose email.';
+    else if (targetId === 'emTplBody') info.textContent = 'Video will be inserted into the template editor.';
+    else info.textContent = 'Open a template editor or compose window first, then insert.';
+  }
+  document.getElementById('emVideoOverlay').style.display = 'flex';
+}
+
+function emCloseVideoModal() {
+  document.getElementById('emVideoOverlay').style.display = 'none';
+  document.getElementById('emVideoUrl').value = '';
+  document.getElementById('emVideoPreview').style.display = 'none';
+  emVideoTargetId = null;
 }
 
 function emVideoPreviewFn() {
@@ -983,6 +1014,9 @@ function emInsertVideo() {
   var url = document.getElementById('emVideoUrl').value.trim();
   var videoId = emExtractYouTubeId(url);
   if (!videoId) { showToast('Could not find a YouTube video ID in that URL'); return; }
+  if (!emVideoTargetId) { showToast('Open a template or compose window first'); return; }
+  var textarea = document.getElementById(emVideoTargetId);
+  if (!textarea) { showToast('Could not find the email body to insert into'); return; }
   var ytLink = 'https://www.youtube.com/watch?v=' + videoId;
   var thumb = 'https://img.youtube.com/vi/' + videoId + '/hqdefault.jpg';
   var videoHtml = '\n<div style="text-align:center;margin:20px 0;">' +
@@ -991,12 +1025,9 @@ function emInsertVideo() {
     '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:50px;background:rgba(255,0,0,0.9);border-radius:14px;display:flex;align-items:center;justify-content:center;">' +
     '<div style="width:0;height:0;border-style:solid;border-width:12px 0 12px 22px;border-color:transparent transparent transparent #fff;margin-left:4px;"></div>' +
     '</div></a></div>\n';
-  var textarea = document.getElementById('emTplBody');
   var pos = textarea.selectionStart || textarea.value.length;
   textarea.value = textarea.value.substring(0, pos) + videoHtml + textarea.value.substring(pos);
-  document.getElementById('emVideoOverlay').style.display = 'none';
-  document.getElementById('emVideoUrl').value = '';
-  document.getElementById('emVideoPreview').style.display = 'none';
+  emCloseVideoModal();
   showToast('Video thumbnail inserted!');
 }
 
