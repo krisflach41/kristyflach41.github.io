@@ -175,7 +175,8 @@ function handleCrmImport(input) {
       var ws = wb.Sheets[wb.SheetNames[0]];
       var rows = XLSX.utils.sheet_to_json(ws);
       var total = rows.length;
-      var imported = 0;
+      var created = 0;
+      var updated = 0;
       var skipped = 0;
       var promises = [];
 
@@ -216,7 +217,7 @@ function handleCrmImport(input) {
           state: String(row['State'] || row['state'] || '').trim(),
           zip: String(row['Zip'] || row['zip'] || row['ZIP'] || row['Zip Code'] || '').trim(),
           job_title: String(row['Title'] || row['Job Title'] || row['job_title'] || '').trim(),
-          license_number: String(row['License Number'] || row['license_number'] || '').trim(),
+          license_number: String(row['License Number'] || row['license_number'] || row['MLS'] || row['MLS #'] || '').trim(),
           website: String(row['Website'] || row['website'] || '').trim(),
           facebook: String(row['Facebook'] || row['facebook'] || '').trim(),
           instagram: String(row['Instagram'] || row['instagram'] || '').trim(),
@@ -230,16 +231,26 @@ function handleCrmImport(input) {
         var p = fetch(API_BASE + '/crm-api', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ action: 'save', crm: contact })
-        }).then(function() { imported++; }).catch(function() { skipped++; });
+        }).then(function(resp) {
+          return resp.json();
+        }).then(function(data) {
+          if (data && data.status === 'updated') { updated++; }
+          else if (data && data.status === 'created') { created++; }
+          else { created++; }
+        }).catch(function() { skipped++; });
         promises.push(p);
       });
 
       Promise.all(promises).then(function() {
         if (statusEl) {
-          statusEl.innerHTML = '<div style="color:#22c55e;font-size:13px;font-weight:600;"><i class="fas fa-check-circle"></i> Imported ' + imported + ' of ' + total + ' contacts' + (skipped > 0 ? ' (' + skipped + ' skipped)' : '') + '</div>';
-          setTimeout(function() { statusEl.style.display = 'none'; }, 5000);
+          var parts = [];
+          if (created > 0) parts.push(created + ' created');
+          if (updated > 0) parts.push(updated + ' updated');
+          if (skipped > 0) parts.push(skipped + ' skipped');
+          statusEl.innerHTML = '<div style="color:#22c55e;font-size:13px;font-weight:600;"><i class="fas fa-check-circle"></i> ' + (created + updated) + ' of ' + total + ' contacts processed (' + parts.join(', ') + ')</div>';
+          setTimeout(function() { statusEl.style.display = 'none'; }, 8000);
         }
-        showToast('Imported ' + imported + ' contacts');
+        showToast((created + updated) + ' contacts processed');
         loadCrm();
       });
     } catch (err) {
