@@ -908,8 +908,9 @@ function emOpenTemplateEditor() {
   document.getElementById('emTemplateEditor').style.display = 'block';
   document.getElementById('emTplEditorTitle').textContent = 'New Template';
   document.getElementById('emTplName').value = '';
-  document.getElementById('emTplSubject').value = 'Happy Birthday, {{first_name}}!';
-  document.getElementById('emTplBody').value = '<p>Hi {{first_name}},</p>\n\n';
+  document.getElementById('emTplSubject').value = '';
+  document.getElementById('emTplBody').value = '';
+  document.getElementById('emTplGreeting').value = 'Hi';
   document.getElementById('emTplCategory').value = 'custom';
   document.getElementById('emTplEditId').value = '';
 }
@@ -925,7 +926,21 @@ function emEditTemplate(id) {
   document.getElementById('emTplEditorTitle').textContent = 'Edit Template';
   document.getElementById('emTplName').value = t.name;
   document.getElementById('emTplSubject').value = t.subject;
-  document.getElementById('emTplBody').value = t.body_html;
+  // Extract greeting from body if it starts with a known greeting pattern
+  var body = t.body_html || '';
+  var greetingEl = document.getElementById('emTplGreeting');
+  greetingEl.value = 'Hi';
+  var greetings = ['Happy Holidays', 'Happy Birthday', 'Congratulations', 'Good morning', 'Hello', 'Hey', 'Hi'];
+  for (var g = 0; g < greetings.length; g++) {
+    var pattern = '<p>' + greetings[g] + ' {{first_name}}';
+    var patternComma = '<p>' + greetings[g] + ', {{first_name}}';
+    if (body.indexOf(pattern) === 0 || body.indexOf(patternComma) === 0) {
+      greetingEl.value = greetings[g];
+      body = body.replace(new RegExp('^<p>' + greetings[g] + '[, ]*\\{\\{first_name\\}\\}[!,.]?</p>\\s*'), '');
+      break;
+    }
+  }
+  document.getElementById('emTplBody').value = body;
   document.getElementById('emTplCategory').value = t.category || 'custom';
   document.getElementById('emTplEditId').value = t.id;
 }
@@ -936,8 +951,13 @@ function emSaveTemplate() {
   var body = document.getElementById('emTplBody').value.trim();
   if (!name || !subject || !body) { showToast('Name, subject, and body required'); return; }
 
+  // Prepend greeting line to body
+  var greeting = document.getElementById('emTplGreeting').value;
+  var separator = (greeting === 'Happy Birthday' || greeting === 'Congratulations' || greeting === 'Happy Holidays') ? ', {{first_name}}!' : ', {{first_name}},';
+  var fullBody = '<p>' + greeting + separator + '</p>\n' + body;
+
   var editId = document.getElementById('emTplEditId').value;
-  var template = { name: name, subject: subject, body_html: body, category: document.getElementById('emTplCategory').value };
+  var template = { name: name, subject: subject, body_html: fullBody, category: document.getElementById('emTplCategory').value };
   if (editId) template.id = parseInt(editId);
 
   fetch(API_BASE + '/email-center', {
@@ -1048,8 +1068,10 @@ function emPreviewTemplate() {
 function emAiDraft() {
   document.getElementById('emAiOverlay').style.display = 'flex';
   document.getElementById('emAiPrompt').value = '';
+  document.getElementById('emAiExtra').value = '';
+  document.getElementById('emAiExtraWrap').style.display = 'none';
+  document.getElementById('emAiRewriteBtn').style.display = 'none';
   document.getElementById('emAiResult').textContent = '';
-  // Pre-fill tone suggestion based on category
   var cat = document.getElementById('emTplCategory').value;
   if (cat === 'milestone') document.getElementById('emAiTone').value = 'warm and professional';
   if (cat === 'seasonal') document.getElementById('emAiTone').value = 'energetic and upbeat';
@@ -1075,13 +1097,45 @@ function emAiGenerate() {
     if (data.success && data.body_html) {
       document.getElementById('emTplBody').value = data.body_html;
       if (data.subject) document.getElementById('emTplSubject').value = data.subject;
-      emAiClose();
-      showToast('AI draft ready! Review and edit as needed.', 'success');
+      document.getElementById('emAiExtraWrap').style.display = 'block';
+      document.getElementById('emAiRewriteBtn').style.display = '';
+      document.getElementById('emAiResult').innerHTML = '<span style="color:#22c55e;">Draft inserted into the body below. Edit it directly or use Re-write for changes.</span>';
     } else {
       document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
     }
   }).catch(function() {
     btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> Generate';
+    document.getElementById('emAiResult').textContent = 'Error connecting to AI';
+  });
+}
+
+function emAiRewrite() {
+  var originalPrompt = document.getElementById('emAiPrompt').value.trim();
+  var extra = document.getElementById('emAiExtra').value.trim();
+  var currentBody = document.getElementById('emTplBody').value.trim();
+  if (!extra) { document.getElementById('emAiResult').textContent = 'Add directions for the re-write'; return; }
+  var tone = document.getElementById('emAiTone').value;
+  var btn = document.getElementById('emAiRewriteBtn');
+  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Re-writing...';
+  document.getElementById('emAiResult').textContent = '';
+
+  var rewritePrompt = 'Original request: ' + originalPrompt + '\n\nCurrent draft:\n' + currentBody + '\n\nRevision instructions: ' + extra;
+
+  fetch(API_BASE + '/ai-email-writer', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt: rewritePrompt, tone: tone })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-redo"></i> Re-write';
+    if (data.success && data.body_html) {
+      document.getElementById('emTplBody').value = data.body_html;
+      if (data.subject) document.getElementById('emTplSubject').value = data.subject;
+      document.getElementById('emAiExtra').value = '';
+      document.getElementById('emAiResult').innerHTML = '<span style="color:#22c55e;">Re-write complete. Edit directly or re-write again.</span>';
+    } else {
+      document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
+    }
+  }).catch(function() {
+    btn.disabled = false; btn.innerHTML = '<i class="fas fa-redo"></i> Re-write';
     document.getElementById('emAiResult').textContent = 'Error connecting to AI';
   });
 }
