@@ -185,7 +185,7 @@ function renderStandardForm(container, sections, data) {
         html+='<div style="display:flex;gap:4px;align-items:center;"><input type="text" id="cf_'+f.id+'" class="card-tracked" value="'+sv+'" style="flex:1;"';
         if(f.placeholder)html+=' placeholder="'+f.placeholder+'"';
         html+='>';
-        if(val)html+='<a href="'+(val.indexOf('http')===0?val:'https://'+val)+'" target="_blank" rel="noopener" style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;text-decoration:none;font-size:12px;" title="Open link"><i class="fas fa-external-link-alt"></i></a>';
+        if(val){var linkUrl=String(val).trim();if(linkUrl.indexOf('http://')!==0&&linkUrl.indexOf('https://')!==0)linkUrl='https://'+linkUrl;html+='<a href="'+linkUrl+'" target="_blank" rel="noopener" style="flex-shrink:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(59,130,246,0.1);color:#3b82f6;text-decoration:none;font-size:12px;" title="Open link"><i class="fas fa-external-link-alt"></i></a>';}
         html+='</div>';
       } else {
         html+='<input type="'+(f.type||'text')+'" id="cf_'+f.id+'" class="card-tracked" value="'+sv+'"';
