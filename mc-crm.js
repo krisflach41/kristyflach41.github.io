@@ -178,81 +178,72 @@ function handleCrmImport(input) {
       var created = 0;
       var updated = 0;
       var skipped = 0;
-      var promises = [];
+      var processed = 0;
+      var contacts = [];
 
       rows.forEach(function(row) {
-        // Build name from First/Last or single Name column
         var firstName = String(row['First Name'] || row['first_name'] || '').trim();
         var mi = String(row['MI'] || row['Middle Initial'] || row['middle_initial'] || '').trim();
         var lastName = String(row['Last Name'] || row['last_name'] || '').trim();
         var fullName = String(row['Name'] || row['Full Name'] || row['name'] || '').trim();
-
         if (firstName || lastName) {
-          var parts = [firstName];
-          if (mi) parts.push(mi.toUpperCase() + '.');
-          parts.push(lastName);
-          fullName = parts.filter(Boolean).join(' ');
+          var nameParts = [firstName];
+          if (mi) nameParts.push(mi.toUpperCase() + '.');
+          nameParts.push(lastName);
+          fullName = nameParts.filter(Boolean).join(' ');
         }
         if (!fullName) { skipped++; return; }
-
         var phone = String(row['Phone'] || row['Phone Number'] || row['phone'] || '').replace(/\D/g, '');
         var type = String(row['Type'] || row['type'] || 'client').toLowerCase().trim();
         if (type === 'agent' || type === 'real estate agent') type = 'realtor';
         if (type === 'past client' || type === 'previous client') type = 'past_client';
-
-        var contact = {
-          name: fullName,
-          first_name: firstName || null,
-          middle_initial: mi ? mi.toUpperCase() : null,
-          last_name: lastName || null,
-          email: String(row['Email'] || row['email'] || '').trim(),
-          phone: phone,
-          type: type,
-          root_type: type,
+        contacts.push({
+          name: fullName, first_name: firstName || null, middle_initial: mi ? mi.toUpperCase() : null, last_name: lastName || null,
+          email: String(row['Email'] || row['email'] || '').trim(), phone: phone, type: type, root_type: type,
           designations: type === 'realtor' ? ['realtor'] : [],
           company: String(row['Company'] || row['Company / Brokerage'] || row['Brokerage'] || row['company'] || '').trim(),
           source: String(row['Source'] || row['source'] || 'import').trim(),
           address: String(row['Street'] || row['Address'] || row['street'] || row['address'] || '').trim(),
-          city: String(row['City'] || row['city'] || '').trim(),
-          state: String(row['State'] || row['state'] || '').trim(),
+          city: String(row['City'] || row['city'] || '').trim(), state: String(row['State'] || row['state'] || '').trim(),
           zip: String(row['Zip'] || row['zip'] || row['ZIP'] || row['Zip Code'] || '').trim(),
           job_title: String(row['Title'] || row['Job Title'] || row['job_title'] || '').trim(),
           license_number: String(row['License Number'] || row['license_number'] || row['MLS'] || row['MLS #'] || '').trim(),
-          website: String(row['Website'] || row['website'] || '').trim(),
-          facebook: String(row['Facebook'] || row['facebook'] || '').trim(),
-          instagram: String(row['Instagram'] || row['instagram'] || '').trim(),
-          linkedin: String(row['LinkedIn'] || row['linkedin'] || '').trim(),
-          tiktok: String(row['TikTok'] || row['tiktok'] || '').trim(),
-          tags: String(row['Tags'] || row['tags'] || '').trim() || null,
-          notes: String(row['Notes'] || row['notes'] || '').trim(),
-          verified: false
-        };
-
-        var p = fetch(API_BASE + '/crm-api', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'save', crm: contact })
-        }).then(function(resp) {
-          return resp.json();
-        }).then(function(data) {
-          if (data && data.status === 'updated') { updated++; }
-          else if (data && data.status === 'created') { created++; }
-          else { created++; }
-        }).catch(function() { skipped++; });
-        promises.push(p);
+          website: String(row['Website'] || row['website'] || '').trim(), facebook: String(row['Facebook'] || row['facebook'] || '').trim(),
+          instagram: String(row['Instagram'] || row['instagram'] || '').trim(), linkedin: String(row['LinkedIn'] || row['linkedin'] || '').trim(),
+          tiktok: String(row['TikTok'] || row['tiktok'] || '').trim(), tags: String(row['Tags'] || row['tags'] || '').trim() || null,
+          notes: String(row['Notes'] || row['notes'] || '').trim(), verified: false
+        });
       });
 
-      Promise.all(promises).then(function() {
-        if (statusEl) {
-          var parts = [];
-          if (created > 0) parts.push(created + ' created');
-          if (updated > 0) parts.push(updated + ' updated');
-          if (skipped > 0) parts.push(skipped + ' skipped');
-          statusEl.innerHTML = '<div style="color:#22c55e;font-size:13px;font-weight:600;"><i class="fas fa-check-circle"></i> ' + (created + updated) + ' of ' + total + ' contacts processed (' + parts.join(', ') + ')</div>';
-          setTimeout(function() { statusEl.style.display = 'none'; }, 8000);
+      function processBatch(idx) {
+        var batch = contacts.slice(idx, idx + 10);
+        if (batch.length === 0) {
+          var sumParts = [];
+          if (created > 0) sumParts.push(created + ' created');
+          if (updated > 0) sumParts.push(updated + ' updated');
+          if (skipped > 0) sumParts.push(skipped + ' skipped');
+          if (statusEl) {
+            statusEl.innerHTML = '<div style="color:#22c55e;font-size:13px;font-weight:600;"><i class="fas fa-check-circle"></i> ' + (created + updated) + ' of ' + total + ' contacts processed (' + sumParts.join(', ') + ')</div>';
+            setTimeout(function() { statusEl.style.display = 'none'; }, 8000);
+          }
+          showToast((created + updated) + ' contacts processed');
+          loadCrm();
+          return;
         }
-        showToast((created + updated) + ' contacts processed');
-        loadCrm();
-      });
+        if (statusEl) { statusEl.innerHTML = '<div style="color:#0ea5e9;font-size:13px;"><i class="fas fa-spinner fa-spin"></i> Processing ' + processed + ' of ' + contacts.length + '...</div>'; }
+        Promise.all(batch.map(function(contact) {
+          return fetch(API_BASE + '/crm-api', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'save', crm: contact })
+          }).then(function(r) { return r.json(); }).then(function(d) {
+            processed++;
+            if (d && d.status === 'updated') updated++;
+            else if (d && d.status === 'created') created++;
+            else created++;
+          }).catch(function() { processed++; skipped++; });
+        })).then(function() { processBatch(idx + 10); });
+      }
+      processBatch(0);
     } catch (err) {
       if (statusEl) { statusEl.innerHTML = '<div style="color:#ef4444;font-size:13px;"><i class="fas fa-exclamation-circle"></i> Import failed: ' + err.message + '</div>'; }
       showToast('Import failed: ' + err.message);
