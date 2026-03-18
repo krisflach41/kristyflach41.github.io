@@ -95,6 +95,8 @@ function switchView(viewId, navEl) {
   if (viewId === 'settings') initSettingsView();
   if (viewId === 'email') loadEmailCenter();
   if (viewId === 'users') loadBlogPosts();
+  if (viewId === 'webinars') wpInit();
+  if (viewId === 'webinarLauncher') wbLoadWebinars();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
