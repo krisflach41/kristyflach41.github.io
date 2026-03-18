@@ -188,6 +188,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
   height: 180px;
   border-radius: 50%;
   object-fit: cover;
+  object-position: top;
   box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   flex-shrink: 0;
 }
@@ -296,6 +297,140 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
   font-size: 14px;
 }
 .loading-screen i { margin-right: 8px; }
+
+/* ===== THANK YOU PAGE ===== */
+.ty-page {
+  display: none;
+}
+.ty-hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.ty-bg {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: url('/header-background.jpeg') center/cover no-repeat;
+  z-index: 0;
+}
+.ty-overlay {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1;
+}
+.ty-content {
+  position: relative; z-index: 2;
+}
+.ty-headshot {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+.ty-headshot img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.ty-banner {
+  background: #0b1f3a;
+  padding: 24px 20px;
+  text-align: center;
+}
+.ty-banner h1 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #9CB5A0;
+  margin: 0;
+}
+.ty-body {
+  padding: 40px 20px;
+  text-align: center;
+}
+.ty-body p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255,255,255,0.9);
+  max-width: 600px;
+  margin: 0 auto 8px;
+}
+.ty-body .ty-congrats {
+  font-size: 15px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 24px;
+  font-style: italic;
+}
+.ty-invite-btn {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 14px 32px;
+  background: #6e7f77;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.ty-invite-btn:hover { background: #5a6b63; }
+.ty-invite-btn i { margin-right: 8px; }
+
+/* Invite modal */
+.invite-overlay {
+  display: none;
+  position: fixed; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.invite-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  width: 90%;
+  max-width: 440px;
+  text-align: center;
+}
+.invite-modal h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0b1f3a;
+  margin-bottom: 8px;
+}
+.invite-modal p {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.invite-modal .form-field { text-align: left; margin-bottom: 12px; }
+.invite-modal .form-field label { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 4px; display: block; }
+.invite-modal .form-field input { width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; font-family: Arial, sans-serif; box-sizing: border-box; }
+.invite-submit {
+  width: 100%;
+  padding: 12px;
+  background: #3b82f6;
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.invite-submit:hover { background: #2563eb; }
+.invite-close {
+  position: absolute;
+  top: 12px; right: 16px;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
@@ -411,7 +546,66 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
 
 </div>
 
-<script>
+<!-- ===== THANK YOU PAGE ===== -->
+<div id="tyPage" class="ty-page">
+  <div class="ty-hero">
+    <div class="ty-bg"></div>
+    <div class="ty-overlay"></div>
+    <div class="ty-content">
+      <div class="ty-headshot">
+        <img src="/hero-headshot.jpg" alt="Kristy Flach">
+      </div>
+      <div class="ty-banner">
+        <h1>You're Registered For The Free Webinar!</h1>
+      </div>
+      <div class="ty-body">
+        <p>The webinar will be hosted Live by <strong>Kristy Flach</strong>.</p>
+        <p>An email & text with the <span style="color:#9CB5A0;font-weight:700;">link</span> will be sent to you.</p>
+        <p>Please check your spam folder if not received via email.</p>
+        <p class="ty-congrats">Congratulations on taking the first step! We look forward to seeing you there.</p>
+        <button class="ty-invite-btn" onclick="openInviteModal()"><i class="fas fa-user-plus"></i> Invite a Friend</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div class="footer-logos">
+      <img src="/PRMG-Logo.png" alt="PRMG">
+      <img src="/equal-housing-logo.png" alt="Equal Housing Opportunity">
+    </div>
+    <div class="footer-text">
+      Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity. For licensing information, visit nmlsconsumeraccess.org. This is not a commitment to lend. All loan programs subject to credit approval.
+    </div>
+    <div class="footer-links">
+      <a href="/privacy-policy">Privacy Policy</a>
+      <a href="/terms">Terms & Conditions</a>
+    </div>
+  </footer>
+</div>
+
+<!-- Invite a Friend Modal -->
+<div id="inviteOverlay" class="invite-overlay">
+  <div class="invite-modal" style="position:relative;">
+    <button class="invite-close" onclick="closeInviteModal()">&times;</button>
+    <h2>Invite a Friend</h2>
+    <p>Have a friend or relative who would like to attend the webinar? Invite them to register below!</p>
+    <div class="form-field">
+      <label>First Name *</label>
+      <input type="text" id="invFirst" placeholder="First Name">
+    </div>
+    <div class="form-field">
+      <label>Email *</label>
+      <input type="email" id="invEmail" placeholder="Email">
+    </div>
+    <div class="form-field">
+      <label>Phone *</label>
+      <input type="tel" id="invPhone" placeholder="Phone">
+    </div>
+    <button class="invite-submit" id="invBtn" onclick="submitInvite()">Invite</button>
+    <div id="invMsg" style="font-size:12px;margin-top:8px;color:#555;"></div>
+  </div>
+</div>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 var webinarData = null;
 
@@ -489,6 +683,9 @@ function populatePage() {
   // Show page
   document.getElementById('loadingScreen').style.display = 'none';
   document.getElementById('pageContent').style.display = 'block';
+
+  // Check if we should show a subpage instead
+  showSubpage();
 }
 
 function submitRegistration(e) {
@@ -561,6 +758,80 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 });
+
+function openInviteModal() {
+  document.getElementById('inviteOverlay').style.display = 'flex';
+  document.getElementById('invFirst').value = '';
+  document.getElementById('invEmail').value = '';
+  document.getElementById('invPhone').value = '';
+  document.getElementById('invMsg').textContent = '';
+}
+
+function closeInviteModal() {
+  document.getElementById('inviteOverlay').style.display = 'none';
+}
+
+function submitInvite() {
+  var first = document.getElementById('invFirst').value.trim();
+  var email = document.getElementById('invEmail').value.trim();
+  var phone = document.getElementById('invPhone').value.trim();
+  var msgEl = document.getElementById('invMsg');
+
+  if (!first || !email || !phone) {
+    msgEl.style.color = '#e53e3e';
+    msgEl.textContent = 'All fields are required.';
+    return;
+  }
+
+  var btn = document.getElementById('invBtn');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'register',
+      webinar_id: webinarData.id,
+      first_name: first,
+      last_name: '',
+      phone: phone,
+      email: email,
+      lo_user_id: webinarData.lo_user_id || 'default'
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.disabled = false;
+    btn.textContent = 'Invite';
+    if (data.success) {
+      msgEl.style.color = '#6e7f77';
+      msgEl.textContent = 'Your friend has been registered! They\'ll receive a confirmation.';
+      document.getElementById('invFirst').value = '';
+      document.getElementById('invEmail').value = '';
+      document.getElementById('invPhone').value = '';
+    } else {
+      msgEl.style.color = '#e53e3e';
+      msgEl.textContent = data.message || 'Could not register. Please try again.';
+    }
+  })
+  .catch(function() {
+    btn.disabled = false;
+    btn.textContent = 'Invite';
+    msgEl.style.color = '#e53e3e';
+    msgEl.textContent = 'Connection error. Please try again.';
+  });
+}
+
+// Route to the correct subpage after webinar loads
+function showSubpage() {
+  if (subpage === 'registered') {
+    document.getElementById('pageContent').style.display = 'none';
+    document.getElementById('tyPage').style.display = 'block';
+    document.title = 'You\'re Registered! | ' + (webinarData.title || 'Kristy Flach');
+  }
+  // Future subpages: join, replay-form, replay, book
+}
 
 loadWebinar();
 </script>
