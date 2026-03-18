@@ -488,17 +488,61 @@
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Webinars</div><div class="topbar-subtitle">Manage events and registrations</div></div>
+      <div><div class="topbar-title">Webinar Pipeline</div><div class="topbar-subtitle">Track registrants through your webinar funnel</div></div>
     </div>
     <div class="topbar-right">
-      <button class="topbar-btn primary">+ Create Webinar</button>
+      <select id="wpWebinarFilter" onchange="wpLoadRegistrants()" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:12px;background:var(--bg-card);color:var(--text-primary);">
+        <option value="">Select a webinar...</option>
+      </select>
+      <button class="topbar-btn" onclick="wpLoadRegistrants()"><i class="fas fa-sync-alt"></i> Refresh</button>
     </div>
   </div>
-  <div class="content-area">
-    <div class="webinar-grid" id="webinarGrid">
-      <div class="webinar-card"><div class="wc-banner upcoming"><div class="wc-badge soon">Upcoming</div></div><div class="wc-body"><div class="wc-title">First-Time Homebuyer Workshop</div><div class="wc-date">Saturday, Feb 22  -  11:00 AM EST</div><div class="wc-stat">23 registered</div></div></div>
-      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">VA Loan Benefits Explained</div><div class="wc-date">Feb 8, 2026</div><div class="wc-stat">41 attended  -  8 leads</div></div></div>
-      <div class="webinar-card"><div class="wc-banner past"><div class="wc-badge done">Completed</div></div><div class="wc-body"><div class="wc-title">Credit Score Bootcamp</div><div class="wc-date">Jan 25, 2026</div><div class="wc-stat">67 attended  -  12 leads</div></div></div>
+  <div class="content-area" style="padding:12px;overflow-x:auto;">
+    <div id="wpBoard" style="display:flex;gap:10px;min-width:max-content;min-height:500px;">
+    </div>
+    <div id="wpEmpty" style="text-align:center;padding:60px;color:var(--text-muted);">
+      <i class="fas fa-chalkboard-teacher" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.2;"></i>
+      <div style="font-size:14px;margin-bottom:4px;">Select a webinar above to view registrants</div>
+    </div>
+  </div>
+
+  <!-- Registrant Detail Modal -->
+  <div id="wpDetailOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:80vh;overflow-y:auto;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);" id="wpDetailName">Registrant</div>
+        <button class="topbar-btn" onclick="wpCloseDetail()" style="font-size:11px;">✕</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+        <div><div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">EMAIL</div><div style="font-size:13px;color:var(--text-primary);" id="wpDetailEmail">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">PHONE</div><div style="font-size:13px;color:var(--text-primary);" id="wpDetailPhone">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">REGISTERED</div><div style="font-size:13px;color:var(--text-primary);" id="wpDetailDate">—</div></div>
+        <div><div style="font-size:10px;color:var(--text-muted);margin-bottom:2px;">STAGE</div><div style="font-size:13px;color:var(--text-primary);" id="wpDetailStage">—</div></div>
+      </div>
+      <div style="margin-bottom:16px;">
+        <div style="font-size:10px;color:var(--text-muted);margin-bottom:4px;">NOTES</div>
+        <textarea id="wpDetailNotes" rows="4" style="width:100%;resize:vertical;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;padding:10px;box-sizing:border-box;" placeholder="Add notes about this registrant..."></textarea>
+        <button class="topbar-btn" onclick="wpSaveNotes()" style="font-size:10px;margin-top:6px;"><i class="fas fa-save"></i> Save Notes</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);">
+        <div style="position:relative;display:inline-block;" id="wpActionDropdown">
+          <button class="topbar-btn primary" onclick="wpToggleActions()" style="font-size:11px;background:rgba(110,127,119,0.2);color:#6e7f77;border-color:rgba(110,127,119,0.4);"><i class="fas fa-ellipsis-h"></i> Actions</button>
+          <div id="wpActionMenu" style="display:none;position:absolute;bottom:100%;left:0;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.15);min-width:220px;padding:6px 0;margin-bottom:4px;z-index:10;">
+            <div style="padding:4px 12px;font-size:10px;color:var(--text-muted);font-weight:700;">CRM</div>
+            <div class="wp-action-item" onclick="wpCreateCRM()" id="wpCrmBtn">Create CRM Card</div>
+            <div style="padding:4px 12px;font-size:10px;color:var(--text-muted);font-weight:700;margin-top:6px;">MOVE TO LOAN PIPELINE</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('warm')">Warm Leads</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('active')">Active Conversations</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('credit')">Credit Repair</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('preapproval')">Started Pre-Approval</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('preapproved')">Approved</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('ratewatch')">Rate Watch</div>
+            <div class="wp-action-item" onclick="wpMoveToLoan('underwriting')">Underwriting</div>
+          </div>
+        </div>
+        <button class="topbar-btn danger" onclick="wpDeleteRegistrant()" style="font-size:11px;"><i class="fas fa-trash-alt"></i> Delete</button>
+      </div>
+      <input type="hidden" id="wpDetailId" value="">
     </div>
   </div>
 </div>
