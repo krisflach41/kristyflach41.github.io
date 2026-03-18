@@ -1235,7 +1235,15 @@ function audSearch() {
   var q = document.getElementById('audFilterSearch').value.trim();
 
   if (type && type !== 'all') params.push('root_type=' + encodeURIComponent(type));
-  if (source && source !== 'all') params.push('source=' + encodeURIComponent(source));
+  if (source && source !== 'all') {
+    if (source.indexOf('webinar:') === 0) {
+      // Webinar stage filter — match by tags
+      params.push('source=webinar');
+      params.push('tags=' + encodeURIComponent(source));
+    } else {
+      params.push('source=' + encodeURIComponent(source));
+    }
+  }
   if (state) params.push('state=' + encodeURIComponent(state));
   if (zip) params.push('zip=' + encodeURIComponent(zip));
   if (city) params.push('city=' + encodeURIComponent(city));
