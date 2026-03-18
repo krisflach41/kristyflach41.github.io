@@ -432,6 +432,62 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
   border: none;
 }
 
+/* ===== JOIN ZOOM PAGE ===== */
+.jz-page { display: none; }
+.jz-hero { position: relative; min-height: 100vh; overflow: hidden; }
+.jz-content { position: relative; z-index: 2; text-align: center; padding: 60px 20px; }
+.jz-headshot { margin-bottom: 20px; }
+.jz-headshot img { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; object-position: top; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.jz-date { font-size: 20px; font-weight: 700; color: white; margin-bottom: 30px; }
+.jz-countdown { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; }
+.jz-count-box { text-align: center; }
+.jz-count-num { font-size: 42px; font-weight: 800; color: white; line-height: 1; }
+.jz-count-label { font-size: 11px; color: rgba(255,255,255,0.6); letter-spacing: 1px; margin-top: 4px; }
+.jz-join-btn { display: inline-block; padding: 18px 50px; font-size: 18px; font-weight: 700; color: white; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+.jz-join-btn.active { background: #6e7f77; }
+.jz-join-btn.active:hover { background: #5a6b63; }
+.jz-join-btn.disabled { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.4); cursor: not-allowed; }
+.jz-note { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 12px; }
+
+/* ===== BOOKING PAGE ===== */
+.bk-page { display: none; }
+.bk-hero { position: relative; min-height: 100vh; overflow: hidden; }
+.bk-content { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+.bk-title { font-size: 28px; font-weight: 800; color: white; text-align: center; margin-bottom: 8px; }
+.bk-title em { font-style: normal; color: #9CB5A0; }
+.bk-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 30px; }
+.bk-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 12px; padding: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.2); }
+.bk-info { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #eee; }
+.bk-info-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(110,127,119,0.1); display: flex; align-items: center; justify-content: center; color: #6e7f77; font-size: 16px; flex-shrink: 0; }
+.bk-info-text { font-size: 13px; color: #555; line-height: 1.5; }
+.bk-info-text strong { color: #0b1f3a; }
+.bk-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.bk-cal-title { font-size: 15px; font-weight: 700; color: #0b1f3a; }
+.bk-cal-nav { display: flex; gap: 6px; }
+.bk-cal-nav button { width: 28px; height: 28px; border: 1px solid #ddd; border-radius: 6px; background: white; cursor: pointer; font-size: 12px; color: #555; }
+.bk-cal-nav button:hover { background: #f5f5f5; }
+.bk-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 20px; }
+.bk-cal-dow { font-size: 10px; font-weight: 700; color: #999; text-align: center; padding: 4px 0; }
+.bk-cal-day { text-align: center; padding: 8px 0; font-size: 13px; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: #333; }
+.bk-cal-day:hover { background: rgba(110,127,119,0.1); }
+.bk-cal-day.disabled { color: #ccc; cursor: default; }
+.bk-cal-day.disabled:hover { background: none; }
+.bk-cal-day.selected { background: #6e7f77; color: white; font-weight: 700; }
+.bk-cal-day.today { border: 1px solid #6e7f77; }
+.bk-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px; max-height: 200px; overflow-y: auto; }
+.bk-slot { padding: 8px; text-align: center; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: #333; }
+.bk-slot:hover { border-color: #6e7f77; background: rgba(110,127,119,0.05); }
+.bk-slot.selected { background: #6e7f77; color: white; border-color: #6e7f77; font-weight: 600; }
+.bk-slot.booked { background: #f5f5f5; color: #ccc; cursor: not-allowed; border-color: #eee; }
+.bk-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.bk-submit { width: 100%; padding: 14px; background: #6e7f77; color: white; font-size: 15px; font-weight: 700; border: none; border-radius: 6px; cursor: pointer; transition: background 0.2s; }
+.bk-submit:hover { background: #5a6b63; }
+.bk-submit:disabled { background: #aaa; cursor: wait; }
+.bk-confirmed { text-align: center; padding: 40px 0; }
+.bk-confirmed i { font-size: 48px; color: #6e7f77; margin-bottom: 16px; display: block; }
+.bk-confirmed h3 { font-size: 22px; font-weight: 800; color: #0b1f3a; margin-bottom: 8px; }
+.bk-confirmed p { font-size: 14px; color: #555; line-height: 1.6; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -443,6 +499,10 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
   .form-row { grid-template-columns: 1fr; }
   .speaker-inner { flex-direction: column; text-align: center; }
   .speaker-img { width: 140px; height: 140px; }
+  .jz-count-num { font-size: 30px; }
+  .jz-countdown { gap: 14px; }
+  .bk-slots { grid-template-columns: repeat(2, 1fr); }
+  .bk-form-row { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -605,6 +665,88 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
     <button class="invite-submit" id="invBtn" onclick="submitInvite()">Invite</button>
     <div id="invMsg" style="font-size:12px;margin-top:8px;color:#555;"></div>
   </div>
+</div>
+
+<!-- ===== JOIN ZOOM PAGE ===== -->
+<div id="jzPage" class="jz-page">
+  <div class="jz-hero">
+    <div class="ty-bg"></div>
+    <div class="ty-overlay"></div>
+    <div class="jz-content">
+      <div class="jz-headshot">
+        <img src="/hero-headshot.jpg" alt="Kristy Flach">
+      </div>
+      <div class="jz-date" id="jzDate">The webinar is on loading...</div>
+      <div class="jz-countdown" id="jzCountdown">
+        <div class="jz-count-box"><div class="jz-count-num" id="jzDays">--</div><div class="jz-count-label">DAYS</div></div>
+        <div class="jz-count-box"><div class="jz-count-num" id="jzHours">--</div><div class="jz-count-label">HOURS</div></div>
+        <div class="jz-count-box"><div class="jz-count-num" id="jzMins">--</div><div class="jz-count-label">MINUTES</div></div>
+        <div class="jz-count-box"><div class="jz-count-num" id="jzSecs">--</div><div class="jz-count-label">SECONDS</div></div>
+      </div>
+      <a href="#" id="jzJoinBtn" class="jz-join-btn disabled" onclick="return jzJoin()">Join Zoom<br><span style="font-size:12px;font-weight:400;">This button will be active 10 minutes before the webinar starts</span></a>
+      <div class="jz-note">You will be redirected to Zoom when the button activates</div>
+    </div>
+  </div>
+  <footer class="landing-footer">
+    <div class="footer-logos"><img src="/PRMG-Logo.png" alt="PRMG"><img src="/equal-housing-logo.png" alt="Equal Housing Opportunity"></div>
+    <div class="footer-text">Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity.</div>
+    <div class="footer-links"><a href="/privacy-policy">Privacy Policy</a><a href="/terms">Terms & Conditions</a></div>
+  </footer>
+</div>
+
+<!-- ===== BOOKING PAGE ===== -->
+<div id="bkPage" class="bk-page">
+  <div class="bk-hero">
+    <div class="ty-bg"></div>
+    <div class="ty-overlay"></div>
+    <div class="bk-content">
+      <div class="bk-title">Schedule a Free <em>1-on-1</em> Consultation</div>
+      <div class="bk-subtitle">In this 30-minute call, we'll create your own personalized road map. No charge, no credit check.</div>
+      <div class="bk-card">
+        <div class="bk-info">
+          <div class="bk-info-icon"><i class="fas fa-clock"></i></div>
+          <div class="bk-info-text"><strong>30 Minutes</strong> · Phone Call · Eastern Time</div>
+        </div>
+        <div id="bkCalendarView">
+          <div class="bk-cal-header">
+            <div class="bk-cal-title" id="bkMonthTitle">March 2026</div>
+            <div class="bk-cal-nav">
+              <button onclick="bkPrevMonth()"><i class="fas fa-chevron-left"></i></button>
+              <button onclick="bkNextMonth()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+          </div>
+          <div class="bk-cal-grid" id="bkCalGrid"></div>
+          <div id="bkSlotSection" style="display:none;">
+            <div style="font-size:13px;font-weight:700;color:#0b1f3a;margin-bottom:8px;" id="bkSlotTitle">Available times</div>
+            <div class="bk-slots" id="bkSlots"></div>
+          </div>
+          <div id="bkFormSection" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
+            <div style="font-size:13px;font-weight:700;color:#0b1f3a;margin-bottom:10px;">Your Information</div>
+            <div class="bk-form-row">
+              <div class="form-field"><label>First Name *</label><input type="text" id="bkFirst" placeholder="First Name"></div>
+              <div class="form-field"><label>Last Name *</label><input type="text" id="bkLast" placeholder="Last Name"></div>
+            </div>
+            <div class="bk-form-row">
+              <div class="form-field"><label>Phone *</label><input type="tel" id="bkPhone" placeholder="(555) 123-4567"></div>
+              <div class="form-field"><label>Email *</label><input type="email" id="bkEmail" placeholder="you@email.com"></div>
+            </div>
+            <button class="bk-submit" id="bkSubmitBtn" onclick="bkSubmitBooking()">Confirm Booking</button>
+            <div id="bkError" style="color:#e53e3e;font-size:12px;margin-top:8px;text-align:center;display:none;"></div>
+          </div>
+        </div>
+        <div id="bkConfirmed" class="bk-confirmed" style="display:none;">
+          <i class="fas fa-check-circle"></i>
+          <h3>You're Booked!</h3>
+          <p id="bkConfirmDetails">Your consultation is scheduled. You'll receive a confirmation email and text shortly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="landing-footer">
+    <div class="footer-logos"><img src="/PRMG-Logo.png" alt="PRMG"><img src="/equal-housing-logo.png" alt="Equal Housing Opportunity"></div>
+    <div class="footer-text">Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity.</div>
+    <div class="footer-links"><a href="/privacy-policy">Privacy Policy</a><a href="/terms">Terms & Conditions</a></div>
+  </footer>
 </div>
 
 <script>
@@ -832,7 +974,294 @@ function showSubpage() {
     document.getElementById('tyPage').style.display = 'block';
     document.title = 'You\'re Registered! | ' + (webinarData.title || 'Kristy Flach');
   }
-  // Future subpages: join, replay-form, replay, book
+  if (subpage === 'join') {
+    document.getElementById('pageContent').style.display = 'none';
+    document.getElementById('jzPage').style.display = 'block';
+    document.title = 'Join Webinar | ' + (webinarData.title || 'Kristy Flach');
+    jzInit();
+  }
+  if (subpage === 'book') {
+    document.getElementById('pageContent').style.display = 'none';
+    document.getElementById('bkPage').style.display = 'block';
+    document.title = 'Book a Consultation | Kristy Flach';
+    bkInit();
+  }
+}
+
+// ===== JOIN ZOOM PAGE =====
+var jzInterval = null;
+var jzCanJoin = false;
+
+function jzInit() {
+  var w = webinarData;
+  document.getElementById('jzDate').textContent = 'The webinar is on ' + (w.pretty_date || w.webinar_date || 'TBD');
+  jzUpdateCountdown();
+  jzInterval = setInterval(jzUpdateCountdown, 1000);
+
+  // Mark attendance via query param
+  var regEmail = params.get('email') || '';
+  if (regEmail && w.id) {
+    fetch(API_BASE + '/webinar-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'mark_attended_by_email', webinar_id: w.id, email: regEmail })
+    });
+  }
+}
+
+function jzUpdateCountdown() {
+  var w = webinarData;
+  if (!w.formatted_datetime) return;
+  var target = new Date(w.formatted_datetime);
+  var now = new Date();
+  var diff = target.getTime() - now.getTime();
+  var tenMinBefore = diff - (10 * 60 * 1000);
+
+  if (diff <= 0) {
+    document.getElementById('jzDays').textContent = '0';
+    document.getElementById('jzHours').textContent = '0';
+    document.getElementById('jzMins').textContent = '0';
+    document.getElementById('jzSecs').textContent = '0';
+    jzActivateBtn();
+    clearInterval(jzInterval);
+    return;
+  }
+
+  if (tenMinBefore <= 0) {
+    jzActivateBtn();
+  }
+
+  var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  var secs = Math.floor((diff % (1000 * 60)) / 1000);
+  document.getElementById('jzDays').textContent = days;
+  document.getElementById('jzHours').textContent = hours;
+  document.getElementById('jzMins').textContent = mins;
+  document.getElementById('jzSecs').textContent = secs;
+}
+
+function jzActivateBtn() {
+  jzCanJoin = true;
+  var btn = document.getElementById('jzJoinBtn');
+  btn.className = 'jz-join-btn active';
+  btn.innerHTML = 'Join Zoom Now';
+}
+
+function jzJoin() {
+  if (!jzCanJoin) return false;
+  var w = webinarData;
+  window.location.href = w.zoom_link || 'https://us06web.zoom.us/j/7080198417?pwd=G2WOlqyTeDUhaUaujzfwxD165yFdn1.1';
+  return false;
+}
+
+// ===== BOOKING PAGE =====
+var bkSelectedDate = null;
+var bkSelectedSlot = null;
+var bkMonth = new Date().getMonth();
+var bkYear = new Date().getFullYear();
+var bkBookedSlots = [];
+
+function bkInit() {
+  bkLoadBookedSlots();
+  bkRenderCal();
+}
+
+function bkLoadBookedSlots() {
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_bookings' })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    bkBookedSlots = data.bookings || [];
+  }).catch(function() {});
+}
+
+function bkPrevMonth() {
+  bkMonth--;
+  if (bkMonth < 0) { bkMonth = 11; bkYear--; }
+  bkRenderCal();
+}
+
+function bkNextMonth() {
+  bkMonth++;
+  if (bkMonth > 11) { bkMonth = 0; bkYear++; }
+  bkRenderCal();
+}
+
+function bkRenderCal() {
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('bkMonthTitle').textContent = months[bkMonth] + ' ' + bkYear;
+  var grid = document.getElementById('bkCalGrid');
+  var dows = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var h = '';
+  dows.forEach(function(d) { h += '<div class="bk-cal-dow">' + d + '</div>'; });
+
+  var firstDay = new Date(bkYear, bkMonth, 1).getDay();
+  var daysInMonth = new Date(bkYear, bkMonth + 1, 0).getDate();
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var maxDate = new Date();
+  maxDate.setDate(maxDate.getDate() + 6);
+
+  for (var i = 0; i < firstDay; i++) h += '<div class="bk-cal-day disabled"></div>';
+
+  for (var d = 1; d <= daysInMonth; d++) {
+    var date = new Date(bkYear, bkMonth, d);
+    date.setHours(0,0,0,0);
+    var dayOfWeek = date.getDay();
+    var isToday = date.getTime() === today.getTime();
+    var isPast = date < today;
+    var isTooFar = date > maxDate;
+
+    // Check availability: M-F=1-5, Sat=6, Sun=0 (1st+3rd only)
+    var isAvailable = false;
+    if (dayOfWeek >= 1 && dayOfWeek <= 6) isAvailable = true;
+    if (dayOfWeek === 0) {
+      // 1st and 3rd Sundays
+      var weekNum = Math.ceil(d / 7);
+      if (weekNum === 1 || weekNum === 3) isAvailable = true;
+    }
+
+    var isDisabled = isPast || isTooFar || !isAvailable;
+    var isSelected = bkSelectedDate && bkSelectedDate.getTime() === date.getTime();
+    var cls = 'bk-cal-day';
+    if (isDisabled) cls += ' disabled';
+    if (isSelected) cls += ' selected';
+    if (isToday) cls += ' today';
+
+    if (isDisabled) {
+      h += '<div class="' + cls + '">' + d + '</div>';
+    } else {
+      h += '<div class="' + cls + '" onclick="bkSelectDate(' + bkYear + ',' + bkMonth + ',' + d + ')">' + d + '</div>';
+    }
+  }
+  grid.innerHTML = h;
+}
+
+function bkSelectDate(y, m, d) {
+  bkSelectedDate = new Date(y, m, d);
+  bkSelectedSlot = null;
+  bkRenderCal();
+  bkRenderSlots();
+}
+
+function bkRenderSlots() {
+  if (!bkSelectedDate) return;
+  document.getElementById('bkSlotSection').style.display = 'block';
+  document.getElementById('bkFormSection').style.display = 'none';
+  var dow = bkSelectedDate.getDay();
+  var slots = [];
+  var startHr, endHr;
+
+  if (dow === 6) { startHr = 11; endHr = 14; }
+  else if (dow === 0) { startHr = 10; endHr = 15; }
+  else { startHr = 10; endHr = 17; }
+
+  // 12hr min notice
+  var now = new Date();
+  var minTime = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+
+  // Generate 30-min slots with 15-min buffer (so every 45 min)
+  for (var hr = startHr; hr < endHr; hr++) {
+    for (var min = 0; min < 60; min += 30) {
+      var slotTime = new Date(bkSelectedDate);
+      slotTime.setHours(hr, min, 0, 0);
+      if (slotTime < minTime) continue;
+
+      var endTime = new Date(slotTime.getTime() + 30 * 60 * 1000);
+      if (endTime.getHours() > endHr || (endTime.getHours() === endHr && endTime.getMinutes() > 0)) continue;
+
+      // Check if booked
+      var dateStr = bkSelectedDate.toISOString().split('T')[0];
+      var timeStr = (hr < 10 ? '0' : '') + hr + ':' + (min < 10 ? '0' : '') + min;
+      var isBooked = bkBookedSlots.some(function(b) { return b.booking_date === dateStr && b.booking_time === timeStr; });
+
+      var ampm = hr >= 12 ? 'PM' : 'AM';
+      var hr12 = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
+      var label = hr12 + ':' + (min < 10 ? '0' : '') + min + ' ' + ampm;
+
+      slots.push({ time: timeStr, label: label, booked: isBooked });
+    }
+  }
+
+  var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('bkSlotTitle').textContent = days[dow] + ' — Available Times';
+  var el = document.getElementById('bkSlots');
+  if (slots.length === 0) {
+    el.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:#999;font-size:13px;">No available times for this day</div>';
+    return;
+  }
+  var h = '';
+  slots.forEach(function(s) {
+    var cls = 'bk-slot' + (s.booked ? ' booked' : '') + (bkSelectedSlot === s.time ? ' selected' : '');
+    if (s.booked) {
+      h += '<div class="' + cls + '">Booked</div>';
+    } else {
+      h += '<div class="' + cls + '" onclick="bkSelectSlot(\'' + s.time + '\')">' + s.label + '</div>';
+    }
+  });
+  el.innerHTML = h;
+}
+
+function bkSelectSlot(time) {
+  bkSelectedSlot = time;
+  bkRenderSlots();
+  document.getElementById('bkFormSection').style.display = 'block';
+}
+
+function bkSubmitBooking() {
+  var first = document.getElementById('bkFirst').value.trim();
+  var last = document.getElementById('bkLast').value.trim();
+  var phone = document.getElementById('bkPhone').value.trim();
+  var email = document.getElementById('bkEmail').value.trim();
+  var errEl = document.getElementById('bkError');
+  errEl.style.display = 'none';
+
+  if (!first || !last || !phone || !email) {
+    errEl.textContent = 'All fields are required.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!bkSelectedDate || !bkSelectedSlot) {
+    errEl.textContent = 'Please select a date and time.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  var btn = document.getElementById('bkSubmitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Booking...';
+  var dateStr = bkSelectedDate.toISOString().split('T')[0];
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'book_consultation',
+      webinar_id: webinarData ? webinarData.id : null,
+      first_name: first, last_name: last, phone: phone, email: email,
+      booking_date: dateStr, booking_time: bkSelectedSlot,
+      lo_user_id: webinarData ? webinarData.lo_user_id : 'default'
+    })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      document.getElementById('bkCalendarView').style.display = 'none';
+      document.getElementById('bkConfirmed').style.display = 'block';
+      var tp = bkSelectedSlot.split(':');
+      var h = parseInt(tp[0]), m = tp[1];
+      var ap = h >= 12 ? 'PM' : 'AM';
+      var h12 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+      document.getElementById('bkConfirmDetails').textContent = 'Your consultation is scheduled for ' + dateStr + ' at ' + h12 + ':' + m + ' ' + ap + ' EST. You\'ll receive a confirmation email and text shortly.';
+    } else {
+      errEl.textContent = data.message || 'Booking failed. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
+    }
+  }).catch(function() {
+    errEl.textContent = 'Connection error. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Confirm Booking';
+  });
 }
 
 loadWebinar();
