@@ -336,8 +336,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
       </div>
       <div class="hero-right">
         <div class="form-card">
-          <div class="form-urgency">Register for the <strong>FREE</strong> Webinar</div>
-          <div class="form-title">Reserve Your <em>Spot</em></div>
+          <div class="form-urgency">Normally a <strong>$5.00</strong> sign-up fee, now completely free!</div>
+          <div class="form-title">Register for the <em>FREE</em> Webinar</div>
           <form id="regForm" onsubmit="return submitRegistration(event)">
             <div class="form-row">
               <div class="form-field">
@@ -458,8 +458,7 @@ function populatePage() {
   document.title = w.title + ' | Kristy Flach';
 
   // Hero
-  var headlineText = w.headline || w.title;
-  document.getElementById('pgHeadline').innerHTML = '[Online] <em>' + headlineText.split(' ').slice(0,2).join(' ') + '</em> ' + headlineText.split(' ').slice(2).join(' ');
+  document.getElementById('pgHeadline').innerHTML = '<em>' + (w.title || 'Homebuyer Masterclass') + ':</em><br>' + (w.headline || 'Don\'t Make These Costly Mistakes');
   document.getElementById('pgSubheadline').textContent = w.subheadline || 'Join our free webinar to gain the clarity you need. Sign up now!';
   document.getElementById('pgDate').textContent = w.pretty_date || w.webinar_date;
   document.getElementById('pgTimezone').textContent = w.timezone_abbr || 'ET';
