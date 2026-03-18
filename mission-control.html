@@ -1094,17 +1094,25 @@
           </div>
         </div>
         <textarea id="emTplBody" rows="10" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Write your email content here..."></textarea>
-        <!-- AI Draft Modal -->
+        <!-- AI Re-write bar (appears after generation, below the body so you can see what was written) -->
+        <div id="emAiRewriteBar" style="display:none;margin-top:8px;margin-bottom:12px;padding:12px;background:linear-gradient(135deg,rgba(168,85,247,0.06),rgba(59,130,246,0.06));border:1px solid rgba(168,85,247,0.2);border-radius:8px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <i class="fas fa-magic" style="color:#a855f7;font-size:12px;"></i>
+            <span style="font-size:12px;font-weight:600;color:#a855f7;">AI draft inserted — edit directly above or re-write:</span>
+          </div>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <textarea id="emAiExtra" rows="2" style="flex:1;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;padding:8px;resize:vertical;box-sizing:border-box;" placeholder="Make it shorter, more casual, add a CTA about scheduling a call..."></textarea>
+            <button class="topbar-btn" onclick="emAiRewrite()" id="emAiRewriteBtn" style="white-space:nowrap;"><i class="fas fa-redo"></i> Re-write</button>
+          </div>
+          <div id="emAiRewriteStatus" style="font-size:11px;margin-top:6px;color:var(--text-muted);"></div>
+        </div>
+        <!-- AI Draft Modal (just the initial prompt — closes after generation) -->
         <div id="emAiOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
           <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;">
             <div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-magic" style="color:#a855f7;"></i> AI Email Writer</div>
             <div class="fc-field" style="margin-bottom:12px;">
               <div class="fc-lbl">Describe what you want this email to say</div>
               <textarea id="emAiPrompt" rows="3" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Recruitment email to realtors about partnering with me, mention Agent Edge tools"></textarea>
-            </div>
-            <div id="emAiExtraWrap" style="display:none;" class="fc-field" style="margin-bottom:12px;">
-              <div class="fc-lbl">Additional directions</div>
-              <textarea id="emAiExtra" rows="2" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:13px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Make it shorter, more casual, add a CTA about scheduling a call..."></textarea>
             </div>
             <div class="fc-field" style="margin-bottom:16px;">
               <div class="fc-lbl">Tone</div>
@@ -1118,12 +1126,11 @@
             <div style="display:flex;gap:8px;">
               <button class="topbar-btn" onclick="emAiClose()">Cancel</button>
               <button class="topbar-btn primary" onclick="emAiGenerate()" id="emAiBtn"><i class="fas fa-magic"></i> Generate</button>
-              <button class="topbar-btn" onclick="emAiRewrite()" id="emAiRewriteBtn" style="display:none;"><i class="fas fa-redo"></i> Re-write</button>
             </div>
             <div id="emAiResult" style="font-size:11px;margin-top:8px;color:var(--text-muted);"></div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;">
+        <div style="display:flex;gap:8px;margin-top:12px;">
           <button class="topbar-btn" onclick="emCloseTemplateEditor()">Cancel</button>
           <button class="topbar-btn" onclick="emPreviewTemplate()" style="font-size:11px;"><i class="fas fa-eye"></i> Preview</button>
           <button class="topbar-btn primary" onclick="emSaveTemplate()"><i class="fas fa-save"></i> Save Template</button>
