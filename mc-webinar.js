@@ -249,3 +249,256 @@ function wbDeleteWebinar(id) {
     body: JSON.stringify({ action: 'delete_webinar', webinar_id: id })
   }).then(function() { wbLoadWebinars(); showToast('Webinar deleted'); });
 }
+
+// ===== WEBINAR PIPELINE =====
+var wpRegistrants = [];
+var wpCurrentDetail = null;
+var wpDragId = null;
+
+var wpStages = [
+  { id: 'registered', title: 'REGISTERED' },
+  { id: 'abandoned', title: 'ABANDONED' },
+  { id: 'did_not_attend', title: 'DID NOT ATTEND' },
+  { id: 'attended', title: 'ATTENDED' },
+  { id: 'attended_no_book', title: 'ATTENDED & DID NOT BOOK' },
+  { id: 'attended_booked', title: 'ATTENDED & BOOKED' },
+  { id: 'appointment_conducted', title: 'APPOINTMENT CONDUCTED' }
+];
+
+function wpInit() {
+  // Load webinar list into the filter dropdown
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_webinars', lo_user_id: loUser })
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    var sel = document.getElementById('wpWebinarFilter');
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Select a webinar...</option>';
+    (res.webinars || []).forEach(function(w) {
+      sel.innerHTML += '<option value="' + w.id + '">' + w.title + ' (' + (w.pretty_date || w.webinar_date || '') + ')</option>';
+    });
+  });
+}
+
+function wpLoadRegistrants() {
+  var webinarId = document.getElementById('wpWebinarFilter').value;
+  var board = document.getElementById('wpBoard');
+  var empty = document.getElementById('wpEmpty');
+  if (!webinarId) {
+    board.innerHTML = '';
+    board.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+  board.style.display = 'flex';
+
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_registrants', webinar_id: parseInt(webinarId) })
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    wpRegistrants = res.registrants || [];
+    wpRenderBoard();
+  }).catch(function() {
+    board.innerHTML = '<div style="padding:40px;color:var(--text-muted);text-align:center;">Error loading registrants</div>';
+  });
+}
+
+function wpRenderBoard() {
+  var board = document.getElementById('wpBoard');
+  board.innerHTML = '';
+
+  wpStages.forEach(function(stage) {
+    var stageRegs = wpRegistrants.filter(function(r) { return (r.pipeline_stage || 'registered') === stage.id; });
+    var col = document.createElement('div');
+    col.className = 'wp-col';
+
+    var header = '<div class="wp-col-header">' + stage.title + ' <span class="wp-col-count">' + stageRegs.length + '</span></div>';
+    var body = document.createElement('div');
+    body.className = 'wp-col-body';
+    body.dataset.stage = stage.id;
+
+    // Drag drop
+    body.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drop-highlight'); });
+    body.addEventListener('dragleave', function() { this.classList.remove('drop-highlight'); });
+    body.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drop-highlight');
+      var newStage = this.dataset.stage;
+      if (wpDragId && newStage) {
+        wpUpdateStage(wpDragId, newStage);
+      }
+    });
+
+    stageRegs.forEach(function(r) {
+      var card = document.createElement('div');
+      card.className = 'wp-card';
+      card.draggable = true;
+      card.addEventListener('dragstart', function() { wpDragId = r.id; });
+      card.addEventListener('dragend', function() { wpDragId = null; });
+      card.onclick = function() { wpOpenDetail(r.id); };
+
+      var name = ((r.first_name || '') + ' ' + (r.last_name || '')).trim() || r.email;
+      var dateStr = r.registered_at ? new Date(r.registered_at).toLocaleDateString() : '';
+      var h = '<div class="wp-card-name">' + name + '</div>';
+      h += '<div class="wp-card-email">' + (r.email || '') + '</div>';
+      h += '<div class="wp-card-phone">' + (r.phone || '') + '</div>';
+      h += '<div class="wp-card-date">' + dateStr + '</div>';
+      if (r.crm_id) h += '<div class="wp-card-crm">CRM</div>';
+      card.innerHTML = h;
+      body.appendChild(card);
+    });
+
+    col.innerHTML = header;
+    col.appendChild(body);
+    board.appendChild(col);
+  });
+}
+
+function wpUpdateStage(regId, newStage) {
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'update_stage', registrant_id: regId, stage: newStage })
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    if (res.success) {
+      var reg = wpRegistrants.find(function(r) { return r.id === regId; });
+      if (reg) reg.pipeline_stage = newStage;
+      wpRenderBoard();
+    }
+  });
+}
+
+function wpOpenDetail(regId) {
+  var r = wpRegistrants.find(function(x) { return x.id === regId; });
+  if (!r) return;
+  wpCurrentDetail = r;
+  document.getElementById('wpDetailId').value = r.id;
+  document.getElementById('wpDetailName').textContent = ((r.first_name || '') + ' ' + (r.last_name || '')).trim() || r.email;
+  document.getElementById('wpDetailEmail').textContent = r.email || '—';
+  document.getElementById('wpDetailPhone').textContent = r.phone || '—';
+  document.getElementById('wpDetailDate').textContent = r.registered_at ? new Date(r.registered_at).toLocaleString() : '—';
+  var stageLabel = wpStages.find(function(s) { return s.id === (r.pipeline_stage || 'registered'); });
+  document.getElementById('wpDetailStage').textContent = stageLabel ? stageLabel.title : r.pipeline_stage;
+  document.getElementById('wpDetailNotes').value = r.notes || '';
+  document.getElementById('wpActionMenu').style.display = 'none';
+
+  // Update CRM button state
+  var crmBtn = document.getElementById('wpCrmBtn');
+  if (r.crm_id) {
+    crmBtn.textContent = 'View CRM Card';
+    crmBtn.onclick = function() { switchView('crm'); /* TODO: open specific card */ };
+  } else {
+    crmBtn.textContent = 'Create CRM Card';
+    crmBtn.onclick = wpCreateCRM;
+  }
+
+  document.getElementById('wpDetailOverlay').style.display = 'flex';
+}
+
+function wpCloseDetail() {
+  document.getElementById('wpDetailOverlay').style.display = 'none';
+  wpCurrentDetail = null;
+}
+
+function wpToggleActions() {
+  var menu = document.getElementById('wpActionMenu');
+  menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+}
+
+function wpSaveNotes() {
+  if (!wpCurrentDetail) return;
+  var notes = document.getElementById('wpDetailNotes').value;
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_notes', registrant_id: wpCurrentDetail.id, notes: notes })
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    if (res.success) {
+      wpCurrentDetail.notes = notes;
+      showToast('Notes saved', 'success');
+    }
+  });
+}
+
+function wpCreateCRM() {
+  if (!wpCurrentDetail) return;
+  var r = wpCurrentDetail;
+  document.getElementById('wpActionMenu').style.display = 'none';
+
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'create_crm_from_registrant',
+      registrant_id: r.id,
+      lo_user_id: localStorage.getItem('agent_edge_user') || 'default'
+    })
+  }).then(function(res) { return res.json(); }).then(function(data) {
+    if (data.success) {
+      r.crm_id = data.crm_id;
+      showToast('CRM card created!', 'success');
+      wpRenderBoard();
+      wpOpenDetail(r.id);
+    } else {
+      showToast('Error: ' + (data.message || 'Could not create CRM card'));
+    }
+  });
+}
+
+function wpMoveToLoan(stage) {
+  if (!wpCurrentDetail) return;
+  var r = wpCurrentDetail;
+  document.getElementById('wpActionMenu').style.display = 'none';
+
+  // Create CRM card first if not exists
+  var createFirst = !r.crm_id;
+  var proceed = function(crmId) {
+    fetch(API_BASE_WB + '/webinar-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'move_to_loan_pipeline',
+        registrant_id: r.id,
+        crm_id: crmId,
+        pipeline_stage: stage,
+        lo_user_id: localStorage.getItem('agent_edge_user') || 'default'
+      })
+    }).then(function(res) { return res.json(); }).then(function(data) {
+      if (data.success) {
+        var stageNames = { warm:'Warm Leads', active:'Active Conversations', credit:'Credit Repair', preapproval:'Started Pre-Approval', preapproved:'Approved', ratewatch:'Rate Watch', underwriting:'Underwriting' };
+        showToast('Moved to ' + (stageNames[stage] || stage) + '!', 'success');
+        wpCloseDetail();
+        wpLoadRegistrants();
+      } else {
+        showToast('Error: ' + (data.message || 'Could not move to pipeline'));
+      }
+    });
+  };
+
+  if (createFirst) {
+    fetch(API_BASE_WB + '/webinar-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'create_crm_from_registrant', registrant_id: r.id, lo_user_id: localStorage.getItem('agent_edge_user') || 'default' })
+    }).then(function(res) { return res.json(); }).then(function(data) {
+      if (data.success) {
+        r.crm_id = data.crm_id;
+        proceed(data.crm_id);
+      } else {
+        showToast('Error creating CRM card first');
+      }
+    });
+  } else {
+    proceed(r.crm_id);
+  }
+}
+
+function wpDeleteRegistrant() {
+  if (!wpCurrentDetail) return;
+  if (!confirm('Delete this registrant? This cannot be undone.')) return;
+  fetch(API_BASE_WB + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_registrant', registrant_id: wpCurrentDetail.id })
+  }).then(function() {
+    wpCloseDetail();
+    wpLoadRegistrants();
+    showToast('Registrant deleted');
+  });
+}
