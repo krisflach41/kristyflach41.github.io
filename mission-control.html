@@ -80,8 +80,8 @@
     <div class="nav-item" onclick="switchView('briefings', this)">
       <span class="nav-icon"><i class="fas fa-sun"></i></span> Market Briefings
     </div>
-    <div class="nav-item" onclick="switchView('prospecting', this)">
-      <span class="nav-icon"><i class="fas fa-search-dollar"></i></span> Prospecting
+    <div class="nav-item" onclick="switchView('webinarLauncher', this)">
+      <span class="nav-icon"><i class="fas fa-broadcast-tower"></i></span> Webinar Seminars
     </div>
 
     <div class="nav-section-label">Admin</div>
@@ -1124,23 +1124,112 @@
 <!-- PROSPECTING VIEW -->
 <!-- ========================================== -->
 
-<div class="view-panel" id="view-prospecting">
+<div class="view-panel" id="view-webinarLauncher">
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Prospecting</div><div class="topbar-subtitle">Find active realtors and untapped opportunities</div></div>
+      <div><div class="topbar-title">Webinar Seminars</div><div class="topbar-subtitle">Create and manage your webinar funnels</div></div>
     </div>
     <div class="topbar-right">
-      <input type="text" class="topbar-search" placeholder="Search by zip, city, county..." style="width:240px;" id="prospectSearch">
-      <button class="topbar-btn primary" onclick="runProspectSearch()">Search</button>
+      <button class="topbar-btn primary" onclick="wbOpenCreate()" style="background:rgba(110,127,119,0.2);color:#6e7f77;border-color:rgba(110,127,119,0.4);"><i class="fas fa-plus"></i> New Webinar</button>
     </div>
   </div>
-  <div class="content-area">
-    <div class="placeholder-center">
-      <div class="placeholder-icon"><i class="fas fa-envelope"></i></div>
-      <div class="placeholder-text">Search for realtors by location to discover partnership opportunities</div>
-      <div class="placeholder-sub">Powered by public records  -  Updated daily</div>
+  <div class="content-area" style="padding:16px 24px;">
+
+    <!-- Webinar List -->
+    <div id="wbList">
+      <div style="text-align:center;padding:60px;color:var(--text-muted);">
+        <i class="fas fa-broadcast-tower" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.2;"></i>
+        <div style="font-size:14px;margin-bottom:4px;">No webinars yet</div>
+        <div style="font-size:12px;">Click "+ New Webinar" to create your first webinar funnel</div>
+      </div>
     </div>
+
+    <!-- Create / Edit Webinar Form (hidden by default) -->
+    <div id="wbCreateForm" style="display:none;">
+      <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-size:16px;font-weight:700;color:var(--text-primary);" id="wbFormTitle">New Webinar</div>
+          <button class="topbar-btn" onclick="wbCloseCreate()" style="font-size:11px;">Cancel</button>
+        </div>
+
+        <!-- Webinar Details -->
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;margin-bottom:12px;"><i class="fas fa-info-circle" style="margin-right:4px;"></i> WEBINAR DETAILS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="fc-field">
+            <div class="fc-lbl">Webinar Title *</div>
+            <input id="wbTitle" placeholder="e.g. First-Time Homebuyer Masterclass">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Target City / Area *</div>
+            <input id="wbCity" placeholder="e.g. Cincinnati, OH">
+          </div>
+        </div>
+
+        <!-- Date & Time -->
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;margin-bottom:12px;margin-top:20px;"><i class="fas fa-calendar-alt" style="margin-right:4px;"></i> DATE & TIME</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="fc-field">
+            <div class="fc-lbl">Webinar Date *</div>
+            <input type="date" id="wbDate">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Start Time *</div>
+            <input type="time" id="wbTime" value="19:00">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Timezone</div>
+            <select id="wbTimezone">
+              <option value="America/New_York" selected>Eastern (ET)</option>
+              <option value="America/Chicago">Central (CT)</option>
+              <option value="America/Denver">Mountain (MT)</option>
+              <option value="America/Los_Angeles">Pacific (PT)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Zoom & Links -->
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;margin-bottom:12px;margin-top:20px;"><i class="fas fa-video" style="margin-right:4px;"></i> ZOOM & LINKS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div class="fc-field">
+            <div class="fc-lbl">Zoom Meeting Link *</div>
+            <input id="wbZoomLink" value="https://us06web.zoom.us/j/7080198417?pwd=G2WOlqyTeDUhaUaujzfwxD165yFdn1.1">
+          </div>
+          <div class="fc-field">
+            <div class="fc-lbl">Booking Link (auto-generated)</div>
+            <input id="wbBookingLink" value="" readonly style="background:#f0f0f0;cursor:not-allowed;" placeholder="Generated on save">
+          </div>
+        </div>
+
+        <!-- Landing Page Content -->
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;margin-bottom:12px;margin-top:20px;"><i class="fas fa-file-alt" style="margin-right:4px;"></i> LANDING PAGE CONTENT</div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Headline *</div>
+          <input id="wbHeadline" placeholder="e.g. Don't Make These Costly Mistakes">
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">Subheadline / Hook</div>
+          <input id="wbSubheadline" placeholder="e.g. Feeling overwhelmed by the homebuying process?">
+        </div>
+        <div class="fc-field" style="margin-bottom:12px;">
+          <div class="fc-lbl">"What to Expect" Description</div>
+          <textarea id="wbExpectText" rows="4" style="width:100%;resize:vertical;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;padding:10px;box-sizing:border-box;" placeholder="Describe what attendees will learn..."></textarea>
+        </div>
+        <div class="fc-field" style="margin-bottom:16px;">
+          <div class="fc-lbl">"Meet the Speaker" Bio</div>
+          <textarea id="wbSpeakerBio" rows="3" style="width:100%;resize:vertical;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;padding:10px;box-sizing:border-box;" placeholder="Short bio about you as the webinar host..."></textarea>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;gap:8px;padding-top:16px;border-top:1px solid var(--border);">
+          <button class="topbar-btn" onclick="wbCloseCreate()">Cancel</button>
+          <button class="topbar-btn" onclick="wbSaveDraft()" style="background:rgba(110,127,119,0.1);color:#6e7f77;border-color:rgba(110,127,119,0.3);"><i class="fas fa-save"></i> Save Draft</button>
+          <button class="topbar-btn primary" onclick="wbPublish()" style="background:rgba(110,127,119,0.2);color:#6e7f77;border-color:rgba(110,127,119,0.4);"><i class="fas fa-rocket"></i> Publish Funnel</button>
+        </div>
+        <input type="hidden" id="wbEditId" value="">
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -2343,6 +2432,7 @@
 <script src="mc-tools-drawer.js"></script>
 <script src="mc-init.js"></script>
 <script src="mc-briefings.js"></script>
+<script src="mc-webinar.js"></script>
 <script src="mc-blog-import.js"></script>
 
 </body>
