@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Webinar | Kristy Flach</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9fa; }
+
+/* ===== HERO SECTION ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: url('/header-background.jpeg') center/cover no-repeat;
+  z-index: 0;
+}
+.hero-overlay {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 1100px; width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+
+/* Left side — messaging */
+.hero-left { color: white; }
+.hero-tag {
+  display: inline-block;
+  background: rgba(110,127,119,0.3);
+  color: #c8d8cc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+.hero-headline {
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+.hero-headline em {
+  font-style: normal;
+  color: #9CB5A0;
+}
+.hero-sub {
+  font-size: 16px;
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-bottom: 20px;
+}
+.hero-details {
+  display: flex; gap: 20px;
+  font-size: 14px;
+  opacity: 0.85;
+  margin-bottom: 24px;
+}
+.hero-details i { color: #9CB5A0; margin-right: 6px; }
+.hero-image {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+}
+
+/* Right side — form */
+.hero-right {}
+.form-card {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 32px 28px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+.form-urgency {
+  text-align: center;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 4px;
+}
+.form-urgency strong { color: #6e7f77; font-size: 18px; }
+.form-title {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0b1f3a;
+  margin-bottom: 20px;
+}
+.form-title em { font-style: normal; color: #6e7f77; }
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.form-field { display: flex; flex-direction: column; }
+.form-field label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  margin-bottom: 4px;
+}
+.form-field input {
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-field input:focus { border-color: #6e7f77; }
+.form-consent {
+  font-size: 10px;
+  color: #888;
+  line-height: 1.5;
+  margin: 12px 0 16px 0;
+}
+.form-btn {
+  width: 100%;
+  padding: 14px;
+  background: #6e7f77;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.form-btn:hover { background: #5a6b63; }
+.form-btn:disabled { background: #aaa; cursor: wait; }
+.form-error { color: #e53e3e; font-size: 12px; margin-top: 8px; text-align: center; display: none; }
+
+/* ===== EXPECT SECTION ===== */
+.expect-section {
+  background: white;
+  padding: 60px 20px;
+  text-align: center;
+}
+.expect-section h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0b1f3a;
+  margin-bottom: 30px;
+}
+.expect-section h2 em { font-style: normal; color: #6e7f77; }
+.expect-text {
+  max-width: 750px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.8;
+  color: #555;
+}
+
+/* ===== SPEAKER SECTION ===== */
+.speaker-section {
+  background: #f3f5f4;
+  padding: 60px 20px;
+}
+.speaker-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  gap: 30px;
+  align-items: center;
+}
+.speaker-img {
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  flex-shrink: 0;
+}
+.speaker-info h3 {
+  font-size: 14px;
+  color: #6e7f77;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.speaker-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0b1f3a;
+  margin-bottom: 8px;
+}
+.speaker-title {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 12px;
+}
+.speaker-bio {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #555;
+}
+
+/* ===== CTA SECTION ===== */
+.cta-section {
+  position: relative;
+  padding: 60px 20px;
+  text-align: center;
+  overflow: hidden;
+}
+.cta-bg {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: url('/header-background.jpeg') center/cover no-repeat;
+  z-index: 0;
+}
+.cta-overlay {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1;
+}
+.cta-content {
+  position: relative; z-index: 2;
+}
+.cta-content h2 {
+  font-size: 26px;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 16px;
+}
+.cta-content h2 em { font-style: normal; color: #9CB5A0; }
+.cta-btn {
+  display: inline-block;
+  padding: 14px 40px;
+  background: #6e7f77;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.cta-btn:hover { background: #5a6b63; }
+
+/* ===== FOOTER ===== */
+.landing-footer {
+  background: white;
+  padding: 24px 20px;
+  text-align: center;
+  border-top: 1px solid #eee;
+}
+.footer-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.footer-logos img { height: 28px; }
+.footer-text {
+  font-size: 10px;
+  color: #999;
+  line-height: 1.6;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.footer-links {
+  margin-top: 8px;
+  font-size: 11px;
+}
+.footer-links a { color: #6e7f77; text-decoration: none; margin: 0 8px; }
+.footer-links a:hover { text-decoration: underline; }
+
+/* ===== LOADING ===== */
+.loading-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: #6e7f77;
+  font-size: 14px;
+}
+.loading-screen i { margin-right: 8px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero-content { grid-template-columns: 1fr; text-align: center; }
+  .hero-left { order: 1; }
+  .hero-right { order: 2; }
+  .hero-headline { font-size: 26px; }
+  .hero-details { justify-content: center; flex-wrap: wrap; gap: 12px; }
+  .hero-image { max-width: 300px; margin: 0 auto 20px; }
+  .form-row { grid-template-columns: 1fr; }
+  .speaker-inner { flex-direction: column; text-align: center; }
+  .speaker-img { width: 140px; height: 140px; }
+}
+</style>
+</head>
+<body>
+
+<div id="loadingScreen" class="loading-screen">
+  <i class="fas fa-spinner fa-spin"></i> Loading webinar details...
+</div>
+
+<div id="pageContent" style="display:none;">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-left">
+        <div class="hero-tag">FREE ONLINE WEBINAR</div>
+        <h1 class="hero-headline" id="pgHeadline">[Online] <em>Home Buyers</em> Masterclass</h1>
+        <p class="hero-sub" id="pgSubheadline">Sign up now to take control of your homebuying journey!</p>
+        <div class="hero-details">
+          <span><i class="fas fa-calendar-alt"></i> <span id="pgDate">Loading...</span></span>
+          <span><i class="fas fa-clock"></i> <span id="pgTimezone">ET</span></span>
+          <span><i class="fas fa-map-marker-alt"></i> <span id="pgCity">Online</span></span>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="form-card">
+          <div class="form-urgency">Register for the <strong>FREE</strong> Webinar</div>
+          <div class="form-title">Reserve Your <em>Spot</em></div>
+          <form id="regForm" onsubmit="return submitRegistration(event)">
+            <div class="form-row">
+              <div class="form-field">
+                <label>First Name *</label>
+                <input type="text" id="regFirst" placeholder="First Name" required>
+              </div>
+              <div class="form-field">
+                <label>Last Name *</label>
+                <input type="text" id="regLast" placeholder="Last Name" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-field">
+                <label>Phone *</label>
+                <input type="tel" id="regPhone" placeholder="(555) 123-4567" required>
+              </div>
+              <div class="form-field">
+                <label>Email *</label>
+                <input type="email" id="regEmail" placeholder="you@email.com" required>
+              </div>
+            </div>
+            <div class="form-consent">By submitting this form, you agree to receive automated, promotional and personalized marketing communications regarding this event. We do not sell or share your data. Msg and data rates may apply. Reply Stop to opt-out.</div>
+            <button type="submit" class="form-btn" id="regBtn">Register</button>
+            <div class="form-error" id="regError"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT TO EXPECT -->
+  <section class="expect-section">
+    <h2>What to <em>expect</em> from this webinar</h2>
+    <div class="expect-text" id="pgExpectText">Loading...</div>
+  </section>
+
+  <!-- MEET THE SPEAKER -->
+  <section class="speaker-section">
+    <div class="speaker-inner">
+      <img src="/hero-headshot.jpg" alt="Kristy Flach" class="speaker-img">
+      <div>
+        <h3>MEET YOUR HOST</h3>
+        <div class="speaker-name" id="pgHostName">Kristy Flach</div>
+        <div class="speaker-title">Certified Mortgage Advisor & Loan Officer | NMLS #2632259</div>
+        <div class="speaker-bio" id="pgSpeakerBio">Loading...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-overlay"></div>
+    <div class="cta-content">
+      <h2>Start Your <em>Home Ownership</em> Journey Today.</h2>
+      <a href="#" onclick="document.querySelector('.hero').scrollIntoView({behavior:'smooth'});return false;" class="cta-btn">Register Now</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="landing-footer">
+    <div class="footer-logos">
+      <img src="/PRMG-Logo.png" alt="PRMG">
+      <img src="/equal-housing-logo.png" alt="Equal Housing Opportunity">
+    </div>
+    <div class="footer-text">
+      Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity. For licensing information, visit nmlsconsumeraccess.org. This is not a commitment to lend. All loan programs subject to credit approval.
+    </div>
+    <div class="footer-links">
+      <a href="/privacy-policy">Privacy Policy</a>
+      <a href="/terms">Terms & Conditions</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+var webinarData = null;
+
+// Get slug from URL: either ?s=slug-name (via 404 redirect) or /landing/slug-name (direct)
+var params = new URLSearchParams(window.location.search);
+var slug = params.get('s') || '';
+var subpage = params.get('p') || '';
+if (!slug) {
+  var pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
+  slug = pathParts[pathParts.length - 1];
+  if (slug === 'landing' || slug === 'index.html') slug = '';
+}
+
+function loadWebinar() {
+  if (!slug) {
+    document.getElementById('loadingScreen').innerHTML = '<div style="text-align:center;"><div style="font-size:18px;color:#333;margin-bottom:8px;">Webinar not found</div><div style="font-size:13px;color:#888;">The webinar you\'re looking for doesn\'t exist or has ended.</div></div>';
+    return;
+  }
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_by_slug', slug: slug })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success || !data.webinar) {
+      document.getElementById('loadingScreen').innerHTML = '<div style="text-align:center;"><div style="font-size:18px;color:#333;margin-bottom:8px;">Webinar not found</div><div style="font-size:13px;color:#888;">The webinar you\'re looking for doesn\'t exist or has ended.</div></div>';
+      return;
+    }
+    webinarData = data.webinar;
+    populatePage();
+  })
+  .catch(function() {
+    document.getElementById('loadingScreen').innerHTML = '<div style="text-align:center;color:#e53e3e;">Error loading webinar. Please try again.</div>';
+  });
+}
+
+function populatePage() {
+  var w = webinarData;
+  document.title = w.title + ' | Kristy Flach';
+
+  // Hero
+  var headlineText = w.headline || w.title;
+  document.getElementById('pgHeadline').innerHTML = '[Online] <em>' + headlineText.split(' ').slice(0,2).join(' ') + '</em> ' + headlineText.split(' ').slice(2).join(' ');
+  document.getElementById('pgSubheadline').textContent = w.subheadline || 'Join our free webinar to gain the clarity you need. Sign up now!';
+  document.getElementById('pgDate').textContent = w.pretty_date || w.webinar_date;
+  document.getElementById('pgTimezone').textContent = w.timezone_abbr || 'ET';
+  document.getElementById('pgCity').textContent = w.city || 'Online';
+
+  // Expect
+  var expectText = w.expect_text || '';
+  if (expectText) {
+    document.getElementById('pgExpectText').innerHTML = expectText.replace(/\n/g, '<br><br>');
+  }
+
+  // Speaker
+  document.getElementById('pgHostName').textContent = w.host_name || 'Kristy Flach';
+  var bio = w.speaker_bio || '';
+  if (bio) {
+    document.getElementById('pgSpeakerBio').innerHTML = bio.replace(/\n/g, '<br>');
+  }
+
+  // Show page
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('pageContent').style.display = 'block';
+}
+
+function submitRegistration(e) {
+  e.preventDefault();
+  var btn = document.getElementById('regBtn');
+  var errEl = document.getElementById('regError');
+  errEl.style.display = 'none';
+
+  var first = document.getElementById('regFirst').value.trim();
+  var last = document.getElementById('regLast').value.trim();
+  var phone = document.getElementById('regPhone').value.trim();
+  var email = document.getElementById('regEmail').value.trim();
+
+  if (!first || !last || !phone || !email) {
+    errEl.textContent = 'All fields are required.';
+    errEl.style.display = 'block';
+    return false;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Registering...';
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'register',
+      webinar_id: webinarData.id,
+      first_name: first,
+      last_name: last,
+      phone: phone,
+      email: email,
+      lo_user_id: webinarData.lo_user_id || 'default'
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      // Redirect to thank you page
+      window.location.href = '/landing/' + slug + '/registered';
+    } else {
+      errEl.textContent = data.message || 'Registration failed. Please try again.';
+      errEl.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Register';
+    }
+  })
+  .catch(function() {
+    errEl.textContent = 'Connection error. Please try again.';
+    errEl.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Register';
+  });
+
+  return false;
+}
+
+// Phone formatting
+document.addEventListener('DOMContentLoaded', function() {
+  var phoneInput = document.getElementById('regPhone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', function() {
+      var val = this.value.replace(/\D/g, '');
+      if (val.length > 10) val = val.substring(0, 10);
+      if (val.length >= 6) {
+        this.value = '(' + val.substring(0,3) + ') ' + val.substring(3,6) + '-' + val.substring(6);
+      } else if (val.length >= 3) {
+        this.value = '(' + val.substring(0,3) + ') ' + val.substring(3);
+      }
+    });
+  }
+});
+
+loadWebinar();
+</script>
+</body>
+</html>
