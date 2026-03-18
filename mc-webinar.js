@@ -216,6 +216,7 @@ function wbCard(w, type) {
     h += '<div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">';
     h += '<a href="https://kristyflach.com/landing/' + w.slug + '" target="_blank" style="font-size:10px;color:#6e7f77;text-decoration:none;padding:2px 6px;border:1px solid rgba(110,127,119,0.3);border-radius:4px;"><i class="fas fa-external-link-alt" style="margin-right:3px;"></i>Registration</a>';
     h += '<a href="https://kristyflach.com/landing/' + w.slug + '/join" target="_blank" style="font-size:10px;color:#6e7f77;text-decoration:none;padding:2px 6px;border:1px solid rgba(110,127,119,0.3);border-radius:4px;"><i class="fas fa-video" style="margin-right:3px;"></i>Join Page</a>';
+    h += '<a href="https://kristyflach.com/landing/' + w.slug + '/book" target="_blank" style="font-size:10px;color:#6e7f77;text-decoration:none;padding:2px 6px;border:1px solid rgba(110,127,119,0.3);border-radius:4px;"><i class="fas fa-calendar-check" style="margin-right:3px;"></i>Booking</a>';
     h += '<a href="https://kristyflach.com/landing/' + w.slug + '/replay" target="_blank" style="font-size:10px;color:#6e7f77;text-decoration:none;padding:2px 6px;border:1px solid rgba(110,127,119,0.3);border-radius:4px;"><i class="fas fa-play-circle" style="margin-right:3px;"></i>Replay</a>';
     h += '</div>';
   }
@@ -224,7 +225,8 @@ function wbCard(w, type) {
   h += '<div style="display:flex;gap:6px;">';
   h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="wbEditWebinar(' + w.id + ')"><i class="fas fa-edit"></i> Edit</button>';
   if (type === 'upcoming') {
-    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="wbCopyLink(\'' + w.slug + '\')"><i class="fas fa-copy"></i> Copy Link</button>';
+    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="wbCopyLink(\'' + w.slug + '\')"><i class="fas fa-copy"></i> Copy Reg Link</button>';
+    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;background:rgba(110,127,119,0.15);color:#6e7f77;border-color:rgba(110,127,119,0.4);font-weight:700;" onclick="wbCopyBookingLink(\'' + w.slug + '\')"><i class="fas fa-calendar-check"></i> Copy Booking Link</button>';
   }
   h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="wbDeleteWebinar(' + w.id + ')"><i class="fas fa-trash-alt"></i></button>';
   h += '</div>';
@@ -237,6 +239,15 @@ function wbCopyLink(slug) {
   var url = 'https://kristyflach.com/landing/' + slug;
   navigator.clipboard.writeText(url).then(function() {
     showToast('Registration link copied!', 'success');
+  }).catch(function() {
+    showToast('Copy failed — link: ' + url);
+  });
+}
+
+function wbCopyBookingLink(slug) {
+  var url = 'https://kristyflach.com/landing/' + slug + '/book';
+  navigator.clipboard.writeText(url).then(function() {
+    showToast('Booking link copied!', 'success');
   }).catch(function() {
     showToast('Copy failed — link: ' + url);
   });
