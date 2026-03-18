@@ -611,34 +611,18 @@ function emDeleteCampaign(id) {
 }
 
 function emOpenCampaignBuilder() {
-  document.getElementById('emCampaignBuilder').style.display = 'block';
-  document.getElementById('emCampaignBuilder').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  document.getElementById('emBuilderTitle').textContent = 'New Campaign';
-  document.getElementById('emCampName').value = '';
-  document.getElementById('emCampTrigger').value = 'manual';
-  document.getElementById('emCampDesc').value = '';
-  document.getElementById('emCampEditId').value = '';
-  emEditSteps = [];
-  emRenderSteps();
+  // Redirect to Templates tab
+  emTab('templates');
+  emOpenTemplateEditor();
 }
 
 function emCloseCampaignBuilder() {
-  document.getElementById('emCampaignBuilder').style.display = 'none';
+  emCloseTemplateEditor();
 }
 
 function emEditCampaign(id) {
-  var c = emCampaigns.find(function(x) { return x.id === id; });
-  if (!c) return;
-  document.getElementById('emCampaignBuilder').style.display = 'block';
-  document.getElementById('emBuilderTitle').textContent = 'Edit Campaign';
-  document.getElementById('emCampName').value = c.name;
-  document.getElementById('emCampTrigger').value = c.trigger_type;
-  document.getElementById('emCampDesc').value = c.description || '';
-  document.getElementById('emCampEditId').value = c.id;
-  emEditSteps = (c.steps || []).map(function(s) {
-    return { step_type: s.step_type || 'email', delay_days: s.delay_days, template_id: s.template_id, subject_override: s.subject_override || '', body_override: s.body_override || '', sms_body: s.sms_body || '' };
-  });
-  emRenderSteps();
+  emTab('templates');
+  emEditTemplate(id);
 }
 
 function emAddStep(type) {
@@ -655,13 +639,9 @@ function emRemoveStep(idx) {
 function emRenderSteps() {
   var el = document.getElementById('emStepsList');
   if (emEditSteps.length === 0) {
-    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;border:1px dashed var(--border);border-radius:8px;">No steps yet. Add an Email or SMS step to build your campaign.</div>';
+    el.innerHTML = '<div style="font-size:11px;color:var(--text-muted);padding:12px;text-align:center;border:1px dashed var(--border);border-radius:8px;">No steps yet. Add an Email or SMS step to build your campaign sequence.</div>';
     return;
   }
-  var tplOpts = '<option value="">— Select a template —</option>';
-  emTemplates.forEach(function(t) {
-    tplOpts += '<option value="' + t.id + '">' + t.name + '</option>';
-  });
   var h = '';
   emEditSteps.forEach(function(s, i) {
     var isEmail = (s.step_type || 'email') === 'email';
@@ -669,34 +649,43 @@ function emRenderSteps() {
     var stepIcon = isEmail ? 'fa-envelope' : 'fa-sms';
     var stepLabel = isEmail ? 'EMAIL' : 'SMS';
 
-    h += '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
-    // Timeline dot
+    h += '<div style="display:flex;align-items:flex-start;gap:12px;padding:14px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;">';
     h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:4px;"><div style="width:24px;height:24px;border-radius:50%;background:' + stepColor + '20;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:' + stepColor + ';">' + (i+1) + '</div>';
     if (i < emEditSteps.length - 1) h += '<div style="width:2px;height:20px;background:' + stepColor + '20;margin-top:4px;"></div>';
     h += '</div>';
-    // Step content
     h += '<div style="flex:1;">';
-    // Step type badge
-    h += '<div style="margin-bottom:8px;"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + stepColor + '15;color:' + stepColor + ';font-weight:600;"><i class="fas ' + stepIcon + '" style="margin-right:4px;"></i>' + stepLabel + '</span></div>';
-    // Delay field
-    h += '<div class="fc-field" style="margin-bottom:8px;max-width:180px;"><div class="fc-lbl">' + (i === 0 ? 'Days after trigger' : 'Days after prev') + '</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
+    h += '<div style="margin-bottom:8px;"><span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + stepColor + '15;color:' + stepColor + ';font-weight:600;"><i class="fas ' + stepIcon + '" style="margin-right:4px;"></i>' + stepLabel + ' — Step ' + (i+1) + '</span></div>';
+    h += '<div class="fc-field" style="margin-bottom:8px;max-width:180px;"><div class="fc-lbl">' + (i === 0 ? 'Days after trigger' : 'Days after previous step') + '</div><input type="number" min="0" value="' + s.delay_days + '" onchange="emEditSteps[' + i + '].delay_days=parseInt(this.value)||0" style="width:100%;"></div>';
 
     if (isEmail) {
-      // Email step — template picker OR write custom
-      var customTplOpts = '<option value="">— Write Custom —</option>' + tplOpts.replace('— Select a template —', '— Or Pick a Template —');
-      h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Email Content</div><select id="emStepTpl_' + i + '" onchange="emEditSteps[' + i + '].template_id=this.value||null;emRenderSteps()">' + customTplOpts.replace('value="' + s.template_id + '"', 'value="' + s.template_id + '" selected') + '</select></div>';
-      if (!s.template_id) {
-        // Custom — show subject and body fields
-        h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Subject Line</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Enter your subject line"></div>';
-        h += '<div class="fc-field"><div class="fc-lbl">Email Body</div><textarea rows="4" style="width:100%;resize:vertical;" onchange="emEditSteps[' + i + '].body_override=this.value" placeholder="Write your email here. Use {{first_name}} for personalization.">' + (s.body_override || '').replace(/</g, '&lt;') + '</textarea></div>';
-      } else {
-        // Template selected — optional subject override only
-        h += '<div class="fc-field"><div class="fc-lbl">Subject Override (optional)</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value" placeholder="Leave blank to use template subject"></div>';
-      }
+      // Greeting
+      var greetOpts = ['Hi','Hello','Hey','Happy Birthday','Congratulations','Good morning','Happy Holidays'];
+      var greetVal = s.greeting || 'Hi';
+      h += '<div style="display:grid;grid-template-columns:150px 1fr;gap:8px;margin-bottom:8px;">';
+      h += '<div class="fc-field"><div class="fc-lbl">Greeting</div><select onchange="emEditSteps[' + i + '].greeting=this.value">';
+      greetOpts.forEach(function(g) { h += '<option value="' + g + '"' + (g === greetVal ? ' selected' : '') + '>' + g + '</option>'; });
+      h += '</select></div>';
+      // Subject
+      h += '<div class="fc-field"><div class="fc-lbl">Subject Line *</div><input value="' + (s.subject_override || '').replace(/"/g, '&quot;') + '" onchange="emEditSteps[' + i + '].subject_override=this.value"></div>';
+      h += '</div>';
+      // AI button
+      h += '<div onclick="emAiDraftForStep(' + i + ')" style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 14px;margin-bottom:8px;background:linear-gradient(135deg,rgba(168,85,247,0.08),rgba(59,130,246,0.08));border:1px dashed rgba(168,85,247,0.3);border-radius:8px;transition:all 0.2s;" onmouseover="this.style.borderColor=\'rgba(168,85,247,0.6)\'" onmouseout="this.style.borderColor=\'rgba(168,85,247,0.3)\'">';
+      h += '<i class="fas fa-magic" style="font-size:12px;color:#a855f7;"></i>';
+      h += '<span style="font-size:12px;font-weight:600;color:#a855f7;">AI Write</span></div>';
+      // Body
+      h += '<div class="fc-field" style="margin-bottom:8px;"><div class="fc-lbl">Email Body *</div>';
+      h += '<textarea id="emStepBody_' + i + '" rows="6" style="width:100%;resize:vertical;background:#fff;border:1px solid var(--border);border-radius:8px;font-family:monospace;font-size:12px;padding:10px;box-sizing:border-box;" onchange="emEditSteps[' + i + '].body_override=this.value" placeholder="Write your email content here...">' + (s.body_override || '').replace(/</g, '&lt;') + '</textarea></div>';
+      // AI rewrite bar for this step
+      h += '<div id="emStepRewrite_' + i + '" style="display:none;margin-bottom:8px;padding:10px;background:linear-gradient(135deg,rgba(168,85,247,0.06),rgba(59,130,246,0.06));border:1px solid rgba(168,85,247,0.2);border-radius:8px;">';
+      h += '<div style="display:flex;gap:8px;align-items:flex-end;">';
+      h += '<textarea id="emStepExtra_' + i + '" rows="2" style="flex:1;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:11px;padding:6px;resize:vertical;box-sizing:border-box;" placeholder="Make it shorter, more casual..."></textarea>';
+      h += '<button class="topbar-btn" onclick="emAiRewriteStep(' + i + ')" style="white-space:nowrap;font-size:10px;"><i class="fas fa-redo"></i> Re-write</button></div>';
+      h += '<div id="emStepRewriteStatus_' + i + '" style="font-size:10px;margin-top:4px;color:var(--text-muted);"></div></div>';
+      // Video button
+      h += '<button class="topbar-btn" onclick="emOpenVideoModal(\'emStepBody_' + i + '\')" style="font-size:10px;padding:4px 8px;color:#ef4444;border-color:rgba(239,68,68,0.3);"><i class="fab fa-youtube"></i> Add Video</button>';
     } else {
-      // SMS step — text message body
       h += '<div class="fc-field"><div class="fc-lbl">Text Message</div><textarea rows="3" style="width:100%;resize:vertical;" onchange="emEditSteps[' + i + '].sms_body=this.value" placeholder="Hi {{first_name}}, just wanted to check in...">' + (s.sms_body || '').replace(/</g, '&lt;') + '</textarea></div>';
-      h += '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Use {{first_name}}, {{name}}, or {{email}} for personalization. 160 chars per SMS segment.</div>';
+      h += '<div style="font-size:10px;color:var(--text-muted);margin-top:4px;">Use {{first_name}} for personalization.</div>';
     }
 
     h += '</div>';
@@ -746,157 +735,42 @@ function emLoadTemplates() {
 
 function emRenderTemplateList() {
   var el = document.getElementById('emTemplateList');
-
-  // Build map: template_id -> campaign info
-  var tplToCampaign = {};
-  emCampaigns.forEach(function(c) {
-    (c.steps || []).forEach(function(s) {
-      if (s.template_id) {
-        if (!tplToCampaign[s.template_id]) tplToCampaign[s.template_id] = [];
-        tplToCampaign[s.template_id].push({ name: c.name, stepOrder: s.step_order, campaignId: c.id });
-      }
-    });
-  });
-
-  // Group by campaign
-  var campaignTemplates = {};
-  var customTemplates = [];
-
-  emTemplates.forEach(function(t) {
-    if (tplToCampaign[t.id]) {
-      tplToCampaign[t.id].forEach(function(info) {
-        if (!campaignTemplates[info.name]) campaignTemplates[info.name] = { campaignId: info.campaignId, templates: [] };
-        campaignTemplates[info.name].templates.push({ tpl: t, stepOrder: info.stepOrder });
-      });
-    } else {
-      customTemplates.push(t);
-    }
-  });
-
-  Object.keys(campaignTemplates).forEach(function(key) {
-    campaignTemplates[key].templates.sort(function(a, b) { return a.stepOrder - b.stepOrder; });
-  });
-
+  if (emCampaigns.length === 0) {
+    el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;"><i class="fas fa-mail-bulk" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>No campaigns yet. Click "+ New Campaign" to build your first drip sequence.</div>';
+    return;
+  }
+  var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
   var h = '';
-  var campKeys = Object.keys(campaignTemplates);
+  emCampaigns.forEach(function(c) {
+    var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
+    var statusLabel = c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : 'Draft';
+    var stepCount = c.steps ? c.steps.length : 0;
+    var emailSteps = (c.steps || []).filter(function(s) { return s.step_type === 'email'; }).length;
+    var smsSteps = (c.steps || []).filter(function(s) { return s.step_type === 'sms'; }).length;
 
-  // Campaign icons
-  var campIcons = { 'Birthday Greeting':'🎂', 'Past Client Nurture':'🏠', 'Refi Opportunity':'💰', 'Realtor Recruitment':'🤝', 'Rent to Buy':'🏘️', 'Credit Repair Journey':'🔧', 'Holiday Greetings':'🎄', 'Second Home & Investment':'🏡', 'Monthly Market Update':'📊', 'Home Anniversary':'🎉', 'Divorce Attorney Outreach':'⚖️', 'Tax Planner Partnership':'🧾' };
-
-  // CAMPAIGN EMAILS
-  if (campKeys.length > 0) {
-    h += '<div style="font-size:12px;font-weight:700;color:var(--text-primary);letter-spacing:0.5px;margin-bottom:12px;">CAMPAIGN EMAILS</div>';
-    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-bottom:24px;">';
-    campKeys.forEach(function(campName) {
-      var group = campaignTemplates[campName];
-      var count = group.templates.length;
-      var icon = campIcons[campName] || '📧';
-      h += '<div class="em-camp-card" onclick="emOpenCampaignTemplates(\'' + campName.replace(/'/g, "\\'") + '\')" style="cursor:pointer;background:#fafbfc;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.2s;position:relative;overflow:hidden;" onmouseover="this.style.borderColor=\'rgba(59,130,246,0.4)\';this.style.background=\'rgba(59,130,246,0.04)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'#fafbfc\'">';
-      h += '<div style="font-size:28px;margin-bottom:10px;">' + icon + '</div>';
-      h += '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + campName + '</div>';
-      h += '<div style="font-size:11px;color:var(--text-muted);">' + count + ' email' + (count !== 1 ? 's' : '') + ' in sequence</div>';
-      // Mini step dots
-      h += '<div style="display:flex;gap:4px;margin-top:10px;">';
-      for (var i = 0; i < count; i++) {
-        h += '<div style="width:6px;height:6px;border-radius:50%;background:rgba(59,130,246,0.3);"></div>';
-      }
-      h += '</div>';
-      h += '</div>';
-    });
+    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
+    h += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
+    h += '<div style="flex:1;">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + '</div>';
+    h += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type || 'Manual');
+    if (emailSteps > 0) h += ' · ' + emailSteps + ' email' + (emailSteps !== 1 ? 's' : '');
+    if (smsSteps > 0) h += ' · ' + smsSteps + ' SMS';
+    if (c.description) h += ' · ' + c.description;
+    h += '</div></div>';
+    h += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
+    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditTemplate(' + c.id + ')"><i class="fas fa-edit"></i> Edit</button>';
+    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="emDeleteCampaignFromTemplates(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>';
     h += '</div>';
-  }
-
-  // CUSTOM TEMPLATES
-  h += '<div style="font-size:12px;font-weight:700;color:var(--text-primary);letter-spacing:0.5px;margin-bottom:12px;">MY CUSTOM TEMPLATES</div>';
-  if (customTemplates.length === 0) {
-    h += '<div style="padding:30px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;">';
-    h += '<i class="fas fa-magic" style="font-size:20px;display:block;margin-bottom:8px;opacity:0.3;color:#a855f7;"></i>';
-    h += 'No custom templates yet. Click "+ New Template" to create your own with AI assist.</div>';
-  } else {
-    h += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">';
-    customTemplates.forEach(function(t) {
-      h += '<div style="background:#fafbfc;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.2s;position:relative;" onmouseover="this.style.borderColor=\'rgba(168,85,247,0.4)\';this.style.background=\'rgba(168,85,247,0.04)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'#fafbfc\'">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
-      h += '<div style="width:32px;height:32px;border-radius:8px;background:rgba(168,85,247,0.12);display:flex;align-items:center;justify-content:center;"><i class="fas fa-envelope" style="color:#a855f7;font-size:12px;"></i></div>';
-      h += '<div style="display:flex;gap:4px;">';
-      h += '<button class="topbar-btn" style="font-size:9px;padding:3px 6px;" onclick="emEditTemplate(' + t.id + ')"><i class="fas fa-edit"></i></button>';
-      h += '<button class="topbar-btn danger" style="font-size:9px;padding:3px 6px;" onclick="emDeleteTemplate(' + t.id + ')"><i class="fas fa-trash-alt"></i></button>';
-      h += '</div></div>';
-      h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.name + '</div>';
-      h += '<div style="font-size:10px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.subject + '</div>';
-      h += '<div style="font-size:9px;padding:2px 6px;border-radius:4px;background:#f8f9fb;color:var(--text-muted);display:inline-block;margin-top:8px;">' + (t.category || 'custom') + '</div>';
-      h += '</div>';
-    });
-    h += '</div>';
-  }
-
+  });
   el.innerHTML = h;
 }
 
-// Open campaign template detail — shows all emails in that campaign
-function emOpenCampaignTemplates(campName) {
-  var el = document.getElementById('emTemplateList');
-
-  // Build template list for this campaign
-  var tplToCampaign = {};
-  emCampaigns.forEach(function(c) {
-    (c.steps || []).forEach(function(s) {
-      if (s.template_id) {
-        if (!tplToCampaign[s.template_id]) tplToCampaign[s.template_id] = [];
-        tplToCampaign[s.template_id].push({ name: c.name, stepOrder: s.step_order });
-      }
-    });
-  });
-
-  var templates = [];
-  emTemplates.forEach(function(t) {
-    if (tplToCampaign[t.id]) {
-      tplToCampaign[t.id].forEach(function(info) {
-        if (info.name === campName) templates.push({ tpl: t, stepOrder: info.stepOrder });
-      });
-    }
-  });
-  templates.sort(function(a, b) { return a.stepOrder - b.stepOrder; });
-
-  var campIcons = { 'Birthday Greeting':'🎂', 'Past Client Nurture':'🏠', 'Refi Opportunity':'💰', 'Realtor Recruitment':'🤝', 'Rent to Buy':'🏘️', 'Credit Repair Journey':'🔧', 'Holiday Greetings':'🎄', 'Second Home & Investment':'🏡', 'Monthly Market Update':'📊', 'Home Anniversary':'🎉', 'Divorce Attorney Outreach':'⚖️', 'Tax Planner Partnership':'🧾' };
-  var icon = campIcons[campName] || '📧';
-
-  var h = '';
-  h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">';
-  h += '<button class="topbar-btn" onclick="emRenderTemplateList()" style="font-size:11px;"><i class="fas fa-arrow-left"></i> Back</button>';
-  h += '<div style="font-size:24px;">' + icon + '</div>';
-  h += '<div><div style="font-size:16px;font-weight:700;color:var(--text-primary);">' + campName + '</div>';
-  h += '<div style="font-size:11px;color:var(--text-muted);">' + templates.length + ' email' + (templates.length !== 1 ? 's' : '') + ' in sequence</div></div>';
-  h += '</div>';
-
-  templates.forEach(function(item, i) {
-    var t = item.tpl;
-    h += '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:4px;">';
-    // Timeline
-    h += '<div style="display:flex;flex-direction:column;align-items:center;padding-top:2px;">';
-    h += '<div style="width:30px;height:30px;border-radius:50%;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#3b82f6;">' + item.stepOrder + '</div>';
-    if (i < templates.length - 1) h += '<div style="width:2px;flex:1;min-height:30px;background:rgba(59,130,246,0.08);margin:4px 0;"></div>';
-    h += '</div>';
-    // Card
-    h += '<div style="flex:1;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden;">';
-    // Header - click to expand
-    h += '<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;" onclick="emToggleTplPreview(\'campDrill_' + t.id + '\')">';
-    h += '<div style="flex:1;min-width:0;">';
-    h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:2px;">' + t.name + '</div>';
-    h += '<div style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + t.subject + '</div>';
-    h += '</div>';
-    h += '<i class="fas fa-eye" style="font-size:10px;color:var(--text-muted);"></i>';
-    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="event.stopPropagation();emEditTemplate(' + t.id + ')"><i class="fas fa-edit"></i> Edit</button>';
-    h += '</div>';
-    // Preview
-    h += '<div id="campDrill_' + t.id + '" style="display:none;border-top:1px solid var(--border);padding:16px;background:rgba(0,0,0,0.01);">';
-    h += '<div style="font-size:10px;color:var(--text-muted);margin-bottom:10px;">Subject: ' + t.subject.replace(/\{\{first_name\}\}/g, '<span style="color:#3b82f6;">Jane</span>') + '</div>';
-    h += '<div style="font-size:12px;color:var(--text-secondary);line-height:1.7;">' + t.body_html.replace(/\{\{first_name\}\}/g, '<span style="color:#3b82f6;">Jane</span>').replace(/\{\{name\}\}/g, '<span style="color:#3b82f6;">Jane Smith</span>') + '</div>';
-    h += '</div>';
-    h += '</div></div>';
-  });
-
-  el.innerHTML = h;
+function emDeleteCampaignFromTemplates(id) {
+  if (!confirm('Delete this campaign and all its steps? This cannot be undone.')) return;
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_campaign', campaign_id: id })
+  }).then(function() { emLoadTemplates(); emLoadCampaigns(); showToast('Campaign deleted'); });
 }
 
 function emToggleTplPreview(id) {
@@ -906,70 +780,121 @@ function emToggleTplPreview(id) {
 
 function emOpenTemplateEditor() {
   document.getElementById('emTemplateEditor').style.display = 'block';
-  document.getElementById('emTplEditorTitle').textContent = 'New Template';
+  document.getElementById('emTplEditorTitle').textContent = 'New Campaign';
   document.getElementById('emTplName').value = '';
-  document.getElementById('emTplSubject').value = '';
-  document.getElementById('emTplBody').value = '';
-  document.getElementById('emTplGreeting').value = 'Hi';
   document.getElementById('emTplCategory').value = 'custom';
+  document.getElementById('emCampTrigger').value = 'manual';
+  document.getElementById('emCampDesc').value = '';
   document.getElementById('emTplEditId').value = '';
-  document.getElementById('emAiRewriteBar').style.display = 'none';
+  document.getElementById('emCampEditId').value = '';
+  emEditSteps = [];
+  emRenderSteps();
 }
 
 function emCloseTemplateEditor() {
   document.getElementById('emTemplateEditor').style.display = 'none';
-  document.getElementById('emAiRewriteBar').style.display = 'none';
 }
 
 function emEditTemplate(id) {
-  var t = emTemplates.find(function(x) { return x.id === id; });
-  if (!t) return;
+  // Edit from template list — load the campaign data
+  var c = emCampaigns.find(function(x) { return x.id === id; });
+  if (!c) return;
   document.getElementById('emTemplateEditor').style.display = 'block';
-  document.getElementById('emTplEditorTitle').textContent = 'Edit Template';
-  document.getElementById('emTplName').value = t.name;
-  document.getElementById('emTplSubject').value = t.subject;
-  // Extract greeting from body if it starts with a known greeting pattern
-  var body = t.body_html || '';
-  var greetingEl = document.getElementById('emTplGreeting');
-  greetingEl.value = 'Hi';
-  var greetings = ['Happy Holidays', 'Happy Birthday', 'Congratulations', 'Good morning', 'Hello', 'Hey', 'Hi'];
-  for (var g = 0; g < greetings.length; g++) {
-    var pattern = '<p>' + greetings[g] + ' {{first_name}}';
-    var patternComma = '<p>' + greetings[g] + ', {{first_name}}';
-    if (body.indexOf(pattern) === 0 || body.indexOf(patternComma) === 0) {
-      greetingEl.value = greetings[g];
-      body = body.replace(new RegExp('^<p>' + greetings[g] + '[, ]*\\{\\{first_name\\}\\}[!,.]?</p>\\s*'), '');
-      break;
-    }
-  }
-  document.getElementById('emTplBody').value = body;
-  document.getElementById('emTplCategory').value = t.category || 'custom';
-  document.getElementById('emTplEditId').value = t.id;
+  document.getElementById('emTplEditorTitle').textContent = 'Edit Campaign';
+  document.getElementById('emTplName').value = c.name;
+  document.getElementById('emTplCategory').value = c.category || 'custom';
+  document.getElementById('emCampTrigger').value = c.trigger_type || 'manual';
+  document.getElementById('emCampDesc').value = c.description || '';
+  document.getElementById('emTplEditId').value = '';
+  document.getElementById('emCampEditId').value = c.id;
+  emEditSteps = (c.steps || []).map(function(s) {
+    return {
+      step_type: s.step_type || 'email',
+      delay_days: s.delay_days,
+      greeting: s.greeting || 'Hi',
+      subject_override: s.subject_override || s.subject || '',
+      body_override: s.body_override || '',
+      sms_body: s.sms_body || '',
+      template_id: s.template_id || null
+    };
+  });
+  emRenderSteps();
+  document.getElementById('emTemplateEditor').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function emSaveTemplate() {
+function emBuildStepsForSave() {
+  // Prepend greeting to each email step body
+  return emEditSteps.map(function(s, i) {
+    var step = {
+      step_type: s.step_type || 'email',
+      step_order: i + 1,
+      delay_days: s.delay_days || 0,
+      template_id: null,
+      subject_override: s.subject_override || '',
+      body_override: s.body_override || '',
+      sms_body: s.sms_body || '',
+      greeting: s.greeting || 'Hi'
+    };
+    if (step.step_type === 'email' && step.body_override) {
+      var greeting = s.greeting || 'Hi';
+      var sep = (greeting === 'Happy Birthday' || greeting === 'Congratulations' || greeting === 'Happy Holidays') ? ', {{first_name}}!' : ', {{first_name}},';
+      step.body_override = '<p>' + greeting + sep + '</p>\n' + step.body_override;
+    }
+    return step;
+  });
+}
+
+function emSaveCampaignDraft() {
   var name = document.getElementById('emTplName').value.trim();
-  var subject = document.getElementById('emTplSubject').value.trim();
-  var body = document.getElementById('emTplBody').value.trim();
-  if (!name || !subject || !body) { showToast('Name, subject, and body required'); return; }
-
-  // Prepend greeting line to body
-  var greeting = document.getElementById('emTplGreeting').value;
-  var separator = (greeting === 'Happy Birthday' || greeting === 'Congratulations' || greeting === 'Happy Holidays') ? ', {{first_name}}!' : ', {{first_name}},';
-  var fullBody = '<p>' + greeting + separator + '</p>\n' + body;
-
-  var editId = document.getElementById('emTplEditId').value;
-  var template = { name: name, subject: subject, body_html: fullBody, category: document.getElementById('emTplCategory').value };
-  if (editId) template.id = parseInt(editId);
+  if (!name) { showToast('Campaign name required'); return; }
+  var editId = document.getElementById('emCampEditId').value;
+  var campaign = {
+    name: name,
+    trigger_type: document.getElementById('emCampTrigger').value,
+    description: document.getElementById('emCampDesc').value.trim(),
+    category: document.getElementById('emTplCategory').value,
+    status: 'draft',
+    steps: emBuildStepsForSave()
+  };
+  if (editId) campaign.id = parseInt(editId);
 
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'save_template', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', template: template })
+    body: JSON.stringify({ action: 'save_campaign', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', campaign: campaign })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      if (data.campaign_id) document.getElementById('emCampEditId').value = data.campaign_id;
+      emLoadTemplates();
+      emLoadCampaigns();
+      showToast('Campaign draft saved!', 'success');
+    } else { showToast('Error: ' + data.message); }
+  });
+}
+
+function emPublishCampaign() {
+  var name = document.getElementById('emTplName').value.trim();
+  if (!name) { showToast('Campaign name required'); return; }
+  if (emEditSteps.length === 0) { showToast('Add at least one step before publishing'); return; }
+  var editId = document.getElementById('emCampEditId').value;
+  var campaign = {
+    name: name,
+    trigger_type: document.getElementById('emCampTrigger').value,
+    description: document.getElementById('emCampDesc').value.trim(),
+    category: document.getElementById('emTplCategory').value,
+    status: 'active',
+    steps: emBuildStepsForSave()
+  };
+  if (editId) campaign.id = parseInt(editId);
+
+  fetch(API_BASE + '/email-center', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_campaign', lo_user_id: localStorage.getItem('agent_edge_user') || 'default', campaign: campaign })
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (data.success) {
       emCloseTemplateEditor();
       emLoadTemplates();
-      showToast('Template saved!', 'success');
+      emLoadCampaigns();
+      showToast('Campaign published! It\'s now active in the Campaigns tab.', 'success');
     } else { showToast('Error: ' + data.message); }
   });
 }
@@ -1067,7 +992,17 @@ function emPreviewTemplate() {
 }
 
 // ===== AI EMAIL WRITER =====
+var emAiTargetStepIdx = null;
+
 function emAiDraft() {
+  emAiTargetStepIdx = null;
+  document.getElementById('emAiOverlay').style.display = 'flex';
+  document.getElementById('emAiPrompt').value = '';
+  document.getElementById('emAiResult').textContent = '';
+}
+
+function emAiDraftForStep(stepIdx) {
+  emAiTargetStepIdx = stepIdx;
   document.getElementById('emAiOverlay').style.display = 'flex';
   document.getElementById('emAiPrompt').value = '';
   document.getElementById('emAiResult').textContent = '';
@@ -1094,13 +1029,26 @@ function emAiGenerate() {
   }).then(function(r) { return r.json(); }).then(function(data) {
     btn.disabled = false; btn.innerHTML = '<i class="fas fa-magic"></i> Generate';
     if (data.success && data.body_html) {
-      document.getElementById('emTplBody').value = data.body_html;
-      if (data.subject) document.getElementById('emTplSubject').value = data.subject;
+      if (emAiTargetStepIdx !== null) {
+        // Insert into step body
+        var textarea = document.getElementById('emStepBody_' + emAiTargetStepIdx);
+        if (textarea) {
+          textarea.value = data.body_html;
+          emEditSteps[emAiTargetStepIdx].body_override = data.body_html;
+        }
+        if (data.subject) {
+          emEditSteps[emAiTargetStepIdx].subject_override = data.subject;
+          emRenderSteps();
+        }
+        var rewriteBar = document.getElementById('emStepRewrite_' + emAiTargetStepIdx);
+        if (rewriteBar) rewriteBar.style.display = 'block';
+      } else {
+        // Fallback for compose body
+        var tplBody = document.getElementById('emTplBody');
+        if (tplBody) tplBody.value = data.body_html;
+      }
       emAiClose();
-      document.getElementById('emAiRewriteBar').style.display = 'block';
-      document.getElementById('emAiExtra').value = '';
-      document.getElementById('emAiRewriteStatus').textContent = '';
-      showToast('AI draft ready — edit it or use Re-write below', 'success');
+      showToast('AI draft ready — edit or re-write below', 'success');
     } else {
       document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
     }
@@ -1110,35 +1058,41 @@ function emAiGenerate() {
   });
 }
 
-function emAiRewrite() {
+function emAiRewriteStep(stepIdx) {
+  var extra = document.getElementById('emStepExtra_' + stepIdx);
+  var statusEl = document.getElementById('emStepRewriteStatus_' + stepIdx);
+  if (!extra || !extra.value.trim()) { if (statusEl) statusEl.textContent = 'Add directions for the re-write'; return; }
+  var currentBody = emEditSteps[stepIdx].body_override || '';
   var originalPrompt = document.getElementById('emAiPrompt').value.trim();
-  var extra = document.getElementById('emAiExtra').value.trim();
-  var currentBody = document.getElementById('emTplBody').value.trim();
-  if (!extra) { document.getElementById('emAiRewriteStatus').textContent = 'Add directions for the re-write'; return; }
   var tone = document.getElementById('emAiTone').value;
-  var btn = document.getElementById('emAiRewriteBtn');
-  btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Re-writing...';
-  document.getElementById('emAiRewriteStatus').textContent = '';
+  if (statusEl) statusEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Re-writing...';
 
-  var rewritePrompt = 'Original request: ' + originalPrompt + '\n\nCurrent draft:\n' + currentBody + '\n\nRevision instructions: ' + extra;
+  var rewritePrompt = (originalPrompt ? 'Original request: ' + originalPrompt + '\n\n' : '') + 'Current draft:\n' + currentBody + '\n\nRevision instructions: ' + extra.value.trim();
 
   fetch(API_BASE + '/ai-email-writer', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt: rewritePrompt, tone: tone })
   }).then(function(r) { return r.json(); }).then(function(data) {
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-redo"></i> Re-write';
     if (data.success && data.body_html) {
-      document.getElementById('emTplBody').value = data.body_html;
-      if (data.subject) document.getElementById('emTplSubject').value = data.subject;
-      document.getElementById('emAiExtra').value = '';
-      document.getElementById('emAiRewriteStatus').innerHTML = '<span style="color:#22c55e;">Re-write complete. Edit above or re-write again.</span>';
+      var textarea = document.getElementById('emStepBody_' + stepIdx);
+      if (textarea) {
+        textarea.value = data.body_html;
+        emEditSteps[stepIdx].body_override = data.body_html;
+      }
+      if (data.subject) emEditSteps[stepIdx].subject_override = data.subject;
+      extra.value = '';
+      if (statusEl) statusEl.innerHTML = '<span style="color:#22c55e;">Re-write complete.</span>';
     } else {
-      document.getElementById('emAiRewriteStatus').textContent = 'Failed: ' + (data.message || 'Try again');
+      if (statusEl) statusEl.textContent = 'Failed: ' + (data.message || 'Try again');
     }
   }).catch(function() {
-    btn.disabled = false; btn.innerHTML = '<i class="fas fa-redo"></i> Re-write';
-    document.getElementById('emAiRewriteStatus').textContent = 'Error connecting to AI';
+    if (statusEl) statusEl.textContent = 'Error connecting to AI';
   });
+}
+
+function emAiRewrite() {
+  // Legacy — kept for compose modal compatibility
+  emAiRewriteStep(emAiTargetStepIdx !== null ? emAiTargetStepIdx : 0);
 }
 
 // ===== HISTORY =====
