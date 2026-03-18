@@ -565,33 +565,55 @@ function emLoadCampaigns() {
 function emRenderCampaignList() {
   var el = document.getElementById('emCampaignList');
   if (emCampaigns.length === 0) {
-    el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;"><i class="fas fa-mail-bulk" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>No campaigns yet. Click "+ New Campaign" to create your first drip sequence.</div>';
+    el.innerHTML = '<div style="padding:40px;text-align:center;border:1px dashed var(--border);border-radius:10px;color:var(--text-muted);font-size:12px;"><i class="fas fa-mail-bulk" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3;"></i>No campaigns yet. Create campaigns in the Templates tab.</div>';
     return;
   }
   var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
+  var autoTriggers = ['signup','birthday','loan_funded','inactive','anniversary','rate_drop'];
+
+  // Group campaigns
+  var active = emCampaigns.filter(function(c) { return c.status === 'active' && autoTriggers.indexOf(c.trigger_type) === -1; });
+  var autoTrigger = emCampaigns.filter(function(c) { return autoTriggers.indexOf(c.trigger_type) !== -1; });
+  var drafts = emCampaigns.filter(function(c) { return (c.status === 'draft' || c.status === 'paused') && autoTriggers.indexOf(c.trigger_type) === -1; });
+
+  function renderGroup(camps) {
+    var gh = '';
+    camps.forEach(function(c) {
+      var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
+      var statusLabel = c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : 'Draft';
+      var stepCount = c.steps ? c.steps.length : 0;
+
+      gh += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
+      gh += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
+      gh += '<div style="flex:1;cursor:pointer;" onclick="emOpenCampaignDetail(' + c.id + ')">';
+      gh += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + ' <i class="fas fa-chevron-right" style="font-size:10px;opacity:0.3;"></i></div>';
+      gh += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type || 'Manual') + ' · ' + stepCount + ' step' + (stepCount !== 1 ? 's' : '') + (c.description ? ' · ' + c.description : '') + '</div>';
+      gh += '</div>';
+      gh += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
+      if (c.status === 'active') {
+        gh += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'paused\')"><i class="fas fa-pause"></i></button>';
+      } else {
+        gh += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'active\')"><i class="fas fa-play"></i></button>';
+      }
+      gh += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditCampaign(' + c.id + ')"><i class="fas fa-edit"></i></button>';
+      gh += '</div>';
+    });
+    return gh;
+  }
+
   var h = '';
-  emCampaigns.forEach(function(c) {
-    var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
-    var statusLabel = c.status.charAt(0).toUpperCase() + c.status.slice(1);
-    var stepCount = c.steps ? c.steps.length : 0;
-
-    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
-    h += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
-    h += '<div style="flex:1;cursor:pointer;" onclick="emOpenCampaignDetail(' + c.id + ')">';
-    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + ' <i class="fas fa-chevron-right" style="font-size:10px;opacity:0.3;"></i></div>';
-    h += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type) + ' · ' + stepCount + ' email' + (stepCount !== 1 ? 's' : '') + (c.description ? ' · ' + c.description : '') + '</div>';
-    h += '</div>';
-    h += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
-
-    if (c.status === 'active') {
-      h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'paused\')"><i class="fas fa-pause"></i></button>';
-    } else {
-      h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emToggleCampaign(' + c.id + ',\'active\')"><i class="fas fa-play"></i></button>';
-    }
-    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditCampaign(' + c.id + ')"><i class="fas fa-edit"></i></button>';
-    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="emDeleteCampaign(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>';
-    h += '</div>';
-  });
+  if (active.length > 0) {
+    h += '<div style="font-size:11px;font-weight:700;color:#22c55e;letter-spacing:0.5px;margin-bottom:8px;margin-top:8px;"><i class="fas fa-circle" style="font-size:6px;vertical-align:middle;margin-right:4px;"></i> ACTIVE CAMPAIGNS</div>';
+    h += renderGroup(active);
+  }
+  if (autoTrigger.length > 0) {
+    h += '<div style="font-size:11px;font-weight:700;color:#3b82f6;letter-spacing:0.5px;margin-bottom:8px;margin-top:16px;"><i class="fas fa-bolt" style="font-size:9px;vertical-align:middle;margin-right:4px;"></i> AUTO-TRIGGER CAMPAIGNS</div>';
+    h += renderGroup(autoTrigger);
+  }
+  if (drafts.length > 0) {
+    h += '<div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;margin-bottom:8px;margin-top:16px;"><i class="fas fa-file-alt" style="font-size:9px;vertical-align:middle;margin-right:4px;"></i> DRAFTS & PAUSED</div>';
+    h += renderGroup(drafts);
+  }
   el.innerHTML = h;
 }
 
@@ -740,28 +762,44 @@ function emRenderTemplateList() {
     return;
   }
   var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
-  var h = '';
+  var campIcons = { birthday:'🎂', anniversary:'🎉', loan_funded:'🏠', signup:'🤝', inactive:'⏰', rate_drop:'💰', manual:'📧' };
+  var h = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;">';
   emCampaigns.forEach(function(c) {
     var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
     var statusLabel = c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : 'Draft';
     var stepCount = c.steps ? c.steps.length : 0;
-    var emailSteps = (c.steps || []).filter(function(s) { return s.step_type === 'email'; }).length;
+    var emailSteps = (c.steps || []).filter(function(s) { return (s.step_type || 'email') === 'email'; }).length;
     var smsSteps = (c.steps || []).filter(function(s) { return s.step_type === 'sms'; }).length;
+    var icon = campIcons[c.trigger_type] || '📧';
 
-    h += '<div style="display:flex;align-items:center;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;">';
-    h += '<div style="width:10px;height:10px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
-    h += '<div style="flex:1;">';
-    h += '<div style="font-size:14px;font-weight:600;color:var(--text-primary);">' + c.name + '</div>';
-    h += '<div style="font-size:11px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || c.trigger_type || 'Manual');
+    h += '<div style="background:#fafbfc;border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.2s;position:relative;cursor:pointer;" onmouseover="this.style.borderColor=\'rgba(59,130,246,0.4)\';this.style.background=\'rgba(59,130,246,0.04)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'#fafbfc\'" onclick="emEditTemplate(' + c.id + ')">';
+    // Top row: icon + status + actions
+    h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">';
+    h += '<div style="font-size:28px;">' + icon + '</div>';
+    h += '<div style="display:flex;gap:4px;align-items:center;" onclick="event.stopPropagation()">';
+    h += '<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
+    h += '<button class="topbar-btn danger" style="font-size:9px;padding:3px 6px;" onclick="emDeleteCampaignFromTemplates(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>';
+    h += '</div></div>';
+    // Name
+    h += '<div style="font-size:13px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + c.name + '</div>';
+    // Info
+    h += '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">' + (trigLabels[c.trigger_type] || 'Manual');
     if (emailSteps > 0) h += ' · ' + emailSteps + ' email' + (emailSteps !== 1 ? 's' : '');
     if (smsSteps > 0) h += ' · ' + smsSteps + ' SMS';
-    if (c.description) h += ' · ' + c.description;
-    h += '</div></div>';
-    h += '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
-    h += '<button class="topbar-btn" style="font-size:10px;padding:4px 8px;" onclick="emEditTemplate(' + c.id + ')"><i class="fas fa-edit"></i> Edit</button>';
-    h += '<button class="topbar-btn danger" style="font-size:10px;padding:4px 8px;" onclick="emDeleteCampaignFromTemplates(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>';
+    h += '</div>';
+    if (c.description) h += '<div style="font-size:10px;color:var(--text-muted);margin-bottom:8px;line-height:1.4;">' + c.description + '</div>';
+    // Step dots
+    if (stepCount > 0) {
+      h += '<div style="display:flex;gap:4px;">';
+      (c.steps || []).forEach(function(s) {
+        var dotColor = (s.step_type || 'email') === 'email' ? 'rgba(59,130,246,0.4)' : 'rgba(34,197,94,0.4)';
+        h += '<div style="width:6px;height:6px;border-radius:50%;background:' + dotColor + ';" title="' + ((s.step_type || 'email') === 'email' ? 'Email' : 'SMS') + '"></div>';
+      });
+      h += '</div>';
+    }
     h += '</div>';
   });
+  h += '</div>';
   el.innerHTML = h;
 }
 
