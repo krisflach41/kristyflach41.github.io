@@ -990,70 +990,28 @@
     <div id="emCampaigns" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
         <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Drip Campaigns</div>
-        <button class="topbar-btn primary" onclick="emOpenCampaignBuilder()"><i class="fas fa-plus"></i> New Campaign</button>
+        <div style="font-size:11px;color:var(--text-muted);">Create and edit campaigns in the Templates tab</div>
       </div>
-
-      <!-- Campaign Builder (hidden by default) — above the list -->
-      <div id="emCampaignBuilder" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
-        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emBuilderTitle">New Campaign</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
-          <div class="fc-field">
-            <div class="fc-lbl" title="Give your campaign a short, descriptive name so you can find it later. Example: 'Refi Follow-Up' or 'Birthday Greeting'" style="cursor:help;border-bottom:1px dotted var(--border);">Campaign Name * <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
-            <input id="emCampName" placeholder="e.g. Refi Opportunity">
-          </div>
-          <div class="fc-field">
-            <div class="fc-lbl" title="This controls WHEN the campaign starts automatically. 'Manual' means you add people yourself. Other triggers fire automatically when the event happens." style="cursor:help;border-bottom:1px dotted var(--border);">Trigger <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
-            <select id="emCampTrigger">
-              <option value="manual" title="You manually add contacts to this campaign from their CRM card">Manual — you add contacts yourself</option>
-              <option value="signup" title="Fires automatically when a new realtor signs up for the portal">Auto — when a realtor signs up</option>
-              <option value="birthday" title="Fires automatically on the contact's birthday from their CRM card">Auto — on contact's birthday</option>
-              <option value="loan_funded" title="Fires automatically when a loan is marked as funded in your pipeline">Auto — when a loan funds</option>
-              <option value="inactive" title="Fires when a realtor hasn't logged into the portal for 7+ days">Auto — realtor inactive 7+ days</option>
-              <option value="anniversary" title="Fires annually on the anniversary of the client's purchase or refi closing date">Auto — purchase/refi anniversary</option>
-              <option value="rate_drop" title="Fires when you trigger a rate alert, targeting clients who could benefit from refinancing">Manual — rate drop opportunity</option>
-            </select>
-          </div>
-        </div>
-        <div class="fc-field" style="margin-bottom:16px;">
-          <div class="fc-lbl" title="A short note to remind you what this campaign is about. Only you see this." style="cursor:help;border-bottom:1px dotted var(--border);">Description <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
-          <input id="emCampDesc" placeholder="e.g. 4 emails over 8 weeks targeting past clients for refi">
-        </div>
-
-        <!-- Steps -->
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">CAMPAIGN SEQUENCE</div>
-        </div>
-        <div id="emStepsList" style="margin-bottom:12px;"></div>
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button class="topbar-btn" onclick="emAddStep('email')" style="font-size:11px;"><i class="fas fa-envelope"></i> Add Email Step</button>
-          <button class="topbar-btn" onclick="emAddStep('sms')" style="font-size:11px;"><i class="fas fa-sms"></i> Add SMS Step</button>
-        </div>
-
-        <div style="display:flex;gap:8px;">
-          <button class="topbar-btn" onclick="emCloseCampaignBuilder()">Cancel</button>
-          <button class="topbar-btn primary" onclick="emSaveCampaign()"><i class="fas fa-save"></i> Save Campaign</button>
-        </div>
-        <input type="hidden" id="emCampEditId" value="">
-      </div>
-
       <div id="emCampaignList"></div>
     </div>
 
     <!-- TEMPLATES -->
     <div id="emTemplates" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Email Templates</div>
-        <button class="topbar-btn primary" onclick="emOpenTemplateEditor()"><i class="fas fa-plus"></i> New Template</button>
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Campaign Builder</div>
+        <button class="topbar-btn primary" onclick="emOpenTemplateEditor()"><i class="fas fa-plus"></i> New Campaign</button>
       </div>
       <div id="emTemplateList"></div>
 
-      <!-- Template Editor -->
+      <!-- Campaign/Template Editor -->
       <div id="emTemplateEditor" style="display:none;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;">
-        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emTplEditorTitle">New Template</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:16px;" id="emTplEditorTitle">New Campaign</div>
+
+        <!-- Campaign Info -->
         <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px;">
-          <div class="fc-field"><div class="fc-lbl">Template Name *</div><input id="emTplName" placeholder=""></div>
+          <div class="fc-field"><div class="fc-lbl">Campaign Name *</div><input id="emTplName" placeholder=""></div>
           <div class="fc-field">
-            <div class="fc-lbl" title="Helps organize your templates." style="cursor:help;border-bottom:1px dotted var(--border);">Category <i class="fas fa-info-circle" style="font-size:9px;opacity:0.4;"></i></div>
+            <div class="fc-lbl">Category</div>
             <select id="emTplCategory">
               <option value="custom">Custom</option>
               <option value="nurture">Nurture — check-ins & follow-ups</option>
@@ -1064,49 +1022,36 @@
             </select>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:150px 1fr;gap:12px;margin-bottom:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
           <div class="fc-field">
-            <div class="fc-lbl">Greeting</div>
-            <select id="emTplGreeting">
-              <option value="Hi">Hi</option>
-              <option value="Hello">Hello</option>
-              <option value="Hey">Hey</option>
-              <option value="Happy Birthday">Happy Birthday</option>
-              <option value="Congratulations">Congratulations</option>
-              <option value="Good morning">Good morning</option>
-              <option value="Happy Holidays">Happy Holidays</option>
+            <div class="fc-lbl">Trigger</div>
+            <select id="emCampTrigger">
+              <option value="manual">Manual — you add contacts yourself</option>
+              <option value="signup">Auto — when a realtor signs up</option>
+              <option value="birthday">Auto — on contact's birthday</option>
+              <option value="loan_funded">Auto — when a loan funds</option>
+              <option value="inactive">Auto — realtor inactive 7+ days</option>
+              <option value="anniversary">Auto — purchase/refi anniversary</option>
+              <option value="rate_drop">Manual — rate drop opportunity</option>
             </select>
           </div>
           <div class="fc-field">
-            <div class="fc-lbl">Subject Line *</div>
-            <input id="emTplSubject" placeholder="" value="">
+            <div class="fc-lbl">Description</div>
+            <input id="emCampDesc" placeholder="">
           </div>
         </div>
-        <div class="fc-field" style="margin-bottom:4px;">
-          <div class="fc-lbl">Email Body *</div>
+
+        <!-- Campaign Steps -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div style="font-size:12px;font-weight:700;color:var(--text-primary);">CAMPAIGN SEQUENCE</div>
         </div>
-        <!-- Big AI Button -->
-        <div onclick="emAiDraft()" style="cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 20px;margin-bottom:12px;background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12));border:1px dashed rgba(168,85,247,0.4);border-radius:10px;transition:all 0.2s;" onmouseover="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.2),rgba(59,130,246,0.2))';this.style.borderColor='rgba(168,85,247,0.7)';" onmouseout="this.style.background='linear-gradient(135deg,rgba(168,85,247,0.12),rgba(59,130,246,0.12))';this.style.borderColor='rgba(168,85,247,0.4)';">
-          <i class="fas fa-magic" style="font-size:18px;color:#a855f7;"></i>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#a855f7;">Let AI Write This For Me</div>
-            <div style="font-size:11px;color:var(--text-muted);">Describe what you want and AI drafts the email in seconds</div>
-          </div>
+        <div id="emStepsList" style="margin-bottom:12px;"></div>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button class="topbar-btn" onclick="emAddStep('email')" style="font-size:11px;"><i class="fas fa-envelope"></i> Add Email Step</button>
+          <button class="topbar-btn" onclick="emAddStep('sms')" style="font-size:11px;"><i class="fas fa-sms"></i> Add SMS Step</button>
         </div>
-        <textarea id="emTplBody" rows="10" style="width:100%;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-family:monospace;font-size:12px;padding:12px;resize:vertical;box-sizing:border-box;" placeholder="Write your email content here..."></textarea>
-        <!-- AI Re-write bar (appears after generation, below the body so you can see what was written) -->
-        <div id="emAiRewriteBar" style="display:none;margin-top:8px;margin-bottom:12px;padding:12px;background:linear-gradient(135deg,rgba(168,85,247,0.06),rgba(59,130,246,0.06));border:1px solid rgba(168,85,247,0.2);border-radius:8px;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-            <i class="fas fa-magic" style="color:#a855f7;font-size:12px;"></i>
-            <span style="font-size:12px;font-weight:600;color:#a855f7;">AI draft inserted — edit directly above or re-write:</span>
-          </div>
-          <div style="display:flex;gap:8px;align-items:flex-end;">
-            <textarea id="emAiExtra" rows="2" style="flex:1;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:12px;padding:8px;resize:vertical;box-sizing:border-box;" placeholder="Make it shorter, more casual, add a CTA about scheduling a call..."></textarea>
-            <button class="topbar-btn" onclick="emAiRewrite()" id="emAiRewriteBtn" style="white-space:nowrap;"><i class="fas fa-redo"></i> Re-write</button>
-          </div>
-          <div id="emAiRewriteStatus" style="font-size:11px;margin-top:6px;color:var(--text-muted);"></div>
-        </div>
-        <!-- AI Draft Modal (just the initial prompt — closes after generation) -->
+
+        <!-- AI Draft Modal -->
         <div id="emAiOverlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;align-items:center;justify-content:center;">
           <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;">
             <div style="font-size:14px;font-weight:700;margin-bottom:12px;"><i class="fas fa-magic" style="color:#a855f7;"></i> AI Email Writer</div>
@@ -1130,12 +1075,15 @@
             <div id="emAiResult" style="font-size:11px;margin-top:8px;color:var(--text-muted);"></div>
           </div>
         </div>
-        <div style="display:flex;gap:8px;margin-top:12px;">
+
+        <!-- Action buttons -->
+        <div style="display:flex;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
           <button class="topbar-btn" onclick="emCloseTemplateEditor()">Cancel</button>
-          <button class="topbar-btn" onclick="emPreviewTemplate()" style="font-size:11px;"><i class="fas fa-eye"></i> Preview</button>
-          <button class="topbar-btn primary" onclick="emSaveTemplate()"><i class="fas fa-save"></i> Save Template</button>
+          <button class="topbar-btn" onclick="emSaveCampaignDraft()"><i class="fas fa-save"></i> Save Draft</button>
+          <button class="topbar-btn primary" onclick="emPublishCampaign()"><i class="fas fa-paper-plane"></i> Publish to Campaigns</button>
         </div>
         <input type="hidden" id="emTplEditId" value="">
+        <input type="hidden" id="emCampEditId" value="">
       </div>
     </div>
 
