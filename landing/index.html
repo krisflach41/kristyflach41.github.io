@@ -325,13 +325,10 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <div class="hero-left">
-        <div class="hero-tag">FREE ONLINE WEBINAR</div>
         <h1 class="hero-headline" id="pgHeadline">[Online] <em>Home Buyers</em> Masterclass</h1>
         <p class="hero-sub" id="pgSubheadline">Sign up now to take control of your homebuying journey!</p>
         <div class="hero-details">
-          <span><i class="fas fa-calendar-alt"></i> <span id="pgDate">Loading...</span></span>
-          <span><i class="fas fa-clock"></i> <span id="pgTimezone">ET</span></span>
-          <span><i class="fas fa-map-marker-alt"></i> <span id="pgCity">Online</span></span>
+          <span id="pgDate" style="font-size:18px;font-weight:700;">Loading...</span>
         </div>
       </div>
       <div class="hero-right">
@@ -458,11 +455,23 @@ function populatePage() {
   document.title = w.title + ' | Kristy Flach';
 
   // Hero
-  document.getElementById('pgHeadline').innerHTML = '<em>' + (w.title || 'Homebuyer Masterclass') + ':</em><br>' + (w.headline || 'Don\'t Make These Costly Mistakes');
+  document.getElementById('pgHeadline').innerHTML = '[Online] <em>' + (w.title || 'Homebuyer Masterclass') + ':</em><br>' + (w.headline || 'Don\'t Make These Costly Mistakes');
   document.getElementById('pgSubheadline').textContent = w.subheadline || 'Join our free webinar to gain the clarity you need. Sign up now!';
-  document.getElementById('pgDate').textContent = w.pretty_date || w.webinar_date;
-  document.getElementById('pgTimezone').textContent = w.timezone_abbr || 'ET';
-  document.getElementById('pgCity').textContent = w.city || 'Online';
+
+  // Date with time — e.g. "Wednesday, March 25 at 7:00 PM EST"
+  var prettyDate = w.pretty_date || w.webinar_date || '';
+  if (prettyDate && prettyDate.indexOf('at') === -1 && w.webinar_time) {
+    var tp = w.webinar_time.split(':');
+    var h = parseInt(tp[0]);
+    var m = tp[1] || '00';
+    var ap = h >= 12 ? 'PM' : 'AM';
+    var h12 = h > 12 ? h - 12 : (h === 0 ? 12 : h);
+    prettyDate += ' at ' + h12 + ':' + m + ' ' + ap;
+  }
+  var tzMap = { 'America/New_York': 'EST', 'America/Chicago': 'CST', 'America/Denver': 'MST', 'America/Los_Angeles': 'PST' };
+  var tzLabel = tzMap[w.timezone] || w.timezone_abbr || 'EST';
+  if (prettyDate.indexOf('EST') === -1 && prettyDate.indexOf('CST') === -1) prettyDate += ' ' + tzLabel;
+  document.getElementById('pgDate').textContent = prettyDate;
 
   // Expect
   var expectText = w.expect_text || '';
