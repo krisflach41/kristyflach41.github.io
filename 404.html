@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script>
+var path = window.location.pathname;
+if (path.indexOf('/landing/') === 0) {
+  // Preserve the original path as a query param so the landing page can read the slug
+  var slug = path.replace('/landing/', '').replace(/\/+$/, '').split('/');
+  var page = slug.length > 1 ? slug[1] : '';
+  var webinarSlug = slug[0];
+  var url = '/landing/index.html?s=' + encodeURIComponent(webinarSlug);
+  if (page) url += '&p=' + encodeURIComponent(page);
+  window.location.replace(url);
+} else {
+  document.write('<html><body style="font-family:Arial;text-align:center;padding:80px 20px;"><h1 style="font-size:48px;color:#0b1f3a;">404</h1><p style="color:#555;">Page not found.</p><a href="/" style="color:#6e7f77;">Go to homepage</a></body></html>');
+}
+</script>
+</head>
+<body></body>
+</html>
