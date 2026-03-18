@@ -913,10 +913,12 @@ function emOpenTemplateEditor() {
   document.getElementById('emTplGreeting').value = 'Hi';
   document.getElementById('emTplCategory').value = 'custom';
   document.getElementById('emTplEditId').value = '';
+  document.getElementById('emAiRewriteBar').style.display = 'none';
 }
 
 function emCloseTemplateEditor() {
   document.getElementById('emTemplateEditor').style.display = 'none';
+  document.getElementById('emAiRewriteBar').style.display = 'none';
 }
 
 function emEditTemplate(id) {
@@ -1068,9 +1070,6 @@ function emPreviewTemplate() {
 function emAiDraft() {
   document.getElementById('emAiOverlay').style.display = 'flex';
   document.getElementById('emAiPrompt').value = '';
-  document.getElementById('emAiExtra').value = '';
-  document.getElementById('emAiExtraWrap').style.display = 'none';
-  document.getElementById('emAiRewriteBtn').style.display = 'none';
   document.getElementById('emAiResult').textContent = '';
   var cat = document.getElementById('emTplCategory').value;
   if (cat === 'milestone') document.getElementById('emAiTone').value = 'warm and professional';
@@ -1097,9 +1096,11 @@ function emAiGenerate() {
     if (data.success && data.body_html) {
       document.getElementById('emTplBody').value = data.body_html;
       if (data.subject) document.getElementById('emTplSubject').value = data.subject;
-      document.getElementById('emAiExtraWrap').style.display = 'block';
-      document.getElementById('emAiRewriteBtn').style.display = '';
-      document.getElementById('emAiResult').innerHTML = '<span style="color:#22c55e;">Draft inserted into the body below. Edit it directly or use Re-write for changes.</span>';
+      emAiClose();
+      document.getElementById('emAiRewriteBar').style.display = 'block';
+      document.getElementById('emAiExtra').value = '';
+      document.getElementById('emAiRewriteStatus').textContent = '';
+      showToast('AI draft ready — edit it or use Re-write below', 'success');
     } else {
       document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
     }
@@ -1113,11 +1114,11 @@ function emAiRewrite() {
   var originalPrompt = document.getElementById('emAiPrompt').value.trim();
   var extra = document.getElementById('emAiExtra').value.trim();
   var currentBody = document.getElementById('emTplBody').value.trim();
-  if (!extra) { document.getElementById('emAiResult').textContent = 'Add directions for the re-write'; return; }
+  if (!extra) { document.getElementById('emAiRewriteStatus').textContent = 'Add directions for the re-write'; return; }
   var tone = document.getElementById('emAiTone').value;
   var btn = document.getElementById('emAiRewriteBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Re-writing...';
-  document.getElementById('emAiResult').textContent = '';
+  document.getElementById('emAiRewriteStatus').textContent = '';
 
   var rewritePrompt = 'Original request: ' + originalPrompt + '\n\nCurrent draft:\n' + currentBody + '\n\nRevision instructions: ' + extra;
 
@@ -1130,13 +1131,13 @@ function emAiRewrite() {
       document.getElementById('emTplBody').value = data.body_html;
       if (data.subject) document.getElementById('emTplSubject').value = data.subject;
       document.getElementById('emAiExtra').value = '';
-      document.getElementById('emAiResult').innerHTML = '<span style="color:#22c55e;">Re-write complete. Edit directly or re-write again.</span>';
+      document.getElementById('emAiRewriteStatus').innerHTML = '<span style="color:#22c55e;">Re-write complete. Edit above or re-write again.</span>';
     } else {
-      document.getElementById('emAiResult').textContent = 'Failed: ' + (data.message || 'Try again');
+      document.getElementById('emAiRewriteStatus').textContent = 'Failed: ' + (data.message || 'Try again');
     }
   }).catch(function() {
     btn.disabled = false; btn.innerHTML = '<i class="fas fa-redo"></i> Re-write';
-    document.getElementById('emAiResult').textContent = 'Error connecting to AI';
+    document.getElementById('emAiRewriteStatus').textContent = 'Error connecting to AI';
   });
 }
 
