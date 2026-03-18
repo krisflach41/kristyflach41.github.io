@@ -1467,7 +1467,7 @@ function audEnrollGroup(id) {
 function audEnrollSelected() {
   if (audSelected.length === 0) { showToast('Select contacts first'); return; }
 
-  // Build campaign selection
+  // Build campaign selection modal
   var loUser = localStorage.getItem('agent_edge_user') || 'default';
   fetch(API_BASE + '/email-center', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -1475,39 +1475,75 @@ function audEnrollSelected() {
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    var campaigns = (data.campaigns || []).filter(function(c) { return c.status === 'active'; });
+    var campaigns = data.campaigns || [];
     if (campaigns.length === 0) {
-      showToast('No active campaigns. Create a campaign first.');
+      showToast('No campaigns found. Create a campaign in the Templates tab first.');
       return;
     }
-    var names = campaigns.map(function(c, i) { return (i + 1) + '. ' + c.name; }).join('\n');
-    var choice = prompt('Select a campaign to enroll ' + audSelected.length + ' contacts:\n\n' + names + '\n\nEnter the number:');
-    if (!choice) return;
-    var idx = parseInt(choice) - 1;
-    if (isNaN(idx) || idx < 0 || idx >= campaigns.length) { showToast('Invalid selection'); return; }
 
-    var campaign = campaigns[idx];
-    var enrolled = 0;
-    var promises = [];
+    // Build and show a campaign picker overlay
+    var existing = document.getElementById('emEnrollCampaignPicker');
+    if (existing) existing.remove();
 
-    // Get contact names from audContacts
-    var contactMap = {};
-    audContacts.forEach(function(c) {
-      if (c.email) contactMap[c.email.toLowerCase()] = c.name || ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || c.email;
+    var overlay = document.createElement('div');
+    overlay.id = 'emEnrollCampaignPicker';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;';
+
+    var trigLabels = { manual:'Manual', signup:'New Signup', birthday:'Birthday', loan_funded:'Loan Funded', inactive:'Inactive 7d', anniversary:'Anniversary', rate_drop:'Rate Drop' };
+
+    var h = '<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:70vh;overflow-y:auto;">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+    h += '<div style="font-size:14px;font-weight:700;">Enroll ' + audSelected.length + ' contact' + (audSelected.length !== 1 ? 's' : '') + ' in a Campaign</div>';
+    h += '<button class="topbar-btn" onclick="document.getElementById(\'emEnrollCampaignPicker\').remove()" style="font-size:11px;">✕</button>';
+    h += '</div>';
+
+    campaigns.forEach(function(c) {
+      var statusColor = c.status === 'active' ? '#22c55e' : c.status === 'paused' ? '#f59e0b' : 'var(--text-muted)';
+      var statusLabel = c.status ? c.status.charAt(0).toUpperCase() + c.status.slice(1) : 'Draft';
+      var stepCount = c.steps ? c.steps.length : 0;
+
+      h += '<div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all 0.15s;" onmouseover="this.style.borderColor=\'rgba(59,130,246,0.4)\';this.style.background=\'rgba(59,130,246,0.04)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'#fafbfc\'" onclick="audDoEnroll(' + c.id + ',\'' + c.name.replace(/'/g, "\\'") + '\')">';
+      h += '<div style="width:8px;height:8px;border-radius:50%;background:' + statusColor + ';flex-shrink:0;"></div>';
+      h += '<div style="flex:1;">';
+      h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary);">' + c.name + '</div>';
+      h += '<div style="font-size:10px;color:var(--text-muted);">' + (trigLabels[c.trigger_type] || 'Manual') + ' · ' + stepCount + ' step' + (stepCount !== 1 ? 's' : '') + '</div>';
+      h += '</div>';
+      h += '<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:' + statusColor + '20;color:' + statusColor + ';font-weight:600;">' + statusLabel + '</span>';
+      h += '<i class="fas fa-arrow-right" style="font-size:10px;color:var(--text-muted);"></i>';
+      h += '</div>';
     });
 
-    audSelected.forEach(function(email) {
-      var name = contactMap[email] || email;
-      var p = fetch(API_BASE + '/email-center', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'enroll', campaign_id: campaign.id, contact_email: email, contact_name: name, lo_user_id: loUser })
-      }).then(function() { enrolled++; }).catch(function() {});
-      promises.push(p);
-    });
-
-    Promise.all(promises).then(function() {
-      showToast('Enrolled ' + enrolled + ' contacts into "' + campaign.name + '"');
-    });
+    h += '</div>';
+    overlay.innerHTML = h;
+    document.body.appendChild(overlay);
   })
   .catch(function() { showToast('Failed to load campaigns'); });
+}
+
+function audDoEnroll(campaignId, campaignName) {
+  // Close picker
+  var picker = document.getElementById('emEnrollCampaignPicker');
+  if (picker) picker.remove();
+
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+  var enrolled = 0;
+  var promises = [];
+
+  var contactMap = {};
+  audContacts.forEach(function(c) {
+    if (c.email) contactMap[c.email.toLowerCase()] = c.name || ((c.first_name || '') + ' ' + (c.last_name || '')).trim() || c.email;
+  });
+
+  audSelected.forEach(function(email) {
+    var name = contactMap[email] || email;
+    var p = fetch(API_BASE + '/email-center', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'enroll', campaign_id: campaignId, contact_email: email, contact_name: name, lo_user_id: loUser })
+    }).then(function() { enrolled++; }).catch(function() {});
+    promises.push(p);
+  });
+
+  Promise.all(promises).then(function() {
+    showToast('Enrolled ' + enrolled + ' contacts into "' + campaignName + '"');
+  });
 }
