@@ -161,9 +161,10 @@ function wbRenderList() {
     return;
   }
 
-  var upcoming = wbWebinars.filter(function(w) { return w.status === 'published' && new Date(w.webinar_date) >= new Date(new Date().toDateString()); });
+  var todayStr = new Date().toISOString().split('T')[0];
+  var upcoming = wbWebinars.filter(function(w) { return w.status === 'published' && w.webinar_date >= todayStr; });
   var drafts = wbWebinars.filter(function(w) { return w.status === 'draft'; });
-  var past = wbWebinars.filter(function(w) { return w.status === 'published' && new Date(w.webinar_date) < new Date(new Date().toDateString()); });
+  var past = wbWebinars.filter(function(w) { return w.status === 'published' && w.webinar_date < todayStr; });
 
   var h = '';
 
