@@ -310,9 +310,10 @@
   <div class="topbar">
     <div class="topbar-left">
       <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-      <div><div class="topbar-title">Calendar</div><div class="topbar-subtitle">Pipeline Dates & Deadlines</div></div>
+      <div><div class="topbar-title">Calendar</div><div class="topbar-subtitle">Events, Bookings & Deadlines</div></div>
     </div>
     <div class="topbar-right">
+      <button class="topbar-btn" onclick="calAddEvent()" style="background:#6e7f77;color:white;font-weight:600;"><i class="fas fa-plus"></i> Add Event</button>
       <button class="topbar-btn" onclick="calPrevMonth()"><i class="fas fa-chevron-left"></i></button>
       <span style="font-family:sans-serif;font-size:14px;letter-spacing:2px;color:var(--text-primary);min-width:180px;text-align:center;" id="calMonthLabel">---</span>
       <button class="topbar-btn" onclick="calNextMonth()"><i class="fas fa-chevron-right"></i></button>
@@ -321,12 +322,18 @@
   </div>
   <div class="content-area" style="padding:16px 24px;">
 
-    <!-- Legend -->
-    <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap;">
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#ef4444;display:inline-block;"></span> Closing / Final CD</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#f59e0b;display:inline-block;"></span> CTC / Conditional</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#3b82f6;display:inline-block;"></span> EMD / Appraisal / Inspection</div>
-      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text-muted);"><span style="width:10px;height:10px;border-radius:3px;background:#a855f7;display:inline-block;"></span> Last Refi Signing (Rescission Cutoff)</div>
+    <!-- Category filter chips -->
+    <div class="cal-filter-bar">
+      <div class="cal-filter-chip" id="calFilter_loan_pipeline" onclick="calToggleFilter('loan_pipeline')"><span class="cal-filter-dot" style="background:#ef4444;"></span>Pipeline</div>
+      <div class="cal-filter-chip" id="calFilter_booking" onclick="calToggleFilter('booking')"><span class="cal-filter-dot" style="background:#6e7f77;"></span>Bookings</div>
+      <div class="cal-filter-chip" id="calFilter_webinar" onclick="calToggleFilter('webinar')"><span class="cal-filter-dot" style="background:#0d9488;"></span>Webinar</div>
+      <div class="cal-filter-chip" id="calFilter_personal" onclick="calToggleFilter('personal')"><span class="cal-filter-dot" style="background:#a855f7;"></span>Personal</div>
+      <div class="cal-filter-chip" id="calFilter_out_of_office" onclick="calToggleFilter('out_of_office')"><span class="cal-filter-dot" style="background:#64748b;"></span>Out of Office</div>
+      <div class="cal-filter-chip" id="calFilter_realtor" onclick="calToggleFilter('realtor')"><span class="cal-filter-dot" style="background:#2563eb;"></span>Realtor</div>
+      <div class="cal-filter-chip" id="calFilter_prospecting" onclick="calToggleFilter('prospecting')"><span class="cal-filter-dot" style="background:#ea580c;"></span>Prospecting</div>
+      <div class="cal-filter-chip" id="calFilter_training" onclick="calToggleFilter('training')"><span class="cal-filter-dot" style="background:#6366f1;"></span>Training</div>
+      <div class="cal-filter-chip" id="calFilter_deadline" onclick="calToggleFilter('deadline')"><span class="cal-filter-dot" style="background:#e11d48;"></span>Deadline</div>
+      <div class="cal-filter-chip" id="calFilter_blocked_time" onclick="calToggleFilter('blocked_time')"><span class="cal-filter-dot" style="background:#4b5563;"></span>Blocked</div>
     </div>
 
     <!-- Calendar grid -->
@@ -345,11 +352,11 @@
       </div>
     </div>
 
-    <!-- Upcoming deadlines list -->
+    <!-- Upcoming events -->
     <div class="mc-panel" style="margin-top:16px;">
       <div class="mc-panel-head">
-        <div class="mc-blinker" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
-        <div class="mc-panel-title" data-tip="Critical pipeline dates in the next 7 days — Final CD, Clear to Close, closing dates, and lock expirations.">UPCOMING DEADLINES</div>
+        <div class="mc-blinker" style="background:#6e7f77;box-shadow:0 0 8px #6e7f77;"></div>
+        <div class="mc-panel-title" data-tip="All upcoming events, bookings, and deadlines in the next 14 days.">UPCOMING</div>
         <div class="mc-status">NEXT 14 DAYS</div>
       </div>
       <div id="calUpcoming" style="padding:4px 0;"></div>
