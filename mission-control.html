@@ -234,7 +234,7 @@
       <div class="mc-panel">
         <div class="mc-panel-head">
           <div class="mc-blinker green"></div>
-          <div class="mc-panel-title">PRODUCTION METRICS</div>
+          <div class="mc-panel-title" data-tip="Your funded loan totals — count, volume, and average loan size for the current month and year.">PRODUCTION METRICS</div>
           <div class="mc-status" id="anaProdStatus">LOADING</div>
         </div>
         <div class="mc-grid-3" style="margin-bottom:20px;">
@@ -252,7 +252,7 @@
       <div class="mc-panel">
         <div class="mc-panel-head">
           <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
-          <div class="mc-panel-title">PIPELINE VELOCITY</div>
+          <div class="mc-panel-title" data-tip="How many loans are in each stage of your pipeline right now. Shows movement from lead to funded.">PIPELINE VELOCITY</div>
           <div class="mc-status" id="anaVelocityStatus">—</div>
         </div>
         <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
@@ -335,7 +335,7 @@
     <div class="mc-panel" style="margin-top:16px;">
       <div class="mc-panel-head">
         <div class="mc-blinker" style="background:#ef4444;box-shadow:0 0 8px #ef4444;"></div>
-        <div class="mc-panel-title">UPCOMING DEADLINES</div>
+        <div class="mc-panel-title" data-tip="Critical pipeline dates in the next 7 days — Final CD, Clear to Close, closing dates, and lock expirations.">UPCOMING DEADLINES</div>
         <div class="mc-status">NEXT 14 DAYS</div>
       </div>
       <div id="calUpcoming" style="padding:4px 0;"></div>
@@ -578,33 +578,33 @@
       <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
         <!-- Leaderboard -->
         <div class="mc-panel">
-          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">REALTOR LEADERBOARD</div><div class="mc-status">TOP 10</div></div>
+          <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title" data-tip="Your top 10 most active realtor partners ranked by portal logins, tool usage, and orders placed.">REALTOR LEADERBOARD</div><div class="mc-status">TOP 10</div></div>
           <div id="ppLeaderboard"></div>
         </div>
         <div>
           <!-- Currently Online -->
           <div class="mc-panel" id="ppOnlinePanel">
-            <div class="mc-panel-head"><div class="mc-blinker green" style="animation:blink 1.5s infinite;"></div><div class="mc-panel-title">ONLINE NOW</div><div class="mc-status" id="ppOnlineCount">—</div></div>
+            <div class="mc-panel-head"><div class="mc-blinker green" style="animation:blink 1.5s infinite;"></div><div class="mc-panel-title" data-tip="Realtor partners currently logged into the Agent Edge portal in real time.">ONLINE NOW</div><div class="mc-status" id="ppOnlineCount">—</div></div>
             <div id="ppOnlineList" style="max-height:160px;overflow-y:auto;"></div>
           </div>
           <!-- Top Reports -->
           <div class="mc-panel">
-            <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOP REPORTS</div><div class="mc-status">THIS MONTH</div></div>
+            <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title" data-tip="The most-ordered client reports this month across all your realtor partners.">TOP REPORTS</div><div class="mc-status">THIS MONTH</div></div>
             <div id="ppTopReports"></div>
           </div>
           <!-- Top Flyers -->
           <div class="mc-panel">
-            <div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">TOP FLYERS</div><div class="mc-status">THIS MONTH</div></div>
+            <div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title" data-tip="The most-ordered marketing flyers this month across all your realtor partners.">TOP FLYERS</div><div class="mc-status">THIS MONTH</div></div>
             <div id="ppTopFlyers"></div>
           </div>
         </div>
       </div>
       <!-- PARTNER ACTIVITY (merged from Activity tab) -->
       <div style="margin-top:16px;">
-        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
+        <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title" data-tip="Individual realtor partner cards showing their activity, last login, and order history. Click to filter.">PARTNER PROFILES</div><div class="mc-status">CLICK TO FILTER</div></div><div style="display:flex;gap:10px;flex-wrap:wrap;" id="ppPartnerCards"></div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;">
-          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
-          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title" data-tip="Which portal tools your realtor partners use most — reports, flyers, property websites, scenario desk.">TOOL USAGE</div><div class="mc-status">ALL PARTNERS</div></div><div id="ppToolBars"></div></div>
+          <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title" data-tip="Flyers and reports downloaded by your partners this month.">CONTENT DOWNLOADS</div><div class="mc-status">THIS MONTH</div></div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
               <div style="text-align:center;padding:14px;background:rgba(59,130,246,0.03);border:1px solid rgba(59,130,246,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#3b82f6;" id="ppDlReports">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">REPORTS</div></div>
               <div style="text-align:center;padding:14px;background:rgba(168,85,247,0.03);border:1px solid rgba(168,85,247,0.06);border-radius:8px;"><div style="font-family:sans-serif;font-size:24px;font-weight:900;color:#a855f7;" id="ppDlFlyers">0</div><div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);font-weight:600;">FLYERS</div></div>
@@ -613,7 +613,7 @@
             </div>
           </div>
         </div>
-        <div class="mc-panel" style="margin-top:16px;"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
+        <div class="mc-panel" style="margin-top:16px;"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title" data-tip="A chronological feed of all partner activity — logins, orders, tool usage, downloads.">ACTIVITY LOG</div><div class="mc-status" id="ppActLogCount">ALL ACTIVITY</div></div>
           <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center;">
             <input type="text" id="ppActSearch" placeholder="Search by name, action, or tool..." oninput="ppActFilter()" class="qb-filter-val" style="flex:1;font-size:13px;padding:8px 14px;">
             <select id="ppActTypeFilter" onchange="ppActFilter()" class="qb-filter-select" style="font-size:12px;padding:8px 14px;">
@@ -628,8 +628,8 @@
 
     <!-- ===== REPORTS TAB ===== -->
     <div id="ppReports" style="display:none;">
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppReportOrderCount">—</div></div><div id="ppReportOrders"></div></div>
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">REPORT TEMPLATES</div><div class="mc-status">SELECT TO GENERATE</div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title" data-tip="Orders currently in progress from your realtor partners that need fulfillment.">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppReportOrderCount">—</div></div><div id="ppReportOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title" data-tip="Available client report templates your partners can order. Select one to generate.">REPORT TEMPLATES</div><div class="mc-status">SELECT TO GENERATE</div></div>
         <div class="pp-tpl-grid">
           <div class="pp-tpl-card" onclick="window.open('neighborhood-blueprint.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">📊</div><div class="pp-tpl-body"><div class="pp-tpl-name">Neighborhood Blueprint</div><div class="pp-tpl-desc">Zip-level demographics, appreciation, affordability, employment</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
           <div class="pp-tpl-card" onclick="window.open('buy-vs-rent.html','_blank')" style="cursor:pointer;"><div class="pp-tpl-icon">💎</div><div class="pp-tpl-body"><div class="pp-tpl-name">Rent to Wealth</div><div class="pp-tpl-desc">Own vs Rent: The Wealth Advantage — equity, appreciation, and total wealth comparison</div></div><div class="pp-tpl-tag" style="background:rgba(34,197,94,0.1);color:#22c55e;">NEW</div></div>
@@ -644,8 +644,8 @@
 
     <!-- ===== FLYERS TAB ===== -->
     <div id="ppFlyers" style="display:none;">
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div><div class="mc-panel-title" data-tip="Orders currently in progress from your realtor partners that need fulfillment.">ACTIVE ORDERS</div><div class="mc-status" style="color:#f59e0b;" id="ppFlyerOrderCount">—</div></div><div id="ppFlyerOrders"></div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker" style="background:#a855f7;box-shadow:0 0 8px #a855f7;"></div><div class="mc-panel-title" data-tip="Available marketing flyer templates your partners can customize and order.">FLYER TEMPLATES</div><div class="mc-status">SELECT TO CUSTOMIZE</div></div>
         <div class="pp-tpl-grid">
           <div class="pp-tpl-card" onclick="ppShowWebsiteBuilder()" style="cursor:pointer;"><div class="pp-tpl-icon">🌐</div><div class="pp-tpl-body"><div class="pp-tpl-name">Single Property Website</div><div class="pp-tpl-desc">Custom listing site with photos, data, and agent branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">ACTIVE</div></div>
           <div class="pp-tpl-card"><div class="pp-tpl-icon">🏡</div><div class="pp-tpl-body"><div class="pp-tpl-name">Open House</div><div class="pp-tpl-desc">Professional open house flyer with co-branding</div></div><div class="pp-tpl-tag" style="background:rgba(59,130,246,0.1);color:#3b82f6;">POPULAR</div></div>
@@ -668,7 +668,7 @@
 
       <!-- STEP 1: Lookup -->
       <div class="mc-panel" id="pwStep1b">
-        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-blue);"></div><div class="mc-panel-title">PROPERTY LOOKUP</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-blue);"></div><div class="mc-panel-title" data-tip="Search for any property by MLS number or address to pull listing data.">PROPERTY LOOKUP</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Street Address</label>
@@ -706,7 +706,7 @@
 
       <!-- STEP 2: Property Data (hidden until lookup) -->
       <div class="mc-panel" id="pwStep2" style="display:none;">
-        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-green);"></div><div class="mc-panel-title">PROPERTY DATA</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-green);"></div><div class="mc-panel-title" data-tip="Details pulled from the property lookup — address, beds, baths, price, listing info.">PROPERTY DATA</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
           <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Address</label><input class="form-input" id="pwDataAddress" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
           <div><label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">City</label><input class="form-input" id="pwDataCity" style="padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:8px;font-family:'DM Sans',sans-serif;color:var(--text-primary);background:#fff;width:100%;box-sizing:border-box;"></div>
@@ -743,7 +743,7 @@
 
       <!-- STEP 3: Photos -->
       <div class="mc-panel" id="pwStep3" style="display:none;">
-        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-purple);"></div><div class="mc-panel-title">PROPERTY PHOTOS</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-purple);"></div><div class="mc-panel-title" data-tip="Listing photos for the property. Assign roles like hero, gallery, and parallax for the website template.">PROPERTY PHOTOS</div></div>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Open the listing URL above, right-click and save property photos, then upload them here. Select which photos to include and assign their placement.</p>
         <div style="display:flex;gap:8px;margin-bottom:16px;">
           <label style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;border:1px solid var(--border);background:white;color:var(--text-secondary);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;">
@@ -758,7 +758,7 @@
 
       <!-- STEP 4: Generate & Preview -->
       <div class="mc-panel" id="pwStep4" style="display:none;">
-        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-teal);"></div><div class="mc-panel-title">PREVIEW & GENERATE</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker" style="background:var(--accent-teal);"></div><div class="mc-panel-title" data-tip="Preview your property website with the selected template and publish it live.">PREVIEW & GENERATE</div></div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px;">
           <div>
             <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;display:block;">Template</label>
@@ -803,7 +803,7 @@
 
     <!-- ===== ORDER HISTORY TAB ===== -->
     <div id="ppHistory" style="display:none;">
-      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">ORDER HISTORY</div><div class="mc-status" id="ppHistoryCount">—</div></div>
+      <div class="mc-panel"><div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title" data-tip="All completed partner orders — reports, flyers, and property websites.">ORDER HISTORY</div><div class="mc-status" id="ppHistoryCount">—</div></div>
         <div class="pp-history-filter" id="ppHistoryFilter">
           <button class="active" onclick="ppFilterHistory('all',this)">ALL</button>
           <button onclick="ppFilterHistory('complete',this)">COMPLETE</button>
@@ -878,7 +878,7 @@
 
       <!-- Upcoming Sends -->
       <div class="mc-panel" style="margin-bottom:16px;">
-        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title">UPCOMING SENDS (next 7 days)</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title" data-tip="Drip campaign emails and texts scheduled to go out in the next 7 days.">UPCOMING SENDS (next 7 days)</div></div>
         <div id="emUpcomingSends" style="padding:8px 0;"></div>
       </div>
 
@@ -901,20 +901,20 @@
 
       <!-- Campaign Analytics -->
       <div class="mc-panel" style="margin-bottom:16px;">
-        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title">CAMPAIGN ANALYTICS</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker orange"></div><div class="mc-panel-title" data-tip="Performance metrics for the selected campaign — sends, opens, clicks, enrollments.">CAMPAIGN ANALYTICS</div></div>
         <div id="emDetailAnalytics" style="padding:12px;"></div>
       </div>
 
       <!-- Email Timeline -->
       <div class="mc-panel" style="margin-bottom:16px;">
-        <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title">EMAIL SEQUENCE</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker blue"></div><div class="mc-panel-title" data-tip="The step-by-step sequence of emails and texts in this campaign with timing.">EMAIL SEQUENCE</div></div>
         <div id="emDetailTimeline" style="padding:12px;"></div>
       </div>
 
       <!-- Enrollments -->
       <div class="mc-panel" style="margin-bottom:16px;">
         <div class="mc-panel-head">
-          <div class="mc-blinker green"></div><div class="mc-panel-title">ENROLLED CONTACTS</div>
+          <div class="mc-blinker green"></div><div class="mc-panel-title" data-tip="Contacts currently enrolled in this campaign and their progress through the steps.">ENROLLED CONTACTS</div>
           <div style="margin-left:auto;"><button class="topbar-btn primary" onclick="emOpenEnrollModal()" style="font-size:10px;padding:4px 10px;"><i class="fas fa-user-plus"></i> Add People</button></div>
         </div>
         <div id="emDetailEnrollments" style="padding:8px 0;"></div>
@@ -948,7 +948,7 @@
 
       <!-- Saved Groups -->
       <div class="mc-panel" style="margin-bottom:16px;">
-        <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title">SAVED GROUPS</div><div class="mc-status" id="audGroupCount">—</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker green"></div><div class="mc-panel-title" data-tip="Audience groups you&#39;ve saved for quick access when enrolling contacts in campaigns.">SAVED GROUPS</div><div class="mc-status" id="audGroupCount">—</div></div>
         <div id="audGroupList" style="max-height:200px;overflow-y:auto;">
           <div style="font-size:12px;color:var(--text-muted);padding:16px;text-align:center;">Loading groups...</div>
         </div>
@@ -956,7 +956,7 @@
 
       <!-- Search & Filter -->
       <div class="mc-panel">
-        <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title">FIND CONTACTS</div><div class="mc-status" id="audResultCount">—</div></div>
+        <div class="mc-panel-head"><div class="mc-blinker"></div><div class="mc-panel-title" data-tip="Search your CRM by type, source, location, or keyword to find contacts for campaigns.">FIND CONTACTS</div><div class="mc-status" id="audResultCount">—</div></div>
         <form autocomplete="off" onsubmit="return false;">
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
           <div>
@@ -1399,7 +1399,7 @@
       <div class="mc-panel">
         <div class="mc-panel-head">
           <div class="mc-blinker"></div>
-          <div class="mc-panel-title">STRIKE RATE ANALYSIS</div>
+          <div class="mc-panel-title" data-tip="Compares your funded loan rates against current market rates to find refinance opportunities.">STRIKE RATE ANALYSIS</div>
           <div class="mc-status" id="anaStrikeStatus">MONITORING</div>
         </div>
         <div class="mc-grid-3" style="margin-bottom:16px;">
@@ -1415,7 +1415,7 @@
       <div class="mc-panel">
         <div class="mc-panel-head">
           <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
-          <div class="mc-panel-title">REFI OPPORTUNITIES</div>
+          <div class="mc-panel-title" data-tip="Past clients whose rate is above today&#39;s market — potential refinance candidates with estimated savings.">REFI OPPORTUNITIES</div>
           <div class="mc-status" id="anaRefiStatus" style="color:#f59e0b;">SCANNING</div>
         </div>
         <div id="anaRefiCards"><div class="mc-empty-msg">SCANNING LOAN HISTORY...</div></div>
@@ -1426,7 +1426,7 @@
         <div class="mc-panel">
           <div class="mc-panel-head">
             <div class="mc-blinker" style="background:#f472b6;box-shadow:0 0 8px #f472b6;"></div>
-            <div class="mc-panel-title">SOURCE PERFORMANCE</div>
+            <div class="mc-panel-title" data-tip="Where your contacts come from (portal, referral, webinar, import) and how many from each source funded.">SOURCE PERFORMANCE</div>
             <div class="mc-status" id="anaSourceStatus">—</div>
           </div>
           <div id="anaSourceBars"></div>
@@ -1437,7 +1437,7 @@
         <div class="mc-panel">
           <div class="mc-panel-head">
             <div class="mc-blinker" style="background:#a78bfa;box-shadow:0 0 8px #a78bfa;"></div>
-            <div class="mc-panel-title">UPCOMING DATES</div>
+            <div class="mc-panel-title" data-tip="Birthdays and loan closing anniversaries in the next 30 days — touchpoint opportunities.">UPCOMING DATES</div>
             <div class="mc-status" style="color:#a78bfa;" id="anaDateStatus">NEXT 30 DAYS</div>
           </div>
           <div id="anaUpcomingDates"><div class="mc-empty-msg">LOADING...</div></div>
@@ -1452,7 +1452,7 @@
       <div class="mc-panel" style="padding:16px 20px 100px;overflow:visible;">
         <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker green"></div>
-          <div class="mc-panel-title">QUICK REPORTS</div>
+          <div class="mc-panel-title" data-tip="Pre-built report templates — select one, configure the date range, and generate.">QUICK REPORTS</div>
           <div class="mc-status">SELECT A REPORT</div>
         </div>
         <div class="qr-grid" id="qrGrid">
@@ -1475,7 +1475,7 @@
       <div class="mc-panel" id="qrConfigPanel" style="display:none;">
         <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker"></div>
-          <div class="mc-panel-title" id="qrConfigTitle">CONFIGURE</div>
+          <div class="mc-panel-title" id="qrConfigTitle" data-tip="Set the parameters for your selected report — date range, filters, and options.">CONFIGURE</div>
         </div>
         <div id="qrConfigBody"></div>
         <div style="margin-top:14px;display:flex;gap:10px;align-items:center;">
@@ -1489,7 +1489,7 @@
       <div class="mc-panel" id="qrCustomPanel" style="display:none;padding:16px 20px;">
         <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
-          <div class="mc-panel-title">CUSTOM REPORT</div>
+          <div class="mc-panel-title" data-tip="Build a custom query across your loan and CRM data with flexible filters.">CUSTOM REPORT</div>
           <div class="mc-status" style="color:#f59e0b;">BUILD YOUR OWN</div>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
@@ -1504,7 +1504,7 @@
       <div class="mc-panel" id="anaResultsPanel" style="display:none;">
         <div class="mc-panel-head" style="margin-bottom:12px;padding-bottom:8px;">
           <div class="mc-blinker green"></div>
-          <div class="mc-panel-title" id="anaResultsTitle">RESULTS</div>
+          <div class="mc-panel-title" id="anaResultsTitle" data-tip="The output of your selected report — sortable table with export options.">RESULTS</div>
           <div class="mc-status" id="anaResultsStatus">—</div>
         </div>
         <div style="display:flex;gap:10px;margin-bottom:12px;align-items:center;">
@@ -1539,7 +1539,7 @@
     <div class="mc-panel" style="margin-bottom:16px;">
       <div class="mc-panel-head">
         <div class="mc-blinker green"></div>
-        <div class="mc-panel-title">ECONOMIC CALENDAR</div>
+        <div class="mc-panel-title" data-tip="This week&#39;s economic data releases that can move mortgage rates — uploaded from MBS Highway.">ECONOMIC CALENDAR</div>
         <div class="mc-status" style="margin-left:auto;">DROP SCREENSHOT</div>
       </div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Drop or Ctrl+V a screenshot of this week's calendar. Claude reads it and builds the portal display.</p>
@@ -1563,7 +1563,7 @@
     <div class="mc-panel" style="margin-bottom:16px;">
       <div class="mc-panel-head">
         <div class="mc-blinker"></div>
-        <div class="mc-panel-title">MARKET SUMMARIES</div>
+        <div class="mc-panel-title" data-tip="Daily morning briefing summaries — the technical version for realtors and the client-friendly version.">MARKET SUMMARIES</div>
         <div class="mc-status" style="margin-left:auto;">PASTE RAW UPDATE</div>
       </div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Paste the raw market update. Claude rewrites it into Realtor Partner and Client-Friendly formats.</p>
@@ -1589,7 +1589,7 @@
     <div class="mc-panel" style="margin-bottom:16px;">
       <div class="mc-panel-head">
         <div class="mc-blinker" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b;"></div>
-        <div class="mc-panel-title">WEEK IN REVIEW</div>
+        <div class="mc-panel-title" data-tip="AI-generated weekly recap of how rates, bonds, and economic data moved Monday through Friday.">WEEK IN REVIEW</div>
         <div class="mc-status" style="margin-left:auto;color:#f59e0b;">FRIDAY ONLY</div>
       </div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Generate a weekly recap from this week's daily summaries, or paste your own.</p>
