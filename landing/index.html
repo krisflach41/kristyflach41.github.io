@@ -584,15 +584,32 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
     <div class="expect-text" id="pgExpectText">Loading...</div>
   </section>
 
-  <!-- MEET THE SPEAKER -->
+  <!-- MEET THE SPEAKER(S) -->
   <section class="speaker-section">
-    <div class="speaker-inner">
+    <div class="speaker-inner" id="pgSpeakerSingle">
       <img src="/hero-headshot.jpg" alt="Kristy Flach" class="speaker-img">
       <div>
         <h3>MEET YOUR HOST</h3>
         <div class="speaker-name" id="pgHostName">Kristy Flach</div>
         <div class="speaker-title">Certified Mortgage Advisor & Loan Officer | NMLS #2632259</div>
         <div class="speaker-bio" id="pgSpeakerBio">Loading...</div>
+      </div>
+    </div>
+    <div id="pgSpeakerCobrand" style="display:none;">
+      <h3 style="text-align:center;font-size:14px;letter-spacing:2px;color:#6e7f77;margin-bottom:24px;">MEET YOUR HOSTS</h3>
+      <div style="display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap;justify-content:center;">
+        <div style="flex:1;min-width:250px;text-align:center;">
+          <img src="/hero-headshot.jpg" alt="Kristy Flach" style="width:120px;height:120px;border-radius:50%;object-fit:cover;object-position:top;margin-bottom:12px;border:3px solid rgba(110,127,119,0.3);">
+          <div style="font-size:18px;font-weight:700;color:#0b1f3a;margin-bottom:2px;">Kristy Flach</div>
+          <div style="font-size:12px;color:#555;margin-bottom:8px;">Certified Mortgage Advisor & Loan Officer</div>
+          <div style="font-size:13px;color:#666;line-height:1.6;" id="pgSpeakerBio2">Loading...</div>
+        </div>
+        <div style="flex:1;min-width:250px;text-align:center;">
+          <div id="pgCobrandPhoto" style="width:120px;height:120px;border-radius:50%;background:#eee;margin:0 auto 12px;overflow:hidden;display:flex;align-items:center;justify-content:center;border:3px solid rgba(110,127,119,0.3);"><span style="font-size:36px;color:#ccc;">?</span></div>
+          <div style="font-size:18px;font-weight:700;color:#0b1f3a;margin-bottom:2px;" id="pgCobrandName"></div>
+          <div style="font-size:12px;color:#555;margin-bottom:8px;" id="pgCobrandCompany"></div>
+          <div style="font-size:13px;color:#666;line-height:1.6;" id="pgCobrandInfo"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -860,6 +877,22 @@ function populatePage() {
   var bio = w.speaker_bio || '';
   if (bio) {
     document.getElementById('pgSpeakerBio').innerHTML = bio.replace(/\n/g, '<br>');
+  }
+
+  // Co-brand
+  if (w.cobrand_name) {
+    document.getElementById('pgSpeakerSingle').style.display = 'none';
+    document.getElementById('pgSpeakerCobrand').style.display = 'block';
+    if (bio) document.getElementById('pgSpeakerBio2').innerHTML = bio.replace(/\n/g, '<br>');
+    document.getElementById('pgCobrandName').textContent = w.cobrand_name;
+    document.getElementById('pgCobrandCompany').textContent = w.cobrand_company || '';
+    var infoText = '';
+    if (w.cobrand_phone) infoText += w.cobrand_phone;
+    if (w.cobrand_email) infoText += (infoText ? ' · ' : '') + w.cobrand_email;
+    document.getElementById('pgCobrandInfo').textContent = infoText;
+    if (w.cobrand_headshot_url) {
+      document.getElementById('pgCobrandPhoto').innerHTML = '<img src="' + w.cobrand_headshot_url + '" style="width:100%;height:100%;object-fit:cover;object-position:top;">';
+    }
   }
 
   // Show page
