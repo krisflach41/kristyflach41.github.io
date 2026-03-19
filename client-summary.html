@@ -78,36 +78,40 @@ p {
 </div>
 
 <script>
-// Load briefing data
+// Load briefing data from API
 window.addEventListener('load', function() {
-  const briefingData = JSON.parse(localStorage.getItem('agentEdgeBriefing') || '{}');
-  
-  // Update date
-  if (briefingData.lastUpdated) {
-    const date = new Date(briefingData.lastUpdated);
-    document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+  fetch('https://agent-edge-backend.vercel.app/api/briefing')
+    .then(function(r) { return r.json(); })
+    .then(function(briefingData) {
+      // Update date
+      if (briefingData.lastUpdated) {
+        var date = new Date(briefingData.lastUpdated);
+        document.getElementById('briefDate').textContent = date.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      } else {
+        document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+
+      // Load client-friendly content
+      var contentDiv = document.getElementById('clientContent');
+      if (briefingData.clientFriendly) {
+        var formatted = formatTextToHTML(briefingData.clientFriendly);
+        contentDiv.innerHTML = formatted;
+      } else {
+        contentDiv.innerHTML = '<p>No client-friendly summary available. Please update from the admin page.</p>';
+      }
+    })
+    .catch(function() {
+      document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      document.getElementById('clientContent').innerHTML = '<p>Unable to load summary. Please try again later.</p>';
     });
-  } else {
-    document.getElementById('briefDate').textContent = new Date().toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  }
-  
-  // Load client-friendly content
-  const contentDiv = document.getElementById('clientContent');
-  
-  if (briefingData.clientFriendly) {
-    // Convert plain text to HTML with paragraphs
-    const formatted = formatTextToHTML(briefingData.clientFriendly);
-    contentDiv.innerHTML = formatted;
-  } else {
-    contentDiv.innerHTML = '<p>No client-friendly summary available. Please update from the admin page.</p>';
-  }
 });
 
 // Helper function to format text into HTML
@@ -134,4 +138,3 @@ function formatTextToHTML(text) {
 </script>
 </body>
 </html>
-
