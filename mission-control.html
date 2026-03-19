@@ -229,6 +229,20 @@
       </div>
     </div>
 
+    <!-- WEBINAR PERFORMANCE -->
+    <div style="margin-top:16px;">
+      <div class="mc-panel">
+        <div class="mc-panel-head">
+          <div class="mc-blinker" style="background:#6e7f77;box-shadow:0 0 8px #6e7f77;"></div>
+          <div class="mc-panel-title" data-tip="Your upcoming webinar and funnel conversion — registrations, attendance, bookings, and loans generated.">WEBINAR PERFORMANCE</div>
+          <div class="mc-status" style="color:#6e7f77;" id="dashWebinarStatus">LOADING</div>
+        </div>
+        <div id="dashWebinarContent">
+          <div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">Loading webinar data...</div>
+        </div>
+      </div>
+    </div>
+
     <!-- PRODUCTION METRICS (moved from Analytics) -->
     <div style="margin-top:16px;">
       <div class="mc-panel">
@@ -1249,6 +1263,34 @@
               <option value="America/Los_Angeles">Pacific (PT)</option>
             </select>
           </div>
+        </div>
+
+        <!-- Co-Brand Partner -->
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;margin-bottom:12px;margin-top:20px;"><i class="fas fa-handshake" style="margin-right:4px;"></i> CO-BRAND PARTNER</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;">
+          <input type="checkbox" id="wbCobrandToggle" style="width:16px;height:16px;cursor:pointer;" onchange="wbToggleCobrand()">
+          <label for="wbCobrandToggle" style="font-size:12px;color:var(--text-primary);cursor:pointer;">Co-brand this webinar with a realtor partner</label>
+        </div>
+        <div id="wbCobrandSection" style="display:none;margin-bottom:16px;">
+          <div class="fc-field" style="margin-bottom:10px;">
+            <div class="fc-lbl">Search Realtor Partner</div>
+            <input id="wbCobrandSearch" placeholder="Start typing a name..." oninput="wbSearchCobrand()" autocomplete="off">
+            <div id="wbCobrandResults" style="display:none;position:relative;">
+              <div id="wbCobrandList" style="position:absolute;top:0;left:0;right:0;max-height:180px;overflow-y:auto;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:100;"></div>
+            </div>
+          </div>
+          <div id="wbCobrandSelected" style="display:none;padding:12px;background:rgba(110,127,119,0.06);border:1px solid rgba(110,127,119,0.15);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div id="wbCobrandAvatar" style="width:48px;height:48px;border-radius:50%;background:#ddd;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#999;"><i class="fas fa-user"></i></div>
+              <div style="flex:1;">
+                <div id="wbCobrandName" style="font-size:14px;font-weight:700;color:var(--text-primary);"></div>
+                <div id="wbCobrandCompany" style="font-size:12px;color:var(--text-muted);"></div>
+                <div id="wbCobrandContact" style="font-size:11px;color:var(--text-muted);margin-top:2px;"></div>
+              </div>
+              <button class="topbar-btn" onclick="wbClearCobrand()" style="font-size:10px;">Remove</button>
+            </div>
+          </div>
+          <input type="hidden" id="wbCobrandCrmId" value="">
         </div>
 
         <!-- Zoom & Links -->

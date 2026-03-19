@@ -19,6 +19,9 @@ function wbOpenCreate() {
   document.getElementById('wbExpectText').value = '';
   document.getElementById('wbSpeakerBio').value = '';
   document.getElementById('wbEditId').value = '';
+  document.getElementById('wbCobrandToggle').checked = false;
+  document.getElementById('wbCobrandSection').style.display = 'none';
+  wbClearCobrand();
 }
 
 function wbCloseCreate() {
@@ -45,6 +48,28 @@ function wbEditWebinar(id) {
   document.getElementById('wbExpectText').value = w.expect_text || '';
   document.getElementById('wbSpeakerBio').value = w.speaker_bio || '';
   document.getElementById('wbEditId').value = w.id;
+
+  // Co-brand
+  if (w.cobrand_crm_id) {
+    document.getElementById('wbCobrandToggle').checked = true;
+    document.getElementById('wbCobrandSection').style.display = 'block';
+    document.getElementById('wbCobrandCrmId').value = w.cobrand_crm_id;
+    document.getElementById('wbCobrandName').textContent = w.cobrand_name || '';
+    document.getElementById('wbCobrandCompany').textContent = w.cobrand_company || '';
+    document.getElementById('wbCobrandContact').textContent = (w.cobrand_phone || '') + (w.cobrand_phone && w.cobrand_email ? ' · ' : '') + (w.cobrand_email || '');
+    var avatar = document.getElementById('wbCobrandAvatar');
+    if (w.cobrand_headshot_url) {
+      avatar.innerHTML = '<img src="' + w.cobrand_headshot_url + '" style="width:100%;height:100%;object-fit:cover;">';
+    } else {
+      avatar.innerHTML = '<i class="fas fa-user"></i>';
+    }
+    document.getElementById('wbCobrandSelected').style.display = 'block';
+    wbCobrandData = { name: w.cobrand_name, company: w.cobrand_company, phone: w.cobrand_phone, email: w.cobrand_email, headshot_url: w.cobrand_headshot_url };
+  } else {
+    document.getElementById('wbCobrandToggle').checked = false;
+    document.getElementById('wbCobrandSection').style.display = 'none';
+    wbClearCobrand();
+  }
 }
 
 function wbGatherForm() {
@@ -96,6 +121,12 @@ function wbGatherForm() {
     host_name: 'Kristy Flach',
     host_email: 'kflach@prmg.net',
     host_phone: '(206) 313-5883',
+    cobrand_crm_id: document.getElementById('wbCobrandCrmId').value || null,
+    cobrand_name: wbCobrandData ? wbCobrandData.name : null,
+    cobrand_company: wbCobrandData ? wbCobrandData.company : null,
+    cobrand_phone: wbCobrandData ? wbCobrandData.phone : null,
+    cobrand_email: wbCobrandData ? wbCobrandData.email : null,
+    cobrand_headshot_url: wbCobrandData ? wbCobrandData.headshot_url : null,
     lo_user_id: localStorage.getItem('agent_edge_user') || 'default'
   };
 }
@@ -214,6 +245,9 @@ function wbCard(w, type) {
   h += '<div style="padding:16px;">';
   h += '<div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + w.title + '</div>';
   h += '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">' + (w.pretty_date || w.webinar_date || '') + ' · ' + (w.city || '') + '</div>';
+  if (w.cobrand_name) {
+    h += '<div style="font-size:10px;color:#6e7f77;margin-bottom:8px;"><i class="fas fa-handshake" style="margin-right:4px;"></i>Co-branded with ' + w.cobrand_name + (w.cobrand_company ? ' · ' + w.cobrand_company : '') + '</div>';
+  }
 
   // Links (only for published)
   if (type === 'upcoming' || type === 'past') {
@@ -516,4 +550,75 @@ function wpDeleteRegistrant() {
     wpLoadRegistrants();
     showToast('Registrant deleted');
   });
+}
+
+// ===== CO-BRAND PARTNER =====
+var wbCobrandData = null;
+var wbCobrandTimer = null;
+
+function wbToggleCobrand() {
+  var on = document.getElementById('wbCobrandToggle').checked;
+  document.getElementById('wbCobrandSection').style.display = on ? 'block' : 'none';
+  if (!on) wbClearCobrand();
+}
+
+function wbSearchCobrand() {
+  clearTimeout(wbCobrandTimer);
+  var q = document.getElementById('wbCobrandSearch').value.trim();
+  if (q.length < 2) {
+    document.getElementById('wbCobrandResults').style.display = 'none';
+    return;
+  }
+  wbCobrandTimer = setTimeout(function() {
+    fetch(API_BASE_WB + '/crm-api?root_type=realtor&q=' + encodeURIComponent(q))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var contacts = data.contacts || [];
+        var list = document.getElementById('wbCobrandList');
+        if (contacts.length === 0) {
+          list.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text-muted);">No realtors found</div>';
+        } else {
+          var h = '';
+          contacts.slice(0, 8).forEach(function(c) {
+            var hasPhoto = c.headshot_url ? '<img src="' + c.headshot_url + '" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">' : '<i class="fas fa-user" style="color:#ccc;"></i>';
+            h += '<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;cursor:pointer;transition:background 0.1s;" onmouseover="this.style.background=\'rgba(110,127,119,0.06)\'" onmouseout="this.style.background=\'none\'" onclick="wbPickCobrand(\'' + c.id + '\')">';
+            h += '<div style="width:28px;height:28px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0f0f0;flex-shrink:0;">' + hasPhoto + '</div>';
+            h += '<div><div style="font-size:12px;font-weight:600;color:var(--text-primary);">' + (c.name || '') + '</div>';
+            h += '<div style="font-size:10px;color:var(--text-muted);">' + (c.company || '') + '</div></div></div>';
+          });
+          list.innerHTML = h;
+        }
+        document.getElementById('wbCobrandResults').style.display = 'block';
+      });
+  }, 300);
+}
+
+function wbPickCobrand(crmId) {
+  fetch(API_BASE_WB + '/crm-api?action=get&id=' + encodeURIComponent(crmId))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.contact) return;
+      var c = data.contact;
+      wbCobrandData = c;
+      document.getElementById('wbCobrandCrmId').value = c.id;
+      document.getElementById('wbCobrandName').textContent = c.name || '';
+      document.getElementById('wbCobrandCompany').textContent = c.company || '';
+      document.getElementById('wbCobrandContact').textContent = (c.phone || '') + (c.phone && c.email ? ' · ' : '') + (c.email || '');
+      var avatar = document.getElementById('wbCobrandAvatar');
+      if (c.headshot_url) {
+        avatar.innerHTML = '<img src="' + c.headshot_url + '" style="width:100%;height:100%;object-fit:cover;">';
+      } else {
+        avatar.innerHTML = '<i class="fas fa-user"></i>';
+      }
+      document.getElementById('wbCobrandSelected').style.display = 'block';
+      document.getElementById('wbCobrandSearch').value = '';
+      document.getElementById('wbCobrandResults').style.display = 'none';
+    });
+}
+
+function wbClearCobrand() {
+  wbCobrandData = null;
+  document.getElementById('wbCobrandCrmId').value = '';
+  document.getElementById('wbCobrandSelected').style.display = 'none';
+  document.getElementById('wbCobrandSearch').value = '';
 }

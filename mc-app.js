@@ -179,6 +179,102 @@ function updateDashboard() {
 
   // Load production metrics and pipeline velocity (moved from Analytics)
   if (typeof loadAnalytics === 'function') loadAnalytics();
+
+  // Load webinar performance
+  loadDashWebinar();
+}
+
+function loadDashWebinar() {
+  var loUser = localStorage.getItem('agent_edge_user') || 'default';
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_webinars', lo_user_id: loUser })
+  }).then(function(r) { return r.json(); }).then(function(res) {
+    var webinars = res.webinars || [];
+    var todayStr = new Date().toISOString().split('T')[0];
+    var thisMonth = todayStr.substring(0, 7);
+
+    // Split into upcoming and this month
+    var upcoming = webinars.filter(function(w) { return w.status === 'published' && w.webinar_date >= todayStr; });
+    var monthAll = webinars.filter(function(w) { return w.status === 'published' && w.webinar_date && w.webinar_date.substring(0, 7) === thisMonth; });
+
+    var el = document.getElementById('dashWebinarContent');
+    var statusEl = document.getElementById('dashWebinarStatus');
+
+    if (upcoming.length === 0 && monthAll.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12px;">No webinars this month. <span style="color:#6e7f77;cursor:pointer;" onclick="switchView(\'webinarLauncher\')">Create one</span></div>';
+      statusEl.textContent = 'NONE';
+      return;
+    }
+
+    // Featured: next upcoming
+    var featured = upcoming.length > 0 ? upcoming[0] : monthAll[monthAll.length - 1];
+    statusEl.textContent = upcoming.length > 0 ? 'NEXT UP' : 'THIS MONTH';
+
+    // Load registrants for featured
+    fetch(API_BASE + '/webinar-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'list_registrants', webinar_id: featured.id })
+    }).then(function(r) { return r.json(); }).then(function(regData) {
+      var regs = regData.registrants || [];
+      var registered = regs.length;
+      var attended = regs.filter(function(r) { return r.attended; }).length;
+      var booked = regs.filter(function(r) { return r.booked; }).length;
+      var movedToLoan = regs.filter(function(r) { return r.moved_to_loan; }).length;
+
+      var h = '';
+
+      // Featured webinar
+      h += '<div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:16px;">';
+      h += '<div style="flex:1;">';
+      h += '<div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">' + featured.title + '</div>';
+      h += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">' + (featured.pretty_date || featured.webinar_date || '') + '</div>';
+      if (featured.cobrand_name) {
+        h += '<div style="font-size:11px;color:#6e7f77;"><i class="fas fa-handshake" style="margin-right:4px;"></i>Co-branded with ' + featured.cobrand_name + '</div>';
+      } else {
+        h += '<div style="font-size:11px;color:var(--text-muted);">Solo</div>';
+      }
+      h += '</div>';
+      h += '</div>';
+
+      // Stats row
+      h += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;">';
+      h += '<div style="text-align:center;padding:10px;background:#fafbfc;border-radius:8px;border:1px solid var(--border);"><div style="font-size:20px;font-weight:700;color:#3b82f6;">' + registered + '</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">REGISTERED</div></div>';
+      h += '<div style="text-align:center;padding:10px;background:#fafbfc;border-radius:8px;border:1px solid var(--border);"><div style="font-size:20px;font-weight:700;color:#22c55e;">' + attended + '</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">ATTENDED</div></div>';
+      h += '<div style="text-align:center;padding:10px;background:#fafbfc;border-radius:8px;border:1px solid var(--border);"><div style="font-size:20px;font-weight:700;color:#f59e0b;">' + booked + '</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">BOOKED</div></div>';
+      h += '<div style="text-align:center;padding:10px;background:#fafbfc;border-radius:8px;border:1px solid var(--border);"><div style="font-size:20px;font-weight:700;color:#6e7f77;">' + movedToLoan + '</div><div style="font-size:9px;color:var(--text-muted);letter-spacing:1px;">TO PIPELINE</div></div>';
+      h += '</div>';
+
+      // Conversion funnel
+      if (registered > 0) {
+        var attendRate = attended > 0 ? Math.round((attended / registered) * 100) : 0;
+        var bookRate = attended > 0 ? Math.round((booked / attended) * 100) : 0;
+        var loanRate = booked > 0 ? Math.round((movedToLoan / booked) * 100) : 0;
+        h += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:1px;margin-bottom:6px;">CONVERSION FUNNEL</div>';
+        h += '<div style="font-size:12px;color:var(--text-secondary);line-height:1.8;">';
+        h += registered + ' registered &rarr; ' + attended + ' attended (' + attendRate + '%) &rarr; ' + booked + ' booked (' + bookRate + '%) &rarr; ' + movedToLoan + ' loans (' + loanRate + '%)';
+        h += '</div>';
+      }
+
+      // Other webinars this month
+      var others = monthAll.filter(function(w) { return w.id !== featured.id; });
+      if (others.length > 0) {
+        h += '<div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">';
+        h += '<div style="font-size:10px;color:var(--text-muted);letter-spacing:1px;margin-bottom:8px;">OTHER THIS MONTH</div>';
+        others.forEach(function(w) {
+          h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:12px;">';
+          h += '<div style="color:var(--text-primary);font-weight:600;">' + w.title + '</div>';
+          h += '<div style="color:var(--text-muted);">' + (w.pretty_date || w.webinar_date || '') + ' · ' + (w.registered_count || 0) + ' reg</div>';
+          h += '</div>';
+        });
+        h += '</div>';
+      }
+
+      el.innerHTML = h;
+    });
+  }).catch(function() {
+    document.getElementById('dashWebinarContent').innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted);font-size:12px;">Unable to load webinar data</div>';
+  });
 }
 
 // ===== MC PIPELINE BARS (HTML) =====
