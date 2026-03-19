@@ -1103,7 +1103,15 @@ function jzInit() {
 function jzUpdateCountdown() {
   var w = webinarData;
   if (!w.formatted_datetime) return;
-  var target = new Date(w.formatted_datetime);
+  // Append timezone offset if not present
+  var dtStr = w.formatted_datetime;
+  if (dtStr && dtStr.length === 19) {
+    // No timezone — assume Eastern
+    var tz = w.timezone || 'America/New_York';
+    var offsets = { 'America/New_York': '-04:00', 'America/Chicago': '-05:00', 'America/Denver': '-06:00', 'America/Los_Angeles': '-07:00', 'America/Phoenix': '-07:00' };
+    dtStr = dtStr + (offsets[tz] || '-04:00');
+  }
+  var target = new Date(dtStr);
   var now = new Date();
   var diff = target.getTime() - now.getTime();
   var tenMinBefore = diff - (10 * 60 * 1000);
