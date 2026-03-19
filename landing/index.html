@@ -474,7 +474,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
 .bk-cal-day.disabled:hover { background: none; }
 .bk-cal-day.selected { background: #6e7f77; color: white; font-weight: 700; }
 .bk-cal-day.today { border: 1px solid #6e7f77; }
-.bk-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 20px; max-height: 200px; overflow-y: auto; }
+.bk-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 20px; max-height: 240px; overflow-y: auto; }
 .bk-slot { padding: 8px; text-align: center; font-size: 13px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.15s; color: #333; }
 .bk-slot:hover { border-color: #6e7f77; background: rgba(110,127,119,0.05); }
 .bk-slot.selected { background: #6e7f77; color: white; border-color: #6e7f77; font-weight: 600; }
@@ -1193,6 +1193,7 @@ var bkSelectedSlot = null;
 var bkMonth = new Date().getMonth();
 var bkYear = new Date().getFullYear();
 var bkBookedSlots = [];
+var bkBlockedEvents = [];
 
 function bkInit() {
   bkLoadBookedSlots();
@@ -1205,6 +1206,7 @@ function bkLoadBookedSlots() {
     body: JSON.stringify({ action: 'list_bookings' })
   }).then(function(r) { return r.json(); }).then(function(data) {
     bkBookedSlots = data.bookings || [];
+    bkBlockedEvents = data.blocked_events || [];
   }).catch(function() {});
 }
 
@@ -1292,27 +1294,88 @@ function bkRenderSlots() {
   // 12hr min notice
   var now = new Date();
   var minTime = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+  var dateStr = bkSelectedDate.toISOString().split('T')[0];
 
-  // Generate 30-min slots with 15-min buffer (so every 45 min)
+  // Gather booked times for this date (for buffer enforcement)
+  var dayBookings = bkBookedSlots.filter(function(b) { return b.booking_date === dateStr; });
+
+  // Gather blocked events for this date (out_of_office / blocked_time)
+  var dayBlocked = (bkBlockedEvents || []).filter(function(e) { return e.event_date === dateStr; });
+
+  // Helper: convert HH:MM to minutes since midnight
+  function toMins(t) { var p = t.split(':'); return parseInt(p[0]) * 60 + parseInt(p[1]); }
+
+  // Check if a slot is blocked by an existing booking's buffer
+  // A 30-min meeting with 15-min buffer means: if booked at 10:00, meeting runs 10:00-10:30,
+  // buffer is 10:30-10:45. So no new slot can START during the booked meeting OR during buffer.
+  // Also no new slot's END (slot+30min) can overlap into the booked meeting.
+  function isBufferBlocked(slotMins) {
+    var slotEnd = slotMins + 30; // this slot would run slotMins to slotMins+30
+    for (var bi = 0; bi < dayBookings.length; bi++) {
+      var bookedMins = toMins(dayBookings[bi].booking_time);
+      var bookedEnd = bookedMins + 30; // meeting end
+      var bufferEnd = bookedEnd + 15; // buffer end
+      // Conflict if: slot starts during meeting+buffer, or slot's meeting would overlap booked meeting
+      // Slot blocked if: slotMins < bufferEnd AND slotEnd > bookedMins
+      if (slotMins < bufferEnd && slotEnd > bookedMins) return true;
+      // Also block if this slot's buffer would overlap into a booked meeting
+      // (i.e. there's a booking starting within 15 min after this slot ends)
+      // This is already covered by the check above from the other booking's perspective
+    }
+    return false;
+  }
+
+  // Check if a slot is blocked by a calendar event (out_of_office / blocked_time)
+  function isEventBlocked(slotMins) {
+    var slotEnd = slotMins + 30;
+    for (var ei = 0; ei < dayBlocked.length; ei++) {
+      var evt = dayBlocked[ei];
+      if (evt.all_day) return true; // all-day block = entire day unavailable
+      if (evt.start_time && evt.end_time) {
+        var evtStart = toMins(evt.start_time);
+        var evtEnd = toMins(evt.end_time);
+        if (slotMins < evtEnd && slotEnd > evtStart) return true;
+      }
+    }
+    return false;
+  }
+
+  // Generate 15-min interval slots
   for (var hr = startHr; hr < endHr; hr++) {
-    for (var min = 0; min < 60; min += 30) {
+    for (var min = 0; min < 60; min += 15) {
+      // M-F lunch block: skip 12:00-12:59 (lunch 12-1pm)
+      if (dow >= 1 && dow <= 5 && hr === 12) continue;
+
       var slotTime = new Date(bkSelectedDate);
       slotTime.setHours(hr, min, 0, 0);
       if (slotTime < minTime) continue;
 
+      // Meeting would end at slot + 30 min — make sure it doesn't run past end hour
       var endTime = new Date(slotTime.getTime() + 30 * 60 * 1000);
-      if (endTime.getHours() > endHr || (endTime.getHours() === endHr && endTime.getMinutes() > 0)) continue;
+      var endHrCheck = endTime.getHours();
+      var endMinCheck = endTime.getMinutes();
+      if (endHrCheck > endHr || (endHrCheck === endHr && endMinCheck > 0)) continue;
 
-      // Check if booked
-      var dateStr = bkSelectedDate.toISOString().split('T')[0];
+      // M-F: make sure meeting doesn't bleed into lunch (if slot is 11:31-11:59, meeting ends during lunch)
+      if (dow >= 1 && dow <= 5 && hr === 11 && min > 30) {
+        var meetingEndMins = hr * 60 + min + 30;
+        if (meetingEndMins > 12 * 60) continue;
+      }
+
       var timeStr = (hr < 10 ? '0' : '') + hr + ':' + (min < 10 ? '0' : '') + min;
-      var isBooked = bkBookedSlots.some(function(b) { return b.booking_date === dateStr && b.booking_time === timeStr; });
+      var slotMins = hr * 60 + min;
+
+      // Check exact booking match
+      var isBooked = dayBookings.some(function(b) { return b.booking_time === timeStr; });
+
+      // Check buffer conflict
+      var isBlocked = isBufferBlocked(slotMins) || isEventBlocked(slotMins);
 
       var ampm = hr >= 12 ? 'PM' : 'AM';
       var hr12 = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
       var label = hr12 + ':' + (min < 10 ? '0' : '') + min + ' ' + ampm;
 
-      slots.push({ time: timeStr, label: label, booked: isBooked });
+      slots.push({ time: timeStr, label: label, booked: isBooked, blocked: isBlocked });
     }
   }
 
@@ -1325,9 +1388,10 @@ function bkRenderSlots() {
   }
   var h = '';
   slots.forEach(function(s) {
-    var cls = 'bk-slot' + (s.booked ? ' booked' : '') + (bkSelectedSlot === s.time ? ' selected' : '');
-    if (s.booked) {
-      h += '<div class="' + cls + '">Booked</div>';
+    var unavailable = s.booked || s.blocked;
+    var cls = 'bk-slot' + (unavailable ? ' booked' : '') + (bkSelectedSlot === s.time ? ' selected' : '');
+    if (unavailable) {
+      h += '<div class="' + cls + '">—</div>';
     } else {
       h += '<div class="' + cls + '" onclick="bkSelectSlot(\'' + s.time + '\')">' + s.label + '</div>';
     }
