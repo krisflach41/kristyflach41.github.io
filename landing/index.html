@@ -1234,8 +1234,19 @@ function bkRenderCal() {
   var daysInMonth = new Date(bkYear, bkMonth + 1, 0).getDate();
   var today = new Date();
   today.setHours(0,0,0,0);
-  var maxDate = new Date();
-  maxDate.setDate(maxDate.getDate() + 6);
+
+  // Date window: if webinar funnel, only show day-after-webinar through 6 days after
+  // Otherwise, normal 6-day window from today
+  var minDate, maxDate;
+  if (webinarData && webinarData.webinar_date) {
+    var wbDate = new Date(webinarData.webinar_date + 'T00:00:00');
+    minDate = new Date(wbDate.getTime() + 86400000); // day after webinar
+    maxDate = new Date(wbDate.getTime() + 6 * 86400000); // 6 days after webinar
+  } else {
+    minDate = new Date(today);
+    maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 6);
+  }
 
   for (var i = 0; i < firstDay; i++) h += '<div class="bk-cal-day disabled"></div>';
 
@@ -1244,8 +1255,8 @@ function bkRenderCal() {
     date.setHours(0,0,0,0);
     var dayOfWeek = date.getDay();
     var isToday = date.getTime() === today.getTime();
-    var isPast = date < today;
-    var isTooFar = date > maxDate;
+    var isBeforeWindow = date < minDate;
+    var isAfterWindow = date > maxDate;
 
     // Check availability: M-F=1-5, Sat=6, Sun=0 (1st+3rd only)
     var isAvailable = false;
@@ -1256,7 +1267,7 @@ function bkRenderCal() {
       if (weekNum === 1 || weekNum === 3) isAvailable = true;
     }
 
-    var isDisabled = isPast || isTooFar || !isAvailable;
+    var isDisabled = isBeforeWindow || isAfterWindow || !isAvailable;
     var isSelected = bkSelectedDate && bkSelectedDate.getTime() === date.getTime();
     var cls = 'bk-cal-day';
     if (isDisabled) cls += ' disabled';
@@ -1380,42 +1391,33 @@ function bkRenderSlots() {
   }
 
   // ===== SCARCITY LOGIC: 60% slots blocked for webinar funnel bookings =====
-  // Only applies when: there's a webinar context AND we're within 6 days after the webinar
+  // The date picker already constrains to the 6-day post-webinar window,
+  // so if we're in a webinar context, apply scarcity to all available slots
   if (webinarData && webinarData.webinar_date) {
-    var wbDate = new Date(webinarData.webinar_date + 'T00:00:00');
-    var dayAfterWb = new Date(wbDate.getTime() + 86400000); // day after webinar
-    var sixDaysAfterWb = new Date(wbDate.getTime() + 7 * 86400000); // 6 days after webinar
-    var todayCheck = new Date(); todayCheck.setHours(0,0,0,0);
-
-    if (todayCheck >= dayAfterWb && todayCheck <= sixDaysAfterWb) {
-      // Seed a simple hash from date string + webinar id for consistent randomness
-      var scarcitySeed = dateStr + '_' + (webinarData.id || '0');
-      function scarcityHash(str, idx) {
-        var hash = 0;
-        var input = str + '_' + idx;
-        for (var ci = 0; ci < input.length; ci++) {
-          hash = ((hash << 5) - hash) + input.charCodeAt(ci);
-          hash = hash & hash; // 32-bit int
-        }
-        return Math.abs(hash);
+    // Seed a simple hash from date string + webinar id for consistent randomness
+    var scarcitySeed = dateStr + '_' + (webinarData.id || '0');
+    function scarcityHash(str, idx) {
+      var hash = 0;
+      var input = str + '_' + idx;
+      for (var ci = 0; ci < input.length; ci++) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(ci);
+        hash = hash & hash;
       }
+      return Math.abs(hash);
+    }
 
-      // Get only the available (not already booked/blocked) slots
-      var availableIndices = [];
-      for (var si = 0; si < slots.length; si++) {
-        if (!slots[si].booked && !slots[si].blocked) availableIndices.push(si);
-      }
+    var availableIndices = [];
+    for (var si = 0; si < slots.length; si++) {
+      if (!slots[si].booked && !slots[si].blocked) availableIndices.push(si);
+    }
 
-      // Block 60% of available slots
-      var numToBlock = Math.round(availableIndices.length * 0.6);
-      // Use seeded hash to deterministically pick which slots to block
-      var scored = availableIndices.map(function(idx) {
-        return { idx: idx, score: scarcityHash(scarcitySeed, idx) };
-      });
-      scored.sort(function(a, b) { return a.score - b.score; });
-      for (var bi = 0; bi < numToBlock; bi++) {
-        slots[scored[bi].idx].blocked = true;
-      }
+    var numToBlock = Math.round(availableIndices.length * 0.6);
+    var scored = availableIndices.map(function(idx) {
+      return { idx: idx, score: scarcityHash(scarcitySeed, idx) };
+    });
+    scored.sort(function(a, b) { return a.score - b.score; });
+    for (var bi = 0; bi < numToBlock; bi++) {
+      slots[scored[bi].idx].blocked = true;
     }
   }
 
