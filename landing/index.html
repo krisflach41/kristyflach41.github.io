@@ -488,6 +488,24 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
 .bk-confirmed h3 { font-size: 22px; font-weight: 800; color: #0b1f3a; margin-bottom: 8px; }
 .bk-confirmed p { font-size: 14px; color: #555; line-height: 1.6; }
 
+/* ===== REPLAY PAGE ===== */
+.rp-page { display: none; }
+.rp-hero { position: relative; min-height: 100vh; overflow: hidden; }
+.rp-content { position: relative; z-index: 2; max-width: 750px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+.rp-title { font-size: 28px; font-weight: 800; color: white; margin-bottom: 30px; }
+.rp-title em { font-style: normal; color: #9CB5A0; }
+.rp-video-wrap { position: relative; cursor: pointer; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.3); margin-bottom: 30px; }
+.rp-thumb { width: 100%; display: block; }
+.rp-play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.rp-play-overlay:hover { background: rgba(0,0,0,0.2); }
+.rp-play-btn { width: 72px; height: 72px; background: rgba(255,255,255,0.95); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+.rp-play-btn i { font-size: 28px; color: #e53e3e; margin-left: 4px; }
+.rp-iframe-wrap { position: relative; padding-bottom: 56.25%; height: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.3); margin-bottom: 30px; }
+.rp-iframe-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+.rp-book-btn { display: inline-block; padding: 16px 40px; background: #6e7f77; color: white; font-size: 16px; font-weight: 700; border: none; border-radius: 8px; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+.rp-book-btn:hover { background: #5a6b63; }
+.rp-coming-soon { font-size: 16px; color: rgba(255,255,255,0.7); padding: 60px 0; }
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -749,6 +767,26 @@ body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9
   </footer>
 </div>
 
+<!-- ===== REPLAY PAGE ===== -->
+<div id="rpPage" class="rp-page">
+  <div class="rp-hero">
+    <div class="ty-bg"></div>
+    <div class="ty-overlay"></div>
+    <div class="rp-content">
+      <div class="rp-title">Watch the <em>Replay</em></div>
+      <div id="rpVideoArea">
+        <div class="rp-coming-soon">The replay will be available soon. Check back shortly.</div>
+      </div>
+      <a href="#" id="rpBookBtn" class="rp-book-btn" style="display:none;" onclick="return rpGoBook()"><i class="fas fa-calendar-check" style="margin-right:8px;"></i>Book a Free 1-on-1 Consultation</a>
+    </div>
+  </div>
+  <footer class="landing-footer">
+    <div class="footer-logos"><img src="/PRMG-Logo.png" alt="PRMG"><img src="/equal-housing-logo.png" alt="Equal Housing Opportunity"></div>
+    <div class="footer-text">Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity.</div>
+    <div class="footer-links"><a href="/privacy-policy">Privacy Policy</a><a href="/terms">Terms & Conditions</a></div>
+  </footer>
+</div>
+
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 var webinarData = null;
@@ -986,6 +1024,60 @@ function showSubpage() {
     document.title = 'Book a Consultation | Kristy Flach';
     bkInit();
   }
+  if (subpage === 'replay') {
+    document.getElementById('pageContent').style.display = 'none';
+    document.getElementById('rpPage').style.display = 'block';
+    document.title = 'Watch the Replay | ' + (webinarData.title || 'Kristy Flach');
+    rpInit();
+  }
+}
+
+// ===== REPLAY PAGE =====
+function rpInit() {
+  var w = webinarData;
+  var videoArea = document.getElementById('rpVideoArea');
+  var bookBtn = document.getElementById('rpBookBtn');
+
+  if (!w.replay_url) {
+    videoArea.innerHTML = '<div class="rp-coming-soon"><i class="fas fa-clock" style="font-size:32px;display:block;margin-bottom:12px;opacity:0.5;"></i>The replay will be available soon.<br>Check back shortly.</div>';
+    return;
+  }
+
+  // Extract YouTube video ID
+  var videoId = rpExtractYoutubeId(w.replay_url);
+  if (!videoId) {
+    videoArea.innerHTML = '<div class="rp-coming-soon">Replay video not available.</div>';
+    return;
+  }
+
+  var thumbUrl = 'https://img.youtube.com/vi/' + videoId + '/maxresdefault.jpg';
+
+  // Show thumbnail with play button
+  videoArea.innerHTML = '<div class="rp-video-wrap" id="rpThumbWrap" onclick="rpPlayVideo(\'' + videoId + '\')">' +
+    '<img src="' + thumbUrl + '" class="rp-thumb" alt="Watch Replay">' +
+    '<div class="rp-play-overlay"><div class="rp-play-btn"><i class="fas fa-play"></i></div></div>' +
+    '</div>';
+
+  // Show book button
+  bookBtn.style.display = 'inline-block';
+}
+
+function rpExtractYoutubeId(url) {
+  if (!url) return null;
+  var match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+  return match ? match[1] : null;
+}
+
+function rpPlayVideo(videoId) {
+  var area = document.getElementById('rpVideoArea');
+  area.innerHTML = '<div class="rp-iframe-wrap"><iframe src="https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>';
+}
+
+function rpGoBook() {
+  if (webinarData && webinarData.slug) {
+    window.location.href = '/landing/' + webinarData.slug + '/book';
+  }
+  return false;
 }
 
 // ===== JOIN ZOOM PAGE =====
