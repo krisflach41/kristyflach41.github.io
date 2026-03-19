@@ -1084,12 +1084,24 @@
               <option value="inactive">Auto — realtor inactive 7+ days</option>
               <option value="anniversary">Auto — purchase/refi anniversary</option>
               <option value="rate_drop">Manual — rate drop opportunity</option>
+              <option value="webinar_registered">Auto — webinar: registered</option>
+              <option value="webinar_did_not_attend">Auto — webinar: did not attend</option>
+              <option value="webinar_attended">Auto — webinar: attended</option>
+              <option value="webinar_attended_no_book">Auto — webinar: attended & did not book</option>
+              <option value="webinar_attended_booked">Auto — webinar: attended & booked</option>
+              <option value="webinar_abandoned">Auto — webinar: abandoned</option>
             </select>
           </div>
           <div class="fc-field">
             <div class="fc-lbl">Description</div>
             <input id="emCampDesc" placeholder="">
           </div>
+        </div>
+
+        <!-- Stop Condition -->
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:10px 14px;background:#fafbfc;border:1px solid var(--border);border-radius:8px;">
+          <input type="checkbox" id="emCampStopOnBook" style="width:16px;height:16px;cursor:pointer;">
+          <label for="emCampStopOnBook" style="font-size:12px;color:var(--text-primary);cursor:pointer;">Stop this campaign if the contact books a consultation</label>
         </div>
 
         <!-- Campaign Steps -->
