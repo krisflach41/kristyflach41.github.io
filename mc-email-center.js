@@ -823,6 +823,7 @@ function emOpenTemplateEditor() {
   document.getElementById('emTplCategory').value = 'custom';
   document.getElementById('emCampTrigger').value = 'manual';
   document.getElementById('emCampDesc').value = '';
+  document.getElementById('emCampStopOnBook').checked = false;
   document.getElementById('emTplEditId').value = '';
   document.getElementById('emCampEditId').value = '';
   emEditSteps = [];
@@ -843,6 +844,7 @@ function emEditTemplate(id) {
   document.getElementById('emTplCategory').value = c.category || 'custom';
   document.getElementById('emCampTrigger').value = c.trigger_type || 'manual';
   document.getElementById('emCampDesc').value = c.description || '';
+  document.getElementById('emCampStopOnBook').checked = c.stop_on_book || false;
   document.getElementById('emTplEditId').value = '';
   document.getElementById('emCampEditId').value = c.id;
   emEditSteps = (c.steps || []).map(function(s) {
@@ -891,6 +893,7 @@ function emSaveCampaignDraft() {
     trigger_type: document.getElementById('emCampTrigger').value,
     description: document.getElementById('emCampDesc').value.trim(),
     category: document.getElementById('emTplCategory').value,
+    stop_on_book: document.getElementById('emCampStopOnBook').checked,
     status: 'draft',
     steps: emBuildStepsForSave()
   };
@@ -919,6 +922,7 @@ function emPublishCampaign() {
     trigger_type: document.getElementById('emCampTrigger').value,
     description: document.getElementById('emCampDesc').value.trim(),
     category: document.getElementById('emTplCategory').value,
+    stop_on_book: document.getElementById('emCampStopOnBook').checked,
     status: 'active',
     steps: emBuildStepsForSave()
   };
