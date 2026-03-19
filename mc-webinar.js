@@ -13,6 +13,7 @@ function wbOpenCreate() {
   document.getElementById('wbTimezone').value = 'America/New_York';
   document.getElementById('wbZoomLink').value = 'https://us06web.zoom.us/j/7080198417?pwd=G2WOlqyTeDUhaUaujzfwxD165yFdn1.1';
   document.getElementById('wbBookingLink').value = '';
+  document.getElementById('wbReplayUrl').value = '';
   document.getElementById('wbHeadline').value = '';
   document.getElementById('wbSubheadline').value = '';
   document.getElementById('wbExpectText').value = '';
@@ -38,6 +39,7 @@ function wbEditWebinar(id) {
   document.getElementById('wbTimezone').value = w.timezone || 'America/New_York';
   document.getElementById('wbZoomLink').value = w.zoom_link || '';
   document.getElementById('wbBookingLink').value = w.booking_link || '';
+  document.getElementById('wbReplayUrl').value = w.replay_url || '';
   document.getElementById('wbHeadline').value = w.headline || '';
   document.getElementById('wbSubheadline').value = w.subheadline || '';
   document.getElementById('wbExpectText').value = w.expect_text || '';
@@ -86,6 +88,7 @@ function wbGatherForm() {
     formatted_datetime: formattedDateTime,
     zoom_link: document.getElementById('wbZoomLink').value.trim(),
     booking_link: 'https://kristyflach.com/landing/' + slug + '/book',
+    replay_url: document.getElementById('wbReplayUrl').value.trim(),
     headline: document.getElementById('wbHeadline').value.trim(),
     subheadline: document.getElementById('wbSubheadline').value.trim(),
     expect_text: document.getElementById('wbExpectText').value.trim(),
