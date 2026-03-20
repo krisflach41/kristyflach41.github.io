@@ -98,12 +98,14 @@ window.addEventListener('load', function() {
   fetch('https://agent-edge-backend.vercel.app/api/briefing')
     .then(function(r) { return r.json(); })
     .then(function(briefingData) {
-      // Update week label
-      if (briefingData.weekEndingLabel) {
-        document.getElementById('weekLabel').textContent = briefingData.weekEndingLabel.replace('Week Ending ', '');
-      } else {
-        document.getElementById('weekLabel').textContent = '';
-      }
+      // Update week label — calculate the Friday of the current/most recent week
+      var refDate = briefingData.lastUpdated ? new Date(briefingData.lastUpdated) : new Date();
+      var day = refDate.getDay(); // 0=Sun
+      var fridayOffset = day <= 5 ? (5 - day) : -1; // if Sat, go back 1 to Friday
+      var friday = new Date(refDate);
+      friday.setDate(refDate.getDate() + fridayOffset);
+      var weekLabel = 'Week Ending ' + friday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      document.getElementById('weekLabel').textContent = weekLabel;
       
       // Load week in review content
       var contentDiv = document.getElementById('wirContent');
