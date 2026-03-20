@@ -272,8 +272,9 @@ body {
 .crm-contact-item:not(.active).t-vendor { border-left-color: rgba(20,184,166,0.35); }
 .crm-contact-item.t-contractor { border-left-color: var(--accent-red); }
 .crm-contact-item.t-vendor { border-left-color: var(--accent-teal); }
-.crm-contact-item.crm-partner-row:not(.active) { background:rgba(110,127,119,0.06); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-top:0.5px solid rgba(110,127,119,0.12); border-right:0.5px solid rgba(110,127,119,0.12); border-bottom:1px solid rgba(110,127,119,0.25); }
-.crm-contact-item.crm-partner-row:not(.active):hover { background:rgba(110,127,119,0.10); }
+.crm-contact-item.crm-partner-row:not(.active) { background:rgba(110,127,119,0.12); border-top:0.5px solid rgba(110,127,119,0.2); border-right:3px solid #6e7f77; border-bottom:1px solid rgba(110,127,119,0.25); }
+.crm-contact-item.crm-partner-row:not(.active):hover { background:rgba(110,127,119,0.18); }
+.crm-contact-item.crm-partner-row.active { background:rgba(110,127,119,0.20); border-right:3px solid #6e7f77; }
 .ci-name { font-size: 13px; font-weight: 600; }
 .ci-sub { font-size: 11px; color: var(--text-muted); }
 .ci-badge {
