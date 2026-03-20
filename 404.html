@@ -12,6 +12,9 @@ if (path.indexOf('/landing/') === 0) {
   var url = '/landing/index.html?s=' + encodeURIComponent(webinarSlug);
   if (page) url += '&p=' + encodeURIComponent(page);
   window.location.replace(url);
+} else if (path.indexOf('/lp/') === 0) {
+  var lpSlug = path.replace('/lp/', '').replace(/\/+$/, '');
+  window.location.replace('/lp/index.html?s=' + encodeURIComponent(lpSlug));
 } else {
   document.write('<html><body style="font-family:Arial;text-align:center;padding:80px 20px;"><h1 style="font-size:48px;color:#0b1f3a;">404</h1><p style="color:#555;">Page not found.</p><a href="/" style="color:#6e7f77;">Go to homepage</a></body></html>');
 }
