@@ -842,99 +842,57 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Page Title (internal)</label>
-          <input type="text" class="form-input" id="lpEditTitle" placeholder="e.g. Lightning Refinance Campaign">
+          <label class="form-label">PAGE TITLE</label>
+          <input type="text" class="form-input" id="lpEditTitle" oninput="lpAutoSlug()">
         </div>
         <div class="form-group">
-          <label class="form-label">URL Slug</label>
+          <label class="form-label">URL</label>
           <div style="display:flex;align-items:center;gap:4px;">
             <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">kristyflach.com/lp/</span>
-            <input type="text" class="form-input" id="lpEditSlug" placeholder="lightning-refinance" style="flex:1;">
+            <input type="text" class="form-input" id="lpEditSlug" style="flex:1;background:#f5f5f5;color:var(--text-muted);" readonly>
           </div>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Hero Tag (small text above headline)</label>
-          <input type="text" class="form-input" id="lpEditTag" placeholder="FREE CONSULTATION" value="FREE CONSULTATION">
+          <label class="form-label">CAMPAIGN TAG</label>
+          <input type="text" class="form-input" id="lpEditCampaign" style="background:#f5f5f5;color:var(--text-muted);" readonly>
         </div>
         <div class="form-group">
-          <label class="form-label">Campaign Tag (for tracking)</label>
-          <input type="text" class="form-input" id="lpEditCampaign" placeholder="fb-lightning-refi">
-        </div>
-      </div>
-
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">Headline</label>
-        <input type="text" class="form-input" id="lpEditHeadline" placeholder="Tap Into Your Home's Equity to Fix It Up and Sell for More">
-      </div>
-
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">Subheadline</label>
-        <input type="text" class="form-input" id="lpEditSubheadline" placeholder="Find out how a strategic refinance can fund your renovations">
-      </div>
-
-      <div class="form-group" style="margin-bottom:14px;">
-        <label class="form-label">Body Content (HTML)</label>
-        <textarea class="form-textarea" id="lpEditBody" rows="8" placeholder="Write your landing page content here. Use <p>, <h2>, <ul> tags for formatting."></textarea>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Video URL (YouTube, optional)</label>
-          <input type="text" class="form-input" id="lpEditVideo" placeholder="https://youtube.com/watch?v=...">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Hero Image URL (optional)</label>
-          <input type="text" class="form-input" id="lpEditHeroImage" placeholder="Leave blank for default background">
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Primary CTA Button Text</label>
-          <input type="text" class="form-input" id="lpEditCtaPrimaryText" value="Book a Free Consultation">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Primary CTA Action</label>
-          <select class="form-select" id="lpEditCtaPrimaryAction">
-            <option value="book">Book a Consultation</option>
-            <option value="call">Call Me</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Secondary CTA Text (optional)</label>
-          <input type="text" class="form-input" id="lpEditCtaSecondaryText" placeholder="Call Me Now">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Secondary CTA Action</label>
-          <select class="form-select" id="lpEditCtaSecondaryAction">
-            <option value="">None</option>
-            <option value="book">Book a Consultation</option>
-            <option value="call">Call Me</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">Status</label>
+          <label class="form-label">STATUS</label>
           <select class="form-select" id="lpEditStatus">
             <option value="draft">Draft</option>
             <option value="published">Published</option>
           </select>
         </div>
-        <div class="form-group">
-          <label class="form-label">&nbsp;</label>
-          <div style="display:flex;gap:8px;">
-            <button class="btn primary" onclick="lpSavePage()"><i class="fas fa-save"></i> Save</button>
-            <button class="btn" onclick="lpCloseEditor()">Cancel</button>
-          </div>
-        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">HEADLINE</label>
+        <input type="text" class="form-input" id="lpEditHeadline">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">SUBHEADLINE</label>
+        <input type="text" class="form-input" id="lpEditSubheadline">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">BODY CONTENT</label>
+        <textarea class="form-textarea" id="lpEditBody" rows="8"></textarea>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Paragraphs are separated by blank lines. The page formats it automatically.</div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">VIDEO URL (optional)</label>
+        <input type="text" class="form-input" id="lpEditVideo">
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:20px;">
+        <button class="btn primary" onclick="lpSavePage()"><i class="fas fa-save"></i> Save</button>
+        <button class="btn" onclick="lpPreviewPage()"><i class="fas fa-eye"></i> Preview</button>
+        <button class="btn" onclick="lpCloseEditor()">Cancel</button>
       </div>
 
       <div class="status-msg" id="lpEditorStatus"></div>
@@ -2397,6 +2355,13 @@ function lpCopyLink(url) {
   navigator.clipboard.writeText(url).then(function() { alert('Link copied!'); });
 }
 
+function lpAutoSlug() {
+  var title = document.getElementById('lpEditTitle').value;
+  var slug = title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+  document.getElementById('lpEditSlug').value = slug;
+  document.getElementById('lpEditCampaign').value = slug;
+}
+
 function lpOpenEditor(pageId) {
   document.getElementById('lpPageList').style.display = 'none';
   document.getElementById('lpAnalyticsPanel').style.display = 'none';
@@ -2409,27 +2374,26 @@ function lpOpenEditor(pageId) {
     document.getElementById('lpEditId').value = p.id;
     document.getElementById('lpEditTitle').value = p.title || '';
     document.getElementById('lpEditSlug').value = p.slug || '';
-    document.getElementById('lpEditTag').value = p.tag_text || 'FREE CONSULTATION';
     document.getElementById('lpEditCampaign').value = p.campaign_tag || '';
     document.getElementById('lpEditHeadline').value = p.headline || '';
     document.getElementById('lpEditSubheadline').value = p.subheadline || '';
-    document.getElementById('lpEditBody').value = p.body_html || '';
+    // Convert HTML back to plain text for editing
+    var bodyText = (p.body_html || '').replace(/<p>/g, '').replace(/<\/p>/g, '\n\n').replace(/<br\s*\/?>/g, '\n').replace(/<[^>]+>/g, '').trim();
+    document.getElementById('lpEditBody').value = bodyText;
     document.getElementById('lpEditVideo').value = p.video_url || '';
-    document.getElementById('lpEditHeroImage').value = p.hero_image || '';
-    document.getElementById('lpEditCtaPrimaryText').value = p.cta_primary_text || 'Book a Free Consultation';
-    document.getElementById('lpEditCtaPrimaryAction').value = p.cta_primary_action || 'book';
-    document.getElementById('lpEditCtaSecondaryText').value = p.cta_secondary_text || '';
-    document.getElementById('lpEditCtaSecondaryAction').value = p.cta_secondary_action || '';
     document.getElementById('lpEditStatus').value = p.status || 'draft';
+    // Don't auto-slug on edit — keep existing slug
+    document.getElementById('lpEditSlug').removeAttribute('readonly');
+    document.getElementById('lpEditSlug').style.background = '';
+    document.getElementById('lpEditSlug').style.color = '';
   } else {
     document.getElementById('lpEditorTitle').innerHTML = '<i class="fas fa-rocket"></i> New Landing Page';
     document.getElementById('lpEditId').value = '';
-    ['lpEditTitle','lpEditSlug','lpEditCampaign','lpEditHeadline','lpEditSubheadline','lpEditBody','lpEditVideo','lpEditHeroImage','lpEditCtaSecondaryText'].forEach(function(id) { document.getElementById(id).value = ''; });
-    document.getElementById('lpEditTag').value = 'FREE CONSULTATION';
-    document.getElementById('lpEditCtaPrimaryText').value = 'Book a Free Consultation';
-    document.getElementById('lpEditCtaPrimaryAction').value = 'book';
-    document.getElementById('lpEditCtaSecondaryAction').value = '';
+    ['lpEditTitle','lpEditSlug','lpEditCampaign','lpEditHeadline','lpEditSubheadline','lpEditBody','lpEditVideo'].forEach(function(id) { document.getElementById(id).value = ''; });
     document.getElementById('lpEditStatus').value = 'draft';
+    document.getElementById('lpEditSlug').setAttribute('readonly', true);
+    document.getElementById('lpEditSlug').style.background = '#f5f5f5';
+    document.getElementById('lpEditSlug').style.color = 'var(--text-muted)';
   }
   document.getElementById('lpEditorStatus').innerHTML = '';
 }
@@ -2441,29 +2405,38 @@ function lpCloseEditor() {
 
 function lpSavePage() {
   var editId = document.getElementById('lpEditId').value;
-  var payload = {
-    action: editId ? 'update_landing_page' : 'create_landing_page',
-    title: document.getElementById('lpEditTitle').value.trim(),
-    slug: document.getElementById('lpEditSlug').value.trim(),
-    tag_text: document.getElementById('lpEditTag').value.trim(),
-    campaign_tag: document.getElementById('lpEditCampaign').value.trim(),
-    headline: document.getElementById('lpEditHeadline').value.trim(),
-    subheadline: document.getElementById('lpEditSubheadline').value.trim(),
-    body_html: document.getElementById('lpEditBody').value,
-    video_url: document.getElementById('lpEditVideo').value.trim(),
-    hero_image: document.getElementById('lpEditHeroImage').value.trim(),
-    cta_primary_text: document.getElementById('lpEditCtaPrimaryText').value.trim(),
-    cta_primary_action: document.getElementById('lpEditCtaPrimaryAction').value,
-    cta_secondary_text: document.getElementById('lpEditCtaSecondaryText').value.trim(),
-    cta_secondary_action: document.getElementById('lpEditCtaSecondaryAction').value,
-    status: document.getElementById('lpEditStatus').value
-  };
-  if (!payload.title || !payload.slug || !payload.headline) {
-    document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Title, slug, and headline are required.</span>';
+  var title = document.getElementById('lpEditTitle').value.trim();
+  var slug = document.getElementById('lpEditSlug').value.trim();
+  var headline = document.getElementById('lpEditHeadline').value.trim();
+
+  if (!title || !slug || !headline) {
+    document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Title and headline are required.</span>';
     return;
   }
+
+  // Auto-format plain text body into HTML paragraphs
+  var rawBody = document.getElementById('lpEditBody').value;
+  var bodyHtml = rawBody.split(/\n\s*\n/).filter(function(p) { return p.trim(); }).map(function(p) { return '<p>' + p.trim().replace(/\n/g, '<br>') + '</p>'; }).join('\n');
+
+  var payload = {
+    action: editId ? 'update_landing_page' : 'create_landing_page',
+    title: title,
+    slug: slug,
+    tag_text: 'FREE CONSULTATION',
+    campaign_tag: document.getElementById('lpEditCampaign').value.trim() || slug,
+    headline: headline,
+    subheadline: document.getElementById('lpEditSubheadline').value.trim(),
+    body_html: bodyHtml,
+    video_url: document.getElementById('lpEditVideo').value.trim(),
+    hero_image: '',
+    cta_primary_text: 'Book a Free Consultation',
+    cta_primary_action: 'book',
+    cta_secondary_text: 'Call Me Now',
+    cta_secondary_action: 'call',
+    status: document.getElementById('lpEditStatus').value
+  };
+
   if (editId) payload.id = parseInt(editId);
-  if (!payload.campaign_tag) payload.campaign_tag = payload.slug;
 
   document.getElementById('lpEditorStatus').innerHTML = '<span style="color:var(--sage);">Saving...</span>';
   fetch(API_BASE + '/webinar-api', {
@@ -2478,6 +2451,60 @@ function lpSavePage() {
     }
   }).catch(function() {
     document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Connection error</span>';
+  });
+}
+
+function lpPreviewPage() {
+  var slug = document.getElementById('lpEditSlug').value.trim();
+  if (!slug) { alert('Enter a title first so the URL can be generated.'); return; }
+  // Save as draft first, then open preview
+  var origStatus = document.getElementById('lpEditStatus').value;
+  document.getElementById('lpEditStatus').value = 'published';
+  var editId = document.getElementById('lpEditId').value;
+
+  // Build a quick save then open
+  var title = document.getElementById('lpEditTitle').value.trim();
+  var headline = document.getElementById('lpEditHeadline').value.trim();
+  if (!title || !headline) { alert('Title and headline are required to preview.'); document.getElementById('lpEditStatus').value = origStatus; return; }
+
+  var rawBody = document.getElementById('lpEditBody').value;
+  var bodyHtml = rawBody.split(/\n\s*\n/).filter(function(p) { return p.trim(); }).map(function(p) { return '<p>' + p.trim().replace(/\n/g, '<br>') + '</p>'; }).join('\n');
+
+  var payload = {
+    action: editId ? 'update_landing_page' : 'create_landing_page',
+    title: title,
+    slug: slug,
+    tag_text: 'FREE CONSULTATION',
+    campaign_tag: document.getElementById('lpEditCampaign').value.trim() || slug,
+    headline: headline,
+    subheadline: document.getElementById('lpEditSubheadline').value.trim(),
+    body_html: bodyHtml,
+    video_url: document.getElementById('lpEditVideo').value.trim(),
+    hero_image: '',
+    cta_primary_text: 'Book a Free Consultation',
+    cta_primary_action: 'book',
+    cta_secondary_text: 'Call Me Now',
+    cta_secondary_action: 'call',
+    status: 'published'
+  };
+  if (editId) payload.id = parseInt(editId);
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) {
+      // Store the ID for future edits
+      if (d.page && d.page.id) document.getElementById('lpEditId').value = d.page.id;
+      window.open('https://kristyflach.com/lp/' + slug, '_blank');
+      document.getElementById('lpEditStatus').value = origStatus;
+    } else {
+      alert('Save failed: ' + (d.message || 'Unknown error'));
+      document.getElementById('lpEditStatus').value = origStatus;
+    }
+  }).catch(function() {
+    alert('Connection error');
+    document.getElementById('lpEditStatus').value = origStatus;
   });
 }
 
