@@ -92,12 +92,10 @@ function crmRenderList() {
       }
     });
 
-    // Partner star SVG
-    var partnerIcon = isPartner ? '<svg width="16" height="16" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-right:6px;vertical-align:middle;"><path d="M9 1L11.1 5.3L15.9 5.9L12.4 9.3L13.2 14.1L9 11.9L4.8 14.1L5.6 9.3L2.1 5.9L6.9 5.3L9 1Z" fill="rgba(110,127,119,0.15)" stroke="#6e7f77" stroke-width="1.2" stroke-linejoin="round"/><path d="M6.5 9L8.2 10.7L11.5 7.3" stroke="#6e7f77" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
     var partnerClass = isPartner ? ' crm-partner-row' : '';
 
     html += '<div class="crm-contact-item' + typeClass + activeClass + partnerClass + '" onclick="crmSelectContact(\'' + c.id + '\')">' +
-      '<div style="display:flex;align-items:center;">' + partnerIcon + '<div><div class="ci-name">' + (c.name || 'Unnamed') + '</div><div class="ci-sub">' + (c.email || (typeof formatPhoneDisplay==='function'?formatPhoneDisplay(c.phone):c.phone) || '') + '</div></div></div>' +
+      '<div><div class="ci-name">' + (c.name || 'Unnamed') + '</div><div class="ci-sub">' + (c.email || (typeof formatPhoneDisplay==='function'?formatPhoneDisplay(c.phone):c.phone) || '') + '</div></div>' +
       '<div style="text-align:right;"><div class="ci-badge" style="background:' + badgeStyle + '">' + badgeLabel + '</div>' + desigHtml + '</div></div>';
   });
   document.getElementById('crmContactList').innerHTML = html;
