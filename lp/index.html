@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kristy Flach | Certified Mortgage Advisor</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: Arial, Helvetica, sans-serif; color: #333; background: #f8f9fa; }
+
+/* ===== HERO ===== */
+.lp-hero {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  overflow: hidden;
+}
+.lp-hero-bg {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: url('/header-background.jpeg') center/cover no-repeat;
+  z-index: 0;
+}
+.lp-hero-overlay {
+  position: absolute; top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1;
+}
+.lp-hero-inner {
+  position: relative; z-index: 2;
+  max-width: 800px; width: 100%;
+  text-align: center; color: white;
+}
+.lp-tag {
+  display: inline-block;
+  background: rgba(110,127,119,0.35);
+  color: #c8d8cc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.lp-headline {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.lp-subheadline {
+  font-size: 18px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ===== CONTENT ===== */
+.lp-content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.lp-body {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #444;
+}
+.lp-body p { margin-bottom: 16px; }
+.lp-body h2 { font-size: 22px; color: #333; margin: 28px 0 12px; }
+.lp-body h3 { font-size: 18px; color: #555; margin: 24px 0 10px; }
+.lp-body ul { margin: 12px 0 16px 24px; }
+.lp-body li { margin-bottom: 8px; }
+.lp-body strong { color: #333; }
+
+/* ===== VIDEO ===== */
+.lp-video-wrap {
+  max-width: 800px;
+  margin: 0 auto 32px;
+  padding: 0 24px;
+}
+.lp-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+}
+.lp-video iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+/* ===== CTA BAR ===== */
+.lp-cta-bar {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.lp-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 32px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.lp-cta-primary {
+  background: #6e7f77;
+  color: white;
+}
+.lp-cta-primary:hover { background: #5a6b64; }
+.lp-cta-secondary {
+  background: white;
+  color: #6e7f77;
+  border: 2px solid #6e7f77;
+}
+.lp-cta-secondary:hover { background: rgba(110,127,119,0.06); }
+
+/* ===== STICKY CTA (mobile) ===== */
+.lp-sticky-cta {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  padding: 12px 20px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  z-index: 100;
+  text-align: center;
+}
+.lp-sticky-cta .lp-cta-btn { width: 100%; justify-content: center; }
+
+/* ===== CO-BRAND ===== */
+.lp-cobrand {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+.lp-cobrand-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.lp-cobrand-photo {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.lp-cobrand-name { font-weight: 700; font-size: 14px; color: #333; }
+.lp-cobrand-title { font-size: 12px; color: #777; }
+
+/* ===== FOOTER ===== */
+.lp-footer {
+  text-align: center;
+  padding: 30px 20px;
+  background: #2a2a2a;
+  color: rgba(255,255,255,0.5);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.lp-footer-logos { display: flex; justify-content: center; gap: 16px; margin-bottom: 12px; }
+.lp-footer-logos img { height: 28px; opacity: 0.6; }
+
+/* ===== LOADING ===== */
+.lp-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-size: 14px;
+  color: #999;
+}
+.lp-loading-spin {
+  width: 24px; height: 24px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #6e7f77;
+  border-radius: 50%;
+  animation: lpSpin 0.7s linear infinite;
+  margin-right: 12px;
+}
+@keyframes lpSpin { to { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .lp-headline { font-size: 28px; }
+  .lp-subheadline { font-size: 15px; }
+  .lp-hero { min-height: 40vh; padding: 40px 16px; }
+  .lp-content { padding: 32px 16px; }
+  .lp-cta-bar { padding: 0 16px 32px; flex-direction: column; }
+  .lp-cta-btn { width: 100%; justify-content: center; }
+  .lp-sticky-cta { display: block; }
+  .lp-cobrand { gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="lp-loading" id="lpLoading">
+  <div class="lp-loading-spin"></div> Loading...
+</div>
+
+<!-- MAIN PAGE (hidden until loaded) -->
+<div id="lpPage" style="display:none;">
+
+  <!-- HERO -->
+  <div class="lp-hero">
+    <div class="lp-hero-bg" id="lpHeroBg"></div>
+    <div class="lp-hero-overlay"></div>
+    <div class="lp-hero-inner">
+      <div class="lp-tag" id="lpTag">FREE CONSULTATION</div>
+      <h1 class="lp-headline" id="lpHeadline"></h1>
+      <p class="lp-subheadline" id="lpSubheadline"></p>
+    </div>
+  </div>
+
+  <!-- VIDEO (optional) -->
+  <div class="lp-video-wrap" id="lpVideoWrap" style="display:none; padding-top:32px;">
+    <div class="lp-video">
+      <iframe id="lpVideoFrame" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- BODY CONTENT -->
+  <div class="lp-content">
+    <div class="lp-body" id="lpBody"></div>
+  </div>
+
+  <!-- CTA BUTTONS -->
+  <div class="lp-cta-bar" id="lpCtaBar"></div>
+
+  <!-- CO-BRAND (optional) -->
+  <div class="lp-cobrand" id="lpCobrand" style="display:none;"></div>
+
+  <!-- FOOTER -->
+  <footer class="lp-footer">
+    <div class="lp-footer-logos">
+      <img src="/PRMG-Logo.png" alt="PRMG">
+      <img src="/equal-housing-logo.png" alt="Equal Housing Opportunity">
+    </div>
+    <div>Paramount Residential Mortgage Group, Inc. (PRMG) NMLS ID #75243. Equal Housing Opportunity.</div>
+    <div style="margin-top:6px;">Kristy Flach | NMLS #2632259 | (206) 313-5883</div>
+  </footer>
+</div>
+
+<!-- STICKY CTA (mobile) -->
+<div class="lp-sticky-cta" id="lpStickyCta" style="display:none;"></div>
+
+<script>
+var API_BASE = 'https://agent-edge-backend.vercel.app/api';
+var lpData = null;
+var lpSource = '';
+var lpVisitorId = '';
+
+// Generate anonymous visitor ID for tracking
+function getVisitorId() {
+  var vid = sessionStorage.getItem('lp_visitor_id');
+  if (!vid) {
+    vid = 'v-' + Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+    sessionStorage.setItem('lp_visitor_id', vid);
+  }
+  return vid;
+}
+
+// Get slug from URL — either ?s=slug (via 404 redirect) or /lp/slug (direct)
+var params = new URLSearchParams(window.location.search);
+var slug = params.get('s') || '';
+if (!slug) {
+  var pathParts = window.location.pathname.replace(/\/+$/, '').split('/');
+  slug = pathParts[pathParts.length - 1];
+  if (slug === 'lp' || slug === 'index.html') slug = '';
+}
+
+// Get source tracking param
+lpSource = params.get('src') || params.get('utm_source') || '';
+lpVisitorId = getVisitorId();
+
+// ===== LOAD PAGE =====
+function loadPage() {
+  if (!slug) {
+    document.getElementById('lpLoading').innerHTML = '<div style="text-align:center;padding:60px;"><div style="font-size:18px;color:#333;margin-bottom:8px;">Page not found</div></div>';
+    return;
+  }
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_landing_page', slug: slug })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success || !data.page) {
+      document.getElementById('lpLoading').innerHTML = '<div style="text-align:center;padding:60px;"><div style="font-size:18px;color:#333;margin-bottom:8px;">Page not found</div></div>';
+      return;
+    }
+    lpData = data.page;
+    renderPage();
+    trackEvent('view');
+  })
+  .catch(function() {
+    document.getElementById('lpLoading').innerHTML = '<div style="text-align:center;padding:60px;color:#e53e3e;">Error loading page.</div>';
+  });
+}
+
+// ===== RENDER =====
+function renderPage() {
+  var p = lpData;
+  document.title = (p.title || p.headline || 'Kristy Flach') + ' | Kristy Flach';
+
+  // Hero
+  document.getElementById('lpHeadline').innerHTML = p.headline || '';
+  document.getElementById('lpSubheadline').textContent = p.subheadline || '';
+  if (p.tag_text) document.getElementById('lpTag').textContent = p.tag_text;
+  if (p.hero_image) document.getElementById('lpHeroBg').style.backgroundImage = 'url(' + p.hero_image + ')';
+
+  // Body
+  document.getElementById('lpBody').innerHTML = p.body_html || '';
+
+  // Video
+  if (p.video_url) {
+    var videoId = '';
+    if (p.video_url.indexOf('youtu') !== -1) {
+      var match = p.video_url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+      if (match) videoId = match[1];
+    }
+    if (videoId) {
+      document.getElementById('lpVideoFrame').src = 'https://www.youtube.com/embed/' + videoId + '?rel=0';
+      document.getElementById('lpVideoWrap').style.display = 'block';
+    }
+  }
+
+  // CTAs
+  var ctaHtml = '';
+  var stickyHtml = '';
+  if (p.cta_primary_text) {
+    var primaryAction = buildCtaAction(p.cta_primary_action, p.cta_primary_text, true);
+    ctaHtml += primaryAction;
+    stickyHtml += primaryAction;
+  }
+  if (p.cta_secondary_text) {
+    ctaHtml += buildCtaAction(p.cta_secondary_action, p.cta_secondary_text, false);
+  }
+  document.getElementById('lpCtaBar').innerHTML = ctaHtml;
+  document.getElementById('lpStickyCta').innerHTML = stickyHtml;
+
+  // Co-brand
+  if (p.cobrand_name) {
+    var cbHtml = '';
+    // Kristy card
+    cbHtml += '<div class="lp-cobrand-card">';
+    cbHtml += '<img class="lp-cobrand-photo" src="/hero-headshot.jpg" alt="Kristy Flach">';
+    cbHtml += '<div><div class="lp-cobrand-name">Kristy Flach</div><div class="lp-cobrand-title">Certified Mortgage Advisor<br>NMLS #2632259</div></div>';
+    cbHtml += '</div>';
+    // Partner card
+    cbHtml += '<div class="lp-cobrand-card">';
+    if (p.cobrand_headshot_url) cbHtml += '<img class="lp-cobrand-photo" src="' + p.cobrand_headshot_url + '" alt="' + p.cobrand_name + '">';
+    cbHtml += '<div><div class="lp-cobrand-name">' + p.cobrand_name + '</div><div class="lp-cobrand-title">' + (p.cobrand_company || '') + '</div></div>';
+    cbHtml += '</div>';
+    document.getElementById('lpCobrand').innerHTML = cbHtml;
+    document.getElementById('lpCobrand').style.display = 'flex';
+  }
+
+  // Show page
+  document.getElementById('lpLoading').style.display = 'none';
+  document.getElementById('lpPage').style.display = 'block';
+
+  // Show sticky CTA on mobile after scroll
+  if (window.innerWidth <= 768) {
+    window.addEventListener('scroll', function() {
+      document.getElementById('lpStickyCta').style.display = window.scrollY > 300 ? 'block' : 'none';
+    });
+  }
+}
+
+// ===== BUILD CTA =====
+function buildCtaAction(action, text, isPrimary) {
+  var cls = isPrimary ? 'lp-cta-btn lp-cta-primary' : 'lp-cta-btn lp-cta-secondary';
+  var icon = '';
+
+  if (action === 'book') {
+    icon = '<i class="fas fa-calendar-check"></i>';
+    // Build booking URL — use the main booking page with campaign tracking
+    var bookUrl = '/landing/index.html?s=_book&src=' + encodeURIComponent(lpData.campaign_tag || slug);
+    return '<a href="' + bookUrl + '" class="' + cls + '" onclick="trackEvent(\'cta_click_book\')">' + icon + ' ' + text + '</a>';
+  }
+  if (action === 'call') {
+    icon = '<i class="fas fa-phone"></i>';
+    return '<a href="tel:+12063135883" class="' + cls + '" onclick="trackEvent(\'cta_click_call\')">' + icon + ' ' + text + '</a>';
+  }
+  if (action === 'link' || action === 'custom') {
+    icon = '<i class="fas fa-arrow-right"></i>';
+    return '<a href="#" class="' + cls + '" onclick="trackEvent(\'cta_click\')">' + icon + ' ' + text + '</a>';
+  }
+  // Default: book
+  icon = '<i class="fas fa-calendar-check"></i>';
+  return '<a href="/landing/index.html?s=_book" class="' + cls + '" onclick="trackEvent(\'cta_click_book\')">' + icon + ' ' + text + '</a>';
+}
+
+// ===== TRACKING =====
+function trackEvent(eventType) {
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'log_landing_event',
+      landing_page_id: lpData ? lpData.id : null,
+      campaign_tag: lpData ? lpData.campaign_tag : '',
+      source: lpSource,
+      event_type: eventType,
+      visitor_id: lpVisitorId
+    })
+  }).catch(function() {});
+}
+
+loadPage();
+</script>
+</body>
+</html>
