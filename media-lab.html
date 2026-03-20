@@ -35,6 +35,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 /* CONTENT */
 .tab-content{display:none;padding:24px;}
 .tab-content.active{display:block;}
+.ad-copy-block{padding:14px 16px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;}
+.ad-copy-block:hover{border-color:#6e7f77;background:rgba(110,127,119,0.03);}
+.ad-copy-line{padding:10px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;}
+.ad-copy-line:hover{border-color:#6e7f77;background:rgba(110,127,119,0.03);}
 
 /* CARDS */
 .ml-card{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
@@ -290,12 +294,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 </div>
 
 <!-- TABS -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 24px 0;background:var(--bg-panel);">
+  <div></div>
+  <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:#6e7f77;text-decoration:none;padding:6px 14px;border:1px solid rgba(110,127,119,0.25);border-radius:6px;transition:all 0.15s;" onmouseover="this.style.background='rgba(110,127,119,0.06)'" onmouseout="this.style.background=''"><i class="fas fa-images"></i> Stock Photo Library</a>
+</div>
 <div class="tab-bar">
   <button class="tab-btn active" onclick="switchTab('studio',this)"><i class="fas fa-video"></i> Recording Studio</button>
   <button class="tab-btn" onclick="switchTab('composer',this)"><i class="fas fa-pen-nib"></i> Post Composer</button>
   <button class="tab-btn" onclick="switchTab('youtube',this)"><i class="fab fa-youtube"></i> YouTube</button>
   <button class="tab-btn" onclick="switchTab('library',this)"><i class="fas fa-photo-film"></i> Media Library</button>
   <button class="tab-btn" onclick="switchTab('landingpages',this)"><i class="fas fa-rocket"></i> Landing Pages</button>
+  <button class="tab-btn" onclick="switchTab('adbuilder',this)"><i class="fas fa-bullhorn"></i> Ad Builder</button>
 
 </div>
 
@@ -911,6 +920,79 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   </div>
 </div>
 
+<!-- ==================== AD BUILDER TAB ==================== -->
+<div class="tab-content" id="tab-adbuilder">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--navy);">Ad Builder</div>
+      <div style="font-size:13px;color:var(--text-muted);">Generate ready-to-use Facebook ad copy and images for your webinars</div>
+    </div>
+  </div>
+
+  <!-- Step 1: Select webinar -->
+  <div class="ml-card" style="margin-bottom:16px;">
+    <div class="ml-card-title"><i class="fas fa-calendar-check"></i> Select Webinar</div>
+    <select class="form-select" id="adWebinarSelect" onchange="adLoadWebinar()" style="max-width:400px;margin-top:10px;">
+      <option value="">-- Select a webinar --</option>
+    </select>
+    <div id="adWebinarInfo" style="display:none;margin-top:12px;padding:12px 16px;background:rgba(110,127,119,0.05);border-radius:8px;">
+      <div style="font-size:14px;font-weight:600;" id="adWbTitle"></div>
+      <div style="font-size:13px;color:var(--text-muted);" id="adWbDetails"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Select audience -->
+  <div class="ml-card" style="margin-bottom:16px;" id="adStep2" style="display:none;">
+    <div class="ml-card-title"><i class="fas fa-users"></i> Audience</div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn" id="adAudBuyer" onclick="adSelectAudience('buyer')" style="padding:10px 24px;font-weight:600;">First-Time Buyers</button>
+      <button class="btn" id="adAudSeller" onclick="adSelectAudience('seller')" style="padding:10px 24px;font-weight:600;">Home Sellers</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Generated ad copy -->
+  <div id="adCopySection" style="display:none;">
+    <div class="ml-card" style="margin-bottom:16px;">
+      <div class="ml-card-title"><i class="fas fa-copy"></i> Ad Copy — Primary Text</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Facebook rotates through multiple text options. Use 3-5 for best results. Click to copy.</div>
+      <div id="adPrimaryTexts"></div>
+    </div>
+
+    <div class="ml-card" style="margin-bottom:16px;">
+      <div class="ml-card-title"><i class="fas fa-heading"></i> Headlines</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Pick 3 that fit your webinar. Click to copy.</div>
+      <div id="adHeadlines"></div>
+    </div>
+
+    <div class="ml-card" style="margin-bottom:16px;">
+      <div class="ml-card-title"><i class="fas fa-align-left"></i> Descriptions</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Short text shown below the headline. Click to copy.</div>
+      <div id="adDescriptions"></div>
+    </div>
+
+    <div class="ml-card" style="margin-bottom:16px;">
+      <div class="ml-card-title"><i class="fas fa-link"></i> Registration Link</div>
+      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+        <input type="text" class="form-input" id="adRegLink" readonly style="flex:1;background:#f5f5f5;">
+        <button class="btn primary" onclick="adCopyField('adRegLink')"><i class="fas fa-copy"></i> Copy</button>
+      </div>
+    </div>
+
+    <div class="ml-card">
+      <div class="ml-card-title"><i class="fas fa-image"></i> Ad Images</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Use 3 images. Pick from the Stock Photo Library or search Unsplash below.</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn primary"><i class="fas fa-images"></i> Open Stock Photo Library</a>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <input type="text" class="form-input" id="adUnsplashQuery" placeholder="Search Unsplash..." style="flex:1;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
+        <button class="btn" onclick="adSearchUnsplash()"><i class="fas fa-search"></i></button>
+      </div>
+      <div id="adUnsplashResults" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
+    </div>
+  </div>
+</div>
+
 
 <!-- VIDEO PLAYER MODAL -->
 <div class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
@@ -936,6 +1018,7 @@ function switchTab(name, btn) {
   if (name === 'library') renderLibrary();
   if (name === 'youtube') renderYtSaved();
   if (name === 'landingpages') lpLoadPages();
+  if (name === 'adbuilder') adInit();
 }
 
 // ===== MEDIA LIBRARY (localStorage for now) =====
@@ -2284,6 +2367,217 @@ function updateProgress(label, pct) {
   document.getElementById('uploadProgressLabel').textContent = label;
   document.getElementById('uploadProgressPct').textContent = pct + '%';
   document.getElementById('uploadProgressBar').style.width = pct + '%';
+}
+
+// ===== AD BUILDER =====
+var adWebinars = [];
+var adSelectedWebinar = null;
+var adSelectedAudience = null;
+
+var AD_TEMPLATES = {
+  buyer: {
+    primary: [
+      "Thinking about buying your first home in {{AREA}}?\n\nHonestly, it's one of the biggest financial moves you'll make. And there's a lot of stuff out there designed to confuse you.\n\nWe're running a free online class on {{DATE}} at {{TIME}} that walks through the actual process — what you can afford, what programs exist, and the mistakes that cost people thousands.\n\nNo pitch. Just the information you need to make a smart decision.\n\nGrab your spot — it's free.",
+      "Most first-time buyers in {{AREA}} assume they can't afford a home yet.\n\nNot enough saved. Credit score's not perfect. Student loans.\n\nBut there are over 60 programs designed specifically for people in that exact situation — down payment assistance, lower monthly payments, special rates for certain jobs and zip codes.\n\nWe put it all into a free 90-minute class on {{DATE}} at {{TIME}}.\n\nNo sales pitch. Just real information that could change your timeline.\n\nTap below to save your seat.",
+      "You're paying your landlord's mortgage while rents keep climbing.\n\nAt some point the math stops making sense.\n\nWe're hosting a free online class on {{DATE}} at {{TIME}} that breaks down exactly how to go from renting to owning — what you qualify for, what it actually costs, and how to avoid the mistakes that trip up most buyers.\n\nLive and easy to join. Seats are limited.\n\nTap below to register.",
+      "If you're thinking about buying a home in {{AREA}}, there are some things to know before you start looking.\n\nThe wrong move early on can cost you thousands — or kill the deal entirely.\n\nJoin our free webinar on {{DATE}} at {{TIME}} where we walk through the buying process, the programs available to you, and the mistakes to avoid.\n\nStraight talk, no pressure.\n\nRegister below.",
+      "It's not luck. It's not rich parents.\n\nPeople are buying homes in {{AREA}} using real programs that most buyers don't even know exist.\n\nDown payment assistance. Lower rates. Programs for specific jobs and incomes.\n\nThis free 90-minute class on {{DATE}} at {{TIME}} walks you through all of it — including how to find out if you qualify.\n\nNo fluff. Just strategies that work.\n\nTap below to grab your seat."
+    ],
+    headlines: [
+      "{{AREA}} First Time Home Buyer Class",
+      "[FREE] Online {{AREA}} Home Buyer Class",
+      "Thinking of Buying in {{AREA}}?",
+      "First Home? Know the DOs and DONTs",
+      "Break Free From Rent — Register Now",
+      "Your Roadmap to Homeownership Starts Here",
+      "{{AREA}} Home Buyers Guide",
+      "Learn the Costly Mistakes to Avoid"
+    ],
+    descriptions: [
+      "Register for this no cost, highly-rated webinar",
+      "Save your spot for {{DAY}} at {{TIME}}"
+    ]
+  },
+  seller: {
+    primary: [
+      "Thinking about selling your {{AREA}} home?\n\nThere are mistakes that can lead to your home being under-valued — and most sellers don't find out until it's too late.\n\nWe're hosting a free online class on {{DATE}} at {{TIME}} to walk through how to sell for the highest value, how to handle offers, and what not to do.\n\nNo pressure, just the information you need.\n\nTap below to register.",
+      "Home owners are under more pressure now than ever before.\n\nIf you're thinking about selling in {{AREA}}, there are some things to consider that could mean the difference between getting top dollar and leaving money on the table.\n\nJoin us on {{DATE}} at {{TIME}} for a free online class covering the most common mistakes sellers make.\n\nTap below to save your seat.",
+      "Selling your home in {{AREA}}?\n\nLearn how to sell for top dollar and avoid costly mistakes that could lead to your home being under-valued.\n\nFree webinar on {{DATE}} at {{TIME}}.\n\nRegister below.",
+      "We've helped hundreds of homeowners in {{AREA}} get the best possible offer on their home.\n\nFor the first time, we're putting everything we know into a free webinar — how to price it right, how to handle multiple offers, and the mistakes that cost sellers thousands.\n\n{{DATE}} at {{TIME}}. Free to attend.\n\nDiscover what the mistakes are and how to avoid them by signing up below."
+    ],
+    headlines: [
+      "Sell Your {{AREA}} Home for Top Dollar",
+      "[FREE] Online {{AREA}} Home Seller Class",
+      "{{AREA}} Home Sellers Guide",
+      "Learn the Insider Tips and Tricks to Selling",
+      "Get the Highest Offer on Your {{AREA}} Home"
+    ],
+    descriptions: [
+      "Register for this no cost, highly-rated webinar",
+      "Save your spot for {{DAY}} at {{TIME}}"
+    ]
+  }
+};
+
+function adInit() {
+  // Load webinars into dropdown
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_webinars', lo_user_id: 'default' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    adWebinars = d.webinars || [];
+    var sel = document.getElementById('adWebinarSelect');
+    var h = '<option value="">-- Select a webinar --</option>';
+    adWebinars.forEach(function(w) {
+      h += '<option value="' + w.id + '">' + w.title + ' — ' + (w.pretty_date || w.webinar_date || '') + '</option>';
+    });
+    sel.innerHTML = h;
+  });
+}
+
+function adLoadWebinar() {
+  var id = parseInt(document.getElementById('adWebinarSelect').value);
+  if (!id) {
+    document.getElementById('adWebinarInfo').style.display = 'none';
+    document.getElementById('adCopySection').style.display = 'none';
+    adSelectedWebinar = null;
+    return;
+  }
+  adSelectedWebinar = adWebinars.find(function(w) { return w.id === id; });
+  if (!adSelectedWebinar) return;
+
+  document.getElementById('adWbTitle').textContent = adSelectedWebinar.title;
+  document.getElementById('adWbDetails').textContent = (adSelectedWebinar.city || '') + ' — ' + (adSelectedWebinar.pretty_date || adSelectedWebinar.webinar_date || '') + ' at ' + (adSelectedWebinar.webinar_time || '');
+  document.getElementById('adWebinarInfo').style.display = 'block';
+  document.getElementById('adStep2').style.display = 'block';
+  document.getElementById('adRegLink').value = 'https://kristyflach.com/landing/' + (adSelectedWebinar.slug || '') + '?src=fb-ad';
+
+  // Reset audience selection
+  adSelectedAudience = null;
+  document.getElementById('adAudBuyer').style.background = '';
+  document.getElementById('adAudBuyer').style.color = '';
+  document.getElementById('adAudSeller').style.background = '';
+  document.getElementById('adAudSeller').style.color = '';
+  document.getElementById('adCopySection').style.display = 'none';
+}
+
+function adSelectAudience(type) {
+  adSelectedAudience = type;
+  // Highlight selected button
+  document.getElementById('adAudBuyer').style.background = type === 'buyer' ? '#6e7f77' : '';
+  document.getElementById('adAudBuyer').style.color = type === 'buyer' ? 'white' : '';
+  document.getElementById('adAudSeller').style.background = type === 'seller' ? '#6e7f77' : '';
+  document.getElementById('adAudSeller').style.color = type === 'seller' ? 'white' : '';
+
+  adGenerateCopy();
+}
+
+function adGenerateCopy() {
+  if (!adSelectedWebinar || !adSelectedAudience) return;
+
+  var w = adSelectedWebinar;
+  var templates = AD_TEMPLATES[adSelectedAudience];
+  var area = w.city || 'your area';
+  var date = w.pretty_date || w.webinar_date || 'TBD';
+  var time = '';
+  if (w.webinar_time) {
+    var tp = w.webinar_time.split(':');
+    var hr = parseInt(tp[0]);
+    var ampm = hr >= 12 ? 'PM' : 'AM';
+    var hr12 = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
+    time = hr12 + ':' + tp[1] + ' ' + ampm;
+  }
+  // Get day of week from date
+  var dayOfWeek = '';
+  if (w.webinar_date) {
+    var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var d = new Date(w.webinar_date + 'T00:00:00');
+    dayOfWeek = days[d.getDay()];
+  }
+
+  function fill(text) {
+    return text.replace(/\{\{AREA\}\}/g, area).replace(/\{\{DATE\}\}/g, date).replace(/\{\{TIME\}\}/g, time || '7:00 PM').replace(/\{\{DAY\}\}/g, dayOfWeek || 'Thursday');
+  }
+
+  // Primary texts
+  var h = '';
+  templates.primary.forEach(function(t, i) {
+    var filled = fill(t);
+    h += '<div class="ad-copy-block" onclick="adCopyText(this)" title="Click to copy">';
+    h += '<div style="font-size:11px;font-weight:700;color:var(--sage);margin-bottom:6px;">Ad Text #' + (i + 1) + '</div>';
+    h += '<div style="font-size:13px;white-space:pre-wrap;line-height:1.6;">' + filled + '</div>';
+    h += '</div>';
+  });
+  document.getElementById('adPrimaryTexts').innerHTML = h;
+
+  // Headlines
+  h = '';
+  templates.headlines.forEach(function(t) {
+    var filled = fill(t);
+    h += '<div class="ad-copy-line" onclick="adCopyText(this)" title="Click to copy">' + filled + '</div>';
+  });
+  document.getElementById('adHeadlines').innerHTML = h;
+
+  // Descriptions
+  h = '';
+  templates.descriptions.forEach(function(t) {
+    var filled = fill(t);
+    h += '<div class="ad-copy-line" onclick="adCopyText(this)" title="Click to copy">' + filled + '</div>';
+  });
+  document.getElementById('adDescriptions').innerHTML = h;
+
+  document.getElementById('adCopySection').style.display = 'block';
+}
+
+function adCopyText(el) {
+  var text = el.querySelector('div:last-child') ? el.querySelector('div:last-child').textContent : el.textContent;
+  navigator.clipboard.writeText(text.trim()).then(function() {
+    el.style.background = 'rgba(110,127,119,0.12)';
+    setTimeout(function() { el.style.background = ''; }, 800);
+  });
+}
+
+function adCopyField(fieldId) {
+  var el = document.getElementById(fieldId);
+  navigator.clipboard.writeText(el.value).then(function() {
+    el.style.background = 'rgba(110,127,119,0.15)';
+    setTimeout(function() { el.style.background = '#f5f5f5'; }, 800);
+  });
+}
+
+function adSearchUnsplash() {
+  var query = document.getElementById('adUnsplashQuery').value.trim();
+  if (!query) return;
+  var resultsDiv = document.getElementById('adUnsplashResults');
+  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Searching...</div>';
+
+  var accessKey = 'cIfFMz55PEagPfSWuJ4YSz2BKkJE9MFfkPOiH8UEEjI';
+  fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=12&orientation=squarish', {
+    headers: { 'Authorization': 'Client-ID ' + accessKey }
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (!data.results || data.results.length === 0) {
+      resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No results</div>';
+      return;
+    }
+    var h = '';
+    data.results.forEach(function(img) {
+      h += '<div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;aspect-ratio:1;" onclick="adDownloadImage(\'' + img.urls.regular + '\',\'' + (img.alt_description || 'unsplash-image').replace(/'/g,'') + '\')">';
+      h += '<img src="' + img.urls.small + '" style="width:100%;height:100%;object-fit:cover;" alt="' + (img.alt_description || '') + '">';
+      h += '<div style="position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,0.5);font-size:10px;color:white;text-align:center;">Click to download</div>';
+      h += '</div>';
+    });
+    resultsDiv.innerHTML = h;
+  }).catch(function() {
+    resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ef4444;">Search failed</div>';
+  });
+}
+
+function adDownloadImage(url, name) {
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = name + '.jpg';
+  a.target = '_blank';
+  a.click();
 }
 
 // Init
