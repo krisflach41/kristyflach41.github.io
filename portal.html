@@ -1150,8 +1150,13 @@ window.addEventListener('load', function() {
       // ===== UPDATE WEEK IN REVIEW =====
       if (briefingData.weekInReview) {
         var wirHeading = document.getElementById('wirHeading');
-        if (wirHeading && briefingData.weekEndingLabel) {
-          wirHeading.textContent = briefingData.weekEndingLabel;
+        if (wirHeading) {
+          var wirRef = briefingData.lastUpdated ? new Date(briefingData.lastUpdated) : new Date();
+          var wirDay = wirRef.getDay();
+          var wirFriOffset = wirDay <= 5 ? (5 - wirDay) : -1;
+          var wirFriday = new Date(wirRef);
+          wirFriday.setDate(wirRef.getDate() + wirFriOffset);
+          wirHeading.textContent = 'Week Ending ' + wirFriday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
         var wirPreview = document.getElementById('wirPreview');
         if (wirPreview) {
