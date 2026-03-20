@@ -34,7 +34,8 @@ var CONTACT_TYPES = {
 // DESIGNATIONS — layered on/off, not permanent
 var DESIGNATION_TYPES = {
   borrower:    { label: 'Borrower',    icon: 'fa-file-invoice-dollar', color: 'var(--type-borrower)' },
-  past_client: { label: 'Past Client', icon: 'fa-user-check',        color: '#22c55e' }
+  past_client: { label: 'Past Client', icon: 'fa-user-check',        color: '#22c55e' },
+  partner:     { label: 'Partner',     icon: 'fa-star',              color: '#6e7f77' }
 };
 // Combined lookup for backward compat
 var ALL_TYPES = Object.assign({}, CONTACT_TYPES, DESIGNATION_TYPES);
