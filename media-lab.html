@@ -295,6 +295,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <button class="tab-btn" onclick="switchTab('composer',this)"><i class="fas fa-pen-nib"></i> Post Composer</button>
   <button class="tab-btn" onclick="switchTab('youtube',this)"><i class="fab fa-youtube"></i> YouTube</button>
   <button class="tab-btn" onclick="switchTab('library',this)"><i class="fas fa-photo-film"></i> Media Library</button>
+  <button class="tab-btn" onclick="switchTab('landingpages',this)"><i class="fas fa-rocket"></i> Landing Pages</button>
 
 </div>
 
@@ -814,6 +815,145 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
 
 
+<!-- ==================== LANDING PAGES TAB ==================== -->
+<div class="tab-content" id="tab-landingpages">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+    <div>
+      <div style="font-size:18px;font-weight:700;color:var(--navy);">Landing Pages</div>
+      <div style="font-size:13px;color:var(--text-muted);">Create trackable landing pages for campaigns, ads, and social media</div>
+    </div>
+    <button class="btn primary" onclick="lpOpenEditor(null)"><i class="fas fa-plus"></i> New Landing Page</button>
+  </div>
+
+  <!-- Page list -->
+  <div id="lpPageList">
+    <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Loading...</div>
+  </div>
+
+  <!-- Editor (hidden until opened) -->
+  <div id="lpEditor" style="display:none;">
+    <div class="ml-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="ml-card-title" id="lpEditorTitle"><i class="fas fa-rocket"></i> New Landing Page</div>
+        <button class="btn" onclick="lpCloseEditor()"><i class="fas fa-times"></i> Close</button>
+      </div>
+
+      <input type="hidden" id="lpEditId">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Page Title (internal)</label>
+          <input type="text" class="form-input" id="lpEditTitle" placeholder="e.g. Lightning Refinance Campaign">
+        </div>
+        <div class="form-group">
+          <label class="form-label">URL Slug</label>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">kristyflach.com/lp/</span>
+            <input type="text" class="form-input" id="lpEditSlug" placeholder="lightning-refinance" style="flex:1;">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Hero Tag (small text above headline)</label>
+          <input type="text" class="form-input" id="lpEditTag" placeholder="FREE CONSULTATION" value="FREE CONSULTATION">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Campaign Tag (for tracking)</label>
+          <input type="text" class="form-input" id="lpEditCampaign" placeholder="fb-lightning-refi">
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">Headline</label>
+        <input type="text" class="form-input" id="lpEditHeadline" placeholder="Tap Into Your Home's Equity to Fix It Up and Sell for More">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">Subheadline</label>
+        <input type="text" class="form-input" id="lpEditSubheadline" placeholder="Find out how a strategic refinance can fund your renovations">
+      </div>
+
+      <div class="form-group" style="margin-bottom:14px;">
+        <label class="form-label">Body Content (HTML)</label>
+        <textarea class="form-textarea" id="lpEditBody" rows="8" placeholder="Write your landing page content here. Use <p>, <h2>, <ul> tags for formatting."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Video URL (YouTube, optional)</label>
+          <input type="text" class="form-input" id="lpEditVideo" placeholder="https://youtube.com/watch?v=...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hero Image URL (optional)</label>
+          <input type="text" class="form-input" id="lpEditHeroImage" placeholder="Leave blank for default background">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Primary CTA Button Text</label>
+          <input type="text" class="form-input" id="lpEditCtaPrimaryText" value="Book a Free Consultation">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Primary CTA Action</label>
+          <select class="form-select" id="lpEditCtaPrimaryAction">
+            <option value="book">Book a Consultation</option>
+            <option value="call">Call Me</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Secondary CTA Text (optional)</label>
+          <input type="text" class="form-input" id="lpEditCtaSecondaryText" placeholder="Call Me Now">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Secondary CTA Action</label>
+          <select class="form-select" id="lpEditCtaSecondaryAction">
+            <option value="">None</option>
+            <option value="book">Book a Consultation</option>
+            <option value="call">Call Me</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" id="lpEditStatus">
+            <option value="draft">Draft</option>
+            <option value="published">Published</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">&nbsp;</label>
+          <div style="display:flex;gap:8px;">
+            <button class="btn primary" onclick="lpSavePage()"><i class="fas fa-save"></i> Save</button>
+            <button class="btn" onclick="lpCloseEditor()">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="status-msg" id="lpEditorStatus"></div>
+    </div>
+  </div>
+
+  <!-- Analytics detail (hidden until opened) -->
+  <div id="lpAnalyticsPanel" style="display:none;">
+    <div class="ml-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div class="ml-card-title"><i class="fas fa-chart-bar"></i> <span id="lpAnalyticsTitle">Analytics</span></div>
+        <button class="btn" onclick="lpCloseAnalytics()"><i class="fas fa-times"></i> Close</button>
+      </div>
+      <div id="lpAnalyticsContent"></div>
+    </div>
+  </div>
+</div>
+
+
 <!-- VIDEO PLAYER MODAL -->
 <div class="video-modal" id="videoModal" onclick="if(event.target===this)closeVideoModal()">
   <div class="video-modal-inner">
@@ -836,8 +976,8 @@ function switchTab(name, btn) {
   document.getElementById('tab-'+name).classList.add('active');
   btn.classList.add('active');
   if (name === 'library') renderLibrary();
-
   if (name === 'youtube') renderYtSaved();
+  if (name === 'landingpages') lpLoadPages();
 }
 
 // ===== MEDIA LIBRARY (localStorage for now) =====
@@ -2192,6 +2332,229 @@ function updateProgress(label, pct) {
 renderDrafts();
 loadDraftsFromSupabase();
 renderYtSaved();
+
+// ===== LANDING PAGES =====
+var lpPages = [];
+
+function lpLoadPages() {
+  document.getElementById('lpPageList').innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Loading...</div>';
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_landing_pages' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    lpPages = d.pages || [];
+    lpRenderList();
+  }).catch(function() {
+    document.getElementById('lpPageList').innerHTML = '<div style="text-align:center;padding:40px;color:#e53e3e;">Error loading pages</div>';
+  });
+}
+
+function lpRenderList() {
+  var el = document.getElementById('lpPageList');
+  if (lpPages.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:60px;"><i class="fas fa-rocket" style="font-size:36px;color:var(--text-muted);display:block;margin-bottom:12px;opacity:0.4;"></i><p style="color:var(--text-muted);font-size:13px;">No landing pages yet. Click "New Landing Page" to create one.</p></div>';
+    return;
+  }
+  var h = '<div style="display:flex;flex-direction:column;gap:10px;">';
+  lpPages.forEach(function(p) {
+    var statusColor = p.status === 'published' ? '#16a34a' : '#f59e0b';
+    var statusLabel = p.status === 'published' ? 'LIVE' : 'DRAFT';
+    var convRate = p.views > 0 ? Math.round((p.clicks / p.views) * 100) : 0;
+    var url = 'https://kristyflach.com/lp/' + p.slug;
+
+    h += '<div class="ml-card" style="padding:16px 20px;">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:start;gap:16px;flex-wrap:wrap;">';
+
+    h += '<div style="flex:1;min-width:200px;">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">';
+    h += '<span style="font-weight:700;font-size:15px;color:var(--navy);">' + (p.title || p.headline) + '</span>';
+    h += '<span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;background:rgba(' + (p.status === 'published' ? '22,163,74' : '245,158,11') + ',0.12);color:' + statusColor + ';">' + statusLabel + '</span>';
+    h += '</div>';
+    h += '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">' + url + '</div>';
+    if (p.campaign_tag) h += '<div style="font-size:11px;color:var(--sage);">Tag: ' + p.campaign_tag + '</div>';
+    h += '</div>';
+
+    h += '<div style="display:flex;gap:20px;align-items:center;">';
+    h += '<div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--navy);">' + (p.views || 0) + '</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">VIEWS</div></div>';
+    h += '<div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:var(--navy);">' + (p.clicks || 0) + '</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">CLICKS</div></div>';
+    h += '<div style="text-align:center;"><div style="font-size:20px;font-weight:800;color:' + (convRate >= 10 ? '#16a34a' : 'var(--navy)') + ';">' + convRate + '%</div><div style="font-size:10px;color:var(--text-muted);font-weight:600;">CONV</div></div>';
+    h += '</div>';
+
+    h += '<div style="display:flex;gap:6px;flex-shrink:0;">';
+    h += '<button class="btn" style="padding:6px 10px;font-size:11px;" onclick="lpCopyLink(\'' + url + '\')" title="Copy link"><i class="fas fa-link"></i></button>';
+    h += '<button class="btn" style="padding:6px 10px;font-size:11px;" onclick="lpViewAnalytics(' + p.id + ',\'' + (p.title || '').replace(/'/g, "\\'") + '\')" title="Analytics"><i class="fas fa-chart-bar"></i></button>';
+    h += '<button class="btn" style="padding:6px 10px;font-size:11px;" onclick="lpOpenEditor(' + p.id + ')" title="Edit"><i class="fas fa-pen"></i></button>';
+    h += '<button class="btn" style="padding:6px 10px;font-size:11px;color:#ef4444;" onclick="lpDeletePage(' + p.id + ')" title="Delete"><i class="fas fa-trash"></i></button>';
+    h += '</div>';
+
+    h += '</div></div>';
+  });
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+function lpCopyLink(url) {
+  navigator.clipboard.writeText(url).then(function() { alert('Link copied!'); });
+}
+
+function lpOpenEditor(pageId) {
+  document.getElementById('lpPageList').style.display = 'none';
+  document.getElementById('lpAnalyticsPanel').style.display = 'none';
+  document.getElementById('lpEditor').style.display = 'block';
+
+  if (pageId) {
+    var p = lpPages.find(function(pg) { return pg.id === pageId; });
+    if (!p) return;
+    document.getElementById('lpEditorTitle').innerHTML = '<i class="fas fa-pen"></i> Edit Landing Page';
+    document.getElementById('lpEditId').value = p.id;
+    document.getElementById('lpEditTitle').value = p.title || '';
+    document.getElementById('lpEditSlug').value = p.slug || '';
+    document.getElementById('lpEditTag').value = p.tag_text || 'FREE CONSULTATION';
+    document.getElementById('lpEditCampaign').value = p.campaign_tag || '';
+    document.getElementById('lpEditHeadline').value = p.headline || '';
+    document.getElementById('lpEditSubheadline').value = p.subheadline || '';
+    document.getElementById('lpEditBody').value = p.body_html || '';
+    document.getElementById('lpEditVideo').value = p.video_url || '';
+    document.getElementById('lpEditHeroImage').value = p.hero_image || '';
+    document.getElementById('lpEditCtaPrimaryText').value = p.cta_primary_text || 'Book a Free Consultation';
+    document.getElementById('lpEditCtaPrimaryAction').value = p.cta_primary_action || 'book';
+    document.getElementById('lpEditCtaSecondaryText').value = p.cta_secondary_text || '';
+    document.getElementById('lpEditCtaSecondaryAction').value = p.cta_secondary_action || '';
+    document.getElementById('lpEditStatus').value = p.status || 'draft';
+  } else {
+    document.getElementById('lpEditorTitle').innerHTML = '<i class="fas fa-rocket"></i> New Landing Page';
+    document.getElementById('lpEditId').value = '';
+    ['lpEditTitle','lpEditSlug','lpEditCampaign','lpEditHeadline','lpEditSubheadline','lpEditBody','lpEditVideo','lpEditHeroImage','lpEditCtaSecondaryText'].forEach(function(id) { document.getElementById(id).value = ''; });
+    document.getElementById('lpEditTag').value = 'FREE CONSULTATION';
+    document.getElementById('lpEditCtaPrimaryText').value = 'Book a Free Consultation';
+    document.getElementById('lpEditCtaPrimaryAction').value = 'book';
+    document.getElementById('lpEditCtaSecondaryAction').value = '';
+    document.getElementById('lpEditStatus').value = 'draft';
+  }
+  document.getElementById('lpEditorStatus').innerHTML = '';
+}
+
+function lpCloseEditor() {
+  document.getElementById('lpEditor').style.display = 'none';
+  document.getElementById('lpPageList').style.display = 'block';
+}
+
+function lpSavePage() {
+  var editId = document.getElementById('lpEditId').value;
+  var payload = {
+    action: editId ? 'update_landing_page' : 'create_landing_page',
+    title: document.getElementById('lpEditTitle').value.trim(),
+    slug: document.getElementById('lpEditSlug').value.trim(),
+    tag_text: document.getElementById('lpEditTag').value.trim(),
+    campaign_tag: document.getElementById('lpEditCampaign').value.trim(),
+    headline: document.getElementById('lpEditHeadline').value.trim(),
+    subheadline: document.getElementById('lpEditSubheadline').value.trim(),
+    body_html: document.getElementById('lpEditBody').value,
+    video_url: document.getElementById('lpEditVideo').value.trim(),
+    hero_image: document.getElementById('lpEditHeroImage').value.trim(),
+    cta_primary_text: document.getElementById('lpEditCtaPrimaryText').value.trim(),
+    cta_primary_action: document.getElementById('lpEditCtaPrimaryAction').value,
+    cta_secondary_text: document.getElementById('lpEditCtaSecondaryText').value.trim(),
+    cta_secondary_action: document.getElementById('lpEditCtaSecondaryAction').value,
+    status: document.getElementById('lpEditStatus').value
+  };
+  if (!payload.title || !payload.slug || !payload.headline) {
+    document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Title, slug, and headline are required.</span>';
+    return;
+  }
+  if (editId) payload.id = parseInt(editId);
+  if (!payload.campaign_tag) payload.campaign_tag = payload.slug;
+
+  document.getElementById('lpEditorStatus').innerHTML = '<span style="color:var(--sage);">Saving...</span>';
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) {
+      document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#16a34a;">Saved!</span>';
+      setTimeout(function() { lpCloseEditor(); lpLoadPages(); }, 600);
+    } else {
+      document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Error: ' + (d.message || 'Save failed') + '</span>';
+    }
+  }).catch(function() {
+    document.getElementById('lpEditorStatus').innerHTML = '<span style="color:#ef4444;">Connection error</span>';
+  });
+}
+
+function lpDeletePage(pageId) {
+  if (!confirm('Delete this landing page and all its analytics data?')) return;
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_landing_page', id: pageId })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.success) lpLoadPages();
+  });
+}
+
+function lpViewAnalytics(pageId, title) {
+  document.getElementById('lpPageList').style.display = 'none';
+  document.getElementById('lpEditor').style.display = 'none';
+  document.getElementById('lpAnalyticsPanel').style.display = 'block';
+  document.getElementById('lpAnalyticsTitle').textContent = 'Analytics — ' + title;
+  document.getElementById('lpAnalyticsContent').innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">Loading...</div>';
+
+  fetch(API_BASE + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get_landing_analytics', landing_page_id: pageId })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    if (!d.success) { document.getElementById('lpAnalyticsContent').innerHTML = '<div style="color:#ef4444;">Error loading analytics</div>'; return; }
+    var a = d.analytics;
+    var h = '';
+    h += '<div style="display:flex;gap:16px;margin-bottom:24px;flex-wrap:wrap;">';
+    h += '<div style="flex:1;min-width:120px;text-align:center;padding:20px;background:rgba(110,127,119,0.06);border-radius:8px;"><div style="font-size:28px;font-weight:800;color:var(--navy);">' + a.views + '</div><div style="font-size:11px;font-weight:600;color:var(--text-muted);">TOTAL VIEWS</div></div>';
+    h += '<div style="flex:1;min-width:120px;text-align:center;padding:20px;background:rgba(110,127,119,0.06);border-radius:8px;"><div style="font-size:28px;font-weight:800;color:var(--navy);">' + a.clicks + '</div><div style="font-size:11px;font-weight:600;color:var(--text-muted);">CTA CLICKS</div></div>';
+    h += '<div style="flex:1;min-width:120px;text-align:center;padding:20px;background:rgba(110,127,119,0.06);border-radius:8px;"><div style="font-size:28px;font-weight:800;color:' + (a.conversion >= 10 ? '#16a34a' : 'var(--navy)') + ';">' + a.conversion + '%</div><div style="font-size:11px;font-weight:600;color:var(--text-muted);">CONVERSION</div></div>';
+    h += '</div>';
+
+    var srcKeys = Object.keys(a.sources || {});
+    if (srcKeys.length > 0) {
+      h += '<div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;">Traffic Sources</div>';
+      h += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:24px;">';
+      srcKeys.forEach(function(src) {
+        var s = a.sources[src];
+        var srcConv = s.views > 0 ? Math.round((s.clicks / s.views) * 100) : 0;
+        h += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(0,0,0,0.02);border-radius:6px;">';
+        h += '<span style="font-weight:600;font-size:13px;flex:1;">' + src + '</span>';
+        h += '<span style="font-size:12px;color:var(--text-muted);">' + s.views + ' views</span>';
+        h += '<span style="font-size:12px;color:var(--text-muted);">' + s.clicks + ' clicks</span>';
+        h += '<span style="font-size:12px;font-weight:700;color:' + (srcConv >= 10 ? '#16a34a' : 'var(--text-secondary)') + ';">' + srcConv + '%</span>';
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+
+    if (a.events && a.events.length > 0) {
+      h += '<div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px;">Recent Activity</div>';
+      h += '<div style="max-height:300px;overflow-y:auto;">';
+      a.events.slice(0, 50).forEach(function(ev) {
+        var dt = new Date(ev.created_at);
+        var timeStr = dt.toLocaleDateString() + ' ' + dt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        var typeLabel = ev.event_type === 'view' ? 'Page View' : ev.event_type === 'cta_click_book' ? 'Clicked Book' : ev.event_type === 'cta_click_call' ? 'Clicked Call' : ev.event_type;
+        var typeColor = ev.event_type === 'view' ? 'var(--text-muted)' : '#16a34a';
+        h += '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12px;">';
+        h += '<span style="color:var(--text-muted);width:140px;flex-shrink:0;">' + timeStr + '</span>';
+        h += '<span style="font-weight:600;color:' + typeColor + ';">' + typeLabel + '</span>';
+        if (ev.source) h += '<span style="color:var(--text-muted);margin-left:auto;">via ' + ev.source + '</span>';
+        h += '</div>';
+      });
+      h += '</div>';
+    }
+
+    document.getElementById('lpAnalyticsContent').innerHTML = h;
+  }).catch(function() {
+    document.getElementById('lpAnalyticsContent').innerHTML = '<div style="color:#ef4444;">Connection error</div>';
+  });
+}
+
+function lpCloseAnalytics() {
+  document.getElementById('lpAnalyticsPanel').style.display = 'none';
+  document.getElementById('lpPageList').style.display = 'block';
+}
 </script>
 </body>
 </html>
