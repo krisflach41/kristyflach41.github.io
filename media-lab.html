@@ -925,71 +925,88 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
     <div>
       <div style="font-size:18px;font-weight:700;color:var(--navy);">Ad Builder</div>
-      <div style="font-size:13px;color:var(--text-muted);">Generate ready-to-use Facebook ad copy and images for your webinars</div>
+      <div style="font-size:13px;color:var(--text-muted);">Build a complete Facebook ad for your webinar</div>
     </div>
   </div>
 
-  <!-- Step 1: Select webinar -->
-  <div class="ml-card" style="margin-bottom:16px;">
-    <div class="ml-card-title"><i class="fas fa-calendar-check"></i> Select Webinar</div>
-    <select class="form-select" id="adWebinarSelect" onchange="adLoadWebinar()" style="max-width:400px;margin-top:10px;">
-      <option value="">-- Select a webinar --</option>
-    </select>
-    <div id="adWebinarInfo" style="display:none;margin-top:12px;padding:12px 16px;background:rgba(110,127,119,0.05);border-radius:8px;">
-      <div style="font-size:14px;font-weight:600;" id="adWbTitle"></div>
-      <div style="font-size:13px;color:var(--text-muted);" id="adWbDetails"></div>
-    </div>
-  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
 
-  <!-- Step 2: Select audience -->
-  <div class="ml-card" style="margin-bottom:16px;" id="adStep2" style="display:none;">
-    <div class="ml-card-title"><i class="fas fa-users"></i> Audience</div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button class="btn" id="adAudBuyer" onclick="adSelectAudience('buyer')" style="padding:10px 24px;font-weight:600;">First-Time Buyers</button>
-      <button class="btn" id="adAudSeller" onclick="adSelectAudience('seller')" style="padding:10px 24px;font-weight:600;">Home Sellers</button>
-    </div>
-  </div>
+    <!-- LEFT: Controls -->
+    <div>
+      <!-- Webinar -->
+      <div class="ml-card" style="margin-bottom:12px;">
+        <div class="ml-card-title">Webinar</div>
+        <select class="form-select" id="adWebinarSelect" onchange="adLoadWebinar()" style="margin-top:8px;">
+          <option value="">-- Select a webinar --</option>
+        </select>
+      </div>
 
-  <!-- Step 3: Generated ad copy -->
-  <div id="adCopySection" style="display:none;">
-    <div class="ml-card" style="margin-bottom:16px;">
-      <div class="ml-card-title"><i class="fas fa-copy"></i> Ad Copy — Primary Text</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Facebook rotates through multiple text options. Use 3-5 for best results. Click to copy.</div>
-      <div id="adPrimaryTexts"></div>
-    </div>
+      <!-- Audience -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adStep2" style="display:none;">
+        <div class="ml-card-title">Audience</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn" id="adAudBuyer" onclick="adSelectAudience('buyer')" style="padding:8px 20px;font-weight:600;">Buyers</button>
+          <button class="btn" id="adAudSeller" onclick="adSelectAudience('seller')" style="padding:8px 20px;font-weight:600;">Sellers</button>
+        </div>
+      </div>
 
-    <div class="ml-card" style="margin-bottom:16px;">
-      <div class="ml-card-title"><i class="fas fa-heading"></i> Headlines</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Pick 3 that fit your webinar. Click to copy.</div>
-      <div id="adHeadlines"></div>
-    </div>
+      <!-- Area override -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adAreaCard" style="display:none;">
+        <div class="ml-card-title">Area Name</div>
+        <input type="text" class="form-input" id="adAreaOverride" style="margin-top:8px;" oninput="adRefreshCopy()">
+      </div>
 
-    <div class="ml-card" style="margin-bottom:16px;">
-      <div class="ml-card-title"><i class="fas fa-align-left"></i> Descriptions</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Short text shown below the headline. Click to copy.</div>
-      <div id="adDescriptions"></div>
-    </div>
+      <!-- Primary Text -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adTextCard" style="display:none;">
+        <div class="ml-card-title">Primary Text</div>
+        <div id="adPrimaryTexts" style="margin-top:8px;max-height:250px;overflow-y:auto;"></div>
+      </div>
 
-    <div class="ml-card" style="margin-bottom:16px;">
-      <div class="ml-card-title"><i class="fas fa-link"></i> Registration Link</div>
-      <div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
-        <input type="text" class="form-input" id="adRegLink" readonly style="flex:1;background:#f5f5f5;">
-        <button class="btn primary" onclick="adCopyField('adRegLink')"><i class="fas fa-copy"></i> Copy</button>
+      <!-- Headline -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adHeadlineCard" style="display:none;">
+        <div class="ml-card-title">Headline</div>
+        <div id="adHeadlines" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- Description -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adDescCard" style="display:none;">
+        <div class="ml-card-title">Description</div>
+        <div id="adDescriptions" style="margin-top:8px;"></div>
+      </div>
+
+      <!-- Photo -->
+      <div class="ml-card" style="margin-bottom:12px;" id="adPhotoCard" style="display:none;">
+        <div class="ml-card-title">Ad Photo</div>
+        <div style="display:flex;gap:8px;margin:8px 0;">
+          <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn" style="font-size:12px;"><i class="fas fa-images"></i> Stock Library</a>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:10px;">
+          <input type="text" class="form-input" id="adUnsplashQuery" style="flex:1;font-size:12px;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
+          <button class="btn" onclick="adSearchUnsplash()" style="font-size:12px;"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="adUnsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+        <div style="margin-top:10px;font-size:12px;color:var(--text-muted);">Or paste an image URL:</div>
+        <div style="display:flex;gap:8px;margin-top:4px;">
+          <input type="text" class="form-input" id="adImageUrl" style="flex:1;font-size:12px;">
+          <button class="btn" onclick="adLoadImageUrl()" style="font-size:12px;">Load</button>
+        </div>
       </div>
     </div>
 
-    <div class="ml-card">
-      <div class="ml-card-title"><i class="fas fa-image"></i> Ad Images</div>
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Use 3 images. Pick from the Stock Photo Library or search Unsplash below.</div>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
-        <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn primary"><i class="fas fa-images"></i> Open Stock Photo Library</a>
+    <!-- RIGHT: Preview -->
+    <div>
+      <div class="ml-card" style="position:sticky;top:20px;">
+        <div class="ml-card-title">Preview</div>
+        <div id="adPreviewArea" style="margin-top:10px;">
+          <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Select a webinar and audience to start</div>
+        </div>
+        <div id="adDownloadArea" style="display:none;margin-top:12px;display:flex;gap:8px;">
+          <button class="btn primary" onclick="adDownload()" style="flex:1;"><i class="fas fa-download"></i> Download Ad Image</button>
+          <button class="btn" onclick="adCopyPostText()" style="flex:1;"><i class="fas fa-copy"></i> Copy Post Text</button>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:12px;">
-        <input type="text" class="form-input" id="adUnsplashQuery" placeholder="Search Unsplash..." style="flex:1;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
-        <button class="btn" onclick="adSearchUnsplash()"><i class="fas fa-search"></i></button>
-      </div>
-      <div id="adUnsplashResults" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;"></div>
     </div>
+
   </div>
 </div>
 
@@ -2373,6 +2390,11 @@ function updateProgress(label, pct) {
 var adWebinars = [];
 var adSelectedWebinar = null;
 var adSelectedAudience = null;
+var adSelectedPrimary = 0;
+var adSelectedHeadline = 0;
+var adSelectedDesc = 0;
+var adSelectedImage = null;
+var adFilledTexts = { primary: [], headlines: [], descriptions: [] };
 
 var AD_TEMPLATES = {
   buyer: {
@@ -2390,13 +2412,13 @@ var AD_TEMPLATES = {
       "First Home? Know the DOs and DONTs",
       "Break Free From Rent — Register Now",
       "Your Roadmap to Homeownership Starts Here",
-      "{{AREA}} Home Buyers Guide",
       "Learn the Costly Mistakes to Avoid"
     ],
     descriptions: [
       "Register for this no cost, highly-rated webinar",
       "Save your spot for {{DAY}} at {{TIME}}"
-    ]
+    ],
+    imageText: { line1: '{{AREA}}', line2: 'First Time', line3: 'Home Buyers', line4: 'FREE Online Webinar', line5: '{{DAY_SHORT}}, {{DATE_SHORT}}', line6: '@ {{TIME}}' }
   },
   seller: {
     primary: [
@@ -2415,12 +2437,12 @@ var AD_TEMPLATES = {
     descriptions: [
       "Register for this no cost, highly-rated webinar",
       "Save your spot for {{DAY}} at {{TIME}}"
-    ]
+    ],
+    imageText: { line1: '{{AREA}}', line2: 'Home Sellers', line3: '', line4: 'FREE Online Webinar', line5: '{{DAY_SHORT}}, {{DATE_SHORT}}', line6: '@ {{TIME}}' }
   }
 };
 
 function adInit() {
-  // Load webinars into dropdown
   fetch(API_BASE + '/webinar-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'list_webinars', lo_user_id: 'default' })
@@ -2435,51 +2457,15 @@ function adInit() {
   });
 }
 
-function adLoadWebinar() {
-  var id = parseInt(document.getElementById('adWebinarSelect').value);
-  if (!id) {
-    document.getElementById('adWebinarInfo').style.display = 'none';
-    document.getElementById('adCopySection').style.display = 'none';
-    adSelectedWebinar = null;
-    return;
-  }
-  adSelectedWebinar = adWebinars.find(function(w) { return w.id === id; });
-  if (!adSelectedWebinar) return;
-
-  document.getElementById('adWbTitle').textContent = adSelectedWebinar.title;
-  document.getElementById('adWbDetails').textContent = (adSelectedWebinar.city || '') + ' — ' + (adSelectedWebinar.pretty_date || adSelectedWebinar.webinar_date || '') + ' at ' + (adSelectedWebinar.webinar_time || '');
-  document.getElementById('adWebinarInfo').style.display = 'block';
-  document.getElementById('adStep2').style.display = 'block';
-  document.getElementById('adRegLink').value = 'https://kristyflach.com/landing/' + (adSelectedWebinar.slug || '') + '?src=fb-ad';
-
-  // Reset audience selection
-  adSelectedAudience = null;
-  document.getElementById('adAudBuyer').style.background = '';
-  document.getElementById('adAudBuyer').style.color = '';
-  document.getElementById('adAudSeller').style.background = '';
-  document.getElementById('adAudSeller').style.color = '';
-  document.getElementById('adCopySection').style.display = 'none';
-}
-
-function adSelectAudience(type) {
-  adSelectedAudience = type;
-  // Highlight selected button
-  document.getElementById('adAudBuyer').style.background = type === 'buyer' ? '#6e7f77' : '';
-  document.getElementById('adAudBuyer').style.color = type === 'buyer' ? 'white' : '';
-  document.getElementById('adAudSeller').style.background = type === 'seller' ? '#6e7f77' : '';
-  document.getElementById('adAudSeller').style.color = type === 'seller' ? 'white' : '';
-
-  adGenerateCopy();
-}
-
-function adGenerateCopy() {
-  if (!adSelectedWebinar || !adSelectedAudience) return;
-
+function adGetFillData() {
   var w = adSelectedWebinar;
-  var templates = AD_TEMPLATES[adSelectedAudience];
-  var area = w.city || 'your area';
+  if (!w) return {};
+  var area = document.getElementById('adAreaOverride').value || w.city || 'Your Area';
   var date = w.pretty_date || w.webinar_date || 'TBD';
   var time = '';
+  var dayOfWeek = '';
+  var dayShort = '';
+  var dateShort = '';
   if (w.webinar_time) {
     var tp = w.webinar_time.split(':');
     var hr = parseInt(tp[0]);
@@ -2487,61 +2473,264 @@ function adGenerateCopy() {
     var hr12 = hr > 12 ? hr - 12 : (hr === 0 ? 12 : hr);
     time = hr12 + ':' + tp[1] + ' ' + ampm;
   }
-  // Get day of week from date
-  var dayOfWeek = '';
   if (w.webinar_date) {
     var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var daysShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var monthsShort = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var d = new Date(w.webinar_date + 'T00:00:00');
     dayOfWeek = days[d.getDay()];
+    dayShort = daysShort[d.getDay()];
+    dateShort = monthsShort[d.getMonth()] + ' ' + d.getDate();
   }
+  return { area: area, date: date, time: time || '7:00 PM', day: dayOfWeek || 'Thursday', dayShort: dayShort, dateShort: dateShort };
+}
 
-  function fill(text) {
-    return text.replace(/\{\{AREA\}\}/g, area).replace(/\{\{DATE\}\}/g, date).replace(/\{\{TIME\}\}/g, time || '7:00 PM').replace(/\{\{DAY\}\}/g, dayOfWeek || 'Thursday');
-  }
+function adFill(text) {
+  var f = adGetFillData();
+  return text.replace(/\{\{AREA\}\}/g, f.area).replace(/\{\{DATE\}\}/g, f.date).replace(/\{\{TIME\}\}/g, f.time).replace(/\{\{DAY\}\}/g, f.day).replace(/\{\{DAY_SHORT\}\}/g, f.dayShort).replace(/\{\{DATE_SHORT\}\}/g, f.dateShort);
+}
+
+function adLoadWebinar() {
+  var id = parseInt(document.getElementById('adWebinarSelect').value);
+  if (!id) { adSelectedWebinar = null; return; }
+  adSelectedWebinar = adWebinars.find(function(w) { return w.id === id; });
+  if (!adSelectedWebinar) return;
+  document.getElementById('adAreaOverride').value = adSelectedWebinar.city || '';
+  document.getElementById('adAreaCard').style.display = 'block';
+  document.getElementById('adStep2').style.display = 'block';
+  adSelectedAudience = null;
+  adSelectedImage = null;
+  document.getElementById('adAudBuyer').style.background = '';
+  document.getElementById('adAudBuyer').style.color = '';
+  document.getElementById('adAudSeller').style.background = '';
+  document.getElementById('adAudSeller').style.color = '';
+  document.getElementById('adTextCard').style.display = 'none';
+  document.getElementById('adHeadlineCard').style.display = 'none';
+  document.getElementById('adDescCard').style.display = 'none';
+  document.getElementById('adPhotoCard').style.display = 'none';
+  document.getElementById('adDownloadArea').style.display = 'none';
+  adRenderPreview();
+}
+
+function adSelectAudience(type) {
+  adSelectedAudience = type;
+  adSelectedPrimary = 0;
+  adSelectedHeadline = 0;
+  adSelectedDesc = 0;
+  document.getElementById('adAudBuyer').style.background = type === 'buyer' ? '#6e7f77' : '';
+  document.getElementById('adAudBuyer').style.color = type === 'buyer' ? 'white' : '';
+  document.getElementById('adAudSeller').style.background = type === 'seller' ? '#6e7f77' : '';
+  document.getElementById('adAudSeller').style.color = type === 'seller' ? 'white' : '';
+  adRefreshCopy();
+  document.getElementById('adTextCard').style.display = 'block';
+  document.getElementById('adHeadlineCard').style.display = 'block';
+  document.getElementById('adDescCard').style.display = 'block';
+  document.getElementById('adPhotoCard').style.display = 'block';
+}
+
+function adRefreshCopy() {
+  if (!adSelectedWebinar || !adSelectedAudience) return;
+  var templates = AD_TEMPLATES[adSelectedAudience];
+
+  adFilledTexts.primary = templates.primary.map(function(t) { return adFill(t); });
+  adFilledTexts.headlines = templates.headlines.map(function(t) { return adFill(t); });
+  adFilledTexts.descriptions = templates.descriptions.map(function(t) { return adFill(t); });
 
   // Primary texts
   var h = '';
-  templates.primary.forEach(function(t, i) {
-    var filled = fill(t);
-    h += '<div class="ad-copy-block" onclick="adCopyText(this)" title="Click to copy">';
-    h += '<div style="font-size:11px;font-weight:700;color:var(--sage);margin-bottom:6px;">Ad Text #' + (i + 1) + '</div>';
-    h += '<div style="font-size:13px;white-space:pre-wrap;line-height:1.6;">' + filled + '</div>';
-    h += '</div>';
+  adFilledTexts.primary.forEach(function(t, i) {
+    var sel = i === adSelectedPrimary ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
+    h += '<label class="ad-copy-block" style="display:block;cursor:pointer;' + sel + '" onclick="adSelectPrimary(' + i + ')">';
+    h += '<div style="display:flex;gap:8px;align-items:start;">';
+    h += '<input type="radio" name="adPrimary" ' + (i === adSelectedPrimary ? 'checked' : '') + ' style="margin-top:3px;flex-shrink:0;">';
+    h += '<div style="font-size:12px;white-space:pre-wrap;line-height:1.5;">' + t.substring(0, 150) + '...</div>';
+    h += '</div></label>';
   });
   document.getElementById('adPrimaryTexts').innerHTML = h;
 
-  // Headlines
   h = '';
-  templates.headlines.forEach(function(t) {
-    var filled = fill(t);
-    h += '<div class="ad-copy-line" onclick="adCopyText(this)" title="Click to copy">' + filled + '</div>';
+  adFilledTexts.headlines.forEach(function(t, i) {
+    var sel = i === adSelectedHeadline ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
+    h += '<label class="ad-copy-line" style="' + sel + '" onclick="adSelectHeadline(' + i + ')">';
+    h += '<input type="radio" name="adHeadline" ' + (i === adSelectedHeadline ? 'checked' : '') + ' style="margin-right:8px;">';
+    h += t + '</label>';
   });
   document.getElementById('adHeadlines').innerHTML = h;
 
-  // Descriptions
   h = '';
-  templates.descriptions.forEach(function(t) {
-    var filled = fill(t);
-    h += '<div class="ad-copy-line" onclick="adCopyText(this)" title="Click to copy">' + filled + '</div>';
+  adFilledTexts.descriptions.forEach(function(t, i) {
+    var sel = i === adSelectedDesc ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
+    h += '<label class="ad-copy-line" style="' + sel + '" onclick="adSelectDesc(' + i + ')">';
+    h += '<input type="radio" name="adDesc" ' + (i === adSelectedDesc ? 'checked' : '') + ' style="margin-right:8px;">';
+    h += t + '</label>';
   });
   document.getElementById('adDescriptions').innerHTML = h;
 
-  document.getElementById('adCopySection').style.display = 'block';
+  adRenderPreview();
 }
 
-function adCopyText(el) {
-  var text = el.querySelector('div:last-child') ? el.querySelector('div:last-child').textContent : el.textContent;
+function adSelectPrimary(i) { adSelectedPrimary = i; adRefreshCopy(); }
+function adSelectHeadline(i) { adSelectedHeadline = i; adRefreshCopy(); }
+function adSelectDesc(i) { adSelectedDesc = i; adRefreshCopy(); }
+
+function adSelectPhoto(url) {
+  adSelectedImage = url;
+  adRenderPreview();
+}
+
+function adLoadImageUrl() {
+  var url = document.getElementById('adImageUrl').value.trim();
+  if (url) adSelectPhoto(url);
+}
+
+function adRenderPreview() {
+  var area = document.getElementById('adPreviewArea');
+  if (!adSelectedWebinar || !adSelectedAudience) {
+    area.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Select a webinar and audience to start</div>';
+    document.getElementById('adDownloadArea').style.display = 'none';
+    return;
+  }
+
+  var templates = AD_TEMPLATES[adSelectedAudience];
+  var imgText = templates.imageText;
+  var f = adGetFillData();
+
+  // Fill image text lines
+  var l1 = adFill(imgText.line1);
+  var l2 = adFill(imgText.line2);
+  var l3 = adFill(imgText.line3);
+  var l4 = adFill(imgText.line4);
+  var l5 = adFill(imgText.line5);
+  var l6 = adFill(imgText.line6);
+
+  var bgImg = adSelectedImage || '';
+  var bgStyle = bgImg ? 'background-image:url(' + bgImg + ');background-size:cover;background-position:center;' : 'background:#555;';
+
+  var postText = adFilledTexts.primary[adSelectedPrimary] || '';
+  var headline = adFilledTexts.headlines[adSelectedHeadline] || '';
+  var desc = adFilledTexts.descriptions[adSelectedDesc] || '';
+  var regLink = 'kristyflach.com';
+
+  var h = '';
+  // Facebook post mockup
+  h += '<div style="border:1px solid #ddd;border-radius:8px;overflow:hidden;font-family:Helvetica,Arial,sans-serif;background:white;">';
+
+  // Post header
+  h += '<div style="padding:12px 14px;display:flex;align-items:center;gap:10px;">';
+  h += '<div style="width:36px;height:36px;border-radius:50%;background:#6e7f77;display:flex;align-items:center;justify-content:center;color:white;font-size:12px;font-weight:700;">KF</div>';
+  h += '<div><div style="font-size:13px;font-weight:600;">Kristy Flach - Mortgage Advisor</div><div style="font-size:11px;color:#888;">Sponsored</div></div>';
+  h += '</div>';
+
+  // Post text (truncated)
+  var shortText = postText.length > 200 ? postText.substring(0, 200) + '...' : postText;
+  h += '<div style="padding:0 14px 10px;font-size:13px;line-height:1.5;white-space:pre-wrap;">' + shortText + '</div>';
+
+  // Ad image
+  h += '<div style="position:relative;width:100%;aspect-ratio:1;' + bgStyle + '">';
+  h += '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:white;padding:20px;">';
+  h += '<div style="font-size:24px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l1 + '</div>';
+  if (l2) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l2 + '</div>';
+  if (l3) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l3 + '</div>';
+  h += '<div style="width:60px;height:3px;background:#ef4444;margin:12px 0;"></div>';
+  h += '<div style="font-size:16px;font-weight:700;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l4 + '</div>';
+  h += '<div style="font-size:20px;font-weight:900;margin-top:10px;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l5 + '</div>';
+  h += '<div style="font-size:20px;font-weight:900;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l6 + '</div>';
+  h += '</div></div>';
+
+  // Bottom bar
+  h += '<div style="padding:10px 14px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">';
+  h += '<div><div style="font-size:11px;color:#888;text-transform:uppercase;">' + regLink + '</div>';
+  h += '<div style="font-size:14px;font-weight:600;">' + headline + '</div>';
+  h += '<div style="font-size:12px;color:#888;">' + desc + '</div></div>';
+  h += '<div style="padding:6px 16px;border:1px solid #888;border-radius:4px;font-size:12px;font-weight:600;color:#333;">Sign Up</div>';
+  h += '</div></div>';
+
+  // Hidden canvas for download
+  h += '<canvas id="adCanvas" width="1250" height="1250" style="display:none;"></canvas>';
+
+  area.innerHTML = h;
+  document.getElementById('adDownloadArea').style.display = 'flex';
+}
+
+function adDownload() {
+  var canvas = document.getElementById('adCanvas');
+  var ctx = canvas.getContext('2d');
+  var templates = AD_TEMPLATES[adSelectedAudience];
+  var imgText = templates.imageText;
+
+  var l1 = adFill(imgText.line1);
+  var l2 = adFill(imgText.line2);
+  var l3 = adFill(imgText.line3);
+  var l4 = adFill(imgText.line4);
+  var l5 = adFill(imgText.line5);
+  var l6 = adFill(imgText.line6);
+
+  function drawText() {
+    // Dark overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0, 0, 1250, 1250);
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'white';
+
+    // Line 1 — area
+    ctx.font = '900 90px Helvetica, Arial, sans-serif';
+    ctx.fillText(l1, 625, 380);
+
+    // Line 2
+    if (l2) { ctx.font = '900 85px Helvetica, Arial, sans-serif'; ctx.fillText(l2, 625, 480); }
+
+    // Line 3
+    if (l3) { ctx.font = '900 85px Helvetica, Arial, sans-serif'; ctx.fillText(l3, 625, 570); }
+
+    // Red line
+    ctx.fillStyle = '#ef4444';
+    ctx.fillRect(550, l3 ? 600 : 520, 150, 6);
+
+    // Line 4 — FREE Online Webinar
+    ctx.fillStyle = 'white';
+    ctx.font = '700 55px Helvetica, Arial, sans-serif';
+    ctx.fillText(l4, 625, l3 ? 680 : 600);
+
+    // Line 5 — date
+    ctx.font = '900 70px Helvetica, Arial, sans-serif';
+    ctx.fillText(l5, 625, l3 ? 800 : 720);
+
+    // Line 6 — time
+    ctx.fillText(l6, 625, l3 ? 890 : 810);
+
+    // Download
+    var link = document.createElement('a');
+    link.download = 'webinar-ad-' + (adSelectedWebinar.slug || 'ad') + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  if (adSelectedImage) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, 1250, 1250);
+      drawText();
+    };
+    img.onerror = function() {
+      ctx.fillStyle = '#444';
+      ctx.fillRect(0, 0, 1250, 1250);
+      drawText();
+    };
+    img.src = adSelectedImage;
+  } else {
+    ctx.fillStyle = '#444';
+    ctx.fillRect(0, 0, 1250, 1250);
+    drawText();
+  }
+}
+
+function adCopyPostText() {
+  var text = adFilledTexts.primary[adSelectedPrimary] || '';
   navigator.clipboard.writeText(text.trim()).then(function() {
-    el.style.background = 'rgba(110,127,119,0.12)';
-    setTimeout(function() { el.style.background = ''; }, 800);
-  });
-}
-
-function adCopyField(fieldId) {
-  var el = document.getElementById(fieldId);
-  navigator.clipboard.writeText(el.value).then(function() {
-    el.style.background = 'rgba(110,127,119,0.15)';
-    setTimeout(function() { el.style.background = '#f5f5f5'; }, 800);
+    alert('Post text copied!');
   });
 }
 
@@ -2549,35 +2738,31 @@ function adSearchUnsplash() {
   var query = document.getElementById('adUnsplashQuery').value.trim();
   if (!query) return;
   var resultsDiv = document.getElementById('adUnsplashResults');
-  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">Searching...</div>';
+  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Searching...</div>';
 
   var accessKey = 'cIfFMz55PEagPfSWuJ4YSz2BKkJE9MFfkPOiH8UEEjI';
-  fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=12&orientation=squarish', {
+  fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=9&orientation=squarish', {
     headers: { 'Authorization': 'Client-ID ' + accessKey }
   }).then(function(r) { return r.json(); }).then(function(data) {
     if (!data.results || data.results.length === 0) {
-      resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">No results</div>';
+      resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No results</div>';
       return;
     }
     var h = '';
     data.results.forEach(function(img) {
-      h += '<div style="position:relative;cursor:pointer;border-radius:6px;overflow:hidden;aspect-ratio:1;" onclick="adDownloadImage(\'' + img.urls.regular + '\',\'' + (img.alt_description || 'unsplash-image').replace(/'/g,'') + '\')">';
-      h += '<img src="' + img.urls.small + '" style="width:100%;height:100%;object-fit:cover;" alt="' + (img.alt_description || '') + '">';
-      h += '<div style="position:absolute;bottom:0;left:0;right:0;padding:4px 6px;background:rgba(0,0,0,0.5);font-size:10px;color:white;text-align:center;">Click to download</div>';
+      h += '<div style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;" onclick="this.style.borderColor=\'#6e7f77\';adSelectPhoto(\'' + img.urls.regular + '\')">';
+      h += '<img src="' + img.urls.small + '" style="width:100%;height:100%;object-fit:cover;">';
       h += '</div>';
     });
     resultsDiv.innerHTML = h;
   }).catch(function() {
-    resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:#ef4444;">Search failed</div>';
+    resultsDiv.innerHTML = '<div style="grid-column:1/-1;color:#ef4444;font-size:12px;">Search failed</div>';
   });
 }
 
-function adDownloadImage(url, name) {
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = name + '.jpg';
-  a.target = '_blank';
-  a.click();
+function adCopyField(fieldId) {
+  var el = document.getElementById(fieldId);
+  navigator.clipboard.writeText(el.value);
 }
 
 // Init
