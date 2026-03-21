@@ -2692,6 +2692,19 @@ function adHandleFileUpload(input) {
 function adLoadImageUrl() {
   var url = document.getElementById('adImageUrl').value.trim();
   if (!url) return;
+
+  // Convert Google Drive sharing links to direct image URLs
+  // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+  var driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) {
+    url = 'https://drive.google.com/thumbnail?id=' + driveMatch[1] + '&sz=w1250';
+  }
+  // Also handle: https://drive.google.com/open?id=FILE_ID
+  var openMatch = url.match(/drive\.google\.com\/open\?id=([a-zA-Z0-9_-]+)/);
+  if (openMatch) {
+    url = 'https://drive.google.com/thumbnail?id=' + openMatch[1] + '&sz=w1250';
+  }
+
   document.getElementById('adUploadFileName').textContent = 'Loading...';
   document.getElementById('adUrlPreview').innerHTML = '';
 
