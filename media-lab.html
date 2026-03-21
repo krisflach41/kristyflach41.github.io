@@ -2702,18 +2702,34 @@ function adLoadStockPhotos() {
   var container = document.getElementById('adStockPhotos');
   container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Loading stock photos...</div>';
 
-  fetch(API_BASE + '/drive-photos')
+  adStockPhotosList = [];
+  adFetchStockPage('');
+}
+
+function adFetchStockPage(pageToken) {
+  var url = API_BASE + '/drive-photos';
+  if (pageToken) url += '?pageToken=' + encodeURIComponent(pageToken);
+
+  fetch(url)
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.success && data.photos && data.photos.length > 0) {
-        adStockPhotosList = data.photos;
-        adStockPhotosLoaded = true;
-        adRenderStockGrid();
+      if (data.success && data.photos) {
+        adStockPhotosList = adStockPhotosList.concat(data.photos);
+        if (data.nextPageToken) {
+          // More pages — keep loading
+          adFetchStockPage(data.nextPageToken);
+        } else {
+          // All loaded
+          adStockPhotosLoaded = true;
+          adRenderStockGrid();
+        }
       } else {
+        var container = document.getElementById('adStockPhotos');
         container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No photos found. <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" style="color:#6e7f77;">Open folder in Drive</a></div>';
       }
     })
     .catch(function() {
+      var container = document.getElementById('adStockPhotos');
       container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Could not load stock photos. <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" style="color:#6e7f77;">Open folder in Drive</a></div>';
     });
 }
@@ -2722,8 +2738,9 @@ function adRenderStockGrid() {
   var container = document.getElementById('adStockPhotos');
   var h = '';
   adStockPhotosList.forEach(function(photo, i) {
+    var smallThumb = 'https://drive.google.com/thumbnail?id=' + photo.id + '&sz=w200';
     h += '<div id="adStock_' + i + '" style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;position:relative;" onclick="adSelectStockPhoto(' + i + ')">';
-    h += '<img src="' + photo.thumb + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
+    h += '<img src="' + smallThumb + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
     h += '</div>';
   });
   container.innerHTML = h;
@@ -2748,16 +2765,15 @@ function adSelectStockPhoto(index) {
   var el = document.getElementById('adStock_' + index);
   if (el) el.style.borderColor = '#6e7f77';
 
-  // Show loading state on the preview
   document.getElementById('adUploadFileName').textContent = 'Loading...';
 
   // Fetch full-size image through proxy to get base64
-  fetch(API_BASE + '/image-proxy?url=' + encodeURIComponent(photo.full))
+  fetch(API_BASE + '/image-proxy?url=' + encodeURIComponent(photo.thumb))
     .then(function(r) { return r.json(); })
     .then(function(data) {
       if (data.success && data.dataUrl) {
         adImageDataUrl = data.dataUrl;
-        document.getElementById('adUploadFileName').textContent = 'Stock photo selected';
+        document.getElementById('adUploadFileName').textContent = photo.name || 'Stock photo selected';
         adRenderPreview();
       } else {
         document.getElementById('adUploadFileName').textContent = 'Failed to load — try uploading manually';
