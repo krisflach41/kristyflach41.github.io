@@ -37,7 +37,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .tab-content.active{display:block;}
 .ad-copy-block{padding:14px 16px;border:1px solid var(--border);border-radius:8px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;}
 .ad-copy-block:hover{border-color:#6e7f77;background:rgba(110,127,119,0.03);}
-.ad-copy-line{padding:10px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;}
+.ad-copy-line{display:block;padding:10px 14px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;}
 .ad-copy-line:hover{border-color:#6e7f77;background:rgba(110,127,119,0.03);}
 
 /* CARDS */
@@ -942,54 +942,60 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
       </div>
 
       <!-- Audience -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adStep2" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adStep2">
         <div class="ml-card-title">Audience</div>
         <div style="display:flex;gap:8px;margin-top:8px;">
           <button class="btn" id="adAudBuyer" onclick="adSelectAudience('buyer')" style="padding:8px 20px;font-weight:600;">Buyers</button>
           <button class="btn" id="adAudSeller" onclick="adSelectAudience('seller')" style="padding:8px 20px;font-weight:600;">Sellers</button>
+          <button class="btn" id="adAudCash" onclick="adSelectAudience('cash')" style="padding:8px 20px;font-weight:600;">Cash Offer</button>
         </div>
       </div>
 
       <!-- Area override -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adAreaCard" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adAreaCard">
         <div class="ml-card-title">Area Name</div>
         <input type="text" class="form-input" id="adAreaOverride" style="margin-top:8px;" oninput="adRefreshCopy()">
       </div>
 
+      <!-- Company/Team Name (Cash Offer only) -->
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adCompanyCard">
+        <div class="ml-card-title">Company / Team Name</div>
+        <input type="text" class="form-input" id="adCompanyOverride" style="margin-top:8px;" oninput="adRefreshCopy()" placeholder="e.g. Kristy Flach Team">
+      </div>
+
       <!-- Primary Text -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adTextCard" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adTextCard">
         <div class="ml-card-title">Primary Text</div>
-        <div id="adPrimaryTexts" style="margin-top:8px;max-height:250px;overflow-y:auto;"></div>
+        <div id="adPrimaryTexts" style="margin-top:8px;max-height:400px;overflow-y:auto;"></div>
       </div>
 
       <!-- Headline -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adHeadlineCard" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adHeadlineCard">
         <div class="ml-card-title">Headline</div>
         <div id="adHeadlines" style="margin-top:8px;"></div>
       </div>
 
       <!-- Description -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adDescCard" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adDescCard">
         <div class="ml-card-title">Description</div>
         <div id="adDescriptions" style="margin-top:8px;"></div>
       </div>
 
       <!-- Photo -->
-      <div class="ml-card" style="margin-bottom:12px;" id="adPhotoCard" style="display:none;">
+      <div class="ml-card" style="margin-bottom:12px;display:none;" id="adPhotoCard">
         <div class="ml-card-title">Ad Photo</div>
-        <div style="display:flex;gap:8px;margin:8px 0;">
-          <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn" style="font-size:12px;"><i class="fas fa-images"></i> Stock Library</a>
+        <div style="margin:8px 0;">
+          <label class="btn" style="font-size:12px;display:inline-block;cursor:pointer;"><i class="fas fa-upload"></i> Upload Photo
+            <input type="file" accept="image/*" id="adFileUpload" onchange="adHandleFileUpload(this)" style="display:none;">
+          </label>
+          <span id="adUploadFileName" style="font-size:12px;color:var(--text-muted);margin-left:8px;"></span>
         </div>
+        <div style="font-size:12px;color:var(--text-muted);margin:8px 0 6px;">Or search Unsplash for inspiration (download from Unsplash, then upload above):</div>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
-          <input type="text" class="form-input" id="adUnsplashQuery" style="flex:1;font-size:12px;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
+          <input type="text" class="form-input" id="adUnsplashQuery" placeholder="e.g. house exterior" style="flex:1;font-size:12px;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
           <button class="btn" onclick="adSearchUnsplash()" style="font-size:12px;"><i class="fas fa-search"></i></button>
         </div>
         <div id="adUnsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
-        <div style="margin-top:10px;font-size:12px;color:var(--text-muted);">Or paste an image URL:</div>
-        <div style="display:flex;gap:8px;margin-top:4px;">
-          <input type="text" class="form-input" id="adImageUrl" style="flex:1;font-size:12px;">
-          <button class="btn" onclick="adLoadImageUrl()" style="font-size:12px;">Load</button>
-        </div>
       </div>
     </div>
 
@@ -1000,14 +1006,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <div id="adPreviewArea" style="margin-top:10px;">
           <div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">Select a webinar and audience to start</div>
         </div>
-        <div id="adDownloadArea" style="display:none;margin-top:12px;display:flex;gap:8px;">
-          <button class="btn primary" onclick="adDownload()" style="flex:1;"><i class="fas fa-download"></i> Download Ad Image</button>
-          <button class="btn" onclick="adCopyPostText()" style="flex:1;"><i class="fas fa-copy"></i> Copy Post Text</button>
+        <div id="adDownloadArea" style="display:none;margin-top:12px;">
+          <div style="display:flex;gap:8px;">
+            <button class="btn primary" onclick="adDownload()" style="flex:1;"><i class="fas fa-download"></i> Download Ad Image</button>
+            <button class="btn" onclick="adCopyPostText()" style="flex:1;position:relative;"><i class="fas fa-copy"></i> <span id="adCopyBtnText">Copy Post Text</span></button>
+          </div>
         </div>
       </div>
     </div>
 
   </div>
+  <canvas id="adCanvas" width="1250" height="1250" style="display:none;"></canvas>
 </div>
 
 
@@ -2393,52 +2402,116 @@ var adSelectedAudience = null;
 var adSelectedPrimary = 0;
 var adSelectedHeadline = 0;
 var adSelectedDesc = 0;
-var adSelectedImage = null;
+var adImageDataUrl = null;
 var adFilledTexts = { primary: [], headlines: [], descriptions: [] };
 
 var AD_TEMPLATES = {
   buyer: {
     primary: [
-      "Thinking about buying your first home in {{AREA}}?\n\nHonestly, it's one of the biggest financial moves you'll make. And there's a lot of stuff out there designed to confuse you.\n\nWe're running a free online class on {{DATE}} at {{TIME}} that walks through the actual process — what you can afford, what programs exist, and the mistakes that cost people thousands.\n\nNo pitch. Just the information you need to make a smart decision.\n\nGrab your spot — it's free.",
-      "Most first-time buyers in {{AREA}} assume they can't afford a home yet.\n\nNot enough saved. Credit score's not perfect. Student loans.\n\nBut there are over 60 programs designed specifically for people in that exact situation — down payment assistance, lower monthly payments, special rates for certain jobs and zip codes.\n\nWe put it all into a free 90-minute class on {{DATE}} at {{TIME}}.\n\nNo sales pitch. Just real information that could change your timeline.\n\nTap below to save your seat.",
-      "You're paying your landlord's mortgage while rents keep climbing.\n\nAt some point the math stops making sense.\n\nWe're hosting a free online class on {{DATE}} at {{TIME}} that breaks down exactly how to go from renting to owning — what you qualify for, what it actually costs, and how to avoid the mistakes that trip up most buyers.\n\nLive and easy to join. Seats are limited.\n\nTap below to register.",
-      "If you're thinking about buying a home in {{AREA}}, there are some things to know before you start looking.\n\nThe wrong move early on can cost you thousands — or kill the deal entirely.\n\nJoin our free webinar on {{DATE}} at {{TIME}} where we walk through the buying process, the programs available to you, and the mistakes to avoid.\n\nStraight talk, no pressure.\n\nRegister below.",
-      "It's not luck. It's not rich parents.\n\nPeople are buying homes in {{AREA}} using real programs that most buyers don't even know exist.\n\nDown payment assistance. Lower rates. Programs for specific jobs and incomes.\n\nThis free 90-minute class on {{DATE}} at {{TIME}} walks you through all of it — including how to find out if you qualify.\n\nNo fluff. Just strategies that work.\n\nTap below to grab your seat."
+"Attention *AREA* Home Buyers\nWe're hosting a FREE online class to help you when buying your first home. We invite you to join us on *DATE* @ 7:00 PM\n\nThinking of buying a home in or around *AREA*?\nDon't make THESE mistakes that could cost you thousands.\n\nBuying your First Home is likely the BIGGEST financial decision you will have to make in your life. Make sure you're fully prepared.\n\nDiscover what the First Time Home Buyer Mistakes are and how you can avoid them by signing up for the FREE class!",
+
+"All first-time *AREA* home buyers NEED to attend this FREE Zoom webinar on Thursday @ 7:00PM\n\nLearn the tips and tricks that have helped our attendees get approved for a mortgage (even when banks have already said \"no\"), and that have helped them save thousands on the purchase of their new home.",
+
+"Buying your first home is a MAJOR investment. Shouldn't you learn everything you can before you start the process?\n\nOur virtual *AREA* First-Time Home Buyers webinar on Wednesday @ 7:00PM teaches you EXACTLY what you need to know to have a stress-free and successful buying experience. No cost. Register NOW!",
+
+"30% of our customers have been denied a mortgage loan in the past. After attending our FREE first-time home buying webinar, they were able to get approved AND save thousands on their purchase!\n\nIf you're considering the purchase of your first home in or around *AREA*, this Zoom webinar on Thursday @ 7:00PM is a not-to-miss.\n\nClick the button below to save your seat (It's free!).",
+
+"Are you thinking of buying in *AREA*?\n\nWe're hosting a FREE online class to help you when buying your first home. We invite you to join us on Tuesday @ 7:30PM and learn from our experts who will share their secrets for finding the right mortgage, negotiating with sellers, and avoiding costly mistakes that could cost you thousands!\n\nClick here to register for the free class.",
+
+"Home Buyers are under more pressure now than ever before.\n\nIf you're thinking of buying a home in or around *AREA*, there are some things to consider that could cost you thousands or more. You don't want to make these mistakes when buying.\n\nJoin us on Wednesday @ 7:00 PM for a FREE online webinar and discover how to avoid the Most Common Mistakes First Time Home Buyers Make.\n\nClick below to save your virtual seat",
+
+"Buying your first home in or around *AREA*?\n\nLearn how to save thousands on your home purchase with expert advice.\n\nRegister for our free webinar on Thursday @ 7:00 PM",
+
+"Not sure if it's the right time to buy a home in *AREA* as a first-time buyer? Find out by attending our FREE webinar on Thursday @ 7:00pm!",
+
+"Ready to own your dream home in *AREA*?\n\nJoin our free webinar hosted by top real estate & mortgage professionals this Wednesday at 7:00 PM.\n\nGet insider tips, avoid costly mistakes, and emerge smarter about real estate and mortgages. Secure your spot now - your dream home is waiting!",
+
+"Are You Currently Renting in *AREA*?\n\nJoin our free webinar on Tuesday @ 7:00 PM and learn everything you need to know about the home buying process.\n\nGet insider tips, avoid costly mistakes, and emerge smarter about real estate and mortgages. Secure your spot now - your first home is waiting!",
+
+"Attention *AREA* Home Buyers\nThinking of buying your first home but don't know where to begin?\nWe are hosting a FREE Online Webinar to help you. We invite you to join us on *DATE* @ 7:00 PM\n\nDuring this free class you'll learn the following:\n\nThe Real Estate Buying Process\nHow to get a better mortgage rate than any of the big banks will offer!\nWhat Government programs are available to first time home buyers.\nMistakes to avoid that can cost you over $50,000\nAnd so much more...\n\nRegister Below!",
+
+"Are you considering buying your first home?\nJoin us for a free webinar on Thursday at 7:00 PM to learn everything you need to know about the process.\n\nOur experts will be on hand to answer all of your questions and give you the information you need to make an informed decision.\n\nBuying a home is one of the biggest decisions you'll ever make - and it can be a little overwhelming. But don't worry, we're here to help.\n\nThis class will teach you everything you need to know so that when the time comes, you feel confident in your purchase.\n\nRegister now for our free webinar!",
+
+"Attention *AREA* Home Buyers\n\nAre you feeling overwhelmed by the prospect of purchasing your first home? Not sure what to do or what to expect?\n\nJoin us for our upcoming webinar where we will be discussing The DOs, DONTs, and What Ifs of Buying Your Home\n\nIn this webinar, you'll learn:\n\nThe DOs of home buying: what steps you need to take to ensure a smooth and successful purchase\nThe DONTs of home buying: common mistakes to avoid that could derail your purchase\nThe What Ifs of home buying: how to plan for and handle unexpected challenges that may come up during the process\n\nDon't let your lack of experience hold you back from achieving your dream of homeownership. Sign up for our webinar and get the knowledge and confidence you need to make your first home purchase a success.\n\nSee you there!",
+
+"It's not luck. It's not rich parents. It's not a scam.\n\nThey're using real programs that most buyers don't even know exist.\n\n*AREA* offers dozens of special programs for first-time buyers \u2014 and in many cases, they can help you buy a home:\nWith little or no money down\nWith lower monthly payments\nWith better interest rates than your bank is offering\n\nThis quick, free 90-minute webinar walks you through all 60+ programs, including how to find out if you qualify \u2014 and how to avoid common mistakes that keep people stuck in rent.\n\nWe've helped thousands of people get into homes using these strategies.\n\nNow it's your turn. Tap to grab your seat before it fills.\n\nDisclaimer: Not legal, financial, or mortgage advice. Always consult a licensed professional before making any housing decisions.",
+
+"Understand total cost and monthly payment with real numbers\nLearn timing and negotiation tactics that protect your budget\nCompare rent versus own so you can act when it makes sense\nMap your financing path and required documents\nAvoid common mistakes that cost buyers time and money\nUse winning offer strategies without overpaying\n\nJoin our free ninety minute class this *DATE* at 7 PM. No fluff. Just strategies real buyers are using right now to get keys in hand faster.\n\nReady to own soon? Tap below to reserve your free seat.",
+
+"*AREA* renters: You are paying your landlord's mortgage while rents climb. Why keep throwing money away instead of owning? Learn how to break free from rent in our free online home buying class. Thursday at 7:00 PM. Live and easy to join. Seats are limited. Tap Sign Up to save your spot now.",
+
+"Most renters in *AREA* are closer to homeownership than they think, but only if they're ready to take real steps soon. If you've got steady income and want to own within the next 6-12 months, this class will show you how to move with confidence."
     ],
     headlines: [
-      "{{AREA}} First Time Home Buyer Class",
-      "[FREE] Online {{AREA}} Home Buyer Class",
-      "Thinking of Buying in {{AREA}}?",
-      "First Home? Know the DOs and DONTs",
-      "Break Free From Rent — Register Now",
-      "Your Roadmap to Homeownership Starts Here",
-      "Learn the Costly Mistakes to Avoid"
+      "*AREA* First Time Home Buyer Class",
+      "[FREE] Online *AREA* First Time Home Buyer Class: Don't Make These Mistakes",
+      "[FREE] Virtual *AREA* First Time Home Buyer Class",
+      "[VIRTUAL] *AREA* First Time Home Buyer Class: Don't Make These Mistakes",
+      "*AREA* Home Buyers Class",
+      "*AREA* First Time Home Buyers Guide",
+      "Learn the Costly Mistakes to Avoid!",
+      "Thinking Of Buying In *AREA*?",
+      "First Home? Know Your DOs and DONTs",
+      "Break Free From Rent - Register for the Home Buyers Class Now",
+      "Your Roadmap to Homeownership in *AREA* Starts Here"
     ],
     descriptions: [
-      "Register for this no cost, highly-rated webinar",
-      "Save your spot for {{DAY}} at {{TIME}}"
+      "Register For This No Cost, Highly-Rated Webinar",
+      "Save your spot for Thursday @ 7:00PM"
     ],
-    imageText: { line1: '{{AREA}}', line2: 'First Time', line3: 'Home Buyers', line4: 'FREE Online Webinar', line5: '{{DAY_SHORT}}, {{DATE_SHORT}}', line6: '@ {{TIME}}' }
+    imageText: { line1: '*AREA*', line2: 'First Time', line3: 'Home Buyers', line4: 'FREE Online Webinar', line5: '*DAY_SHORT*, *DATE_SHORT*', line6: '@ *TIME*' }
   },
   seller: {
     primary: [
-      "Thinking about selling your {{AREA}} home?\n\nThere are mistakes that can lead to your home being under-valued — and most sellers don't find out until it's too late.\n\nWe're hosting a free online class on {{DATE}} at {{TIME}} to walk through how to sell for the highest value, how to handle offers, and what not to do.\n\nNo pressure, just the information you need.\n\nTap below to register.",
-      "Home owners are under more pressure now than ever before.\n\nIf you're thinking about selling in {{AREA}}, there are some things to consider that could mean the difference between getting top dollar and leaving money on the table.\n\nJoin us on {{DATE}} at {{TIME}} for a free online class covering the most common mistakes sellers make.\n\nTap below to save your seat.",
-      "Selling your home in {{AREA}}?\n\nLearn how to sell for top dollar and avoid costly mistakes that could lead to your home being under-valued.\n\nFree webinar on {{DATE}} at {{TIME}}.\n\nRegister below.",
-      "We've helped hundreds of homeowners in {{AREA}} get the best possible offer on their home.\n\nFor the first time, we're putting everything we know into a free webinar — how to price it right, how to handle multiple offers, and the mistakes that cost sellers thousands.\n\n{{DATE}} at {{TIME}}. Free to attend.\n\nDiscover what the mistakes are and how to avoid them by signing up below."
+"Thinking of selling your *AREA* home?\nDon't make these mistakes that could lead to your home being under-valued.\n\nWe're hosting a free online webinar to teach you how to sell your home for the highest value.\nAt the same time, you'll learn about the costly mistakes to avoid that could lead to missing out on THOUSANDS.\n\nDiscover what the mistakes are and how you can avoid them by signing up for the FREE class!",
+
+"Attention *AREA* Home Owners\nWe're hosting a FREE online class to help you when selling your home. We invite you to join us on *DATE* @ 7:00 PM\n\nThinking of selling your *AREA* home?\nDon't make THESE mistakes that could lead to missing out on thousands.\n\nSelling your home is one of the BIGGEST financial decisions you will have to make in your life. Make sure you're fully prepared.\n\nDiscover what the Top Home Seller Mistakes are and how you can avoid them by signing up for the FREE class!",
+
+"All *AREA* home owners NEED to attend this FREE Zoom webinar on *DATE* @ 7:00 PM\n\nLearn the tips and tricks that have helped our attendees get the highest offer and have helped them make thousands extra on the sale of their home.\n\nClick below to save your virtual seat",
+
+"Thinking of selling your *AREA* home?\nDon't make these mistakes that could lead to your home being under-valued.\n\nWe have assisted hundred of homeowners get the highest offer when selling their home, and for the first time are hosting a webinar to teach you how to sell your home for the highest value\n\nDiscover what the mistakes are and how you can avoid them by signing up for the FREE class!",
+
+"Home Owners are under more pressure now than ever before.\n\nIf you're thinking of selling your *AREA* home, there are some things to consider that could lead to missing out on thousands or more! Don't make these mistakes when selling your home.\n\nJoin us on *DATE* @ 7:30 PM for a FREE online webinar and discover how to avoid the Most Common Mistakes Home Sellers Make.\n\nClick below to save your virtual seat",
+
+"Selling your home in *AREA*?\n\nLearn how to sell for top dollar and avoid costly mistakes that could lead to your home being under-valued.\n\nRegister for our free webinar on *DATE* @ 7:30 PM",
+
+"Ready to transform your property into a lucrative asset?\n\nSay goodbye to settling for less and hello to realizing your home's full potential! Our expert-led webinar is your essential guide to mastering the art of selling your home with finesse.\n\nWith insider tips and proven strategies, you'll confidently navigate the market and secure the best deal possible. Don't let this opportunity slip away - join us and unlock the keys to a successful home sale today!",
+
+"7PM - 8PM\n\nCome join our webinar and learn strategies to sell your home!\n\nWe will be giving away over $500 worth of gifts that will help you sell your home."
     ],
     headlines: [
-      "Sell Your {{AREA}} Home for Top Dollar",
-      "[FREE] Online {{AREA}} Home Seller Class",
-      "{{AREA}} Home Sellers Guide",
-      "Learn the Insider Tips and Tricks to Selling",
-      "Get the Highest Offer on Your {{AREA}} Home"
+      "Sell Your *AREA* Home for Top Dollar",
+      "[FREE] Online *AREA* Home Seller Class",
+      "*AREA* Home Sellers Guide",
+      "Learn the Insider Tips and Tricks to Selling Your Home!",
+      "Get the Highest Cash Offer on Your *AREA* Home"
     ],
     descriptions: [
-      "Register for this no cost, highly-rated webinar",
-      "Save your spot for {{DAY}} at {{TIME}}"
+      "Register For This No Cost, Highly-Rated Webinar",
+      "Looking to learn about the home selling process? Learn how to navigate through multiple offers in this free online class"
     ],
-    imageText: { line1: '{{AREA}}', line2: 'Home Sellers', line3: '', line4: 'FREE Online Webinar', line5: '{{DAY_SHORT}}, {{DATE_SHORT}}', line6: '@ {{TIME}}' }
+    imageText: { line1: '*AREA*', line2: 'Home Sellers', line3: '', line4: 'FREE Online Webinar', line5: '*DAY_SHORT*, *DATE_SHORT*', line6: '@ *TIME*' }
+  },
+  cash: {
+    primary: [
+"Home Owners are under more pressure now than ever before.\n\nIf you're thinking of accepting a cash offer on your *AREA* home, there are some things to consider that could lead to your home being under-valued! Don't make these mistakes when selling your home.\n\nJoin us on *DATE* @ 7:00 PM for a FREE online webinar and discover how to avoid the Most Common Mistakes Home Sellers make.\n\nClick below to save your virtual seat",
+
+"Thinking of selling your *AREA* home?\n\nDon't make these mistakes that could lead to your home being under-valued.\n\n*COMPANY* has assisted hundreds of homeowners get the highest cash offer when selling their home, and for the first time are hosting a webinar to teach you how to sell your home for the highest value.\n\nDiscover what the mistakes are and how you can avoid them by signing up for the FREE class!",
+
+"Attention *AREA* Home Owners\nWe're hosting a FREE online class to help you when selling your home. We invite you to join us on Wednesday @ 7:00 PM\n\nDon't make THESE mistakes that could cost you thousands and learn about the pros and cons of accepting a cash offer.\n\nSelling your home is one of the BIGGEST financial decisions you will have to make in your life. Make sure you're fully prepared.\n\nDiscover what the Home Seller Mistakes are and how you can avoid them by signing up for the FREE class!"
+    ],
+    headlines: [
+      "Sell Your *AREA* Home for Top Dollar",
+      "[FREE] Online *AREA* Home Seller Class",
+      "*AREA* Home Sellers Guide",
+      "Learn the Insider Tips and Tricks to Selling Your Home!",
+      "Get the Highest Cash Offer on Your *AREA* Home"
+    ],
+    descriptions: [
+      "Register For This No Cost, Highly-Rated Webinar",
+      "Looking to learn about the home selling process? Learn how to navigate through multiple offers in this free online class"
+    ],
+    imageText: { line1: '*AREA*', line2: 'Cash Offer', line3: 'Home Sellers', line4: 'FREE Online Webinar', line5: '*DAY_SHORT*, *DATE_SHORT*', line6: '@ *TIME*' }
   }
 };
 
@@ -2451,7 +2524,7 @@ function adInit() {
     var sel = document.getElementById('adWebinarSelect');
     var h = '<option value="">-- Select a webinar --</option>';
     adWebinars.forEach(function(w) {
-      h += '<option value="' + w.id + '">' + w.title + ' — ' + (w.pretty_date || w.webinar_date || '') + '</option>';
+      h += '<option value="' + w.id + '">' + w.title + ' \u2014 ' + (w.pretty_date || w.webinar_date || '') + '</option>';
     });
     sel.innerHTML = h;
   });
@@ -2461,6 +2534,9 @@ function adGetFillData() {
   var w = adSelectedWebinar;
   if (!w) return {};
   var area = document.getElementById('adAreaOverride').value || w.city || 'Your Area';
+  var company = '';
+  var companyEl = document.getElementById('adCompanyOverride');
+  if (companyEl) company = companyEl.value || '';
   var date = w.pretty_date || w.webinar_date || 'TBD';
   var time = '';
   var dayOfWeek = '';
@@ -2483,12 +2559,19 @@ function adGetFillData() {
     dayShort = daysShort[d.getDay()];
     dateShort = monthsShort[d.getMonth()] + ' ' + d.getDate();
   }
-  return { area: area, date: date, time: time || '7:00 PM', day: dayOfWeek || 'Thursday', dayShort: dayShort, dateShort: dateShort };
+  return { area: area, company: company, date: date, time: time || '7:00 PM', day: dayOfWeek || 'Thursday', dayShort: dayShort, dateShort: dateShort };
 }
 
 function adFill(text) {
   var f = adGetFillData();
-  return text.replace(/\{\{AREA\}\}/g, f.area).replace(/\{\{DATE\}\}/g, f.date).replace(/\{\{TIME\}\}/g, f.time).replace(/\{\{DAY\}\}/g, f.day).replace(/\{\{DAY_SHORT\}\}/g, f.dayShort).replace(/\{\{DATE_SHORT\}\}/g, f.dateShort);
+  return text
+    .replace(/\*AREA\*/gi, f.area)
+    .replace(/\*DATE\*/gi, f.date)
+    .replace(/\*TIME\*/gi, f.time)
+    .replace(/\*DAY_SHORT\*/g, f.dayShort)
+    .replace(/\*DATE_SHORT\*/g, f.dateShort)
+    .replace(/\*DAY\*/g, f.day)
+    .replace(/\*COMPANY\*/g, f.company);
 }
 
 function adLoadWebinar() {
@@ -2499,12 +2582,16 @@ function adLoadWebinar() {
   document.getElementById('adAreaOverride').value = adSelectedWebinar.city || '';
   document.getElementById('adAreaCard').style.display = 'block';
   document.getElementById('adStep2').style.display = 'block';
+  document.getElementById('adCompanyCard').style.display = 'none';
   adSelectedAudience = null;
-  adSelectedImage = null;
+  adImageDataUrl = null;
+  document.getElementById('adUploadFileName').textContent = '';
   document.getElementById('adAudBuyer').style.background = '';
   document.getElementById('adAudBuyer').style.color = '';
   document.getElementById('adAudSeller').style.background = '';
   document.getElementById('adAudSeller').style.color = '';
+  document.getElementById('adAudCash').style.background = '';
+  document.getElementById('adAudCash').style.color = '';
   document.getElementById('adTextCard').style.display = 'none';
   document.getElementById('adHeadlineCard').style.display = 'none';
   document.getElementById('adDescCard').style.display = 'none';
@@ -2522,6 +2609,9 @@ function adSelectAudience(type) {
   document.getElementById('adAudBuyer').style.color = type === 'buyer' ? 'white' : '';
   document.getElementById('adAudSeller').style.background = type === 'seller' ? '#6e7f77' : '';
   document.getElementById('adAudSeller').style.color = type === 'seller' ? 'white' : '';
+  document.getElementById('adAudCash').style.background = type === 'cash' ? '#6e7f77' : '';
+  document.getElementById('adAudCash').style.color = type === 'cash' ? 'white' : '';
+  document.getElementById('adCompanyCard').style.display = type === 'cash' ? 'block' : 'none';
   adRefreshCopy();
   document.getElementById('adTextCard').style.display = 'block';
   document.getElementById('adHeadlineCard').style.display = 'block';
@@ -2537,18 +2627,19 @@ function adRefreshCopy() {
   adFilledTexts.headlines = templates.headlines.map(function(t) { return adFill(t); });
   adFilledTexts.descriptions = templates.descriptions.map(function(t) { return adFill(t); });
 
-  // Primary texts
+  // Primary texts — FULL text, no truncation
   var h = '';
   adFilledTexts.primary.forEach(function(t, i) {
     var sel = i === adSelectedPrimary ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
     h += '<label class="ad-copy-block" style="display:block;cursor:pointer;' + sel + '" onclick="adSelectPrimary(' + i + ')">';
     h += '<div style="display:flex;gap:8px;align-items:start;">';
     h += '<input type="radio" name="adPrimary" ' + (i === adSelectedPrimary ? 'checked' : '') + ' style="margin-top:3px;flex-shrink:0;">';
-    h += '<div style="font-size:12px;white-space:pre-wrap;line-height:1.5;">' + t.substring(0, 150) + '...</div>';
+    h += '<div style="font-size:12px;white-space:pre-wrap;line-height:1.5;">' + t + '</div>';
     h += '</div></label>';
   });
   document.getElementById('adPrimaryTexts').innerHTML = h;
 
+  // Headlines — display:block via CSS
   h = '';
   adFilledTexts.headlines.forEach(function(t, i) {
     var sel = i === adSelectedHeadline ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
@@ -2558,6 +2649,7 @@ function adRefreshCopy() {
   });
   document.getElementById('adHeadlines').innerHTML = h;
 
+  // Descriptions — display:block via CSS
   h = '';
   adFilledTexts.descriptions.forEach(function(t, i) {
     var sel = i === adSelectedDesc ? 'border-color:#6e7f77;background:rgba(110,127,119,0.05);' : '';
@@ -2574,14 +2666,16 @@ function adSelectPrimary(i) { adSelectedPrimary = i; adRefreshCopy(); }
 function adSelectHeadline(i) { adSelectedHeadline = i; adRefreshCopy(); }
 function adSelectDesc(i) { adSelectedDesc = i; adRefreshCopy(); }
 
-function adSelectPhoto(url) {
-  adSelectedImage = url;
-  adRenderPreview();
-}
-
-function adLoadImageUrl() {
-  var url = document.getElementById('adImageUrl').value.trim();
-  if (url) adSelectPhoto(url);
+function adHandleFileUpload(input) {
+  var file = input.files[0];
+  if (!file) return;
+  document.getElementById('adUploadFileName').textContent = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    adImageDataUrl = e.target.result;
+    adRenderPreview();
+  };
+  reader.readAsDataURL(file);
 }
 
 function adRenderPreview() {
@@ -2594,9 +2688,7 @@ function adRenderPreview() {
 
   var templates = AD_TEMPLATES[adSelectedAudience];
   var imgText = templates.imageText;
-  var f = adGetFillData();
 
-  // Fill image text lines
   var l1 = adFill(imgText.line1);
   var l2 = adFill(imgText.line2);
   var l3 = adFill(imgText.line3);
@@ -2604,7 +2696,7 @@ function adRenderPreview() {
   var l5 = adFill(imgText.line5);
   var l6 = adFill(imgText.line6);
 
-  var bgImg = adSelectedImage || '';
+  var bgImg = adImageDataUrl || '';
   var bgStyle = bgImg ? 'background-image:url(' + bgImg + ');background-size:cover;background-position:center;' : 'background:#555;';
 
   var postText = adFilledTexts.primary[adSelectedPrimary] || '';
@@ -2622,13 +2714,13 @@ function adRenderPreview() {
   h += '<div><div style="font-size:13px;font-weight:600;">Kristy Flach - Mortgage Advisor</div><div style="font-size:11px;color:#888;">Sponsored</div></div>';
   h += '</div>';
 
-  // Post text (truncated)
-  var shortText = postText.length > 200 ? postText.substring(0, 200) + '...' : postText;
+  // Post text
+  var shortText = postText.length > 200 ? postText.substring(0, 200) + '... <span style="color:#2563eb;cursor:pointer;font-size:12px;">See more</span>' : postText;
   h += '<div style="padding:0 14px 10px;font-size:13px;line-height:1.5;white-space:pre-wrap;">' + shortText + '</div>';
 
-  // Ad image
+  // Ad image with overlay
   h += '<div style="position:relative;width:100%;aspect-ratio:1;' + bgStyle + '">';
-  h += '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:white;padding:20px;">';
+  h += '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:white;padding:20px;">';
   h += '<div style="font-size:24px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l1 + '</div>';
   if (l2) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l2 + '</div>';
   if (l3) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l3 + '</div>';
@@ -2638,7 +2730,7 @@ function adRenderPreview() {
   h += '<div style="font-size:20px;font-weight:900;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l6 + '</div>';
   h += '</div></div>';
 
-  // Bottom bar
+  // Bottom bar — headline, description, Sign Up
   h += '<div style="padding:10px 14px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">';
   h += '<div><div style="font-size:11px;color:#888;text-transform:uppercase;">' + regLink + '</div>';
   h += '<div style="font-size:14px;font-weight:600;">' + headline + '</div>';
@@ -2646,11 +2738,8 @@ function adRenderPreview() {
   h += '<div style="padding:6px 16px;border:1px solid #888;border-radius:4px;font-size:12px;font-weight:600;color:#333;">Sign Up</div>';
   h += '</div></div>';
 
-  // Hidden canvas for download
-  h += '<canvas id="adCanvas" width="1250" height="1250" style="display:none;"></canvas>';
-
   area.innerHTML = h;
-  document.getElementById('adDownloadArea').style.display = 'flex';
+  document.getElementById('adDownloadArea').style.display = 'block';
 }
 
 function adDownload() {
@@ -2668,7 +2757,7 @@ function adDownload() {
 
   function drawText() {
     // Dark overlay
-    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
     ctx.fillRect(0, 0, 1250, 1250);
 
     ctx.textAlign = 'center';
@@ -2707,9 +2796,8 @@ function adDownload() {
     link.click();
   }
 
-  if (adSelectedImage) {
+  if (adImageDataUrl) {
     var img = new Image();
-    img.crossOrigin = 'anonymous';
     img.onload = function() {
       ctx.drawImage(img, 0, 0, 1250, 1250);
       drawText();
@@ -2719,7 +2807,7 @@ function adDownload() {
       ctx.fillRect(0, 0, 1250, 1250);
       drawText();
     };
-    img.src = adSelectedImage;
+    img.src = adImageDataUrl;
   } else {
     ctx.fillStyle = '#444';
     ctx.fillRect(0, 0, 1250, 1250);
@@ -2729,8 +2817,10 @@ function adDownload() {
 
 function adCopyPostText() {
   var text = adFilledTexts.primary[adSelectedPrimary] || '';
+  var btnText = document.getElementById('adCopyBtnText');
   navigator.clipboard.writeText(text.trim()).then(function() {
-    alert('Post text copied!');
+    btnText.textContent = 'Copied!';
+    setTimeout(function() { btnText.textContent = 'Copy Post Text'; }, 2000);
   });
 }
 
@@ -2750,19 +2840,16 @@ function adSearchUnsplash() {
     }
     var h = '';
     data.results.forEach(function(img) {
-      h += '<div style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;" onclick="this.style.borderColor=\'#6e7f77\';adSelectPhoto(\'' + img.urls.regular + '\')">';
+      var dlUrl = img.urls.regular;
+      h += '<div style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;position:relative;" title="Right-click to save, then upload above">';
       h += '<img src="' + img.urls.small + '" style="width:100%;height:100%;object-fit:cover;">';
+      h += '<a href="' + dlUrl + '" download target="_blank" onclick="event.stopPropagation();" style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:white;font-size:10px;padding:3px 6px;border-radius:3px;text-decoration:none;"><i class="fas fa-download"></i></a>';
       h += '</div>';
     });
     resultsDiv.innerHTML = h;
   }).catch(function() {
     resultsDiv.innerHTML = '<div style="grid-column:1/-1;color:#ef4444;font-size:12px;">Search failed</div>';
   });
-}
-
-function adCopyField(fieldId) {
-  var el = document.getElementById(fieldId);
-  navigator.clipboard.writeText(el.value);
 }
 
 // Init
