@@ -985,15 +985,18 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
       <div class="ml-card" style="margin-bottom:12px;display:none;" id="adPhotoCard">
         <div class="ml-card-title">Ad Photo</div>
 
-        <!-- Stock Library link + Upload -->
-        <div style="display:flex;gap:8px;align-items:center;margin:8px 0 14px;flex-wrap:wrap;">
+        <!-- Stock Library link -->
+        <div style="margin:8px 0 10px;">
           <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn" style="font-size:12px;"><i class="fas fa-images"></i> Stock Photo Library</a>
-          <label class="btn" style="font-size:12px;display:inline-block;cursor:pointer;"><i class="fas fa-upload"></i> Upload Photo
-            <input type="file" accept="image/*" id="adFileUpload" onchange="adHandleFileUpload(this)" style="display:none;">
-          </label>
-          <span id="adUploadFileName" style="font-size:12px;color:var(--text-muted);"></span>
         </div>
-        <div style="font-size:11px;color:var(--text-muted);margin:-8px 0 14px;">Open Stock Library, save a photo, then upload it above</div>
+
+        <!-- Paste Zone -->
+        <div id="adPasteZone" tabindex="0" style="border:2px dashed var(--border);border-radius:8px;padding:30px 20px;text-align:center;cursor:pointer;transition:all 0.15s;outline:none;margin-bottom:14px;" onclick="this.focus()" onfocus="this.style.borderColor='#6e7f77'" onblur="this.style.borderColor='var(--border)'">
+          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Click here and paste your photo (Ctrl+V)</div>
+          <div style="font-size:11px;color:var(--text-muted);">Copy a photo from Stock Library or anywhere, then paste it here</div>
+          <div id="adPastePreview" style="margin-top:10px;"></div>
+        </div>
+        <span id="adUploadFileName" style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:10px;"></span>
 
         <!-- Unsplash Search -->
         <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;">Or Search Unsplash</div>
@@ -2675,15 +2678,42 @@ function adSelectDesc(i) { adSelectedDesc = i; adRefreshCopy(); }
 function adHandleFileUpload(input) {
   var file = input.files[0];
   if (!file) return;
-  document.getElementById('adUploadFileName').textContent = file.name;
   var reader = new FileReader();
   reader.onload = function(e) {
     adImageDataUrl = e.target.result;
+    document.getElementById('adUploadFileName').textContent = file.name;
+    document.getElementById('adPastePreview').innerHTML = '<img src="' + adImageDataUrl + '" style="max-width:100%;max-height:150px;border-radius:4px;">';
     adClearPhotoSelections();
     adRenderPreview();
   };
   reader.readAsDataURL(file);
 }
+
+// Paste handler for the paste zone
+document.addEventListener('DOMContentLoaded', function() {
+  var zone = document.getElementById('adPasteZone');
+  if (zone) {
+    zone.addEventListener('paste', function(e) {
+      var items = (e.clipboardData || e.originalEvent.clipboardData).items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          var file = items[i].getAsFile();
+          var reader = new FileReader();
+          reader.onload = function(ev) {
+            adImageDataUrl = ev.target.result;
+            document.getElementById('adUploadFileName').textContent = 'Photo pasted';
+            document.getElementById('adPastePreview').innerHTML = '<img src="' + adImageDataUrl + '" style="max-width:100%;max-height:150px;border-radius:4px;">';
+            adClearPhotoSelections();
+            adRenderPreview();
+          };
+          reader.readAsDataURL(file);
+          return;
+        }
+      }
+    });
+  }
+});
 
 function adClearPhotoSelections() {
   // Clear unsplash borders
@@ -2765,7 +2795,7 @@ function adRenderPreview() {
   var headline = adFilledTexts.headlines[adSelectedHeadline] || '';
   var desc = adFilledTexts.descriptions[adSelectedDesc] || '';
   var regLink = 'kristyflach.com';
-  var regUrl = 'https://kristyflach.com/landing/?s=' + (adSelectedWebinar.slug || '');
+  var regUrl = 'https://kristyflach.com/landing/' + (adSelectedWebinar.slug || '');
 
   var h = '';
   // Facebook post mockup
@@ -2792,13 +2822,13 @@ function adRenderPreview() {
   // Ad image with overlay
   h += '<div style="position:relative;width:100%;aspect-ratio:1;' + bgStyle + '">';
   h += '<div style="position:absolute;inset:0;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:white;padding:20px;">';
-  h += '<div style="font-size:24px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l1 + '</div>';
-  if (l2) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l2 + '</div>';
-  if (l3) h += '<div style="font-size:22px;font-weight:900;line-height:1.2;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l3 + '</div>';
-  h += '<div style="width:60px;height:3px;background:#ef4444;margin:12px 0;"></div>';
-  h += '<div style="font-size:16px;font-weight:700;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l4 + '</div>';
-  h += '<div style="font-size:20px;font-weight:900;margin-top:10px;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l5 + '</div>';
-  h += '<div style="font-size:20px;font-weight:900;text-shadow:1px 1px 3px rgba(0,0,0,0.5);">' + l6 + '</div>';
+  h += '<div style="font-size:36px;font-weight:900;line-height:1.2;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l1 + '</div>';
+  if (l2) h += '<div style="font-size:32px;font-weight:900;line-height:1.2;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l2 + '</div>';
+  if (l3) h += '<div style="font-size:32px;font-weight:900;line-height:1.2;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l3 + '</div>';
+  h += '<div style="width:80px;height:4px;background:#ef4444;margin:14px 0;"></div>';
+  h += '<div style="font-size:22px;font-weight:700;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l4 + '</div>';
+  h += '<div style="font-size:28px;font-weight:900;margin-top:12px;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l5 + '</div>';
+  h += '<div style="font-size:28px;font-weight:900;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l6 + '</div>';
   h += '</div></div>';
 
   // Bottom bar — headline, description, Sign Up (clickable)
@@ -2841,31 +2871,31 @@ function adDownload() {
     ctx.textAlign = 'center';
     ctx.fillStyle = 'white';
 
-    // Line 1 — area
-    ctx.font = '900 90px Helvetica, Arial, sans-serif';
-    ctx.fillText(l1, 625, 320);
+    // Line 1 — area (BIG — text is the hero)
+    ctx.font = '900 110px Helvetica, Arial, sans-serif';
+    ctx.fillText(l1, 625, 300);
 
     // Line 2
-    if (l2) { ctx.font = '900 85px Helvetica, Arial, sans-serif'; ctx.fillText(l2, 625, 420); }
+    if (l2) { ctx.font = '900 100px Helvetica, Arial, sans-serif'; ctx.fillText(l2, 625, 420); }
 
     // Line 3
-    if (l3) { ctx.font = '900 85px Helvetica, Arial, sans-serif'; ctx.fillText(l3, 625, 510); }
+    if (l3) { ctx.font = '900 100px Helvetica, Arial, sans-serif'; ctx.fillText(l3, 625, 530); }
 
     // Red line
     ctx.fillStyle = '#ef4444';
-    ctx.fillRect(550, l3 ? 540 : 460, 150, 6);
+    ctx.fillRect(500, l3 ? 565 : 465, 250, 8);
 
     // Line 4 — FREE Online Webinar
     ctx.fillStyle = 'white';
-    ctx.font = '700 55px Helvetica, Arial, sans-serif';
-    ctx.fillText(l4, 625, l3 ? 620 : 540);
+    ctx.font = '700 65px Helvetica, Arial, sans-serif';
+    ctx.fillText(l4, 625, l3 ? 660 : 560);
 
     // Line 5 — date
-    ctx.font = '900 70px Helvetica, Arial, sans-serif';
-    ctx.fillText(l5, 625, l3 ? 740 : 660);
+    ctx.font = '900 85px Helvetica, Arial, sans-serif';
+    ctx.fillText(l5, 625, l3 ? 790 : 690);
 
     // Line 6 — time
-    ctx.fillText(l6, 625, l3 ? 830 : 750);
+    ctx.fillText(l6, 625, l3 ? 890 : 790);
 
     // === BOTTOM BAR (below image area) ===
     // White background bar
