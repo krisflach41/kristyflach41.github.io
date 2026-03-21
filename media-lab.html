@@ -990,12 +990,13 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" class="btn" style="font-size:12px;"><i class="fas fa-images"></i> Stock Photo Library</a>
         </div>
 
-        <!-- Paste Zone -->
-        <div id="adPasteZone" tabindex="0" style="border:2px dashed var(--border);border-radius:8px;padding:30px 20px;text-align:center;cursor:pointer;transition:all 0.15s;outline:none;margin-bottom:14px;" onclick="this.focus()" onfocus="this.style.borderColor='#6e7f77'" onblur="this.style.borderColor='var(--border)'">
-          <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:4px;">Click here and paste your photo (Ctrl+V)</div>
-          <div style="font-size:11px;color:var(--text-muted);">Copy a photo from Stock Library or anywhere, then paste it here</div>
-          <div id="adPastePreview" style="margin-top:10px;"></div>
+        <!-- Paste image URL -->
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;">Paste Image URL</div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <input type="text" class="form-input" id="adImageUrl" placeholder="Paste image URL here" style="flex:1;font-size:12px;">
+          <button class="btn" onclick="adLoadImageUrl()" style="font-size:12px;">Load</button>
         </div>
+        <div id="adUrlPreview" style="margin-bottom:14px;"></div>
         <span id="adUploadFileName" style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:10px;"></span>
 
         <!-- Unsplash Search -->
@@ -2682,38 +2683,35 @@ function adHandleFileUpload(input) {
   reader.onload = function(e) {
     adImageDataUrl = e.target.result;
     document.getElementById('adUploadFileName').textContent = file.name;
-    document.getElementById('adPastePreview').innerHTML = '<img src="' + adImageDataUrl + '" style="max-width:100%;max-height:150px;border-radius:4px;">';
     adClearPhotoSelections();
     adRenderPreview();
   };
   reader.readAsDataURL(file);
 }
 
-// Paste handler for the paste zone
-document.addEventListener('DOMContentLoaded', function() {
-  var zone = document.getElementById('adPasteZone');
-  if (zone) {
-    zone.addEventListener('paste', function(e) {
-      var items = (e.clipboardData || e.originalEvent.clipboardData).items;
-      for (var i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-          e.preventDefault();
-          var file = items[i].getAsFile();
-          var reader = new FileReader();
-          reader.onload = function(ev) {
-            adImageDataUrl = ev.target.result;
-            document.getElementById('adUploadFileName').textContent = 'Photo pasted';
-            document.getElementById('adPastePreview').innerHTML = '<img src="' + adImageDataUrl + '" style="max-width:100%;max-height:150px;border-radius:4px;">';
-            adClearPhotoSelections();
-            adRenderPreview();
-          };
-          reader.readAsDataURL(file);
-          return;
-        }
+function adLoadImageUrl() {
+  var url = document.getElementById('adImageUrl').value.trim();
+  if (!url) return;
+  document.getElementById('adUploadFileName').textContent = 'Loading...';
+  document.getElementById('adUrlPreview').innerHTML = '';
+
+  fetch(API_BASE + '/image-proxy?url=' + encodeURIComponent(url))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.dataUrl) {
+        adImageDataUrl = data.dataUrl;
+        document.getElementById('adUploadFileName').textContent = 'Photo loaded';
+        document.getElementById('adUrlPreview').innerHTML = '<img src="' + adImageDataUrl + '" style="max-width:100%;max-height:150px;border-radius:4px;">';
+        adClearPhotoSelections();
+        adRenderPreview();
+      } else {
+        document.getElementById('adUploadFileName').textContent = 'Failed to load image';
       }
+    })
+    .catch(function() {
+      document.getElementById('adUploadFileName').textContent = 'Failed to load image';
     });
-  }
-});
+}
 
 function adClearPhotoSelections() {
   // Clear unsplash borders
