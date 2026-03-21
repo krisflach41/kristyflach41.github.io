@@ -984,13 +984,24 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
       <!-- Photo -->
       <div class="ml-card" style="margin-bottom:12px;display:none;" id="adPhotoCard">
         <div class="ml-card-title">Ad Photo</div>
-        <div style="margin:8px 0;">
+
+        <!-- Stock Photo Library from Google Drive -->
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;">Stock Photo Library</div>
+        <div id="adStockPhotos" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;">
+          <div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Loading stock photos...</div>
+        </div>
+
+        <!-- File Upload -->
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin:10px 0 6px;">Or Upload From Computer</div>
+        <div style="margin:4px 0 14px;">
           <label class="btn" style="font-size:12px;display:inline-block;cursor:pointer;"><i class="fas fa-upload"></i> Upload Photo
             <input type="file" accept="image/*" id="adFileUpload" onchange="adHandleFileUpload(this)" style="display:none;">
           </label>
           <span id="adUploadFileName" style="font-size:12px;color:var(--text-muted);margin-left:8px;"></span>
         </div>
-        <div style="font-size:12px;color:var(--text-muted);margin:8px 0 6px;">Or search Unsplash for inspiration (download from Unsplash, then upload above):</div>
+
+        <!-- Unsplash Search -->
+        <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px;">Or Search Unsplash</div>
         <div style="display:flex;gap:8px;margin-bottom:10px;">
           <input type="text" class="form-input" id="adUnsplashQuery" placeholder="e.g. house exterior" style="flex:1;font-size:12px;" onkeydown="if(event.key==='Enter')adSearchUnsplash()">
           <button class="btn" onclick="adSearchUnsplash()" style="font-size:12px;"><i class="fas fa-search"></i></button>
@@ -2617,6 +2628,7 @@ function adSelectAudience(type) {
   document.getElementById('adHeadlineCard').style.display = 'block';
   document.getElementById('adDescCard').style.display = 'block';
   document.getElementById('adPhotoCard').style.display = 'block';
+  adLoadStockPhotos();
 }
 
 function adRefreshCopy() {
@@ -2673,9 +2685,136 @@ function adHandleFileUpload(input) {
   var reader = new FileReader();
   reader.onload = function(e) {
     adImageDataUrl = e.target.result;
+    adClearPhotoSelections();
     adRenderPreview();
   };
   reader.readAsDataURL(file);
+}
+
+var adStockPhotosLoaded = false;
+var adStockPhotosList = [];
+
+function adLoadStockPhotos() {
+  if (adStockPhotosLoaded) {
+    adRenderStockGrid();
+    return;
+  }
+  var container = document.getElementById('adStockPhotos');
+  container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Loading stock photos...</div>';
+
+  fetch(API_BASE + '/drive-photos')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.photos && data.photos.length > 0) {
+        adStockPhotosList = data.photos;
+        adStockPhotosLoaded = true;
+        adRenderStockGrid();
+      } else {
+        container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No photos found. <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" style="color:#6e7f77;">Open folder in Drive</a></div>';
+      }
+    })
+    .catch(function() {
+      container.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Could not load stock photos. <a href="https://drive.google.com/drive/folders/1PZShJxcQfjaDv2G7NiNToYdQQVaJQIJc" target="_blank" style="color:#6e7f77;">Open folder in Drive</a></div>';
+    });
+}
+
+function adRenderStockGrid() {
+  var container = document.getElementById('adStockPhotos');
+  var h = '';
+  adStockPhotosList.forEach(function(photo, i) {
+    h += '<div id="adStock_' + i + '" style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;position:relative;" onclick="adSelectStockPhoto(' + i + ')">';
+    h += '<img src="' + photo.thumb + '" style="width:100%;height:100%;object-fit:cover;" loading="lazy">';
+    h += '</div>';
+  });
+  container.innerHTML = h;
+}
+
+function adClearPhotoSelections() {
+  // Clear stock photo borders
+  adStockPhotosList.forEach(function(p, i) {
+    var el = document.getElementById('adStock_' + i);
+    if (el) el.style.borderColor = 'transparent';
+  });
+  // Clear unsplash borders
+  var unsplashDivs = document.querySelectorAll('#adUnsplashResults > div');
+  unsplashDivs.forEach(function(d) { d.style.borderColor = 'transparent'; });
+}
+
+function adSelectStockPhoto(index) {
+  var photo = adStockPhotosList[index];
+  if (!photo) return;
+
+  adClearPhotoSelections();
+  var el = document.getElementById('adStock_' + index);
+  if (el) el.style.borderColor = '#6e7f77';
+
+  // Show loading state on the preview
+  document.getElementById('adUploadFileName').textContent = 'Loading...';
+
+  // Fetch full-size image through proxy to get base64
+  fetch(API_BASE + '/image-proxy?url=' + encodeURIComponent(photo.full))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.dataUrl) {
+        adImageDataUrl = data.dataUrl;
+        document.getElementById('adUploadFileName').textContent = 'Stock photo selected';
+        adRenderPreview();
+      } else {
+        document.getElementById('adUploadFileName').textContent = 'Failed to load — try uploading manually';
+      }
+    })
+    .catch(function() {
+      document.getElementById('adUploadFileName').textContent = 'Failed to load — try uploading manually';
+    });
+}
+
+function adSelectUnsplashPhoto(url, index) {
+  adClearPhotoSelections();
+  var el = document.getElementById('adUnsplash_' + index);
+  if (el) el.style.borderColor = '#6e7f77';
+
+  document.getElementById('adUploadFileName').textContent = 'Loading...';
+
+  fetch(API_BASE + '/image-proxy?url=' + encodeURIComponent(url))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.dataUrl) {
+        adImageDataUrl = data.dataUrl;
+        document.getElementById('adUploadFileName').textContent = 'Unsplash photo selected';
+        adRenderPreview();
+      } else {
+        document.getElementById('adUploadFileName').textContent = 'Failed to load — try uploading manually';
+      }
+    })
+    .catch(function() {
+      document.getElementById('adUploadFileName').textContent = 'Failed to load — try uploading manually';
+    });
+}
+
+function adSearchUnsplash() {
+  var query = document.getElementById('adUnsplashQuery').value.trim();
+  if (!query) return;
+  var resultsDiv = document.getElementById('adUnsplashResults');
+  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Searching...</div>';
+
+  fetch(API_BASE + '/image-search?query=' + encodeURIComponent(query))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.images || data.images.length === 0) {
+        resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No results</div>';
+        return;
+      }
+      var h = '';
+      data.images.forEach(function(img, i) {
+        h += '<div id="adUnsplash_' + i + '" style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;" onclick="adSelectUnsplashPhoto(\'' + img.regular.replace(/'/g, "\\'") + '\', ' + i + ')">';
+        h += '<img src="' + img.thumb + '" style="width:100%;height:100%;object-fit:cover;">';
+        h += '</div>';
+      });
+      resultsDiv.innerHTML = h;
+    })
+    .catch(function() {
+      resultsDiv.innerHTML = '<div style="grid-column:1/-1;color:#ef4444;font-size:12px;">Search failed</div>';
+    });
 }
 
 function adRenderPreview() {
@@ -2821,34 +2960,6 @@ function adCopyPostText() {
   navigator.clipboard.writeText(text.trim()).then(function() {
     btnText.textContent = 'Copied!';
     setTimeout(function() { btnText.textContent = 'Copy Post Text'; }, 2000);
-  });
-}
-
-function adSearchUnsplash() {
-  var query = document.getElementById('adUnsplashQuery').value.trim();
-  if (!query) return;
-  var resultsDiv = document.getElementById('adUnsplashResults');
-  resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">Searching...</div>';
-
-  var accessKey = 'cIfFMz55PEagPfSWuJ4YSz2BKkJE9MFfkPOiH8UEEjI';
-  fetch('https://api.unsplash.com/search/photos?query=' + encodeURIComponent(query) + '&per_page=9&orientation=squarish', {
-    headers: { 'Authorization': 'Client-ID ' + accessKey }
-  }).then(function(r) { return r.json(); }).then(function(data) {
-    if (!data.results || data.results.length === 0) {
-      resultsDiv.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:16px;color:var(--text-muted);font-size:12px;">No results</div>';
-      return;
-    }
-    var h = '';
-    data.results.forEach(function(img) {
-      var dlUrl = img.urls.regular;
-      h += '<div style="cursor:pointer;border-radius:4px;overflow:hidden;aspect-ratio:1;border:2px solid transparent;position:relative;" title="Right-click to save, then upload above">';
-      h += '<img src="' + img.urls.small + '" style="width:100%;height:100%;object-fit:cover;">';
-      h += '<a href="' + dlUrl + '" download target="_blank" onclick="event.stopPropagation();" style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.6);color:white;font-size:10px;padding:3px 6px;border-radius:3px;text-decoration:none;"><i class="fas fa-download"></i></a>';
-      h += '</div>';
-    });
-    resultsDiv.innerHTML = h;
-  }).catch(function() {
-    resultsDiv.innerHTML = '<div style="grid-column:1/-1;color:#ef4444;font-size:12px;">Search failed</div>';
   });
 }
 
