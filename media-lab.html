@@ -2871,7 +2871,7 @@ function adDownload() {
   var desc = adFilledTexts.descriptions[adSelectedDesc] || '';
   var regLink = 'KRISTYFLACH.COM';
 
-  // Canvas is 1250 wide. Image area is top 1100px, bottom bar is 150px
+  // Canvas is 1250 wide. Image area is top 1100px, bottom bar is below
   canvas.height = 1400;
 
   function drawContent() {
@@ -2932,17 +2932,6 @@ function adDownload() {
     ctx.fillStyle = '#888888';
     ctx.font = '500 30px Helvetica, Arial, sans-serif';
     ctx.fillText(desc, 40, 1260);
-
-    // Sign Up button
-    ctx.strokeStyle = '#888888';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.roundRect(1020, 1165, 190, 60, 8);
-    ctx.stroke();
-    ctx.fillStyle = '#333333';
-    ctx.textAlign = 'center';
-    ctx.font = '700 30px Helvetica, Arial, sans-serif';
-    ctx.fillText('Sign Up', 1115, 1205);
 
     // Download
     var link = document.createElement('a');
