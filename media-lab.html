@@ -2842,12 +2842,12 @@ function adRenderPreview() {
   h += '<div style="font-size:28px;font-weight:900;text-shadow:2px 2px 4px rgba(0,0,0,0.6);">' + l6 + '</div>';
   h += '</div></div>';
 
-  // Bottom bar — headline, description, Sign Up (clickable)
+  // Bottom bar — headline, description, headshot
   h += '<div style="padding:10px 14px;border-top:1px solid #eee;display:flex;justify-content:space-between;align-items:center;">';
   h += '<div><div style="font-size:11px;color:#888;text-transform:uppercase;">' + regLink + '</div>';
   h += '<div style="font-size:14px;font-weight:600;">' + headline + '</div>';
   h += '<div style="font-size:12px;color:#888;">' + desc + '</div></div>';
-  h += '<a href="' + regUrl + '" target="_blank" style="padding:6px 16px;border:1px solid #888;border-radius:4px;font-size:12px;font-weight:600;color:#333;text-decoration:none;">Sign Up</a>';
+  h += '<img src="hero-headshot.jpg" style="width:50px;height:50px;border-radius:50%;object-fit:cover;">';
   h += '</div></div>';
 
   area.innerHTML = h;
@@ -2933,11 +2933,34 @@ function adDownload() {
     ctx.font = '500 30px Helvetica, Arial, sans-serif';
     ctx.fillText(desc, 40, 1260);
 
-    // Download
-    var link = document.createElement('a');
-    link.download = 'webinar-ad-' + (adSelectedWebinar.slug || 'ad') + '.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    // Hero headshot — circular, bottom-right corner
+    var headshot = new Image();
+    headshot.onload = function() {
+      var size = 120;
+      var x = 1250 - size - 40;
+      var y = 1100 + ((300 - size) / 2);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(x + size/2, y + size/2, size/2, 0, Math.PI * 2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(headshot, x, y, size, size);
+      ctx.restore();
+
+      // Download after headshot is drawn
+      var link = document.createElement('a');
+      link.download = 'webinar-ad-' + (adSelectedWebinar.slug || 'ad') + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    headshot.onerror = function() {
+      // Download without headshot if it fails
+      var link = document.createElement('a');
+      link.download = 'webinar-ad-' + (adSelectedWebinar.slug || 'ad') + '.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    };
+    headshot.src = 'hero-headshot.jpg';
   }
 
   if (adImageDataUrl) {
