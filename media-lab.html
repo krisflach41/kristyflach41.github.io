@@ -275,6 +275,85 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
 .recording-saved{display:none;align-items:center;gap:10px;padding:12px 16px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);border-radius:8px;margin-top:12px;}
 .recording-saved.show{display:flex;}
+
+/* ===================== CONTENT CALENDAR TAB ===================== */
+.cc-top-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.cc-month-nav{display:flex;align-items:center;gap:10px;}
+.cc-month-label{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);min-width:200px;text-align:center;}
+.cc-nav-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all 0.2s;}
+.cc-nav-btn:hover{background:var(--bg-hover);color:var(--text-primary);}
+
+/* Priority panel */
+.cc-priorities{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
+.cc-priorities-title{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.cc-priorities-title i{color:var(--sage);}
+.cc-sliders{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;}
+.cc-slider-row{display:flex;align-items:center;gap:10px;}
+.cc-slider-label{font-size:12px;font-weight:600;color:var(--text-secondary);min-width:130px;display:flex;align-items:center;gap:6px;}
+.cc-slider-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.cc-slider-row input[type=range]{flex:1;accent-color:var(--sage);cursor:pointer;height:6px;}
+.cc-slider-pct{font-size:13px;font-weight:700;color:var(--navy);min-width:36px;text-align:right;}
+.cc-total-row{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
+.cc-total-label{font-size:12px;font-weight:600;color:var(--text-muted);}
+.cc-total-val{font-size:14px;font-weight:800;}
+.cc-total-val.over{color:var(--accent-red);}
+.cc-total-val.ok{color:var(--accent-green);}
+.cc-split-row{display:flex;align-items:center;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.cc-split-label{font-size:12px;font-weight:600;color:var(--text-muted);}
+.cc-split-toggle{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-secondary);}
+.cc-split-toggle input[type=range]{width:100px;accent-color:var(--sage);}
+
+/* Calendar grid */
+.cc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:20px;}
+.cc-day-header{padding:8px 4px;text-align:center;font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;}
+.cc-day{min-height:110px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:6px 8px;cursor:pointer;transition:all 0.15s;position:relative;}
+.cc-day:hover{border-color:var(--sage);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.cc-day.empty{background:var(--bg-deep);border-color:transparent;cursor:default;min-height:40px;}
+.cc-day.empty:hover{border-color:transparent;box-shadow:none;}
+.cc-day.selected{border-color:var(--sage);box-shadow:0 0 0 2px rgba(110,127,119,0.2);}
+.cc-day.approved{border-left:3px solid var(--accent-green);}
+.cc-day-num{font-size:12px;font-weight:700;color:var(--text-primary);margin-bottom:4px;}
+.cc-day-cat{display:inline-block;padding:2px 6px;border-radius:4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:3px;}
+.cc-day-type{font-size:9px;color:var(--text-muted);font-weight:600;margin-bottom:3px;display:flex;align-items:center;gap:3px;}
+.cc-day-topic{font-size:11px;color:var(--text-secondary);line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cc-day-approved-badge{position:absolute;top:5px;right:5px;font-size:10px;color:var(--accent-green);}
+.cc-day-event{font-size:9px;color:var(--gold);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Category colors */
+.cc-cat-realtor_outreach{background:rgba(37,99,235,0.12);color:#1d4ed8;}
+.cc-cat-refinance{background:rgba(168,85,247,0.12);color:#7c3aed;}
+.cc-cat-purchase{background:rgba(22,163,74,0.12);color:#15803d;}
+.cc-cat-educational{background:rgba(234,88,12,0.12);color:#c2410c;}
+.cc-cat-silly_fun{background:rgba(236,72,153,0.12);color:#db2777;}
+
+/* Detail panel */
+.cc-detail{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;}
+.cc-detail-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.cc-detail-date{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);}
+.cc-detail-badges{display:flex;gap:6px;align-items:center;}
+.cc-detail-body{padding:20px;}
+.cc-detail-section{margin-bottom:16px;}
+.cc-detail-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+.cc-detail-hook{font-size:15px;font-weight:700;color:var(--navy);line-height:1.4;padding:12px;background:rgba(110,127,119,0.05);border-radius:8px;border-left:3px solid var(--sage);}
+.cc-detail-overlay{font-size:13px;font-weight:600;color:var(--sage);padding:8px 12px;background:rgba(110,127,119,0.06);border-radius:6px;display:inline-block;}
+.cc-detail-content{font-size:14px;color:var(--text-primary);line-height:1.65;white-space:pre-wrap;word-break:break-word;}
+.cc-detail-funfact{font-size:13px;color:var(--text-secondary);padding:12px;background:rgba(186,163,112,0.08);border-radius:8px;border-left:3px solid var(--gold);line-height:1.5;}
+.cc-detail-event{font-size:12px;color:var(--gold);font-weight:600;display:flex;align-items:center;gap:5px;padding:6px 0;}
+.cc-detail-actions{display:flex;gap:8px;padding:16px 20px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.cc-detail-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:6px 12px;border-radius:6px;}
+.cc-status-draft{background:rgba(100,116,139,0.1);color:#64748b;}
+.cc-status-approved{background:rgba(22,163,74,0.1);color:#15803d;}
+
+/* Loading state */
+.cc-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;}
+.cc-loading-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--sage);border-radius:50%;animation:ccSpin 0.8s linear infinite;}
+@keyframes ccSpin{to{transform:rotate(360deg);}}
+.cc-loading-text{font-size:14px;color:var(--text-muted);text-align:center;}
+
+/* Empty state */
+.cc-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
+.cc-empty i{font-size:40px;opacity:0.2;margin-bottom:12px;}
+.cc-empty p{font-size:14px;margin:4px 0;}
 </style>
 </head>
 <body>
@@ -305,6 +384,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <button class="tab-btn" onclick="switchTab('library',this)"><i class="fas fa-photo-film"></i> Media Library</button>
   <button class="tab-btn" onclick="switchTab('landingpages',this)"><i class="fas fa-rocket"></i> Landing Pages</button>
   <button class="tab-btn" onclick="switchTab('adbuilder',this)"><i class="fas fa-bullhorn"></i> Ad Builder</button>
+  <button class="tab-btn" onclick="switchTab('contentcal',this)"><i class="fas fa-calendar-days"></i> Content Calendar</button>
 
 </div>
 
@@ -1041,6 +1121,122 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   </div>
 </div>
 
+<!-- ==================== CONTENT CALENDAR TAB ==================== -->
+<div class="tab-content" id="tab-contentcal">
+
+  <!-- Top bar: month nav + generate button -->
+  <div class="cc-top-bar">
+    <div class="cc-month-nav">
+      <button class="cc-nav-btn" onclick="ccNavMonth(-1)"><i class="fas fa-chevron-left"></i></button>
+      <div class="cc-month-label" id="ccMonthLabel">March 2026</div>
+      <button class="cc-nav-btn" onclick="ccNavMonth(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button class="btn primary" onclick="ccGenerate()" id="ccGenerateBtn"><i class="fas fa-wand-magic-sparkles"></i> Generate Month</button>
+    </div>
+  </div>
+
+  <!-- Priority sliders -->
+  <div class="cc-priorities" id="ccPriorities">
+    <div class="cc-priorities-title"><i class="fas fa-sliders"></i> Content Priorities</div>
+    <div class="cc-sliders">
+      <div class="cc-slider-row">
+        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#2563eb;"></span> Realtor/Partner</div>
+        <input type="range" min="0" max="100" step="5" value="80" id="ccSlider_realtor_outreach" oninput="ccUpdateSliders()">
+        <span class="cc-slider-pct" id="ccPct_realtor_outreach">80%</span>
+      </div>
+      <div class="cc-slider-row">
+        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#a855f7;"></span> Refinance</div>
+        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_refinance" oninput="ccUpdateSliders()">
+        <span class="cc-slider-pct" id="ccPct_refinance">5%</span>
+      </div>
+      <div class="cc-slider-row">
+        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#16a34a;"></span> Purchase</div>
+        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_purchase" oninput="ccUpdateSliders()">
+        <span class="cc-slider-pct" id="ccPct_purchase">5%</span>
+      </div>
+      <div class="cc-slider-row">
+        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#ea580c;"></span> Educational</div>
+        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_educational" oninput="ccUpdateSliders()">
+        <span class="cc-slider-pct" id="ccPct_educational">5%</span>
+      </div>
+      <div class="cc-slider-row">
+        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#ec4899;"></span> Silly/Fun</div>
+        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_silly_fun" oninput="ccUpdateSliders()">
+        <span class="cc-slider-pct" id="ccPct_silly_fun">5%</span>
+      </div>
+      <div class="cc-total-row">
+        <span class="cc-total-label">Total</span>
+        <span class="cc-total-val ok" id="ccTotalPct">100%</span>
+      </div>
+      <div class="cc-split-row" style="grid-column:1/-1;">
+        <span class="cc-split-label">Content Split:</span>
+        <div class="cc-split-toggle">
+          <i class="fas fa-video" style="color:var(--sage);"></i>
+          <span id="ccVideoLabel">80%</span>
+          <input type="range" min="0" max="100" step="5" value="80" id="ccVideoSplit" oninput="ccUpdateSplit()">
+          <span id="ccPostLabel">20%</span>
+          <i class="fas fa-pen-nib" style="color:var(--sage);"></i>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">Video scripts vs. written posts</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar grid -->
+  <div id="ccCalendarWrap">
+    <div class="cc-empty" id="ccEmptyState">
+      <i class="fas fa-calendar-days"></i>
+      <p style="font-size:16px;font-weight:600;color:var(--navy);">Set your priorities and hit Generate</p>
+      <p>Your month of content will appear here.</p>
+    </div>
+    <div id="ccCalendarGrid" style="display:none;"></div>
+  </div>
+
+  <!-- Detail panel (shows when a day is clicked) -->
+  <div class="cc-detail" id="ccDetail" style="display:none;">
+    <div class="cc-detail-header">
+      <div>
+        <div class="cc-detail-date" id="ccDetailDate">March 23, 2026</div>
+        <div class="cc-detail-event" id="ccDetailEvent" style="display:none;"><i class="fas fa-star"></i> <span id="ccDetailEventText"></span></div>
+      </div>
+      <div class="cc-detail-badges" id="ccDetailBadges"></div>
+    </div>
+    <div class="cc-detail-body">
+      <div class="cc-detail-section">
+        <div class="cc-detail-label">Hook</div>
+        <div class="cc-detail-hook" id="ccDetailHook"></div>
+      </div>
+      <div class="cc-detail-section" id="ccDetailOverlayWrap" style="display:none;">
+        <div class="cc-detail-label">Text Overlay (on screen)</div>
+        <div class="cc-detail-overlay" id="ccDetailOverlay"></div>
+      </div>
+      <div class="cc-detail-section">
+        <div class="cc-detail-label">Full Content</div>
+        <div class="cc-detail-content" id="ccDetailContent"></div>
+      </div>
+      <div class="cc-detail-section">
+        <div class="cc-detail-label">Fun Fact</div>
+        <div class="cc-detail-funfact" id="ccDetailFunFact"></div>
+      </div>
+    </div>
+    <div class="cc-detail-actions">
+      <div class="cc-detail-status" id="ccDetailStatus"><i class="fas fa-pen"></i> Draft</div>
+      <div style="flex:1;"></div>
+      <button class="btn" onclick="ccRegenDay()"><i class="fas fa-rotate"></i> Regenerate</button>
+      <button class="btn sage" onclick="ccApproveDay()" id="ccApproveBtn"><i class="fas fa-check"></i> Approve</button>
+      <button class="btn primary" onclick="ccSendDay()" id="ccSendBtn" style="display:none;"><i class="fas fa-paper-plane"></i> <span id="ccSendLabel">Send</span></button>
+      <button class="btn" onclick="ccCloseDetail()" style="margin-left:4px;"><i class="fas fa-times"></i> Close</button>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="cc-loading" id="ccLoading" style="display:none;">
+    <div class="cc-loading-spinner"></div>
+    <div class="cc-loading-text" id="ccLoadingText">Generating your month of content...<br>This takes about 30-45 seconds.</div>
+  </div>
+</div>
+
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 var ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -1055,6 +1251,7 @@ function switchTab(name, btn) {
   if (name === 'youtube') renderYtSaved();
   if (name === 'landingpages') lpLoadPages();
   if (name === 'adbuilder') adInit();
+  if (name === 'contentcal') ccInit();
 }
 
 // ===== MEDIA LIBRARY (localStorage for now) =====
@@ -3286,6 +3483,438 @@ function lpViewAnalytics(pageId, title) {
 function lpCloseAnalytics() {
   document.getElementById('lpAnalyticsPanel').style.display = 'none';
   document.getElementById('lpPageList').style.display = 'block';
+}
+
+// ===== CONTENT CALENDAR =====
+var ccMonth = new Date().getMonth() + 1; // 1-12
+var ccYear = new Date().getFullYear();
+var ccDays = []; // array of day objects from AI
+var ccSelectedDate = null;
+var ccInitialized = false;
+var ccApproved = {}; // { 'YYYY-MM-DD': true }
+
+var CC_CATEGORIES = {
+  realtor_outreach: { label: 'Realtor/Partner', color: '#2563eb', bg: 'rgba(37,99,235,0.12)' },
+  refinance:        { label: 'Refinance',       color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
+  purchase:         { label: 'Purchase',        color: '#16a34a', bg: 'rgba(22,163,74,0.12)' },
+  educational:      { label: 'Educational',     color: '#ea580c', bg: 'rgba(234,88,12,0.12)' },
+  silly_fun:        { label: 'Silly/Fun',       color: '#ec4899', bg: 'rgba(236,72,153,0.12)' }
+};
+
+function ccInit() {
+  if (ccInitialized) return;
+  ccInitialized = true;
+  ccUpdateMonthLabel();
+  ccUpdateSliders();
+  ccUpdateSplit();
+  // Load saved data from localStorage if any
+  ccLoadSaved();
+}
+
+function ccUpdateMonthLabel() {
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('ccMonthLabel').textContent = months[ccMonth - 1] + ' ' + ccYear;
+}
+
+function ccNavMonth(dir) {
+  ccMonth += dir;
+  if (ccMonth > 12) { ccMonth = 1; ccYear++; }
+  if (ccMonth < 1) { ccMonth = 12; ccYear--; }
+  ccUpdateMonthLabel();
+  ccCloseDetail();
+  // Check if we have saved data for this month
+  ccLoadSaved();
+}
+
+function ccUpdateSliders() {
+  var cats = ['realtor_outreach','refinance','purchase','educational','silly_fun'];
+  var total = 0;
+  cats.forEach(function(c) {
+    var val = parseInt(document.getElementById('ccSlider_' + c).value);
+    document.getElementById('ccPct_' + c).textContent = val + '%';
+    total += val;
+  });
+  var el = document.getElementById('ccTotalPct');
+  el.textContent = total + '%';
+  el.className = 'cc-total-val ' + (total === 100 ? 'ok' : 'over');
+}
+
+function ccUpdateSplit() {
+  var v = parseInt(document.getElementById('ccVideoSplit').value);
+  document.getElementById('ccVideoLabel').textContent = v + '%';
+  document.getElementById('ccPostLabel').textContent = (100 - v) + '%';
+}
+
+function ccGetPriorities() {
+  var cats = ['realtor_outreach','refinance','purchase','educational','silly_fun'];
+  var p = {};
+  cats.forEach(function(c) {
+    p[c] = parseInt(document.getElementById('ccSlider_' + c).value);
+  });
+  return p;
+}
+
+function ccGetSplit() {
+  var v = parseInt(document.getElementById('ccVideoSplit').value);
+  return { video: v, post: 100 - v };
+}
+
+// ===== GENERATE FULL MONTH =====
+async function ccGenerate() {
+  var priorities = ccGetPriorities();
+  var total = 0;
+  Object.values(priorities).forEach(function(v) { total += v; });
+  if (total !== 100) {
+    alert('Your priorities add up to ' + total + '%. They need to equal 100% before generating.');
+    return;
+  }
+
+  var split = ccGetSplit();
+
+  // Show loading
+  document.getElementById('ccEmptyState').style.display = 'none';
+  document.getElementById('ccCalendarGrid').style.display = 'none';
+  document.getElementById('ccDetail').style.display = 'none';
+  document.getElementById('ccLoading').style.display = 'flex';
+  document.getElementById('ccGenerateBtn').disabled = true;
+
+  try {
+    var resp = await fetch(API_BASE + '/content-calendar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'generate-month',
+        month: ccMonth,
+        year: ccYear,
+        priorities: priorities,
+        videoPostSplit: split
+      })
+    });
+    var data = await resp.json();
+
+    if (data.success && data.days && data.days.length > 0) {
+      ccDays = data.days;
+      ccApproved = {};
+      ccSaveToLocal();
+      ccRenderGrid();
+    } else if (data.raw) {
+      // AI returned something but it didn't parse — try to show error
+      alert('The AI returned content but it was not in the expected format. Please try generating again.');
+      console.error('Raw AI response:', data.raw);
+    } else {
+      alert('Generation failed: ' + (data.error || 'Unknown error. Please try again.'));
+    }
+  } catch (err) {
+    alert('Connection error. Please check your internet and try again.');
+    console.error('ccGenerate error:', err);
+  }
+
+  document.getElementById('ccLoading').style.display = 'none';
+  document.getElementById('ccGenerateBtn').disabled = false;
+}
+
+// ===== RENDER CALENDAR GRID =====
+function ccRenderGrid() {
+  if (!ccDays || ccDays.length === 0) {
+    document.getElementById('ccEmptyState').style.display = 'block';
+    document.getElementById('ccCalendarGrid').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('ccEmptyState').style.display = 'none';
+  var grid = document.getElementById('ccCalendarGrid');
+  grid.style.display = 'grid';
+  grid.className = 'cc-grid';
+
+  var h = '';
+
+  // Day headers
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  dayNames.forEach(function(d) {
+    h += '<div class="cc-day-header">' + d + '</div>';
+  });
+
+  // First day of month
+  var firstDay = new Date(ccYear, ccMonth - 1, 1).getDay(); // 0=Sun
+  var daysInMonth = new Date(ccYear, ccMonth, 0).getDate();
+
+  // Empty cells before day 1
+  for (var i = 0; i < firstDay; i++) {
+    h += '<div class="cc-day empty"></div>';
+  }
+
+  // Day cells
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = ccYear + '-' + String(ccMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    var dayData = ccDays.find(function(dd) {
+      // Match by date string or by day number
+      if (dd.date === dateStr) return true;
+      var ddDay = parseInt(dd.date.split('-')[2]);
+      return ddDay === d;
+    });
+
+    var isApproved = ccApproved[dateStr];
+    var isSelected = ccSelectedDate === dateStr;
+    var classes = 'cc-day';
+    if (isApproved) classes += ' approved';
+    if (isSelected) classes += ' selected';
+
+    h += '<div class="' + classes + '" onclick="ccSelectDay(\'' + dateStr + '\')">';
+    h += '<div class="cc-day-num">' + d + '</div>';
+
+    if (dayData) {
+      var cat = dayData.category || 'educational';
+      var catInfo = CC_CATEGORIES[cat] || CC_CATEGORIES.educational;
+
+      h += '<div class="cc-day-cat cc-cat-' + cat + '">' + catInfo.label + '</div>';
+      h += '<div class="cc-day-type"><i class="fas fa-' + (dayData.contentType === 'video' ? 'video' : 'pen-nib') + '"></i> ' + (dayData.contentType === 'video' ? 'Video' : 'Post') + '</div>';
+      h += '<div class="cc-day-topic">' + (dayData.topic || '') + '</div>';
+
+      if (dayData.event) {
+        h += '<div class="cc-day-event"><i class="fas fa-star"></i> ' + dayData.event + '</div>';
+      }
+
+      if (isApproved) {
+        h += '<div class="cc-day-approved-badge"><i class="fas fa-check-circle"></i></div>';
+      }
+    }
+
+    h += '</div>';
+  }
+
+  // Fill remaining cells to complete the grid
+  var totalCells = firstDay + daysInMonth;
+  var remaining = (7 - (totalCells % 7)) % 7;
+  for (var i = 0; i < remaining; i++) {
+    h += '<div class="cc-day empty"></div>';
+  }
+
+  grid.innerHTML = h;
+}
+
+// ===== SELECT A DAY =====
+function ccSelectDay(dateStr) {
+  ccSelectedDate = dateStr;
+  ccRenderGrid(); // re-render to show selection
+
+  var dayData = ccFindDay(dateStr);
+  if (!dayData) return;
+
+  var panel = document.getElementById('ccDetail');
+  panel.style.display = 'block';
+
+  // Date label
+  var dt = new Date(dateStr + 'T12:00:00');
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('ccDetailDate').textContent = dayNames[dt.getDay()] + ', ' + months[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
+
+  // Event
+  var eventEl = document.getElementById('ccDetailEvent');
+  if (dayData.event) {
+    eventEl.style.display = 'flex';
+    document.getElementById('ccDetailEventText').textContent = dayData.event;
+  } else {
+    eventEl.style.display = 'none';
+  }
+
+  // Badges
+  var cat = dayData.category || 'educational';
+  var catInfo = CC_CATEGORIES[cat] || CC_CATEGORIES.educational;
+  var badgesHtml = '<span class="cc-day-cat cc-cat-' + cat + '" style="font-size:11px;padding:3px 8px;">' + catInfo.label + '</span>';
+  badgesHtml += '<span style="font-size:11px;padding:3px 8px;background:rgba(110,127,119,0.1);border-radius:4px;color:var(--sage);font-weight:700;"><i class="fas fa-' + (dayData.contentType === 'video' ? 'video' : 'pen-nib') + '"></i> ' + (dayData.contentType === 'video' ? 'Video Script' : 'Written Post') + '</span>';
+  document.getElementById('ccDetailBadges').innerHTML = badgesHtml;
+
+  // Hook
+  document.getElementById('ccDetailHook').textContent = dayData.hook || '';
+
+  // Text overlay (video only)
+  var overlayWrap = document.getElementById('ccDetailOverlayWrap');
+  if (dayData.contentType === 'video' && dayData.textOverlay) {
+    overlayWrap.style.display = 'block';
+    document.getElementById('ccDetailOverlay').textContent = dayData.textOverlay;
+  } else {
+    overlayWrap.style.display = 'none';
+  }
+
+  // Content
+  document.getElementById('ccDetailContent').textContent = dayData.content || '';
+
+  // Fun fact
+  document.getElementById('ccDetailFunFact').textContent = dayData.funFact || '';
+
+  // Status
+  var isApproved = ccApproved[dateStr];
+  var statusEl = document.getElementById('ccDetailStatus');
+  if (isApproved) {
+    statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Approved';
+    statusEl.className = 'cc-detail-status cc-status-approved';
+    document.getElementById('ccApproveBtn').style.display = 'none';
+    document.getElementById('ccSendBtn').style.display = 'inline-flex';
+    document.getElementById('ccSendLabel').textContent = dayData.contentType === 'video' ? 'Send to Teleprompter' : 'Send to Composer';
+  } else {
+    statusEl.innerHTML = '<i class="fas fa-pen"></i> Draft';
+    statusEl.className = 'cc-detail-status cc-status-draft';
+    document.getElementById('ccApproveBtn').style.display = 'inline-flex';
+    document.getElementById('ccSendBtn').style.display = 'none';
+  }
+
+  // Scroll to detail panel
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function ccFindDay(dateStr) {
+  if (!ccDays || ccDays.length === 0) return null;
+  var dayNum = parseInt(dateStr.split('-')[2]);
+  return ccDays.find(function(dd) {
+    if (dd.date === dateStr) return true;
+    var ddDay = parseInt(dd.date.split('-')[2]);
+    return ddDay === dayNum;
+  }) || null;
+}
+
+function ccCloseDetail() {
+  document.getElementById('ccDetail').style.display = 'none';
+  ccSelectedDate = null;
+  ccRenderGrid();
+}
+
+// ===== APPROVE DAY =====
+function ccApproveDay() {
+  if (!ccSelectedDate) return;
+  ccApproved[ccSelectedDate] = true;
+  ccSaveToLocal();
+  ccSelectDay(ccSelectedDate); // refresh detail
+  ccRenderGrid();
+}
+
+// ===== REGENERATE SINGLE DAY =====
+async function ccRegenDay() {
+  if (!ccSelectedDate) return;
+
+  var dayData = ccFindDay(ccSelectedDate);
+  if (!dayData) return;
+
+  // Show loading in detail panel
+  document.getElementById('ccDetailContent').innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text-muted);"><div class="cc-loading-spinner" style="width:20px;height:20px;border-width:2px;"></div> Regenerating this day...</div>';
+
+  try {
+    var resp = await fetch(API_BASE + '/content-calendar', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'regenerate-day',
+        date: ccSelectedDate,
+        category: dayData.category,
+        contentType: dayData.contentType,
+        event: dayData.event
+      })
+    });
+    var data = await resp.json();
+
+    if (data.success && data.date) {
+      // Replace the day in our array
+      var idx = ccDays.findIndex(function(dd) {
+        if (dd.date === ccSelectedDate) return true;
+        var ddDay = parseInt(dd.date.split('-')[2]);
+        var selDay = parseInt(ccSelectedDate.split('-')[2]);
+        return ddDay === selDay;
+      });
+      if (idx >= 0) {
+        // Keep original date string consistent
+        data.date = ccSelectedDate;
+        ccDays[idx] = data;
+      }
+      // Remove approval if it was approved
+      delete ccApproved[ccSelectedDate];
+      ccSaveToLocal();
+      ccRenderGrid();
+      ccSelectDay(ccSelectedDate);
+    } else {
+      alert('Regeneration failed: ' + (data.error || 'Please try again.'));
+      ccSelectDay(ccSelectedDate); // restore view
+    }
+  } catch (err) {
+    alert('Connection error. Please try again.');
+    ccSelectDay(ccSelectedDate);
+  }
+}
+
+// ===== SEND TO TELEPROMPTER OR COMPOSER =====
+function ccSendDay() {
+  if (!ccSelectedDate) return;
+  var dayData = ccFindDay(ccSelectedDate);
+  if (!dayData) return;
+
+  // Build the full text: hook + content + fun fact
+  var fullText = dayData.content || '';
+  if (dayData.funFact) {
+    fullText += '\n\n' + dayData.funFact;
+  }
+
+  if (dayData.contentType === 'video') {
+    // Send to teleprompter — load into scriptText and switch to studio tab
+    var scriptField = document.getElementById('scriptText');
+    if (scriptField) {
+      scriptField.value = fullText;
+    }
+    // Switch to studio tab
+    var studioBtn = document.querySelector('.tab-btn');
+    switchTab('studio', studioBtn);
+    // Auto-load to teleprompter display
+    setTimeout(function() {
+      var display = document.getElementById('tpDisplay');
+      if (display) {
+        display.textContent = fullText;
+        display.style.transform = 'translateY(0)';
+        var overlay = document.getElementById('tpOverlay');
+        if (overlay) overlay.style.display = 'block';
+      }
+    }, 200);
+  } else {
+    // Send to post composer — load caption and switch tab
+    var captionField = document.getElementById('postCaption');
+    if (captionField) {
+      captionField.value = fullText;
+    }
+    // Trigger the caption input handler to update preview and char count
+    if (typeof onCaptionInput === 'function') onCaptionInput();
+    // Switch to composer tab
+    var composerBtn = document.querySelectorAll('.tab-btn')[1]; // Post Composer is 2nd tab
+    switchTab('composer', composerBtn);
+  }
+}
+
+// ===== LOCAL STORAGE — persist calendar data =====
+function ccSaveToLocal() {
+  var key = 'cc_' + ccYear + '_' + ccMonth;
+  var payload = { days: ccDays, approved: ccApproved };
+  try {
+    localStorage.setItem(key, JSON.stringify(payload));
+  } catch(e) { console.warn('Could not save calendar data', e); }
+}
+
+function ccLoadSaved() {
+  var key = 'cc_' + ccYear + '_' + ccMonth;
+  try {
+    var raw = localStorage.getItem(key);
+    if (raw) {
+      var data = JSON.parse(raw);
+      ccDays = data.days || [];
+      ccApproved = data.approved || {};
+      ccRenderGrid();
+    } else {
+      ccDays = [];
+      ccApproved = {};
+      document.getElementById('ccEmptyState').style.display = 'block';
+      document.getElementById('ccCalendarGrid').style.display = 'none';
+    }
+  } catch(e) {
+    ccDays = [];
+    ccApproved = {};
+  }
+  document.getElementById('ccDetail').style.display = 'none';
+  ccSelectedDate = null;
 }
 </script>
 </body>
