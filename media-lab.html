@@ -283,25 +283,38 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .cc-nav-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-secondary);transition:all 0.2s;}
 .cc-nav-btn:hover{background:var(--bg-hover);color:var(--text-primary);}
 
-/* Priority panel */
-.cc-priorities{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;}
-.cc-priorities-title{font-weight:700;font-size:14px;color:var(--navy);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.cc-priorities-title i{color:var(--sage);}
-.cc-sliders{display:grid;grid-template-columns:1fr 1fr;gap:12px 24px;}
-.cc-slider-row{display:flex;align-items:center;gap:10px;}
-.cc-slider-label{font-size:12px;font-weight:600;color:var(--text-secondary);min-width:130px;display:flex;align-items:center;gap:6px;}
-.cc-slider-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.cc-slider-row input[type=range]{flex:1;accent-color:var(--sage);cursor:pointer;height:6px;}
-.cc-slider-pct{font-size:13px;font-weight:700;color:var(--navy);min-width:36px;text-align:right;}
-.cc-total-row{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:4px;}
-.cc-total-label{font-size:12px;font-weight:600;color:var(--text-muted);}
-.cc-total-val{font-size:14px;font-weight:800;}
+/* Control panels */
+.cc-controls{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.cc-panel{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px;}
+.cc-panel-title{font-weight:700;font-size:13px;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.cc-panel-title i{color:var(--sage);}
+.cc-panel-full{grid-column:1/-1;}
+
+/* Percentage boxes (audience & mood) */
+.cc-pct-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.cc-pct-item{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-deep);transition:all 0.15s;}
+.cc-pct-item:focus-within{border-color:var(--sage);background:rgba(110,127,119,0.04);}
+.cc-pct-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.cc-pct-name{font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap;}
+.cc-pct-input{width:40px;padding:3px 4px;border:1px solid var(--border);border-radius:5px;font-family:inherit;font-size:13px;font-weight:700;color:var(--navy);text-align:center;background:white;}
+.cc-pct-input:focus{outline:none;border-color:var(--sage);}
+.cc-pct-sym{font-size:11px;color:var(--text-muted);font-weight:600;}
+.cc-total-row{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.cc-total-label{font-size:11px;font-weight:600;color:var(--text-muted);}
+.cc-total-val{font-size:13px;font-weight:800;}
 .cc-total-val.over{color:var(--accent-red);}
 .cc-total-val.ok{color:var(--accent-green);}
-.cc-split-row{display:flex;align-items:center;gap:16px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
-.cc-split-label{font-size:12px;font-weight:600;color:var(--text-muted);}
-.cc-split-toggle{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text-secondary);}
-.cc-split-toggle input[type=range]{width:100px;accent-color:var(--sage);}
+
+/* Topics textarea */
+.cc-topics-input{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:13px;color:var(--text-primary);min-height:70px;resize:vertical;line-height:1.5;background:white;}
+.cc-topics-input:focus{outline:none;border-color:var(--sage);}
+.cc-topics-hint{font-size:11px;color:var(--text-muted);margin-top:5px;}
+
+/* Video/post split */
+.cc-split-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.cc-split-item{display:flex;align-items:center;gap:6px;}
+.cc-split-item i{color:var(--sage);font-size:14px;}
+.cc-split-item label{font-size:12px;font-weight:600;color:var(--text-secondary);}
 
 /* Calendar grid */
 .cc-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:20px;}
@@ -320,17 +333,28 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .cc-day-event{font-size:9px;color:var(--gold);font-weight:600;margin-top:2px;display:flex;align-items:center;gap:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* Category colors */
-.cc-cat-realtor_outreach{background:rgba(37,99,235,0.12);color:#1d4ed8;}
-.cc-cat-refinance{background:rgba(168,85,247,0.12);color:#7c3aed;}
-.cc-cat-purchase{background:rgba(22,163,74,0.12);color:#15803d;}
-.cc-cat-educational{background:rgba(234,88,12,0.12);color:#c2410c;}
-.cc-cat-silly_fun{background:rgba(236,72,153,0.12);color:#db2777;}
+.cc-cat-realtors{background:rgba(37,99,235,0.12);color:#1d4ed8;}
+.cc-cat-cpas{background:rgba(13,148,136,0.12);color:#0d9488;}
+.cc-cat-divorce_attorneys{background:rgba(100,116,139,0.12);color:#475569;}
+.cc-cat-financial_planners{background:rgba(99,102,241,0.12);color:#6366f1;}
+.cc-cat-wedding_pros{background:rgba(236,72,153,0.12);color:#db2777;}
+.cc-cat-buyers{background:rgba(22,163,74,0.12);color:#15803d;}
+.cc-cat-sellers{background:rgba(234,88,12,0.12);color:#c2410c;}
+.cc-cat-past_clients{background:rgba(186,163,112,0.15);color:#92810e;}
+
+/* Mood badge colors */
+.cc-mood-educational{background:rgba(37,99,235,0.1);color:#1d4ed8;}
+.cc-mood-surprising{background:rgba(234,88,12,0.1);color:#c2410c;}
+.cc-mood-funny{background:rgba(236,72,153,0.1);color:#db2777;}
+.cc-mood-heartfelt{background:rgba(168,85,247,0.1);color:#7c3aed;}
+.cc-mood-bold{background:rgba(220,38,38,0.1);color:#dc2626;}
+.cc-mood-relatable{background:rgba(22,163,74,0.1);color:#15803d;}
 
 /* Detail panel */
 .cc-detail{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:0;overflow:hidden;}
 .cc-detail-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .cc-detail-date{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--navy);}
-.cc-detail-badges{display:flex;gap:6px;align-items:center;}
+.cc-detail-badges{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
 .cc-detail-body{padding:20px;}
 .cc-detail-section{margin-bottom:16px;}
 .cc-detail-label{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
@@ -354,6 +378,11 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .cc-empty{text-align:center;padding:60px 20px;color:var(--text-muted);}
 .cc-empty i{font-size:40px;opacity:0.2;margin-bottom:12px;}
 .cc-empty p{font-size:14px;margin:4px 0;}
+
+/* Responsive */
+@media(max-width:900px){
+  .cc-controls{grid-template-columns:1fr;}
+}
 </style>
 </head>
 <body>
@@ -1136,49 +1165,69 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
     </div>
   </div>
 
-  <!-- Priority sliders -->
-  <div class="cc-priorities" id="ccPriorities">
-    <div class="cc-priorities-title"><i class="fas fa-sliders"></i> Content Priorities</div>
-    <div class="cc-sliders">
-      <div class="cc-slider-row">
-        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#2563eb;"></span> Realtor/Partner</div>
-        <input type="range" min="0" max="100" step="5" value="80" id="ccSlider_realtor_outreach" oninput="ccUpdateSliders()">
-        <span class="cc-slider-pct" id="ccPct_realtor_outreach">80%</span>
-      </div>
-      <div class="cc-slider-row">
-        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#a855f7;"></span> Refinance</div>
-        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_refinance" oninput="ccUpdateSliders()">
-        <span class="cc-slider-pct" id="ccPct_refinance">5%</span>
-      </div>
-      <div class="cc-slider-row">
-        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#16a34a;"></span> Purchase</div>
-        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_purchase" oninput="ccUpdateSliders()">
-        <span class="cc-slider-pct" id="ccPct_purchase">5%</span>
-      </div>
-      <div class="cc-slider-row">
-        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#ea580c;"></span> Educational</div>
-        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_educational" oninput="ccUpdateSliders()">
-        <span class="cc-slider-pct" id="ccPct_educational">5%</span>
-      </div>
-      <div class="cc-slider-row">
-        <div class="cc-slider-label"><span class="cc-slider-dot" style="background:#ec4899;"></span> Silly/Fun</div>
-        <input type="range" min="0" max="100" step="5" value="5" id="ccSlider_silly_fun" oninput="ccUpdateSliders()">
-        <span class="cc-slider-pct" id="ccPct_silly_fun">5%</span>
+  <!-- Control panels: Audience + Mood side by side -->
+  <div class="cc-controls">
+
+    <!-- AUDIENCE -->
+    <div class="cc-panel">
+      <div class="cc-panel-title"><i class="fas fa-users"></i> Audience — Who are you talking to?</div>
+      <div class="cc-pct-grid" id="ccAudienceGrid">
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#2563eb;"></span><span class="cc-pct-name">Realtors</span><input class="cc-pct-input" type="number" min="0" max="100" value="40" data-group="audience" data-key="realtors" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#0d9488;"></span><span class="cc-pct-name">CPAs</span><input class="cc-pct-input" type="number" min="0" max="100" value="15" data-group="audience" data-key="cpas" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#64748b;"></span><span class="cc-pct-name">Divorce Attorneys</span><input class="cc-pct-input" type="number" min="0" max="100" value="5" data-group="audience" data-key="divorce_attorneys" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#6366f1;"></span><span class="cc-pct-name">Financial Planners</span><input class="cc-pct-input" type="number" min="0" max="100" value="5" data-group="audience" data-key="financial_planners" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#ec4899;"></span><span class="cc-pct-name">Wedding Pros</span><input class="cc-pct-input" type="number" min="0" max="100" value="5" data-group="audience" data-key="wedding_pros" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#16a34a;"></span><span class="cc-pct-name">Buyers</span><input class="cc-pct-input" type="number" min="0" max="100" value="10" data-group="audience" data-key="buyers" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#ea580c;"></span><span class="cc-pct-name">Sellers</span><input class="cc-pct-input" type="number" min="0" max="100" value="5" data-group="audience" data-key="sellers" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#baa370;"></span><span class="cc-pct-name">Past Clients/Sphere</span><input class="cc-pct-input" type="number" min="0" max="100" value="15" data-group="audience" data-key="past_clients" oninput="ccUpdateTotal('audience')"><span class="cc-pct-sym">%</span></div>
       </div>
       <div class="cc-total-row">
         <span class="cc-total-label">Total</span>
-        <span class="cc-total-val ok" id="ccTotalPct">100%</span>
+        <span class="cc-total-val ok" id="ccAudienceTotal">100%</span>
       </div>
-      <div class="cc-split-row" style="grid-column:1/-1;">
-        <span class="cc-split-label">Content Split:</span>
-        <div class="cc-split-toggle">
-          <i class="fas fa-video" style="color:var(--sage);"></i>
-          <span id="ccVideoLabel">80%</span>
-          <input type="range" min="0" max="100" step="5" value="80" id="ccVideoSplit" oninput="ccUpdateSplit()">
-          <span id="ccPostLabel">20%</span>
-          <i class="fas fa-pen-nib" style="color:var(--sage);"></i>
+    </div>
+
+    <!-- MOOD -->
+    <div class="cc-panel">
+      <div class="cc-panel-title"><i class="fas fa-masks-theater"></i> Mood — What's the emotional tone?</div>
+      <div class="cc-pct-grid" id="ccMoodGrid">
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#2563eb;"></span><span class="cc-pct-name">Educational</span><input class="cc-pct-input" type="number" min="0" max="100" value="25" data-group="mood" data-key="educational" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#ea580c;"></span><span class="cc-pct-name">Surprising/Myth-Busting</span><input class="cc-pct-input" type="number" min="0" max="100" value="25" data-group="mood" data-key="surprising" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#ec4899;"></span><span class="cc-pct-name">Funny/Playful</span><input class="cc-pct-input" type="number" min="0" max="100" value="15" data-group="mood" data-key="funny" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#7c3aed;"></span><span class="cc-pct-name">Heartfelt/Inspiring</span><input class="cc-pct-input" type="number" min="0" max="100" value="15" data-group="mood" data-key="heartfelt" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#dc2626;"></span><span class="cc-pct-name">Bold/Controversial</span><input class="cc-pct-input" type="number" min="0" max="100" value="10" data-group="mood" data-key="bold" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+        <div class="cc-pct-item"><span class="cc-pct-dot" style="background:#16a34a;"></span><span class="cc-pct-name">Relatable</span><input class="cc-pct-input" type="number" min="0" max="100" value="10" data-group="mood" data-key="relatable" oninput="ccUpdateTotal('mood')"><span class="cc-pct-sym">%</span></div>
+      </div>
+      <div class="cc-total-row">
+        <span class="cc-total-label">Total</span>
+        <span class="cc-total-val ok" id="ccMoodTotal">100%</span>
+      </div>
+    </div>
+
+    <!-- TOPICS -->
+    <div class="cc-panel">
+      <div class="cc-panel-title"><i class="fas fa-lightbulb"></i> Topics — What do you want to cover?</div>
+      <textarea class="cc-topics-input" id="ccTopics" placeholder="Type specific topics you want covered this month...&#10;Example: spring buying season, tax refund down payments, VA loans, rate drop, CPA referral push, realtor open house season"></textarea>
+      <div class="cc-topics-hint">Freeform — list anything on your mind for this month. The AI will work these into the calendar.</div>
+    </div>
+
+    <!-- VIDEO / POST SPLIT -->
+    <div class="cc-panel">
+      <div class="cc-panel-title"><i class="fas fa-shuffle"></i> Content Split</div>
+      <div class="cc-split-row">
+        <div class="cc-split-item">
+          <i class="fas fa-video"></i>
+          <label>Video Scripts</label>
+          <input class="cc-pct-input" type="number" min="0" max="100" value="80" id="ccVideoSplit" oninput="ccUpdateSplit()" style="width:48px;">
+          <span class="cc-pct-sym">%</span>
         </div>
-        <span style="font-size:11px;color:var(--text-muted);margin-left:8px;">Video scripts vs. written posts</span>
+        <div class="cc-split-item">
+          <i class="fas fa-pen-nib"></i>
+          <label>Written Posts</label>
+          <input class="cc-pct-input" type="number" min="0" max="100" value="20" id="ccPostSplit" readonly style="width:48px;background:var(--bg-deep);cursor:default;">
+          <span class="cc-pct-sym">%</span>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted);">Videos are 30-second scripts for teleprompter</span>
       </div>
     </div>
   </div>
@@ -1187,17 +1236,17 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <div id="ccCalendarWrap">
     <div class="cc-empty" id="ccEmptyState">
       <i class="fas fa-calendar-days"></i>
-      <p style="font-size:16px;font-weight:600;color:var(--navy);">Set your priorities and hit Generate</p>
+      <p style="font-size:16px;font-weight:600;color:var(--navy);">Set your audience, mood, and topics — then hit Generate</p>
       <p>Your month of content will appear here.</p>
     </div>
     <div id="ccCalendarGrid" style="display:none;"></div>
   </div>
 
-  <!-- Detail panel (shows when a day is clicked) -->
+  <!-- Detail panel -->
   <div class="cc-detail" id="ccDetail" style="display:none;">
     <div class="cc-detail-header">
       <div>
-        <div class="cc-detail-date" id="ccDetailDate">March 23, 2026</div>
+        <div class="cc-detail-date" id="ccDetailDate"></div>
         <div class="cc-detail-event" id="ccDetailEvent" style="display:none;"><i class="fas fa-star"></i> <span id="ccDetailEventText"></span></div>
       </div>
       <div class="cc-detail-badges" id="ccDetailBadges"></div>
@@ -3485,29 +3534,42 @@ function lpCloseAnalytics() {
   document.getElementById('lpPageList').style.display = 'block';
 }
 
+
 // ===== CONTENT CALENDAR =====
-var ccMonth = new Date().getMonth() + 1; // 1-12
+var ccMonth = new Date().getMonth() + 1;
 var ccYear = new Date().getFullYear();
-var ccDays = []; // array of day objects from AI
+var ccDays = [];
 var ccSelectedDate = null;
 var ccInitialized = false;
-var ccApproved = {}; // { 'YYYY-MM-DD': true }
+var ccApproved = {};
 
-var CC_CATEGORIES = {
-  realtor_outreach: { label: 'Realtor/Partner', color: '#2563eb', bg: 'rgba(37,99,235,0.12)' },
-  refinance:        { label: 'Refinance',       color: '#a855f7', bg: 'rgba(168,85,247,0.12)' },
-  purchase:         { label: 'Purchase',        color: '#16a34a', bg: 'rgba(22,163,74,0.12)' },
-  educational:      { label: 'Educational',     color: '#ea580c', bg: 'rgba(234,88,12,0.12)' },
-  silly_fun:        { label: 'Silly/Fun',       color: '#ec4899', bg: 'rgba(236,72,153,0.12)' }
+var CC_AUDIENCES = {
+  realtors: { label: 'Realtors', color: '#2563eb' },
+  cpas: { label: 'CPAs', color: '#0d9488' },
+  divorce_attorneys: { label: 'Divorce Attorneys', color: '#64748b' },
+  financial_planners: { label: 'Financial Planners', color: '#6366f1' },
+  wedding_pros: { label: 'Wedding Pros', color: '#ec4899' },
+  buyers: { label: 'Buyers', color: '#16a34a' },
+  sellers: { label: 'Sellers', color: '#ea580c' },
+  past_clients: { label: 'Past Clients/Sphere', color: '#baa370' }
+};
+
+var CC_MOODS = {
+  educational: { label: 'Educational', color: '#2563eb' },
+  surprising: { label: 'Surprising', color: '#ea580c' },
+  funny: { label: 'Funny/Playful', color: '#ec4899' },
+  heartfelt: { label: 'Heartfelt', color: '#7c3aed' },
+  bold: { label: 'Bold', color: '#dc2626' },
+  relatable: { label: 'Relatable', color: '#16a34a' }
 };
 
 function ccInit() {
   if (ccInitialized) return;
   ccInitialized = true;
   ccUpdateMonthLabel();
-  ccUpdateSliders();
+  ccUpdateTotal('audience');
+  ccUpdateTotal('mood');
   ccUpdateSplit();
-  // Load saved data from localStorage if any
   ccLoadSaved();
 }
 
@@ -3522,56 +3584,59 @@ function ccNavMonth(dir) {
   if (ccMonth < 1) { ccMonth = 12; ccYear--; }
   ccUpdateMonthLabel();
   ccCloseDetail();
-  // Check if we have saved data for this month
   ccLoadSaved();
 }
 
-function ccUpdateSliders() {
-  var cats = ['realtor_outreach','refinance','purchase','educational','silly_fun'];
+function ccUpdateTotal(group) {
+  var inputs = document.querySelectorAll('.cc-pct-input[data-group="' + group + '"]');
   var total = 0;
-  cats.forEach(function(c) {
-    var val = parseInt(document.getElementById('ccSlider_' + c).value);
-    document.getElementById('ccPct_' + c).textContent = val + '%';
-    total += val;
-  });
-  var el = document.getElementById('ccTotalPct');
+  inputs.forEach(function(inp) { total += parseInt(inp.value) || 0; });
+  var elId = group === 'audience' ? 'ccAudienceTotal' : 'ccMoodTotal';
+  var el = document.getElementById(elId);
   el.textContent = total + '%';
   el.className = 'cc-total-val ' + (total === 100 ? 'ok' : 'over');
 }
 
 function ccUpdateSplit() {
-  var v = parseInt(document.getElementById('ccVideoSplit').value);
-  document.getElementById('ccVideoLabel').textContent = v + '%';
-  document.getElementById('ccPostLabel').textContent = (100 - v) + '%';
+  var v = parseInt(document.getElementById('ccVideoSplit').value) || 0;
+  if (v > 100) v = 100;
+  if (v < 0) v = 0;
+  document.getElementById('ccPostSplit').value = 100 - v;
 }
 
-function ccGetPriorities() {
-  var cats = ['realtor_outreach','refinance','purchase','educational','silly_fun'];
-  var p = {};
-  cats.forEach(function(c) {
-    p[c] = parseInt(document.getElementById('ccSlider_' + c).value);
+function ccGetGroup(group) {
+  var inputs = document.querySelectorAll('.cc-pct-input[data-group="' + group + '"]');
+  var result = {};
+  inputs.forEach(function(inp) {
+    var val = parseInt(inp.value) || 0;
+    if (val > 0) result[inp.dataset.key] = val;
   });
-  return p;
+  return result;
 }
 
-function ccGetSplit() {
-  var v = parseInt(document.getElementById('ccVideoSplit').value);
-  return { video: v, post: 100 - v };
+function ccGroupTotal(group) {
+  var data = ccGetGroup(group);
+  var t = 0;
+  Object.values(data).forEach(function(v) { t += v; });
+  return t;
 }
 
 // ===== GENERATE FULL MONTH =====
 async function ccGenerate() {
-  var priorities = ccGetPriorities();
-  var total = 0;
-  Object.values(priorities).forEach(function(v) { total += v; });
-  if (total !== 100) {
-    alert('Your priorities add up to ' + total + '%. They need to equal 100% before generating.');
+  if (ccGroupTotal('audience') !== 100) {
+    alert('Your Audience percentages add up to ' + ccGroupTotal('audience') + '%. They need to equal 100%.');
+    return;
+  }
+  if (ccGroupTotal('mood') !== 100) {
+    alert('Your Mood percentages add up to ' + ccGroupTotal('mood') + '%. They need to equal 100%.');
     return;
   }
 
-  var split = ccGetSplit();
+  var audience = ccGetGroup('audience');
+  var mood = ccGetGroup('mood');
+  var topics = (document.getElementById('ccTopics').value || '').trim();
+  var videoSplit = parseInt(document.getElementById('ccVideoSplit').value) || 80;
 
-  // Show loading
   document.getElementById('ccEmptyState').style.display = 'none';
   document.getElementById('ccCalendarGrid').style.display = 'none';
   document.getElementById('ccDetail').style.display = 'none';
@@ -3586,27 +3651,43 @@ async function ccGenerate() {
         action: 'generate-month',
         month: ccMonth,
         year: ccYear,
-        priorities: priorities,
-        videoPostSplit: split
+        audience: audience,
+        mood: mood,
+        topics: topics,
+        videoPostSplit: { video: videoSplit, post: 100 - videoSplit }
       })
     });
     var data = await resp.json();
 
-    if (data.success && data.days && data.days.length > 0) {
-      ccDays = data.days;
+    // Try to parse — handle multiple response shapes
+    var days = null;
+    if (data.days && Array.isArray(data.days)) {
+      days = data.days;
+    } else if (data.success && data.raw) {
+      // AI returned raw text, try to parse it
+      try {
+        var cleaned = data.raw.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+        var parsed = JSON.parse(cleaned);
+        days = parsed.days || parsed;
+      } catch(e) {
+        console.error('Could not parse raw response:', e, data.raw);
+      }
+    }
+
+    if (days && days.length > 0) {
+      ccDays = days;
       ccApproved = {};
       ccSaveToLocal();
       ccRenderGrid();
-    } else if (data.raw) {
-      // AI returned something but it didn't parse — try to show error
-      alert('The AI returned content but it was not in the expected format. Please try generating again.');
-      console.error('Raw AI response:', data.raw);
     } else {
-      alert('Generation failed: ' + (data.error || 'Unknown error. Please try again.'));
+      alert('Generation did not return calendar data. Please try again.');
+      console.error('Response:', data);
+      document.getElementById('ccEmptyState').style.display = 'block';
     }
   } catch (err) {
     alert('Connection error. Please check your internet and try again.');
     console.error('ccGenerate error:', err);
+    document.getElementById('ccEmptyState').style.display = 'block';
   }
 
   document.getElementById('ccLoading').style.display = 'none';
@@ -3627,32 +3708,19 @@ function ccRenderGrid() {
   grid.className = 'cc-grid';
 
   var h = '';
-
-  // Day headers
   var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  dayNames.forEach(function(d) {
-    h += '<div class="cc-day-header">' + d + '</div>';
-  });
+  dayNames.forEach(function(d) { h += '<div class="cc-day-header">' + d + '</div>'; });
 
-  // First day of month
-  var firstDay = new Date(ccYear, ccMonth - 1, 1).getDay(); // 0=Sun
+  var firstDay = new Date(ccYear, ccMonth - 1, 1).getDay();
   var daysInMonth = new Date(ccYear, ccMonth, 0).getDate();
 
-  // Empty cells before day 1
   for (var i = 0; i < firstDay; i++) {
     h += '<div class="cc-day empty"></div>';
   }
 
-  // Day cells
   for (var d = 1; d <= daysInMonth; d++) {
     var dateStr = ccYear + '-' + String(ccMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
-    var dayData = ccDays.find(function(dd) {
-      // Match by date string or by day number
-      if (dd.date === dateStr) return true;
-      var ddDay = parseInt(dd.date.split('-')[2]);
-      return ddDay === d;
-    });
-
+    var dayData = ccFindDay(dateStr);
     var isApproved = ccApproved[dateStr];
     var isSelected = ccSelectedDate === dateStr;
     var classes = 'cc-day';
@@ -3663,26 +3731,23 @@ function ccRenderGrid() {
     h += '<div class="cc-day-num">' + d + '</div>';
 
     if (dayData) {
-      var cat = dayData.category || 'educational';
-      var catInfo = CC_CATEGORIES[cat] || CC_CATEGORIES.educational;
+      var aud = dayData.audience || dayData.category || 'buyers';
+      var audInfo = CC_AUDIENCES[aud] || { label: aud, color: '#64748b' };
 
-      h += '<div class="cc-day-cat cc-cat-' + cat + '">' + catInfo.label + '</div>';
+      h += '<div class="cc-day-cat" style="background:' + audInfo.color + '22;color:' + audInfo.color + ';">' + audInfo.label + '</div>';
       h += '<div class="cc-day-type"><i class="fas fa-' + (dayData.contentType === 'video' ? 'video' : 'pen-nib') + '"></i> ' + (dayData.contentType === 'video' ? 'Video' : 'Post') + '</div>';
       h += '<div class="cc-day-topic">' + (dayData.topic || '') + '</div>';
 
       if (dayData.event) {
         h += '<div class="cc-day-event"><i class="fas fa-star"></i> ' + dayData.event + '</div>';
       }
-
       if (isApproved) {
         h += '<div class="cc-day-approved-badge"><i class="fas fa-check-circle"></i></div>';
       }
     }
-
     h += '</div>';
   }
 
-  // Fill remaining cells to complete the grid
   var totalCells = firstDay + daysInMonth;
   var remaining = (7 - (totalCells % 7)) % 7;
   for (var i = 0; i < remaining; i++) {
@@ -3695,7 +3760,7 @@ function ccRenderGrid() {
 // ===== SELECT A DAY =====
 function ccSelectDay(dateStr) {
   ccSelectedDate = dateStr;
-  ccRenderGrid(); // re-render to show selection
+  ccRenderGrid();
 
   var dayData = ccFindDay(dateStr);
   if (!dayData) return;
@@ -3703,13 +3768,11 @@ function ccSelectDay(dateStr) {
   var panel = document.getElementById('ccDetail');
   panel.style.display = 'block';
 
-  // Date label
   var dt = new Date(dateStr + 'T12:00:00');
   var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-  document.getElementById('ccDetailDate').textContent = dayNames[dt.getDay()] + ', ' + months[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
+  var dayNms = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('ccDetailDate').textContent = dayNms[dt.getDay()] + ', ' + months[dt.getMonth()] + ' ' + dt.getDate() + ', ' + dt.getFullYear();
 
-  // Event
   var eventEl = document.getElementById('ccDetailEvent');
   if (dayData.event) {
     eventEl.style.display = 'flex';
@@ -3718,17 +3781,19 @@ function ccSelectDay(dateStr) {
     eventEl.style.display = 'none';
   }
 
-  // Badges
-  var cat = dayData.category || 'educational';
-  var catInfo = CC_CATEGORIES[cat] || CC_CATEGORIES.educational;
-  var badgesHtml = '<span class="cc-day-cat cc-cat-' + cat + '" style="font-size:11px;padding:3px 8px;">' + catInfo.label + '</span>';
+  // Badges: audience + mood + type
+  var aud = dayData.audience || dayData.category || 'buyers';
+  var audInfo = CC_AUDIENCES[aud] || { label: aud, color: '#64748b' };
+  var moodKey = dayData.mood || 'educational';
+  var moodInfo = CC_MOODS[moodKey] || { label: moodKey, color: '#64748b' };
+
+  var badgesHtml = '<span class="cc-day-cat" style="background:' + audInfo.color + '22;color:' + audInfo.color + ';font-size:11px;padding:3px 8px;">' + audInfo.label + '</span>';
+  badgesHtml += '<span class="cc-day-cat" style="background:' + moodInfo.color + '15;color:' + moodInfo.color + ';font-size:11px;padding:3px 8px;">' + moodInfo.label + '</span>';
   badgesHtml += '<span style="font-size:11px;padding:3px 8px;background:rgba(110,127,119,0.1);border-radius:4px;color:var(--sage);font-weight:700;"><i class="fas fa-' + (dayData.contentType === 'video' ? 'video' : 'pen-nib') + '"></i> ' + (dayData.contentType === 'video' ? 'Video Script' : 'Written Post') + '</span>';
   document.getElementById('ccDetailBadges').innerHTML = badgesHtml;
 
-  // Hook
   document.getElementById('ccDetailHook').textContent = dayData.hook || '';
 
-  // Text overlay (video only)
   var overlayWrap = document.getElementById('ccDetailOverlayWrap');
   if (dayData.contentType === 'video' && dayData.textOverlay) {
     overlayWrap.style.display = 'block';
@@ -3737,13 +3802,9 @@ function ccSelectDay(dateStr) {
     overlayWrap.style.display = 'none';
   }
 
-  // Content
   document.getElementById('ccDetailContent').textContent = dayData.content || '';
-
-  // Fun fact
   document.getElementById('ccDetailFunFact').textContent = dayData.funFact || '';
 
-  // Status
   var isApproved = ccApproved[dateStr];
   var statusEl = document.getElementById('ccDetailStatus');
   if (isApproved) {
@@ -3759,7 +3820,6 @@ function ccSelectDay(dateStr) {
     document.getElementById('ccSendBtn').style.display = 'none';
   }
 
-  // Scroll to detail panel
   panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
@@ -3768,7 +3828,7 @@ function ccFindDay(dateStr) {
   var dayNum = parseInt(dateStr.split('-')[2]);
   return ccDays.find(function(dd) {
     if (dd.date === dateStr) return true;
-    var ddDay = parseInt(dd.date.split('-')[2]);
+    var ddDay = parseInt((dd.date || '').split('-')[2]);
     return ddDay === dayNum;
   }) || null;
 }
@@ -3784,19 +3844,17 @@ function ccApproveDay() {
   if (!ccSelectedDate) return;
   ccApproved[ccSelectedDate] = true;
   ccSaveToLocal();
-  ccSelectDay(ccSelectedDate); // refresh detail
+  ccSelectDay(ccSelectedDate);
   ccRenderGrid();
 }
 
 // ===== REGENERATE SINGLE DAY =====
 async function ccRegenDay() {
   if (!ccSelectedDate) return;
-
   var dayData = ccFindDay(ccSelectedDate);
   if (!dayData) return;
 
-  // Show loading in detail panel
-  document.getElementById('ccDetailContent').innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text-muted);"><div class="cc-loading-spinner" style="width:20px;height:20px;border-width:2px;"></div> Regenerating this day...</div>';
+  document.getElementById('ccDetailContent').innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text-muted);"><div class="cc-loading-spinner" style="width:20px;height:20px;border-width:2px;"></div> Regenerating...</div>';
 
   try {
     var resp = await fetch(API_BASE + '/content-calendar', {
@@ -3805,34 +3863,39 @@ async function ccRegenDay() {
       body: JSON.stringify({
         action: 'regenerate-day',
         date: ccSelectedDate,
-        category: dayData.category,
+        category: dayData.audience || dayData.category,
         contentType: dayData.contentType,
         event: dayData.event
       })
     });
     var data = await resp.json();
 
+    var newDay = null;
     if (data.success && data.date) {
-      // Replace the day in our array
+      newDay = data;
+    } else if (data.success && data.raw) {
+      try {
+        var cleaned = data.raw.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+        newDay = JSON.parse(cleaned);
+      } catch(e) { console.error('Parse error on regen:', e); }
+    }
+
+    if (newDay) {
       var idx = ccDays.findIndex(function(dd) {
         if (dd.date === ccSelectedDate) return true;
-        var ddDay = parseInt(dd.date.split('-')[2]);
-        var selDay = parseInt(ccSelectedDate.split('-')[2]);
-        return ddDay === selDay;
+        return parseInt((dd.date || '').split('-')[2]) === parseInt(ccSelectedDate.split('-')[2]);
       });
       if (idx >= 0) {
-        // Keep original date string consistent
-        data.date = ccSelectedDate;
-        ccDays[idx] = data;
+        newDay.date = ccSelectedDate;
+        ccDays[idx] = newDay;
       }
-      // Remove approval if it was approved
       delete ccApproved[ccSelectedDate];
       ccSaveToLocal();
       ccRenderGrid();
       ccSelectDay(ccSelectedDate);
     } else {
-      alert('Regeneration failed: ' + (data.error || 'Please try again.'));
-      ccSelectDay(ccSelectedDate); // restore view
+      alert('Regeneration failed. Please try again.');
+      ccSelectDay(ccSelectedDate);
     }
   } catch (err) {
     alert('Connection error. Please try again.');
@@ -3846,22 +3909,14 @@ function ccSendDay() {
   var dayData = ccFindDay(ccSelectedDate);
   if (!dayData) return;
 
-  // Build the full text: hook + content + fun fact
   var fullText = dayData.content || '';
-  if (dayData.funFact) {
-    fullText += '\n\n' + dayData.funFact;
-  }
+  if (dayData.funFact) fullText += '\n\n' + dayData.funFact;
 
   if (dayData.contentType === 'video') {
-    // Send to teleprompter — load into scriptText and switch to studio tab
     var scriptField = document.getElementById('scriptText');
-    if (scriptField) {
-      scriptField.value = fullText;
-    }
-    // Switch to studio tab
+    if (scriptField) scriptField.value = fullText;
     var studioBtn = document.querySelector('.tab-btn');
     switchTab('studio', studioBtn);
-    // Auto-load to teleprompter display
     setTimeout(function() {
       var display = document.getElementById('tpDisplay');
       if (display) {
@@ -3872,25 +3927,19 @@ function ccSendDay() {
       }
     }, 200);
   } else {
-    // Send to post composer — load caption and switch tab
     var captionField = document.getElementById('postCaption');
-    if (captionField) {
-      captionField.value = fullText;
-    }
-    // Trigger the caption input handler to update preview and char count
+    if (captionField) captionField.value = fullText;
     if (typeof onCaptionInput === 'function') onCaptionInput();
-    // Switch to composer tab
-    var composerBtn = document.querySelectorAll('.tab-btn')[1]; // Post Composer is 2nd tab
+    var composerBtn = document.querySelectorAll('.tab-btn')[1];
     switchTab('composer', composerBtn);
   }
 }
 
-// ===== LOCAL STORAGE — persist calendar data =====
+// ===== LOCAL STORAGE =====
 function ccSaveToLocal() {
   var key = 'cc_' + ccYear + '_' + ccMonth;
-  var payload = { days: ccDays, approved: ccApproved };
   try {
-    localStorage.setItem(key, JSON.stringify(payload));
+    localStorage.setItem(key, JSON.stringify({ days: ccDays, approved: ccApproved }));
   } catch(e) { console.warn('Could not save calendar data', e); }
 }
 
