@@ -543,32 +543,51 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 
 <!-- ==================== POST COMPOSER TAB ==================== -->
 <div class="tab-content" id="tab-composer">
-  <div class="composer-layout">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+
+    <!-- LEFT: Content + Image -->
     <div>
-      <!-- Platform selection -->
-      <div class="ml-card">
-        <div class="ml-card-title"><i class="fas fa-share-nodes"></i> Post To</div>
+      <!-- Platform size selector -->
+      <div class="ml-card" style="margin-bottom:14px;">
+        <div class="ml-card-title"><i class="fas fa-crop-simple"></i> Platform Size</div>
         <div class="platform-toggles">
-          <label class="platform-toggle fb" id="toggle-fb">
-            <input type="checkbox" value="facebook" onchange="updatePlatformToggle(this,'toggle-fb')">
-            <i class="fab fa-facebook"></i> Facebook
+          <label class="platform-toggle ig" id="size-square" onclick="setCanvasSize('square',this)" style="border-color:var(--sage);background:rgba(110,127,119,0.08);">
+            <i class="fab fa-instagram"></i> Square (1080x1080)
           </label>
-          <label class="platform-toggle ig" id="toggle-ig">
-            <input type="checkbox" value="instagram" onchange="updatePlatformToggle(this,'toggle-ig')">
-            <i class="fab fa-instagram"></i> Instagram
+          <label class="platform-toggle fb" id="size-landscape" onclick="setCanvasSize('landscape',this)">
+            <i class="fab fa-facebook"></i> Landscape (1200x630)
           </label>
-          <label class="platform-toggle li" id="toggle-li">
-            <input type="checkbox" value="linkedin" onchange="updatePlatformToggle(this,'toggle-li')">
-            <i class="fab fa-linkedin"></i> LinkedIn
+          <label class="platform-toggle tt" id="size-portrait" onclick="setCanvasSize('portrait',this)">
+            <i class="fab fa-tiktok"></i> Portrait (1080x1350)
           </label>
-          <label class="platform-toggle tt" id="toggle-tt">
-            <input type="checkbox" value="tiktok" onchange="updatePlatformToggle(this,'toggle-tt')">
-            <i class="fab fa-tiktok"></i> TikTok
+          <label class="platform-toggle tt" id="size-story" onclick="setCanvasSize('story',this)">
+            <i class="fas fa-mobile-screen"></i> Story (1080x1920)
           </label>
-          <label class="platform-toggle yt" id="toggle-yt">
-            <input type="checkbox" value="youtube" onchange="updatePlatformToggle(this,'toggle-yt')">
-            <i class="fab fa-youtube"></i> YouTube Community
-          </label>
+        </div>
+      </div>
+
+      <!-- Hook / Text Overlay -->
+      <div class="ml-card" style="margin-bottom:14px;">
+        <div class="ml-card-title"><i class="fas fa-bolt"></i> Hook Text (appears on image)</div>
+        <div class="form-group" style="margin-bottom:10px;">
+          <label class="form-label">Text Overlay (on screen)</label>
+          <input type="text" class="form-input" id="compTextOverlay" placeholder="3-7 punchy words for the image — e.g. YOUR BANK LIED" style="font-size:15px;font-weight:700;" oninput="updateComposerCanvas()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Hook Line</label>
+          <input type="text" class="form-input" id="compHook" placeholder="The scroll-stopping first line..." style="font-size:14px;" oninput="updateComposerCanvas()">
+        </div>
+      </div>
+
+      <!-- Caption -->
+      <div class="ml-card" style="margin-bottom:14px;">
+        <div class="ml-card-title"><i class="fas fa-pen"></i> Caption</div>
+        <textarea class="form-textarea" id="postCaption" style="min-height:150px;font-size:15px;" placeholder="Write your post caption here..." oninput="onCaptionInput()"></textarea>
+        <div class="char-counter" id="charCounter" style="font-size:13px;">0 / 2200</div>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+          <button class="btn" onclick="aiCaptionHelper()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-sparkles"></i> AI Caption Helper</button>
+          <button class="btn" onclick="addHashtags()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-hashtag"></i> Add Hashtags</button>
+          <button class="btn" onclick="addNMLS()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-shield"></i> Add NMLS</button>
         </div>
       </div>
 
@@ -578,128 +597,87 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <span>Rate or loan content detected — remember to include your NMLS #2632259 disclaimer before posting.</span>
       </div>
 
-      <!-- Post content -->
+      <!-- Image selection -->
       <div class="ml-card">
-        <div class="ml-card-title"><i class="fas fa-pen"></i> Post Content</div>
+        <div class="ml-card-title"><i class="fas fa-image"></i> Background Image</div>
 
-        <div class="form-group" style="margin-bottom:8px;">
-          <label class="form-label">Caption</label>
-          <textarea class="form-textarea" id="postCaption" style="min-height:130px;" placeholder="Write your post caption..." oninput="onCaptionInput()"></textarea>
-          <div class="char-counter" id="charCounter">0 / 2200</div>
+        <!-- Upload -->
+        <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()" style="margin-bottom:10px;">
+          <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event)">
+          <i class="fas fa-images" style="font-size:24px;color:var(--text-muted);margin-bottom:6px;"></i>
+          <div style="font-size:14px;color:var(--text-muted);">Click to upload <span style="color:var(--sage);font-weight:600;">or drag & drop</span></div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-bottom:14px;">
-          <button class="btn" onclick="aiCaptionHelper()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-sparkles"></i> AI Caption Helper</button>
-          <button class="btn" onclick="addHashtags()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-hashtag"></i> Add Hashtags</button>
-          <button class="btn" onclick="addNMLS()" style="font-size:12px;padding:6px 12px;"><i class="fas fa-shield"></i> Add NMLS</button>
+        <!-- URL paste -->
+        <div style="display:flex;gap:6px;margin-bottom:10px;">
+          <input type="text" class="form-input" id="imageUrlInput" placeholder="Or paste an image URL..." style="flex:1;font-size:14px;">
+          <button class="btn sage" onclick="loadImageFromUrl()" style="padding:6px 14px;font-size:13px;"><i class="fas fa-link"></i> Load</button>
         </div>
 
-        <!-- Photo upload -->
-        <div class="form-group">
-          <label class="form-label" style="display:flex;justify-content:space-between;align-items:center;">
-            <span>Photos / Images</span>
-            <button class="btn" onclick="toggleUnsplashSearch()" id="btnUnsplash" style="padding:3px 10px;font-size:11px;"><i class="fas fa-search"></i> Search Unsplash</button>
-          </label>
-
-          <!-- Unsplash search panel -->
-          <div id="unsplashPanel" style="display:none;margin-bottom:10px;">
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-              <input type="text" class="form-input" id="unsplashQuery" placeholder="Search photos... e.g. house keys, family home, mortgage" style="flex:1;font-size:13px;" onkeydown="if(event.key==='Enter')searchUnsplash()">
-              <button class="btn sage" onclick="searchUnsplash()" style="padding:4px 12px;font-size:12px;">Go</button>
-            </div>
-            <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
-              <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);"></div>
-              <button id="unsplashLoadMore" onclick="searchUnsplash(true)" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;color:var(--text-muted);cursor:pointer;">Load more</button>
-            </div>
-          </div>
-
-          <div class="photo-upload-area" id="photoUploadArea" onclick="document.getElementById('photoInput').click()">
-            <input type="file" id="photoInput" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(event)">
-            <i class="fas fa-images" style="font-size:24px;color:var(--text-muted);margin-bottom:6px;"></i>
-            <div style="font-size:13px;color:var(--text-muted);">Click to upload photos <span style="color:var(--sage);font-weight:600;">or drag &amp; drop</span></div>
-            <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">JPG, PNG, GIF up to 10MB each</div>
-            <div class="photo-preview-grid" id="photoPreviewGrid" style="display:none;"></div>
-          </div>
-
-          <!-- Image URL paste -->
-          <div style="display:flex;gap:6px;margin-top:8px;">
-            <input type="text" class="form-input" id="imageUrlInput" placeholder="Or paste an image URL here..." style="flex:1;font-size:13px;">
-            <button class="btn sage" onclick="loadImageFromUrl()" style="padding:6px 14px;font-size:12px;white-space:nowrap;"><i class="fas fa-link"></i> Load</button>
-          </div>
+        <!-- Unsplash search -->
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <input type="text" class="form-input" id="unsplashQuery" placeholder="Search Unsplash photos..." style="flex:1;font-size:14px;" onkeydown="if(event.key==='Enter')searchUnsplash()">
+          <button class="btn sage" onclick="searchUnsplash()" style="padding:6px 14px;font-size:13px;"><i class="fas fa-search"></i> Search</button>
         </div>
-      </div>
-
-      <!-- Schedule / Post -->
-      <div class="ml-card">
-        <div class="ml-card-title"><i class="fas fa-share-nodes"></i> Share Your Post</div>
-
-        <!-- Copy & Download row -->
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-          <button class="btn primary" onclick="copyCaption()"><i class="fas fa-copy"></i> Copy Caption</button>
-          <button class="btn sage" onclick="downloadPostImage()" id="downloadImgBtn" style="display:none;"><i class="fas fa-download"></i> Download Image</button>
-          <button class="btn sage" onclick="downloadFullPost()"><i class="fas fa-file-arrow-down"></i> Download Post</button>
-        </div>
-        <div class="status-msg" id="copyStatus"></div>
-
-        <!-- Platform quick links -->
-        <div class="form-label" style="margin-bottom:8px;">OPEN &amp; PASTE</div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
-          <a href="https://www.facebook.com/100407459637787" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-            <i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook
-          </a>
-          <a href="https://www.instagram.com/kristy_prmg/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-            <i class="fab fa-instagram" style="color:#e1306c;"></i> Instagram
-          </a>
-          <a href="https://www.linkedin.com/in/kristy-flach-057470174/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-            <i class="fab fa-linkedin" style="color:#0a66c2;"></i> LinkedIn
-          </a>
-          <a href="https://www.tiktok.com/@kflach_cma" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-            <i class="fab fa-tiktok"></i> TikTok
-          </a>
-          <a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-            <i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube
-          </a>
+        <div id="unsplashResults" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-height:200px;overflow-y:auto;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+          <div id="unsplashStatus" style="font-size:11px;color:var(--text-muted);"></div>
+          <button id="unsplashLoadMore" onclick="searchUnsplash(true)" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--text-muted);cursor:pointer;">More</button>
         </div>
 
-        <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Copy your caption, download the image, then paste into each platform.</div>
-
-        <!-- Keep the direct publish for Facebook (which works) -->
-        <div style="border-top:1px solid var(--border);padding-top:16px;">
-          <div class="form-label" style="margin-bottom:8px;">DIRECT PUBLISH (Facebook only)</div>
-          <div class="schedule-row">
-            <div class="form-group" style="flex:1;">
-              <label class="form-label">Schedule For (optional)</label>
-              <input type="datetime-local" class="form-input" id="scheduleTime">
-            </div>
-            <div style="display:flex;gap:8px;align-items:flex-end;padding-bottom:1px;">
-              <button class="btn" onclick="savePostDraft()"><i class="fas fa-floppy-disk"></i> Save Draft</button>
-              <button class="btn primary" onclick="publishPost()" id="publishBtn"><i class="fas fa-paper-plane"></i> Publish to Facebook</button>
-            </div>
-          </div>
-          <div class="status-msg" id="postStatus"></div>
-        </div>
+        <!-- Photo preview -->
+        <div class="photo-preview-grid" id="photoPreviewGrid" style="display:none;margin-top:8px;"></div>
       </div>
     </div>
 
-    <!-- Preview panel -->
+    <!-- RIGHT: Canvas Preview + Actions -->
     <div>
       <div class="ml-card" style="position:sticky;top:20px;">
-        <div class="ml-card-title"><i class="fas fa-eye"></i> Preview</div>
-        <div class="post-preview">
-          <div class="preview-header">How it'll look</div>
-          <div id="previewPlatformTabs" class="preview-platform-tabs" style="display:none;"></div>
-          <div id="previewMount"></div>
-          <!-- Hidden inputs kept for backward compat with existing JS -->
-          <img id="previewImg" src="" alt="" style="display:none;">
-          <div id="previewText" style="display:none;"></div>
-          <div id="changeImageBtn" style="display:none;margin:8px 12px;text-align:center;">
-            <button onclick="openUnsplashToChange()" style="background:none;border:1px solid var(--border);border-radius:6px;padding:4px 12px;font-size:11px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-images"></i> Change image</button>
+        <div class="ml-card-title"><i class="fas fa-eye"></i> Live Preview</div>
+        <div style="text-align:center;margin-bottom:14px;">
+          <canvas id="composerCanvas" width="1080" height="1080" style="max-width:100%;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);"></canvas>
+        </div>
+
+        <!-- Actions -->
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn primary" style="width:100%;padding:14px;font-size:15px;font-weight:700;" onclick="downloadComposerGraphic()"><i class="fas fa-download"></i> Download Graphic</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn" style="flex:1;font-size:13px;" onclick="copyCaption()"><i class="fas fa-copy"></i> Copy Caption</button>
+            <button class="btn" style="flex:1;font-size:13px;" onclick="downloadCaptionText()"><i class="fas fa-file-lines"></i> Download Caption</button>
           </div>
         </div>
 
-        <div style="margin-top:14px;">
-          <div class="ml-card-title" style="margin-bottom:10px;"><i class="fas fa-clock-rotate-left"></i> Recent Drafts</div>
+        <div class="status-msg" id="copyStatus"></div>
+        <div class="status-msg" id="postStatus"></div>
+
+        <!-- Platform quick links -->
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+          <div class="form-label" style="margin-bottom:8px;">OPEN & PASTE</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <a href="https://www.facebook.com/100407459637787" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;">
+              <i class="fab fa-facebook" style="color:#1877f2;"></i> Facebook
+            </a>
+            <a href="https://www.instagram.com/kristy_prmg/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;">
+              <i class="fab fa-instagram" style="color:#e1306c;"></i> Instagram
+            </a>
+            <a href="https://www.linkedin.com/in/kristy-flach-057470174/" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;">
+              <i class="fab fa-linkedin" style="color:#0a66c2;"></i> LinkedIn
+            </a>
+            <a href="https://www.tiktok.com/@kflach_cma" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;">
+              <i class="fab fa-tiktok"></i> TikTok
+            </a>
+            <a href="https://www.youtube.com/@houseMoneywithKristy" target="_blank" class="btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-size:12px;">
+              <i class="fab fa-youtube" style="color:#ff0000;"></i> YouTube
+            </a>
+          </div>
+        </div>
+
+        <!-- Drafts -->
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+          <div class="ml-card-title" style="margin-bottom:8px;"><i class="fas fa-clock-rotate-left"></i> Recent Drafts</div>
+          <div style="display:flex;gap:6px;margin-bottom:8px;">
+            <button class="btn" onclick="savePostDraft()" style="font-size:12px;"><i class="fas fa-floppy-disk"></i> Save Draft</button>
+          </div>
           <div id="draftsList" style="font-size:13px;color:var(--text-muted);">No drafts saved yet.</div>
         </div>
       </div>
@@ -2105,6 +2083,7 @@ function renderPhotoPreview() {
   var dlBtn = document.getElementById('downloadImgBtn');
   if (dlBtn) dlBtn.style.display = uploadedPhotos.length ? 'inline-flex' : 'none';
   renderPreview();
+  if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
 }
 
 function handlePhotoUpload(e) {
@@ -2276,26 +2255,199 @@ function loadImageFromUrl() {
 function downloadFullPost() {
   var caption = (document.getElementById('postCaption').value || '').trim();
   if (!caption) { alert('Write a caption first.'); return; }
-
-  // Create a text file with the caption
   var content = caption;
   content += '\n\n---\nKristy Flach | Certified Mortgage Advisor\nNMLS #2632259 | PRMG\n';
-
   var blob = new Blob([content], { type: 'text/plain' });
   var link = document.createElement('a');
   var date = new Date().toISOString().split('T')[0];
   link.download = 'social-post-' + date + '.txt';
   link.href = URL.createObjectURL(blob);
   link.click();
-
-  // Also download the image if there is one
   if (uploadedPhotos.length) {
     setTimeout(function() { downloadPostImage(); }, 500);
   }
-
   var status = document.getElementById('copyStatus');
   showStatus(status, 'Post downloaded!' + (uploadedPhotos.length ? ' Image downloading separately.' : ''), 'success');
 }
+
+// ===== CANVAS-BASED COMPOSER =====
+var compCanvasW = 1080;
+var compCanvasH = 1080;
+var compCurrentSize = 'square';
+
+function setCanvasSize(size, btn) {
+  // Update button styles
+  document.querySelectorAll('.platform-toggles .platform-toggle').forEach(function(el) {
+    el.style.borderColor = 'var(--border)';
+    el.style.background = 'none';
+  });
+  if (btn) {
+    btn.style.borderColor = 'var(--sage)';
+    btn.style.background = 'rgba(110,127,119,0.08)';
+  }
+
+  compCurrentSize = size;
+  var canvas = document.getElementById('composerCanvas');
+  switch(size) {
+    case 'square': compCanvasW = 1080; compCanvasH = 1080; break;
+    case 'landscape': compCanvasW = 1200; compCanvasH = 630; break;
+    case 'portrait': compCanvasW = 1080; compCanvasH = 1350; break;
+    case 'story': compCanvasW = 1080; compCanvasH = 1920; break;
+  }
+  canvas.width = compCanvasW;
+  canvas.height = compCanvasH;
+  updateComposerCanvas();
+}
+
+function updateComposerCanvas() {
+  var canvas = document.getElementById('composerCanvas');
+  var ctx = canvas.getContext('2d');
+  var overlay = (document.getElementById('compTextOverlay').value || '').trim();
+  var hook = (document.getElementById('compHook').value || '').trim();
+
+  var imgSrc = uploadedPhotos.length ? uploadedPhotos[0] : null;
+
+  if (imgSrc) {
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      drawComposerCanvas(ctx, img, overlay, hook);
+    };
+    img.onerror = function() {
+      drawComposerCanvas(ctx, null, overlay, hook);
+    };
+    img.src = imgSrc;
+  } else {
+    drawComposerCanvas(ctx, null, overlay, hook);
+  }
+}
+
+function drawComposerCanvas(ctx, img, overlay, hook) {
+  var w = compCanvasW;
+  var h = compCanvasH;
+
+  // Background
+  if (img) {
+    var scale = Math.max(w / img.width, h / img.height);
+    var x = (w - img.width * scale) / 2;
+    var y = (h - img.height * scale) / 2;
+    ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+    // Dark overlay
+    ctx.fillStyle = 'rgba(0,10,30,0.5)';
+    ctx.fillRect(0, 0, w, h);
+  } else {
+    // Navy gradient background
+    var grad = ctx.createLinearGradient(0, 0, w, h);
+    grad.addColorStop(0, '#001a3a');
+    grad.addColorStop(0.6, '#002556');
+    grad.addColorStop(1, '#0a3060');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, w, h);
+    // Decorative circle
+    ctx.beginPath();
+    ctx.arc(w - 80, h - 80, 100, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(186,163,112,0.15)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+
+  // Gold accent bar
+  var padX = Math.round(w * 0.06);
+  var textStartY = Math.round(h * 0.15);
+  ctx.fillStyle = '#baa370';
+  ctx.fillRect(padX, textStartY, 50, 4);
+
+  // Text overlay (big, uppercase)
+  if (overlay) {
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 ' + Math.round(w * 0.055) + 'px "Segoe UI", system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    var overlayLines = wrapCanvasText(ctx, overlay.toUpperCase(), w - padX * 2);
+    var olY = textStartY + 40;
+    overlayLines.forEach(function(line) {
+      ctx.fillText(line, padX, olY);
+      olY += Math.round(w * 0.065);
+    });
+    textStartY = olY + 10;
+  }
+
+  // Hook line
+  if (hook) {
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.font = '600 ' + Math.round(w * 0.032) + 'px Georgia, serif';
+    ctx.textAlign = 'left';
+    var hookLines = wrapCanvasText(ctx, hook, w - padX * 2);
+    var hkY = textStartY + 20;
+    hookLines.forEach(function(line) {
+      ctx.fillText(line, padX, hkY);
+      hkY += Math.round(w * 0.042);
+    });
+  }
+
+  // Byline at bottom
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '600 ' + Math.round(w * 0.018) + 'px "Segoe UI", system-ui, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('KRISTY FLACH  ·  Certified Mortgage Advisor  ·  NMLS #2632259', padX, h - Math.round(h * 0.04));
+}
+
+function wrapCanvasText(ctx, text, maxWidth) {
+  var allLines = [];
+  var paragraphs = text.split('\n');
+  paragraphs.forEach(function(para) {
+    if (para.trim() === '') { allLines.push(''); return; }
+    var words = para.split(' ');
+    var line = '';
+    words.forEach(function(word) {
+      var test = line + (line ? ' ' : '') + word;
+      if (ctx.measureText(test).width > maxWidth && line) {
+        allLines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+    if (line) allLines.push(line);
+  });
+  return allLines;
+}
+
+function downloadComposerGraphic() {
+  updateComposerCanvas();
+  setTimeout(function() {
+    var canvas = document.getElementById('composerCanvas');
+    var link = document.createElement('a');
+    link.download = 'social-post-' + Date.now() + '.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    var status = document.getElementById('copyStatus');
+    showStatus(status, 'Graphic downloaded!', 'success');
+  }, 300);
+}
+
+function downloadCaptionText() {
+  var caption = (document.getElementById('postCaption').value || '').trim();
+  if (!caption) { alert('Write a caption first.'); return; }
+  var content = caption + '\n\n---\nKristy Flach | Certified Mortgage Advisor | NMLS #2632259 | PRMG';
+  var blob = new Blob([content], { type: 'text/plain' });
+  var link = document.createElement('a');
+  link.download = 'caption-' + Date.now() + '.txt';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+}
+
+// Update canvas when photos change
+var origRenderPhotoPreview = typeof renderPhotoPreview === 'function' ? renderPhotoPreview : null;
+function renderPhotoPreviewAndCanvas() {
+  if (origRenderPhotoPreview) origRenderPhotoPreview();
+  updateComposerCanvas();
+}
+
+// Init canvas on first load
+setTimeout(function() {
+  var canvas = document.getElementById('composerCanvas');
+  if (canvas) updateComposerCanvas();
+}, 500);
 
 async function publishPost() {
   var caption = document.getElementById('postCaption').value.trim();
@@ -4006,7 +4158,13 @@ function ccSendDay() {
   } else {
     var captionField = document.getElementById('postCaption');
     if (captionField) captionField.value = fullText;
+    // Populate hook fields if they exist
+    var hookField = document.getElementById('compHook');
+    if (hookField && dayData.hook) hookField.value = dayData.hook;
+    var overlayField = document.getElementById('compTextOverlay');
+    if (overlayField && dayData.textOverlay) overlayField.value = dayData.textOverlay;
     if (typeof onCaptionInput === 'function') onCaptionInput();
+    if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
     var composerBtn = document.querySelectorAll('.tab-btn')[1];
     switchTab('composer', composerBtn);
   }
