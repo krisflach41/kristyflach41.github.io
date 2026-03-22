@@ -191,7 +191,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .pv-tt-avt{width:40px;height:40px;border-radius:50%;background:#6e7f77;border:2px solid #fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;}
 .pv-tt-bottom{position:absolute;bottom:0;left:0;right:60px;padding:12px 12px 16px;background:linear-gradient(transparent,rgba(0,0,0,0.7));}
 .pv-tt-user{font-weight:700;font-size:13px;color:#fff;margin-bottom:4px;}
-.pv-tt-cap{font-size:12px;color:#fff;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.pv-tt-cap{font-size:12px;color:#fff;line-height:1.4;}
 
 /* No platform selected */
 .pv-empty{padding:36px 14px;text-align:center;color:var(--text-muted);}
@@ -621,6 +621,12 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
             <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">JPG, PNG, GIF up to 10MB each</div>
             <div class="photo-preview-grid" id="photoPreviewGrid" style="display:none;"></div>
           </div>
+
+          <!-- Image URL paste -->
+          <div style="display:flex;gap:6px;margin-top:8px;">
+            <input type="text" class="form-input" id="imageUrlInput" placeholder="Or paste an image URL here..." style="flex:1;font-size:13px;">
+            <button class="btn sage" onclick="loadImageFromUrl()" style="padding:6px 14px;font-size:12px;white-space:nowrap;"><i class="fas fa-link"></i> Load</button>
+          </div>
         </div>
       </div>
 
@@ -632,6 +638,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
           <button class="btn primary" onclick="copyCaption()"><i class="fas fa-copy"></i> Copy Caption</button>
           <button class="btn sage" onclick="downloadPostImage()" id="downloadImgBtn" style="display:none;"><i class="fas fa-download"></i> Download Image</button>
+          <button class="btn sage" onclick="downloadFullPost()"><i class="fas fa-file-arrow-down"></i> Download Post</button>
         </div>
         <div class="status-msg" id="copyStatus"></div>
 
@@ -1920,7 +1927,7 @@ function renderPreview() {
       +   '<i class="far fa-bookmark pv-save"></i>'
       + '</div>'
       + '<div style="padding:0 12px 4px;font-size:13px;font-weight:700;color:#000;">47 likes</div>'
-      + '<div class="pv-caption-block"><strong>kristyflach</strong> '+(restDisplay ? escPv(restDisplay) : (caption ? escPv(caption) : '<span style="color:#aaa;">Caption will appear here...</span>'))+'</div>'
+      + '<div class="pv-caption-block"><strong>kristyflach</strong> '+(caption ? escPv(caption) : '<span style="color:#aaa;">Caption will appear here...</span>')+'</div>'
       + '<div style="padding:0 12px 10px;font-size:10px;color:#8e8e8e;text-transform:uppercase;">Just now</div>'
       + '</div>';
 
@@ -1950,7 +1957,7 @@ function renderPreview() {
       +   '<div class="pv-sub">Certified Mortgage Advisor · NMLS #2632259</div>'
       +   '<div class="pv-sub">Just now · <i class="fas fa-globe-americas" style="font-size:9px;"></i></div></div>'
       + '</div>'
-      + (caption ? '<div class="pv-caption-block" style="padding-top:0;">'+escPv(restDisplay||caption)+(rest.length>200?'<span class="pv-caption-more"> ...see more</span>':'')+'</div>' : '')
+      + (caption ? '<div class="pv-caption-block" style="padding-top:0;">'+escPv(caption)+'</div>' : '')
       + graphic('landscape')
       + '<div class="pv-li-actions">'
       +   '<div class="pv-li-action"><i class="fas fa-thumbs-up" style="color:#0a66c2;"></i> Like</div>'
@@ -2249,6 +2256,45 @@ function downloadPostImage() {
     return;
   }
   link.click();
+}
+
+function loadImageFromUrl() {
+  var url = (document.getElementById('imageUrlInput').value || '').trim();
+  if (!url) { alert('Paste an image URL first.'); return; }
+  // Validate it looks like a URL
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    url = 'https://' + url;
+  }
+  // Add to uploaded photos and render
+  uploadedPhotos.push(url);
+  renderPhotoPreview();
+  renderPreview();
+  document.getElementById('imageUrlInput').value = '';
+  document.getElementById('downloadImgBtn').style.display = 'inline-flex';
+}
+
+function downloadFullPost() {
+  var caption = (document.getElementById('postCaption').value || '').trim();
+  if (!caption) { alert('Write a caption first.'); return; }
+
+  // Create a text file with the caption
+  var content = caption;
+  content += '\n\n---\nKristy Flach | Certified Mortgage Advisor\nNMLS #2632259 | PRMG\n';
+
+  var blob = new Blob([content], { type: 'text/plain' });
+  var link = document.createElement('a');
+  var date = new Date().toISOString().split('T')[0];
+  link.download = 'social-post-' + date + '.txt';
+  link.href = URL.createObjectURL(blob);
+  link.click();
+
+  // Also download the image if there is one
+  if (uploadedPhotos.length) {
+    setTimeout(function() { downloadPostImage(); }, 500);
+  }
+
+  var status = document.getElementById('copyStatus');
+  showStatus(status, 'Post downloaded!' + (uploadedPhotos.length ? ' Image downloading separately.' : ''), 'success');
 }
 
 async function publishPost() {
