@@ -3663,25 +3663,49 @@ async function ccGenerate() {
     var days = null;
     if (data.days && Array.isArray(data.days)) {
       days = data.days;
-    } else if (data.success && data.raw) {
-      // AI returned raw text, try to parse it
+    } else if (data.raw || data.parseError) {
+      // Backend couldn't parse — try on frontend
+      var rawText = data.raw || '';
       try {
-        var cleaned = data.raw.replace(/```json\s*/gi, '').replace(/```\s*/gi, '').trim();
+        // Aggressively strip markdown fences, whitespace, BOM
+        var cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+        if (cleaned.charCodeAt(0) === 0xFEFF) cleaned = cleaned.slice(1);
         var parsed = JSON.parse(cleaned);
-        days = parsed.days || parsed;
+        days = parsed.days || (Array.isArray(parsed) ? parsed : null);
       } catch(e) {
-        console.error('Could not parse raw response:', e, data.raw);
+        console.error('Frontend parse failed:', e);
+        // Last resort: try to find JSON array in the text
+        try {
+          var match = rawText.match(/\[\s*\{[\s\S]*\}\s*\]/);
+          if (match) days = JSON.parse(match[0]);
+        } catch(e2) { console.error('Last resort parse failed:', e2); }
       }
+    }
+    // Also check if days ended up somewhere unexpected on the response
+    if (!days && data.success) {
+      // Maybe the spread put items at root level — look for date patterns
+      var possibleDays = [];
+      Object.keys(data).forEach(function(k) {
+        if (Array.isArray(data[k]) && data[k].length > 0 && data[k][0].date) {
+          possibleDays = data[k];
+        }
+      });
+      if (possibleDays.length > 0) days = possibleDays;
     }
 
     if (days && days.length > 0) {
+      console.log('Calendar loaded: ' + days.length + ' days');
       ccDays = days;
       ccApproved = {};
       ccSaveToLocal();
       ccRenderGrid();
     } else {
       alert('Generation did not return calendar data. Please try again.');
-      console.error('Response:', data);
+      console.error('Response keys:', Object.keys(data));
+      console.error('data.days:', data.days);
+      console.error('data.raw type:', typeof data.raw);
+      console.error('data.raw length:', data.raw ? data.raw.length : 0);
+      console.error('Full response:', JSON.stringify(data).substring(0, 500));
       document.getElementById('ccEmptyState').style.display = 'block';
     }
   } catch (err) {
