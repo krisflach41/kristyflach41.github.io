@@ -1253,6 +1253,10 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
     </div>
     <div class="cc-detail-body">
       <div class="cc-detail-section">
+        <div class="cc-detail-label">Visual Hook</div>
+        <div id="ccDetailVisualHook" style="font-size:14px;color:var(--sage);font-style:italic;padding:8px 12px;background:rgba(110,127,119,0.04);border-radius:6px;"></div>
+      </div>
+      <div class="cc-detail-section">
         <div class="cc-detail-label">Hook</div>
         <div class="cc-detail-hook" id="ccDetailHook"></div>
       </div>
@@ -3817,6 +3821,9 @@ function ccSelectDay(dateStr) {
   document.getElementById('ccDetailBadges').innerHTML = badgesHtml;
 
   document.getElementById('ccDetailHook').textContent = dayData.hook || '';
+
+  // Visual hook
+  document.getElementById('ccDetailVisualHook').textContent = dayData.visualHook || '';
 
   var overlayWrap = document.getElementById('ccDetailOverlayWrap');
   if (dayData.contentType === 'video' && dayData.textOverlay) {
