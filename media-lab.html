@@ -4174,15 +4174,10 @@ function ccSendDay() {
     if (scriptField) scriptField.value = fullScript;
     var studioBtn = document.querySelector('.tab-btn');
     switchTab('studio', studioBtn);
+    // Use the existing loadToTeleprompter function after tab switch
     setTimeout(function() {
-      var display = document.getElementById('tpDisplay');
-      if (display) {
-        display.textContent = fullScript;
-        display.style.transform = 'translateY(0)';
-        var overlay = document.getElementById('tpOverlay');
-        if (overlay) overlay.style.display = 'block';
-      }
-    }, 200);
+      if (typeof loadToTeleprompter === 'function') loadToTeleprompter();
+    }, 300);
   } else {
     // Post: caption gets content + fun fact
     var fullText = dayData.content || '';
