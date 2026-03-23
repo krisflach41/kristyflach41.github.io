@@ -36,8 +36,15 @@
   /* Date bar */
   .date-bar { padding: 0 16px !important; font-size: 18px !important; }
 
-  /* Rate ticker */
-  .ticker-line span { margin-right: 40px !important; font-size: 13px; }
+  /* Rate ticker — stop animation, stack rates */
+  .rate-ticker { padding: 10px 0 !important; }
+  .ticker-track { width: 100% !important; animation: none !important; flex-wrap: wrap; justify-content: center; gap: 4px; }
+  .ticker-line { width: 100% !important; flex-wrap: wrap; justify-content: center; gap: 6px 16px; padding: 0 12px; }
+  .ticker-line:nth-child(2) { display: none !important; } /* Hide the duplicate line */
+  .ticker-line span { margin-right: 0 !important; font-size: 13px !important; }
+  /* Front-end site ticker */
+  .rate-ticker-line { flex-wrap: wrap !important; justify-content: center !important; gap: 6px 14px !important; }
+  .rate-ticker-line span { margin-right: 0 !important; font-size: 12px !important; }
 
   /* Blog/briefing section */
   .blog-section { padding: 30px 18px !important; margin-top: 30px !important; border-radius: 16px !important; }
@@ -110,9 +117,16 @@
   .flyer-card img { height: 160px !important; }
   .flyer-card h3 { font-size: 14px !important; }
 
+  /* Marketing collection gallery */
+  .studio-gallery { grid-template-columns: 1fr !important; gap: 20px !important; }
+
   /* Studio panels (flyer generators) */
   .studio-panel { width: 95% !important; max-width: none !important; padding: 20px !important; }
   .studio-grid { grid-template-columns: 1fr !important; }
+
+  /* Panel thumbnails */
+  .panel-thumbs { flex-wrap: wrap !important; gap: 8px !important; }
+  .thumb { width: 80px !important; height: 100px !important; }
 
   /* Lightbox */
   .lightbox-inner { width: 95% !important; max-width: none !important; }
@@ -270,8 +284,8 @@
 /* ===== COLLECTION LANDING PAGES (marketing, advisory, education, messaging) ===== */
 @media (max-width: 768px) {
   .panel-grid { grid-template-columns: 1fr !important; }
-  .panel-thumbs { grid-template-columns: repeat(3, 1fr) !important; }
-  .panel-thumbs img { height: 60px !important; }
+  .panel-thumbs { flex-wrap: wrap !important; justify-content: center !important; gap: 8px !important; }
+  .panel-thumbs .thumb { width: 70px !important; height: 90px !important; }
 
   /* Wing features list */
   .wing-features { font-size: 13px !important; }
