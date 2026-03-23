@@ -10,7 +10,7 @@
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
     #gus-fab {
-      position: fixed; bottom: 24px; right: 24px; z-index: 99999;
+      position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
       width: 64px; height: 64px; border-radius: 50%;
       background: #002556; border: 3px solid #baa370;
       cursor: pointer; overflow: hidden;
@@ -19,7 +19,7 @@
       display: flex; align-items: center; justify-content: center;
     }
     #gus-fab:hover {
-      transform: scale(1.1) rotate(-5deg);
+      transform: translateY(-50%) scale(1.1) rotate(-5deg);
       box-shadow: 0 10px 32px rgba(0,37,86,0.4), 0 4px 12px rgba(0,0,0,0.2);
     }
     #gus-fab img {
@@ -34,7 +34,8 @@
     }
 
     #gus-panel {
-      position: fixed; bottom: 100px; right: 24px; z-index: 99998;
+      position: fixed; top: 50%; right: 88px; z-index: 99998;
+      transform: translateY(-50%);
       width: 380px; max-height: 520px;
       background: #faf8f4; border-radius: 20px;
       box-shadow: 0 20px 60px rgba(0,37,86,0.25), 0 8px 24px rgba(0,0,0,0.12);
@@ -134,8 +135,9 @@
     #gus-send svg { width: 18px; height: 18px; }
 
     @media (max-width: 480px) {
-      #gus-panel { width: calc(100vw - 32px); right: 16px; bottom: 90px; max-height: 70vh; }
-      #gus-fab { bottom: 16px; right: 16px; width: 56px; height: 56px; }
+      #gus-panel { width: calc(100vw - 32px); right: 16px; top: auto; bottom: 80px; transform: none; max-height: 70vh; }
+      #gus-fab { top: auto; bottom: 16px; right: 16px; width: 56px; height: 56px; transform: none; }
+      #gus-fab:hover { transform: scale(1.1); }
     }
   `;
   document.head.appendChild(style);
