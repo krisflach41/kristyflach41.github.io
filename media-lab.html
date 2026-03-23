@@ -2305,11 +2305,7 @@ function updateComposerCanvas() {
   var ctx = canvas.getContext('2d');
   var overlay = (document.getElementById('compTextOverlay').value || '').trim();
   var hook = (document.getElementById('compHook').value || '').trim();
-  var caption = '';
-  // Include caption on canvas for Instagram formats (square, portrait, story)
-  if (compCurrentSize === 'square' || compCurrentSize === 'portrait' || compCurrentSize === 'story') {
-    caption = (document.getElementById('postCaption').value || '').trim();
-  }
+  var caption = (document.getElementById('postCaption').value || '').trim();
 
   var imgSrc = uploadedPhotos.length ? uploadedPhotos[0] : null;
 
@@ -4166,24 +4162,32 @@ function ccSendDay() {
   var dayData = ccFindDay(ccSelectedDate);
   if (!dayData) return;
 
-  var fullText = dayData.content || '';
-  if (dayData.funFact) fullText += '\n\n' + dayData.funFact;
-
   if (dayData.contentType === 'video') {
+    // Build full script: hook first, then content, then fun fact
+    var scriptParts = [];
+    if (dayData.hook) scriptParts.push(dayData.hook);
+    if (dayData.content) scriptParts.push(dayData.content);
+    if (dayData.funFact) scriptParts.push(dayData.funFact);
+    var fullScript = scriptParts.join('\n\n');
+
     var scriptField = document.getElementById('scriptText');
-    if (scriptField) scriptField.value = fullText;
+    if (scriptField) scriptField.value = fullScript;
     var studioBtn = document.querySelector('.tab-btn');
     switchTab('studio', studioBtn);
     setTimeout(function() {
       var display = document.getElementById('tpDisplay');
       if (display) {
-        display.textContent = fullText;
+        display.textContent = fullScript;
         display.style.transform = 'translateY(0)';
         var overlay = document.getElementById('tpOverlay');
         if (overlay) overlay.style.display = 'block';
       }
     }, 200);
   } else {
+    // Post: caption gets content + fun fact
+    var fullText = dayData.content || '';
+    if (dayData.funFact) fullText += '\n\n' + dayData.funFact;
+
     var captionField = document.getElementById('postCaption');
     if (captionField) captionField.value = fullText;
     // Populate hook fields if they exist
