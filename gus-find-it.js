@@ -13,7 +13,7 @@
       position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
       width: 85px; height: 85px; border-radius: 50%;
       background: #002556; border: 3px solid #baa370;
-      cursor: grab; overflow: hidden;
+      cursor: grab; overflow: visible;
       box-shadow: 0 6px 24px rgba(0,37,86,0.35), 0 2px 8px rgba(0,0,0,0.15);
       transition: box-shadow 0.3s, opacity 0.3s;
       display: flex; align-items: center; justify-content: center;
@@ -30,13 +30,15 @@
     }
     #gus-fab img {
       width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+      position: absolute; top: 0; left: 0;
     }
     #gus-fab .gus-badge {
-      position: absolute; top: -2px; right: -2px;
-      background: #baa370; color: #002556; font-size: 11px; font-weight: 800;
-      padding: 3px 7px; border-radius: 8px; letter-spacing: 0.3px;
+      position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+      background: #002556; color: #baa370; font-size: 10px; font-weight: 800;
+      padding: 3px 10px; border-radius: 10px; letter-spacing: 0.5px;
       font-family: 'DM Sans', system-ui, sans-serif;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      white-space: nowrap; border: 2px solid #baa370;
     }
 
     #gus-panel {
