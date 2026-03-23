@@ -62,9 +62,9 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
 .form-row.single{grid-template-columns:1fr;}
 .form-group{display:flex;flex-direction:column;gap:5px;}
 .form-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;}
-.form-input,.form-select,.form-textarea{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--text-primary);background:white;transition:border-color 0.2s;}
+.form-input,.form-select,.form-textarea{padding:9px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:14px;color:var(--text-primary);background:white;transition:border-color 0.2s;width:100%;box-sizing:border-box;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--sage);}
-.form-textarea{resize:vertical;min-height:100px;line-height:1.5;}
+.form-textarea{resize:vertical;min-height:100px;line-height:1.5;width:100%;box-sizing:border-box;}
 
 /* STATUS */
 .status-msg{font-size:13px;padding:8px 12px;border-radius:7px;margin-top:10px;display:none;}
@@ -1727,26 +1727,25 @@ async function searchUnsplash(loadMore) {
 }
 
 function selectUnsplashPhoto(photo) {
-  // Convert to blob and add to uploadedPhotos
+  // Use URL directly for immediate canvas update
+  uploadedPhotos = [photo.urls.regular];
+  renderPhotoPreview();
+  // Force canvas update with a slight delay to let the image start loading
+  setTimeout(function() {
+    if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
+  }, 100);
+  // Also try blob conversion in background for higher quality download
   fetch(photo.urls.regular)
-    .then(r => r.blob())
-    .then(blob => {
+    .then(function(r) { return r.blob(); })
+    .then(function(blob) {
       var reader = new FileReader();
       reader.onload = function(e) {
-        uploadedPhotos.push(e.target.result);
-        renderPhotoPreview();
-        document.getElementById('unsplashPanel').style.display = 'none';
-        document.getElementById('unsplashResults').innerHTML = '';
-        document.getElementById('unsplashQuery').value = '';
+        uploadedPhotos[0] = e.target.result;
+        if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
       };
       reader.readAsDataURL(blob);
     })
-    .catch(function() {
-      // Fallback: just store the URL directly
-      uploadedPhotos.push(photo.urls.regular);
-      renderPhotoPreview();
-      document.getElementById('unsplashPanel').style.display = 'none';
-    });
+    .catch(function() { /* URL fallback already in place */ });
   // Trigger Unsplash download endpoint (required by API terms)
   fetch(API_BASE + '/unsplash-search?download=' + photo.id);
 }
@@ -2016,6 +2015,7 @@ function onCaptionInput() {
   document.getElementById('complianceBanner').classList.toggle('show', rateTerms.test(val));
 
   renderPreview();
+  if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
 }
 
 async function aiCaptionHelper() {
@@ -2102,11 +2102,13 @@ function handlePhotoUpload(e) {
       thumb.innerHTML = '<img src="'+ev.target.result+'"><button class="remove-photo" onclick="removePhoto('+i+')"><i class="fas fa-times"></i></button>';
       grid.appendChild(thumb);
 
-      // Show first photo in preview
       if (i === 0) {
-        document.getElementById('previewImg').src = ev.target.result;
-        document.getElementById('previewImg').style.display = 'block';
-        renderPreview();
+        var previewImg = document.getElementById('previewImg');
+        if (previewImg) {
+          previewImg.src = ev.target.result;
+          previewImg.style.display = 'block';
+        }
+        if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
       }
     };
     reader.readAsDataURL(file);
@@ -2240,16 +2242,15 @@ function downloadPostImage() {
 function loadImageFromUrl() {
   var url = (document.getElementById('imageUrlInput').value || '').trim();
   if (!url) { alert('Paste an image URL first.'); return; }
-  // Validate it looks like a URL
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     url = 'https://' + url;
   }
-  // Add to uploaded photos and render
-  uploadedPhotos.push(url);
+  uploadedPhotos = [url];
   renderPhotoPreview();
-  renderPreview();
+  setTimeout(function() {
+    if (typeof updateComposerCanvas === 'function') updateComposerCanvas();
+  }, 100);
   document.getElementById('imageUrlInput').value = '';
-  document.getElementById('downloadImgBtn').style.display = 'inline-flex';
 }
 
 function downloadFullPost() {
@@ -2304,6 +2305,11 @@ function updateComposerCanvas() {
   var ctx = canvas.getContext('2d');
   var overlay = (document.getElementById('compTextOverlay').value || '').trim();
   var hook = (document.getElementById('compHook').value || '').trim();
+  var caption = '';
+  // Include caption on canvas for Instagram formats (square, portrait, story)
+  if (compCurrentSize === 'square' || compCurrentSize === 'portrait' || compCurrentSize === 'story') {
+    caption = (document.getElementById('postCaption').value || '').trim();
+  }
 
   var imgSrc = uploadedPhotos.length ? uploadedPhotos[0] : null;
 
@@ -2311,18 +2317,18 @@ function updateComposerCanvas() {
     var img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = function() {
-      drawComposerCanvas(ctx, img, overlay, hook);
+      drawComposerCanvas(ctx, img, overlay, hook, caption);
     };
     img.onerror = function() {
-      drawComposerCanvas(ctx, null, overlay, hook);
+      drawComposerCanvas(ctx, null, overlay, hook, caption);
     };
     img.src = imgSrc;
   } else {
-    drawComposerCanvas(ctx, null, overlay, hook);
+    drawComposerCanvas(ctx, null, overlay, hook, caption);
   }
 }
 
-function drawComposerCanvas(ctx, img, overlay, hook) {
+function drawComposerCanvas(ctx, img, overlay, hook, caption) {
   var w = compCanvasW;
   var h = compCanvasH;
 
@@ -2332,18 +2338,15 @@ function drawComposerCanvas(ctx, img, overlay, hook) {
     var x = (w - img.width * scale) / 2;
     var y = (h - img.height * scale) / 2;
     ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-    // Dark overlay
     ctx.fillStyle = 'rgba(0,10,30,0.5)';
     ctx.fillRect(0, 0, w, h);
   } else {
-    // Navy gradient background
     var grad = ctx.createLinearGradient(0, 0, w, h);
     grad.addColorStop(0, '#001a3a');
     grad.addColorStop(0.6, '#002556');
     grad.addColorStop(1, '#0a3060');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
-    // Decorative circle
     ctx.beginPath();
     ctx.arc(w - 80, h - 80, 100, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(186,163,112,0.15)';
@@ -2351,46 +2354,71 @@ function drawComposerCanvas(ctx, img, overlay, hook) {
     ctx.stroke();
   }
 
-  // Gold accent bar
   var padX = Math.round(w * 0.06);
-  var textStartY = Math.round(h * 0.15);
+  var textStartY = Math.round(h * 0.08);
+
+  // Gold accent bar
   ctx.fillStyle = '#baa370';
   ctx.fillRect(padX, textStartY, 50, 4);
 
   // Text overlay (big, uppercase)
   if (overlay) {
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 ' + Math.round(w * 0.055) + 'px "Segoe UI", system-ui, sans-serif';
+    ctx.font = '800 ' + Math.round(w * 0.05) + 'px "Segoe UI", system-ui, sans-serif';
     ctx.textAlign = 'left';
     var overlayLines = wrapCanvasText(ctx, overlay.toUpperCase(), w - padX * 2);
     var olY = textStartY + 40;
     overlayLines.forEach(function(line) {
       ctx.fillText(line, padX, olY);
-      olY += Math.round(w * 0.065);
+      olY += Math.round(w * 0.058);
     });
     textStartY = olY + 10;
   }
 
   // Hook line
   if (hook) {
-    ctx.fillStyle = 'rgba(255,255,255,0.9)';
-    ctx.font = '600 ' + Math.round(w * 0.032) + 'px Georgia, serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.92)';
+    ctx.font = '600 ' + Math.round(w * 0.03) + 'px Georgia, serif';
     ctx.textAlign = 'left';
     var hookLines = wrapCanvasText(ctx, hook, w - padX * 2);
-    var hkY = textStartY + 20;
+    var hkY = textStartY + 16;
     hookLines.forEach(function(line) {
       ctx.fillText(line, padX, hkY);
-      hkY += Math.round(w * 0.042);
+      hkY += Math.round(w * 0.038);
     });
+    textStartY = hkY + 8;
+  }
+
+  // Caption text (for Instagram formats: square, portrait, story)
+  if (caption) {
+    ctx.fillStyle = 'rgba(186,163,112,0.4)';
+    ctx.fillRect(padX, textStartY, w - padX * 2, 1);
+    textStartY += 16;
+
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    var captionFontSize = Math.round(w * 0.026);
+    ctx.font = '400 ' + captionFontSize + 'px "Segoe UI", system-ui, sans-serif';
+    ctx.textAlign = 'left';
+    var captionLines = wrapCanvasText(ctx, caption, w - padX * 2);
+    var maxCaptionY = h - Math.round(h * 0.07);
+    var lineH = Math.round(captionFontSize * 1.5);
+    var capY = textStartY;
+    for (var ci = 0; ci < captionLines.length; ci++) {
+      if (capY + lineH > maxCaptionY) {
+        ctx.fillText('...', padX, capY);
+        break;
+      }
+      ctx.fillText(captionLines[ci], padX, capY);
+      capY += lineH;
+    }
   }
 
   // Byline at bottom
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
   ctx.font = '600 ' + Math.round(w * 0.018) + 'px "Segoe UI", system-ui, sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('KRISTY FLACH  ·  Certified Mortgage Advisor  ·  NMLS #2632259', padX, h - Math.round(h * 0.04));
+  ctx.fillText('KRISTY FLACH  \u00B7  Certified Mortgage Advisor  \u00B7  NMLS #2632259', padX, h - Math.round(h * 0.03));
 }
-
 function wrapCanvasText(ctx, text, maxWidth) {
   var allLines = [];
   var paragraphs = text.split('\n');
