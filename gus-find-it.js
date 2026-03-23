@@ -101,20 +101,41 @@
       border-bottom-right-radius: 4px;
     }
     .gus-typing {
-      align-self: flex-start; padding: 10px 18px;
+      align-self: flex-start; padding: 10px 14px;
       background: white; border-radius: 14px; border-bottom-left-radius: 4px;
       border: 1px solid rgba(186,163,112,0.2);
-      display: flex; gap: 5px; align-items: center;
+      overflow: hidden; width: 200px; height: 42px; position: relative;
     }
-    .gus-dot {
-      width: 7px; height: 7px; background: #baa370; border-radius: 50%;
-      animation: gusBounce 1.2s infinite;
+    .gus-chase-track {
+      position: absolute; top: 50%; left: 0; width: 100%; height: 30px;
+      transform: translateY(-50%);
     }
-    .gus-dot:nth-child(2) { animation-delay: 0.2s; }
-    .gus-dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes gusBounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
+    .gus-chase-bone {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      font-size: 18px; animation: gusBoneRun 2s linear infinite;
+    }
+    .gus-chase-gus {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 28px; height: 28px; border-radius: 50%; overflow: hidden;
+      animation: gusChaseRun 2s linear infinite;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .gus-chase-gus img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    @keyframes gusBoneRun {
+      0% { left: -20px; }
+      50% { left: 75%; }
+      51% { left: -20px; opacity: 0; }
+      55% { opacity: 1; }
+      100% { left: 75%; }
+    }
+    @keyframes gusChaseRun {
+      0% { left: -40px; }
+      50% { left: calc(75% - 24px); }
+      50.5% { left: -40px; opacity: 0; }
+      55% { opacity: 1; }
+      100% { left: calc(75% - 24px); }
     }
 
     #gus-input-wrap {
@@ -294,7 +315,7 @@
     // Add typing indicator
     var typing = document.createElement('div');
     typing.className = 'gus-typing';
-    typing.innerHTML = '<div class="gus-dot"></div><div class="gus-dot"></div><div class="gus-dot"></div>';
+    typing.innerHTML = '<div class="gus-chase-track"><span class="gus-chase-bone">🦴</span><div class="gus-chase-gus"><img src="gus.JPG" alt="Gus" draggable="false"></div></div>';
     msgs.appendChild(typing);
     msgs.scrollTop = msgs.scrollHeight;
 
