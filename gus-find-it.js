@@ -11,24 +11,30 @@
 
     #gus-fab {
       position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
-      width: 64px; height: 64px; border-radius: 50%;
+      width: 85px; height: 85px; border-radius: 50%;
       background: #002556; border: 3px solid #baa370;
-      cursor: pointer; overflow: hidden;
+      cursor: grab; overflow: hidden;
       box-shadow: 0 6px 24px rgba(0,37,86,0.35), 0 2px 8px rgba(0,0,0,0.15);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: box-shadow 0.3s, opacity 0.3s;
       display: flex; align-items: center; justify-content: center;
+      opacity: 0.75;
+      user-select: none; -webkit-user-select: none;
     }
     #gus-fab:hover {
-      transform: translateY(-50%) scale(1.1) rotate(-5deg);
       box-shadow: 0 10px 32px rgba(0,37,86,0.4), 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 1;
+    }
+    #gus-fab.dragging {
+      cursor: grabbing; opacity: 1;
+      box-shadow: 0 14px 40px rgba(0,37,86,0.5), 0 6px 16px rgba(0,0,0,0.25);
     }
     #gus-fab img {
       width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
     }
     #gus-fab .gus-badge {
       position: absolute; top: -2px; right: -2px;
-      background: #baa370; color: #002556; font-size: 9px; font-weight: 800;
-      padding: 2px 5px; border-radius: 8px; letter-spacing: 0.3px;
+      background: #baa370; color: #002556; font-size: 11px; font-weight: 800;
+      padding: 3px 7px; border-radius: 8px; letter-spacing: 0.3px;
       font-family: 'DM Sans', system-ui, sans-serif;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
@@ -145,8 +151,8 @@
   // Inject HTML
   var widget = document.createElement('div');
   widget.innerHTML = `
-    <div id="gus-fab" onclick="window.gusToggle()">
-      <img src="gus.JPG" alt="Gus">
+    <div id="gus-fab">
+      <img src="gus.JPG" alt="Gus" draggable="false">
       <span class="gus-badge">FIND IT</span>
     </div>
     <div id="gus-panel">
@@ -177,11 +183,96 @@
     var panel = document.getElementById('gus-panel');
     if (isOpen) {
       panel.classList.add('open');
+      // Position panel near the fab
+      var fab = document.getElementById('gus-fab');
+      var fabRect = fab.getBoundingClientRect();
+      panel.style.top = Math.max(10, fabRect.top - 200) + 'px';
+      panel.style.right = (window.innerWidth - fabRect.left + 12) + 'px';
+      panel.style.transform = 'none';
       document.getElementById('gus-input').focus();
     } else {
       panel.classList.remove('open');
     }
   };
+
+  // Drag functionality
+  (function() {
+    var fab = document.getElementById('gus-fab');
+    var isDragging = false;
+    var wasDragged = false;
+    var startX, startY, startLeft, startTop;
+
+    fab.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isDragging = true;
+      wasDragged = false;
+      fab.classList.add('dragging');
+      var rect = fab.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      // Remove any transform so positioning works
+      fab.style.transform = 'none';
+      fab.style.left = startLeft + 'px';
+      fab.style.top = startTop + 'px';
+      fab.style.right = 'auto';
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDragged = true;
+      fab.style.left = (startLeft + dx) + 'px';
+      fab.style.top = (startTop + dy) + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      fab.classList.remove('dragging');
+      if (!wasDragged) {
+        window.gusToggle();
+      }
+    });
+
+    // Touch support for mobile
+    fab.addEventListener('touchstart', function(e) {
+      isDragging = true;
+      wasDragged = false;
+      fab.classList.add('dragging');
+      var touch = e.touches[0];
+      var rect = fab.getBoundingClientRect();
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      fab.style.transform = 'none';
+      fab.style.left = startLeft + 'px';
+      fab.style.top = startTop + 'px';
+      fab.style.right = 'auto';
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      var touch = e.touches[0];
+      var dx = touch.clientX - startX;
+      var dy = touch.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDragged = true;
+      fab.style.left = (startLeft + dx) + 'px';
+      fab.style.top = (startTop + dy) + 'px';
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      fab.classList.remove('dragging');
+      if (!wasDragged) {
+        window.gusToggle();
+      }
+    });
+  })();
 
   // Send message
   window.gusSend = async function() {
