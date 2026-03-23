@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Co-Branded Webinars - Agent Edge</title>
+<style>
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  margin: 0; padding: 80px 0;
+  background: linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
+    url("portal-bg.jpg") center / cover no-repeat fixed;
+  color: #0b1f3a;
+}
+.page-wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+.glass-panel {
+  padding: 50px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.58);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: 0 20px 55px rgba(0,0,0,0.10), 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.page-title { font-size: 36px; text-align: center; margin-bottom: 8px; }
+.page-subtitle { text-align: center; color: #555; font-size: 16px; line-height: 1.6; max-width: 650px; margin: 0 auto 40px auto; }
+
+/* Pitch section */
+.pitch-section {
+  background: linear-gradient(180deg, rgba(248,242,232,0.88), rgba(248,242,232,0.72));
+  border-radius: 16px; padding: 36px; margin-bottom: 40px;
+  border: 1px solid rgba(255,255,255,0.6);
+  box-shadow: 0 10px 30px rgba(160,140,110,0.12);
+}
+.pitch-section h3 {
+  font-size: 22px; margin: 0 0 16px 0; color: #002556;
+}
+.pitch-section p {
+  font-size: 15px; line-height: 1.7; color: #444; margin-bottom: 14px;
+}
+.pitch-section p:last-child { margin-bottom: 0; }
+
+.pitch-highlights {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-top: 20px;
+}
+.pitch-highlight {
+  background: rgba(255,255,255,0.6); padding: 16px 18px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.7);
+}
+.pitch-highlight .ph-icon { font-size: 22px; margin-bottom: 6px; }
+.pitch-highlight .ph-title { font-weight: 700; font-size: 14px; color: #002556; margin-bottom: 4px; }
+.pitch-highlight .ph-text { font-size: 12.5px; color: #555; line-height: 1.5; }
+
+/* Form */
+.form-divider {
+  height: 1px; background: rgba(110,127,119,0.15); margin: 40px 0;
+}
+.form-heading {
+  font-size: 22px; font-weight: 700; color: #002556; margin-bottom: 6px;
+}
+.form-subheading {
+  font-size: 14px; color: #555; margin-bottom: 30px;
+}
+
+.form-group { margin-bottom: 22px; }
+.form-label {
+  display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #0b1f3a;
+}
+.form-helper { font-size: 12px; color: #888; margin-top: 4px; }
+
+.form-input, .form-select, .form-textarea {
+  width: 100%; padding: 12px 14px;
+  border: 1px solid rgba(110,127,119,0.25); border-radius: 10px;
+  font-size: 15px; font-family: inherit;
+  background: rgba(255,255,255,0.6); box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: #6e7f77;
+  background: rgba(255,255,255,0.8);
+  box-shadow: 0 0 0 3px rgba(110,127,119,0.1);
+}
+.form-textarea { resize: vertical; min-height: 100px; }
+
+/* Radio/checkbox groups */
+.option-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.option-card {
+  padding: 14px 16px; border-radius: 10px;
+  border: 1.5px solid rgba(110,127,119,0.2);
+  background: rgba(255,255,255,0.5);
+  cursor: pointer; transition: all 0.2s ease;
+  display: flex; align-items: center; gap: 10px;
+}
+.option-card:hover { border-color: #6e7f77; background: rgba(255,255,255,0.7); }
+.option-card.selected {
+  border-color: #6e7f77; background: rgba(110,127,119,0.08);
+  box-shadow: 0 0 0 2px rgba(110,127,119,0.15);
+}
+.option-card input[type="radio"] { accent-color: #6e7f77; width: 18px; height: 18px; flex-shrink: 0; }
+.option-card .option-label { font-size: 14px; font-weight: 500; color: #0b1f3a; }
+
+/* Slides toggle */
+.slide-toggle {
+  display: flex; gap: 12px; margin-top: 8px;
+}
+.slide-btn {
+  flex: 1; padding: 14px; border-radius: 10px;
+  border: 1.5px solid rgba(110,127,119,0.2);
+  background: rgba(255,255,255,0.5);
+  cursor: pointer; text-align: center; transition: all 0.2s;
+  font-family: inherit; font-size: 14px; font-weight: 600; color: #0b1f3a;
+}
+.slide-btn:hover { border-color: #6e7f77; }
+.slide-btn.selected { border-color: #6e7f77; background: rgba(110,127,119,0.08); color: #6e7f77; }
+
+/* Submit */
+.submit-btn {
+  width: 100%; padding: 16px; border: none; border-radius: 12px;
+  background: #6e7f77; color: white; font-weight: 700; font-size: 16px;
+  cursor: pointer; transition: 0.25s ease; font-family: inherit; margin-top: 10px;
+}
+.submit-btn:hover:not(:disabled) {
+  background: #5a6b63; transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(110,127,119,0.3);
+}
+.submit-btn:disabled { background: #999; cursor: not-allowed; opacity: 0.6; }
+
+/* Messages */
+.success-msg {
+  display: none; background: rgba(46,204,113,0.1);
+  border: 1px solid rgba(46,204,113,0.3); color: #27ae60;
+  padding: 20px; border-radius: 12px; text-align: center;
+  font-size: 16px; font-weight: 600; margin-top: 20px;
+}
+.success-msg.show { display: block; }
+.success-msg p { margin: 8px 0 0 0; font-weight: 400; font-size: 14px; color: #555; }
+
+/* Return */
+.return-main {
+  position: fixed; bottom: 20px; right: 20px;
+  padding: 10px 18px; border-radius: 25px;
+  background: rgba(255,255,255,0.35); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.6);
+  text-decoration: none; color: #0b1f3a; font-weight: 600;
+}
+.back-link {
+  text-align: center; margin-top: 30px;
+}
+.back-link a {
+  color: #6e7f77; text-decoration: none; font-weight: 600; font-size: 14px;
+}
+.back-link a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+  .glass-panel { padding: 30px 20px; }
+  .pitch-highlights { grid-template-columns: 1fr; }
+  .option-grid { grid-template-columns: 1fr; }
+  .slide-toggle { flex-direction: column; }
+  .page-title { font-size: 28px; }
+}
+</style>
+<script src="tracking.js"></script>
+<script src="auth.js"></script>
+<link rel="stylesheet" href="mobile-fixes.css">
+</head>
+<body>
+
+<div class="page-wrap">
+<div class="glass-panel">
+
+  <h2 class="page-title">Co-Branded Webinars</h2>
+  <p class="page-subtitle">Partner with Kristy to host a live webinar for your clients and sphere. Your brand. Her expertise. Real lead generation.</p>
+
+  <!-- PITCH SECTION -->
+  <div class="pitch-section">
+    <h3>Here's how it works.</h3>
+    <p>You invite your clients and sphere. Kristy brings 20+ years of mortgage expertise and presents alongside you. The webinar goes out under your brand — your name, your face, your audience. Your clients get real, actionable education from a Certified Mortgage Advisor. You get positioned as the agent who brings serious value to the people in their world.</p>
+    <p>This isn't a generic presentation from a corporate lender. Kristy customizes every session to your market and your audience. She answers real questions in real time. Your clients walk away smarter, and they remember who made it happen — you.</p>
+
+    <div class="pitch-highlights">
+      <div class="pitch-highlight">
+        <div class="ph-icon">🎯</div>
+        <div class="ph-title">Lead Generation</div>
+        <div class="ph-text">Every attendee is a warm lead. Registration captures contact info. Follow-up is built in.</div>
+      </div>
+      <div class="pitch-highlight">
+        <div class="ph-icon">🏷️</div>
+        <div class="ph-title">Your Brand, Front & Center</div>
+        <div class="ph-text">Co-branded slides, registration page, and follow-up materials all feature your name and info.</div>
+      </div>
+      <div class="pitch-highlight">
+        <div class="ph-icon">📊</div>
+        <div class="ph-title">Expert Content</div>
+        <div class="ph-text">Kristy handles the heavy lifting — market data, loan programs, qualifying strategies. You focus on your clients.</div>
+      </div>
+      <div class="pitch-highlight">
+        <div class="ph-icon">💰</div>
+        <div class="ph-title">Completely Free</div>
+        <div class="ph-text">No cost to you. This is part of the partnership. When your clients are educated, everyone wins.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-divider"></div>
+
+  <div class="form-heading">Request a Co-Branded Webinar</div>
+  <div class="form-subheading">Fill out the details below and we'll set up a quick consultation to plan your session.</div>
+
+  <form id="webinarForm">
+
+    <div class="form-group">
+      <label class="form-label">Your Name</label>
+      <input type="text" class="form-input" id="wbName" placeholder="Your full name" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-input" id="wbEmail" placeholder="your@email.com" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Phone</label>
+      <input type="tel" class="form-input" id="wbPhone" placeholder="(555) 555-5555">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Who is the target audience?</label>
+      <div class="slide-toggle">
+        <button type="button" class="slide-btn selected" onclick="selectTarget(this, 'Buyers')">Buyers</button>
+        <button type="button" class="slide-btn" onclick="selectTarget(this, 'Sellers')">Sellers</button>
+        <button type="button" class="slide-btn" onclick="selectTarget(this, 'Both')">Both</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">What is the main goal?</label>
+      <div class="slide-toggle">
+        <button type="button" class="slide-btn selected" onclick="selectGoal(this, 'Education')">Education</button>
+        <button type="button" class="slide-btn" onclick="selectGoal(this, 'Lead Generation')">Lead Generation</button>
+        <button type="button" class="slide-btn" onclick="selectGoal(this, 'Both')">Both</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">What topic?</label>
+      <div class="option-grid">
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="First Time Home Buyers">
+          <span class="option-label">First Time Home Buyers</span>
+        </label>
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="Buyers">
+          <span class="option-label">Buyers</span>
+        </label>
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="Move Up Buyers">
+          <span class="option-label">Move Up Buyers</span>
+        </label>
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="Sellers">
+          <span class="option-label">Sellers</span>
+        </label>
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="Investors">
+          <span class="option-label">Investors</span>
+        </label>
+        <label class="option-card" onclick="selectTopic(this)">
+          <input type="radio" name="topic" value="Credit & Qualifying">
+          <span class="option-label">Credit & Qualifying</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Do you have a presentation/slides, or do you need them created?</label>
+      <div class="slide-toggle">
+        <button type="button" class="slide-btn" onclick="selectSlides(this, 'I have slides')">I have slides</button>
+        <button type="button" class="slide-btn selected" onclick="selectSlides(this, 'I need slides created')">I need slides created</button>
+      </div>
+      <div class="form-helper">If you have existing slides, we'll review and co-brand them. If not, Kristy's team will build them for you.</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Anything else we should know?</label>
+      <textarea class="form-textarea" id="wbNotes" placeholder="Specific topics you want covered, audience size, preferred dates, etc."></textarea>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">Submit Webinar Request</button>
+  </form>
+
+  <div class="success-msg" id="successMsg">
+    ✓ Webinar request submitted!
+    <p>Kristy will reach out within 24 hours to schedule a quick planning call.</p>
+  </div>
+
+  <div class="back-link">
+    <a href="realtor-marketing-studio.html">← Back to Marketing Collection</a>
+  </div>
+
+</div>
+</div>
+
+<a href="portal.html" class="return-main">← Return to Portal</a>
+
+<script>
+var selectedTarget = 'Buyers';
+var selectedGoal = 'Education';
+var selectedSlides = 'I need slides created';
+
+function selectTarget(btn, val) {
+  selectedTarget = val;
+  btn.parentElement.querySelectorAll('.slide-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+function selectGoal(btn, val) {
+  selectedGoal = val;
+  btn.parentElement.querySelectorAll('.slide-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+function selectSlides(btn, val) {
+  selectedSlides = val;
+  btn.parentElement.querySelectorAll('.slide-btn').forEach(function(b) { b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+function selectTopic(card) {
+  document.querySelectorAll('.option-card').forEach(function(c) { c.classList.remove('selected'); });
+  card.classList.add('selected');
+  card.querySelector('input').checked = true;
+}
+
+// Phone formatting
+document.getElementById('wbPhone').addEventListener('input', function(e) {
+  var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+  e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+});
+
+// Pre-fill from session
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof protectPage === 'function') protectPage();
+  try {
+    var session = JSON.parse(sessionStorage.getItem('agentEdgeUser') || '{}');
+    if (session.name) document.getElementById('wbName').value = session.name;
+    if (session.email) document.getElementById('wbEmail').value = session.email;
+    if (session.phone) document.getElementById('wbPhone').value = session.phone;
+  } catch(e) {}
+});
+
+// Submit
+document.getElementById('webinarForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  var btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
+
+  var topicEl = document.querySelector('input[name="topic"]:checked');
+  var topic = topicEl ? topicEl.value : 'Not selected';
+
+  var data = {
+    name: document.getElementById('wbName').value.trim(),
+    email: document.getElementById('wbEmail').value.trim(),
+    phone: document.getElementById('wbPhone').value.trim(),
+    target: selectedTarget,
+    goal: selectedGoal,
+    topic: topic,
+    slides: selectedSlides,
+    notes: document.getElementById('wbNotes').value.trim()
+  };
+
+  // SMS notification to Kristy
+  try {
+    await fetch('https://agent-edge-backend.vercel.app/api/send-sms', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        to: '+12063135883',
+        message: 'Agent Edge: WEBINAR REQUEST\n' + data.name + '\n' + data.email + '\n' + (data.phone || '') + '\nTarget: ' + data.target + '\nGoal: ' + data.goal + '\nTopic: ' + data.topic + '\nSlides: ' + data.slides
+      })
+    });
+  } catch (err) { console.error('SMS failed:', err); }
+
+  // Show success
+  document.getElementById('webinarForm').style.display = 'none';
+  document.getElementById('successMsg').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+<script src="gus-find-it.js"></script>
+</body>
+</html>
