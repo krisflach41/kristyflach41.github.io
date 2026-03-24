@@ -126,36 +126,12 @@ body {
       Educational video content to share with clients and support your conversations at every stage of the lending process.
     </p>
 
-    <div class="video-grid">
+    <div class="video-grid" id="videoGrid">
+      <div style="grid-column:1/-1; text-align:center; padding:40px; color:#999;">Loading videos...</div>
+    </div>
 
-      <div class="video-card">
-        <div class="video-wrapper">
-          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-        </div>
-        <div class="video-body">
-          <h3>Understanding the Mortgage Process</h3>
-          <p>A step-by-step walkthrough of how the lending process works from pre-approval to closing day.</p>
-          <div class="video-tags">
-            <span class="video-tag">First-Time Buyers</span>
-            <span class="video-tag">Process Overview</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="video-card">
-        <div class="video-wrapper">
-          <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" allowfullscreen></iframe>
-        </div>
-        <div class="video-body">
-          <h3>What Affects Your Interest Rate</h3>
-          <p>An overview of the key factors that determine your mortgage rate and how to position yourself for the best terms.</p>
-          <div class="video-tags">
-            <span class="video-tag">Rates &amp; Pricing</span>
-            <span class="video-tag">Client Education</span>
-          </div>
-        </div>
-      </div>
-
+    <div style="text-align:center; margin-top:28px;">
+      <a href="https://www.youtube.com/playlist?list=PLJc5mrJVmMUocgnYRiYTQpNEkt3yaoEUr" target="_blank" style="display:inline-block; padding:12px 28px; background:#002556; color:white; text-decoration:none; font-weight:700; font-size:14px; border-radius:10px; transition:all 0.25s ease; letter-spacing:0.3px;">View More on YouTube</a>
     </div>
 
     <div class="back-link">
@@ -167,7 +143,39 @@ body {
 
 <a href="portal.html" class="return-main">← Back to Portal</a>
 
-<script src="login.js"></script>
+<script>
+// Load 2 most recent portal-visible videos from Supabase
+document.addEventListener('DOMContentLoaded', function() {
+  fetch('https://agent-edge-backend.vercel.app/api/video-library?visibility=portal')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var grid = document.getElementById('videoGrid');
+      if (!data.success || !data.videos || data.videos.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:#999;">No videos yet. Check back soon.</div>';
+        return;
+      }
+      var vids = data.videos.slice(0, 2);
+      grid.innerHTML = vids.map(function(v) {
+        var embedUrl = v.file_url || ('https://www.youtube.com/embed/' + v.file_name);
+        var tags = v.category ? '<div class="video-tags"><span class="video-tag">' + v.category + '</span></div>' : '';
+        return '<div class="video-card">' +
+          '<div class="video-wrapper">' +
+            '<iframe src="' + embedUrl + '" allowfullscreen></iframe>' +
+          '</div>' +
+          '<div class="video-body">' +
+            '<h3>' + (v.title || 'Untitled') + '</h3>' +
+            (v.description ? '<p>' + v.description + '</p>' : '') +
+            tags +
+          '</div>' +
+        '</div>';
+      }).join('');
+    })
+    .catch(function(err) {
+      console.error('Video library load error:', err);
+      document.getElementById('videoGrid').innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:60px; color:#999;">Unable to load videos.</div>';
+    });
+});
+</script>
 <script src="gus-find-it.js"></script>
 </body>
 </html>
