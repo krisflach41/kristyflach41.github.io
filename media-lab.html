@@ -2624,7 +2624,29 @@ function saveYouTubeVideo() {
     description:description, visibility:visibility, platforms:['youtube']
   });
 
-  showStatus(status, 'Video saved to Media Library!', 'success');
+  // Also save to Supabase so Video Library page can pull it
+  fetch('https://agent-edge-backend.vercel.app/api/video-library', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'save',
+      videoId: id,
+      title: title,
+      category: category,
+      description: description,
+      visibility: visibility
+    })
+  }).then(function(r) { return r.json(); }).then(function(data) {
+    if (data.success) {
+      showStatus(status, 'Video saved to Media Library and Video Library!', 'success');
+    } else {
+      showStatus(status, 'Saved locally. Supabase sync failed: ' + (data.error || ''), 'success');
+    }
+  }).catch(function(err) {
+    showStatus(status, 'Saved locally. Supabase sync failed.', 'success');
+    console.error('Supabase save error:', err);
+  });
+
   renderYtSaved();
 
   // Clear form
