@@ -469,6 +469,36 @@ h1 {
   border: 1px solid rgba(255,255,255,0.7);
 }
 
+/* ===== MARKETS DASHBOARD ===== */
+.mkts-dash { margin-bottom:45px; text-align:left; }
+.mkts-dash-header { text-align:center; margin-bottom:18px; }
+.mkts-dash-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#6e7f77; font-weight:700; }
+.mkts-updated { font-size:11px; color:#8a7e6b; margin-top:4px; }
+.mkts-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:18px; }
+.mkts-card { border-radius:16px; background:linear-gradient(180deg,rgba(248,242,232,0.92),rgba(248,242,232,0.76)); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.6); box-shadow:0 10px 30px rgba(160,140,110,0.12),0 4px 10px rgba(160,140,110,0.06); padding:20px 22px; cursor:pointer; transition:all 0.2s ease; }
+.mkts-card:hover { transform:translateY(-2px); box-shadow:0 14px 38px rgba(160,140,110,0.18),0 6px 14px rgba(160,140,110,0.1); }
+.mkts-card.active { border:2px solid #6e7f77; }
+.mkts-card-label { font-size:11px; font-weight:700; color:#6e7f77; text-transform:uppercase; letter-spacing:0.5px; display:flex; justify-content:space-between; align-items:center; }
+.mkts-card-price-row { display:flex; justify-content:space-between; align-items:baseline; margin-top:6px; }
+.mkts-card-price { font-size:28px; font-weight:700; color:#0b1f3a; }
+.mkts-card-change { font-size:14px; font-weight:700; }
+.mkts-card-rows { margin-top:10px; font-size:11px; color:#5a5145; }
+.mkts-card-rows > div { display:flex; justify-content:space-between; padding:2px 0; }
+.mkts-card-rows span:last-child { font-weight:600; color:#0b1f3a; }
+.mkts-coupon-select { font-size:10px; padding:2px 6px; border:1px solid rgba(110,127,119,0.3); border-radius:4px; background:rgba(255,255,255,0.7); color:#0b1f3a; cursor:pointer; font-weight:600; }
+.mkts-dma-row { display:flex; align-items:center; gap:18px; padding:10px 0; border-top:1px solid rgba(110,127,119,0.15); margin-bottom:6px; flex-wrap:wrap; }
+.mkts-dma-row label { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#0b1f3a; cursor:pointer; }
+.mkts-dma-row input[type="checkbox"] { width:14px; height:14px; }
+.mkts-chart-wrap { border-radius:14px; background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,0.7); box-shadow:0 6px 20px rgba(160,140,110,0.08); overflow:hidden; }
+.mkts-chart-wrap canvas { width:100%; height:360px; display:block; }
+.mkts-ranges { display:flex; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid rgba(110,127,119,0.2); }
+.mkts-ranges button { flex:1; padding:9px; font-size:12px; font-weight:600; border:none; background:rgba(255,255,255,0.7); color:#5a5145; cursor:pointer; border-right:1px solid rgba(110,127,119,0.15); transition:all 0.15s; font-family:inherit; }
+.mkts-ranges button:last-child { border-right:none; }
+.mkts-ranges button:hover { background:rgba(110,127,119,0.12); }
+.mkts-ranges button.active { background:#6e7f77; color:#fff; }
+.mkts-source { font-size:10px; color:#8a7e6b; text-align:center; margin-top:14px; }
+@media (max-width:768px) { .mkts-cards { grid-template-columns:1fr; } .mkts-dma-row { gap:10px; } }
+
 /* ===== CART STYLES ===== */
 .cart-icon {
   position: fixed;
@@ -766,6 +796,82 @@ h1 {
   <p class="section-subtitle">
     Daily market intelligence designed to help Realtor partners speak with clarity and confidence.
   </p>
+
+  <!-- ═══ MARKETS DASHBOARD ═══ -->
+  <div class="mkts-dash">
+    <div class="mkts-dash-header">
+      <div class="mkts-dash-title">Today's Market Snapshot</div>
+      <div class="mkts-updated" id="mktsTimestamp">Loading...</div>
+    </div>
+    <div class="mkts-cards">
+      <div class="mkts-card active" data-mkts-card="UMBS_5.5" onclick="mktsChangeSymbol('UMBS_'+mktsActiveCoupon)">
+        <div class="mkts-card-label">
+          <span id="mktsUmbsLabel">Mortgage Bond Pricing</span>
+          <select class="mkts-coupon-select" id="mktsCouponSelect" onchange="mktsChangeCoupon(this.value)" title="Change coupon">
+            <option value="5">5.0%</option>
+            <option value="5.5" selected>5.5%</option>
+            <option value="6">6.0%</option>
+          </select>
+        </div>
+        <div class="mkts-card-price-row">
+          <div class="mkts-card-price" id="mktsUmbsPrice">—</div>
+          <div class="mkts-card-change" id="mktsUmbsBps">—</div>
+        </div>
+        <div class="mkts-card-rows">
+          <div><span>Last Night's Close</span><span id="mktsUmbsClose">—</span></div>
+          <div><span>Open (9:00 AM ET)</span><span id="mktsUmbsOpen">—</span></div>
+          <div><span>Mid-Day (12:00 PM ET)</span><span id="mktsUmbsMidDay">—</span></div>
+          <div><span>Afternoon (2:00 PM ET)</span><span id="mktsUmbsAfternoon">—</span></div>
+        </div>
+      </div>
+      <div class="mkts-card" data-mkts-card="10Y" onclick="mktsChangeSymbol('10Y')">
+        <div class="mkts-card-label">10 Year Treasury Yield</div>
+        <div class="mkts-card-price-row">
+          <div class="mkts-card-price" id="mkts10YPrice">—</div>
+          <div class="mkts-card-change" id="mkts10YBps">—</div>
+        </div>
+        <div class="mkts-card-rows">
+          <div><span>Previous Close</span><span id="mkts10YPrevClose">—</span></div>
+          <div><span>Open (9:00 AM ET)</span><span id="mkts10YOpen">—</span></div>
+          <div><span>Mid-Day (12:00 PM ET)</span><span id="mkts10YMidDay">—</span></div>
+          <div><span>Current</span><span id="mkts10YLast">—</span></div>
+        </div>
+      </div>
+      <div class="mkts-card" data-mkts-card="SPY" onclick="mktsChangeSymbol('SPY')">
+        <div class="mkts-card-label">S&amp;P 500</div>
+        <div class="mkts-card-price-row">
+          <div class="mkts-card-price" id="mktsSpyPrice">—</div>
+          <div class="mkts-card-change" id="mktsSpyPts">—</div>
+        </div>
+        <div class="mkts-card-rows">
+          <div><span>Previous Close</span><span id="mktsSpyPrevClose">—</span></div>
+          <div><span>Today's Open</span><span id="mktsSpyOpen2">—</span></div>
+          <div><span>High</span><span id="mktsSpyHigh">—</span></div>
+          <div><span>Low</span><span id="mktsSpyLow">—</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="mkts-dma-row">
+      <label><input type="checkbox" id="mktsDMA200CB" checked onchange="mktsToggleDMA(200)" style="accent-color:#2563eb;"> <span style="color:#2563eb;">200 DMA</span></label>
+      <label><input type="checkbox" id="mktsDMA100CB" checked onchange="mktsToggleDMA(100)" style="accent-color:#a855f7;"> <span style="color:#a855f7;">100 DMA</span></label>
+      <label><input type="checkbox" id="mktsDMA50CB" checked onchange="mktsToggleDMA(50)" style="accent-color:#0b1f3a;"> <span style="color:#0b1f3a;">50 DMA</span></label>
+      <label><input type="checkbox" id="mktsDMA25CB" checked onchange="mktsToggleDMA(25)" style="accent-color:#ea580c;"> <span style="color:#ea580c;">25 DMA</span></label>
+      <label><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span> <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5%</span></label>
+    </div>
+    <div class="mkts-chart-wrap">
+      <canvas id="mktsMainChart"></canvas>
+    </div>
+    <div class="mkts-ranges" id="mktsChartRanges">
+      <button onclick="mktsChangeRange('1mo')" data-range="1mo">1M</button>
+      <button onclick="mktsChangeRange('3mo')" data-range="3mo" class="active">3M</button>
+      <button onclick="mktsChangeRange('6mo')" data-range="6mo">6M</button>
+      <button onclick="mktsChangeRange('1y')" data-range="1y">1Y</button>
+      <button onclick="mktsChangeRange('2y')" data-range="2y">2Y</button>
+      <button onclick="mktsChangeRange('ytd')" data-range="ytd">YTD</button>
+      <button onclick="mktsChangeRange('max')" data-range="max">Max</button>
+    </div>
+    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · Bond &amp; equity data delayed · Snapshots at 9 AM, 12 PM, 2 PM, 5 PM ET</div>
+  </div>
 
   <div class="blog-grid">
 
@@ -1286,6 +1392,57 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('adminLink').style.display = 'block';
   }
 });
+</script>
+<script>
+/* ═══ MARKETS DASHBOARD LOGIC ═══ */
+var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='3mo',mktsChartData=null,mktsActiveCoupon='5.5';
+var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
+(function(){loadMarketsData();setInterval(loadMarketsData,120000);})();
+
+function loadMarketsData(){var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});}
+
+function mktsBpHtml(b,inv){if(b===null||b===undefined)return'<span style="color:#8a7e6b">—</span>';var up=b>0,c=inv?(up?'#dc2626':'#16a34a'):(up?'#16a34a':'#dc2626');if(b===0)c='#0b1f3a';return'<span style="color:'+c+';font-weight:700">'+Math.abs(b)+'bp '+(up?'▲':(b<0?'▼':''))+'</span>';}
+function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a7e6b">—</span>';var c=v>=0?'#16a34a':'#dc2626';return'<span style="color:'+c+';font-weight:700">'+Math.abs(v).toFixed(2)+' '+(v>=0?'▲':'▼')+'</span>';}
+
+function mktsRenderCards(d){
+  var u=d.umbs;if(u&&u.price){document.getElementById('mktsUmbsPrice').textContent=u.price.toFixed(2);document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(Math.round((u.change||0)*100),false);}
+  var snap=d.snapshots||{},uk='UMBS_'+mktsActiveCoupon,us=snap[uk]||{};
+  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');
+  if(u&&u.previousClose){var el=document.getElementById('mktsUmbsClose');if(el&&el.textContent==='—')el.textContent=u.previousClose.toFixed(2);}
+  if(u&&u.open){var el2=document.getElementById('mktsUmbsOpen');if(el2&&el2.textContent==='—')el2.textContent=u.open.toFixed(2);}
+  var t10=d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}
+  var t10s=snap['10Y']||{};mktsSetSnapYield('mkts10YOpen',t10s,'Open');mktsSetSnapYield('mkts10YMidDay',t10s,'Mid-Day');
+  var spy=d.spy;if(spy&&spy.price){document.getElementById('mktsSpyPrice').textContent=spy.price.toFixed(2);document.getElementById('mktsSpyPts').innerHTML=mktsPtsHtml(spy.change||0);mktsSetVal('mktsSpyPrevClose',spy.previousClose?spy.previousClose.toFixed(2):'—');mktsSetVal('mktsSpyOpen2',spy.open?spy.open.toFixed(2):'—');mktsSetVal('mktsSpyHigh',spy.high?spy.high.toFixed(2):'—');mktsSetVal('mktsSpyLow',spy.low?spy.low.toFixed(2):'—');}
+}
+function mktsSetVal(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+function mktsSetSnap(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(2):'—';}
+function mktsSetSnapYield(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(3)+'%':'—';}
+
+function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var lbl=document.getElementById('mktsUmbsLabel');if(lbl)lbl.textContent='Mortgage Bond Pricing ('+c+'%)';var dl=document.getElementById('mktsDMALabel');if(dl)dl.textContent='UMBS 30YR '+c+'%';loadMarketsData();}
+function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsLoadChart();}
+function mktsChangeRange(r){mktsCurrentRange=r;document.querySelectorAll('#mktsChartRanges button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-range')===r);});mktsLoadChart();}
+function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById('mktsDMA'+p+'CB');if(cb)cb.checked=mktsDMA[p];mktsRenderChartFromData();}
+
+function mktsLoadChart(){var isT=mktsCurrentSymbol==='10Y';var url='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+mktsCurrentRange;if(!isT)url+='&interval=1d';fetch(url).then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});}
+
+function mktsRenderChartFromData(){if(!mktsChartData||!mktsChartData.data||mktsChartData.data.length===0)return;var isT=mktsChartData.type==='treasury',data=mktsChartData.data;var canvas=document.getElementById('mktsMainChart');var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;canvas.width=w*dpr;canvas.height=h*dpr;var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);if(isT)mktsDrawTreasury(ctx,w,h,data);else mktsDrawCandles(ctx,w,h,data);}
+
+function mktsCalcSMA(data,p){var r=[];for(var i=0;i<data.length;i++){if(i<p-1){r.push(null);continue;}var s=0;for(var j=i-p+1;j<=i;j++)s+=(data[j].close||data[j].value);r.push(s/p);}return r;}
+function mktsCalcPivots(data){if(data.length<2)return null;var prev=data[data.length-2];var H=prev.high,L=prev.low,C=prev.close;if(!H||!L||!C)return null;var P=(H+L+C)/3;return{pivot:P,r1:2*P-L,r2:P+(H-L),s1:2*P-H,s2:P-(H-L)};}
+function mktsCalcFib(data){var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});var r=hi-lo;if(r===0)return null;return{pct0:{level:hi,label:'0% '+hi.toFixed(2)},pct236:{level:hi-r*0.236,label:'23.6% '+(hi-r*0.236).toFixed(2)},pct382:{level:hi-r*0.382,label:'38.2% '+(hi-r*0.382).toFixed(2)},pct50:{level:hi-r*0.5,label:'50% '+(hi-r*0.5).toFixed(2)},pct618:{level:hi-r*0.618,label:'61.8% '+(hi-r*0.618).toFixed(2)},pct100:{level:lo,label:'100% '+lo.toFixed(2)}};}
+
+function mktsDrawCandles(ctx,w,h,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var minP=Infinity,maxP=-Infinity;data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});var range=maxP-minP||1;minP-=range*0.06;maxP+=range*0.06;range=maxP-minP;function yP(v){return pad.top+((maxP-v)/range)*ch;}function xP(i){return pad.left+(cw/data.length)*i+(cw/data.length)/2;}
+for(var g=0;g<=7;g++){var gy=pad.top+(ch/7)*g;ctx.strokeStyle='#ede8df';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxP-(range/7)*g).toFixed(2),w-pad.right+5,gy+3);}
+[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||data.length<p)return;var sma=mktsCalcSMA(data,p);ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var s=false;sma.forEach(function(v,i){if(v===null)return;if(!s){ctx.moveTo(xP(i),yP(v));s=true;}else ctx.lineTo(xP(i),yP(v));});ctx.stroke();});
+var fib=mktsCalcFib(data);if(fib){ctx.setLineDash([5,4]);Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minP&&f.level<=maxP){var y=yP(f.level);ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle='#6e7f77';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,pad.left+10,y-4);}});ctx.setLineDash([]);}
+var pv=mktsCalcPivots(data);if(pv){ctx.setLineDash([8,4]);[{v:pv.r2,l:'R2 '+pv.r2.toFixed(2),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(2),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(2),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(2),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minP&&sr.v<=maxP){var y=yP(sr.v);ctx.strokeStyle=sr.c;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle=sr.c;ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='right';ctx.fillText(sr.l,w-pad.right-5,y-4);}});ctx.setLineDash([]);}
+var barW=Math.max(2,Math.min(9,(cw/data.length)*0.65));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();ctx.fillStyle=color;var top=Math.min(yP(c.open),yP(c.close)),bh=Math.max(Math.abs(yP(c.close)-yP(c.open)),1);ctx.fillRect(x-barW/2,top,barW,bh);});
+ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var li=Math.max(1,Math.ceil(data.length/12));data.forEach(function(c,i){if(i%li===0){var dt=new Date(c.date);ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);}});}
+
+function mktsDrawTreasury(ctx,w,h,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var vals=data.map(function(d){return d.value;}),minV=Math.min.apply(null,vals),maxV=Math.max.apply(null,vals);var range=maxV-minV||0.1;minV-=range*0.06;maxV+=range*0.06;range=maxV-minV;function yP(v){return pad.top+((maxV-v)/range)*ch;}
+for(var g=0;g<=7;g++){var gy=pad.top+(ch/7)*g;ctx.strokeStyle='#ede8df';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxV-(range/7)*g).toFixed(2)+'%',w-pad.right+5,gy+3);}
+ctx.beginPath();ctx.strokeStyle='#6e7f77';ctx.lineWidth=2;data.forEach(function(d,i){var x=pad.left+(cw/Math.max(data.length-1,1))*i;if(i===0)ctx.moveTo(x,yP(d.value));else ctx.lineTo(x,yP(d.value));});ctx.stroke();ctx.lineTo(pad.left+cw,pad.top+ch);ctx.lineTo(pad.left,pad.top+ch);ctx.closePath();ctx.fillStyle='rgba(110,127,119,0.06)';ctx.fill();
+ctx.textAlign='center';var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var li=Math.max(1,Math.ceil(data.length/12));data.forEach(function(d,i){if(i%li===0){var p=d.date.split('-');ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.fillText(months[parseInt(p[1])-1]+' '+parseInt(p[2]),pad.left+(cw/Math.max(data.length-1,1))*i,h-6);}});}
 </script>
 <script src="gus-find-it.js"></script>
 </body>
