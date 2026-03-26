@@ -1847,7 +1847,7 @@
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px;">
 
       <!-- UMBS 30YR 5.5% -->
-      <div style="background:#fff;border:2px solid #6e7f77;border-radius:10px;padding:18px 20px;">
+      <div data-mkts-card="UMBS_5.5" onclick="mktsChangeSymbol('UMBS_5.5')" style="background:#fff;border:2px solid #6e7f77;border-radius:10px;padding:18px 20px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">UMBS 30YR 5.5%</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsUmbs55Price" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1857,7 +1857,7 @@
       </div>
 
       <!-- 10Y UST -->
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;">
+      <div data-mkts-card="10Y" onclick="mktsChangeSymbol('10Y')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">10Y UST</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mkts10YPrice" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1871,8 +1871,8 @@
         </div>
       </div>
 
-      <!-- SPDR S&P 500 ETF -->
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;">
+      <!-- S&P 500 -->
+      <div data-mkts-card="SPY" onclick="mktsChangeSymbol('SPY')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">SPDR S&P 500 ETF</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsSpyPrice" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1895,7 +1895,7 @@
 
     <!-- More Coupons -->
     <div id="mktsMoreCoupons" style="display:none;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;">
+      <div data-mkts-card="UMBS_5" onclick="mktsChangeSymbol('UMBS_5')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 5%</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsUmbs5Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1903,7 +1903,7 @@
         </div>
         <div id="mktsUmbs5Snaps" style="margin-top:8px;"></div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;">
+      <div data-mkts-card="UMBS_6" onclick="mktsChangeSymbol('UMBS_6')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 6%</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsUmbs6Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1915,7 +1915,7 @@
 
     <!-- More Treasuries -->
     <div id="mktsMoreTreasuries" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
+      <div data-mkts-card="1Y" onclick="mktsChangeSymbol('1Y')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">1Y UST</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
           <div id="mkts1YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1928,7 +1928,7 @@
           <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts1YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
+      <div data-mkts-card="2Y" onclick="mktsChangeSymbol('2Y')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">2Y UST</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
           <div id="mkts2YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1941,7 +1941,7 @@
           <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts2YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
+      <div data-mkts-card="5Y" onclick="mktsChangeSymbol('5Y')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">5Y UST</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
           <div id="mkts5YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1954,7 +1954,7 @@
           <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts5YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
+      <div data-mkts-card="7Y" onclick="mktsChangeSymbol('7Y')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">7Y UST</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
           <div id="mkts7YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
@@ -1996,15 +1996,6 @@
 
     <!-- ═══ MAIN CHART ═══ -->
     <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;overflow:hidden;">
-      <!-- Symbol selectors -->
-      <div id="mktsChartSymbols" style="display:flex;gap:6px;padding:12px 16px 0;">
-        <button onclick="mktsChangeSymbol('UMBS_5.5')" data-sym="UMBS_5.5" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">UMBS 5.5%</button>
-        <button onclick="mktsChangeSymbol('UMBS_5')" data-sym="UMBS_5" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 5%</button>
-        <button onclick="mktsChangeSymbol('UMBS_6')" data-sym="UMBS_6" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 6%</button>
-        <button onclick="mktsChangeSymbol('10Y')" data-sym="10Y" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">10Y UST</button>
-        <button onclick="mktsChangeSymbol('SPY')" data-sym="SPY" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">SPY</button>
-      </div>
-
       <canvas id="mktsMainChart" style="width:100%;height:360px;display:block;"></canvas>
     </div>
 
@@ -2036,7 +2027,7 @@
 
     <!-- Source -->
     <div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:16px;">
-      Treasury yields via FRED (Federal Reserve Bank of St. Louis) · MBS & equity data via Yahoo Finance (15-20 min delayed) · Auto-refreshes every 5 minutes
+      Treasury yields via FRED (Federal Reserve Bank of St. Louis) · MBS & equity data via Yahoo Finance (15-20 min delayed) · Auto-refreshes every 2 minutes
     </div>
 
   </div>

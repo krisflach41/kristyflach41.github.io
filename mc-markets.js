@@ -148,6 +148,17 @@ function mktsRenderSnapshots(containerId, snaps, inverted) {
 // ─── Chart: Symbol + Range switching ────────────────────────────
 function mktsChangeSymbol(sym) {
   mktsCurrentSymbol = sym;
+  // Highlight active card
+  document.querySelectorAll('[data-mkts-card]').forEach(function(card) {
+    if (card.getAttribute('data-mkts-card') === sym) {
+      card.style.borderColor = '#6e7f77';
+      card.style.borderWidth = '2px';
+    } else {
+      card.style.borderColor = '#e2e5ed';
+      card.style.borderWidth = '1px';
+    }
+  });
+  // Also update button bar if it exists
   document.querySelectorAll('#mktsChartSymbols button').forEach(function(b) {
     if (b.getAttribute('data-sym') === sym) {
       b.style.background = '#6e7f77'; b.style.color = '#fff'; b.style.borderColor = '#6e7f77';
@@ -158,7 +169,7 @@ function mktsChangeSymbol(sym) {
   // Update DMA label
   var dmaLabel = document.getElementById('mktsDMALabel');
   if (dmaLabel) {
-    var labels = { 'UMBS_5.5': 'UMBS 30YR 5.5%', 'UMBS_5': 'UMBS 30YR 5%', 'UMBS_6': 'UMBS 30YR 6%', '10Y': '10Y UST', 'SPY': 'S&P 500' };
+    var labels = { 'UMBS_5.5': 'UMBS 30YR 5.5%', 'UMBS_5': 'UMBS 30YR 5%', 'UMBS_6': 'UMBS 30YR 6%', '10Y': '10Y UST', 'SPY': 'S&P 500', '1Y': '1Y UST', '2Y': '2Y UST', '5Y': '5Y UST', '7Y': '7Y UST' };
     dmaLabel.textContent = labels[sym] || sym;
   }
   mktsLoadChart();
@@ -533,7 +544,8 @@ function mktsDrawStochastic(ctx, w, h, data) {
     if (viewId === 'markets' && !mktsLoaded) {
       mktsLoaded = true;
       loadMarketsData();
-      mktsRefreshTimer = setInterval(loadMarketsData, 300000);
+      // Auto-refresh every 2 minutes
+      mktsRefreshTimer = setInterval(loadMarketsData, 120000);
     }
   };
 })();
