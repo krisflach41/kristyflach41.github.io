@@ -6,7 +6,7 @@ var mktsLoaded=false,mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange
 var mktsRefreshTimer=null,mktsChartData=null;
 var mktsDMA={200:true,100:true,50:true,25:true};
 var mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
-var mktsFilters={sr:true,fib:true,stoch:true};
+
 
 function loadMarketsData(){
   var ts=document.getElementById('mktsTimestamp');
@@ -98,12 +98,7 @@ function mktsChangeRange(r){
   mktsLoadChart();
 }
 function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById('mktsDMA'+p+'CB');if(cb)cb.checked=mktsDMA[p];mktsRenderChartFromData();}
-function mktsToggleFilter(f){
-  mktsFilters[f]=!mktsFilters[f];
-  var el=document.getElementById('mktsFilter_'+f);
-  if(el){el.style.background=mktsFilters[f]?'#6e7f77':'#ccc';}
-  mktsRenderChartFromData();
-}
+
 
 function mktsLoadChart(){
   var isT=['1Y','2Y','5Y','7Y','10Y'].indexOf(mktsCurrentSymbol)!==-1;
@@ -121,7 +116,7 @@ function mktsRenderChartFromData(){
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
   if(isT)mktsDrawTreasury(ctx,w,h,data);else mktsDrawCandles(ctx,w,h,data);
   var sc=document.getElementById('mktsStochChart'),sl=document.getElementById('mktsStochLabel');
-  if(sc&&!isT&&mktsFilters.stoch&&data.length>21){
+  if(sc&&!isT&&true&&data.length>21){
     sc.style.display='block';if(sl)sl.style.display='block';
     var sw=sc.offsetWidth,sh=sc.offsetHeight;sc.width=sw*dpr;sc.height=sh*dpr;
     var sctx=sc.getContext('2d');sctx.scale(dpr,dpr);mktsDrawStoch(sctx,sw,sh,data);
@@ -181,7 +176,7 @@ function mktsDrawCandles(ctx,w,h,data){
   });
 
   // Fibonacci
-  if(mktsFilters.fib){
+  if(true){
     var fib=mktsCalcFib(data);
     if(fib){ctx.setLineDash([5,4]);
       Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minP&&f.level<=maxP){
@@ -194,7 +189,7 @@ function mktsDrawCandles(ctx,w,h,data){
   }
 
   // S/R
-  if(mktsFilters.sr){
+  if(true){
     var pv=mktsCalcPivots(data);
     if(pv){ctx.setLineDash([8,4]);
       [{v:pv.r2,l:'R2 '+pv.r2.toFixed(2),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(2),c:'#2563eb'},
