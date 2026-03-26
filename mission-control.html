@@ -1839,449 +1839,209 @@
       <button class="topbar-btn" onclick="loadMarketsData()" title="Refresh"><i class="fas fa-sync-alt"></i> Refresh</button>
     </div>
   </div>
-  <div class="view-body" style="padding:24px;">
+  <div class="view-body" style="padding:24px;overflow-y:auto;">
 
-    <!-- Last Updated -->
-    <div id="mktsTimestamp" style="font-size:11px;color:var(--text-muted);margin-bottom:16px;">Loading market data...</div>
+    <div id="mktsTimestamp" style="font-size:11px;color:var(--text-muted);margin-bottom:14px;">Loading market data...</div>
 
-    <!-- ─── TOP PRICE CARDS ─── -->
-    <div id="mktsPriceCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+    <!-- ═══ TOP 3 PRICE CARDS ═══ -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:12px;">
 
-      <!-- UMBS 30YR 5.5% (primary) -->
-      <div style="background:#fff;border:2px solid #6e7f77;border-radius:12px;padding:20px;">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;">
-          <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">UMBS 30YR 5.5%</div>
+      <!-- UMBS 30YR 5.5% -->
+      <div style="background:#fff;border:2px solid #6e7f77;border-radius:10px;padding:18px 20px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">UMBS 30YR 5.5%</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mktsUmbs55Price" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsUmbs55Bps" style="font-size:15px;">—</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
-          <div id="mktsUmbs55Price" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mktsUmbs55Change" style="font-size:16px;font-weight:700;">—</div>
-        </div>
-        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
-          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsUmbs55Open">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsUmbs55High">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsUmbs55Low">—</span></div>
-        </div>
+        <div id="mktsUmbs55Snaps" style="margin-top:10px;"></div>
       </div>
 
       <!-- 10Y UST -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">10Y UST</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
-          <div id="mkts10YPrice" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mkts10YChange" style="font-size:16px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mkts10YPrice" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts10YBps" style="font-size:15px;">—</div>
         </div>
-        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
-          <div style="display:flex;justify-content:space-between;"><span>Previous</span><span id="mkts10YPrev">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>Change</span><span id="mkts10YBps">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>Date</span><span id="mkts10YDate">—</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-secondary);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mkts10YOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mkts10YLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mkts10YHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts10YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
 
       <!-- SPDR S&P 500 ETF -->
-      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:18px 20px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">SPDR S&P 500 ETF</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
-          <div id="mktsSpyPrice" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mktsSpyChange" style="font-size:16px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mktsSpyPrice" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsSpyPts" style="font-size:15px;">—</div>
         </div>
-        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
-          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsSpyOpen">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsSpyHigh">—</span></div>
-          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsSpyLow">—</span></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-secondary);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsSpyOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mktsSpyLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsSpyHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsSpyLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ─── EXPANDABLE COUPONS ─── -->
-    <div style="margin-bottom:8px;">
-      <span onclick="document.getElementById('mktsMoreCoupons').style.display=document.getElementById('mktsMoreCoupons').style.display==='none'?'grid':'none';this.textContent=document.getElementById('mktsMoreCoupons').style.display==='none'?'Show more coupons ▾':'Hide coupons ▴'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more coupons ▾</span>
-      <span style="margin-left:24px;" onclick="document.getElementById('mktsMoreTreasuries').style.display=document.getElementById('mktsMoreTreasuries').style.display==='none'?'grid':'none';this.textContent=document.getElementById('mktsMoreTreasuries').style.display==='none'?'Show more treasuries ▾':'Hide treasuries ▴'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more treasuries ▾</span>
+    <!-- ═══ SHOW MORE TOGGLES ═══ -->
+    <div style="display:flex;gap:24px;margin-bottom:12px;">
+      <span id="mktsToggleCoupons" onclick="var el=document.getElementById('mktsMoreCoupons');var show=el.style.display==='none';el.style.display=show?'grid':'none';this.textContent=show?'Hide coupons ▴':'Show more coupons ▾'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more coupons ▾</span>
+      <span id="mktsToggleTreasuries" onclick="var el=document.getElementById('mktsMoreTreasuries');var show=el.style.display==='none';el.style.display=show?'grid':'none';this.textContent=show?'Hide treasuries ▴':'Show more treasuries ▾'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more treasuries ▾</span>
     </div>
 
     <!-- More Coupons -->
-    <div id="mktsMoreCoupons" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;">
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+    <div id="mktsMoreCoupons" style="display:none;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 5%</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsUmbs5Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mktsUmbs5Change" style="font-size:14px;font-weight:700;">—</div>
+          <div id="mktsUmbs5Bps" style="font-size:14px;">—</div>
         </div>
+        <div id="mktsUmbs5Snaps" style="margin-top:8px;"></div>
       </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 6%</div>
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
           <div id="mktsUmbs6Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mktsUmbs6Change" style="font-size:14px;font-weight:700;">—</div>
+          <div id="mktsUmbs6Bps" style="font-size:14px;">—</div>
         </div>
+        <div id="mktsUmbs6Snaps" style="margin-top:8px;"></div>
       </div>
     </div>
 
     <!-- More Treasuries -->
-    <div id="mktsMoreTreasuries" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;" id="mkts1YCard">
+    <div id="mktsMoreTreasuries" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">1Y UST</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
-          <div id="mkts1YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mkts1YChange" style="font-size:13px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+          <div id="mkts1YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts1YBps" style="font-size:13px;">—</div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mkts1YOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mkts1YLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mkts1YHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts1YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">2Y UST</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
-          <div id="mkts2YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mkts2YChange" style="font-size:13px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+          <div id="mkts2YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts2YBps" style="font-size:13px;">—</div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mkts2YOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mkts2YLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mkts2YHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts2YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">5Y UST</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
-          <div id="mkts5YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mkts5YChange" style="font-size:13px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+          <div id="mkts5YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts5YBps" style="font-size:13px;">—</div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mkts5YOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mkts5YLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mkts5YHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts5YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
-      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+      <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:14px 16px;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">7Y UST</div>
-        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
-          <div id="mkts7YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
-          <div id="mkts7YChange" style="font-size:13px;font-weight:700;">—</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;">
+          <div id="mkts7YPrice" style="font-size:20px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts7YBps" style="font-size:13px;">—</div>
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mkts7YOpen" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mkts7YLast" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mkts7YHigh" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts7YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ─── CHART SECTION ─── -->
-    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
-      <!-- Chart Controls -->
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div style="display:flex;gap:8px;" id="mktsChartSymbols">
-          <button onclick="mktsChangeSymbol('UMBS_5.5')" class="mkts-sym-btn active" data-sym="UMBS_5.5" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">UMBS 5.5%</button>
-          <button onclick="mktsChangeSymbol('UMBS_5')" class="mkts-sym-btn" data-sym="UMBS_5" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 5%</button>
-          <button onclick="mktsChangeSymbol('UMBS_6')" class="mkts-sym-btn" data-sym="UMBS_6" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 6%</button>
-          <button onclick="mktsChangeSymbol('10Y')" class="mkts-sym-btn" data-sym="10Y" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">10Y UST</button>
-          <button onclick="mktsChangeSymbol('SPY')" class="mkts-sym-btn" data-sym="SPY" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">SPY</button>
-        </div>
-        <div style="display:flex;gap:4px;" id="mktsChartRanges">
-          <button onclick="mktsChangeRange('5d')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1W</button>
-          <button onclick="mktsChangeRange('1mo')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1M</button>
-          <button onclick="mktsChangeRange('3mo')" class="mkts-range-btn active" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">3M</button>
-          <button onclick="mktsChangeRange('6mo')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">6M</button>
-          <button onclick="mktsChangeRange('1y')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1Y</button>
-          <button onclick="mktsChangeRange('2y')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">2Y</button>
-        </div>
-      </div>
-      <!-- Chart Canvas -->
-      <canvas id="mktsChartCanvas" width="900" height="400" style="width:100%;height:400px;"></canvas>
+    <!-- ═══ DMA TOGGLES ═══ -->
+    <div style="display:flex;align-items:center;gap:20px;margin-bottom:8px;padding:10px 0;border-top:1px solid #e2e5ed;">
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#0b1f3a;cursor:pointer;">
+        <input type="checkbox" id="mktsDMA200CB" checked onchange="mktsToggleDMA(200)" style="accent-color:#2563eb;"> <span style="color:#2563eb;">200 DMA</span>
+        <span style="color:var(--text-muted);font-weight:400;">N/A</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#0b1f3a;cursor:pointer;">
+        <input type="checkbox" id="mktsDMA100CB" checked onchange="mktsToggleDMA(100)" style="accent-color:#dc2626;"> <span style="color:#dc2626;">100 DMA</span>
+        <span style="color:var(--text-muted);font-weight:400;">N/A</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#0b1f3a;cursor:pointer;">
+        <input type="checkbox" id="mktsDMA50CB" checked onchange="mktsToggleDMA(50)" style="accent-color:#0b1f3a;"> <span style="color:#0b1f3a;">50 DMA</span>
+        <span style="color:var(--text-muted);font-weight:400;">N/A</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#0b1f3a;cursor:pointer;">
+        <input type="checkbox" id="mktsDMA25CB" checked onchange="mktsToggleDMA(25)" style="accent-color:#ea580c;"> <span style="color:#ea580c;">25 DMA</span>
+        <span style="color:var(--text-muted);font-weight:400;">N/A</span>
+      </label>
+      <label style="display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;cursor:pointer;">
+        <span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span>
+        <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5%</span>
+        <span style="color:var(--text-muted);font-weight:400;">N/A</span>
+      </label>
     </div>
 
-    <!-- Source disclaimer -->
-    <div style="font-size:10px;color:var(--text-muted);text-align:center;">
+    <!-- ═══ MAIN CHART ═══ -->
+    <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;overflow:hidden;">
+      <!-- Symbol selectors -->
+      <div id="mktsChartSymbols" style="display:flex;gap:6px;padding:12px 16px 0;">
+        <button onclick="mktsChangeSymbol('UMBS_5.5')" data-sym="UMBS_5.5" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">UMBS 5.5%</button>
+        <button onclick="mktsChangeSymbol('UMBS_5')" data-sym="UMBS_5" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 5%</button>
+        <button onclick="mktsChangeSymbol('UMBS_6')" data-sym="UMBS_6" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 6%</button>
+        <button onclick="mktsChangeSymbol('10Y')" data-sym="10Y" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">10Y UST</button>
+        <button onclick="mktsChangeSymbol('SPY')" data-sym="SPY" style="padding:5px 12px;border-radius:5px;font-size:11px;font-weight:600;border:1px solid #e2e5ed;background:#fff;color:#0b1f3a;cursor:pointer;">SPY</button>
+      </div>
+
+      <canvas id="mktsMainChart" style="width:100%;height:360px;display:block;"></canvas>
+    </div>
+
+    <!-- ═══ STOCHASTIC ═══ -->
+    <div id="mktsStochLabel" style="margin-top:16px;margin-bottom:4px;">
+      <span style="font-size:13px;font-weight:700;color:#0b1f3a;">Stochastic</span>
+      <span style="margin-left:16px;font-size:11px;font-weight:600;color:#0b1f3a;">
+        <span style="display:inline-block;width:8px;height:8px;background:#0b1f3a;border-radius:1px;margin-right:3px;"></span> %K (21)
+      </span>
+      <span style="margin-left:12px;font-size:11px;font-weight:600;color:#6e7f77;">
+        <span style="display:inline-block;width:8px;height:8px;background:#6e7f77;border-radius:1px;margin-right:3px;"></span> %D (3 DMA)
+      </span>
+    </div>
+    <div style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;overflow:hidden;">
+      <canvas id="mktsStochChart" style="width:100%;height:150px;display:block;"></canvas>
+    </div>
+
+    <!-- ═══ TIME RANGE SELECTOR ═══ -->
+    <div id="mktsChartRanges" style="display:flex;margin-top:14px;border:1px solid #e2e5ed;border-radius:8px;overflow:hidden;">
+      <button onclick="mktsChangeRange('1d')" data-range="1d" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">Intraday</button>
+      <button onclick="mktsChangeRange('1mo')" data-range="1mo" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">1M</button>
+      <button onclick="mktsChangeRange('3mo')" data-range="3mo" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#6e7f77;color:#fff;cursor:pointer;border-right:1px solid #e2e5ed;">3M</button>
+      <button onclick="mktsChangeRange('6mo')" data-range="6mo" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">6M</button>
+      <button onclick="mktsChangeRange('1y')" data-range="1y" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">1Y</button>
+      <button onclick="mktsChangeRange('2y')" data-range="2y" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">2Y</button>
+      <button onclick="mktsChangeRange('ytd')" data-range="ytd" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;border-right:1px solid #e2e5ed;">YTD</button>
+      <button onclick="mktsChangeRange('max')" data-range="max" style="flex:1;padding:10px;font-size:12px;font-weight:600;border:none;background:#fff;color:#5a6578;cursor:pointer;">Max</button>
+    </div>
+
+    <!-- Source -->
+    <div style="font-size:10px;color:var(--text-muted);text-align:center;margin-top:16px;">
       Treasury yields via FRED (Federal Reserve Bank of St. Louis) · MBS & equity data via Yahoo Finance (15-20 min delayed) · Auto-refreshes every 5 minutes
     </div>
 
   </div>
 </div>
-
-<script>
-// ═══════════════════════════════════════════════
-// MARKETS OVERVIEW — Data + Charts
-// ═══════════════════════════════════════════════
-var mktsLoaded = false;
-var mktsCurrentSymbol = 'UMBS_5.5';
-var mktsCurrentRange = '3mo';
-var mktsRefreshTimer = null;
-
-function loadMarketsData() {
-  document.getElementById('mktsTimestamp').textContent = 'Refreshing...';
-
-  fetch('https://agent-edge-backend.vercel.app/api/markets')
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (d.error) { document.getElementById('mktsTimestamp').textContent = 'Error: ' + d.error; return; }
-
-      // Timestamp
-      var t = new Date(d.fetchedAt);
-      document.getElementById('mktsTimestamp').textContent = 'Day Change: ' + t.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit',timeZone:'America/New_York'}) + ' ET';
-
-      // ─── UMBS 5.5% (primary card) ───
-      var u55 = d.umbs['UMBS_5.5'];
-      if (u55 && u55.price) {
-        document.getElementById('mktsUmbs55Price').textContent = u55.price.toFixed(2);
-        var ch55 = u55.change || 0;
-        var bps55 = Math.round(Math.abs(ch55) * 100);
-        document.getElementById('mktsUmbs55Change').innerHTML = bps55 + 'bp ' + (ch55 >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
-        document.getElementById('mktsUmbs55Change').style.color = ch55 >= 0 ? '#16a34a' : '#dc2626';
-        document.getElementById('mktsUmbs55Open').textContent = u55.open ? u55.open.toFixed(4) : '—';
-        document.getElementById('mktsUmbs55High').textContent = u55.high ? u55.high.toFixed(4) : '—';
-        document.getElementById('mktsUmbs55Low').textContent = u55.low ? u55.low.toFixed(4) : '—';
-      }
-
-      // ─── 10Y UST ───
-      var t10 = d.treasuries['10Y'];
-      if (t10 && t10.yield) {
-        document.getElementById('mkts10YPrice').textContent = t10.yield.toFixed(4);
-        var ch10 = t10.changeBps || 0;
-        document.getElementById('mkts10YChange').innerHTML = Math.abs(ch10) + 'bp ' + (ch10 >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
-        document.getElementById('mkts10YChange').style.color = ch10 >= 0 ? '#dc2626' : '#16a34a'; // inverted: yield up = bad for rates
-        document.getElementById('mkts10YPrev').textContent = t10.previousYield ? t10.previousYield.toFixed(4) : '—';
-        document.getElementById('mkts10YBps').textContent = (ch10 >= 0 ? '+' : '') + ch10 + ' bps';
-        document.getElementById('mkts10YDate').textContent = t10.date || '—';
-      }
-
-      // ─── SPY ───
-      var spy = d.spy;
-      if (spy && spy.price) {
-        document.getElementById('mktsSpyPrice').textContent = spy.price.toFixed(2);
-        var chSpy = spy.change || 0;
-        document.getElementById('mktsSpyChange').innerHTML = Math.abs(chSpy).toFixed(2) + ' ' + (chSpy >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
-        document.getElementById('mktsSpyChange').style.color = chSpy >= 0 ? '#16a34a' : '#dc2626';
-        document.getElementById('mktsSpyOpen').textContent = spy.open ? spy.open.toFixed(2) : '—';
-        document.getElementById('mktsSpyHigh').textContent = spy.high ? spy.high.toFixed(2) : '—';
-        document.getElementById('mktsSpyLow').textContent = spy.low ? spy.low.toFixed(2) : '—';
-      }
-
-      // ─── More coupons ───
-      var u5 = d.umbs['UMBS_5'];
-      if (u5 && u5.price) {
-        document.getElementById('mktsUmbs5Price').textContent = u5.price.toFixed(2);
-        var ch5 = u5.change || 0;
-        var bps5 = Math.round(Math.abs(ch5) * 100);
-        document.getElementById('mktsUmbs5Change').innerHTML = bps5 + 'bp ' + (ch5 >= 0 ? '▲' : '▼');
-        document.getElementById('mktsUmbs5Change').style.color = ch5 >= 0 ? '#16a34a' : '#dc2626';
-      }
-      var u6 = d.umbs['UMBS_6'];
-      if (u6 && u6.price) {
-        document.getElementById('mktsUmbs6Price').textContent = u6.price.toFixed(2);
-        var ch6 = u6.change || 0;
-        var bps6 = Math.round(Math.abs(ch6) * 100);
-        document.getElementById('mktsUmbs6Change').innerHTML = bps6 + 'bp ' + (ch6 >= 0 ? '▲' : '▼');
-        document.getElementById('mktsUmbs6Change').style.color = ch6 >= 0 ? '#16a34a' : '#dc2626';
-      }
-
-      // ─── More treasuries ───
-      ['1Y','2Y','5Y','7Y'].forEach(function(tn) {
-        var td = d.treasuries[tn];
-        if (td && td.yield) {
-          document.getElementById('mkts'+tn+'Price').textContent = td.yield.toFixed(4);
-          var chT = td.changeBps || 0;
-          document.getElementById('mkts'+tn+'Change').innerHTML = Math.abs(chT) + 'bp ' + (chT >= 0 ? '▲' : '▼');
-          document.getElementById('mkts'+tn+'Change').style.color = chT >= 0 ? '#dc2626' : '#16a34a';
-        }
-      });
-
-      // Load chart
-      mktsLoadChart();
-    })
-    .catch(function(err) {
-      document.getElementById('mktsTimestamp').textContent = 'Error loading data: ' + err.message;
-    });
-}
-
-function mktsChangeSymbol(sym) {
-  mktsCurrentSymbol = sym;
-  document.querySelectorAll('.mkts-sym-btn').forEach(function(b) {
-    if (b.getAttribute('data-sym') === sym) {
-      b.style.background = '#6e7f77'; b.style.color = '#fff'; b.style.borderColor = '#6e7f77';
-    } else {
-      b.style.background = '#fff'; b.style.color = '#0b1f3a'; b.style.borderColor = '#e2e5ed';
-    }
-  });
-  mktsLoadChart();
-}
-
-function mktsChangeRange(range) {
-  mktsCurrentRange = range;
-  document.querySelectorAll('.mkts-range-btn').forEach(function(b) {
-    var bRange = b.getAttribute('onclick').match(/'([^']+)'/)[1];
-    if (bRange === range) {
-      b.style.background = '#6e7f77'; b.style.color = '#fff'; b.style.borderColor = '#6e7f77';
-    } else {
-      b.style.background = '#fff'; b.style.color = '#5a6578'; b.style.borderColor = '#e2e5ed';
-    }
-  });
-  mktsLoadChart();
-}
-
-function mktsLoadChart() {
-  var canvas = document.getElementById('mktsChartCanvas');
-  var ctx = canvas.getContext('2d');
-  var W = canvas.width = canvas.offsetWidth * 2;
-  var H = canvas.height = canvas.offsetHeight * 2;
-  ctx.scale(2, 2);
-  var w = canvas.offsetWidth;
-  var h = canvas.offsetHeight;
-
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#f8f9fb';
-  ctx.fillRect(0, 0, w, h);
-  ctx.font = '11px DM Sans, sans-serif';
-  ctx.fillStyle = '#9ca3b4';
-  ctx.fillText('Loading chart data...', w/2 - 50, h/2);
-
-  var isTreasury = ['1Y','2Y','5Y','7Y','10Y'].indexOf(mktsCurrentSymbol) !== -1;
-  var url = 'https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=' + mktsCurrentSymbol + '&range=' + mktsCurrentRange;
-  if (!isTreasury) url += '&interval=1d';
-
-  fetch(url)
-    .then(function(r) { return r.json(); })
-    .then(function(d) {
-      if (!d.data || d.data.length === 0) {
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = '#f8f9fb'; ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = '#9ca3b4'; ctx.font = '12px DM Sans, sans-serif';
-        ctx.fillText('No chart data available for this range', w/2 - 100, h/2);
-        return;
-      }
-
-      if (isTreasury) {
-        mktsDrawLineChart(ctx, w, h, d.data);
-      } else {
-        mktsDrawCandlestick(ctx, w, h, d.data);
-      }
-    })
-    .catch(function(err) {
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = '#f8f9fb'; ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = '#dc2626'; ctx.font = '12px DM Sans, sans-serif';
-      ctx.fillText('Error: ' + err.message, 20, h/2);
-    });
-}
-
-function mktsDrawCandlestick(ctx, w, h, data) {
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
-
-  var pad = { top: 20, right: 60, bottom: 40, left: 20 };
-  var cw = w - pad.left - pad.right;
-  var ch = h - pad.top - pad.bottom;
-
-  // Find min/max
-  var minP = Infinity, maxP = -Infinity;
-  data.forEach(function(c) {
-    if (c.low < minP) minP = c.low;
-    if (c.high > maxP) maxP = c.high;
-  });
-  var range = maxP - minP || 1;
-  minP -= range * 0.05;
-  maxP += range * 0.05;
-  range = maxP - minP;
-
-  // Grid lines
-  ctx.strokeStyle = '#f0f2f7';
-  ctx.lineWidth = 1;
-  for (var g = 0; g <= 5; g++) {
-    var gy = pad.top + (ch / 5) * g;
-    ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(w - pad.right, gy); ctx.stroke();
-    var gval = maxP - (range / 5) * g;
-    ctx.fillStyle = '#9ca3b4'; ctx.font = '10px DM Sans, sans-serif';
-    ctx.fillText(gval.toFixed(2), w - pad.right + 6, gy + 3);
-  }
-
-  // Candles
-  var barW = Math.max(2, (cw / data.length) * 0.7);
-  var gap = cw / data.length;
-
-  data.forEach(function(c, i) {
-    var x = pad.left + gap * i + gap / 2;
-    var yO = pad.top + ((maxP - c.open) / range) * ch;
-    var yC = pad.top + ((maxP - c.close) / range) * ch;
-    var yH = pad.top + ((maxP - c.high) / range) * ch;
-    var yL = pad.top + ((maxP - c.low) / range) * ch;
-
-    var up = c.close >= c.open;
-    ctx.strokeStyle = up ? '#16a34a' : '#dc2626';
-    ctx.fillStyle = up ? '#16a34a' : '#dc2626';
-
-    // Wick
-    ctx.beginPath();
-    ctx.moveTo(x, yH); ctx.lineTo(x, yL);
-    ctx.lineWidth = 1; ctx.stroke();
-
-    // Body
-    var bodyTop = Math.min(yO, yC);
-    var bodyH = Math.max(Math.abs(yC - yO), 1);
-    if (up) {
-      ctx.fillRect(x - barW/2, bodyTop, barW, bodyH);
-    } else {
-      ctx.fillRect(x - barW/2, bodyTop, barW, bodyH);
-    }
-
-    // Date labels (every Nth candle)
-    if (data.length < 40 || i % Math.ceil(data.length / 8) === 0) {
-      var dt = new Date(c.date);
-      var lbl = (dt.getMonth()+1) + '/' + dt.getDate();
-      ctx.fillStyle = '#9ca3b4'; ctx.font = '9px DM Sans, sans-serif';
-      ctx.fillText(lbl, x - 12, h - pad.bottom + 14);
-    }
-  });
-}
-
-function mktsDrawLineChart(ctx, w, h, data) {
-  ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
-
-  var pad = { top: 20, right: 60, bottom: 40, left: 20 };
-  var cw = w - pad.left - pad.right;
-  var ch = h - pad.top - pad.bottom;
-
-  var vals = data.map(function(d) { return d.value; });
-  var minV = Math.min.apply(null, vals);
-  var maxV = Math.max.apply(null, vals);
-  var range = maxV - minV || 0.1;
-  minV -= range * 0.05;
-  maxV += range * 0.05;
-  range = maxV - minV;
-
-  // Grid
-  ctx.strokeStyle = '#f0f2f7'; ctx.lineWidth = 1;
-  for (var g = 0; g <= 5; g++) {
-    var gy = pad.top + (ch / 5) * g;
-    ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(w - pad.right, gy); ctx.stroke();
-    var gval = maxV - (range / 5) * g;
-    ctx.fillStyle = '#9ca3b4'; ctx.font = '10px DM Sans, sans-serif';
-    ctx.fillText(gval.toFixed(2) + '%', w - pad.right + 6, gy + 3);
-  }
-
-  // Line
-  ctx.beginPath();
-  ctx.strokeStyle = '#6e7f77';
-  ctx.lineWidth = 2;
-  data.forEach(function(d, i) {
-    var x = pad.left + (cw / (data.length - 1)) * i;
-    var y = pad.top + ((maxV - d.value) / range) * ch;
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  });
-  ctx.stroke();
-
-  // Fill
-  ctx.lineTo(pad.left + cw, pad.top + ch);
-  ctx.lineTo(pad.left, pad.top + ch);
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(110,127,119,0.08)';
-  ctx.fill();
-
-  // Date labels
-  data.forEach(function(d, i) {
-    if (data.length < 40 || i % Math.ceil(data.length / 8) === 0) {
-      var x = pad.left + (cw / (data.length - 1)) * i;
-      var parts = d.date.split('-');
-      var lbl = parseInt(parts[1]) + '/' + parseInt(parts[2]);
-      ctx.fillStyle = '#9ca3b4'; ctx.font = '9px DM Sans, sans-serif';
-      ctx.fillText(lbl, x - 12, h - pad.bottom + 14);
-    }
-  });
-}
-
-// Lazy load when switching to Markets view
-var origSwitchView = switchView;
-switchView = function(viewId, navEl) {
-  origSwitchView(viewId, navEl);
-  if (viewId === 'markets' && !mktsLoaded) {
-    mktsLoaded = true;
-    loadMarketsData();
-    // Auto-refresh every 5 minutes
-    mktsRefreshTimer = setInterval(loadMarketsData, 300000);
-  }
-};
-</script>
+<script src="mc-markets.js"></script>
 
 <!-- ========================================== -->
 <!-- USER MANAGEMENT VIEW -->
