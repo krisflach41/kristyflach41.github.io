@@ -1853,7 +1853,12 @@
           <div id="mktsUmbs55Price" style="font-size:30px;font-weight:700;color:#0b1f3a;">—</div>
           <div id="mktsUmbs55Bps" style="font-size:15px;">—</div>
         </div>
-        <div id="mktsUmbs55Snaps" style="margin-top:10px;"></div>
+        <div style="margin-top:10px;font-size:11px;color:var(--text-secondary);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsUmbs55Open" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mktsUmbs55Last" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsUmbs55High" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsUmbs55Low" style="font-weight:600;">—</span></div>
+        </div>
       </div>
 
       <!-- 10Y UST -->
@@ -1901,7 +1906,12 @@
           <div id="mktsUmbs5Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
           <div id="mktsUmbs5Bps" style="font-size:14px;">—</div>
         </div>
-        <div id="mktsUmbs5Snaps" style="margin-top:8px;"></div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsUmbs5Open" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mktsUmbs5Last" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsUmbs5High" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsUmbs5Low" style="font-weight:600;">—</span></div>
+        </div>
       </div>
       <div data-mkts-card="UMBS_6" onclick="mktsChangeSymbol('UMBS_6')" style="background:#fff;border:1px solid #e2e5ed;border-radius:10px;padding:16px 18px;cursor:pointer;transition:border-color 0.15s;">
         <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 6%</div>
@@ -1909,7 +1919,12 @@
           <div id="mktsUmbs6Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
           <div id="mktsUmbs6Bps" style="font-size:14px;">—</div>
         </div>
-        <div id="mktsUmbs6Snaps" style="margin-top:8px;"></div>
+        <div style="margin-top:8px;font-size:10px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsUmbs6Open" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Last</span><span id="mktsUmbs6Last" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsUmbs6High" style="font-weight:600;">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsUmbs6Low" style="font-weight:600;">—</span></div>
+        </div>
       </div>
     </div>
 
@@ -1967,6 +1982,23 @@
           <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mkts7YLow" style="font-weight:600;">—</span></div>
         </div>
       </div>
+    </div>
+
+    <!-- ═══ FILTER TOGGLES ═══ -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;padding:8px 0;">
+      <span style="font-size:11px;font-weight:700;color:#0b1f3a;">Filters:</span>
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+        <span id="mktsFilter_sr" onclick="mktsToggleFilter('sr')" style="display:inline-block;width:32px;height:18px;border-radius:9px;background:#6e7f77;cursor:pointer;position:relative;transition:background 0.2s;"><span style="position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s;"></span></span>
+        Support & Resistance
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+        <span id="mktsFilter_fib" onclick="mktsToggleFilter('fib')" style="display:inline-block;width:32px;height:18px;border-radius:9px;background:#6e7f77;cursor:pointer;position:relative;transition:background 0.2s;"><span style="position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s;"></span></span>
+        Fibonacci
+      </label>
+      <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;">
+        <span id="mktsFilter_stoch" onclick="mktsToggleFilter('stoch')" style="display:inline-block;width:32px;height:18px;border-radius:9px;background:#6e7f77;cursor:pointer;position:relative;transition:background 0.2s;"><span style="position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform 0.2s;"></span></span>
+        Stochastic
+      </label>
     </div>
 
     <!-- ═══ DMA TOGGLES ═══ -->
