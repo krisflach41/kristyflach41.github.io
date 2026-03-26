@@ -80,6 +80,9 @@
     <div class="nav-item" onclick="switchView('briefings', this)">
       <span class="nav-icon"><i class="fas fa-sun"></i></span> Market Briefings
     </div>
+    <div class="nav-item" onclick="switchView('markets', this)">
+      <span class="nav-icon"><i class="fas fa-chart-area"></i></span> Markets
+    </div>
     <div class="nav-item" onclick="switchView('webinarLauncher', this)">
       <span class="nav-icon"><i class="fas fa-broadcast-tower"></i></span> Webinar Seminars
     </div>
@@ -1821,6 +1824,463 @@
     else{bar.style.background='rgba(59,130,246,0.06)';bar.style.border='1px solid rgba(59,130,246,0.15)';bar.style.color='#60a5fa';}
   }
 })();
+</script>
+
+<!-- ========================================== -->
+<!-- MARKETS OVERVIEW VIEW -->
+<!-- ========================================== -->
+<div class="view-panel" id="view-markets">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Markets Overview</div><div class="topbar-subtitle">MBS pricing, Treasury yields & market data</div></div>
+    </div>
+    <div class="topbar-actions">
+      <button class="topbar-btn" onclick="loadMarketsData()" title="Refresh"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+  </div>
+  <div class="view-body" style="padding:24px;">
+
+    <!-- Last Updated -->
+    <div id="mktsTimestamp" style="font-size:11px;color:var(--text-muted);margin-bottom:16px;">Loading market data...</div>
+
+    <!-- ─── TOP PRICE CARDS ─── -->
+    <div id="mktsPriceCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;">
+
+      <!-- UMBS 30YR 5.5% (primary) -->
+      <div style="background:#fff;border:2px solid #6e7f77;border-radius:12px;padding:20px;">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;">
+          <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">UMBS 30YR 5.5%</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
+          <div id="mktsUmbs55Price" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsUmbs55Change" style="font-size:16px;font-weight:700;">—</div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsUmbs55Open">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsUmbs55High">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsUmbs55Low">—</span></div>
+        </div>
+      </div>
+
+      <!-- 10Y UST -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">10Y UST</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
+          <div id="mkts10YPrice" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts10YChange" style="font-size:16px;font-weight:700;">—</div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Previous</span><span id="mkts10YPrev">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Change</span><span id="mkts10YBps">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Date</span><span id="mkts10YDate">—</span></div>
+        </div>
+      </div>
+
+      <!-- SPDR S&P 500 ETF -->
+      <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">SPDR S&P 500 ETF</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;">
+          <div id="mktsSpyPrice" style="font-size:32px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsSpyChange" style="font-size:16px;font-weight:700;">—</div>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
+          <div style="display:flex;justify-content:space-between;"><span>Open</span><span id="mktsSpyOpen">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>High</span><span id="mktsSpyHigh">—</span></div>
+          <div style="display:flex;justify-content:space-between;"><span>Low</span><span id="mktsSpyLow">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── EXPANDABLE COUPONS ─── -->
+    <div style="margin-bottom:8px;">
+      <span onclick="document.getElementById('mktsMoreCoupons').style.display=document.getElementById('mktsMoreCoupons').style.display==='none'?'grid':'none';this.textContent=document.getElementById('mktsMoreCoupons').style.display==='none'?'Show more coupons ▾':'Hide coupons ▴'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more coupons ▾</span>
+      <span style="margin-left:24px;" onclick="document.getElementById('mktsMoreTreasuries').style.display=document.getElementById('mktsMoreTreasuries').style.display==='none'?'grid':'none';this.textContent=document.getElementById('mktsMoreTreasuries').style.display==='none'?'Show more treasuries ▾':'Hide treasuries ▴'" style="font-size:12px;color:#6e7f77;cursor:pointer;font-weight:600;">Show more treasuries ▾</span>
+    </div>
+
+    <!-- More Coupons -->
+    <div id="mktsMoreCoupons" style="display:none;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 5%</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mktsUmbs5Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsUmbs5Change" style="font-size:14px;font-weight:700;">—</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">UMBS 30YR 6%</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mktsUmbs6Price" style="font-size:24px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mktsUmbs6Change" style="font-size:14px;font-weight:700;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- More Treasuries -->
+    <div id="mktsMoreTreasuries" style="display:none;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;">
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;" id="mkts1YCard">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">1Y UST</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mkts1YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts1YChange" style="font-size:13px;font-weight:700;">—</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">2Y UST</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mkts2YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts2YChange" style="font-size:13px;font-weight:700;">—</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">5Y UST</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mkts5YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts5YChange" style="font-size:13px;font-weight:700;">—</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;">
+        <div style="font-size:11px;font-weight:700;color:#6e7f77;">7Y UST</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;">
+          <div id="mkts7YPrice" style="font-size:22px;font-weight:700;color:#0b1f3a;">—</div>
+          <div id="mkts7YChange" style="font-size:13px;font-weight:700;">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── CHART SECTION ─── -->
+    <div style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px;">
+      <!-- Chart Controls -->
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="display:flex;gap:8px;" id="mktsChartSymbols">
+          <button onclick="mktsChangeSymbol('UMBS_5.5')" class="mkts-sym-btn active" data-sym="UMBS_5.5" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">UMBS 5.5%</button>
+          <button onclick="mktsChangeSymbol('UMBS_5')" class="mkts-sym-btn" data-sym="UMBS_5" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 5%</button>
+          <button onclick="mktsChangeSymbol('UMBS_6')" class="mkts-sym-btn" data-sym="UMBS_6" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">UMBS 6%</button>
+          <button onclick="mktsChangeSymbol('10Y')" class="mkts-sym-btn" data-sym="10Y" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">10Y UST</button>
+          <button onclick="mktsChangeSymbol('SPY')" class="mkts-sym-btn" data-sym="SPY" style="padding:6px 12px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid var(--border);background:#fff;color:#0b1f3a;cursor:pointer;">SPY</button>
+        </div>
+        <div style="display:flex;gap:4px;" id="mktsChartRanges">
+          <button onclick="mktsChangeRange('5d')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1W</button>
+          <button onclick="mktsChangeRange('1mo')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1M</button>
+          <button onclick="mktsChangeRange('3mo')" class="mkts-range-btn active" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid #6e7f77;background:#6e7f77;color:#fff;cursor:pointer;">3M</button>
+          <button onclick="mktsChangeRange('6mo')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">6M</button>
+          <button onclick="mktsChangeRange('1y')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">1Y</button>
+          <button onclick="mktsChangeRange('2y')" class="mkts-range-btn" style="padding:4px 10px;border-radius:4px;font-size:10px;font-weight:600;border:1px solid var(--border);background:#fff;color:var(--text-secondary);cursor:pointer;">2Y</button>
+        </div>
+      </div>
+      <!-- Chart Canvas -->
+      <canvas id="mktsChartCanvas" width="900" height="400" style="width:100%;height:400px;"></canvas>
+    </div>
+
+    <!-- Source disclaimer -->
+    <div style="font-size:10px;color:var(--text-muted);text-align:center;">
+      Treasury yields via FRED (Federal Reserve Bank of St. Louis) · MBS & equity data via Yahoo Finance (15-20 min delayed) · Auto-refreshes every 5 minutes
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// MARKETS OVERVIEW — Data + Charts
+// ═══════════════════════════════════════════════
+var mktsLoaded = false;
+var mktsCurrentSymbol = 'UMBS_5.5';
+var mktsCurrentRange = '3mo';
+var mktsRefreshTimer = null;
+
+function loadMarketsData() {
+  document.getElementById('mktsTimestamp').textContent = 'Refreshing...';
+
+  fetch('https://agent-edge-backend.vercel.app/api/markets')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) { document.getElementById('mktsTimestamp').textContent = 'Error: ' + d.error; return; }
+
+      // Timestamp
+      var t = new Date(d.fetchedAt);
+      document.getElementById('mktsTimestamp').textContent = 'Day Change: ' + t.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit',timeZone:'America/New_York'}) + ' ET';
+
+      // ─── UMBS 5.5% (primary card) ───
+      var u55 = d.umbs['UMBS_5.5'];
+      if (u55 && u55.price) {
+        document.getElementById('mktsUmbs55Price').textContent = u55.price.toFixed(2);
+        var ch55 = u55.change || 0;
+        var bps55 = Math.round(Math.abs(ch55) * 100);
+        document.getElementById('mktsUmbs55Change').innerHTML = bps55 + 'bp ' + (ch55 >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
+        document.getElementById('mktsUmbs55Change').style.color = ch55 >= 0 ? '#16a34a' : '#dc2626';
+        document.getElementById('mktsUmbs55Open').textContent = u55.open ? u55.open.toFixed(4) : '—';
+        document.getElementById('mktsUmbs55High').textContent = u55.high ? u55.high.toFixed(4) : '—';
+        document.getElementById('mktsUmbs55Low').textContent = u55.low ? u55.low.toFixed(4) : '—';
+      }
+
+      // ─── 10Y UST ───
+      var t10 = d.treasuries['10Y'];
+      if (t10 && t10.yield) {
+        document.getElementById('mkts10YPrice').textContent = t10.yield.toFixed(4);
+        var ch10 = t10.changeBps || 0;
+        document.getElementById('mkts10YChange').innerHTML = Math.abs(ch10) + 'bp ' + (ch10 >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
+        document.getElementById('mkts10YChange').style.color = ch10 >= 0 ? '#dc2626' : '#16a34a'; // inverted: yield up = bad for rates
+        document.getElementById('mkts10YPrev').textContent = t10.previousYield ? t10.previousYield.toFixed(4) : '—';
+        document.getElementById('mkts10YBps').textContent = (ch10 >= 0 ? '+' : '') + ch10 + ' bps';
+        document.getElementById('mkts10YDate').textContent = t10.date || '—';
+      }
+
+      // ─── SPY ───
+      var spy = d.spy;
+      if (spy && spy.price) {
+        document.getElementById('mktsSpyPrice').textContent = spy.price.toFixed(2);
+        var chSpy = spy.change || 0;
+        document.getElementById('mktsSpyChange').innerHTML = Math.abs(chSpy).toFixed(2) + ' ' + (chSpy >= 0 ? '<span style="font-size:10px;">▲</span>' : '<span style="font-size:10px;">▼</span>');
+        document.getElementById('mktsSpyChange').style.color = chSpy >= 0 ? '#16a34a' : '#dc2626';
+        document.getElementById('mktsSpyOpen').textContent = spy.open ? spy.open.toFixed(2) : '—';
+        document.getElementById('mktsSpyHigh').textContent = spy.high ? spy.high.toFixed(2) : '—';
+        document.getElementById('mktsSpyLow').textContent = spy.low ? spy.low.toFixed(2) : '—';
+      }
+
+      // ─── More coupons ───
+      var u5 = d.umbs['UMBS_5'];
+      if (u5 && u5.price) {
+        document.getElementById('mktsUmbs5Price').textContent = u5.price.toFixed(2);
+        var ch5 = u5.change || 0;
+        var bps5 = Math.round(Math.abs(ch5) * 100);
+        document.getElementById('mktsUmbs5Change').innerHTML = bps5 + 'bp ' + (ch5 >= 0 ? '▲' : '▼');
+        document.getElementById('mktsUmbs5Change').style.color = ch5 >= 0 ? '#16a34a' : '#dc2626';
+      }
+      var u6 = d.umbs['UMBS_6'];
+      if (u6 && u6.price) {
+        document.getElementById('mktsUmbs6Price').textContent = u6.price.toFixed(2);
+        var ch6 = u6.change || 0;
+        var bps6 = Math.round(Math.abs(ch6) * 100);
+        document.getElementById('mktsUmbs6Change').innerHTML = bps6 + 'bp ' + (ch6 >= 0 ? '▲' : '▼');
+        document.getElementById('mktsUmbs6Change').style.color = ch6 >= 0 ? '#16a34a' : '#dc2626';
+      }
+
+      // ─── More treasuries ───
+      ['1Y','2Y','5Y','7Y'].forEach(function(tn) {
+        var td = d.treasuries[tn];
+        if (td && td.yield) {
+          document.getElementById('mkts'+tn+'Price').textContent = td.yield.toFixed(4);
+          var chT = td.changeBps || 0;
+          document.getElementById('mkts'+tn+'Change').innerHTML = Math.abs(chT) + 'bp ' + (chT >= 0 ? '▲' : '▼');
+          document.getElementById('mkts'+tn+'Change').style.color = chT >= 0 ? '#dc2626' : '#16a34a';
+        }
+      });
+
+      // Load chart
+      mktsLoadChart();
+    })
+    .catch(function(err) {
+      document.getElementById('mktsTimestamp').textContent = 'Error loading data: ' + err.message;
+    });
+}
+
+function mktsChangeSymbol(sym) {
+  mktsCurrentSymbol = sym;
+  document.querySelectorAll('.mkts-sym-btn').forEach(function(b) {
+    if (b.getAttribute('data-sym') === sym) {
+      b.style.background = '#6e7f77'; b.style.color = '#fff'; b.style.borderColor = '#6e7f77';
+    } else {
+      b.style.background = '#fff'; b.style.color = '#0b1f3a'; b.style.borderColor = '#e2e5ed';
+    }
+  });
+  mktsLoadChart();
+}
+
+function mktsChangeRange(range) {
+  mktsCurrentRange = range;
+  document.querySelectorAll('.mkts-range-btn').forEach(function(b) {
+    var bRange = b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    if (bRange === range) {
+      b.style.background = '#6e7f77'; b.style.color = '#fff'; b.style.borderColor = '#6e7f77';
+    } else {
+      b.style.background = '#fff'; b.style.color = '#5a6578'; b.style.borderColor = '#e2e5ed';
+    }
+  });
+  mktsLoadChart();
+}
+
+function mktsLoadChart() {
+  var canvas = document.getElementById('mktsChartCanvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width = canvas.offsetWidth * 2;
+  var H = canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2, 2);
+  var w = canvas.offsetWidth;
+  var h = canvas.offsetHeight;
+
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#f8f9fb';
+  ctx.fillRect(0, 0, w, h);
+  ctx.font = '11px DM Sans, sans-serif';
+  ctx.fillStyle = '#9ca3b4';
+  ctx.fillText('Loading chart data...', w/2 - 50, h/2);
+
+  var isTreasury = ['1Y','2Y','5Y','7Y','10Y'].indexOf(mktsCurrentSymbol) !== -1;
+  var url = 'https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=' + mktsCurrentSymbol + '&range=' + mktsCurrentRange;
+  if (!isTreasury) url += '&interval=1d';
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (!d.data || d.data.length === 0) {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = '#f8f9fb'; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#9ca3b4'; ctx.font = '12px DM Sans, sans-serif';
+        ctx.fillText('No chart data available for this range', w/2 - 100, h/2);
+        return;
+      }
+
+      if (isTreasury) {
+        mktsDrawLineChart(ctx, w, h, d.data);
+      } else {
+        mktsDrawCandlestick(ctx, w, h, d.data);
+      }
+    })
+    .catch(function(err) {
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = '#f8f9fb'; ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = '#dc2626'; ctx.font = '12px DM Sans, sans-serif';
+      ctx.fillText('Error: ' + err.message, 20, h/2);
+    });
+}
+
+function mktsDrawCandlestick(ctx, w, h, data) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+
+  var pad = { top: 20, right: 60, bottom: 40, left: 20 };
+  var cw = w - pad.left - pad.right;
+  var ch = h - pad.top - pad.bottom;
+
+  // Find min/max
+  var minP = Infinity, maxP = -Infinity;
+  data.forEach(function(c) {
+    if (c.low < minP) minP = c.low;
+    if (c.high > maxP) maxP = c.high;
+  });
+  var range = maxP - minP || 1;
+  minP -= range * 0.05;
+  maxP += range * 0.05;
+  range = maxP - minP;
+
+  // Grid lines
+  ctx.strokeStyle = '#f0f2f7';
+  ctx.lineWidth = 1;
+  for (var g = 0; g <= 5; g++) {
+    var gy = pad.top + (ch / 5) * g;
+    ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(w - pad.right, gy); ctx.stroke();
+    var gval = maxP - (range / 5) * g;
+    ctx.fillStyle = '#9ca3b4'; ctx.font = '10px DM Sans, sans-serif';
+    ctx.fillText(gval.toFixed(2), w - pad.right + 6, gy + 3);
+  }
+
+  // Candles
+  var barW = Math.max(2, (cw / data.length) * 0.7);
+  var gap = cw / data.length;
+
+  data.forEach(function(c, i) {
+    var x = pad.left + gap * i + gap / 2;
+    var yO = pad.top + ((maxP - c.open) / range) * ch;
+    var yC = pad.top + ((maxP - c.close) / range) * ch;
+    var yH = pad.top + ((maxP - c.high) / range) * ch;
+    var yL = pad.top + ((maxP - c.low) / range) * ch;
+
+    var up = c.close >= c.open;
+    ctx.strokeStyle = up ? '#16a34a' : '#dc2626';
+    ctx.fillStyle = up ? '#16a34a' : '#dc2626';
+
+    // Wick
+    ctx.beginPath();
+    ctx.moveTo(x, yH); ctx.lineTo(x, yL);
+    ctx.lineWidth = 1; ctx.stroke();
+
+    // Body
+    var bodyTop = Math.min(yO, yC);
+    var bodyH = Math.max(Math.abs(yC - yO), 1);
+    if (up) {
+      ctx.fillRect(x - barW/2, bodyTop, barW, bodyH);
+    } else {
+      ctx.fillRect(x - barW/2, bodyTop, barW, bodyH);
+    }
+
+    // Date labels (every Nth candle)
+    if (data.length < 40 || i % Math.ceil(data.length / 8) === 0) {
+      var dt = new Date(c.date);
+      var lbl = (dt.getMonth()+1) + '/' + dt.getDate();
+      ctx.fillStyle = '#9ca3b4'; ctx.font = '9px DM Sans, sans-serif';
+      ctx.fillText(lbl, x - 12, h - pad.bottom + 14);
+    }
+  });
+}
+
+function mktsDrawLineChart(ctx, w, h, data) {
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
+
+  var pad = { top: 20, right: 60, bottom: 40, left: 20 };
+  var cw = w - pad.left - pad.right;
+  var ch = h - pad.top - pad.bottom;
+
+  var vals = data.map(function(d) { return d.value; });
+  var minV = Math.min.apply(null, vals);
+  var maxV = Math.max.apply(null, vals);
+  var range = maxV - minV || 0.1;
+  minV -= range * 0.05;
+  maxV += range * 0.05;
+  range = maxV - minV;
+
+  // Grid
+  ctx.strokeStyle = '#f0f2f7'; ctx.lineWidth = 1;
+  for (var g = 0; g <= 5; g++) {
+    var gy = pad.top + (ch / 5) * g;
+    ctx.beginPath(); ctx.moveTo(pad.left, gy); ctx.lineTo(w - pad.right, gy); ctx.stroke();
+    var gval = maxV - (range / 5) * g;
+    ctx.fillStyle = '#9ca3b4'; ctx.font = '10px DM Sans, sans-serif';
+    ctx.fillText(gval.toFixed(2) + '%', w - pad.right + 6, gy + 3);
+  }
+
+  // Line
+  ctx.beginPath();
+  ctx.strokeStyle = '#6e7f77';
+  ctx.lineWidth = 2;
+  data.forEach(function(d, i) {
+    var x = pad.left + (cw / (data.length - 1)) * i;
+    var y = pad.top + ((maxV - d.value) / range) * ch;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Fill
+  ctx.lineTo(pad.left + cw, pad.top + ch);
+  ctx.lineTo(pad.left, pad.top + ch);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(110,127,119,0.08)';
+  ctx.fill();
+
+  // Date labels
+  data.forEach(function(d, i) {
+    if (data.length < 40 || i % Math.ceil(data.length / 8) === 0) {
+      var x = pad.left + (cw / (data.length - 1)) * i;
+      var parts = d.date.split('-');
+      var lbl = parseInt(parts[1]) + '/' + parseInt(parts[2]);
+      ctx.fillStyle = '#9ca3b4'; ctx.font = '9px DM Sans, sans-serif';
+      ctx.fillText(lbl, x - 12, h - pad.bottom + 14);
+    }
+  });
+}
+
+// Lazy load when switching to Markets view
+var origSwitchView = switchView;
+switchView = function(viewId, navEl) {
+  origSwitchView(viewId, navEl);
+  if (viewId === 'markets' && !mktsLoaded) {
+    mktsLoaded = true;
+    loadMarketsData();
+    // Auto-refresh every 5 minutes
+    mktsRefreshTimer = setInterval(loadMarketsData, 300000);
+  }
+};
 </script>
 
 <!-- ========================================== -->
