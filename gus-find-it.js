@@ -1,244 +1,355 @@
-// /api/gus-find-it.js — Gus Find It AI assistant for Agent Edge Partner Portal
-// POST { question, history? }
+/* ===== GUS FIND IT — Floating AI Assistant Widget ===== */
+(function() {
+  var API = 'https://agent-edge-backend.vercel.app/api/gus-find-it';
+  var isOpen = false;
+  var history = [];
 
-export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  // Inject CSS
+  var style = document.createElement('style');
+  style.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+    #gus-fab {
+      position: fixed; top: 50%; right: 12px; transform: translateY(-50%); z-index: 99999;
+      width: 85px; height: 85px; border-radius: 50%;
+      background: #002556; border: 3px solid #baa370;
+      cursor: grab; overflow: visible;
+      box-shadow: 0 6px 24px rgba(0,37,86,0.35), 0 2px 8px rgba(0,0,0,0.15);
+      transition: box-shadow 0.3s, opacity 0.3s;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0.75;
+      user-select: none; -webkit-user-select: none;
+    }
+    #gus-fab:hover {
+      box-shadow: 0 10px 32px rgba(0,37,86,0.4), 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 1;
+    }
+    #gus-fab.dragging {
+      cursor: grabbing; opacity: 1;
+      box-shadow: 0 14px 40px rgba(0,37,86,0.5), 0 6px 16px rgba(0,0,0,0.25);
+    }
+    #gus-fab img {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+      position: absolute; top: 0; left: 0;
+    }
+    #gus-fab .gus-badge {
+      position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
+      background: #002556; color: #baa370; font-size: 10px; font-weight: 800;
+      padding: 3px 10px; border-radius: 10px; letter-spacing: 0.5px;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+      white-space: nowrap; border: 2px solid #baa370;
+    }
 
-  const { question, history } = req.body;
-  if (!question) return res.status(400).json({ error: 'question required' });
+    #gus-panel {
+      position: fixed; top: 50%; right: 88px; z-index: 99998;
+      transform: translateY(-50%);
+      width: 380px; max-height: 520px;
+      background: #faf8f4; border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,37,86,0.25), 0 8px 24px rgba(0,0,0,0.12);
+      border: 1px solid rgba(186,163,112,0.3);
+      display: none; flex-direction: column; overflow: hidden;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      animation: gusSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #gus-panel.open { display: flex; }
 
-  const KNOWLEDGE_BASE = `You are Gus Find It — the AI assistant inside Agent Edge Partner Portal. You are named after Gus, Kristy Flach's dog — a hilarious, playful Westie who lives for fun. Your personality matches: friendly, enthusiastic, helpful, a little goofy, and always eager to help people find what they need. You're like a golden retriever in a library — you WILL find the answer and you'll have fun doing it.
+    @keyframes gusSlideUp {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-PERSONALITY RULES:
-- Playful and warm but efficient. Don't waste people's time with long intros.
-- Short, clear answers. Get to the point fast, then add personality.
-- Use occasional dog references naturally (not forced): "Let me dig that up for you" / "Found it!" / "Sniffing around the portal..." / "I fetched that for you"
-- Never more than one dog reference per answer. Keep it subtle.
-- Always provide the direct link to the page when you know it.
-- If you don't know something, say so honestly. "That one's not in my yard — you should ask Kristy directly."
-- Never make up features that don't exist.
+    #gus-header {
+      padding: 16px 18px; display: flex; align-items: center; gap: 12px;
+      background: #002556; color: white; flex-shrink: 0;
+    }
+    #gus-header img {
+      width: 42px; height: 42px; border-radius: 50%; border: 2px solid #baa370;
+      object-fit: cover;
+    }
+    #gus-header-info h3 {
+      margin: 0; font-size: 16px; font-weight: 700; letter-spacing: -0.3px;
+    }
+    #gus-header-info p {
+      margin: 2px 0 0 0; font-size: 11px; color: rgba(255,255,255,0.65); font-weight: 500;
+    }
+    #gus-close {
+      margin-left: auto; background: none; border: none; color: rgba(255,255,255,0.6);
+      font-size: 22px; cursor: pointer; padding: 4px 8px; border-radius: 8px;
+      transition: all 0.2s;
+    }
+    #gus-close:hover { color: white; background: rgba(255,255,255,0.1); }
 
-ABOUT AGENT EDGE:
-Agent Edge is a free platform built by Kristy Flach (Certified Mortgage Advisor, NMLS #2632259, Paramount Residential Mortgage Group) for real estate agent partners. Everything is free — no subscriptions, no hidden fees. The platform gives agents co-branded marketing materials, client-ready reports, decision tools, educational resources, and social media tools.
+    #gus-messages {
+      flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+      min-height: 200px; max-height: 340px;
+    }
+    #gus-messages::-webkit-scrollbar { width: 4px; }
+    #gus-messages::-webkit-scrollbar-thumb { background: rgba(110,127,119,0.2); border-radius: 4px; }
 
-BASE URL: https://kristyflach.com
+    .gus-msg {
+      max-width: 88%; padding: 10px 14px; border-radius: 14px;
+      font-size: 14px; line-height: 1.55; word-break: break-word;
+    }
+    .gus-msg a { color: #002556; font-weight: 600; text-decoration: underline; }
+    .gus-msg-bot {
+      background: white; color: #1a2332; align-self: flex-start;
+      border: 1px solid rgba(186,163,112,0.2);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .gus-msg-user {
+      background: #002556; color: white; align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .gus-typing {
+      align-self: flex-start; padding: 12px 18px;
+      background: white; border-radius: 14px; border-bottom-left-radius: 4px;
+      border: 1px solid rgba(186,163,112,0.2);
+      display: flex; gap: 8px; align-items: center;
+    }
+    .gus-paw {
+      font-size: 18px; animation: gusPawBounce 1.6s ease infinite;
+      display: inline-block;
+    }
+    .gus-paw:nth-child(2) { animation-delay: 0.2s; }
+    .gus-paw:nth-child(3) { animation-delay: 0.4s; }
+    .gus-paw:nth-child(4) { animation-delay: 0.6s; }
+    @keyframes gusPawBounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.4; }
+      30% { transform: translateY(-8px) rotate(-15deg); opacity: 1; }
+      50% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    }
 
-===== COMPLETE SITE MAP =====
+    #gus-input-wrap {
+      padding: 12px 16px; border-top: 1px solid rgba(186,163,112,0.15);
+      display: flex; gap: 8px; background: white; flex-shrink: 0;
+    }
+    #gus-input {
+      flex: 1; padding: 10px 14px; border: 1px solid rgba(110,127,119,0.2);
+      border-radius: 12px; font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 14px; color: #1a2332; background: #faf8f4;
+      outline: none; transition: border-color 0.2s;
+    }
+    #gus-input:focus { border-color: #6e7f77; }
+    #gus-input::placeholder { color: #aaa; }
 
-PORTAL HOME (portal.html):
-- Main hub after login. Shows live mortgage rate ticker (30yr, FHA, VA, Jumbo, 15yr rates)
-- Morning Briefing section: daily market intelligence with economic calendar, market summary, client-friendly summary, and week in review
-- TODAY'S MARKET SNAPSHOT: Interactive dashboard showing 3 cards (Mortgage Bond Pricing, 10 Year Treasury Yield, S&P 500) with daily snapshots at 9am, 12pm, 2pm, and 5pm ET. Click any card to see its trend chart below with moving averages (200/100/50/25 DMA), Fibonacci retracement levels, and support/resistance lines. The coupon dropdown lets you switch between UMBS 5.0%, 5.5%, and 6.0%. Chart time ranges: 1 Week, 2 Weeks, 3 Weeks, Monthly, 3 Months, 6 Months, Yearly. Click the ⓘ icon next to "Today's Market Snapshot" for a plain-English explanation of what each indicator means and how it impacts mortgage rates. Key concept: when bond prices go UP, rates go DOWN (inverse relationship). Treasury yields and rates move in the SAME direction.
-- Navigation to four collections: Marketing, Advisory, Education, Messaging
-- Profile link, logout, cart/kit system
-- The rate ticker updates automatically with current rates
+    #gus-send {
+      width: 40px; height: 40px; border-radius: 12px; border: none;
+      background: #002556; color: white; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0;
+    }
+    #gus-send:hover { background: #001a3d; transform: scale(1.05); }
+    #gus-send:disabled { opacity: 0.4; cursor: default; transform: none; }
+    #gus-send svg { width: 18px; height: 18px; }
 
-PROFILE (profile.html):
-- Edit name, phone, title, brokerage, website
-- Upload/change headshot (used on co-branded materials)
-- Change password
-- Email is read-only (it's your login)
+    @media (max-width: 480px) {
+      #gus-panel { width: calc(100vw - 32px); right: 16px; top: auto; bottom: 80px; transform: none; max-height: 70vh; }
+      #gus-fab { top: auto; bottom: 16px; right: 16px; width: 56px; height: 56px; transform: none; }
+      #gus-fab:hover { transform: scale(1.1); }
+    }
+  `;
+  document.head.appendChild(style);
 
-===== MARKETING COLLECTION (realtor-marketing-studio.html) =====
-Contains 7 sub-collections of co-branded marketing materials:
+  // Inject HTML
+  var widget = document.createElement('div');
+  widget.innerHTML = `
+    <div id="gus-fab">
+      <img src="gus.JPG" alt="Gus" draggable="false">
+      <span class="gus-badge">FIND IT</span>
+    </div>
+    <div id="gus-panel">
+      <div id="gus-header">
+        <img src="gus.JPG" alt="Gus">
+        <div id="gus-header-info">
+          <h3>Gus Find It</h3>
+          <p>I know where everything is. Try me.</p>
+        </div>
+        <button id="gus-close" onclick="window.gusToggle()">&times;</button>
+      </div>
+      <div id="gus-messages">
+        <div class="gus-msg gus-msg-bot">Hey there! I'm Gus. I know every corner of Agent Edge. Ask me where to find something, how a tool works, or what's available — I'll dig it up for you.</div>
+      </div>
+      <div id="gus-input-wrap">
+        <input type="text" id="gus-input" placeholder="Ask Gus anything..." onkeydown="if(event.key==='Enter')window.gusSend()">
+        <button id="gus-send" onclick="window.gusSend()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(widget);
 
-1. OPEN HOUSE MATERIALS (open-house.html):
-   - Professional open house flyers and sign-in sheets
-   - Co-branded with agent and Kristy's info
+  // Toggle
+  window.gusToggle = function() {
+    isOpen = !isOpen;
+    var panel = document.getElementById('gus-panel');
+    if (isOpen) {
+      panel.classList.add('open');
+      // Position panel near the fab
+      var fab = document.getElementById('gus-fab');
+      var fabRect = fab.getBoundingClientRect();
+      panel.style.top = Math.max(10, fabRect.top - 200) + 'px';
+      panel.style.right = (window.innerWidth - fabRect.left + 12) + 'px';
+      panel.style.transform = 'none';
+      document.getElementById('gus-input').focus();
+    } else {
+      panel.classList.remove('open');
+    }
+  };
 
-2. BUYER FLYERS (buyers.html):
-   - Pre-designed flyers for buyer topics: agency, builder perks, conforming limits, FHA, Home Possible, Home Ready, power buyer, reverse purchase, seller-paid costs, steps to buy, tax refund, tips, USDA, VA
-   - Each generates a co-branded PDF with agent info
+  // Drag functionality
+  (function() {
+    var fab = document.getElementById('gus-fab');
+    var isDragging = false;
+    var wasDragged = false;
+    var startX, startY, startLeft, startTop;
 
-3. SELLER FLYERS (sellers.html):
-   - Flyers for seller topics: build grade standards, ready to sell
-   - Co-branded PDFs
-
-4. FINANCING FLYERS (financing.html):
-   - Flyers covering: advisor, bank statement loans, client wealth, close second, distressed properties, DSCR second, fixer upper, investor solution, investors, jumbo, lightning close, mortgage credit cert, refi, repair escrow, shorter term, small business owners
-   - Co-branded PDFs
-
-5. CONSTRUCTION FLYERS (construction.html):
-   - Builder perks, construction to perm loans
-   - Co-branded PDFs
-
-6. EDUCATION FLYERS (education.html):
-   - Checklist, client wealth, closing costs, control debt, credit holding you back, credit problems, credit score, reverse mortgage
-   - Co-branded PDFs
-
-7. PROPERTY WEBSITES (property-websites.html):
-   - 7 custom single property website templates (Cavallo, Contemporary, Impact, Modern, Sleek, Stylish, Vertical)
-   - Agent enters property details, generates a live website for any listing
-   - Templates at: cavallo.html, contemporary.html, impact.html, modern.html, sleek.html, stylish.html, vertical.html
-
-===== ADVISORY COLLECTION (advisory-collection.html) =====
-Three wings of advisory tools:
-
-1. MARKET INTELLIGENCE (market-intelligence.html):
-   - Client-ready analytical reports:
-   - Buy vs Rent Analysis (buy-vs-rent.html) — compares renting vs buying with real numbers
-   - Mortgage Amortization Report (amortization-report.html) — shows how payments break down over time
-   - Home Appreciation Calculator — shows how home values grow
-   - Investment Property Analysis — ROI calculations for rental properties
-   - Real Estate Report Card — comprehensive property analysis
-   - Neighborhood Blueprint (neighborhood-blueprint.html) — detailed area analysis
-   - Worth the Premium (worth-the-premium.html) — is the higher-priced home worth it
-   - Owner to Investor (owner-to-investor.html) — transition from homeowner to investor
-   - Wealth in Motion (wealth-in-motion.html) — long-term wealth building through real estate
-   - Wealth Starts Now (wealth-starts-now.html) — getting started with real estate wealth
-   - Loan Comparison Tool (loan-comparison.html) — side-by-side loan program comparison
-
-2. FINANCING STRATEGIES (financing-strategies.html):
-   - Payment Calculator (calc-payment.html) — calculate monthly mortgage payments
-   - Buying Power Calculator (calc-buying-power.html) — how much house can your client afford
-   - Affordability Calculator (calc-affordability.html) — detailed affordability analysis
-
-3. DECISION TOOLS (decision-tools.html):
-   - Scenario Desk (scenario-desk.html) — search lending guidelines across 5 agencies (Fannie Mae, Freddie Mac, FHA, VA, USDA), submit complex scenarios for expert review and callback
-   - Market Pulse (market-pulse.html) — interactive home value trends across all 50 states with charts
-   - Seller Strategies Calculator (calc-seller-strategy.html) — shows sellers smarter alternatives to price reductions (buydowns, closing cost credits, etc.)
-
-===== EDUCATION COLLECTION (education-collection.html) =====
-Four areas of client-facing educational resources:
-
-1. FINANCIAL CALCULATORS (education-calculators.html):
-   - W-2 Income Calculator (income-calculator.html) — helps clients understand qualifying income
-   - Self-Employed Income Calculator (self-employed-calculator.html) — calculates qualifying income for self-employed borrowers
-
-2. VIDEO LIBRARY (education-videos.html):
-   - Educational videos from House Money with Kristy YouTube channel
-
-3. LOAN PROGRAM GUIDES (education-loan-guides.html):
-   - Conventional Loans (conventional-loans-education.html)
-   - FHA Loans (fha-loans-education.html)
-   - VA Loans (va-loan-educaton.html)
-   - USDA Loans (usda-loans-education.html)
-   - DSCR Loans (dscr-loans-education.html)
-   - Jumbo Loans (jumbo-loans-education.html)
-   - Reverse Mortgages (reverse-mortgage-education.html)
-   - Non-Conforming Loans (Non-Conforming-Loans.html)
-   - Non-Qualifying Loans (Non-Qualified-Loans.html)
-   - Down Payment Assistance (down-payment-assistance-education.html)
-
-4. CREDIT TOOLS (education-credit-tools.html):
-   - Credit Score Education (credit-score-education.html) — explains how scores work
-   - Credit Score Simulator (credit-score-simulator.html) — interactive tool showing how actions affect scores
-   - Credit Analysis Pipeline (mc-credit-analysis.html) — submit client credit for review and guidance
-
-===== MESSAGING COLLECTION (messaging-collection.html) =====
-Three social media and content tools:
-
-1. ON-DEMAND STUDIO (messaging-ondemand.html):
-   - AI-powered custom social media post generator
-   - Choose topic, platform, what to include
-   - Generates a post in Kristy's voice that agents can customize
-   - Limited to 5 uses for trial/explorer accounts
-
-2. GRAB & GO CONTENT STUDIO (messaging-grabandgo.html):
-   - 40+ pre-written social media posts organized by category (Market Updates, Homebuying Tips, Mortgage Education, Client Stories, Lifestyle)
-   - Filter by category and goal (education, engagement, lead gen, brand)
-   - Click any post to customize text, search Unsplash for images, preview on canvas, and download as a ready-to-post graphic (PNG)
-   - The downloaded image has text overlaid on the photo — ready to upload directly to any social platform
-
-3. IMAGE LIBRARY (messaging-images.html):
-   - Curated links to stock photo categories on Unsplash and Pexels
-   - Categories: Real Estate/Market, Home Buying, Mortgage/Finance, Success/Celebration, Community/Lifestyle, Seasonal/Holiday
-
-===== OTHER FEATURES =====
-
-CART/KIT SYSTEM:
-- Agents can add marketing materials to their "kit" as they browse
-- Cart icon in top right of portal
-- Proceed to checkout to request materials
-
-MORNING BRIEFINGS:
-- Daily market intelligence on the portal home page
-- Economic calendar showing market-moving events for the week
-- Professional market summary
-- Client-friendly version agents can share directly with their clients
-- Week in review published on Fridays
-
-CO-BRANDING:
-- All marketing materials (flyers, property websites, reports) automatically include the agent's name, title, brokerage, phone, and headshot
-- Agent info comes from their profile — keeping profile updated keeps materials current
-
-LOGIN/SIGNUP:
-- Login at login.html
-- Signup at signup.html — two paths: Partner (full access) or Explorer (limited)
-- Forgot password at forgot-password.html
-- Change password in profile
-
-===== COMMON QUESTIONS =====
-
-"How do I update my information on materials?" → Go to Profile (click the person icon top right of portal). Update your info there and it flows to all co-branded materials.
-
-"How do I create a flyer?" → Marketing Collection → choose the category (Buyers, Sellers, etc.) → click the flyer you want → it generates with your info.
-
-"How do I create a property website?" → Marketing Collection → Property Websites → choose a template → enter property details → publish.
-
-"Where do I find calculators?" → Two places: Financing Strategies (in Advisory Collection) has the main mortgage calculators. Education Collection has income calculators for qualifying.
-
-"How do I search lending guidelines?" → Advisory Collection → Decision Tools → Scenario Desk. You can search across 5 agencies or submit a scenario for expert review.
-
-"How do I get a credit analysis?" → Education Collection → Credit Tools → Credit Analysis. Submit the scenario and Kristy's team reviews it.
-
-"How do I create a social media post?" → Messaging Collection → On-Demand Studio (AI writes a custom post) or Grab & Go (pick from pre-written posts and add an image).
-
-"Is this really free?" → Yes. Everything on Agent Edge is free. No subscriptions, no hidden fees. Kristy built it to support her realtor partners.
-
-"How do I get my headshot on materials?" → Profile → click the headshot circle → upload a square photo. It appears on all co-branded materials automatically.
-
-"What's the morning briefing?" → Daily market intelligence on the portal home page. Includes economic calendar, market summary, and a client-friendly version you can share.
-
-"What's the market snapshot?" → The Market Snapshot on the portal home page shows three cards: Mortgage Bond Pricing (UMBS), 10 Year Treasury Yield, and S&P 500. It updates throughout the day with snapshots at 9am, 12pm, 2pm, and 5pm ET. Click any card to see a trend chart with technical indicators. Click the ⓘ icon for a plain-English explanation of what everything means.
-
-"How do bond prices affect rates?" → Bond prices and mortgage rates move in opposite directions. When bond prices go UP, mortgage rates go DOWN — that's good for buyers. When bond prices go DOWN, rates go UP. The Market Snapshot on the portal home page tracks this in real time.
-
-"What are the DMA lines on the chart?" → DMA stands for Daily Moving Average. The 200 DMA (blue), 100 DMA (purple), 50 DMA (dark), and 25 DMA (orange) show the average price over that many days. They help identify trends — when the price is above the moving averages, the trend is generally positive.
-
-"Can I share the client summary with my clients?" → Yes! That's exactly what it's for. The client-friendly version is written in plain English specifically for sharing.`;
-
-  // Build messages array with history if provided
-  const messages = [];
-  if (history && Array.isArray(history)) {
-    history.forEach(function(msg) {
-      messages.push({ role: msg.role, content: msg.content });
-    });
-  }
-  messages.push({ role: 'user', content: question });
-
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 500,
-        system: KNOWLEDGE_BASE,
-        messages: messages
-      })
+    fab.addEventListener('mousedown', function(e) {
+      e.preventDefault();
+      isDragging = true;
+      wasDragged = false;
+      fab.classList.add('dragging');
+      var rect = fab.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      // Remove any transform so positioning works
+      fab.style.transform = 'none';
+      fab.style.left = startLeft + 'px';
+      fab.style.top = startTop + 'px';
+      fab.style.right = 'auto';
     });
 
-    const data = await response.json();
-    if (data.error) return res.status(500).json({ error: data.error.message });
+    document.addEventListener('mousemove', function(e) {
+      if (!isDragging) return;
+      var dx = e.clientX - startX;
+      var dy = e.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDragged = true;
+      fab.style.left = (startLeft + dx) + 'px';
+      fab.style.top = (startTop + dy) + 'px';
+    });
 
-    const answer = data.content && data.content[0] ? data.content[0].text.trim() : 'Hmm, I got a little lost on that one. Try asking a different way?';
+    document.addEventListener('mouseup', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      fab.classList.remove('dragging');
+      if (!wasDragged) {
+        window.gusToggle();
+      }
+    });
 
-    return res.status(200).json({ success: true, answer: answer });
+    // Touch support for mobile
+    fab.addEventListener('touchstart', function(e) {
+      isDragging = true;
+      wasDragged = false;
+      fab.classList.add('dragging');
+      var touch = e.touches[0];
+      var rect = fab.getBoundingClientRect();
+      startX = touch.clientX;
+      startY = touch.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
+      fab.style.transform = 'none';
+      fab.style.left = startLeft + 'px';
+      fab.style.top = startTop + 'px';
+      fab.style.right = 'auto';
+    }, { passive: true });
 
-  } catch (err) {
-    console.error('gus-find-it error:', err);
-    return res.status(500).json({ error: 'Gus got distracted by a squirrel. Please try again.' });
+    document.addEventListener('touchmove', function(e) {
+      if (!isDragging) return;
+      var touch = e.touches[0];
+      var dx = touch.clientX - startX;
+      var dy = touch.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) wasDragged = true;
+      fab.style.left = (startLeft + dx) + 'px';
+      fab.style.top = (startTop + dy) + 'px';
+    }, { passive: true });
+
+    document.addEventListener('touchend', function() {
+      if (!isDragging) return;
+      isDragging = false;
+      fab.classList.remove('dragging');
+      if (!wasDragged) {
+        window.gusToggle();
+      }
+    });
+  })();
+
+  // Send message
+  window.gusSend = async function() {
+    var input = document.getElementById('gus-input');
+    var q = input.value.trim();
+    if (!q) return;
+
+    var msgs = document.getElementById('gus-messages');
+    var sendBtn = document.getElementById('gus-send');
+
+    // Add user message
+    var userDiv = document.createElement('div');
+    userDiv.className = 'gus-msg gus-msg-user';
+    userDiv.textContent = q;
+    msgs.appendChild(userDiv);
+    input.value = '';
+    sendBtn.disabled = true;
+
+    // Add typing indicator
+    var typing = document.createElement('div');
+    typing.className = 'gus-typing';
+    typing.innerHTML = '<span class="gus-paw">🐾</span><span class="gus-paw">🐾</span><span class="gus-paw">🐾</span><span class="gus-paw">🐾</span>';
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    // Track in history
+    history.push({ role: 'user', content: q });
+
+    try {
+      var resp = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, history: history.slice(-10) })
+      });
+      var data = await resp.json();
+      var answer = data.answer || 'Hmm, I got turned around. Try asking a different way?';
+
+      // Track answer
+      history.push({ role: 'assistant', content: answer });
+
+      // Remove typing, add answer
+      typing.remove();
+      var botDiv = document.createElement('div');
+      botDiv.className = 'gus-msg gus-msg-bot';
+      // Convert URLs and page references to links
+      botDiv.innerHTML = formatGusAnswer(answer);
+      msgs.appendChild(botDiv);
+
+    } catch (err) {
+      typing.remove();
+      var errDiv = document.createElement('div');
+      errDiv.className = 'gus-msg gus-msg-bot';
+      errDiv.textContent = 'Oops — I got distracted by a squirrel. Try again in a sec.';
+      msgs.appendChild(errDiv);
+    }
+
+    msgs.scrollTop = msgs.scrollHeight;
+    sendBtn.disabled = false;
+    input.focus();
+  };
+
+  // Format answer — turn .html references into clickable links
+  function formatGusAnswer(text) {
+    // Escape HTML
+    var safe = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Convert .html file references to links
+    safe = safe.replace(/(\b\w[\w-]*\.html)\b/g, '<a href="$1" target="_self">$1</a>');
+    // Convert markdown-style links [text](url)
+    safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    // Convert **bold**
+    safe = safe.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    // Line breaks
+    safe = safe.replace(/\n/g, '<br>');
+    return safe;
   }
-}
+})();
