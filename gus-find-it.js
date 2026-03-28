@@ -1,1620 +1,244 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="refresh" content="600">
-<title>Agent Edge Partner Portal</title>
-<script src="auth.js"></script>
-<script src="universal-cart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<style>
-
-/* ===== LOGOUT BUTTON (NEXT TO CART) ===== */
-.profile-icon {
-  position: fixed;
-  top: 20px;
-  right: 200px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  z-index: 10000;
-  text-decoration: none;
-}
-.profile-icon:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.95);
-}
-.profile-icon .profile-tooltip {
-  position: absolute;
-  bottom: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #0b1f3a;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-}
-.profile-icon:hover .profile-tooltip {
-  opacity: 1;
-}
-
-.logout-btn {
-  position: fixed;
-  top: 20px;
-  right: 85px;          /* ← MOVED: Sits left of cart (cart is at right: 20px, width 50px + gap) */
-  padding: 10px 18px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.85);  /* ← MATCHED cart opacity */
-  backdrop-filter: blur(10px);         /* ← MATCHED cart blur */
-  border: 1px solid rgba(255,255,255,0.9);  /* ← MATCHED cart border */
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  z-index: 9999;
-  cursor: pointer;
-  transition: 0.25s ease;
-  font-family: inherit;
-  font-size: 14px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);  /* ← MATCHED cart shadow */
-}
-
-.logout-btn:hover {
-  background: rgba(255,255,255,0.95);
-  transform: scale(1.08);  /* ← MATCHED cart hover effect */
-}
-
-/* ===== GLOBAL PAGE WIDTH ===== */
-.page-wrap {
-  max-width: 1150px;
-  margin: 0 auto;
-  padding: 0 24px;
-}
-
-/* ===== BASE ===== */
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 0 0 80px 0;
-  background:
-    linear-gradient(rgba(255,255,255,0.55), rgba(255,255,255,0.65)),
-    url("portal-bg.jpg") center / cover no-repeat fixed;
-  color: #0b1f3a;
-}
-
-h1 {
-  text-align: center;
-  font-size: 34px;
-  margin-bottom: 25px;
-  letter-spacing: 1px;
-}
-
-/* ===== NAV ===== */
-.portal-nav {
-  text-align: center;
-  margin-bottom: 10px;
-}
-.portal-nav a {
-  margin: 0 18px;
-  text-decoration: none;
-  font-weight: 700;
-  color: #6e7f77;
-  font-size: 22px;
-  letter-spacing: 0.3px;
-}
-
-/* ===== READ MORE GLASS BUTTONS ===== */
-.read-more-btn {
-  display: inline-block;
-  padding: 10px 22px;
-  background: rgba(110,127,119,0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: white;
-  text-decoration: none;
-  font-weight: 700;
-  font-size: 13px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  margin-top: 12px;
-}
-.read-more-btn:hover {
-  background: rgba(90,107,99,0.95);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.18);
-}
-
-/* ===== DATE ===== */
-.date-bar {
-  width: 100%;
-  padding: 0 50px;
-  text-align: left;
-  font-size: 22px;
-  font-weight: 800;
-  color: #0b1f3a;
-}
-
-/* ===== RATE TICKER ===== */
-.rate-ticker {
-  width: 100%;
-  overflow: hidden;
-  background: #0b1f3a;
-  color: white;
-  padding: 14px 0;
-}
-.ticker-track {
-  display: flex;
-  width: 200%;
-  animation: ticker 18s linear infinite;
-}
-.ticker-line {
-  display: flex;
-  width: 50%;
-}
-.ticker-line span {
-  margin-right: 120px;
-  white-space: nowrap;
-  font-weight: 500;
-}
-@keyframes ticker {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-/* ===== MORNING BRIEF PANEL ===== */
-.blog-section {
-  max-width: 1000px;
-  margin: 80px auto 0 auto;
-  padding: 60px 50px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.65);
-  box-shadow:
-    0 20px 55px rgba(0,0,0,0.10),
-    0 6px 18px rgba(0,0,0,0.05);
-  text-align: center;
-}
-
-/* ===== HEADINGS ===== */
-.section-title {
-  font-size: 36px;
-  margin-bottom: 12px;
-  letter-spacing: 0.5px;
-}
-.section-subtitle {
-  font-size: 16px;
-  max-width: 700px;
-  margin: 0 auto 55px auto;
-  line-height: 1.6;
-  color: #555;
-}
-
-/* ===== CARD GRID ===== */
-.blog-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 34px;
-  max-width: 1000px;
-  margin: 0 auto;
-  text-align: left;
-  align-items: stretch;
-}
-
-/* ===== CARDS ===== */
-.blog-card {
-  border-radius: 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(248,242,232,0.88),
-    rgba(248,242,232,0.72)
-  );
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  box-shadow:
-    0 15px 40px rgba(160,140,110,0.15),
-    0 5px 14px rgba(160,140,110,0.08);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  min-height: 420px;
-}
-
-.event-card {
-  padding: 0;
-  overflow: hidden;
-}
-
-.event-row {
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-  cursor: pointer;
-  padding: 8px 30px;
-}
-
-.event-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 4px 0;
-}
-
-.day {
-  font-weight: 700;
-  color: #6e7f77;
-  width: 40px;
-}
-
-.headline {
-  flex: 1;
-  font-weight: 600;
-  color: #0b1f3a;
-}
-
-.more {
-  font-size: 12px;
-  background: #6e7f77;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-}
-
-.event-details {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease;
-  padding: 0 20px;
-  font-size: 14px;
-  color: #4a5a6a;
-}
-
-.event-details div {
-  padding: 6px 0;
-}
-
-.event-row.active .event-details {
-  max-height: 200px;
-  padding-bottom: 12px;
-}
-
-.expand-card .expand-main {
-  cursor: pointer;
-  padding: 8px 0;
-  font-weight: 500;
-  color: #0b1f3a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.expand-card .expand-details {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.35s ease;
-}
-
-.expand-card.active .expand-details {
-  max-height: 200px;
-}
-
-.expand-card .more {
-  font-size: 12px;
-  background: #6e7f77;
-  color: white;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 700;
-}
-
-.events-header {
-  text-align: center;
-  padding: 26px 30px 12px 30px;
-  margin: 0 0 12px 0;
-}
-
-.events-header .events-week {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #6e7f77;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.events-header .events-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0b1f3a;
-  margin: 0;
-}
-
-.brief-header {
-  text-align: center;
-  padding: 26px 30px 12px 30px;
-  margin: 0 0 12px 0;
-}
-.brief-header .blog-category {
-  display: block;
-  margin-bottom: 10px;
-}
-.brief-header h3 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0b1f3a;
-  margin: 0;
-}
-
-.blog-category {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  color: #6e7f77;
-  font-weight: 700;
-}
-
-.econ-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 15px;
-}
-.econ-table th {
-  background: #6e7f77;
-  color: white;
-  padding: 10px;
-}
-.econ-table td {
-  padding: 10px;
-  border-bottom: 1px solid #e3ecf7;
-}
-
-.week-review-card {
-  margin-top: 40px;
-  padding: 30px 36px;
-  border-radius: 20px;
-  background: linear-gradient(
-    180deg,
-    rgba(248,242,232,0.88),
-    rgba(248,242,232,0.72)
-  );
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  box-shadow:
-    0 15px 40px rgba(160,140,110,0.15),
-    0 5px 14px rgba(160,140,110,0.08);
-  text-align: left;
-}
-
-.events-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #0b1f3a;
-  margin: 0 0 18px 0;
-}
-
-.summary-text {
-  max-height: 110px;
-  overflow: hidden;
-  position: relative;
-}
-.summary-text::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40px;
-  background: linear-gradient(to bottom, rgba(248,242,232,0), rgba(248,242,232,1));
-}
-
-.return-home {
-  position: fixed;
-  bottom: 22px;
-  right: 28px;
-  z-index: 999;
-}
-
-.return-home a {
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  color: #0b1f3a;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.55);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.7);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-  transition: all 0.25s ease;
-}
-
-.return-home a:hover {
-  background: rgba(255,255,255,0.75);
-  transform: translateY(-2px);
-}
-
-.blog-section {
-  position: relative;
-}
-
-.brief-update-time {
-  position: absolute;
-  top: 24px;
-  right: 36px;
-  font-size: 13px;
-  font-weight: 500;
-  color: #0b1f3a;
-  background: rgba(255,255,255,0.45);
-  backdrop-filter: blur(6px);
-  padding: 6px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.7);
-}
-
-/* ===== MARKETS DASHBOARD ===== */
-.mkts-dash { margin-bottom:45px; text-align:left; }
-.mkts-dash-header { text-align:center; margin-bottom:18px; }
-.mkts-dash-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#6e7f77; font-weight:700; }
-.mkts-updated { font-size:11px; color:#8a7e6b; margin-top:4px; }
-.mkts-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:18px; }
-.mkts-card { border-radius:16px; background:linear-gradient(180deg,rgba(248,242,232,0.92),rgba(248,242,232,0.76)); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.6); box-shadow:0 10px 30px rgba(160,140,110,0.12),0 4px 10px rgba(160,140,110,0.06); padding:20px 22px; cursor:pointer; transition:all 0.2s ease; }
-.mkts-card:hover { transform:translateY(-2px); box-shadow:0 14px 38px rgba(160,140,110,0.18),0 6px 14px rgba(160,140,110,0.1); }
-.mkts-card.active { border:2px solid #6e7f77; }
-.mkts-card-label { font-size:11px; font-weight:700; color:#6e7f77; text-transform:uppercase; letter-spacing:0.5px; display:flex; justify-content:space-between; align-items:center; }
-.mkts-card-price-row { display:flex; justify-content:space-between; align-items:baseline; margin-top:6px; }
-.mkts-card-price { font-size:28px; font-weight:700; color:#0b1f3a; }
-.mkts-card-change { font-size:14px; font-weight:700; }
-.mkts-card-rows { margin-top:10px; font-size:11px; color:#5a5145; }
-.mkts-card-rows > div { display:flex; justify-content:space-between; padding:2px 0; }
-.mkts-card-rows span:last-child { font-weight:600; color:#0b1f3a; }
-.mkts-coupon-select { font-size:10px; padding:2px 6px; border:1px solid rgba(110,127,119,0.3); border-radius:4px; background:rgba(255,255,255,0.7); color:#0b1f3a; cursor:pointer; font-weight:600; }
-.mkts-dma-row { display:flex; align-items:center; gap:18px; padding:10px 0; border-top:1px solid rgba(110,127,119,0.15); margin-bottom:6px; flex-wrap:wrap; }
-.mkts-dma-row label { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#0b1f3a; cursor:pointer; }
-.mkts-dma-row input[type="checkbox"] { width:14px; height:14px; }
-.mkts-chart-wrap { border-radius:14px; background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,0.7); box-shadow:0 6px 20px rgba(160,140,110,0.08); overflow:hidden; }
-.mkts-chart-wrap canvas { width:100%; height:360px; display:block; }
-.mkts-ranges { display:flex; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid rgba(110,127,119,0.2); }
-.mkts-ranges button { flex:1; padding:9px; font-size:12px; font-weight:600; border:none; background:rgba(255,255,255,0.7); color:#5a5145; cursor:pointer; border-right:1px solid rgba(110,127,119,0.15); transition:all 0.15s; font-family:inherit; }
-.mkts-ranges button:last-child { border-right:none; }
-.mkts-ranges button:hover { background:rgba(110,127,119,0.12); }
-.mkts-ranges button.active { background:#6e7f77; color:#fff; }
-.mkts-source { font-size:10px; color:#8a7e6b; text-align:center; margin-top:14px; }
-.mkts-info-icon { display:inline-block; cursor:pointer; color:#6e7f77; font-size:15px; margin-left:6px; vertical-align:middle; transition:color 0.2s; }
-.mkts-info-icon:hover { color:#0b1f3a; }
-@media (max-width:768px) { .mkts-cards { grid-template-columns:1fr; } .mkts-dma-row { gap:10px; } }
-
-/* ===== CART STYLES ===== */
-.cart-icon {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transition: all 0.25s ease;
-  z-index: 10000;
-}
-
-.cart-icon:hover {
-  transform: scale(1.08);
-  background: rgba(255,255,255,0.95);
-}
-
-.cart-icon svg {
-  width: 24px;
-  height: 24px;
-  fill: #6e7f77;
-}
-
-.cart-badge {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #c0392b;
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid white;
-}
-
-.cart-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  z-index: 9998;
-}
-
-.cart-overlay.active {
-  display: block;
-}
-
-.cart-modal {
-  position: fixed;
-  top: 50%;
-  right: -500px;
-  transform: translateY(-50%);
-  width: 90%;
-  max-width: 480px;
-  max-height: 85vh;
-  background: white;
-  border-radius: 18px 0 0 18px;
-  box-shadow: -8px 0 40px rgba(0,0,0,0.3);
-  display: flex;
-  flex-direction: column;
-  transition: right 0.3s ease;
-  z-index: 9999;
-}
-
-.cart-modal.active {
-  right: 0;
-}
-
-.cart-header {
-  padding: 24px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-header h2 {
-  margin: 0;
-  font-size: 22px;
-  color: #0b1f3a;
-}
-
-.cart-close {
-  background: none;
-  border: none;
-  font-size: 28px;
-  color: #666;
-  cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.cart-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 24px;
-}
-
-.cart-empty {
-  text-align: center;
-  padding: 60px 20px;
-  color: #999;
-}
-
-.cart-empty svg {
-  width: 64px;
-  height: 64px;
-  fill: #ddd;
-  margin-bottom: 16px;
-}
-
-.cart-section {
-  margin-bottom: 32px;
-}
-
-.cart-section-title {
-  font-size: 14px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #6e7f77;
-  margin-bottom: 12px;
-}
-
-.cart-item {
-  background: rgba(11,78,162,0.04);
-  padding: 12px 16px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cart-item-info {
-  flex: 1;
-}
-
-.cart-item-name {
-  font-weight: 600;
-  color: #0b1f3a;
-  margin-bottom: 2px;
-}
-
-.cart-item-meta {
-  font-size: 13px;
-  color: #666;
-}
-
-.cart-item-remove {
-  background: none;
-  border: none;
-  color: #c0392b;
-  cursor: pointer;
-  font-size: 20px;
-  padding: 4px 8px;
-}
-
-.cart-footer {
-  padding: 20px 24px;
-  border-top: 1px solid #e0e0e0;
-}
-
-.cart-total {
-  display: flex;
-  justify-content: space-between;
-  font-size: 16px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: #0b1f3a;
-}
-
-.cart-checkout-btn {
-  width: 100%;
-  padding: 14px;
-  background: #6e7f77;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: 0.25s ease;
-}
-
-.cart-checkout-btn:hover {
-  background: #0a3d7f;
-}
-
-.cart-clear-btn {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  color: #c0392b;
-  border: 1px solid #c0392b;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  margin-top: 10px;
-  transition: 0.25s ease;
-}
-
-.cart-clear-btn:hover {
-  background: rgba(192,57,43,0.05);
-}
-
-@media (max-width: 640px) {
-  .cart-modal {
-    max-width: 100%;
-    border-radius: 18px 0 0 18px;
-  }
-}
-</style>
-<script src="tracking.js"></script>
-<script src="feature-gate.js"></script>
-<link rel="stylesheet" href="mobile-fixes.css">
-</head>
-
-<body>
-
-<!-- PROFILE ICON -->
-<a href="profile.html" class="profile-icon" title="My Profile">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6e7f77" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-    <circle cx="12" cy="7" r="4"/>
-  </svg>
-  <span class="profile-tooltip">My Profile</span>
-</a>
-
-<!-- LOGOUT BUTTON -->
-<button class="logout-btn" onclick="logout()">Logout →</button>
-
-<h1>Agent Edge Partner Portal</h1>
-
-<div class="portal-nav">
-  <a href="realtor-marketing-studio.html">Marketing Collection</a>
-  <a href="advisory-collection.html">Advisory Collection</a>
- <a href="education-collection.html">Education Collection</a>
- <a href="messaging-collection.html">Messaging Collection</a>
-</div>
-
-<div class="date-bar" id="currentDate"></div>
-
-<div class="rate-ticker">
-  <div class="ticker-track">
-    <div class="ticker-line" id="portalTickerLine1"><span>Loading rates...</span></div>
-    <div class="ticker-line" id="portalTickerLine2"><span>Loading rates...</span></div>
-  </div>
-</div>
-<script>
-(function() {
-  fetch('https://agent-edge-backend.vercel.app/api/rates')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (!data.rates) return;
-      var r = data.rates;
-      var html = '';
-      if (r['30year'])      html += '<span>30-Year ' + r['30year'].toFixed(3) + '%</span>';
-      if (r['30yearFHA'])   html += '<span>FHA ' + r['30yearFHA'].toFixed(3) + '%</span>';
-      if (r['30yearVA'])    html += '<span>VA ' + r['30yearVA'].toFixed(3) + '%</span>';
-      if (r['30yearJumbo']) html += '<span>Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
-      if (r['15year'])      html += '<span>15-Year ' + r['15year'].toFixed(3) + '%</span>';
-      document.getElementById('portalTickerLine1').innerHTML = html;
-      document.getElementById('portalTickerLine2').innerHTML = html;
-    })
-    .catch(function(err) { console.error('Rate fetch error:', err); });
-})();
-</script>
-
-<div class="page-wrap">
-<section class="blog-section">
-  <div class="brief-update-time">
-    Last Updated – <span id="briefDate"></span>
-  </div>
-
-  <h2 class="section-title">Agent Edge Morning Briefing</h2>
-  <p class="section-subtitle">
-    Daily market intelligence designed to help Realtor partners speak with clarity and confidence.
-  </p>
-
-  <!-- ═══ MARKETS DASHBOARD ═══ -->
-  <div class="mkts-dash">
-    <div class="mkts-dash-header">
-      <div class="mkts-dash-title">Today's Market Snapshot <span class="mkts-info-icon" onclick="document.getElementById('mktsInfoModal').style.display='flex'" title="What is this?">ⓘ</span></div>
-      <div class="mkts-updated" id="mktsTimestamp">Loading...</div>
-    </div>
-    <div class="mkts-cards">
-      <div class="mkts-card active" data-mkts-card="UMBS_5.5" onclick="mktsChangeSymbol('UMBS_'+mktsActiveCoupon)">
-        <div class="mkts-card-label">
-          <span id="mktsUmbsLabel">Mortgage Bond Pricing</span>
-          <select class="mkts-coupon-select" id="mktsCouponSelect" onchange="mktsChangeCoupon(this.value)" title="Change coupon">
-            <option value="5">5.0%</option>
-            <option value="5.5" selected>5.5%</option>
-            <option value="6">6.0%</option>
-          </select>
-        </div>
-        <div class="mkts-card-price-row">
-          <div class="mkts-card-price" id="mktsUmbsPrice">—</div>
-          <div class="mkts-card-change" id="mktsUmbsBps">—</div>
-        </div>
-        <div class="mkts-card-rows">
-          <div><span>Last Night's Close</span><span id="mktsUmbsClose">—</span></div>
-          <div><span>Open (9:00 AM ET)</span><span id="mktsUmbsOpen">—</span></div>
-          <div><span>Mid-Day (12:00 PM ET)</span><span id="mktsUmbsMidDay">—</span></div>
-          <div><span>Afternoon (2:00 PM ET)</span><span id="mktsUmbsAfternoon">—</span></div>
-        </div>
-      </div>
-      <div class="mkts-card" data-mkts-card="10Y" onclick="mktsChangeSymbol('10Y')">
-        <div class="mkts-card-label">10 Year Treasury Yield</div>
-        <div class="mkts-card-price-row">
-          <div class="mkts-card-price" id="mkts10YPrice">—</div>
-          <div class="mkts-card-change" id="mkts10YBps">—</div>
-        </div>
-        <div class="mkts-card-rows">
-          <div><span>Previous Close</span><span id="mkts10YPrevClose">—</span></div>
-          <div><span>Open (9:00 AM ET)</span><span id="mkts10YOpen">—</span></div>
-          <div><span>Mid-Day (12:00 PM ET)</span><span id="mkts10YMidDay">—</span></div>
-          <div><span>Current</span><span id="mkts10YLast">—</span></div>
-        </div>
-      </div>
-      <div class="mkts-card" data-mkts-card="SPY" onclick="mktsChangeSymbol('SPY')">
-        <div class="mkts-card-label">S&amp;P 500</div>
-        <div class="mkts-card-price-row">
-          <div class="mkts-card-price" id="mktsSpyPrice">—</div>
-          <div class="mkts-card-change" id="mktsSpyPts">—</div>
-        </div>
-        <div class="mkts-card-rows">
-          <div><span>Previous Close</span><span id="mktsSpyPrevClose">—</span></div>
-          <div><span>Today's Open</span><span id="mktsSpyOpen2">—</span></div>
-          <div><span>High</span><span id="mktsSpyHigh">—</span></div>
-          <div><span>Low</span><span id="mktsSpyLow">—</span></div>
-        </div>
-      </div>
-    </div>
-    <div class="mkts-dma-row">
-      <label><input type="checkbox" id="mktsDMA200CB" checked onchange="mktsToggleDMA(200)" style="accent-color:#2563eb;"> <span style="color:#2563eb;">200 DMA</span></label>
-      <label><input type="checkbox" id="mktsDMA100CB" checked onchange="mktsToggleDMA(100)" style="accent-color:#a855f7;"> <span style="color:#a855f7;">100 DMA</span></label>
-      <label><input type="checkbox" id="mktsDMA50CB" checked onchange="mktsToggleDMA(50)" style="accent-color:#0b1f3a;"> <span style="color:#0b1f3a;">50 DMA</span></label>
-      <label><input type="checkbox" id="mktsDMA25CB" checked onchange="mktsToggleDMA(25)" style="accent-color:#ea580c;"> <span style="color:#ea580c;">25 DMA</span></label>
-      <label><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span> <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5%</span></label>
-    </div>
-    <div class="mkts-chart-wrap">
-      <canvas id="mktsMainChart"></canvas>
-    </div>
-    <div class="mkts-ranges" id="mktsChartRanges">
-      <button onclick="mktsChangeRange('5d')" data-range="5d">1 Week</button>
-      <button onclick="mktsChangeRange('1mo')" data-range="1mo">2 Weeks</button>
-      <button onclick="mktsChangeRange('3wk')" data-range="3wk">3 Weeks</button>
-      <button onclick="mktsChangeRange('1mo2')" data-range="1mo2" class="active">Monthly</button>
-      <button onclick="mktsChangeRange('3mo')" data-range="3mo">3 Months</button>
-      <button onclick="mktsChangeRange('6mo')" data-range="6mo">6 Months</button>
-      <button onclick="mktsChangeRange('1y')" data-range="1y">Yearly</button>
-    </div>
-    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · Bond &amp; equity data delayed · Snapshots at 9 AM, 12 PM, 2 PM, 5 PM ET</div>
-
-    <!-- Info Modal -->
-    <div id="mktsInfoModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;" onclick="if(event.target===this)this.style.display='none'">
-      <div style="background:#fffcf7;border-radius:20px;max-width:560px;width:90%;padding:36px 40px;box-shadow:0 20px 60px rgba(0,0,0,0.2);position:relative;font-family:inherit;">
-        <button onclick="document.getElementById('mktsInfoModal').style.display='none'" style="position:absolute;top:14px;right:18px;background:none;border:none;font-size:22px;color:#8a7e6b;cursor:pointer;">✕</button>
-        <h3 style="margin:0 0 16px 0;font-size:22px;color:#0b1f3a;">Understanding the Market Snapshot</h3>
-        <div style="font-size:14px;line-height:1.7;color:#3a3530;">
-          <p style="margin:0 0 14px 0;"><strong style="color:#6e7f77;">Mortgage Bond Pricing (UMBS)</strong> — This tracks the price of mortgage-backed securities. When bond prices go <strong style="color:#16a34a;">UP</strong>, mortgage rates go <strong style="color:#16a34a;">DOWN</strong> (good for buyers). When bond prices go <strong style="color:#dc2626;">DOWN</strong>, rates go <strong style="color:#dc2626;">UP</strong> (costs buyers more). It's an inverse relationship.</p>
-          <p style="margin:0 0 14px 0;"><strong style="color:#6e7f77;">10 Year Treasury Yield</strong> — The most-watched benchmark for mortgage rates. Treasury yields and mortgage rates move in the <strong>same direction</strong>. When yields rise, expect rates to rise. When yields fall, rates typically follow.</p>
-          <p style="margin:0 0 14px 0;"><strong style="color:#6e7f77;">S&amp;P 500</strong> — Tracks the broader stock market. Money flows between stocks and bonds. When stocks sell off, investors often move to bonds, which pushes bond prices up and rates down. A big stock rally can pull money away from bonds and push rates higher.</p>
-          <p style="margin:0 0 14px 0;"><strong style="color:#6e7f77;">bp (basis points)</strong> — One basis point = 0.01%. So "25bp" means a quarter of a percent. A 50bp move in bond pricing can shift mortgage rates by roughly 0.125% to 0.25%.</p>
-          <p style="margin:0;"><strong style="color:#6e7f77;">The Chart</strong> — Shows price trends over time with moving averages (DMA lines), support &amp; resistance levels, and Fibonacci retracement zones. These help identify where prices may find a floor or ceiling — useful for understanding if rate trends are likely to continue or reverse.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="blog-grid">
-
-    <article class="blog-card event-card">
-      <div class="events-header">
-        <div class="events-week">WEEK OF FEB 2</div>
-        <div class="events-title">Market-Moving Events</div>
-      </div>
-
-      <div class="event-row" onclick="toggleDetails(this)">
-        <div class="event-main">
-          <span class="day">Mon</span>
-          <span class="headline">ISM Manufacturing</span>
-        </div>
-      </div>
-
-      <div class="event-row" onclick="toggleDetails(this)">
-        <div class="event-main">
-          <span class="day">Tue</span>
-          <span class="headline">JOLTS Job Openings</span>
-        </div>
-      </div>
-
-      <div class="event-row" onclick="toggleDetails(this)">
-        <div class="event-main">
-          <span class="day">Wed</span>
-          <span class="headline">ADP Payrolls</span>
-        </div>
-      </div>
-
-      <div class="event-row" onclick="toggleDetails(this)">
-        <div class="event-main">
-          <span class="day">Thu</span>
-          <span class="headline">Bank of England Decision</span>
-          <span class="more">+3</span>
-        </div>
-        <div class="event-details">
-          <div>Challenger Job Cuts</div>
-          <div>ECB Rate Decision</div>
-          <div>Jobless Claims</div>
-        </div>
-      </div>
-
-      <div class="event-row" onclick="toggleDetails(this)">
-        <div class="event-main">
-          <span class="day">Fri</span>
-          <span class="headline">Nonfarm Payrolls</span>
-          <span class="more">+5</span>
-        </div>
-        <div class="event-details">
-          <div>Unemployment Rate</div>
-          <div>Average Hourly Earnings (MoM)</div>
-          <div>Average Hourly Earnings (YoY)</div>
-          <div>Average Weekly Hours</div>
-          <div>Michigan Consumer Sentiment</div>
-        </div>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-content">
-        <div class="brief-header">
-          <span class="blog-category">Today</span>
-          <h3>Market Summary</h3>
-        </div>
-        <div class="summary-text">
-          <p>
-            Markets are focused on labor data. Underlying employment trends suggest conditions may be weaker than headline reports imply. Investors are watching closely for confirmation.
-          </p>
-        </div>
-        <a href="summary-briefs.html" class="read-more-btn">Read Full Brief →</a>
-      </div>
-    </article>
-
-    <article class="blog-card">
-      <div class="blog-content">
-        <div class="brief-header">
-          <span class="blog-category">Client Version</span>
-          <h3>Client-Friendly Summary</h3>
-        </div>
-        <div class="summary-text">
-          <p>
-            The market is a little uneasy to start the week because a lot of attention is on jobs data.
-            Even though headlines say the job market is strong, the reality is more mixed. Many people who lose work today don't show up in the usual reports — especially freelancers, gig workers, and people whose unemployment benefits have run out. That means job numbers can look better on paper than they feel in real life.
-            When economists look deeper, they're seeing signs that more people are staying unemployed longer, even if that doesn't show up in the main headlines yet.
-            Some Fed officials are openly acknowledging this. One Fed governor recently said the job market is weaker than it appears and that interest rates may still be too high for where the economy is right now.
-            That's why this week's job reports matter so much. If they confirm the slowdown, it could help calm markets and support housing conditions as the year moves forward.
-          </p>
-        </div>
-        <a href="client-summary.html" class="read-more-btn">Read Full Version →</a>
-      </div>
-    </article>
-
-  </div>
-
-  <div class="week-review-card">
-    <span class="blog-category">Week In Review</span>
-    <h3 id="wirHeading">Week Ending February 7, 2026</h3>
-    <div class="summary-text" id="wirPreview">
-      <p>Major reports, trend direction, and recent rate behavior will appear here on Fridays.</p>
-    </div>
-    <a href="week-in-review.html" class="read-more-btn" style="display:inline-block;margin-top:16px;">Read Full Review →</a>
-  </div>
-
-</section>
-</div>
-
-<!-- CART SYSTEM -->
-<div class="cart-icon" onclick="openCart()">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-  </svg>
-  <span class="cart-badge" id="cartBadge">0</span>
-</div>
-
-<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
-
-<div class="cart-modal" id="cartModal">
-  <div class="cart-header">
-    <h2>My Kit</h2>
-    <button class="cart-close" onclick="closeCart()">×</button>
-  </div>
-  
-  <div class="cart-body" id="cartBody">
-    <div class="cart-empty">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-      </svg>
-      <p>Your kit is empty</p>
-      <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
-    </div>
-  </div>
-  
-  <div class="cart-footer" id="cartFooter" style="display: none;">
-    <div class="cart-total">
-      <span>Total Items:</span>
-      <span id="cartTotalCount">0</span>
-    </div>
-    <button class="cart-checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
-    <button class="cart-clear-btn" onclick="clearCart()">Clear Cart</button>
-  </div>
-</div>
-
-<div class="return-home">
-  <a href="https://kristyflach.com">← Return to Main Website</a>
-</div>
-
-<script>
-// PROTECT THIS PAGE - Must be logged in
-document.addEventListener('DOMContentLoaded', function() {
-  if (typeof protectPage === 'function') {
-    protectPage();
-  }
-});
-
-// DATE
-const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById("currentDate").innerText = new Date().toLocaleDateString('en-US', options);
-});
-
-// EVENT CARD AUTO MODE
-function toggleDetails(row) {
-  row.classList.toggle("active");
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const rows = document.querySelectorAll(".event-row");
-
-  rows.forEach(row => {
-    const details = row.querySelector(".event-details");
-    const headlineEl = row.querySelector(".headline");
-    const moreEl = row.querySelector(".more");
-
-    if (!details) return;
-
-    const items = details.querySelectorAll("div");
-
-    if (items.length > 0) {
-      headlineEl.textContent = items[0].textContent;
-      const remaining = items.length - 1;
-
-      if (remaining > 0) {
-        moreEl.textContent = `+${remaining}`;
-        moreEl.style.display = "inline-block";
-      } else {
-        moreEl.style.display = "none";
-      }
-    }
-  });
-});
-
-// BRIEF DATE
-const now = new Date();
-const briefOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-document.getElementById("briefDate").textContent = now.toLocaleDateString('en-US', briefOptions);
-
-// CART FUNCTIONS
-function openCart() {
-  document.getElementById('cartOverlay').classList.add('active');
-  document.getElementById('cartModal').classList.add('active');
-  renderCart();
-}
-
-function closeCart() {
-  document.getElementById('cartOverlay').classList.remove('active');
-  document.getElementById('cartModal').classList.remove('active');
-}
-
-function renderCart() {
-  const body = document.getElementById('cartBody');
-  const footer = document.getElementById('cartFooter');
-  const totalCount = document.getElementById('cartTotalCount');
-  
-  const summary = universalCart.getSummary();
-  const count = universalCart.getTotalCount();
-  
-  if (count === 0) {
-    body.innerHTML = `
-      <div class="cart-empty">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-          <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
-        </svg>
-        <p>Your kit is empty</p>
-        <p style="font-size: 14px; margin-top: 8px;">Browse collections to add materials</p>
-      </div>
-    `;
-    footer.style.display = 'none';
-    return;
-  }
-  
-  let html = '';
-  
-  summary.forEach(section => {
-    html += `<div class="cart-section">`;
-    html += `<div class="cart-section-title">${section.collection}</div>`;
-    
-    section.items.forEach(item => {
-      if (item.type === 'flyer') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-            </div>
-            <button class="cart-item-remove" onclick="removeMarketingItem('${item.name}')">×</button>
-          </div>
-        `;
-      } else if (item.type === 'report') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-              <div class="cart-item-meta">${item.count} ${item.count === 1 ? 'property' : 'properties'}</div>
-            </div>
-          </div>
-        `;
-      } else if (item.type === 'website') {
-        html += `
-          <div class="cart-item">
-            <div class="cart-item-info">
-              <div class="cart-item-name">${item.name}</div>
-              ${item.mls ? `<div class="cart-item-meta">MLS: ${item.mls}</div>` : ''}
-            </div>
-          </div>
-        `;
-      }
-    });
-    
-    html += `</div>`;
-  });
-  
-  body.innerHTML = html;
-  footer.style.display = 'block';
-  totalCount.textContent = count;
-}
-
-function removeMarketingItem(name) {
-  universalCart.removeMarketingItem(name);
-  renderCart();
-  
-  const card = document.querySelector(`[data-name="${name}"]`);
-  if (card) {
-    const btn = card.querySelector('.add-btn');
-    if (btn) {
-      btn.textContent = 'Add to My Kit';
-      btn.classList.remove('added');
-    }
-  }
-}
-
-function clearCart() {
-  if (confirm('Are you sure you want to clear your entire cart?')) {
-    universalCart.clear();
-    renderCart();
-    
-    document.querySelectorAll('.add-btn.added').forEach(btn => {
-      btn.textContent = 'Add to My Kit';
-      btn.classList.remove('added');
+// /api/gus-find-it.js — Gus Find It AI assistant for Agent Edge Partner Portal
+// POST { question, history? }
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' });
+
+  const { question, history } = req.body;
+  if (!question) return res.status(400).json({ error: 'question required' });
+
+  const KNOWLEDGE_BASE = `You are Gus Find It — the AI assistant inside Agent Edge Partner Portal. You are named after Gus, Kristy Flach's dog — a hilarious, playful Westie who lives for fun. Your personality matches: friendly, enthusiastic, helpful, a little goofy, and always eager to help people find what they need. You're like a golden retriever in a library — you WILL find the answer and you'll have fun doing it.
+
+PERSONALITY RULES:
+- Playful and warm but efficient. Don't waste people's time with long intros.
+- Short, clear answers. Get to the point fast, then add personality.
+- Use occasional dog references naturally (not forced): "Let me dig that up for you" / "Found it!" / "Sniffing around the portal..." / "I fetched that for you"
+- Never more than one dog reference per answer. Keep it subtle.
+- Always provide the direct link to the page when you know it.
+- If you don't know something, say so honestly. "That one's not in my yard — you should ask Kristy directly."
+- Never make up features that don't exist.
+
+ABOUT AGENT EDGE:
+Agent Edge is a free platform built by Kristy Flach (Certified Mortgage Advisor, NMLS #2632259, Paramount Residential Mortgage Group) for real estate agent partners. Everything is free — no subscriptions, no hidden fees. The platform gives agents co-branded marketing materials, client-ready reports, decision tools, educational resources, and social media tools.
+
+BASE URL: https://kristyflach.com
+
+===== COMPLETE SITE MAP =====
+
+PORTAL HOME (portal.html):
+- Main hub after login. Shows live mortgage rate ticker (30yr, FHA, VA, Jumbo, 15yr rates)
+- Morning Briefing section: daily market intelligence with economic calendar, market summary, client-friendly summary, and week in review
+- TODAY'S MARKET SNAPSHOT: Interactive dashboard showing 3 cards (Mortgage Bond Pricing, 10 Year Treasury Yield, S&P 500) with daily snapshots at 9am, 12pm, 2pm, and 5pm ET. Click any card to see its trend chart below with moving averages (200/100/50/25 DMA), Fibonacci retracement levels, and support/resistance lines. The coupon dropdown lets you switch between UMBS 5.0%, 5.5%, and 6.0%. Chart time ranges: 1 Week, 2 Weeks, 3 Weeks, Monthly, 3 Months, 6 Months, Yearly. Click the ⓘ icon next to "Today's Market Snapshot" for a plain-English explanation of what each indicator means and how it impacts mortgage rates. Key concept: when bond prices go UP, rates go DOWN (inverse relationship). Treasury yields and rates move in the SAME direction.
+- Navigation to four collections: Marketing, Advisory, Education, Messaging
+- Profile link, logout, cart/kit system
+- The rate ticker updates automatically with current rates
+
+PROFILE (profile.html):
+- Edit name, phone, title, brokerage, website
+- Upload/change headshot (used on co-branded materials)
+- Change password
+- Email is read-only (it's your login)
+
+===== MARKETING COLLECTION (realtor-marketing-studio.html) =====
+Contains 7 sub-collections of co-branded marketing materials:
+
+1. OPEN HOUSE MATERIALS (open-house.html):
+   - Professional open house flyers and sign-in sheets
+   - Co-branded with agent and Kristy's info
+
+2. BUYER FLYERS (buyers.html):
+   - Pre-designed flyers for buyer topics: agency, builder perks, conforming limits, FHA, Home Possible, Home Ready, power buyer, reverse purchase, seller-paid costs, steps to buy, tax refund, tips, USDA, VA
+   - Each generates a co-branded PDF with agent info
+
+3. SELLER FLYERS (sellers.html):
+   - Flyers for seller topics: build grade standards, ready to sell
+   - Co-branded PDFs
+
+4. FINANCING FLYERS (financing.html):
+   - Flyers covering: advisor, bank statement loans, client wealth, close second, distressed properties, DSCR second, fixer upper, investor solution, investors, jumbo, lightning close, mortgage credit cert, refi, repair escrow, shorter term, small business owners
+   - Co-branded PDFs
+
+5. CONSTRUCTION FLYERS (construction.html):
+   - Builder perks, construction to perm loans
+   - Co-branded PDFs
+
+6. EDUCATION FLYERS (education.html):
+   - Checklist, client wealth, closing costs, control debt, credit holding you back, credit problems, credit score, reverse mortgage
+   - Co-branded PDFs
+
+7. PROPERTY WEBSITES (property-websites.html):
+   - 7 custom single property website templates (Cavallo, Contemporary, Impact, Modern, Sleek, Stylish, Vertical)
+   - Agent enters property details, generates a live website for any listing
+   - Templates at: cavallo.html, contemporary.html, impact.html, modern.html, sleek.html, stylish.html, vertical.html
+
+===== ADVISORY COLLECTION (advisory-collection.html) =====
+Three wings of advisory tools:
+
+1. MARKET INTELLIGENCE (market-intelligence.html):
+   - Client-ready analytical reports:
+   - Buy vs Rent Analysis (buy-vs-rent.html) — compares renting vs buying with real numbers
+   - Mortgage Amortization Report (amortization-report.html) — shows how payments break down over time
+   - Home Appreciation Calculator — shows how home values grow
+   - Investment Property Analysis — ROI calculations for rental properties
+   - Real Estate Report Card — comprehensive property analysis
+   - Neighborhood Blueprint (neighborhood-blueprint.html) — detailed area analysis
+   - Worth the Premium (worth-the-premium.html) — is the higher-priced home worth it
+   - Owner to Investor (owner-to-investor.html) — transition from homeowner to investor
+   - Wealth in Motion (wealth-in-motion.html) — long-term wealth building through real estate
+   - Wealth Starts Now (wealth-starts-now.html) — getting started with real estate wealth
+   - Loan Comparison Tool (loan-comparison.html) — side-by-side loan program comparison
+
+2. FINANCING STRATEGIES (financing-strategies.html):
+   - Payment Calculator (calc-payment.html) — calculate monthly mortgage payments
+   - Buying Power Calculator (calc-buying-power.html) — how much house can your client afford
+   - Affordability Calculator (calc-affordability.html) — detailed affordability analysis
+
+3. DECISION TOOLS (decision-tools.html):
+   - Scenario Desk (scenario-desk.html) — search lending guidelines across 5 agencies (Fannie Mae, Freddie Mac, FHA, VA, USDA), submit complex scenarios for expert review and callback
+   - Market Pulse (market-pulse.html) — interactive home value trends across all 50 states with charts
+   - Seller Strategies Calculator (calc-seller-strategy.html) — shows sellers smarter alternatives to price reductions (buydowns, closing cost credits, etc.)
+
+===== EDUCATION COLLECTION (education-collection.html) =====
+Four areas of client-facing educational resources:
+
+1. FINANCIAL CALCULATORS (education-calculators.html):
+   - W-2 Income Calculator (income-calculator.html) — helps clients understand qualifying income
+   - Self-Employed Income Calculator (self-employed-calculator.html) — calculates qualifying income for self-employed borrowers
+
+2. VIDEO LIBRARY (education-videos.html):
+   - Educational videos from House Money with Kristy YouTube channel
+
+3. LOAN PROGRAM GUIDES (education-loan-guides.html):
+   - Conventional Loans (conventional-loans-education.html)
+   - FHA Loans (fha-loans-education.html)
+   - VA Loans (va-loan-educaton.html)
+   - USDA Loans (usda-loans-education.html)
+   - DSCR Loans (dscr-loans-education.html)
+   - Jumbo Loans (jumbo-loans-education.html)
+   - Reverse Mortgages (reverse-mortgage-education.html)
+   - Non-Conforming Loans (Non-Conforming-Loans.html)
+   - Non-Qualifying Loans (Non-Qualified-Loans.html)
+   - Down Payment Assistance (down-payment-assistance-education.html)
+
+4. CREDIT TOOLS (education-credit-tools.html):
+   - Credit Score Education (credit-score-education.html) — explains how scores work
+   - Credit Score Simulator (credit-score-simulator.html) — interactive tool showing how actions affect scores
+   - Credit Analysis Pipeline (mc-credit-analysis.html) — submit client credit for review and guidance
+
+===== MESSAGING COLLECTION (messaging-collection.html) =====
+Three social media and content tools:
+
+1. ON-DEMAND STUDIO (messaging-ondemand.html):
+   - AI-powered custom social media post generator
+   - Choose topic, platform, what to include
+   - Generates a post in Kristy's voice that agents can customize
+   - Limited to 5 uses for trial/explorer accounts
+
+2. GRAB & GO CONTENT STUDIO (messaging-grabandgo.html):
+   - 40+ pre-written social media posts organized by category (Market Updates, Homebuying Tips, Mortgage Education, Client Stories, Lifestyle)
+   - Filter by category and goal (education, engagement, lead gen, brand)
+   - Click any post to customize text, search Unsplash for images, preview on canvas, and download as a ready-to-post graphic (PNG)
+   - The downloaded image has text overlaid on the photo — ready to upload directly to any social platform
+
+3. IMAGE LIBRARY (messaging-images.html):
+   - Curated links to stock photo categories on Unsplash and Pexels
+   - Categories: Real Estate/Market, Home Buying, Mortgage/Finance, Success/Celebration, Community/Lifestyle, Seasonal/Holiday
+
+===== OTHER FEATURES =====
+
+CART/KIT SYSTEM:
+- Agents can add marketing materials to their "kit" as they browse
+- Cart icon in top right of portal
+- Proceed to checkout to request materials
+
+MORNING BRIEFINGS:
+- Daily market intelligence on the portal home page
+- Economic calendar showing market-moving events for the week
+- Professional market summary
+- Client-friendly version agents can share directly with their clients
+- Week in review published on Fridays
+
+CO-BRANDING:
+- All marketing materials (flyers, property websites, reports) automatically include the agent's name, title, brokerage, phone, and headshot
+- Agent info comes from their profile — keeping profile updated keeps materials current
+
+LOGIN/SIGNUP:
+- Login at login.html
+- Signup at signup.html — two paths: Partner (full access) or Explorer (limited)
+- Forgot password at forgot-password.html
+- Change password in profile
+
+===== COMMON QUESTIONS =====
+
+"How do I update my information on materials?" → Go to Profile (click the person icon top right of portal). Update your info there and it flows to all co-branded materials.
+
+"How do I create a flyer?" → Marketing Collection → choose the category (Buyers, Sellers, etc.) → click the flyer you want → it generates with your info.
+
+"How do I create a property website?" → Marketing Collection → Property Websites → choose a template → enter property details → publish.
+
+"Where do I find calculators?" → Two places: Financing Strategies (in Advisory Collection) has the main mortgage calculators. Education Collection has income calculators for qualifying.
+
+"How do I search lending guidelines?" → Advisory Collection → Decision Tools → Scenario Desk. You can search across 5 agencies or submit a scenario for expert review.
+
+"How do I get a credit analysis?" → Education Collection → Credit Tools → Credit Analysis. Submit the scenario and Kristy's team reviews it.
+
+"How do I create a social media post?" → Messaging Collection → On-Demand Studio (AI writes a custom post) or Grab & Go (pick from pre-written posts and add an image).
+
+"Is this really free?" → Yes. Everything on Agent Edge is free. No subscriptions, no hidden fees. Kristy built it to support her realtor partners.
+
+"How do I get my headshot on materials?" → Profile → click the headshot circle → upload a square photo. It appears on all co-branded materials automatically.
+
+"What's the morning briefing?" → Daily market intelligence on the portal home page. Includes economic calendar, market summary, and a client-friendly version you can share.
+
+"What's the market snapshot?" → The Market Snapshot on the portal home page shows three cards: Mortgage Bond Pricing (UMBS), 10 Year Treasury Yield, and S&P 500. It updates throughout the day with snapshots at 9am, 12pm, 2pm, and 5pm ET. Click any card to see a trend chart with technical indicators. Click the ⓘ icon for a plain-English explanation of what everything means.
+
+"How do bond prices affect rates?" → Bond prices and mortgage rates move in opposite directions. When bond prices go UP, mortgage rates go DOWN — that's good for buyers. When bond prices go DOWN, rates go UP. The Market Snapshot on the portal home page tracks this in real time.
+
+"What are the DMA lines on the chart?" → DMA stands for Daily Moving Average. The 200 DMA (blue), 100 DMA (purple), 50 DMA (dark), and 25 DMA (orange) show the average price over that many days. They help identify trends — when the price is above the moving averages, the trend is generally positive.
+
+"Can I share the client summary with my clients?" → Yes! That's exactly what it's for. The client-friendly version is written in plain English specifically for sharing.`;
+
+  // Build messages array with history if provided
+  const messages = [];
+  if (history && Array.isArray(history)) {
+    history.forEach(function(msg) {
+      messages.push({ role: msg.role, content: msg.content });
     });
   }
-}
+  messages.push({ role: 'user', content: question });
 
-function proceedToCheckout() {
-  sessionStorage.setItem('checkoutCart', JSON.stringify(universalCart.cart));
-  window.location.href = 'checkout.html';
-}
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeCart();
-  }
-});
-
-</script>
-
-
-<script>
-// Load briefing data from Supabase on page load
-window.addEventListener('load', function() {
-  fetch('https://agent-edge-backend.vercel.app/api/briefing')
-    .then(function(r) { return r.json(); })
-    .then(function(briefingData) {
-      if (!briefingData || briefingData.error) {
-        console.log('No briefing data available');
-        return;
-      }
-  
-      // ===== UPDATE ECONOMIC CALENDAR =====
-      if (briefingData.economicCalendar && Array.isArray(briefingData.economicCalendar)) {
-        var eventCard = document.querySelector('.event-card');
-        if (eventCard) {
-          var weekLabel = briefingData.calendarWeek || 'THIS WEEK';
-          var calendarHTML = '<div class="events-header">' +
-            '<div class="events-week">' + weekLabel + '</div>' +
-            '<div class="events-title">Market-Moving Events</div>' +
-          '</div>';
-          
-          briefingData.economicCalendar.forEach(function(event) {
-            var dayAbbrev = event.day.substring(0, 3);
-            var hasMore = event.additionalEvents && event.additionalEvents.length > 0;
-            var moreText = hasMore ? '<span class="more">+' + event.additionalEvents.length + '</span>' : '';
-            
-            calendarHTML += '<div class="event-row"' + (hasMore ? ' onclick="toggleDetails(this)"' : '') + '>' +
-              '<div class="event-main">' +
-                '<span class="day">' + dayAbbrev + '</span>' +
-                '<span class="headline">' + event.mainEvent + '</span>' +
-                moreText +
-              '</div>' +
-              (hasMore ? '<div class="event-details">' +
-                event.additionalEvents.map(function(e) { return '<div>' + e + '</div>'; }).join('') +
-              '</div>' : '') +
-            '</div>';
-          });
-          
-          eventCard.innerHTML = calendarHTML;
-        }
-      }
-      
-      // ===== UPDATE MARKET SUMMARY PREVIEW =====
-      if (briefingData.marketSummary) {
-        var marketCard = document.querySelectorAll('.blog-card')[1];
-        if (marketCard) {
-          var summaryDiv = marketCard.querySelector('.summary-text');
-          if (summaryDiv) {
-            var preview = briefingData.marketSummary.substring(0, 300) + '...';
-            summaryDiv.innerHTML = '<p>' + preview + '</p>';
-          }
-        }
-      }
-      
-      // ===== UPDATE CLIENT-FRIENDLY PREVIEW =====
-      if (briefingData.clientFriendly) {
-        var clientCard = document.querySelectorAll('.blog-card')[2];
-        if (clientCard) {
-          var cSummaryDiv = clientCard.querySelector('.summary-text');
-          if (cSummaryDiv) {
-            var cPreview = briefingData.clientFriendly.substring(0, 400) + '...';
-            cSummaryDiv.innerHTML = '<p>' + cPreview + '</p>';
-          }
-        }
-      }
-      
-      // ===== UPDATE WEEK IN REVIEW =====
-      if (briefingData.weekInReview) {
-        var wirHeading = document.getElementById('wirHeading');
-        if (wirHeading) {
-          var wirRef = briefingData.lastUpdated ? new Date(briefingData.lastUpdated) : new Date();
-          var wirDay = wirRef.getDay();
-          var wirFriOffset = wirDay <= 5 ? (5 - wirDay) : -1;
-          var wirFriday = new Date(wirRef);
-          wirFriday.setDate(wirRef.getDate() + wirFriOffset);
-          wirHeading.textContent = 'Week Ending ' + wirFriday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-        }
-        var wirPreview = document.getElementById('wirPreview');
-        if (wirPreview) {
-          // Show first section as preview
-          var firstParagraph = briefingData.weekInReview.split(/\n\n+/);
-          var previewText = '';
-          for (var wi = 0; wi < firstParagraph.length && previewText.length < 350; wi++) {
-            var chunk = firstParagraph[wi].trim();
-            if (!chunk) continue;
-            // Skip all-caps headings for preview
-            if (chunk.match(/^[A-Z\s&–—:]+$/) && chunk.length < 60) continue;
-            // Strip leading heading label if present
-            chunk = chunk.replace(/^(Rate & Bond Recap|Rate and Bond Recap|Economic Highlights|Housing & Market Impact|Housing and Market Impact|Week Ahead|Key Takeaways|Market Overview|Bottom Line)[:\s—–-]*/i, '');
-            if (chunk) { previewText += chunk + ' '; }
-          }
-          if (previewText.length > 350) previewText = previewText.substring(0, 350) + '...';
-          wirPreview.innerHTML = '<p>' + previewText.trim() + '</p>';
-        }
-      }
-      
-      // ===== UPDATE LAST UPDATED TIME =====
-      if (briefingData.lastUpdated) {
-        var lastUpdated = new Date(briefingData.lastUpdated);
-        var briefDate = document.getElementById('briefDate');
-        if (briefDate) {
-          briefDate.textContent = lastUpdated.toLocaleDateString('en-US', { 
-            month: 'long', 
-            day: 'numeric', 
-            year: 'numeric' 
-          });
-        }
-      }
-      
-      console.log('Briefing data loaded from Supabase:', briefingData);
-    })
-    .catch(function(err) {
-      console.error('Failed to load briefing data:', err);
-    });
-});
-</script>
-<!-- Admin Access - Bottom Left (admin only) -->
-<a href="mission-control.html" id="adminLink" style="
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  color: rgba(11,30,58,0.15);
-  font-size: 11px;
-  text-decoration: none;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: 0.25s ease;
-  z-index: 9999;
-  display: none;
-" onmouseover="this.style.color='rgba(11,30,58,0.5)'" onmouseout="this.style.color='rgba(11,30,58,0.15)'">&bull; Admin</a>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // ===== COMPREHENSIVE TRACKING SYSTEM =====
-  var userEmail = sessionStorage.getItem('agentEdgeUser');
-  var userName = sessionStorage.getItem('agentEdgeName') || 'User';
-  var pageLoadTime = new Date();
-  
-  // Track to Vercel API
-  function trackEvent(action, tool, details) {
-    if (!userEmail) return;
-    
-    fetch('https://agent-edge-backend.vercel.app/api/track', {
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01'
+      },
       body: JSON.stringify({
-        userName: userName,
-        userEmail: userEmail,
-        collection: 'Portal',
-        tool: tool || 'Portal',
-        action: action,
-        details: details || ''
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        system: KNOWLEDGE_BASE,
+        messages: messages
       })
-    }).catch(function(err) {
-      console.error('Tracking error:', err);
     });
-  }
 
-  // 1. TRACK PAGE VISIT
-  trackEvent('page_visit', 'Portal Homepage', 'Viewed portal landing page');
+    const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
 
-  // 2. TRACK TIME SPENT (when user leaves)
-  window.addEventListener('beforeunload', function() {
-    var timeSpent = Math.round((new Date() - pageLoadTime) / 1000); // seconds
-    trackEvent('time_spent', 'Portal Homepage', timeSpent + ' seconds');
-  });
+    const answer = data.content && data.content[0] ? data.content[0].text.trim() : 'Hmm, I got a little lost on that one. Try asking a different way?';
 
-  // 3. TRACK LINK CLICKS (which collections they visit)
-  document.querySelectorAll('a').forEach(function(link) {
-    link.addEventListener('click', function(e) {
-      var href = this.getAttribute('href') || '';
-      var linkText = this.textContent.trim();
-      
-      // Track collection page visits
-      if (href.includes('market-intelligence') || linkText.includes('Market Intelligence')) {
-        trackEvent('collection_click', 'Marketing Intelligence', 'Clicked to view Marketing collection');
-      } else if (href.includes('advisory') || linkText.includes('Advisory')) {
-        trackEvent('collection_click', 'Advisory Tools', 'Clicked to view Advisory collection');
-      } else if (href.includes('education') || linkText.includes('Education')) {
-        trackEvent('collection_click', 'Education', 'Clicked to view Education collection');
-      } else if (href.includes('messaging') || linkText.includes('Messaging')) {
-        trackEvent('collection_click', 'Messaging', 'Clicked to view Messaging collection');
-      } else if (href.includes('mission-control') || linkText.includes('Admin')) {
-        trackEvent('admin_access', 'Mission Control', 'Accessed admin panel');
-      } else if (href && !href.startsWith('#')) {
-        // Track other navigation
-        trackEvent('navigation', 'Portal Link', 'Clicked: ' + linkText);
-      }
-    });
-  });
+    return res.status(200).json({ success: true, answer: answer });
 
-  // 4. TRACK DOWNLOADS (any download links)
-  document.querySelectorAll('a[download], a[href$=".pdf"], a[href$=".docx"], a[href$=".xlsx"]').forEach(function(link) {
-    link.addEventListener('click', function() {
-      var fileName = this.getAttribute('download') || this.getAttribute('href').split('/').pop();
-      trackEvent('download', 'Portal Download', 'Downloaded: ' + fileName);
-    });
-  });
-
-  // Show admin link only for admins
-  if (sessionStorage.getItem('agentEdgeAdmin') === 'true') {
-    document.getElementById('adminLink').style.display = 'block';
-  }
-});
-</script>
-<script>
-/* ═══ MARKETS DASHBOARD LOGIC ═══ */
-var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
-var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
-(function(){try{loadMarketsData();setInterval(loadMarketsData,120000);}catch(e){console.error('Markets init error:',e);}})();
-
-/* Map realtor-friendly range names to Yahoo/FRED API params */
-function mktsRangeToApi(r){
-  var map={'5d':'5d','1mo':'10d','3wk':'1mo','1mo2':'1mo','3mo':'3mo','6mo':'6mo','1y':'1y'};
-  return map[r]||'1mo';
-}
-function mktsRangeToFredDays(r){
-  var map={'5d':10,'1mo':16,'3wk':25,'1mo2':35,'3mo':100,'6mo':200,'1y':370};
-  return map[r]||35;
-}
-
-function loadMarketsData(){var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});}
-
-function mktsBpHtml(b,inv){if(b===null||b===undefined)return'<span style="color:#8a7e6b">—</span>';var up=b>0,c=inv?(up?'#dc2626':'#16a34a'):(up?'#16a34a':'#dc2626');if(b===0)c='#0b1f3a';return'<span style="color:'+c+';font-weight:700">'+Math.abs(b)+'bp '+(up?'▲':(b<0?'▼':''))+'</span>';}
-function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a7e6b">—</span>';var c=v>=0?'#16a34a':'#dc2626';return'<span style="color:'+c+';font-weight:700">'+Math.abs(v).toFixed(2)+' '+(v>=0?'▲':'▼')+'</span>';}
-
-function mktsRenderCards(d){
-  var u=d.umbs;if(u&&u.price){document.getElementById('mktsUmbsPrice').textContent=u.price.toFixed(2);document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(Math.round((u.change||0)*100),false);}
-  var snap=d.snapshots||{},uk='UMBS_'+mktsActiveCoupon,us=snap[uk]||{};
-  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');
-  if(u&&u.previousClose){var el=document.getElementById('mktsUmbsClose');if(el&&el.textContent==='—')el.textContent=u.previousClose.toFixed(2);}
-  if(u&&u.open){var el2=document.getElementById('mktsUmbsOpen');if(el2&&el2.textContent==='—')el2.textContent=u.open.toFixed(2);}
-  var t10=d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}
-  var t10s=snap['10Y']||{};mktsSetSnapYield('mkts10YOpen',t10s,'Open');mktsSetSnapYield('mkts10YMidDay',t10s,'Mid-Day');
-  var spy=d.spy;if(spy&&spy.price){document.getElementById('mktsSpyPrice').textContent=spy.price.toFixed(2);document.getElementById('mktsSpyPts').innerHTML=mktsPtsHtml(spy.change||0);mktsSetVal('mktsSpyPrevClose',spy.previousClose?spy.previousClose.toFixed(2):'—');mktsSetVal('mktsSpyOpen2',spy.open?spy.open.toFixed(2):'—');mktsSetVal('mktsSpyHigh',spy.high?spy.high.toFixed(2):'—');mktsSetVal('mktsSpyLow',spy.low?spy.low.toFixed(2):'—');}
-}
-function mktsSetVal(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-function mktsSetSnap(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(2):'—';}
-function mktsSetSnapYield(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(3)+'%':'—';}
-
-function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var lbl=document.getElementById('mktsUmbsLabel');if(lbl)lbl.textContent='Mortgage Bond Pricing ('+c+'%)';var dl=document.getElementById('mktsDMALabel');if(dl)dl.textContent='UMBS 30YR '+c+'%';loadMarketsData();}
-function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsLoadChart();}
-function mktsChangeRange(r){mktsCurrentRange=r;document.querySelectorAll('#mktsChartRanges button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-range')===r);});mktsLoadChart();}
-function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById('mktsDMA'+p+'CB');if(cb)cb.checked=mktsDMA[p];mktsRenderChartFromData();}
-
-function mktsLoadChart(){
-  var isT=mktsCurrentSymbol==='10Y';
-  var apiRange=mktsRangeToApi(mktsCurrentRange);
-  if(isT){
-    /* Treasury: use FRED days param — always request more data for DMAs */
-    var days=Math.max(mktsRangeToFredDays(mktsCurrentRange),250);
-    var url='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range='+apiRange;
-    fetch(url).then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
-  } else {
-    /* UMBS or SPY: always request at least 1y of data for DMAs, then trim for display */
-    var bigRange=apiRange;
-    if(['5d','10d','1mo'].indexOf(apiRange)!==-1) bigRange='1y';
-    else if(apiRange==='3mo') bigRange='1y';
-    else if(apiRange==='6mo') bigRange='2y';
-    var url2='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d';
-    fetch(url2).then(function(r){return r.json()}).then(function(d){
-      mktsChartData=d;
-      mktsChartData._displayRange=mktsCurrentRange;
-      mktsRenderChartFromData();
-    }).catch(function(e){console.error(e);});
+  } catch (err) {
+    console.error('gus-find-it error:', err);
+    return res.status(500).json({ error: 'Gus got distracted by a squirrel. Please try again.' });
   }
 }
-
-function mktsRenderChartFromData(){
-  if(!mktsChartData||!mktsChartData.data||mktsChartData.data.length===0)return;
-  var canvas=document.getElementById('mktsMainChart');
-  if(!canvas||!canvas.offsetWidth)return;
-  var isT=mktsChartData.type==='treasury',allData=mktsChartData.data;
-  var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
-  canvas.width=w*dpr;canvas.height=h*dpr;
-  var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
-
-  /* Figure out how many points to DISPLAY vs how many we have for DMA calc */
-  var displayDays={'5d':5,'1mo':10,'3wk':15,'1mo2':22,'3mo':65,'6mo':130,'1y':252};
-  var dRange=mktsChartData._displayRange||mktsCurrentRange;
-  var showN=displayDays[dRange]||allData.length;
-  var displayStart=Math.max(0,allData.length-showN);
-  var displayData=allData.slice(displayStart);
-
-  if(isT){
-    mktsDrawTreasuryFull(ctx,w,h,allData,displayStart,displayData);
-  } else {
-    mktsDrawCandlesFull(ctx,w,h,allData,displayStart,displayData);
-  }
-}
-
-/* ═══ TECHNICAL CALCULATIONS ═══ */
-function mktsCalcSMA(data,p){var r=[];for(var i=0;i<data.length;i++){if(i<p-1){r.push(null);continue;}var s=0;for(var j=i-p+1;j<=i;j++)s+=(data[j].close!=null?data[j].close:data[j].value);r.push(s/p);}return r;}
-
-function mktsCalcFibFromRange(hi,lo,dec){
-  var r=hi-lo;if(r===0)return null;
-  var d=dec||2;
-  return{pct0:{level:hi,label:'0% '+hi.toFixed(d)},pct236:{level:hi-r*0.236,label:'23.6% '+(hi-r*0.236).toFixed(d)},pct382:{level:hi-r*0.382,label:'38.2% '+(hi-r*0.382).toFixed(d)},pct50:{level:hi-r*0.5,label:'50% '+(hi-r*0.5).toFixed(d)},pct618:{level:hi-r*0.618,label:'61.8% '+(hi-r*0.618).toFixed(d)},pct100:{level:lo,label:'100% '+lo.toFixed(d)}};
-}
-
-function mktsCalcPivotsFromValues(H,L,C,dec){
-  if(!H||!L||!C)return null;
-  var P=(H+L+C)/3,d=dec||2;
-  return{r2:+(P+(H-L)).toFixed(6),r1:+(2*P-L).toFixed(6),s1:+(2*P-H).toFixed(6),s2:+(P-(H-L)).toFixed(6)};
-}
-
-/* ═══ DRAW HELPERS ═══ */
-function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){
-  for(var g=0;g<=7;g++){var gy=pad.top+(h-pad.top-pad.bottom)/7*g;ctx.strokeStyle='#ede8df';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxV-(range/7)*g).toFixed(dec||2)+(suffix||''),w-pad.right+5,gy+3);}
-}
-function mktsDrawDates(ctx,w,h,data,xP){
-  ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';
-  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var li=Math.max(1,Math.ceil(data.length/10));
-  data.forEach(function(c,i){if(i%li===0){var dt=new Date(c.date||c);ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);}});
-}
-function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP){
-  if(!fib)return;ctx.setLineDash([5,4]);
-  Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minV&&f.level<=maxV){var y=yP(f.level);ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle='#6e7f77';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,pad.left+10,y-4);}});
-  ctx.setLineDash([]);
-}
-function mktsDrawSR(ctx,pad,w,pv,minV,maxV,yP,dec){
-  if(!pv)return;ctx.setLineDash([8,4]);var d=dec||2;
-  [{v:pv.r2,l:'R2 '+pv.r2.toFixed(d),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(d),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(d),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(d),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minV&&sr.v<=maxV){var y=yP(sr.v);ctx.strokeStyle=sr.c;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle=sr.c;ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='right';ctx.fillText(sr.l,w-pad.right-5,y-4);}});
-  ctx.setLineDash([]);
-}
-function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){
-  var smaAll={};
-  [200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});
-  Object.keys(smaAll).forEach(function(pk){
-    var p=parseInt(pk),sma=smaAll[p];
-    ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;
-    for(var i=0;i<displayData.length;i++){
-      var gi=displayStart+i;
-      if(gi>=sma.length||sma[gi]===null)continue;
-      if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}
-      else ctx.lineTo(xP(i),yP(sma[gi]));
-    }
-    ctx.stroke();
-  });
-}
-
-/* ═══ CANDLESTICK CHART (UMBS, SPY) WITH ALL OVERLAYS ═══ */
-function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){
-  ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
-  var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
-  var minP=Infinity,maxP=-Infinity;
-  data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});
-  var range=maxP-minP||1;minP-=range*0.06;maxP+=range*0.06;range=maxP-minP;
-  function yP(v){return pad.top+((maxP-v)/range)*ch;}
-  function xP(i){return pad.left+(cw/data.length)*i+(cw/data.length)/2;}
-
-  mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');
-
-  /* DMAs from full dataset */
-  mktsDrawMAs(ctx,allData,displayStart,data,mktsDMA,mktsDMAColors,xP,yP);
-
-  /* Fibonacci from display range */
-  var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});
-  mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,2),minP,maxP,yP);
-
-  /* S/R from last 2 candles in display */
-  if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
-
-  /* Candles */
-  var barW=Math.max(2,Math.min(9,(cw/data.length)*0.65));
-  data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();ctx.fillStyle=color;var top=Math.min(yP(c.open),yP(c.close)),bh=Math.max(Math.abs(yP(c.close)-yP(c.open)),1);ctx.fillRect(x-barW/2,top,barW,bh);});
-
-  mktsDrawDates(ctx,w,h,data,xP);
-}
-
-/* ═══ TREASURY LINE CHART WITH ALL OVERLAYS ═══ */
-function mktsDrawTreasuryFull(ctx,w,h,allData,displayStart,data){
-  ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
-  var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
-  var vals=data.map(function(d){return d.value;});
-  var minV=Math.min.apply(null,vals),maxV=Math.max.apply(null,vals);
-  var range=maxV-minV||0.1;minV-=range*0.06;maxV+=range*0.06;range=maxV-minV;
-  function yP(v){return pad.top+((maxV-v)/range)*ch;}
-  function xP(i){return pad.left+(cw/Math.max(data.length-1,1))*i;}
-
-  mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,3,'%');
-
-  /* DMAs — treasury data uses .value, we need to map for the SMA calc */
-  var allMapped=allData.map(function(d){return{close:d.value,value:d.value,date:d.date};});
-  mktsDrawMAs(ctx,allMapped,displayStart,data.map(function(d){return{close:d.value,value:d.value};}),mktsDMA,mktsDMAColors,xP,yP);
-
-  /* Fibonacci from display range */
-  var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);
-  mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,3),minV,maxV,yP);
-
-  /* S/R — use last 3 days as proxy H/L/C */
-  if(data.length>=5){
-    var recent=data.slice(-5);
-    var rH=Math.max.apply(null,recent.map(function(d){return d.value;}));
-    var rL=Math.min.apply(null,recent.map(function(d){return d.value;}));
-    var rC=recent[recent.length-1].value;
-    mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(rH,rL,rC,3),minV,maxV,yP,3);
-  }
-
-  /* Line */
-  ctx.beginPath();ctx.strokeStyle='#6e7f77';ctx.lineWidth=2;
-  data.forEach(function(d,i){if(i===0)ctx.moveTo(xP(i),yP(d.value));else ctx.lineTo(xP(i),yP(d.value));});
-  ctx.stroke();
-  /* Fill under */
-  ctx.lineTo(xP(data.length-1),pad.top+ch);ctx.lineTo(xP(0),pad.top+ch);ctx.closePath();ctx.fillStyle='rgba(110,127,119,0.06)';ctx.fill();
-
-  mktsDrawDates(ctx,w,h,data,xP);
-}
-</script>
-<script src="gus-find-it.js"></script>
-</body>
-</html>
