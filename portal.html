@@ -1414,7 +1414,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ═══ MARKETS DASHBOARD LOGIC ═══ */
 var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
 var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
-(function(){loadMarketsData();setInterval(loadMarketsData,120000);})();
+(function(){try{loadMarketsData();setInterval(loadMarketsData,120000);}catch(e){console.error('Markets init error:',e);}})();
 
 /* Map realtor-friendly range names to Yahoo/FRED API params */
 function mktsRangeToApi(r){
@@ -1475,8 +1475,9 @@ function mktsLoadChart(){
 
 function mktsRenderChartFromData(){
   if(!mktsChartData||!mktsChartData.data||mktsChartData.data.length===0)return;
-  var isT=mktsChartData.type==='treasury',allData=mktsChartData.data;
   var canvas=document.getElementById('mktsMainChart');
+  if(!canvas||!canvas.offsetWidth)return;
+  var isT=mktsChartData.type==='treasury',allData=mktsChartData.data;
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);
