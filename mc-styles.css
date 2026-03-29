@@ -1463,3 +1463,8 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 
 /* Remaining months field */
 .br-debt-term { min-width: 90px; }
+
+/* Sticky summary header */
+.br-sticky-header { position: sticky; top: 0; z-index: 5; background: var(--bg-deep); padding-bottom: 12px; margin: 0 -24px; padding-left: 24px; padding-right: 24px; padding-top: 4px; border-bottom: 1px solid var(--border-light); }
+
+.br-equity-timeline-breakdown { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }

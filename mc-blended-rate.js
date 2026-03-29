@@ -911,8 +911,10 @@ function brRenderEquityRecoup() {
 
   var homeValue = parseFloat((document.getElementById('brEquityHomeValue').value || '0').replace(/[^0-9.]/g, '')) || 0;
   var debtTotal = parseFloat(document.getElementById('brEquityDebtTotalVal').value) || 0;
+  var closingCosts = parseFloat((document.getElementById('brEquityClosingCosts').value || '0').replace(/[^0-9.]/g, '')) || 0;
+  var totalToRecoup = debtTotal + closingCosts;
 
-  if (homeValue <= 0 || debtTotal <= 0) {
+  if (homeValue <= 0 || totalToRecoup <= 0) {
     container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:15px;font-size:13px;">Enter your current home value above to see the equity recoup timeline.</div>';
     return;
   }
@@ -931,10 +933,10 @@ function brRenderEquityRecoup() {
     if (r.key === selectedKey) selectedRate = r.rate;
   });
 
-  // Calculate months to recoup
+  // Calculate months to recoup (debt + closing costs)
   var annualAppreciation = homeValue * (selectedRate / 100);
   var monthlyAppreciation = annualAppreciation / 12;
-  var monthsToRecoup = monthlyAppreciation > 0 ? Math.ceil(debtTotal / monthlyAppreciation) : 0;
+  var monthsToRecoup = monthlyAppreciation > 0 ? Math.ceil(totalToRecoup / monthlyAppreciation) : 0;
 
   var html = '<div class="br-equity-rates">' +
     '<div class="br-equity-rates-header">' +
@@ -952,9 +954,17 @@ function brRenderEquityRecoup() {
 
   html += '</div></div>';
 
+  // Build the recoup label with breakdown
+  var recoupLabel = 'to recoup $' + Math.round(totalToRecoup).toLocaleString() + ' in equity';
+  var recoupBreakdown = '';
+  if (closingCosts > 0) {
+    recoupBreakdown = '$' + Math.round(debtTotal).toLocaleString() + ' debt + $' + Math.round(closingCosts).toLocaleString() + ' closing costs';
+  }
+
   html += '<div class="br-equity-timeline">' +
     '<div class="br-equity-timeline-big">' + brFormatMonths(monthsToRecoup) + '</div>' +
-    '<div class="br-equity-timeline-label">to recoup $' + Math.round(debtTotal).toLocaleString() + ' in equity</div>' +
+    '<div class="br-equity-timeline-label">' + recoupLabel + '</div>' +
+    (recoupBreakdown ? '<div class="br-equity-timeline-breakdown">' + recoupBreakdown + '</div>' : '') +
     '<div class="br-equity-timeline-detail">Your home at $' + Math.round(homeValue).toLocaleString() + ' appreciates ~$' + Math.round(monthlyAppreciation).toLocaleString() + '/mo at ' + selectedRate.toFixed(2) + '% annually</div>' +
   '</div>';
 
@@ -1037,18 +1047,22 @@ function brGenerateReport() {
   var equityData = null;
   if (hasEquity) {
     var homeVal = parseFloat(document.getElementById('brEquityHomeValue').value.replace(/[^0-9.]/g, ''));
+    var rptClosingCosts = parseFloat((document.getElementById('brEquityClosingCosts').value || '0').replace(/[^0-9.]/g, '')) || 0;
     var debtTotalNonMtg = 0;
     brDebts.forEach(function(d) { if (d.balance > 0 && d.type !== 'mortgage') debtTotalNonMtg += d.balance; });
+    var totalToRecoupRpt = debtTotalNonMtg + rptClosingCosts;
     var selKey = document.getElementById('brEquityRateSelect') ? document.getElementById('brEquityRateSelect').value : '5yr';
     var selRate = brAppreciationData.fiveYear || brAppreciationData.rate || 3.5;
     if (selKey === '1yr' && brAppreciationData.oneYear) selRate = brAppreciationData.oneYear;
     if (selKey === '10yr' && brAppreciationData.tenYear) selRate = brAppreciationData.tenYear;
     var annualApp = homeVal * (selRate / 100);
     var monthlyApp = annualApp / 12;
-    var moRecoup = monthlyApp > 0 ? Math.ceil(debtTotalNonMtg / monthlyApp) : 0;
+    var moRecoup = monthlyApp > 0 ? Math.ceil(totalToRecoupRpt / monthlyApp) : 0;
     equityData = {
       homeValue: homeVal,
       debtTotal: debtTotalNonMtg,
+      closingCosts: rptClosingCosts,
+      totalToRecoup: totalToRecoupRpt,
       rate: selRate,
       stateName: brAppreciationData.stateName || brAppreciationData.state || '',
       monthlyAppreciation: monthlyApp,
@@ -1148,7 +1162,10 @@ function brGenerateReport() {
     rpt += '<p class="rpt-body-text">Based on your home value of $' + Math.round(equityData.homeValue).toLocaleString() + ' and ' + equityData.stateName + '\'s ' + equityData.rate.toFixed(2) + '% annual appreciation rate:</p>';
     rpt += '<div class="rpt-equity-highlight">';
     rpt += '<div class="rpt-equity-big">' + brFormatMonths(equityData.monthsToRecoup) + '</div>';
-    rpt += '<div class="rpt-equity-label">to recoup $' + Math.round(equityData.debtTotal).toLocaleString() + ' in equity used for consolidation</div>';
+    rpt += '<div class="rpt-equity-label">to recoup $' + Math.round(equityData.totalToRecoup).toLocaleString() + ' in equity used for consolidation</div>';
+    if (equityData.closingCosts > 0) {
+      rpt += '<div style="font-size:11px;color:var(--text-dim);margin-top:4px;">$' + Math.round(equityData.debtTotal).toLocaleString() + ' debt + $' + Math.round(equityData.closingCosts).toLocaleString() + ' closing costs</div>';
+    }
     rpt += '<div class="rpt-equity-detail">Your home appreciates approximately $' + Math.round(equityData.monthlyAppreciation).toLocaleString() + ' per month</div>';
     rpt += '</div></div>';
   }

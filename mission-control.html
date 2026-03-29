@@ -2093,8 +2093,9 @@
       </div>
     </div>
 
-    <!-- SUMMARY BAR -->
-    <div class="br-summary-bar">
+    <!-- SUMMARY BAR (sticky) -->
+    <div class="br-sticky-header">
+      <div class="br-summary-bar">
       <div class="br-summary-item">
         <span class="br-summary-label">Total amount</span>
         <span class="br-summary-value" id="brSummaryTotal">$0</span>
@@ -2108,6 +2109,7 @@
         <span class="br-summary-value" id="brSummaryPayment">$0</span>
       </div>
     </div>
+    </div><!-- end br-sticky-header -->
 
     <!-- DEBT ROWS -->
     <div id="brDebtRows" class="br-debt-rows"></div>
@@ -2183,6 +2185,10 @@
           <div class="br-field">
             <label>Current home value</label>
             <div class="br-input-prefix"><span>$</span><input type="text" id="brEquityHomeValue" class="br-input" placeholder="0" oninput="brFormatEquityInput(this)" onblur="brFormatEquityInput(this)"></div>
+          </div>
+          <div class="br-field">
+            <label>Est. closing costs</label>
+            <div class="br-input-prefix"><span>$</span><input type="text" id="brEquityClosingCosts" class="br-input" placeholder="0" oninput="brFormatEquityInput(this)" onblur="brFormatEquityInput(this)"></div>
           </div>
           <div class="br-field">
             <label>Property zip code</label>
