@@ -1336,8 +1336,15 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 .br-debt-balance { min-width: 120px; }
 .br-debt-rate { min-width: 90px; }
 .br-debt-payment { min-width: 140px; }
-.br-debt-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 8px; font-size: 13px; border-radius: 6px; transition: 0.15s; align-self: center; }
-.br-debt-delete:hover { color: var(--accent-red); background: rgba(220,38,38,0.08); }
+.br-debt-delete { display: none; } /* deprecated — replaced by icon column */
+.br-debt-actions-col { display: flex; flex-direction: column; gap: 4px; align-self: center; flex-shrink: 0; }
+.br-debt-icon-btn { background: none; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 12px; border-radius: 6px; transition: 0.15s; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.br-debt-icon-btn:hover { color: var(--accent-blue); background: rgba(37,99,235,0.08); border-color: rgba(37,99,235,0.15); }
+.br-debt-delete-btn:hover { color: var(--accent-red) !important; background: rgba(220,38,38,0.08) !important; border-color: rgba(220,38,38,0.15) !important; }
+.br-excluded-active { color: var(--accent-orange) !important; }
+.br-excluded-active:hover { color: var(--accent-orange) !important; background: rgba(234,88,12,0.08) !important; }
+.br-debt-excluded { opacity: 0.45; border-style: dashed; }
+.br-debt-excluded:hover { opacity: 0.65; }
 
 /* Input prefix/suffix */
 .br-input-prefix, .br-input-suffix { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-deep); overflow: hidden; }
@@ -1454,8 +1461,5 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
 .br-debt-total-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
 .br-debt-total-value { font-size: 18px; font-weight: 700; color: var(--text-primary); }
 
-/* Estimate rate link */
-.br-estimate-link { font-size: 10px; color: var(--accent-blue); cursor: pointer; text-decoration: none; margin-top: 2px; display: inline-block; }
-.br-estimate-link:hover { text-decoration: underline; }
 /* Remaining months field */
 .br-debt-term { min-width: 90px; }
