@@ -2111,6 +2111,11 @@
     <!-- DEBT ROWS -->
     <div id="brDebtRows" class="br-debt-rows"></div>
 
+    <div class="br-debt-total-row">
+      <span class="br-debt-total-label">Total balance:</span>
+      <span class="br-debt-total-value" id="brDebtTotalBalance">$0</span>
+    </div>
+
     <div class="br-debt-actions">
       <button class="br-btn br-btn-primary" onclick="brAddDebt()"><i class="fas fa-plus" style="margin-right:5px;"></i> Add debt</button>
       <button class="br-btn" onclick="brReset()">Reset</button>
@@ -2854,6 +2859,7 @@
     <div class="drawer-tab" onclick="switchDrawerTab('calc',this)"><i class="fas fa-calculator"></i> Calculators</div>
     <div class="drawer-tab" onclick="switchDrawerTab('credit',this)"><i class="fas fa-credit-card"></i> Credit Analysis</div>
     <div class="drawer-tab" onclick="switchDrawerTab('compare',this)"><i class="fas fa-scale-balanced"></i> Loan Compare</div>
+    <div class="drawer-tab" onclick="switchDrawerTab('blended',this)"><i class="fas fa-percent"></i> Blended Rate</div>
     <div class="drawer-tab" onclick="switchDrawerTab('gus',this)"><i class="fas fa-paw"></i> Ask Gus</div>
   </div>
   <div class="drawer-body">
@@ -2881,6 +2887,14 @@
     </div>
     <div class="drawer-panel" id="drawer-compare">
       <iframe id="drawerCompareFrame" src="" style="width:100%;flex:1;border:none;"></iframe>
+    </div>
+    <div class="drawer-panel" id="drawer-blended">
+      <div style="padding:40px 30px;text-align:center;">
+        <div style="font-size:40px;margin-bottom:12px;"><i class="fas fa-scale-balanced" style="color:var(--accent-blue);"></i></div>
+        <div style="font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:6px;">Blended Rate Calculator</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Show clients the true cost of carrying multiple debts and how consolidating into a single mortgage saves money.</div>
+        <button class="topbar-btn primary" onclick="closeDrawer();switchView('blendedRate', document.querySelector('[onclick*=blendedRate]'));" style="background:var(--accent-blue);border-color:var(--accent-blue);font-size:13px;padding:10px 24px;"><i class="fas fa-arrow-right" style="margin-right:6px;"></i> Open Blended Rate Calculator</button>
+      </div>
     </div>
     <div class="drawer-panel" id="drawer-gus">
       <div class="drawer-gus-wrap">

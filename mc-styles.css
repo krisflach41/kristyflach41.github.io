@@ -1448,3 +1448,14 @@ input:checked + .sms-slider::before { transform:translateX(22px); background:#22
   .br-comp-inputs { flex-direction: column; }
   .br-equity-rates-row { flex-direction: column; }
 }
+
+/* Debt total row */
+.br-debt-total-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 10px 18px; margin-bottom: 8px; border-top: 2px solid var(--border); }
+.br-debt-total-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.br-debt-total-value { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+
+/* Estimate rate link */
+.br-estimate-link { font-size: 10px; color: var(--accent-blue); cursor: pointer; text-decoration: none; margin-top: 2px; display: inline-block; }
+.br-estimate-link:hover { text-decoration: underline; }
+/* Remaining months field */
+.br-debt-term { min-width: 90px; }

@@ -29,7 +29,7 @@ function openDrawer(tab) {
     panels.forEach(function(p) { p.classList.remove('active'); });
 
     // Find matching tab and panel
-    var tabMap = { reports: 0, calc: 1, credit: 2, compare: 3, gus: 4 };
+    var tabMap = { reports: 0, calc: 1, credit: 2, compare: 3, blended: 4, gus: 5 };
     var idx = tabMap[tab];
     if (idx !== undefined && tabs[idx]) tabs[idx].classList.add('active');
     var panel = document.getElementById('drawer-' + tab);

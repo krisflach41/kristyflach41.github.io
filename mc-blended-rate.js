@@ -186,7 +186,8 @@ function brAddDebt() {
     type: 'revolving',
     balance: 0,
     rate: 0,
-    payment: 0
+    payment: 0,
+    remainingMonths: 0
   };
   brDebts.push(debt);
   brRenderDebts();
@@ -236,11 +237,91 @@ function brFormatDebtInput(el, id, field) {
   brUpdateDebt(id, field, raw);
 }
 
+// ===== RATE ESTIMATION =====
+function brEstimateRate(id) {
+  var debt = brDebts.find(function(d) { return d.id === id; });
+  if (!debt) return;
+
+  if (debt.balance <= 0 || debt.payment <= 0) {
+    alert('Enter both a balance and a monthly payment to estimate the rate.');
+    return;
+  }
+
+  var rate = 0;
+
+  if (debt.type === 'installment' || debt.type === 'mortgage') {
+    // Need remaining months
+    var n = debt.remainingMonths;
+    if (!n || n <= 0) {
+      alert('For installment loans and mortgages, enter the remaining months to estimate the rate.');
+      return;
+    }
+    rate = brSolveInstallmentRate(debt.balance, debt.payment, n);
+  } else {
+    // Revolving — estimate using a simplified approach
+    // Monthly interest ≈ payment - (balance * 0.01) from the standard formula
+    // So monthlyRate ≈ (payment - balance*0.01) / balance, annualize it
+    // More accurate: use Newton's method assuming fixed payment payoff
+    // We'll assume a 120-month horizon for revolving as a reasonable estimate
+    rate = brSolveInstallmentRate(debt.balance, debt.payment, 120);
+    if (rate <= 0) {
+      // Fallback: simple interest estimate from first month
+      var monthlyInterestEst = debt.payment - (debt.balance * 0.01);
+      if (monthlyInterestEst > 0) {
+        rate = (monthlyInterestEst / debt.balance) * 12 * 100;
+      }
+    }
+  }
+
+  if (rate > 0 && rate < 100) {
+    rate = Math.round(rate * 100) / 100; // round to 2 decimals
+    debt.rate = rate;
+    var rateInput = document.getElementById('brRate_' + id);
+    if (rateInput) rateInput.value = rate;
+    brUpdateSummary();
+    showToast('Estimated rate: ' + rate + '%');
+  } else {
+    alert('Could not estimate a reasonable rate from the balance and payment provided. Check your numbers and try again.');
+  }
+}
+
+// Newton's method to solve for interest rate given PV, PMT, and N
+function brSolveInstallmentRate(balance, payment, months) {
+  // Solve: payment = balance * r / (1 - (1+r)^-n)  for r (monthly rate)
+  // Using Newton-Raphson iteration
+  var r = 0.005; // initial guess: 6% annual = 0.5% monthly
+  for (var i = 0; i < 100; i++) {
+    var pmt = r === 0 ? balance / months : balance * r / (1 - Math.pow(1 + r, -months));
+    var dpmt; // derivative of pmt w.r.t. r
+    if (r === 0) {
+      dpmt = 0;
+    } else {
+      var a = Math.pow(1 + r, -months);
+      var denom = 1 - a;
+      var numer = balance * r;
+      // d/dr [balance * r / (1 - (1+r)^-n)]
+      // = balance * [(1-a) - r * n * (1+r)^(-n-1)] / (1-a)^2
+      dpmt = balance * (denom + r * months * Math.pow(1 + r, -months - 1)) / (denom * denom);
+    }
+    if (Math.abs(dpmt) < 1e-12) break;
+    var rNew = r - (pmt - payment) / dpmt;
+    if (Math.abs(rNew - r) < 1e-10) {
+      r = rNew;
+      break;
+    }
+    r = rNew;
+    if (r < 0) r = 0.0001; // keep positive
+    if (r > 0.5) r = 0.5; // cap at 600% annual
+  }
+  return r * 12 * 100; // convert monthly to annual percentage
+}
+
 function brRenderDebts() {
   var container = document.getElementById('brDebtRows');
   var html = '';
 
   brDebts.forEach(function(d, idx) {
+    var showTermField = (d.type === 'installment' || d.type === 'mortgage');
     html += '<div class="br-debt-row" data-id="' + d.id + '">' +
       '<div class="br-debt-grip" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></div>' +
       '<div class="br-debt-fields">' +
@@ -250,7 +331,7 @@ function brRenderDebts() {
         '</div>' +
         '<div class="br-debt-field br-debt-type">' +
           '<label>Type</label>' +
-          '<select onchange="brUpdateDebt(' + d.id + ',\'type\',this.value)">' +
+          '<select onchange="brUpdateDebt(' + d.id + ',\'type\',this.value);brRenderDebts();">' +
             '<option value="revolving"' + (d.type === 'revolving' ? ' selected' : '') + '>Revolving</option>' +
             '<option value="installment"' + (d.type === 'installment' ? ' selected' : '') + '>Installment</option>' +
             '<option value="mortgage"' + (d.type === 'mortgage' ? ' selected' : '') + '>Mortgage</option>' +
@@ -262,12 +343,17 @@ function brRenderDebts() {
         '</div>' +
         '<div class="br-debt-field br-debt-rate">' +
           '<label>Interest rate</label>' +
-          '<div class="br-input-suffix"><input type="text" value="' + (d.rate > 0 ? d.rate : '') + '" placeholder="0" oninput="brUpdateDebt(' + d.id + ',\'rate\',this.value)"><span>%</span></div>' +
+          '<div class="br-input-suffix"><input type="text" id="brRate_' + d.id + '" value="' + (d.rate > 0 ? d.rate : '') + '" placeholder="0" oninput="brUpdateDebt(' + d.id + ',\'rate\',this.value)"><span>%</span></div>' +
+          '<a class="br-estimate-link" onclick="brEstimateRate(' + d.id + ')" title="Calculate rate from balance & payment">Estimate rate</a>' +
         '</div>' +
         '<div class="br-debt-field br-debt-payment">' +
           '<label>Min payment <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>' +
           '<div class="br-input-prefix"><span>$</span><input type="text" value="' + (d.payment > 0 ? d.payment.toLocaleString() : '') + '" placeholder="0" oninput="brFormatDebtInput(this,' + d.id + ',\'payment\')" onblur="brFormatDebtInput(this,' + d.id + ',\'payment\')"></div>' +
         '</div>' +
+        (showTermField ? '<div class="br-debt-field br-debt-term">' +
+          '<label>Months left</label>' +
+          '<input type="text" value="' + (d.remainingMonths > 0 ? d.remainingMonths : '') + '" placeholder="e.g. 48" oninput="brUpdateDebt(' + d.id + ',\'remainingMonths\',this.value)">' +
+        '</div>' : '') +
       '</div>' +
       '<button class="br-debt-delete" onclick="brRemoveDebt(' + d.id + ')" title="Remove"><i class="fas fa-trash-can"></i></button>' +
     '</div>';
@@ -347,6 +433,10 @@ function brUpdateSummary() {
   document.getElementById('brSummaryTotal').textContent = '$' + Math.round(totalBalance).toLocaleString();
   document.getElementById('brSummaryRate').textContent = blendedRate.toFixed(3) + '%';
   document.getElementById('brSummaryPayment').textContent = '$' + Math.round(totalPayment).toLocaleString();
+
+  // Update total balance below debt rows
+  var totalEl = document.getElementById('brDebtTotalBalance');
+  if (totalEl) totalEl.textContent = '$' + Math.round(totalBalance).toLocaleString();
 
   // Update comparison panel if open
   brUpdateComparison();
@@ -452,6 +542,30 @@ function brCalcDebtPayoff(debt) {
   if (debt.type === 'revolving') {
     // Revolving: minimum payment = 1% of balance + monthly interest, floor $25
     var bal = balance;
+    var initialInterest = balance * monthlyRate;
+    var actualPayment = userPayment > 0 ? userPayment : Math.max((balance * 0.01) + initialInterest, 25);
+
+    // Check upfront: if the user's payment doesn't cover even the first month's interest, debt never pays off
+    if (userPayment > 0 && userPayment <= initialInterest) {
+      // Calculate first year for the interest ratio display
+      for (var m = 0; m < 12; m++) {
+        var int = bal * monthlyRate;
+        firstYearInterest += int;
+        firstYearPayments += userPayment;
+        bal += (int - userPayment); // balance grows
+      }
+      return {
+        monthlyPayment: Math.round(userPayment),
+        months: maxMonths,
+        payoffTimeStr: 'Never (payment below interest)',
+        totalInterest: 0,
+        totalCost: balance,
+        firstYearInterest: firstYearInterest,
+        firstYearPayments: firstYearPayments
+      };
+    }
+
+    bal = balance;
     while (bal > 0.50 && months < maxMonths) {
       months++;
       var interest = bal * monthlyRate;
@@ -460,10 +574,10 @@ function brCalcDebtPayoff(debt) {
         minPay = userPayment;
       } else {
         minPay = Math.max((bal * 0.01) + interest, 25);
-      }
-      // If min payment doesn't cover interest, debt grows forever — cap it
-      if (minPay <= interest && userPayment <= 0) {
-        minPay = interest + 1;
+        // If calculated min doesn't cover interest, force it above
+        if (minPay <= interest) {
+          minPay = interest + (bal * 0.01);
+        }
       }
       if (minPay > bal + interest) minPay = bal + interest;
       var principal = minPay - interest;
@@ -474,7 +588,6 @@ function brCalcDebtPayoff(debt) {
         firstYearPayments += minPay;
       }
     }
-    var actualPayment = userPayment > 0 ? userPayment : Math.max((balance * 0.01) + (balance * monthlyRate), 25);
     return {
       monthlyPayment: Math.round(actualPayment),
       months: months,
