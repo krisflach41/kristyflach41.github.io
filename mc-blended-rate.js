@@ -187,7 +187,8 @@ function brAddDebt() {
     balance: 0,
     rate: 0,
     payment: 0,
-    remainingMonths: 0
+    remainingMonths: 0,
+    excluded: false
   };
   brDebts.push(debt);
   brRenderDebts();
@@ -197,6 +198,14 @@ function brAddDebt() {
 function brRemoveDebt(id) {
   brDebts = brDebts.filter(function(d) { return d.id !== id; });
   if (brDebts.length === 0) brAddDebt();
+  brRenderDebts();
+  brUpdateSummary();
+}
+
+function brToggleExclude(id) {
+  var debt = brDebts.find(function(d) { return d.id === id; });
+  if (!debt) return;
+  debt.excluded = !debt.excluded;
   brRenderDebts();
   brUpdateSummary();
 }
@@ -322,7 +331,9 @@ function brRenderDebts() {
 
   brDebts.forEach(function(d, idx) {
     var showTermField = (d.type === 'installment' || d.type === 'mortgage');
-    html += '<div class="br-debt-row" data-id="' + d.id + '">' +
+    var isExcluded = d.excluded || false;
+    var rowClass = 'br-debt-row' + (isExcluded ? ' br-debt-excluded' : '');
+    html += '<div class="' + rowClass + '" data-id="' + d.id + '">' +
       '<div class="br-debt-grip" title="Drag to reorder"><i class="fas fa-grip-vertical"></i></div>' +
       '<div class="br-debt-fields">' +
         '<div class="br-debt-field br-debt-name">' +
@@ -344,7 +355,6 @@ function brRenderDebts() {
         '<div class="br-debt-field br-debt-rate">' +
           '<label>Interest rate</label>' +
           '<div class="br-input-suffix"><input type="text" id="brRate_' + d.id + '" value="' + (d.rate > 0 ? d.rate : '') + '" placeholder="0" oninput="brUpdateDebt(' + d.id + ',\'rate\',this.value)"><span>%</span></div>' +
-          '<a class="br-estimate-link" onclick="brEstimateRate(' + d.id + ')" title="Calculate rate from balance & payment">Estimate rate</a>' +
         '</div>' +
         '<div class="br-debt-field br-debt-payment">' +
           '<label>Min payment <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>' +
@@ -355,7 +365,11 @@ function brRenderDebts() {
           '<input type="text" value="' + (d.remainingMonths > 0 ? d.remainingMonths : '') + '" placeholder="e.g. 48" oninput="brUpdateDebt(' + d.id + ',\'remainingMonths\',this.value)">' +
         '</div>' : '') +
       '</div>' +
-      '<button class="br-debt-delete" onclick="brRemoveDebt(' + d.id + ')" title="Remove"><i class="fas fa-trash-can"></i></button>' +
+      '<div class="br-debt-actions-col">' +
+        '<button class="br-debt-icon-btn" onclick="brEstimateRate(' + d.id + ')" title="Estimate interest rate from balance &amp; payment"><i class="fas fa-percent"></i></button>' +
+        '<button class="br-debt-icon-btn' + (isExcluded ? ' br-excluded-active' : '') + '" onclick="brToggleExclude(' + d.id + ')" title="' + (isExcluded ? 'Include in analysis' : 'Exclude from analysis') + '"><i class="fas fa-eye' + (isExcluded ? '-slash' : '') + '"></i></button>' +
+        '<button class="br-debt-icon-btn br-debt-delete-btn" onclick="brRemoveDebt(' + d.id + ')" title="Remove"><i class="fas fa-trash-can"></i></button>' +
+      '</div>' +
     '</div>';
   });
 
@@ -413,8 +427,15 @@ function brUpdateSummary() {
   var totalBalance = 0;
   var totalPayment = 0;
   var weightedRateSum = 0;
+  var totalBalanceAll = 0; // includes excluded for total balance display
 
   brDebts.forEach(function(d) {
+    if (d.balance > 0) {
+      totalBalanceAll += d.balance;
+    }
+    // Only skip manually excluded debts from the summary bar
+    // Mortgage IS included in the blended rate — it's part of their current reality
+    if (d.excluded) return;
     if (d.balance > 0) {
       totalBalance += d.balance;
       weightedRateSum += d.balance * d.rate;
@@ -434,9 +455,9 @@ function brUpdateSummary() {
   document.getElementById('brSummaryRate').textContent = blendedRate.toFixed(3) + '%';
   document.getElementById('brSummaryPayment').textContent = '$' + Math.round(totalPayment).toLocaleString();
 
-  // Update total balance below debt rows
+  // Update total balance below debt rows (all debts including excluded)
   var totalEl = document.getElementById('brDebtTotalBalance');
-  if (totalEl) totalEl.textContent = '$' + Math.round(totalBalance).toLocaleString();
+  if (totalEl) totalEl.textContent = '$' + Math.round(totalBalanceAll).toLocaleString();
 
   // Update comparison panel if open
   brUpdateComparison();
@@ -467,7 +488,7 @@ function brGenerateSummaryCards() {
   var totalCostAll = 0;
   var totalBalanceAll = 0;
 
-  var validDebts = brDebts.filter(function(d) { return d.balance > 0 && d.rate > 0; });
+  var validDebts = brDebts.filter(function(d) { return d.balance > 0 && d.rate > 0 && !d.excluded && d.type !== 'mortgage'; });
 
   if (validDebts.length === 0) {
     container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:30px;font-size:13px;">Enter at least one debt with a balance and interest rate to see the analysis.</div>';
