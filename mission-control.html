@@ -2062,6 +2062,7 @@
       <div><div class="topbar-title">Blended Rate Calculator</div><div class="topbar-subtitle">Show clients the true cost of carrying multiple debts</div></div>
     </div>
     <div class="topbar-right">
+      <button class="topbar-btn" onclick="brReset()"><i class="fas fa-rotate-left"></i> Reset</button>
       <button class="topbar-btn" onclick="brGenerateSummaryCards()"><i class="fas fa-calculator"></i> Analyze Debts</button>
       <button class="topbar-btn" onclick="brGenerateReport()" style="background:var(--accent-blue);color:#fff;border-color:var(--accent-blue);"><i class="fas fa-file-pdf"></i> Generate Report</button>
     </div>
@@ -2118,7 +2119,6 @@
 
     <div class="br-debt-actions">
       <button class="br-btn br-btn-primary" onclick="brAddDebt()"><i class="fas fa-plus" style="margin-right:5px;"></i> Add debt</button>
-      <button class="br-btn" onclick="brReset()">Reset</button>
     </div>
 
     <!-- DEBT SUMMARY CARDS (Option B) -->
