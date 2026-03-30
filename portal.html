@@ -824,6 +824,7 @@ h1 {
           <div><span>Open (9:00 AM ET)</span><span id="mktsUmbsOpen">—</span></div>
           <div><span>Mid-Day (12:00 PM ET)</span><span id="mktsUmbsMidDay">—</span></div>
           <div><span>Afternoon (2:00 PM ET)</span><span id="mktsUmbsAfternoon">—</span></div>
+          <div><span>Close (5:00 PM ET)</span><span id="mktsUmbsCloseToday">—</span></div>
         </div>
       </div>
       <div class="mkts-card" data-mkts-card="10Y" onclick="mktsChangeSymbol('10Y')">
@@ -1436,21 +1437,26 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
     if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}
     // Apply override to UMBS if available
     if(overrideData&&mktsActiveCoupon==='5.5'){
-      d.umbs=d.umbs||{};
-      d.umbs.price=overrideData.latest_price;
-      d.umbs.change=overrideData.latest_bps/100;
-      if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
-      // Map snapshots to the portal's snapshot format
       var snaps=overrideData.snapshots||{};
+      // Find the latest snapshot for headline price
+      var latestPrice=0,latestBps=0;
+      var order=['close','afternoon','midday','open'];
+      for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}
+
+      d.umbs=d.umbs||{};
+      if(latestPrice)d.umbs.price=latestPrice;
+      if(latestBps)d.umbs.change=latestBps/100;
+      if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
+      if(snaps.open&&snaps.open.price)d.umbs.open=snaps.open.price;
+
+      // Completely replace the UMBS snapshots with manual data
       var uk='UMBS_'+mktsActiveCoupon;
       d.snapshots=d.snapshots||{};
-      d.snapshots[uk]=d.snapshots[uk]||{};
-      if(snaps.close&&snaps.close.price)d.snapshots[uk]['Close']={price:snaps.close.price,date:overrideData.date};
-      if(snaps.open&&snaps.open.price){d.snapshots[uk]['Open']={price:snaps.open.price,date:overrideData.date};d.umbs.open=snaps.open.price;}
-      if(snaps.midday&&snaps.midday.price)d.snapshots[uk]['Mid-Day']={price:snaps.midday.price,date:overrideData.date};
-      if(snaps.afternoon&&snaps.afternoon.price)d.snapshots[uk]['Afternoon']={price:snaps.afternoon.price,date:overrideData.date};
-      // Previous close goes into the Close slot from yesterday
-      if(overrideData.previous_close&&!d.snapshots[uk]['Close'])d.umbs.previousClose=overrideData.previous_close;
+      d.snapshots[uk]={};
+      if(snaps.open&&snaps.open.price)d.snapshots[uk]['Open']={price:snaps.open.price};
+      if(snaps.midday&&snaps.midday.price)d.snapshots[uk]['Mid-Day']={price:snaps.midday.price};
+      if(snaps.afternoon&&snaps.afternoon.price)d.snapshots[uk]['Afternoon']={price:snaps.afternoon.price};
+      if(snaps.close&&snaps.close.price)d.snapshots[uk]['CloseToday']={price:snaps.close.price};
     }
     mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'+(overrideData?' (manual)':'');mktsRenderCards(d);mktsLoadChart();
   }).catch(function(e){if(ts)ts.textContent='Error loading data';});
@@ -1464,8 +1470,8 @@ function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a
 function mktsRenderCards(d){
   var u=d.umbs;if(u&&u.price){document.getElementById('mktsUmbsPrice').textContent=u.price.toFixed(2);document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(Math.round((u.change||0)*100),false);}
   var snap=d.snapshots||{},uk='UMBS_'+mktsActiveCoupon,us=snap[uk]||{};
-  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');
-  if(u&&u.previousClose){var el=document.getElementById('mktsUmbsClose');if(el&&el.textContent==='—')el.textContent=u.previousClose.toFixed(2);}
+  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');mktsSetSnap('mktsUmbsCloseToday',us,'CloseToday');
+  if(u&&u.previousClose){var el=document.getElementById('mktsUmbsClose');if(el&&(el.textContent==='—'||el.textContent))el.textContent=u.previousClose.toFixed(2);}
   if(u&&u.open){var el2=document.getElementById('mktsUmbsOpen');if(el2&&el2.textContent==='—')el2.textContent=u.open.toFixed(2);}
   var t10=d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}
   var t10s=snap['10Y']||{};mktsSetSnapYield('mkts10YOpen',t10s,'Open');mktsSetSnapYield('mkts10YMidDay',t10s,'Mid-Day');
