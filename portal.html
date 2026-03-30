@@ -1277,7 +1277,9 @@ window.addEventListener('load', function() {
         if (wirHeading) {
           var wirRef = briefingData.lastUpdated ? new Date(briefingData.lastUpdated) : new Date();
           var wirDay = wirRef.getDay();
-          var wirFriOffset = wirDay <= 5 ? (5 - wirDay) : -1;
+          // Always go backward to the most recent Friday (day 5)
+          // If today is Friday (5), offset is 0. If Saturday (6), offset is -1. If Sunday (0), offset is -2. Mon=-3, Tue=-4, Wed=-5, Thu=-6
+          var wirFriOffset = wirDay >= 5 ? -(wirDay - 5) : -(wirDay + 2);
           var wirFriday = new Date(wirRef);
           wirFriday.setDate(wirRef.getDate() + wirFriOffset);
           wirHeading.textContent = 'Week Ending ' + wirFriday.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
