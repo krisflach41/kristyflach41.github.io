@@ -1421,7 +1421,30 @@ var mktsDragging=false,mktsDragStartX=0,mktsDragSZS=0,mktsDragSZE=0;
 
 function mktsRangeToApi(r){return{'5d':'5d','1mo':'10d','3wk':'1mo','1mo2':'1mo','3mo':'3mo','6mo':'6mo','1y':'1y'}[r]||'1mo';}
 
-function loadMarketsData(){var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});}
+function loadMarketsData(){var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';
+// Check for manual MBS override first
+fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override').then(function(r){return r.json()}).then(function(ov){
+  var overrideData=null;
+  if(ov.success&&ov.override){
+    var today=new Date().toISOString().split('T')[0];
+    if(ov.override.date===today)overrideData=ov.override;
+  }
+  // Now fetch markets as usual
+  fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){
+    if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}
+    // Apply override to UMBS if available
+    if(overrideData&&mktsActiveCoupon==='5.5'){
+      d.umbs=d.umbs||{};
+      d.umbs.price=overrideData.price;
+      d.umbs.change=overrideData.bps/100;
+      if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
+    }
+    mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'+(overrideData?' (MBS manual)':'');mktsRenderCards(d);mktsLoadChart();
+  }).catch(function(e){if(ts)ts.textContent='Error loading data';});
+}).catch(function(){
+  // If override check fails, proceed normally
+  fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});
+});}
 
 function mktsBpHtml(b,inv){if(b===null||b===undefined)return'<span style="color:#8a7e6b">—</span>';var up=b>0,c=inv?(up?'#dc2626':'#16a34a'):(up?'#16a34a':'#dc2626');if(b===0)c='#0b1f3a';return'<span style="color:'+c+';font-weight:700">'+Math.abs(b)+'bp '+(up?'▲':(b<0?'▼':''))+'</span>';}
 function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a7e6b">—</span>';var c=v>=0?'#16a34a':'#dc2626';return'<span style="color:'+c+';font-weight:700">'+Math.abs(v).toFixed(2)+' '+(v>=0?'▲':'▼')+'</span>';}
