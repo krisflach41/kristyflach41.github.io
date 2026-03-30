@@ -158,6 +158,14 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
     <i class="fas fa-magnifying-glass"></i>
     <span class="ds-tool-tip">Search Photos</span>
   </div>
+  <div class="ds-tool" onclick="dsToggleSvgPanel()">
+    <i class="fas fa-shapes"></i>
+    <span class="ds-tool-tip">SVG Library</span>
+  </div>
+  <div class="ds-tool" onclick="dsToggleBrandPanel()">
+    <i class="fas fa-swatchbook"></i>
+    <span class="ds-tool-tip">Brand Kit</span>
+  </div>
   <div class="ds-tool-divider"></div>
   <div class="ds-tool" onclick="dsUndo()">
     <i class="fas fa-undo"></i>
@@ -280,6 +288,7 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
     <button class="ds-topbar-btn" onclick="dsPreview()"><i class="fas fa-eye"></i> Preview</button>
     <button class="ds-topbar-btn" onclick="dsExportPNG()"><i class="fas fa-download"></i> PNG</button>
     <button class="ds-topbar-btn" onclick="dsExportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
+    <button class="ds-topbar-btn" onclick="dsExportPPTX()"><i class="fas fa-file-powerpoint"></i> PPTX</button>
     <button class="ds-topbar-btn primary" onclick="dsSaveProject()"><i class="fas fa-save"></i> Save</button>
   </div>
   <div class="ds-viewport" id="dsViewport" onmousedown="dsViewportClick(event)">
@@ -325,6 +334,74 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
   <div style="padding:6px 14px;border-top:1px solid var(--ds-border);font-size:9px;color:var(--ds-text-dim);">Photos from Unsplash — free to use</div>
 </div>
 
+<!-- SVG Library panel -->
+<div id="dsSvgPanel" style="display:none;position:absolute;top:50px;left:60px;width:360px;background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:50;overflow:hidden;">
+  <div style="padding:12px 14px;border-bottom:1px solid var(--ds-border);display:flex;align-items:center;gap:8px;">
+    <i class="fas fa-shapes" style="color:var(--ds-text-dim);font-size:12px;"></i>
+    <input type="text" id="dsSvgSearch" class="ds-panel-input" placeholder="Search icons & shapes..." style="flex:1;" oninput="dsSvgFilter(this.value)">
+    <button style="background:none;border:none;color:var(--ds-text-dim);cursor:pointer;font-size:14px;" onclick="document.getElementById('dsSvgPanel').style.display='none'">&times;</button>
+  </div>
+  <!-- Category tabs -->
+  <div style="padding:8px 14px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--ds-border);">
+    <button class="ds-panel-btn active" onclick="dsSvgCategory('all',this)" style="font-size:10px;padding:4px 10px;">All</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('social',this)" style="font-size:10px;padding:4px 10px;">Social</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('arrows',this)" style="font-size:10px;padding:4px 10px;">Arrows</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('shapes',this)" style="font-size:10px;padding:4px 10px;">Shapes</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('real_estate',this)" style="font-size:10px;padding:4px 10px;">Real Estate</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('business',this)" style="font-size:10px;padding:4px 10px;">Business</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('decorative',this)" style="font-size:10px;padding:4px 10px;">Decorative</button>
+  </div>
+  <div id="dsSvgGrid" style="max-height:380px;overflow-y:auto;padding:8px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;"></div>
+</div>
+
+<!-- Brand Kit panel -->
+<div id="dsBrandPanel" style="display:none;position:absolute;top:50px;left:60px;width:320px;background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:50;overflow:hidden;">
+  <div style="padding:12px 14px;border-bottom:1px solid var(--ds-border);display:flex;align-items:center;justify-content:space-between;">
+    <div style="display:flex;align-items:center;gap:8px;"><i class="fas fa-swatchbook" style="color:var(--ds-text-dim);font-size:12px;"></i><span style="font-size:13px;font-weight:600;">Brand Kit</span></div>
+    <button style="background:none;border:none;color:var(--ds-text-dim);cursor:pointer;font-size:14px;" onclick="document.getElementById('dsBrandPanel').style.display='none'">&times;</button>
+  </div>
+  <div style="max-height:500px;overflow-y:auto;padding:12px 14px;">
+    <!-- Brand Colors -->
+    <div class="ds-panel-label">My colors</div>
+    <div id="dsBrandColors" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+    <div class="ds-panel-row">
+      <input type="color" id="dsBrandNewColor" class="ds-panel-color" value="#002556">
+      <input type="text" id="dsBrandNewColorHex" class="ds-panel-input" value="#002556" style="width:80px;font-size:11px;font-family:monospace;">
+      <button class="ds-panel-btn" onclick="dsBrandAddColor()" style="font-size:10px;">Add</button>
+    </div>
+
+    <!-- Brand Fonts -->
+    <div class="ds-panel-label" style="margin-top:14px;">My fonts</div>
+    <div id="dsBrandFonts" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
+    <div class="ds-panel-row">
+      <select id="dsBrandNewFont" class="ds-panel-select" style="flex:1;">
+        <option value="DM Sans">DM Sans</option>
+        <option value="Playfair Display">Playfair Display</option>
+        <option value="Georgia">Georgia</option>
+        <option value="Helvetica">Helvetica</option>
+        <option value="Arial">Arial</option>
+        <option value="Times New Roman">Times New Roman</option>
+        <option value="Garamond">Garamond</option>
+        <option value="Palatino">Palatino</option>
+        <option value="Verdana">Verdana</option>
+        <option value="Trebuchet MS">Trebuchet MS</option>
+        <option value="Impact">Impact</option>
+      </select>
+      <button class="ds-panel-btn" onclick="dsBrandAddFont()" style="font-size:10px;">Add</button>
+    </div>
+
+    <!-- Brand Logos -->
+    <div class="ds-panel-label" style="margin-top:14px;">My logos</div>
+    <div id="dsBrandLogos" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;"></div>
+    <button class="ds-panel-btn" onclick="dsBrandUploadLogo()" style="width:100%;font-size:10px;"><i class="fas fa-upload" style="margin-right:4px;"></i> Upload Logo</button>
+    <input type="file" id="dsBrandLogoUpload" accept="image/*" style="display:none;" onchange="dsBrandHandleLogoUpload(this)">
+
+    <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--ds-border);">
+      <button class="ds-panel-btn" onclick="dsBrandSave()" style="width:100;background:var(--ds-accent);border-color:var(--ds-accent);color:#fff;width:100%;"><i class="fas fa-save" style="margin-right:4px;"></i> Save Brand Kit</button>
+    </div>
+  </div>
+</div>
+
 <style>
 /* Slide strip */
 .ds-slide-strip { height: 80px; background: var(--ds-surface); border-top: 1px solid var(--ds-border); display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; overflow-x: auto; }
@@ -343,6 +420,28 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
 .ds-unsplash-item:hover img { transform: scale(1.05); }
 .ds-unsplash-item .ds-unsplash-credit { position: absolute; bottom: 0; left: 0; right: 0; padding: 2px 6px; background: rgba(0,0,0,0.6); font-size: 8px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 0.2s; }
 .ds-unsplash-item:hover .ds-unsplash-credit { opacity: 1; }
+
+/* SVG library grid */
+.ds-svg-item { width: 100%; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border: 1px solid var(--ds-border); border-radius: 6px; cursor: pointer; padding: 8px; transition: 0.15s; background: rgba(255,255,255,0.03); }
+.ds-svg-item:hover { border-color: var(--ds-accent); background: rgba(99,102,241,0.08); }
+.ds-svg-item svg { width: 100%; height: 100%; fill: var(--ds-text-mid); }
+.ds-svg-item:hover svg { fill: var(--ds-text); }
+
+/* Brand kit items */
+.ds-brand-color { width: 32px; height: 32px; border-radius: 6px; cursor: pointer; border: 2px solid transparent; transition: 0.15s; position: relative; }
+.ds-brand-color:hover { border-color: var(--ds-accent); transform: scale(1.1); }
+.ds-brand-color-x { position: absolute; top: -4px; right: -4px; width: 14px; height: 14px; border-radius: 50%; background: var(--ds-red); color: #fff; font-size: 8px; display: none; align-items: center; justify-content: center; cursor: pointer; line-height: 14px; text-align: center; }
+.ds-brand-color:hover .ds-brand-color-x { display: flex; }
+.ds-brand-font { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--ds-border); border-radius: 6px; cursor: pointer; transition: 0.15s; }
+.ds-brand-font:hover { border-color: var(--ds-accent); }
+.ds-brand-font-name { flex: 1; font-size: 12px; }
+.ds-brand-font-x { color: var(--ds-text-dim); font-size: 10px; cursor: pointer; }
+.ds-brand-font-x:hover { color: var(--ds-red); }
+.ds-brand-logo { width: 60px; height: 60px; border-radius: 6px; border: 1px solid var(--ds-border); overflow: hidden; cursor: pointer; position: relative; }
+.ds-brand-logo img { width: 100%; height: 100%; object-fit: contain; }
+.ds-brand-logo:hover { border-color: var(--ds-accent); }
+.ds-brand-logo-x { position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--ds-red); color: #fff; font-size: 8px; display: none; align-items: center; justify-content: center; cursor: pointer; }
+.ds-brand-logo:hover .ds-brand-logo-x { display: flex; }
 </style>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -1373,6 +1472,8 @@ function dsRenderSlideStrip() {
 // ===== UNSPLASH SEARCH =====
 function dsToggleUnsplash() {
   var panel = document.getElementById('dsUnsplashPanel');
+  document.getElementById('dsSvgPanel').style.display = 'none';
+  document.getElementById('dsBrandPanel').style.display = 'none';
   panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
   if (panel.style.display === 'block') {
     document.getElementById('dsUnsplashQuery').focus();
@@ -1422,10 +1523,274 @@ function dsInsertUnsplash(url, photoId, origW, origH) {
   document.getElementById('dsUnsplashPanel').style.display = 'none';
 }
 
+// ===== SVG LIBRARY =====
+var DS_SVGS = [
+  // Social
+  { name: 'Facebook', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>' },
+  { name: 'Instagram', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>' },
+  { name: 'LinkedIn', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>' },
+  { name: 'YouTube', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>' },
+  { name: 'Phone', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>' },
+  { name: 'Email', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>' },
+  { name: 'Globe', cat: 'social', svg: '<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>' },
+  // Arrows
+  { name: 'Arrow Right', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>' },
+  { name: 'Arrow Left', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>' },
+  { name: 'Arrow Up', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.58 5.59L20 12l-8-8z"/></svg>' },
+  { name: 'Arrow Down', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M20 12l-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"/></svg>' },
+  { name: 'Curved Arrow', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M10 9V5l-7 7 7 7v-4.1c5 0 8.5 1.6 11 5.1-1-5-4-10-11-11z"/></svg>' },
+  { name: 'Double Arrow', cat: 'arrows', svg: '<svg viewBox="0 0 24 24"><path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/></svg>' },
+  // Shapes
+  { name: 'Star', cat: 'shapes', svg: '<svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' },
+  { name: 'Heart', cat: 'shapes', svg: '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' },
+  { name: 'Hexagon', cat: 'shapes', svg: '<svg viewBox="0 0 24 24"><path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18-.21 0-.41-.06-.57-.18l-7.9-4.44A.991.991 0 013 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18.21 0 .41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9z"/></svg>' },
+  { name: 'Diamond', cat: 'shapes', svg: '<svg viewBox="0 0 24 24"><path d="M12 2L2 12l10 10 10-10L12 2z"/></svg>' },
+  { name: 'Shield', cat: 'shapes', svg: '<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>' },
+  // Real Estate
+  { name: 'House', cat: 'real_estate', svg: '<svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>' },
+  { name: 'Key', cat: 'real_estate', svg: '<svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>' },
+  { name: 'Location', cat: 'real_estate', svg: '<svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>' },
+  { name: 'Building', cat: 'real_estate', svg: '<svg viewBox="0 0 24 24"><path d="M15 11V5l-3-3-3 3v2H3v14h18V11h-6zm-8 8H5v-2h2v2zm0-4H5v-2h2v2zm0-4H5V9h2v2zm6 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V9h2v2zm0-4h-2V5h2v2zm6 12h-2v-2h2v2zm0-4h-2v-2h2v2z"/></svg>' },
+  // Business
+  { name: 'Chart Up', cat: 'business', svg: '<svg viewBox="0 0 24 24"><path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z"/></svg>' },
+  { name: 'Money', cat: 'business', svg: '<svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>' },
+  { name: 'Handshake', cat: 'business', svg: '<svg viewBox="0 0 24 24"><path d="M12.22 19.85c-.18.18-.5.18-.67 0l-3.05-3.05-.01-.01c-.18-.18-.18-.49 0-.67l.01-.01 2.78-2.78c.39-.39.39-1.02 0-1.41l-.71-.71a.996.996 0 00-1.41 0L6.38 13.98l-.01.01c-.18.18-.49.18-.67 0l-.01-.01-1.64-1.64c-.18-.18-.18-.49 0-.67l.01-.01 6.19-6.19c.18-.17.49-.17.67 0l.01.01 3.04 3.04c.18.18.18.49 0 .67l-.01.01-2.79 2.79c-.39.39-.39 1.02 0 1.41l.71.71c.39.39 1.02.39 1.41 0l2.79-2.79.01-.01c.18-.18.49-.18.67 0l.01.01 1.64 1.64c.18.18.18.49 0 .67l-.01.01-6.19 6.19z"/></svg>' },
+  { name: 'Calculator', cat: 'business', svg: '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 14H7v-2h4v2zm0-4H7v-2h4v2zm0-4H7V7h4v2zm6 8h-4V11h4v6z"/></svg>' },
+  // Decorative
+  { name: 'Divider Line', cat: 'decorative', svg: '<svg viewBox="0 0 200 4"><rect width="200" height="2" y="1" rx="1"/></svg>' },
+  { name: 'Wavy Line', cat: 'decorative', svg: '<svg viewBox="0 0 200 20"><path d="M0 10 Q25 0 50 10 Q75 20 100 10 Q125 0 150 10 Q175 20 200 10" fill="none" stroke="currentColor" stroke-width="2"/></svg>' },
+  { name: 'Checkmark', cat: 'decorative', svg: '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' },
+  { name: 'Quote Left', cat: 'decorative', svg: '<svg viewBox="0 0 24 24"><path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/></svg>' },
+  { name: 'Sparkle', cat: 'decorative', svg: '<svg viewBox="0 0 24 24"><path d="M12 2l1.5 5.5L19 9l-5.5 1.5L12 16l-1.5-5.5L5 9l5.5-1.5z"/></svg>' }
+];
+
+var dsSvgCurrentCat = 'all';
+
+function dsToggleSvgPanel() {
+  var panel = document.getElementById('dsSvgPanel');
+  // Close other panels
+  document.getElementById('dsUnsplashPanel').style.display = 'none';
+  document.getElementById('dsBrandPanel').style.display = 'none';
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') dsSvgRender();
+}
+
+function dsSvgCategory(cat, btn) {
+  dsSvgCurrentCat = cat;
+  document.querySelectorAll('#dsSvgPanel .ds-panel-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  dsSvgRender();
+}
+
+function dsSvgFilter(query) {
+  dsSvgRender(query.toLowerCase());
+}
+
+function dsSvgRender(searchQuery) {
+  var grid = document.getElementById('dsSvgGrid');
+  var filtered = DS_SVGS.filter(function(s) {
+    if (dsSvgCurrentCat !== 'all' && s.cat !== dsSvgCurrentCat) return false;
+    if (searchQuery && !s.name.toLowerCase().includes(searchQuery)) return false;
+    return true;
+  });
+  var html = '';
+  filtered.forEach(function(s, i) {
+    html += '<div class="ds-svg-item" onclick="dsInsertSvg(' + i + ')" title="' + s.name + '">' + s.svg + '</div>';
+  });
+  if (filtered.length === 0) html = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ds-text-dim);font-size:12px;">No matches</div>';
+  grid.innerHTML = html;
+}
+
+function dsInsertSvg(idx) {
+  var s = DS_SVGS.filter(function(s) {
+    if (dsSvgCurrentCat !== 'all' && s.cat !== dsSvgCurrentCat) return false;
+    return true;
+  })[idx];
+  if (!s) return;
+  // Convert SVG to data URL for use as image
+  var svgBlob = new Blob([s.svg], { type: 'image/svg+xml' });
+  var url = URL.createObjectURL(svgBlob);
+  dsCreateElement('image', { x: 50, y: 50, w: 80, h: 80, src: url });
+  document.getElementById('dsSvgPanel').style.display = 'none';
+}
+
+// ===== BRAND KIT =====
+var dsBrand = { colors: [], fonts: [], logos: [] };
+
+function dsToggleBrandPanel() {
+  var panel = document.getElementById('dsBrandPanel');
+  document.getElementById('dsUnsplashPanel').style.display = 'none';
+  document.getElementById('dsSvgPanel').style.display = 'none';
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') dsBrandRender();
+}
+
+function dsBrandRender() {
+  // Colors
+  var colorsHtml = '';
+  dsBrand.colors.forEach(function(c, i) {
+    colorsHtml += '<div class="ds-brand-color" style="background:' + c + ';" onclick="dsBrandApplyColor(\'' + c + '\')" title="' + c + '">';
+    colorsHtml += '<div class="ds-brand-color-x" onclick="event.stopPropagation();dsBrandRemoveColor(' + i + ');">&times;</div>';
+    colorsHtml += '</div>';
+  });
+  document.getElementById('dsBrandColors').innerHTML = colorsHtml || '<div style="font-size:11px;color:var(--ds-text-dim);">No colors saved yet</div>';
+
+  // Fonts
+  var fontsHtml = '';
+  dsBrand.fonts.forEach(function(f, i) {
+    fontsHtml += '<div class="ds-brand-font" onclick="dsBrandApplyFont(\'' + f + '\')">';
+    fontsHtml += '<div class="ds-brand-font-name" style="font-family:\'' + f + '\';">' + f + '</div>';
+    fontsHtml += '<div class="ds-brand-font-x" onclick="event.stopPropagation();dsBrandRemoveFont(' + i + ');">&times;</div>';
+    fontsHtml += '</div>';
+  });
+  document.getElementById('dsBrandFonts').innerHTML = fontsHtml || '<div style="font-size:11px;color:var(--ds-text-dim);">No fonts saved yet</div>';
+
+  // Logos
+  var logosHtml = '';
+  dsBrand.logos.forEach(function(l, i) {
+    logosHtml += '<div class="ds-brand-logo" onclick="dsBrandInsertLogo(\'' + l.replace(/'/g, "\\'") + '\')">';
+    logosHtml += '<img src="' + l + '">';
+    logosHtml += '<div class="ds-brand-logo-x" onclick="event.stopPropagation();dsBrandRemoveLogo(' + i + ');">&times;</div>';
+    logosHtml += '</div>';
+  });
+  document.getElementById('dsBrandLogos').innerHTML = logosHtml || '<div style="font-size:11px;color:var(--ds-text-dim);">No logos saved yet</div>';
+}
+
+function dsBrandAddColor() {
+  var hex = document.getElementById('dsBrandNewColorHex').value.trim() || document.getElementById('dsBrandNewColor').value;
+  if (!hex.match(/^#[0-9a-fA-F]{3,6}$/)) return;
+  if (dsBrand.colors.indexOf(hex) === -1) dsBrand.colors.push(hex);
+  dsBrandRender();
+}
+function dsBrandRemoveColor(i) { dsBrand.colors.splice(i, 1); dsBrandRender(); }
+function dsBrandApplyColor(c) {
+  if (DS.selectedId) {
+    var el = dsElements().find(function(e) { return e.id === DS.selectedId; });
+    if (el) {
+      if (el.type === 'text') dsPropSet(el.id, 'fontColor', c);
+      else if (el.fill !== undefined) dsPropSet(el.id, 'fill', c);
+    }
+  }
+}
+
+function dsBrandAddFont() {
+  var font = document.getElementById('dsBrandNewFont').value;
+  if (dsBrand.fonts.indexOf(font) === -1) dsBrand.fonts.push(font);
+  dsBrandRender();
+}
+function dsBrandRemoveFont(i) { dsBrand.fonts.splice(i, 1); dsBrandRender(); }
+function dsBrandApplyFont(f) {
+  if (DS.selectedId) {
+    var el = dsElements().find(function(e) { return e.id === DS.selectedId; });
+    if (el && el.type === 'text') dsPropSet(el.id, 'fontFamily', f);
+  }
+}
+
+function dsBrandUploadLogo() { document.getElementById('dsBrandLogoUpload').click(); }
+function dsBrandHandleLogoUpload(input) {
+  if (!input.files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    dsBrand.logos.push(e.target.result);
+    dsBrandRender();
+  };
+  reader.readAsDataURL(input.files[0]);
+  input.value = '';
+}
+function dsBrandRemoveLogo(i) { dsBrand.logos.splice(i, 1); dsBrandRender(); }
+function dsBrandInsertLogo(src) {
+  dsCreateElement('image', { x: 50, y: 50, w: 150, h: 150, src: src });
+}
+
+function dsBrandSave() {
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_brand', brand: dsBrand })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    dsShowToast(data.success ? 'Brand kit saved' : 'Error saving');
+  })
+  .catch(function() { dsShowToast('Connection error'); });
+}
+
+function dsBrandLoad() {
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio?action=get_brand')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.brand) {
+        dsBrand.colors = data.brand.colors || [];
+        dsBrand.fonts = data.brand.fonts || [];
+        dsBrand.logos = data.brand.logos || [];
+      }
+    })
+    .catch(function() {});
+}
+
+// ===== PPTX EXPORT =====
+function dsExportPPTX() {
+  var savedPage = DS.currentPage;
+  var savedSel = DS.selectedId;
+  DS.selectedId = null;
+
+  dsShowToast('Generating PPTX...');
+
+  var pageImages = [];
+  var pageIdx = 0;
+
+  function renderPageForPptx() {
+    if (pageIdx >= DS.pages.length) {
+      dsBuildPptx(pageImages);
+      DS.currentPage = savedPage;
+      DS.selectedId = savedSel;
+      dsApplyPageToCanvas();
+      return;
+    }
+    DS.currentPage = pageIdx;
+    dsApplyPageToCanvas();
+    html2canvas(document.getElementById('dsCanvas'), { scale: 2, useCORS: true, backgroundColor: null }).then(function(c) {
+      pageImages.push(c.toDataURL('image/png'));
+      pageIdx++;
+      renderPageForPptx();
+    });
+  }
+  renderPageForPptx();
+}
+
+function dsBuildPptx(images) {
+  // Build a minimal PPTX file (Office Open XML)
+  // PPTX is a zip containing XML files — we'll use a simplified builder
+  // For production quality we'd use PptxGenJS, but to avoid another dependency
+  // we'll generate it with the library loaded from CDN
+
+  var script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js';
+  script.onload = function() {
+    var pptx = new PptxGenJS();
+    pptx.layout = 'LAYOUT_WIDE'; // 13.33 x 7.5 inches
+
+    images.forEach(function(imgData, i) {
+      var slide = pptx.addSlide();
+      slide.addImage({
+        data: imgData,
+        x: 0, y: 0,
+        w: '100%', h: '100%'
+      });
+    });
+
+    pptx.writeFile({ fileName: 'presentation-' + Date.now() + '.pptx' }).then(function() {
+      dsShowToast('PPTX exported (' + images.length + ' slide' + (images.length > 1 ? 's' : '') + ')');
+    });
+  };
+  document.head.appendChild(script);
+}
+
 // ===== INIT =====
 dsSetTool('select');
 dsZoomFit();
 dsRenderSlideStrip();
+dsBrandLoad();
 </script>
 </body>
 </html>
