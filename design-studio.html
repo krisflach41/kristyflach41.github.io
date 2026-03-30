@@ -612,6 +612,7 @@ function dsCreateElement(type, props) {
     el.lineHeight = 1.4;
     el.letterSpacing = 0;
     el.textShadow = '';
+    el.textCurve = 0;
   } else if (type === 'rect') {
     el.fill = props.fill || '#6366f1';
     el.stroke = '';
@@ -632,6 +633,9 @@ function dsCreateElement(type, props) {
     el.src = props.src || '';
     el.w = props.w || 200;
     el.h = props.h || 200;
+    el.frame = 'none';
+    el.frameRadius = 16;
+    el.frameCaption = '';
   }
 
   dsSaveUndo();
@@ -704,14 +708,124 @@ function dsRenderCanvas() {
       shape.style.marginTop = Math.max(0, (el.h - el.strokeWidth) / 2) + 'px';
       div.appendChild(shape);
     } else if (el.type === 'image') {
+      var imgContainer = document.createElement('div');
+      imgContainer.style.width = '100%';
+      imgContainer.style.height = '100%';
+      imgContainer.style.overflow = 'hidden';
+      imgContainer.style.position = 'relative';
+
+      // Apply frame clip-path
+      var frame = el.frame || 'none';
+      if (frame === 'circle') {
+        imgContainer.style.borderRadius = '50%';
+      } else if (frame === 'rounded') {
+        imgContainer.style.borderRadius = (el.frameRadius || 16) + 'px';
+      } else if (frame === 'oval') {
+        imgContainer.style.borderRadius = '50%';
+        // Oval is just circle on a non-square element
+      } else if (frame === 'diamond') {
+        imgContainer.style.clipPath = 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)';
+      } else if (frame === 'hexagon') {
+        imgContainer.style.clipPath = 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)';
+      } else if (frame === 'arch') {
+        imgContainer.style.borderRadius = '50% 50% 0 0';
+      } else if (frame === 'polaroid') {
+        imgContainer.style.background = '#fff';
+        imgContainer.style.padding = '8px 8px 32px 8px';
+        imgContainer.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+        imgContainer.style.borderRadius = '2px';
+      }
+
       var img = document.createElement('img');
       img.src = el.src;
       img.style.width = '100%';
-      img.style.height = '100%';
+      img.style.height = frame === 'polaroid' ? 'calc(100% - 24px)' : '100%';
       img.style.objectFit = 'cover';
       img.style.pointerEvents = 'none';
+      img.style.display = 'block';
       img.draggable = false;
-      div.appendChild(img);
+      imgContainer.appendChild(img);
+
+      if (frame === 'polaroid' && el.frameCaption) {
+        var caption = document.createElement('div');
+        caption.style.cssText = 'position:absolute;bottom:4px;left:8px;right:8px;text-align:center;font-size:11px;color:#333;font-family:Georgia,serif;';
+        caption.textContent = el.frameCaption;
+        imgContainer.appendChild(caption);
+      }
+
+      div.appendChild(imgContainer);
+    }
+
+    // Curved text rendering (replaces standard text with SVG arc)
+    if (el.type === 'text' && el.textCurve && el.textCurve !== 0) {
+      // Remove the standard text div and replace with SVG curved text
+      var textChild = div.querySelector('.ds-text-content');
+      if (textChild) textChild.style.display = 'none';
+
+      var svgNS = 'http://www.w3.org/2000/svg';
+      var curveAmount = el.textCurve;
+      var svgW = el.w || 200;
+      var svgH = Math.max(el.h || 80, Math.abs(curveAmount) / 2 + el.fontSize * 2);
+
+      var svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('width', svgW);
+      svg.setAttribute('height', svgH);
+      svg.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
+      svg.style.overflow = 'visible';
+      svg.style.pointerEvents = 'none';
+
+      var pathId = 'curve_' + el.id;
+      var path = document.createElementNS(svgNS, 'path');
+      var midX = svgW / 2;
+      var midY = svgH / 2;
+
+      // Calculate arc path
+      if (Math.abs(curveAmount) >= 360) {
+        // Full circle
+        var r = svgW / (2 * Math.PI);
+        var cx = midX;
+        var cy = midY;
+        path.setAttribute('d', 'M ' + (cx - r) + ',' + cy + ' A ' + r + ',' + r + ' 0 1,1 ' + (cx + r) + ',' + cy + ' A ' + r + ',' + r + ' 0 1,1 ' + (cx - r) + ',' + cy);
+      } else {
+        // Arc
+        var radius = (svgW * 180) / (Math.PI * Math.abs(curveAmount));
+        var sweep = curveAmount > 0 ? 1 : 0;
+        var cy = curveAmount > 0 ? midY + radius - el.fontSize : midY - radius + el.fontSize;
+        var startAngle = curveAmount > 0 ? Math.PI + (Math.PI * Math.abs(curveAmount) / 360) : -(Math.PI * Math.abs(curveAmount) / 360);
+        var endAngle = curveAmount > 0 ? Math.PI - (Math.PI * Math.abs(curveAmount) / 360) : (Math.PI * Math.abs(curveAmount) / 360);
+        var x1 = midX + radius * Math.cos(startAngle);
+        var y1 = cy + radius * Math.sin(startAngle);
+        var x2 = midX + radius * Math.cos(endAngle);
+        var y2 = cy + radius * Math.sin(endAngle);
+        var largeArc = Math.abs(curveAmount) > 180 ? 1 : 0;
+        path.setAttribute('d', 'M ' + x1 + ',' + y1 + ' A ' + radius + ',' + radius + ' 0 ' + largeArc + ',' + sweep + ' ' + x2 + ',' + y2);
+      }
+
+      path.setAttribute('id', pathId);
+      path.setAttribute('fill', 'none');
+
+      var defs = document.createElementNS(svgNS, 'defs');
+      defs.appendChild(path);
+      svg.appendChild(defs);
+
+      var textPath = document.createElementNS(svgNS, 'textPath');
+      textPath.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#' + pathId);
+      textPath.setAttribute('startOffset', '50%');
+      textPath.setAttribute('text-anchor', 'middle');
+      textPath.textContent = el.text;
+
+      var textEl = document.createElementNS(svgNS, 'text');
+      textEl.setAttribute('font-family', el.fontFamily);
+      textEl.setAttribute('font-size', el.fontSize);
+      textEl.setAttribute('fill', el.fontColor);
+      textEl.setAttribute('font-weight', el.fontWeight);
+      textEl.setAttribute('font-style', el.fontStyle);
+      textEl.setAttribute('letter-spacing', el.letterSpacing);
+      textEl.appendChild(textPath);
+      svg.appendChild(textEl);
+
+      div.appendChild(svg);
+      div.style.height = svgH + 'px';
     }
 
     // Resize handles
@@ -978,7 +1092,7 @@ function dsRenderProps() {
 
   // Opacity
   html += '<div class="ds-panel-label" style="margin-top:10px;">Opacity</div>';
-  html += '<div class="ds-panel-row"><input type="range" class="ds-panel-slider" min="0" max="1" step="0.05" value="' + el.opacity + '" oninput="dsPropSet(' + el.id + ',\'opacity\',parseFloat(this.value))"><span style="font-size:10px;color:var(--ds-text-dim);min-width:30px;text-align:right;">' + Math.round(el.opacity * 100) + '%</span></div>';
+  html += '<div class="ds-panel-row"><input type="range" class="ds-panel-slider" min="0" max="1" step="0.05" value="' + el.opacity + '" oninput="dsQuickProp(' + el.id + ',\'opacity\',parseFloat(this.value));this.nextElementSibling.textContent=Math.round(parseFloat(this.value)*100)+\'%\'"><span style="font-size:10px;color:var(--ds-text-dim);min-width:30px;text-align:right;">' + Math.round(el.opacity * 100) + '%</span></div>';
 
   // Type-specific props
   if (el.type === 'text') {
@@ -1014,6 +1128,12 @@ function dsRenderProps() {
     html += '<div class="ds-panel-label">Letter Spacing</div>';
     html += '<div class="ds-panel-row"><input type="range" class="ds-panel-slider" min="-2" max="20" step="0.5" value="' + el.letterSpacing + '" oninput="dsPropSet(' + el.id + ',\'letterSpacing\',parseFloat(this.value))"><span style="font-size:10px;color:var(--ds-text-dim);min-width:24px;text-align:right;">' + el.letterSpacing + 'px</span></div>';
 
+    html += '<div class="ds-panel-label">Text Curve</div>';
+    html += '<div class="ds-panel-row"><input type="range" class="ds-panel-slider" min="-360" max="360" step="5" value="' + (el.textCurve || 0) + '" oninput="dsPropSet(' + el.id + ',\'textCurve\',parseInt(this.value))"><span style="font-size:10px;color:var(--ds-text-dim);min-width:30px;text-align:right;">' + (el.textCurve || 0) + '°</span></div>';
+    if (el.textCurve && el.textCurve !== 0) {
+      html += '<button class="ds-panel-btn" onclick="dsPropSet(' + el.id + ',\'textCurve\',0)" style="font-size:10px;width:100%;">Reset to Flat</button>';
+    }
+
   } else if (el.type === 'rect' || el.type === 'circle') {
     html += '<div class="ds-panel-label" style="margin-top:10px;">Fill</div>';
     html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.fill || '#000000') + '" onchange="dsPropSet(' + el.id + ',\'fill\',this.value);this.nextElementSibling.value=this.value;">';
@@ -1035,7 +1155,34 @@ function dsRenderProps() {
 
   } else if (el.type === 'image') {
     html += '<div class="ds-panel-label" style="margin-top:10px;">Image</div>';
-    html += '<button class="ds-panel-btn" onclick="dsReplaceImage(' + el.id + ')" style="width:100%;"><i class="fas fa-image" style="margin-right:4px;"></i> Replace Image</button>';
+    html += '<button class="ds-panel-btn" onclick="dsReplaceImage(' + el.id + ')" style="width:100%;margin-bottom:8px;"><i class="fas fa-image" style="margin-right:4px;"></i> Replace Image</button>';
+
+    html += '<div class="ds-panel-label">Frame Shape</div>';
+    var frames = [
+      { id: 'none', label: 'None', icon: 'fa-square' },
+      { id: 'rounded', label: 'Rounded', icon: 'fa-square' },
+      { id: 'circle', label: 'Circle', icon: 'fa-circle' },
+      { id: 'oval', label: 'Oval', icon: 'fa-circle' },
+      { id: 'diamond', label: 'Diamond', icon: 'fa-diamond' },
+      { id: 'hexagon', label: 'Hex', icon: 'fa-hexagon-xmark' },
+      { id: 'arch', label: 'Arch', icon: 'fa-archway' },
+      { id: 'polaroid', label: 'Polaroid', icon: 'fa-image' }
+    ];
+    html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px;">';
+    frames.forEach(function(f) {
+      var isActive = (el.frame || 'none') === f.id;
+      html += '<button class="ds-panel-btn' + (isActive ? ' active' : '') + '" onclick="dsPropSet(' + el.id + ',\'frame\',\'' + f.id + '\')" style="font-size:9px;padding:6px 4px;" title="' + f.label + '">' + f.label + '</button>';
+    });
+    html += '</div>';
+
+    if ((el.frame || 'none') === 'rounded') {
+      html += '<div class="ds-panel-label">Corner Radius</div>';
+      html += '<div class="ds-panel-row"><input type="range" class="ds-panel-slider" min="0" max="50" value="' + (el.frameRadius || 16) + '" oninput="dsPropSet(' + el.id + ',\'frameRadius\',parseInt(this.value))"><span style="font-size:10px;color:var(--ds-text-dim);min-width:24px;text-align:right;">' + (el.frameRadius || 16) + '</span></div>';
+    }
+    if ((el.frame || 'none') === 'polaroid') {
+      html += '<div class="ds-panel-label">Caption</div>';
+      html += '<input type="text" class="ds-panel-input" value="' + (el.frameCaption || '').replace(/"/g,'&quot;') + '" onchange="dsPropSet(' + el.id + ',\'frameCaption\',this.value)" placeholder="Add a caption...">';
+    }
   }
 
   // Duplicate button
@@ -1054,6 +1201,20 @@ function dsPropSet(id, prop, value) {
   el[prop] = value;
   dsRenderCanvas();
   dsRenderProps();
+}
+
+// Quick property update — re-renders canvas but not the properties panel (for sliders)
+function dsQuickProp(id, prop, value) {
+  var el = dsElements().find(function(e) { return e.id === id; });
+  if (!el) return;
+  el[prop] = value;
+  // Only update the specific DOM element's style, don't re-render everything
+  var elDiv = document.querySelector('[data-id="' + id + '"]');
+  if (elDiv && prop === 'opacity') {
+    elDiv.style.opacity = value;
+  } else {
+    dsRenderCanvas();
+  }
 }
 
 function dsDuplicate(id) {
