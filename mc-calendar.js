@@ -171,22 +171,76 @@ function gatherAllEvents() {
     });
   }
 
-  // 4) Calendar events
+  // 4) Calendar events (including recurring generation)
   calEvents.forEach(function(ev) {
     if (!calFilters[ev.category]) return;
-    addEvent(ev.event_date, {
-      id: 'ce_' + ev.id,
-      title: ev.title,
-      category: ev.category,
-      time: ev.start_time || null,
-      endTime: ev.end_time || null,
-      allDay: ev.all_day || false,
-      notes: ev.notes || '',
-      reminder: ev.reminder || false,
-      sourceType: 'calendar_event',
-      sourceId: ev.id,
-      sourceData: ev
-    });
+    var repeatType = ev.repeat_type || 'none';
+
+    if (repeatType === 'none') {
+      // Single event
+      addEvent(ev.event_date, {
+        id: 'ce_' + ev.id,
+        title: ev.title,
+        category: ev.category,
+        time: ev.start_time || null,
+        endTime: ev.end_time || null,
+        allDay: ev.all_day || false,
+        notes: ev.notes || '',
+        reminder: ev.reminder || false,
+        sourceType: 'calendar_event',
+        sourceId: ev.id,
+        sourceData: ev
+      });
+    } else {
+      // Recurring — generate occurrences for the visible month range
+      var viewStart = new Date(calYear, calMonth - 1, 1);
+      var viewEnd = new Date(calYear, calMonth + 2, 0);
+      var evStart = new Date(ev.event_date + 'T00:00:00');
+      var evEnd = ev.repeat_end ? new Date(ev.repeat_end + 'T23:59:59') : new Date(calYear + 1, 11, 31);
+      var current = new Date(evStart);
+      var safety = 0;
+
+      while (current <= viewEnd && current <= evEnd && safety < 500) {
+        safety++;
+        if (current >= viewStart && current >= evStart) {
+          var dateStr = current.getFullYear() + '-' + String(current.getMonth() + 1).padStart(2, '0') + '-' + String(current.getDate()).padStart(2, '0');
+          var dayOfWeek = current.getDay();
+
+          // Skip weekends for weekday recurrence
+          if (repeatType === 'weekdays' && (dayOfWeek === 0 || dayOfWeek === 6)) {
+            current.setDate(current.getDate() + 1);
+            continue;
+          }
+
+          addEvent(dateStr, {
+            id: 'ce_' + ev.id + '_' + dateStr,
+            title: ev.title,
+            category: ev.category,
+            time: ev.start_time || null,
+            endTime: ev.end_time || null,
+            allDay: ev.all_day || false,
+            notes: ev.notes || '',
+            reminder: ev.reminder || false,
+            sourceType: 'calendar_event',
+            sourceId: ev.id,
+            sourceData: ev,
+            isRecurring: true,
+            occurrenceDate: dateStr
+          });
+        }
+
+        // Advance to next occurrence
+        if (repeatType === 'daily' || repeatType === 'weekdays') {
+          current.setDate(current.getDate() + 1);
+        } else if (repeatType === 'weekly') {
+          current.setDate(current.getDate() + 7);
+        } else if (repeatType === 'biweekly') {
+          current.setDate(current.getDate() + 14);
+        } else if (repeatType === 'monthly') {
+          current.setMonth(current.getMonth() + 1);
+        }
+      }
+    }
   });
 
   // Sort each day
@@ -503,11 +557,28 @@ function calOpenEventForm(dateStr, existingEvent) {
   });
   html += '</select>';
 
+  // Recurrence
+  var rt = ev.repeat_type || 'none';
+  html += '<label class="cal-form-label">Repeat</label>';
+  html += '<select id="calEvRepeat" class="cal-form-input" onchange="calToggleRepeatEnd()">';
+  html += '<option value="none"' + (rt === 'none' ? ' selected' : '') + '>Does not repeat</option>';
+  html += '<option value="daily"' + (rt === 'daily' ? ' selected' : '') + '>Every day</option>';
+  html += '<option value="weekdays"' + (rt === 'weekdays' ? ' selected' : '') + '>Every weekday (Mon–Fri)</option>';
+  html += '<option value="weekly"' + (rt === 'weekly' ? ' selected' : '') + '>Every week</option>';
+  html += '<option value="biweekly"' + (rt === 'biweekly' ? ' selected' : '') + '>Every 2 weeks</option>';
+  html += '<option value="monthly"' + (rt === 'monthly' ? ' selected' : '') + '>Every month</option>';
+  html += '</select>';
+
+  html += '<div id="calEvRepeatEndWrap" style="' + (rt === 'none' ? 'display:none;' : '') + '">';
+  html += '<label class="cal-form-label">End repeat <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>';
+  html += '<input type="date" id="calEvRepeatEnd" class="cal-form-input" value="' + (ev.repeat_end || '') + '">';
+  html += '</div>';
+
   html += '<label class="cal-form-label">Notes</label>';
   html += '<textarea id="calEvNotes" class="cal-form-input" rows="3" placeholder="Optional notes">' + (ev.notes || '') + '</textarea>';
 
   html += '<label class="cal-form-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;">';
-  html += '<input type="checkbox" id="calEvReminder" ' + (ev.reminder ? 'checked' : '') + '> SMS reminder (10 min before)</label>';
+  html += '<input type="checkbox" id="calEvReminder" ' + (ev.reminder ? 'checked' : '') + '> SMS reminder (15 min before)</label>';
 
   html += '<div style="display:flex;gap:10px;margin-top:16px;">';
   if (isEdit) {
@@ -536,10 +607,18 @@ function calToggleAllDay() {
   document.getElementById('calEvTimeFields').style.display = allDay ? 'none' : '';
 }
 
+function calToggleRepeatEnd() {
+  var val = document.getElementById('calEvRepeat').value;
+  document.getElementById('calEvRepeatEndWrap').style.display = val === 'none' ? 'none' : '';
+}
+
 // ===== SAVE EVENT =====
 function calSaveEvent(existingId) {
   var title = document.getElementById('calEvTitle').value.trim();
   if (!title) { alert('Title is required'); return; }
+
+  var repeatType = document.getElementById('calEvRepeat').value;
+  var repeatEnd = repeatType !== 'none' ? (document.getElementById('calEvRepeatEnd').value || null) : null;
 
   var payload = {
     action: existingId ? 'update_calendar_event' : 'create_calendar_event',
@@ -550,7 +629,9 @@ function calSaveEvent(existingId) {
     end_time: document.getElementById('calEvAllDay').checked ? null : (document.getElementById('calEvEnd').value || null),
     category: document.getElementById('calEvCategory').value,
     notes: document.getElementById('calEvNotes').value.trim(),
-    reminder: document.getElementById('calEvReminder').checked
+    reminder: document.getElementById('calEvReminder').checked,
+    repeat_type: repeatType,
+    repeat_end: repeatEnd
   };
 
   if (existingId) payload.id = existingId;
@@ -614,3 +695,149 @@ function calAddEvent() {
   var todayStr = new Date().toISOString().slice(0,10);
   calOpenEventForm(todayStr);
 }
+
+// ===== CALENDAR REMINDER SYSTEM =====
+var calRemindersDismissed = {};
+var calReminderInterval = null;
+var calSmsSent = {};
+
+function calStartReminders() {
+  if (calReminderInterval) clearInterval(calReminderInterval);
+  calCheckReminders();
+  calReminderInterval = setInterval(calCheckReminders, 60000); // check every 60 seconds
+}
+
+function calCheckReminders() {
+  var now = new Date();
+  var todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+  var nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+  // Gather today's events
+  var todayEvents = [];
+
+  calEvents.forEach(function(ev) {
+    if (!ev.start_time || ev.all_day) return;
+    var repeatType = ev.repeat_type || 'none';
+
+    if (repeatType === 'none') {
+      if (ev.event_date === todayStr) todayEvents.push(ev);
+    } else {
+      // Check if this recurring event has an occurrence today
+      var evStart = new Date(ev.event_date + 'T00:00:00');
+      var evEnd = ev.repeat_end ? new Date(ev.repeat_end + 'T23:59:59') : new Date(now.getFullYear() + 1, 11, 31);
+      var today = new Date(todayStr + 'T00:00:00');
+
+      if (today < evStart || today > evEnd) return;
+
+      var isOccurrence = false;
+      if (repeatType === 'daily') {
+        isOccurrence = true;
+      } else if (repeatType === 'weekdays') {
+        var dow = today.getDay();
+        isOccurrence = dow >= 1 && dow <= 5;
+      } else if (repeatType === 'weekly') {
+        var diff = Math.round((today - evStart) / 86400000);
+        isOccurrence = diff % 7 === 0;
+      } else if (repeatType === 'biweekly') {
+        var diff2 = Math.round((today - evStart) / 86400000);
+        isOccurrence = diff2 % 14 === 0;
+      } else if (repeatType === 'monthly') {
+        isOccurrence = today.getDate() === evStart.getDate();
+      }
+
+      if (isOccurrence) todayEvents.push(ev);
+    }
+  });
+
+  todayEvents.forEach(function(ev) {
+    var parts = ev.start_time.split(':');
+    var evMinutes = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+    var diff = evMinutes - nowMinutes;
+    var reminderId = ev.id + '_' + todayStr;
+
+    // 15 minutes before and not yet dismissed
+    if (diff > 0 && diff <= 15 && !calRemindersDismissed[reminderId]) {
+      calShowReminderBanner(ev, diff, reminderId);
+
+      // Send SMS if reminder enabled and not already sent
+      if (ev.reminder && !calSmsSent[reminderId]) {
+        calSmsSent[reminderId] = true;
+        calSendReminderSms(ev);
+      }
+    }
+  });
+}
+
+function calShowReminderBanner(ev, minutesLeft, reminderId) {
+  // Don't show if already showing this one
+  if (document.getElementById('calReminder_' + reminderId)) return;
+
+  var catConfig = CAL_CATEGORIES[ev.category] || { label: ev.category, color: '#3b82f6' };
+  var timeStr = ev.start_time ? formatCalTime(ev.start_time) : '';
+
+  var banner = document.createElement('div');
+  banner.id = 'calReminder_' + reminderId;
+  banner.className = 'cal-reminder-banner';
+  banner.innerHTML =
+    '<div class="cal-reminder-dot" style="background:' + catConfig.color + ';"></div>' +
+    '<div class="cal-reminder-content">' +
+      '<div class="cal-reminder-title">' + ev.title + '</div>' +
+      '<div class="cal-reminder-detail">' + catConfig.label + (timeStr ? ' — ' + timeStr : '') + ' — in ' + minutesLeft + ' min</div>' +
+    '</div>' +
+    '<button class="cal-reminder-dismiss" onclick="calDismissReminder(\'' + reminderId + '\')">Dismiss</button>';
+
+  // Insert at top of body
+  var container = document.getElementById('calReminderContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'calReminderContainer';
+    container.className = 'cal-reminder-container';
+    document.body.appendChild(container);
+  }
+  container.appendChild(banner);
+
+  // Auto-dismiss after 5 minutes if not clicked
+  setTimeout(function() { calDismissReminder(reminderId); }, 300000);
+}
+
+function calDismissReminder(reminderId) {
+  calRemindersDismissed[reminderId] = true;
+  var el = document.getElementById('calReminder_' + reminderId);
+  if (el) {
+    el.style.animation = 'calReminderSlideOut 0.3s ease forwards';
+    setTimeout(function() { el.remove(); }, 300);
+  }
+}
+
+function calSendReminderSms(ev) {
+  var API = 'https://agent-edge-backend.vercel.app/api';
+  fetch(API + '/webinar-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'send_calendar_sms',
+      title: ev.title,
+      time: ev.start_time ? formatCalTime(ev.start_time) : ''
+    })
+  }).catch(function() {}); // fire and forget
+}
+
+function formatCalTime(t) {
+  if (!t) return '';
+  var parts = t.split(':');
+  var h = parseInt(parts[0]);
+  var m = parts[1];
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  if (h > 12) h -= 12;
+  if (h === 0) h = 12;
+  return h + ':' + m + ' ' + ampm;
+}
+
+// Start reminders when calendar data is loaded
+var _origCalLoadData = calLoadData;
+calLoadData = function(cb) {
+  _origCalLoadData(function() {
+    calStartReminders();
+    if (cb) cb();
+  });
+};
