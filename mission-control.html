@@ -206,7 +206,7 @@
 
     <!-- PANELS -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <!-- Pipeline Overview -->
+      <!-- Pipeline Overview (merged with Velocity KPIs) -->
       <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-blue);"></div>
@@ -219,6 +219,12 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1px solid var(--border);">
           <div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:1px;">ACTIVE PIPELINE</div>
           <div style="font-size:20px;font-weight:700;color:var(--accent-blue);" id="mcTotalValue">0 LOANS</div>
+        </div>
+        <!-- Velocity KPIs (merged from Pipeline Velocity) -->
+        <div class="mc-grid-3" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border);">
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
+          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
         </div>
       </div>
 
@@ -267,23 +273,9 @@
       </div>
     </div>
 
-    <!-- PIPELINE VELOCITY (moved from Analytics) -->
-    <div style="margin-top:16px;">
-      <div class="mc-panel">
-        <div class="mc-panel-head">
-          <div class="mc-blinker" style="background:#06b6d4;box-shadow:0 0 8px #06b6d4;"></div>
-          <div class="mc-panel-title" data-tip="How many loans are in each stage of your pipeline right now. Shows movement from lead to funded.">PIPELINE VELOCITY</div>
-          <div class="mc-status" id="anaVelocityStatus">—</div>
-        </div>
-        <div style="font-size:10px;letter-spacing:2px;color:var(--text-muted);margin-bottom:10px;font-family:sans-serif;">LOANS PER STAGE</div>
-        <div id="anaVelocityBars"></div>
-        <div class="mc-grid-3" style="margin-top:14px;" id="anaVelocityKpis">
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#06b6d4;" id="anaAvgClose">—</div><div class="mc-kpi-label">AVG CLOSE TIME</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#22c55e;" id="anaConversion">—</div><div class="mc-kpi-label">CONVERSION RATE</div></div>
-          <div class="mc-kpi"><div class="mc-kpi-value" style="font-size:22px;color:#f59e0b;" id="anaStalled">—</div><div class="mc-kpi-label">PIPELINE LOANS</div></div>
-        </div>
-      </div>
-    </div>
+    <!-- Hidden velocity bars container (renderPipelineVelocity writes here but bars are redundant with Overview) -->
+    <div id="anaVelocityBars" style="display:none;"></div>
+    <div id="anaVelocityStatus" style="display:none;"></div>
 
   </div>
 </div>
