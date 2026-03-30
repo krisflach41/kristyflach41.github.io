@@ -194,8 +194,12 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
         <div class="ds-size-card-name">Instagram</div>
         <div class="ds-size-card-dim">1080 × 1080</div>
       </div>
-      <div class="ds-size-card" onclick="dsSetCanvasSize('facebook',this)" data-size="facebook">
-        <div class="ds-size-card-name">Facebook</div>
+      <div class="ds-size-card" onclick="dsSetCanvasSize('fb_post',this)" data-size="fb_post">
+        <div class="ds-size-card-name">FB Post</div>
+        <div class="ds-size-card-dim">1200 × 630</div>
+      </div>
+      <div class="ds-size-card" onclick="dsSetCanvasSize('fb_cover',this)" data-size="fb_cover">
+        <div class="ds-size-card-name">FB Cover</div>
         <div class="ds-size-card-dim">1920 × 1080</div>
       </div>
       <div class="ds-size-card" onclick="dsSetCanvasSize('slide',this)" data-size="slide">
@@ -213,6 +217,10 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
       <div class="ds-size-card" onclick="dsSetCanvasSize('trifold',this)" data-size="trifold">
         <div class="ds-size-card-name">Trifold</div>
         <div class="ds-size-card-dim">11 × 8.5 in</div>
+      </div>
+      <div class="ds-size-card" onclick="dsSetCanvasSize('email',this)" data-size="email">
+        <div class="ds-size-card-name">Email Insert</div>
+        <div class="ds-size-card-dim">600 × 400</div>
       </div>
       <div class="ds-size-card" onclick="dsSetCanvasSize('custom',this)" data-size="custom">
         <div class="ds-size-card-name">Custom</div>
@@ -234,8 +242,8 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
   <div class="ds-panel-section">
     <div class="ds-panel-label">Background</div>
     <div class="ds-panel-row">
-      <input type="color" class="ds-panel-color" id="dsBgColor" value="#ffffff" onchange="dsSetBgColor(this.value)">
-      <span style="font-size:11px;color:var(--ds-text-mid);">Color</span>
+      <input type="color" class="ds-panel-color" id="dsBgColor" value="#ffffff" onchange="dsSetBgColor(this.value);document.getElementById('dsBgHex').value=this.value;">
+      <input type="text" class="ds-panel-input" id="dsBgHex" value="#ffffff" style="width:80px;font-size:11px;font-family:monospace;" onchange="var v=this.value.trim();if(v.match(/^#[0-9a-fA-F]{6}$/)){dsSetBgColor(v);document.getElementById('dsBgColor').value=v;}" placeholder="#ffffff">
       <div style="flex:1;"></div>
       <button class="ds-panel-btn" onclick="dsUploadBgImage()" style="font-size:10px;"><i class="fas fa-image" style="margin-right:4px;"></i>Image</button>
       <input type="file" id="dsBgImageUpload" accept="image/*" style="display:none;" onchange="dsHandleBgImageUpload(this)">
@@ -317,11 +325,13 @@ var DS = {
 var CANVAS_SIZES = {
   flyer: { w: 816, h: 1056, label: 'Flyer (8.5×11)' },
   instagram: { w: 1080, h: 1080, label: 'Instagram' },
-  facebook: { w: 1920, h: 1080, label: 'Facebook Cover' },
+  fb_post: { w: 1200, h: 630, label: 'Facebook Post' },
+  fb_cover: { w: 1920, h: 1080, label: 'Facebook Cover' },
   slide: { w: 1920, h: 1080, label: 'Slide 16:9' },
   bizcard_front: { w: 630, h: 360, label: 'Business Card Front' },
   bizcard_back: { w: 630, h: 360, label: 'Business Card Back' },
-  trifold: { w: 1056, h: 816, label: 'Trifold (11×8.5)' }
+  trifold: { w: 1056, h: 816, label: 'Trifold (11×8.5)' },
+  email: { w: 600, h: 400, label: 'Email Insert' }
 };
 
 // ===== TOOL SELECTION =====
@@ -368,6 +378,7 @@ function dsApplyCustomSize() {
   var canvas = document.getElementById('dsCanvas');
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
+  dsRenderTrifoldGuides();
   dsZoomFit();
 }
 
@@ -832,7 +843,8 @@ function dsRenderProps() {
 
     html += '<div class="ds-panel-row">';
     html += '<input type="number" class="ds-panel-input-sm" value="' + el.fontSize + '" onchange="dsPropSet(' + el.id + ',\'fontSize\',parseInt(this.value))" title="Font size">';
-    html += '<input type="color" class="ds-panel-color" value="' + el.fontColor + '" onchange="dsPropSet(' + el.id + ',\'fontColor\',this.value)" style="width:24px;height:24px;">';
+    html += '<input type="color" class="ds-panel-color" value="' + el.fontColor + '" onchange="dsPropSet(' + el.id + ',\'fontColor\',this.value);this.nextElementSibling.value=this.value;" style="width:24px;height:24px;">';
+    html += '<input type="text" class="ds-panel-input" value="' + el.fontColor + '" style="width:72px;font-size:10px;font-family:monospace;" onchange="var v=this.value.trim();if(v.match(/^#[0-9a-fA-F]{3,6}$/)){dsPropSet(' + el.id + ',\'fontColor\',v);this.previousElementSibling.value=v;}">';
     html += '</div>';
 
     html += '<div class="ds-panel-row">';
@@ -855,7 +867,8 @@ function dsRenderProps() {
 
   } else if (el.type === 'rect' || el.type === 'circle') {
     html += '<div class="ds-panel-label" style="margin-top:10px;">Fill</div>';
-    html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.fill || '#000000') + '" onchange="dsPropSet(' + el.id + ',\'fill\',this.value)"><span style="font-size:11px;color:var(--ds-text-mid);">' + (el.fill || 'none') + '</span></div>';
+    html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.fill || '#000000') + '" onchange="dsPropSet(' + el.id + ',\'fill\',this.value);this.nextElementSibling.value=this.value;">';
+    html += '<input type="text" class="ds-panel-input" value="' + (el.fill || '#000000') + '" style="width:80px;font-size:10px;font-family:monospace;" onchange="var v=this.value.trim();if(v.match(/^#[0-9a-fA-F]{3,6}$/)){dsPropSet(' + el.id + ',\'fill\',v);this.previousElementSibling.value=v;}"></div>';
 
     html += '<div class="ds-panel-label">Stroke</div>';
     html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.stroke || '#000000') + '" onchange="dsPropSet(' + el.id + ',\'stroke\',this.value)">';
