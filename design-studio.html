@@ -338,19 +338,26 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
 <div id="dsSvgPanel" style="display:none;position:absolute;top:50px;left:60px;width:360px;background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:50;overflow:hidden;">
   <div style="padding:12px 14px;border-bottom:1px solid var(--ds-border);display:flex;align-items:center;gap:8px;">
     <i class="fas fa-shapes" style="color:var(--ds-text-dim);font-size:12px;"></i>
-    <input type="text" id="dsSvgSearch" class="ds-panel-input" placeholder="Search icons & shapes..." style="flex:1;" oninput="dsSvgFilter(this.value)">
+    <input type="text" id="dsSvgSearch" class="ds-panel-input" placeholder="Search icons & shapes..." style="flex:1;" oninput="dsSvgFilter(this.value)" onkeydown="if(event.key==='Enter'&&dsSvgTab==='online')dsSearchIconify()">
     <button style="background:none;border:none;color:var(--ds-text-dim);cursor:pointer;font-size:14px;" onclick="document.getElementById('dsSvgPanel').style.display='none'">&times;</button>
   </div>
-  <!-- Category tabs -->
-  <div style="padding:8px 14px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--ds-border);">
-    <button class="ds-panel-btn active" onclick="dsSvgCategory('all',this)" style="font-size:10px;padding:4px 10px;">All</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('social',this)" style="font-size:10px;padding:4px 10px;">Social</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('arrows',this)" style="font-size:10px;padding:4px 10px;">Arrows</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('shapes',this)" style="font-size:10px;padding:4px 10px;">Shapes</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('real_estate',this)" style="font-size:10px;padding:4px 10px;">Real Estate</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('business',this)" style="font-size:10px;padding:4px 10px;">Business</button>
-    <button class="ds-panel-btn" onclick="dsSvgCategory('decorative',this)" style="font-size:10px;padding:4px 10px;">Decorative</button>
+  <!-- Source tabs -->
+  <div style="padding:8px 14px;display:flex;gap:6px;border-bottom:1px solid var(--ds-border);">
+    <button class="ds-panel-btn active" id="dsSvgTabBuiltin" onclick="dsSvgSwitchTab('builtin')" style="font-size:10px;padding:4px 14px;">Built-in</button>
+    <button class="ds-panel-btn" id="dsSvgTabOnline" onclick="dsSvgSwitchTab('online')" style="font-size:10px;padding:4px 14px;">Online (200K+)</button>
   </div>
+  <!-- Built-in category tabs -->
+  <div id="dsSvgBuiltinCats" style="padding:6px 14px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--ds-border);">
+    <button class="ds-panel-btn active" onclick="dsSvgCategory('all',this)" style="font-size:9px;padding:3px 8px;">All</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('social',this)" style="font-size:9px;padding:3px 8px;">Social</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('arrows',this)" style="font-size:9px;padding:3px 8px;">Arrows</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('shapes',this)" style="font-size:9px;padding:3px 8px;">Shapes</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('real_estate',this)" style="font-size:9px;padding:3px 8px;">Real Estate</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('business',this)" style="font-size:9px;padding:3px 8px;">Business</button>
+    <button class="ds-panel-btn" onclick="dsSvgCategory('decorative',this)" style="font-size:9px;padding:3px 8px;">Decorative</button>
+  </div>
+  <!-- Online search hint -->
+  <div id="dsSvgOnlineHint" style="display:none;padding:8px 14px;border-bottom:1px solid var(--ds-border);font-size:10px;color:var(--ds-text-dim);">Type a search term and press Enter — searches 200,000+ icons from Material, Font Awesome, Bootstrap, and more</div>
   <div id="dsSvgGrid" style="max-height:380px;overflow-y:auto;padding:8px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;"></div>
 </div>
 
@@ -614,7 +621,7 @@ function dsCreateElement(type, props) {
     rotation: 0,
     opacity: 1,
     locked: false,
-    name: (type === 'text' ? 'Text' : type === 'rect' ? 'Rectangle' : type === 'circle' ? 'Circle' : type === 'line' ? 'Line' : type === 'image' ? 'Image' : 'Element') + ' ' + DS.counter
+    name: (type === 'text' ? 'Text' : type === 'rect' ? 'Rectangle' : type === 'circle' ? 'Circle' : type === 'line' ? 'Line' : type === 'image' ? 'Image' : type === 'svg' ? 'SVG' : 'Element') + ' ' + DS.counter
   };
 
   if (type === 'text') {
@@ -646,6 +653,13 @@ function dsCreateElement(type, props) {
     el.strokeWidth = props.strokeWidth || 2;
     el.w = props.w || 200;
     el.h = 4;
+  } else if (type === 'svg') {
+    el.svgContent = props.svgContent || '';
+    el.svgName = props.svgName || 'Icon';
+    el.fill = props.fill || '#333333';
+    el.w = props.w || 80;
+    el.h = props.h || 80;
+    el.name = (props.svgName || 'SVG') + ' ' + DS.counter;
   } else if (type === 'image') {
     el.src = props.src || '';
     el.w = props.w || 200;
@@ -725,6 +739,25 @@ function dsRenderCanvas() {
       shape.style.height = el.strokeWidth + 'px';
       shape.style.marginTop = Math.max(0, (el.h - el.strokeWidth) / 2) + 'px';
       div.appendChild(shape);
+    } else if (el.type === 'svg') {
+      var svgContainer = document.createElement('div');
+      svgContainer.style.width = '100%';
+      svgContainer.style.height = '100%';
+      svgContainer.style.display = 'flex';
+      svgContainer.style.alignItems = 'center';
+      svgContainer.style.justifyContent = 'center';
+      // Inject SVG with fill color applied
+      var svgStr = el.svgContent || '';
+      // Apply fill color to all paths/shapes
+      svgStr = svgStr.replace(/fill="[^"]*"/g, 'fill="' + el.fill + '"');
+      // If no fill attribute exists, add it
+      svgStr = svgStr.replace(/<(path|rect|polygon|circle|ellipse)(?![^>]*fill=)/g, '<$1 fill="' + el.fill + '"');
+      // Also handle stroke-only SVGs (like wavy line)
+      svgStr = svgStr.replace(/stroke="currentColor"/g, 'stroke="' + el.fill + '"');
+      // Set SVG to fill container
+      svgStr = svgStr.replace(/<svg /, '<svg style="width:100%;height:100%;" ');
+      svgContainer.innerHTML = svgStr;
+      div.appendChild(svgContainer);
     } else if (el.type === 'image') {
       var imgContainer = document.createElement('div');
       imgContainer.style.width = '100%';
@@ -1206,7 +1239,7 @@ function dsRenderLayers() {
   // Render in reverse (top layer first)
   for (var i = dsElements().length - 1; i >= 0; i--) {
     var el = dsElements()[i];
-    var icon = el.type === 'text' ? 'fa-font' : el.type === 'rect' ? 'fa-square' : el.type === 'circle' ? 'fa-circle' : el.type === 'line' ? 'fa-minus' : el.type === 'image' ? 'fa-image' : 'fa-cube';
+    var icon = el.type === 'text' ? 'fa-font' : el.type === 'rect' ? 'fa-square' : el.type === 'circle' ? 'fa-circle' : el.type === 'line' ? 'fa-minus' : el.type === 'image' ? 'fa-image' : el.type === 'svg' ? 'fa-shapes' : 'fa-cube';
     var sel = el.id === DS.selectedId ? ' selected' : '';
     html += '<div class="ds-layer-item' + sel + '" onclick="dsSelectElement(' + el.id + ')">' +
       '<div class="ds-layer-icon"><i class="fas ' + icon + '"></i></div>' +
@@ -1335,6 +1368,12 @@ function dsRenderProps() {
     html += '<div class="ds-panel-label" style="margin-top:10px;">Stroke</div>';
     html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.stroke || '#000000') + '" onchange="dsPropSet(' + el.id + ',\'stroke\',this.value)">';
     html += '<input type="number" class="ds-panel-input-sm" value="' + (el.strokeWidth || 2) + '" onchange="dsPropSet(' + el.id + ',\'strokeWidth\',parseInt(this.value))" style="width:45px;"><span style="font-size:10px;color:var(--ds-text-dim);">px</span></div>';
+
+  } else if (el.type === 'svg') {
+    html += '<div class="ds-panel-label" style="margin-top:10px;">SVG Color</div>';
+    html += '<div class="ds-panel-row"><input type="color" class="ds-panel-color" value="' + (el.fill || '#333333') + '" onchange="dsPropSet(' + el.id + ',\'fill\',this.value);this.nextElementSibling.value=this.value;">';
+    html += '<input type="text" class="ds-panel-input" value="' + (el.fill || '#333333') + '" style="width:80px;font-size:10px;font-family:monospace;" onchange="var v=this.value.trim();if(v.match(/^#[0-9a-fA-F]{3,6}$/)){dsPropSet(' + el.id + ',\'fill\',v);this.previousElementSibling.value=v;}"></div>';
+    html += '<div style="font-size:10px;color:var(--ds-text-dim);margin-top:4px;">' + (el.svgName || 'Icon') + '</div>';
 
   } else if (el.type === 'image') {
     html += '<div class="ds-panel-label" style="margin-top:10px;">Image</div>';
@@ -1899,6 +1938,70 @@ var DS_SVGS = [
 ];
 
 var dsSvgCurrentCat = 'all';
+var dsSvgTab = 'builtin';
+
+function dsSvgSwitchTab(tab) {
+  dsSvgTab = tab;
+  document.getElementById('dsSvgTabBuiltin').classList.toggle('active', tab === 'builtin');
+  document.getElementById('dsSvgTabOnline').classList.toggle('active', tab === 'online');
+  document.getElementById('dsSvgBuiltinCats').style.display = tab === 'builtin' ? 'flex' : 'none';
+  document.getElementById('dsSvgOnlineHint').style.display = tab === 'online' ? 'block' : 'none';
+  document.getElementById('dsSvgSearch').placeholder = tab === 'builtin' ? 'Search built-in icons...' : 'Search 200K+ icons and press Enter...';
+
+  if (tab === 'builtin') {
+    dsSvgRender();
+  } else {
+    var grid = document.getElementById('dsSvgGrid');
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ds-text-dim);font-size:12px;">Type a search term and press Enter</div>';
+  }
+}
+
+function dsSearchIconify() {
+  var query = document.getElementById('dsSvgSearch').value.trim();
+  if (!query) return;
+  var grid = document.getElementById('dsSvgGrid');
+  grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ds-text-dim);font-size:12px;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+
+  fetch('https://api.iconify.design/search?query=' + encodeURIComponent(query) + '&limit=60')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var icons = data.icons || [];
+      if (icons.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ds-text-dim);font-size:12px;">No icons found for "' + query + '"</div>';
+        return;
+      }
+      var html = '';
+      icons.forEach(function(iconName, i) {
+        // Iconify icon names are like "mdi:home" — render them via the API
+        var parts = iconName.split(':');
+        var prefix = parts[0];
+        var name = parts[1];
+        var imgUrl = 'https://api.iconify.design/' + prefix + '/' + name + '.svg?color=%23999999';
+        html += '<div class="ds-svg-item" onclick="dsInsertIconify(\'' + iconName + '\')" title="' + iconName + '">';
+        html += '<img src="' + imgUrl + '" style="width:100%;height:100%;object-fit:contain;" loading="lazy">';
+        html += '</div>';
+      });
+      grid.innerHTML = html;
+    })
+    .catch(function() {
+      grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ds-red);font-size:12px;">Search failed — check your connection</div>';
+    });
+}
+
+function dsInsertIconify(iconName) {
+  // Fetch the SVG content from Iconify
+  var parts = iconName.split(':');
+  var prefix = parts[0];
+  var name = parts[1];
+  fetch('https://api.iconify.design/' + prefix + '/' + name + '.svg')
+    .then(function(r) { return r.text(); })
+    .then(function(svgStr) {
+      if (!svgStr || !svgStr.includes('<svg')) { dsShowToast('Failed to load icon'); return; }
+      dsCreateElement('svg', { x: 50, y: 50, w: 80, h: 80, svgContent: svgStr, svgName: name, fill: '#333333' });
+      document.getElementById('dsSvgPanel').style.display = 'none';
+    })
+    .catch(function() { dsShowToast('Failed to load icon'); });
+}
 
 function dsToggleSvgPanel() {
   var panel = document.getElementById('dsSvgPanel');
@@ -1944,16 +2047,12 @@ function dsInsertSvg(idx) {
   });
   var s = filtered[idx];
   if (!s) return;
-  // Add xmlns and explicit fill so SVG renders as an image src
-  var svgStr = s.svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
-  // Add fill="#000000" to path/rect elements that don't have a fill
-  svgStr = svgStr.replace(/<(path|rect|polygon|circle|ellipse)([^>]*?)(\/>|>)/g, function(match, tag, attrs, close) {
-    if (attrs.indexOf('fill=') === -1 && attrs.indexOf('stroke=') !== -1) return match; // has stroke, leave it
-    if (attrs.indexOf('fill=') === -1) return '<' + tag + ' fill="#333333"' + attrs + close;
-    return match;
-  });
-  var encoded = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
-  dsCreateElement('image', { x: 50, y: 50, w: 80, h: 80, src: encoded });
+  // Add xmlns if missing
+  var svgStr = s.svg;
+  if (svgStr.indexOf('xmlns=') === -1) {
+    svgStr = svgStr.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+  }
+  dsCreateElement('svg', { x: 50, y: 50, w: 80, h: 80, svgContent: svgStr, svgName: s.name, fill: '#333333' });
   document.getElementById('dsSvgPanel').style.display = 'none';
 }
 
