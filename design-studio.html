@@ -935,16 +935,127 @@ function dsStartDrag(e, id) {
     var dy = (e2.clientY - startY) / DS.zoom;
     el.x = Math.round(origX + dx);
     el.y = Math.round(origY + dy);
+
+    // Snap guides
+    dsCalcSnapGuides(el);
     dsRenderCanvas();
+    dsDrawSnapGuides();
   }
   function onUp() {
     DS.isDragging = false;
+    DS.snapGuides = [];
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onUp);
+    dsClearSnapGuides();
     dsSaveUndo();
   }
   document.addEventListener('mousemove', onMove);
   document.addEventListener('mouseup', onUp);
+}
+
+// ===== SNAP GUIDES =====
+var SNAP_THRESHOLD = 6;
+
+function dsCalcSnapGuides(el) {
+  DS.snapGuides = [];
+  var elCx = el.x + el.w / 2;
+  var elCy = el.y + el.h / 2;
+  var elL = el.x, elR = el.x + el.w, elT = el.y, elB = el.y + el.h;
+
+  // Canvas center guides
+  var canvasCx = DS.canvasW / 2;
+  var canvasCy = DS.canvasH / 2;
+  if (Math.abs(elCx - canvasCx) < SNAP_THRESHOLD) {
+    el.x = canvasCx - el.w / 2;
+    DS.snapGuides.push({ type: 'v', pos: canvasCx });
+  }
+  if (Math.abs(elCy - canvasCy) < SNAP_THRESHOLD) {
+    el.y = canvasCy - el.h / 2;
+    DS.snapGuides.push({ type: 'h', pos: canvasCy });
+  }
+
+  // Update after canvas snap
+  elCx = el.x + el.w / 2;
+  elCy = el.y + el.h / 2;
+  elL = el.x; elR = el.x + el.w; elT = el.y; elB = el.y + el.h;
+
+  // Other elements
+  dsElements().forEach(function(other) {
+    if (other.id === el.id) return;
+    var oCx = other.x + other.w / 2;
+    var oCy = other.y + other.h / 2;
+    var oL = other.x, oR = other.x + other.w, oT = other.y, oB = other.y + other.h;
+
+    // Vertical center to center
+    if (Math.abs(elCx - oCx) < SNAP_THRESHOLD) {
+      el.x = oCx - el.w / 2;
+      DS.snapGuides.push({ type: 'v', pos: oCx });
+    }
+    // Horizontal center to center
+    if (Math.abs(elCy - oCy) < SNAP_THRESHOLD) {
+      el.y = oCy - el.h / 2;
+      DS.snapGuides.push({ type: 'h', pos: oCy });
+    }
+    // Left edge to left edge
+    if (Math.abs(elL - oL) < SNAP_THRESHOLD) {
+      el.x = oL;
+      DS.snapGuides.push({ type: 'v', pos: oL });
+    }
+    // Right edge to right edge
+    if (Math.abs(elR - oR) < SNAP_THRESHOLD) {
+      el.x = oR - el.w;
+      DS.snapGuides.push({ type: 'v', pos: oR });
+    }
+    // Left edge to right edge
+    if (Math.abs(elL - oR) < SNAP_THRESHOLD) {
+      el.x = oR;
+      DS.snapGuides.push({ type: 'v', pos: oR });
+    }
+    // Right edge to left edge
+    if (Math.abs(elR - oL) < SNAP_THRESHOLD) {
+      el.x = oL - el.w;
+      DS.snapGuides.push({ type: 'v', pos: oL });
+    }
+    // Top edge to top edge
+    if (Math.abs(elT - oT) < SNAP_THRESHOLD) {
+      el.y = oT;
+      DS.snapGuides.push({ type: 'h', pos: oT });
+    }
+    // Bottom edge to bottom edge
+    if (Math.abs(elB - oB) < SNAP_THRESHOLD) {
+      el.y = oB - el.h;
+      DS.snapGuides.push({ type: 'h', pos: oB });
+    }
+    // Top to bottom
+    if (Math.abs(elT - oB) < SNAP_THRESHOLD) {
+      el.y = oB;
+      DS.snapGuides.push({ type: 'h', pos: oB });
+    }
+    // Bottom to top
+    if (Math.abs(elB - oT) < SNAP_THRESHOLD) {
+      el.y = oT - el.h;
+      DS.snapGuides.push({ type: 'h', pos: oT });
+    }
+  });
+}
+
+function dsDrawSnapGuides() {
+  dsClearSnapGuides();
+  var canvas = document.getElementById('dsCanvas');
+  (DS.snapGuides || []).forEach(function(g) {
+    var line = document.createElement('div');
+    line.className = 'ds-snap-guide';
+    if (g.type === 'v') {
+      line.style.cssText = 'position:absolute;top:0;bottom:0;width:1px;background:#f43f5e;z-index:999;pointer-events:none;left:' + g.pos + 'px;';
+    } else {
+      line.style.cssText = 'position:absolute;left:0;right:0;height:1px;background:#f43f5e;z-index:999;pointer-events:none;top:' + g.pos + 'px;';
+    }
+    canvas.appendChild(line);
+  });
+}
+
+function dsClearSnapGuides() {
+  document.querySelectorAll('.ds-snap-guide').forEach(function(g) { g.remove(); });
 }
 
 // ===== RESIZE =====
