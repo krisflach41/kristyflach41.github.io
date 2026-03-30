@@ -1580,30 +1580,54 @@
 
     <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:sans-serif;letter-spacing:0.5px;"></div>
 
-    <!-- MBS PRICE OVERRIDE -->
+    <!-- MBS INTRADAY PRICING -->
     <div class="mc-panel" style="margin-bottom:16px;">
       <div class="mc-panel-head">
         <div class="mc-blinker" style="background:#3b82f6;box-shadow:0 0 8px #3b82f6;"></div>
-        <div class="mc-panel-title" data-tip="Enter today's UMBS pricing from MBS Highway. This overrides the automated feed on the portal.">MBS PRICING</div>
+        <div class="mc-panel-title" data-tip="Enter UMBS 5.5% pricing from MBS Highway throughout the day. Yesterday's close is your baseline.">MBS PRICING</div>
         <div class="mc-status" style="margin-left:auto;" id="mbsOverrideStatus">NOT SET TODAY</div>
       </div>
-      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Enter today's UMBS 5.5% pricing from MBS Highway. This is what your realtors see on the portal.</p>
-      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
-        <div style="display:flex;flex-direction:column;gap:3px;">
-          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Current price</label>
-          <input type="text" id="mbsOverridePrice" placeholder="e.g. 99.84" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:3px;">
-          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Change (bps)</label>
-          <input type="text" id="mbsOverrideBps" placeholder="e.g. +27 or -14" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
-        </div>
-        <div style="display:flex;flex-direction:column;gap:3px;">
-          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Prev. close</label>
-          <input type="text" id="mbsOverrideClose" placeholder="e.g. 99.57" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
-        </div>
-        <button onclick="saveMbsOverride()" class="bc-btn" id="mbsOverrideSaveBtn">Save to Portal</button>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Enter UMBS 5.5% pricing from MBS Highway. The bps change calculates automatically from yesterday's close.</p>
+
+      <!-- Previous close baseline -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--bg-hover);border-radius:8px;">
+        <span style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Previous close:</span>
+        <span style="font-size:18px;font-weight:700;color:var(--text-primary);" id="mbsPrevClose">—</span>
+        <span style="font-size:11px;color:var(--text-muted);margin-left:auto;" id="mbsPrevCloseDate"></span>
       </div>
-      <div id="mbsOverrideResult" style="margin-top:10px;font-size:12px;display:none;"></div>
+
+      <!-- 4 time slots -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
+        <div class="mbs-slot" id="mbsSlotOpen">
+          <div class="mbs-slot-label">9:00 AM ET</div>
+          <div class="mbs-slot-sublabel">Open</div>
+          <input type="text" id="mbsPrice_open" class="mbs-slot-input" placeholder="—" oninput="mbsCalcBps('open')">
+          <div class="mbs-slot-bps" id="mbsBps_open">—</div>
+        </div>
+        <div class="mbs-slot" id="mbsSlotMidDay">
+          <div class="mbs-slot-label">12:00 PM ET</div>
+          <div class="mbs-slot-sublabel">Mid-Day</div>
+          <input type="text" id="mbsPrice_midday" class="mbs-slot-input" placeholder="—" oninput="mbsCalcBps('midday')">
+          <div class="mbs-slot-bps" id="mbsBps_midday">—</div>
+        </div>
+        <div class="mbs-slot" id="mbsSlotAfternoon">
+          <div class="mbs-slot-label">2:00 PM ET</div>
+          <div class="mbs-slot-sublabel">Afternoon</div>
+          <input type="text" id="mbsPrice_afternoon" class="mbs-slot-input" placeholder="—" oninput="mbsCalcBps('afternoon')">
+          <div class="mbs-slot-bps" id="mbsBps_afternoon">—</div>
+        </div>
+        <div class="mbs-slot" id="mbsSlotClose">
+          <div class="mbs-slot-label">5:00 PM ET</div>
+          <div class="mbs-slot-sublabel">Close</div>
+          <input type="text" id="mbsPrice_close" class="mbs-slot-input" placeholder="—" oninput="mbsCalcBps('close')">
+          <div class="mbs-slot-bps" id="mbsBps_close">—</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;">
+        <button onclick="mbsSaveSnapshots()" class="bc-btn" id="mbsSaveBtn">Save to Portal</button>
+        <div id="mbsSaveResult" style="font-size:12px;display:none;"></div>
+      </div>
     </div>
 
     <!-- ECONOMIC CALENDAR -->
@@ -1702,23 +1726,50 @@
 </style>
 
 <script>
-// ===== MBS PRICING OVERRIDE =====
-function saveMbsOverride() {
-  var price = document.getElementById('mbsOverridePrice').value.trim();
-  var bps = document.getElementById('mbsOverrideBps').value.trim();
-  var prevClose = document.getElementById('mbsOverrideClose').value.trim();
-  if (!price) { alert('Enter a price.'); return; }
+// ===== MBS INTRADAY PRICING =====
+var mbsPrevClosePrice = 0;
 
-  var btn = document.getElementById('mbsOverrideSaveBtn');
+function mbsCalcBps(slot) {
+  var price = parseFloat(document.getElementById('mbsPrice_' + slot).value) || 0;
+  var bpsEl = document.getElementById('mbsBps_' + slot);
+  if (!price || !mbsPrevClosePrice) { bpsEl.textContent = '—'; bpsEl.style.color = 'var(--text-muted)'; return; }
+  var bps = Math.round((price - mbsPrevClosePrice) * 100);
+  var color = bps > 0 ? '#16a34a' : bps < 0 ? '#dc2626' : 'var(--text-primary)';
+  var arrow = bps > 0 ? ' ▲' : bps < 0 ? ' ▼' : '';
+  bpsEl.textContent = (bps >= 0 ? '+' : '') + bps + 'bp' + arrow;
+  bpsEl.style.color = color;
+}
+
+function mbsSaveSnapshots() {
+  var btn = document.getElementById('mbsSaveBtn');
   btn.textContent = 'Saving...';
   btn.disabled = true;
 
   var today = new Date().toISOString().split('T')[0];
+  var snapshots = {};
+  var slots = ['open', 'midday', 'afternoon', 'close'];
+  var labels = { open: 'Open', midday: 'Mid-Day', afternoon: 'Afternoon', close: 'Close' };
+  var latestPrice = 0;
+  var latestBps = 0;
+
+  slots.forEach(function(s) {
+    var price = parseFloat(document.getElementById('mbsPrice_' + s).value) || 0;
+    if (price > 0) {
+      var bps = mbsPrevClosePrice ? Math.round((price - mbsPrevClosePrice) * 100) : 0;
+      snapshots[s] = { price: price, bps: bps, label: labels[s] };
+      latestPrice = price;
+      latestBps = bps;
+    }
+  });
+
+  if (Object.keys(snapshots).length === 0) { alert('Enter at least one price.'); btn.textContent = 'Save to Portal'; btn.disabled = false; return; }
+
   var payload = {
     date: today,
-    price: parseFloat(price) || 0,
-    bps: parseInt(bps) || 0,
-    previous_close: parseFloat(prevClose) || 0,
+    snapshots: snapshots,
+    previous_close: mbsPrevClosePrice,
+    latest_price: latestPrice,
+    latest_bps: latestBps,
     updated_at: new Date().toISOString()
   };
 
@@ -1731,49 +1782,69 @@ function saveMbsOverride() {
   .then(function(data) {
     btn.textContent = 'Save to Portal';
     btn.disabled = false;
-    var result = document.getElementById('mbsOverrideResult');
+    var result = document.getElementById('mbsSaveResult');
     if (data.success) {
-      result.style.display = 'block';
+      result.style.display = 'inline';
       result.style.color = '#22c55e';
-      result.textContent = 'Saved. Portal now shows ' + price + ' (' + (bps >= 0 ? '+' : '') + bps + 'bp)';
-      document.getElementById('mbsOverrideStatus').textContent = 'UPDATED ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      result.textContent = 'Saved — portal updated';
+      document.getElementById('mbsOverrideStatus').textContent = 'LIVE';
       document.getElementById('mbsOverrideStatus').style.color = '#22c55e';
+      setTimeout(function() { result.style.display = 'none'; }, 3000);
     } else {
-      result.style.display = 'block';
+      result.style.display = 'inline';
       result.style.color = '#dc2626';
-      result.textContent = 'Error: ' + (data.message || 'Failed to save');
+      result.textContent = 'Error: ' + (data.message || 'Failed');
     }
   })
   .catch(function(err) {
     btn.textContent = 'Save to Portal';
     btn.disabled = false;
-    var result = document.getElementById('mbsOverrideResult');
-    result.style.display = 'block';
-    result.style.color = '#dc2626';
-    result.textContent = 'Error: ' + err.message;
   });
 }
 
-function loadMbsOverride() {
+function mbsLoadToday() {
   fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.success && data.override) {
-        var o = data.override;
-        var today = new Date().toISOString().split('T')[0];
-        if (o.date === today) {
-          document.getElementById('mbsOverridePrice').value = o.price || '';
-          document.getElementById('mbsOverrideBps').value = o.bps || '';
-          document.getElementById('mbsOverrideClose').value = o.previous_close || '';
-          document.getElementById('mbsOverrideStatus').textContent = 'SET TODAY';
+      if (!data.success || !data.override) return;
+      var o = data.override;
+      var today = new Date().toISOString().split('T')[0];
+
+      // Set previous close from the stored value, or from yesterday's close snapshot
+      if (o.date === today && o.previous_close) {
+        mbsPrevClosePrice = o.previous_close;
+      } else if (o.date !== today && o.snapshots && o.snapshots.close) {
+        // Yesterday's record — its close is today's prev close
+        mbsPrevClosePrice = o.snapshots.close.price;
+      } else if (o.latest_price) {
+        mbsPrevClosePrice = o.latest_price;
+      }
+
+      document.getElementById('mbsPrevClose').textContent = mbsPrevClosePrice > 0 ? mbsPrevClosePrice.toFixed(2) : '—';
+      if (o.date && o.date !== today) {
+        document.getElementById('mbsPrevCloseDate').textContent = 'from ' + o.date;
+      }
+
+      // If today's data exists, populate the fields
+      if (o.date === today && o.snapshots) {
+        var slots = ['open', 'midday', 'afternoon', 'close'];
+        var hasAny = false;
+        slots.forEach(function(s) {
+          if (o.snapshots[s] && o.snapshots[s].price) {
+            document.getElementById('mbsPrice_' + s).value = o.snapshots[s].price;
+            mbsCalcBps(s);
+            hasAny = true;
+          }
+        });
+        if (hasAny) {
+          document.getElementById('mbsOverrideStatus').textContent = 'LIVE';
           document.getElementById('mbsOverrideStatus').style.color = '#22c55e';
         }
       }
     })
     .catch(function() {});
 }
-// Load current override on page load
-setTimeout(loadMbsOverride, 1000);
+setTimeout(mbsLoadToday, 1000);
 </script>
 
 <script>

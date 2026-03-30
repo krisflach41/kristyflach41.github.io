@@ -1427,7 +1427,7 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
   var overrideData=null;
   if(ov.success&&ov.override){
     var today=new Date().toISOString().split('T')[0];
-    if(ov.override.date===today)overrideData=ov.override;
+    if(ov.override.date===today&&ov.override.snapshots&&Object.keys(ov.override.snapshots).length>0)overrideData=ov.override;
   }
   // Now fetch markets as usual
   fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){
@@ -1435,14 +1435,24 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
     // Apply override to UMBS if available
     if(overrideData&&mktsActiveCoupon==='5.5'){
       d.umbs=d.umbs||{};
-      d.umbs.price=overrideData.price;
-      d.umbs.change=overrideData.bps/100;
+      d.umbs.price=overrideData.latest_price;
+      d.umbs.change=overrideData.latest_bps/100;
       if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
+      // Map snapshots to the portal's snapshot format
+      var snaps=overrideData.snapshots||{};
+      var uk='UMBS_'+mktsActiveCoupon;
+      d.snapshots=d.snapshots||{};
+      d.snapshots[uk]=d.snapshots[uk]||{};
+      if(snaps.close&&snaps.close.price)d.snapshots[uk]['Close']={price:snaps.close.price,date:overrideData.date};
+      if(snaps.open&&snaps.open.price){d.snapshots[uk]['Open']={price:snaps.open.price,date:overrideData.date};d.umbs.open=snaps.open.price;}
+      if(snaps.midday&&snaps.midday.price)d.snapshots[uk]['Mid-Day']={price:snaps.midday.price,date:overrideData.date};
+      if(snaps.afternoon&&snaps.afternoon.price)d.snapshots[uk]['Afternoon']={price:snaps.afternoon.price,date:overrideData.date};
+      // Previous close goes into the Close slot from yesterday
+      if(overrideData.previous_close&&!d.snapshots[uk]['Close'])d.umbs.previousClose=overrideData.previous_close;
     }
-    mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'+(overrideData?' (MBS manual)':'');mktsRenderCards(d);mktsLoadChart();
+    mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'+(overrideData?' (manual)':'');mktsRenderCards(d);mktsLoadChart();
   }).catch(function(e){if(ts)ts.textContent='Error loading data';});
 }).catch(function(){
-  // If override check fails, proceed normally
   fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});
 });}
 
