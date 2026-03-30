@@ -938,6 +938,7 @@ function dsStartDrag(e, id) {
 
     // Snap guides
     dsCalcSnapGuides(el);
+    dsCheckSizeMatch(el);
     dsRenderCanvas();
     dsDrawSnapGuides();
   }
@@ -1047,15 +1048,45 @@ function dsDrawSnapGuides() {
     line.className = 'ds-snap-guide';
     if (g.type === 'v') {
       line.style.cssText = 'position:absolute;top:0;bottom:0;width:1px;background:#f43f5e;z-index:999;pointer-events:none;left:' + g.pos + 'px;';
-    } else {
+    } else if (g.type === 'h') {
       line.style.cssText = 'position:absolute;left:0;right:0;height:1px;background:#f43f5e;z-index:999;pointer-events:none;top:' + g.pos + 'px;';
+    } else if (g.type === 'size') {
+      // Size match indicator — show a small label
+      var label = document.createElement('div');
+      label.className = 'ds-snap-guide';
+      label.style.cssText = 'position:absolute;z-index:999;pointer-events:none;background:#6366f1;color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:system-ui;white-space:nowrap;left:' + g.x + 'px;top:' + g.y + 'px;';
+      label.textContent = g.label;
+      canvas.appendChild(label);
     }
-    canvas.appendChild(line);
+    if (g.type === 'v' || g.type === 'h') canvas.appendChild(line);
   });
 }
 
 function dsClearSnapGuides() {
   document.querySelectorAll('.ds-snap-guide').forEach(function(g) { g.remove(); });
+}
+
+// ===== SIZE MATCH CHECK =====
+function dsCheckSizeMatch(el) {
+  dsElements().forEach(function(other) {
+    if (other.id === el.id) return;
+    // Width match
+    if (Math.abs(el.w - other.w) < SNAP_THRESHOLD) {
+      el.w = other.w;
+      DS.snapGuides.push({ type: 'size', x: el.x + el.w + 4, y: el.y, label: 'W: ' + other.w + 'px' });
+    }
+    // Height match
+    if (Math.abs(el.h - other.h) < SNAP_THRESHOLD) {
+      el.h = other.h;
+      DS.snapGuides.push({ type: 'size', x: el.x + el.w + 4, y: el.y + el.h / 2, label: 'H: ' + other.h + 'px' });
+    }
+    // Both match
+    if (Math.abs(el.w - other.w) < SNAP_THRESHOLD && Math.abs(el.h - other.h) < SNAP_THRESHOLD) {
+      // Remove the individual labels and show combined
+      DS.snapGuides = DS.snapGuides.filter(function(g) { return g.type !== 'size'; });
+      DS.snapGuides.push({ type: 'size', x: el.x + el.w + 4, y: el.y + el.h / 2, label: 'Same size (' + other.w + '×' + other.h + ')' });
+    }
+  });
 }
 
 // ===== RESIZE =====
@@ -1080,12 +1111,17 @@ function dsStartResize(e, id, handle) {
     el.h = Math.round(el.h);
     el.x = Math.round(el.x);
     el.y = Math.round(el.y);
+    DS.snapGuides = [];
+    dsCheckSizeMatch(el);
     dsRenderCanvas();
+    dsDrawSnapGuides();
   }
   function onUp() {
     DS.isResizing = false;
+    DS.snapGuides = [];
     document.removeEventListener('mousemove', onMove);
     document.removeEventListener('mouseup', onUp);
+    dsClearSnapGuides();
     dsSaveUndo();
   }
   document.addEventListener('mousemove', onMove);
