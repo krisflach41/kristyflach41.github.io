@@ -80,9 +80,6 @@
     <div class="nav-item" onclick="switchView('briefings', this)">
       <span class="nav-icon"><i class="fas fa-sun"></i></span> Market Briefings
     </div>
-    <div class="nav-item" onclick="switchView('markets', this)">
-      <span class="nav-icon"><i class="fas fa-chart-area"></i></span> Markets
-    </div>
     <div class="nav-item" onclick="switchView('blendedRate', this)">
       <span class="nav-icon"><i class="fas fa-scale-balanced"></i></span> Blended Rate
     </div>
@@ -1583,6 +1580,32 @@
 
     <div id="briefingStatus" style="padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;text-align:center;margin-bottom:16px;display:none;font-family:sans-serif;letter-spacing:0.5px;"></div>
 
+    <!-- MBS PRICE OVERRIDE -->
+    <div class="mc-panel" style="margin-bottom:16px;">
+      <div class="mc-panel-head">
+        <div class="mc-blinker" style="background:#3b82f6;box-shadow:0 0 8px #3b82f6;"></div>
+        <div class="mc-panel-title" data-tip="Enter today's UMBS pricing from MBS Highway. This overrides the automated feed on the portal.">MBS PRICING</div>
+        <div class="mc-status" style="margin-left:auto;" id="mbsOverrideStatus">NOT SET TODAY</div>
+      </div>
+      <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Enter today's UMBS 5.5% pricing from MBS Highway. This is what your realtors see on the portal.</p>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Current price</label>
+          <input type="text" id="mbsOverridePrice" placeholder="e.g. 99.84" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Change (bps)</label>
+          <input type="text" id="mbsOverrideBps" placeholder="e.g. +27 or -14" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <label style="font-size:10px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.3px;">Prev. close</label>
+          <input type="text" id="mbsOverrideClose" placeholder="e.g. 99.57" style="padding:8px 10px;border:1px solid var(--border);border-radius:7px;font-size:14px;font-weight:600;width:120px;font-family:inherit;">
+        </div>
+        <button onclick="saveMbsOverride()" class="bc-btn" id="mbsOverrideSaveBtn">Save to Portal</button>
+      </div>
+      <div id="mbsOverrideResult" style="margin-top:10px;font-size:12px;display:none;"></div>
+    </div>
+
     <!-- ECONOMIC CALENDAR -->
     <div class="mc-panel" style="margin-bottom:16px;">
       <div class="mc-panel-head">
@@ -1677,6 +1700,81 @@
 .bc-spin { display:inline-block; width:14px; height:14px; border:2px solid var(--border); border-top-color:currentColor; border-radius:50%; animation:briefSpin 0.7s linear infinite; vertical-align:middle; margin-right:6px; }
 @keyframes briefSpin { to { transform: rotate(360deg); } }
 </style>
+
+<script>
+// ===== MBS PRICING OVERRIDE =====
+function saveMbsOverride() {
+  var price = document.getElementById('mbsOverridePrice').value.trim();
+  var bps = document.getElementById('mbsOverrideBps').value.trim();
+  var prevClose = document.getElementById('mbsOverrideClose').value.trim();
+  if (!price) { alert('Enter a price.'); return; }
+
+  var btn = document.getElementById('mbsOverrideSaveBtn');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+
+  var today = new Date().toISOString().split('T')[0];
+  var payload = {
+    date: today,
+    price: parseFloat(price) || 0,
+    bps: parseInt(bps) || 0,
+    previous_close: parseFloat(prevClose) || 0,
+    updated_at: new Date().toISOString()
+  };
+
+  fetch('https://agent-edge-backend.vercel.app/api/rates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_mbs_override', data: payload })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.textContent = 'Save to Portal';
+    btn.disabled = false;
+    var result = document.getElementById('mbsOverrideResult');
+    if (data.success) {
+      result.style.display = 'block';
+      result.style.color = '#22c55e';
+      result.textContent = 'Saved. Portal now shows ' + price + ' (' + (bps >= 0 ? '+' : '') + bps + 'bp)';
+      document.getElementById('mbsOverrideStatus').textContent = 'UPDATED ' + new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      document.getElementById('mbsOverrideStatus').style.color = '#22c55e';
+    } else {
+      result.style.display = 'block';
+      result.style.color = '#dc2626';
+      result.textContent = 'Error: ' + (data.message || 'Failed to save');
+    }
+  })
+  .catch(function(err) {
+    btn.textContent = 'Save to Portal';
+    btn.disabled = false;
+    var result = document.getElementById('mbsOverrideResult');
+    result.style.display = 'block';
+    result.style.color = '#dc2626';
+    result.textContent = 'Error: ' + err.message;
+  });
+}
+
+function loadMbsOverride() {
+  fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.override) {
+        var o = data.override;
+        var today = new Date().toISOString().split('T')[0];
+        if (o.date === today) {
+          document.getElementById('mbsOverridePrice').value = o.price || '';
+          document.getElementById('mbsOverrideBps').value = o.bps || '';
+          document.getElementById('mbsOverrideClose').value = o.previous_close || '';
+          document.getElementById('mbsOverrideStatus').textContent = 'SET TODAY';
+          document.getElementById('mbsOverrideStatus').style.color = '#22c55e';
+        }
+      }
+    })
+    .catch(function() {});
+}
+// Load current override on page load
+setTimeout(loadMbsOverride, 1000);
+</script>
 
 <script>
 (function() {
