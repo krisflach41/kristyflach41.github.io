@@ -154,6 +154,10 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
     <span class="ds-tool-tip">Upload Image</span>
   </div>
   <input type="file" id="dsImageUpload" accept="image/*" style="display:none;" onchange="dsHandleImageUpload(this)">
+  <div class="ds-tool" onclick="dsToggleUnsplash()">
+    <i class="fas fa-magnifying-glass"></i>
+    <span class="ds-tool-tip">Search Photos</span>
+  </div>
   <div class="ds-tool-divider"></div>
   <div class="ds-tool" onclick="dsUndo()">
     <i class="fas fa-undo"></i>
@@ -272,6 +276,7 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
     <div class="ds-topbar-sep"></div>
     <div class="ds-topbar-zoom" id="dsZoomLabel">100%</div>
     <div class="ds-topbar-spacer"></div>
+    <button class="ds-topbar-btn" onclick="dsShowProjectsList()"><i class="fas fa-folder-open"></i> Open</button>
     <button class="ds-topbar-btn" onclick="dsPreview()"><i class="fas fa-eye"></i> Preview</button>
     <button class="ds-topbar-btn" onclick="dsExportPNG()"><i class="fas fa-download"></i> PNG</button>
     <button class="ds-topbar-btn" onclick="dsExportPDF()"><i class="fas fa-file-pdf"></i> PDF</button>
@@ -280,6 +285,15 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
   <div class="ds-viewport" id="dsViewport" onmousedown="dsViewportClick(event)">
     <div class="ds-canvas-wrapper" id="dsCanvasWrapper">
       <div class="ds-canvas" id="dsCanvas" style="width:816px;height:1056px;"></div>
+    </div>
+  </div>
+  <!-- Slide strip -->
+  <div class="ds-slide-strip" id="dsSlideStrip">
+    <div class="ds-slide-strip-inner" id="dsSlideStripInner"></div>
+    <div class="ds-slide-strip-actions">
+      <button class="ds-topbar-btn" onclick="dsAddPage()" title="Add page"><i class="fas fa-plus"></i> Add Page</button>
+      <button class="ds-topbar-btn" onclick="dsDuplicatePage()" title="Duplicate current page"><i class="fas fa-copy"></i> Duplicate</button>
+      <button class="ds-topbar-btn" onclick="dsDeletePage()" title="Delete current page"><i class="fas fa-trash-can"></i></button>
     </div>
   </div>
 </div>
@@ -299,12 +313,46 @@ body { font-family: 'DM Sans', system-ui, sans-serif; background: var(--ds-bg); 
   <div id="dsPreviewContent" style="max-width:90vw;max-height:90vh;overflow:auto;"></div>
 </div>
 
+<!-- Unsplash search panel -->
+<div id="dsUnsplashPanel" style="display:none;position:absolute;top:50px;left:60px;width:320px;background:var(--ds-surface);border:1px solid var(--ds-border);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,0.4);z-index:50;overflow:hidden;">
+  <div style="padding:12px 14px;border-bottom:1px solid var(--ds-border);display:flex;align-items:center;gap:8px;">
+    <i class="fas fa-magnifying-glass" style="color:var(--ds-text-dim);font-size:12px;"></i>
+    <input type="text" id="dsUnsplashQuery" class="ds-panel-input" placeholder="Search free photos..." style="flex:1;" onkeydown="if(event.key==='Enter')dsSearchUnsplash()">
+    <button class="ds-panel-btn" onclick="dsSearchUnsplash()">Search</button>
+    <button style="background:none;border:none;color:var(--ds-text-dim);cursor:pointer;font-size:14px;" onclick="document.getElementById('dsUnsplashPanel').style.display='none'">&times;</button>
+  </div>
+  <div id="dsUnsplashResults" style="max-height:400px;overflow-y:auto;padding:8px;"></div>
+  <div style="padding:6px 14px;border-top:1px solid var(--ds-border);font-size:9px;color:var(--ds-text-dim);">Photos from Unsplash — free to use</div>
+</div>
+
+<style>
+/* Slide strip */
+.ds-slide-strip { height: 80px; background: var(--ds-surface); border-top: 1px solid var(--ds-border); display: flex; align-items: center; padding: 0 12px; gap: 8px; flex-shrink: 0; overflow-x: auto; }
+.ds-slide-strip-inner { display: flex; gap: 8px; flex: 1; overflow-x: auto; padding: 4px 0; }
+.ds-slide-strip-actions { display: flex; gap: 4px; flex-shrink: 0; margin-left: 8px; }
+.ds-slide-thumb { width: 90px; height: 56px; border-radius: 6px; border: 2px solid transparent; background: #fff; cursor: pointer; flex-shrink: 0; position: relative; overflow: hidden; transition: border-color 0.15s; }
+.ds-slide-thumb:hover { border-color: rgba(99,102,241,0.4); }
+.ds-slide-thumb.active { border-color: var(--ds-accent); }
+.ds-slide-thumb-label { position: absolute; bottom: 2px; left: 4px; font-size: 8px; color: rgba(0,0,0,0.5); font-weight: 700; }
+.ds-slide-thumb canvas { width: 100%; height: 100%; }
+
+/* Unsplash grid */
+.ds-unsplash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ds-unsplash-item { border-radius: 6px; overflow: hidden; cursor: pointer; position: relative; aspect-ratio: 3/2; }
+.ds-unsplash-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
+.ds-unsplash-item:hover img { transform: scale(1.05); }
+.ds-unsplash-item .ds-unsplash-credit { position: absolute; bottom: 0; left: 0; right: 0; padding: 2px 6px; background: rgba(0,0,0,0.6); font-size: 8px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0; transition: opacity 0.2s; }
+.ds-unsplash-item:hover .ds-unsplash-credit { opacity: 1; }
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 // ===== DESIGN STUDIO ENGINE =====
 var DS = {
-  elements: [],
+  pages: [{ id: 1, elements: [], bgColor: '#ffffff', bgImage: null }],
+  currentPage: 0,
+  pageCounter: 1,
   selectedId: null,
   tool: 'select',
   counter: 0,
@@ -312,8 +360,6 @@ var DS = {
   canvasW: 816,
   canvasH: 1056,
   canvasType: 'flyer',
-  bgColor: '#ffffff',
-  bgImage: null,
   undoStack: [],
   redoStack: [],
   isDragging: false,
@@ -321,6 +367,10 @@ var DS = {
   isRotating: false,
   dragData: null
 };
+
+// Helpers to access current page
+function dsPage() { return DS.pages[DS.currentPage]; }
+function dsElements() { return dsPage().elements; }
 
 var CANVAS_SIZES = {
   flyer: { w: 816, h: 1056, label: 'Flyer (8.5×11)' },
@@ -398,8 +448,8 @@ function dsRenderTrifoldGuides() {
 
 // ===== BACKGROUND =====
 function dsSetBgColor(color) {
-  DS.bgColor = color;
-  DS.bgImage = null;
+  dsPage().bgColor = color;
+  dsPage().bgImage = null;
   var canvas = document.getElementById('dsCanvas');
   canvas.style.background = color;
   canvas.style.backgroundImage = 'none';
@@ -410,7 +460,7 @@ function dsHandleBgImageUpload(input) {
   if (!input.files || !input.files[0]) return;
   var reader = new FileReader();
   reader.onload = function(e) {
-    DS.bgImage = e.target.result;
+    dsPage().bgImage = e.target.result;
     var canvas = document.getElementById('dsCanvas');
     canvas.style.backgroundImage = 'url(' + e.target.result + ')';
     canvas.style.backgroundSize = 'cover';
@@ -486,7 +536,7 @@ function dsCreateElement(type, props) {
   }
 
   dsSaveUndo();
-  DS.elements.push(el);
+  dsElements().push(el);
   dsRenderCanvas();
   dsSelectElement(el.id);
   dsSetTool('select');
@@ -500,7 +550,7 @@ function dsRenderCanvas() {
   var children = Array.from(canvas.children);
   children.forEach(function(c) { if (!c.classList.contains('ds-trifold-guide')) c.remove(); });
 
-  DS.elements.forEach(function(el) {
+  dsElements().forEach(function(el) {
     var div = document.createElement('div');
     div.className = 'ds-element' + (el.id === DS.selectedId ? ' selected' : '');
     div.dataset.id = el.id;
@@ -511,7 +561,7 @@ function dsRenderCanvas() {
     div.style.minHeight = el.type === 'text' ? el.h + 'px' : '';
     div.style.opacity = el.opacity;
     div.style.transform = el.rotation ? 'rotate(' + el.rotation + 'deg)' : '';
-    div.style.zIndex = DS.elements.indexOf(el) + 2;
+    div.style.zIndex = dsElements().indexOf(el) + 2;
 
     if (el.type === 'text') {
       var textDiv = document.createElement('div');
@@ -617,7 +667,7 @@ function dsDeselectAll() {
 
 // ===== DRAG =====
 function dsStartDrag(e, id) {
-  var el = DS.elements.find(function(x) { return x.id === id; });
+  var el = dsElements().find(function(x) { return x.id === id; });
   if (!el || el.locked) return;
   DS.isDragging = true;
   var startX = e.clientX;
@@ -644,7 +694,7 @@ function dsStartDrag(e, id) {
 
 // ===== RESIZE =====
 function dsStartResize(e, id, handle) {
-  var el = DS.elements.find(function(x) { return x.id === id; });
+  var el = dsElements().find(function(x) { return x.id === id; });
   if (!el) return;
   DS.isResizing = true;
   var startX = e.clientX;
@@ -678,7 +728,7 @@ function dsStartResize(e, id, handle) {
 
 // ===== ROTATE =====
 function dsStartRotate(e, id) {
-  var el = DS.elements.find(function(x) { return x.id === id; });
+  var el = dsElements().find(function(x) { return x.id === id; });
   if (!el) return;
   DS.isRotating = true;
   var elDiv = document.querySelector('[data-id="' + id + '"]');
@@ -752,8 +802,8 @@ function dsRenderLayers() {
   var container = document.getElementById('dsLayersList');
   var html = '';
   // Render in reverse (top layer first)
-  for (var i = DS.elements.length - 1; i >= 0; i--) {
-    var el = DS.elements[i];
+  for (var i = dsElements().length - 1; i >= 0; i--) {
+    var el = dsElements()[i];
     var icon = el.type === 'text' ? 'fa-font' : el.type === 'rect' ? 'fa-square' : el.type === 'circle' ? 'fa-circle' : el.type === 'line' ? 'fa-minus' : el.type === 'image' ? 'fa-image' : 'fa-cube';
     var sel = el.id === DS.selectedId ? ' selected' : '';
     html += '<div class="ds-layer-item' + sel + '" onclick="dsSelectElement(' + el.id + ')">' +
@@ -769,11 +819,11 @@ function dsRenderLayers() {
 
 function dsMoveLayerUp() {
   if (!DS.selectedId) return;
-  var idx = DS.elements.findIndex(function(e) { return e.id === DS.selectedId; });
-  if (idx < DS.elements.length - 1) {
-    var temp = DS.elements[idx];
-    DS.elements[idx] = DS.elements[idx + 1];
-    DS.elements[idx + 1] = temp;
+  var idx = dsElements().findIndex(function(e) { return e.id === DS.selectedId; });
+  if (idx < dsElements().length - 1) {
+    var temp = dsElements()[idx];
+    dsElements()[idx] = dsElements()[idx + 1];
+    dsElements()[idx + 1] = temp;
     dsSaveUndo();
     dsRenderCanvas();
   }
@@ -781,25 +831,25 @@ function dsMoveLayerUp() {
 
 function dsMoveLayerDown() {
   if (!DS.selectedId) return;
-  var idx = DS.elements.findIndex(function(e) { return e.id === DS.selectedId; });
+  var idx = dsElements().findIndex(function(e) { return e.id === DS.selectedId; });
   if (idx > 0) {
-    var temp = DS.elements[idx];
-    DS.elements[idx] = DS.elements[idx - 1];
-    DS.elements[idx - 1] = temp;
+    var temp = dsElements()[idx];
+    dsElements()[idx] = dsElements()[idx - 1];
+    dsElements()[idx - 1] = temp;
     dsSaveUndo();
     dsRenderCanvas();
   }
 }
 
 function dsToggleLock(id) {
-  var el = DS.elements.find(function(e) { return e.id === id; });
+  var el = dsElements().find(function(e) { return e.id === id; });
   if (el) { el.locked = !el.locked; dsRenderCanvas(); }
 }
 
 function dsDeleteSelected() {
   if (!DS.selectedId) return;
   dsSaveUndo();
-  DS.elements = DS.elements.filter(function(e) { return e.id !== DS.selectedId; });
+  dsPage().elements = dsElements().filter(function(e) { return e.id !== DS.selectedId; });
   DS.selectedId = null;
   dsRenderCanvas();
   dsRenderProps();
@@ -812,7 +862,7 @@ function dsRenderProps() {
     container.innerHTML = '<div style="text-align:center;color:var(--ds-text-dim);font-size:12px;padding:20px 0;">Select an element to edit its properties</div>';
     return;
   }
-  var el = DS.elements.find(function(e) { return e.id === DS.selectedId; });
+  var el = dsElements().find(function(e) { return e.id === DS.selectedId; });
   if (!el) return;
 
   var html = '';
@@ -899,7 +949,7 @@ function dsRenderProps() {
 }
 
 function dsPropSet(id, prop, value) {
-  var el = DS.elements.find(function(e) { return e.id === id; });
+  var el = dsElements().find(function(e) { return e.id === id; });
   if (!el) return;
   dsSaveUndo();
   el[prop] = value;
@@ -908,7 +958,7 @@ function dsPropSet(id, prop, value) {
 }
 
 function dsDuplicate(id) {
-  var el = DS.elements.find(function(e) { return e.id === id; });
+  var el = dsElements().find(function(e) { return e.id === id; });
   if (!el) return;
   var clone = JSON.parse(JSON.stringify(el));
   clone.x += 20;
@@ -917,7 +967,7 @@ function dsDuplicate(id) {
   clone.id = DS.counter;
   clone.name = clone.name + ' copy';
   dsSaveUndo();
-  DS.elements.push(clone);
+  dsElements().push(clone);
   dsRenderCanvas();
   dsSelectElement(clone.id);
 }
@@ -939,102 +989,278 @@ function dsReplaceImage(id) {
 
 // ===== UNDO / REDO =====
 function dsSaveUndo() {
-  DS.undoStack.push(JSON.stringify(DS.elements));
+  DS.undoStack.push(JSON.stringify(dsElements()));
   if (DS.undoStack.length > 50) DS.undoStack.shift();
   DS.redoStack = [];
 }
 
 function dsUndo() {
   if (DS.undoStack.length === 0) return;
-  DS.redoStack.push(JSON.stringify(DS.elements));
-  DS.elements = JSON.parse(DS.undoStack.pop());
+  DS.redoStack.push(JSON.stringify(dsElements()));
+  dsPage().elements = JSON.parse(DS.undoStack.pop());
   dsRenderCanvas();
   dsRenderProps();
 }
 
 function dsRedo() {
   if (DS.redoStack.length === 0) return;
-  DS.undoStack.push(JSON.stringify(DS.elements));
-  DS.elements = JSON.parse(DS.redoStack.pop());
+  DS.undoStack.push(JSON.stringify(dsElements()));
+  dsPage().elements = JSON.parse(DS.redoStack.pop());
   dsRenderCanvas();
   dsRenderProps();
 }
 
 // ===== EXPORT =====
+function dsExportPDF() {
+  var savedPage = DS.currentPage;
+  var savedSel = DS.selectedId;
+  DS.selectedId = null;
+
+  var pdf = new jspdf.jsPDF({
+    orientation: DS.canvasW > DS.canvasH ? 'landscape' : 'portrait',
+    unit: 'px',
+    format: [DS.canvasW, DS.canvasH]
+  });
+
+  var pageIdx = 0;
+  function renderPage() {
+    if (pageIdx >= DS.pages.length) {
+      pdf.save('design-' + Date.now() + '.pdf');
+      DS.currentPage = savedPage;
+      DS.selectedId = savedSel;
+      dsApplyPageToCanvas();
+      dsShowToast('PDF exported (' + DS.pages.length + ' page' + (DS.pages.length > 1 ? 's' : '') + ')');
+      return;
+    }
+
+    DS.currentPage = pageIdx;
+    dsApplyPageToCanvas();
+
+    var canvas = document.getElementById('dsCanvas');
+    html2canvas(canvas, { scale: 2, useCORS: true, backgroundColor: null }).then(function(c) {
+      if (pageIdx > 0) pdf.addPage([DS.canvasW, DS.canvasH], DS.canvasW > DS.canvasH ? 'landscape' : 'portrait');
+      pdf.addImage(c.toDataURL('image/png'), 'PNG', 0, 0, DS.canvasW, DS.canvasH);
+      pageIdx++;
+      renderPage();
+    });
+  }
+  renderPage();
+}
+
 function dsExportPNG() {
   var canvas = document.getElementById('dsCanvas');
-  // Temporarily deselect for clean export
   var savedSel = DS.selectedId;
   DS.selectedId = null;
   dsRenderCanvas();
 
   html2canvas(canvas, { scale: 2, useCORS: true, backgroundColor: null }).then(function(c) {
     var link = document.createElement('a');
-    link.download = 'design-' + Date.now() + '.png';
+    link.download = 'design-page' + (DS.currentPage + 1) + '-' + Date.now() + '.png';
     link.href = c.toDataURL('image/png');
     link.click();
     DS.selectedId = savedSel;
     dsRenderCanvas();
-  });
-}
-
-function dsExportPDF() {
-  var canvas = document.getElementById('dsCanvas');
-  var savedSel = DS.selectedId;
-  DS.selectedId = null;
-  dsRenderCanvas();
-
-  html2canvas(canvas, { scale: 2, useCORS: true, backgroundColor: null }).then(function(c) {
-    var imgData = c.toDataURL('image/png');
-    var pdf = new jspdf.jsPDF({
-      orientation: DS.canvasW > DS.canvasH ? 'landscape' : 'portrait',
-      unit: 'px',
-      format: [DS.canvasW, DS.canvasH]
-    });
-    pdf.addImage(imgData, 'PNG', 0, 0, DS.canvasW, DS.canvasH);
-    pdf.save('design-' + Date.now() + '.pdf');
-    DS.selectedId = savedSel;
-    dsRenderCanvas();
+    dsShowToast('PNG exported (page ' + (DS.currentPage + 1) + ')');
   });
 }
 
 // ===== PREVIEW =====
 function dsPreview() {
-  var canvas = document.getElementById('dsCanvas');
+  var savedPage = DS.currentPage;
   var savedSel = DS.selectedId;
   DS.selectedId = null;
-  dsRenderCanvas();
 
-  html2canvas(canvas, { scale: 1, useCORS: true, backgroundColor: null }).then(function(c) {
-    var modal = document.getElementById('dsPreviewModal');
-    document.getElementById('dsPreviewContent').innerHTML = '';
-    document.getElementById('dsPreviewContent').appendChild(c);
-    modal.style.display = 'flex';
-    DS.selectedId = savedSel;
-    dsRenderCanvas();
-  });
+  var content = document.getElementById('dsPreviewContent');
+  content.innerHTML = '<div style="text-align:center;padding:20px;color:#999;">Rendering preview...</div>';
+  document.getElementById('dsPreviewModal').style.display = 'flex';
+
+  var pageIdx = 0;
+  var images = [];
+
+  function renderPreviewPage() {
+    if (pageIdx >= DS.pages.length) {
+      var html = '';
+      images.forEach(function(img, i) {
+        html += '<div style="margin-bottom:12px;text-align:center;">';
+        if (DS.pages.length > 1) html += '<div style="font-size:11px;color:#999;margin-bottom:4px;">Page ' + (i + 1) + '</div>';
+        html += '<img src="' + img + '" style="max-width:90vw;max-height:' + (DS.pages.length > 1 ? '60vh' : '85vh') + ';border-radius:4px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">';
+        html += '</div>';
+      });
+      content.innerHTML = html;
+      DS.currentPage = savedPage;
+      DS.selectedId = savedSel;
+      dsApplyPageToCanvas();
+      return;
+    }
+
+    DS.currentPage = pageIdx;
+    dsApplyPageToCanvas();
+
+    html2canvas(document.getElementById('dsCanvas'), { scale: 1, useCORS: true, backgroundColor: null }).then(function(c) {
+      images.push(c.toDataURL('image/png'));
+      pageIdx++;
+      renderPreviewPage();
+    });
+  }
+  renderPreviewPage();
 }
 
 // ===== SAVE PROJECT =====
+var dsProjectId = null;
+var dsProjectName = '';
+
 function dsSaveProject() {
-  var project = {
-    canvasW: DS.canvasW,
-    canvasH: DS.canvasH,
-    canvasType: DS.canvasType,
-    bgColor: DS.bgColor,
-    bgImage: DS.bgImage,
-    elements: DS.elements,
-    counter: DS.counter
-  };
-
-  // For now, save to localStorage (Supabase integration in session 2)
-  var name = prompt('Project name:', DS.canvasType + '-' + new Date().toISOString().split('T')[0]);
+  var name = dsProjectName || prompt('Project name:', DS.canvasType + '-' + new Date().toISOString().split('T')[0]);
   if (!name) return;
+  dsProjectName = name;
 
-  var projects = JSON.parse(localStorage.getItem('ds_projects') || '{}');
-  projects[name] = project;
-  localStorage.setItem('ds_projects', JSON.stringify(projects));
-  alert('Project saved: ' + name);
+  var project = {
+    name: name,
+    canvas_type: DS.canvasType,
+    canvas_w: DS.canvasW,
+    canvas_h: DS.canvasH,
+    data: {
+      pages: DS.pages,
+      pageCounter: DS.pageCounter,
+      counter: DS.counter
+    }
+  };
+  if (dsProjectId) project.id = dsProjectId;
+
+  var saveBtn = document.querySelector('.ds-topbar-btn.primary');
+  if (saveBtn) { saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; saveBtn.disabled = true; }
+
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_project', project: project })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (saveBtn) { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }
+    if (data.success) {
+      if (data.id) dsProjectId = data.id;
+      dsShowToast('Project saved');
+    } else {
+      dsShowToast('Error: ' + (data.message || 'Save failed'));
+    }
+  })
+  .catch(function() {
+    if (saveBtn) { saveBtn.innerHTML = '<i class="fas fa-save"></i> Save'; saveBtn.disabled = false; }
+    dsShowToast('Connection error — saved locally');
+    var projects = JSON.parse(localStorage.getItem('ds_projects') || '{}');
+    projects[name] = project;
+    localStorage.setItem('ds_projects', JSON.stringify(projects));
+  });
+}
+
+function dsLoadProject(id) {
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'load_project', id: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (!data.success || !data.project) { dsShowToast('Project not found'); return; }
+    var p = data.project;
+    dsProjectId = p.id;
+    dsProjectName = p.name;
+    DS.canvasType = p.canvas_type || 'flyer';
+    DS.canvasW = p.canvas_w || 816;
+    DS.canvasH = p.canvas_h || 1056;
+
+    var canvas = document.getElementById('dsCanvas');
+    canvas.style.width = DS.canvasW + 'px';
+    canvas.style.height = DS.canvasH + 'px';
+
+    if (p.data && p.data.pages) {
+      DS.pages = p.data.pages;
+      DS.pageCounter = p.data.pageCounter || DS.pages.length;
+      DS.counter = p.data.counter || 0;
+    }
+    DS.currentPage = 0;
+    DS.selectedId = null;
+
+    // Update size picker
+    document.querySelectorAll('.ds-size-card').forEach(function(c) {
+      c.classList.toggle('active', c.dataset.size === DS.canvasType);
+    });
+
+    dsApplyPageToCanvas();
+    dsRenderSlideStrip();
+    dsRenderTrifoldGuides();
+    dsZoomFit();
+    dsShowToast('Loaded: ' + p.name);
+  })
+  .catch(function() { dsShowToast('Error loading project'); });
+}
+
+function dsShowProjectsList() {
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio?action=list_projects')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.projects || data.projects.length === 0) {
+        dsShowToast('No saved projects');
+        return;
+      }
+      var html = '<div class="cal-modal-overlay" onclick="dsCloseProjectsList()">';
+      html += '<div class="cal-modal" onclick="event.stopPropagation()" style="max-width:500px;background:var(--ds-surface);border:1px solid var(--ds-border);color:var(--ds-text);">';
+      html += '<div style="padding:16px 20px;border-bottom:1px solid var(--ds-border);display:flex;justify-content:space-between;align-items:center;">';
+      html += '<div style="font-size:14px;font-weight:700;">My Projects</div>';
+      html += '<div style="cursor:pointer;font-size:18px;color:var(--ds-text-dim);" onclick="dsCloseProjectsList()">&times;</div>';
+      html += '</div>';
+      html += '<div style="max-height:400px;overflow-y:auto;">';
+      data.projects.forEach(function(p) {
+        var date = p.updated_at ? new Date(p.updated_at).toLocaleDateString() : '';
+        html += '<div style="padding:12px 20px;border-bottom:1px solid var(--ds-border-light);display:flex;align-items:center;gap:12px;cursor:pointer;transition:0.1s;" onmouseover="this.style.background=\'rgba(255,255,255,0.03)\'" onmouseout="this.style.background=\'transparent\'" onclick="dsLoadProject(' + p.id + ');dsCloseProjectsList();">';
+        html += '<div style="flex:1;"><div style="font-size:13px;font-weight:600;">' + p.name + '</div><div style="font-size:10px;color:var(--ds-text-dim);">' + (p.canvas_type || '') + ' — ' + date + '</div></div>';
+        html += '<button style="background:none;border:none;color:var(--ds-red);cursor:pointer;font-size:12px;padding:4px 8px;" onclick="event.stopPropagation();dsDeleteProject(' + p.id + ')" title="Delete"><i class="fas fa-trash-can"></i></button>';
+        html += '</div>';
+      });
+      html += '</div></div></div>';
+
+      var container = document.getElementById('dsProjectsModal');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'dsProjectsModal';
+        document.body.appendChild(container);
+      }
+      container.innerHTML = html;
+    })
+    .catch(function() { dsShowToast('Error loading projects'); });
+}
+
+function dsCloseProjectsList() {
+  var el = document.getElementById('dsProjectsModal');
+  if (el) el.innerHTML = '';
+}
+
+function dsDeleteProject(id) {
+  if (!confirm('Delete this project permanently?')) return;
+  fetch('https://agent-edge-backend.vercel.app/api/design-studio', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete_project', id: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) {
+      dsShowProjectsList(); // Refresh list
+      if (dsProjectId === id) { dsProjectId = null; dsProjectName = ''; }
+    }
+  });
+}
+
+function dsShowToast(msg) {
+  var existing = document.getElementById('dsToast');
+  if (existing) existing.remove();
+  var toast = document.createElement('div');
+  toast.id = 'dsToast';
+  toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 20px;background:#0f172a;color:#e2e8f0;border:1px solid rgba(255,255,255,0.1);border-radius:8px;font-size:13px;font-weight:500;z-index:200;box-shadow:0 8px 24px rgba(0,0,0,0.4);';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+  setTimeout(function() { toast.remove(); }, 2500);
 }
 
 // ===== KEYBOARD SHORTCUTS =====
@@ -1054,7 +1280,7 @@ document.addEventListener('keydown', function(e) {
   // Arrow keys nudge
   if (DS.selectedId && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
     e.preventDefault();
-    var el = DS.elements.find(function(x) { return x.id === DS.selectedId; });
+    var el = dsElements().find(function(x) { return x.id === DS.selectedId; });
     if (el && !el.locked) {
       var step = e.shiftKey ? 10 : 1;
       if (e.key === 'ArrowUp') el.y -= step;
@@ -1066,9 +1292,140 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+// ===== MULTI-PAGE / SLIDES =====
+function dsAddPage() {
+  DS.pageCounter++;
+  DS.pages.push({ id: DS.pageCounter, elements: [], bgColor: '#ffffff', bgImage: null });
+  DS.currentPage = DS.pages.length - 1;
+  DS.selectedId = null;
+  dsApplyPageToCanvas();
+  dsRenderSlideStrip();
+}
+
+function dsDuplicatePage() {
+  var page = dsPage();
+  DS.pageCounter++;
+  var clone = JSON.parse(JSON.stringify(page));
+  clone.id = DS.pageCounter;
+  // Re-id all elements to avoid conflicts
+  clone.elements.forEach(function(el) {
+    DS.counter++;
+    el.id = DS.counter;
+    el.name = el.name + ' copy';
+  });
+  DS.pages.splice(DS.currentPage + 1, 0, clone);
+  DS.currentPage = DS.currentPage + 1;
+  DS.selectedId = null;
+  dsApplyPageToCanvas();
+  dsRenderSlideStrip();
+}
+
+function dsDeletePage() {
+  if (DS.pages.length <= 1) { alert('Cannot delete the only page.'); return; }
+  if (!confirm('Delete this page?')) return;
+  DS.pages.splice(DS.currentPage, 1);
+  if (DS.currentPage >= DS.pages.length) DS.currentPage = DS.pages.length - 1;
+  DS.selectedId = null;
+  dsApplyPageToCanvas();
+  dsRenderSlideStrip();
+}
+
+function dsSwitchPage(idx) {
+  if (idx < 0 || idx >= DS.pages.length) return;
+  DS.currentPage = idx;
+  DS.selectedId = null;
+  dsApplyPageToCanvas();
+  dsRenderSlideStrip();
+}
+
+function dsApplyPageToCanvas() {
+  var page = dsPage();
+  var canvas = document.getElementById('dsCanvas');
+  if (page.bgImage) {
+    canvas.style.backgroundImage = 'url(' + page.bgImage + ')';
+    canvas.style.backgroundSize = 'cover';
+    canvas.style.backgroundPosition = 'center';
+    canvas.style.backgroundColor = page.bgColor;
+  } else {
+    canvas.style.backgroundImage = 'none';
+    canvas.style.background = page.bgColor;
+  }
+  document.getElementById('dsBgColor').value = page.bgColor;
+  document.getElementById('dsBgHex').value = page.bgColor;
+  dsRenderCanvas();
+  dsRenderProps();
+}
+
+function dsRenderSlideStrip() {
+  var container = document.getElementById('dsSlideStripInner');
+  var html = '';
+  DS.pages.forEach(function(page, idx) {
+    var isActive = idx === DS.currentPage;
+    var bgStyle = 'background:' + (page.bgColor || '#fff') + ';';
+    if (page.bgImage) bgStyle = 'background:url(' + page.bgImage + ') center/cover;';
+    html += '<div class="ds-slide-thumb' + (isActive ? ' active' : '') + '" onclick="dsSwitchPage(' + idx + ')" style="' + bgStyle + '">';
+    html += '<div class="ds-slide-thumb-label">' + (idx + 1) + '</div>';
+    html += '</div>';
+  });
+  container.innerHTML = html;
+}
+
+// ===== UNSPLASH SEARCH =====
+function dsToggleUnsplash() {
+  var panel = document.getElementById('dsUnsplashPanel');
+  panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+  if (panel.style.display === 'block') {
+    document.getElementById('dsUnsplashQuery').focus();
+  }
+}
+
+function dsSearchUnsplash() {
+  var query = document.getElementById('dsUnsplashQuery').value.trim();
+  if (!query) return;
+  var results = document.getElementById('dsUnsplashResults');
+  results.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ds-text-dim);font-size:12px;"><i class="fas fa-spinner fa-spin"></i> Searching...</div>';
+
+  fetch('https://agent-edge-backend.vercel.app/api/unsplash-search?query=' + encodeURIComponent(query) + '&per_page=12')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var photos = data.results || [];
+      if (photos.length === 0) {
+        results.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ds-text-dim);font-size:12px;">No photos found</div>';
+        return;
+      }
+      var html = '<div class="ds-unsplash-grid">';
+      photos.forEach(function(photo) {
+        html += '<div class="ds-unsplash-item" onclick="dsInsertUnsplash(\'' + photo.urls.regular + '\',\'' + photo.id + '\',' + photo.width + ',' + photo.height + ')">';
+        html += '<img src="' + photo.urls.small + '" alt="' + (photo.alt_description || '') + '" loading="lazy">';
+        html += '<div class="ds-unsplash-credit">' + photo.user.name + '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      results.innerHTML = html;
+    })
+    .catch(function() {
+      results.innerHTML = '<div style="text-align:center;padding:20px;color:var(--ds-red);font-size:12px;">Search failed</div>';
+    });
+}
+
+function dsInsertUnsplash(url, photoId, origW, origH) {
+  // Trigger Unsplash download tracking (required by API terms)
+  fetch('https://agent-edge-backend.vercel.app/api/unsplash-search?download=' + photoId).catch(function() {});
+
+  // Calculate size to fit canvas
+  var maxW = DS.canvasW * 0.6;
+  var scale = origW > maxW ? maxW / origW : 1;
+  var w = Math.round(origW * scale);
+  var h = Math.round(origH * scale);
+
+  dsCreateElement('image', { x: 50, y: 50, w: w, h: h, src: url });
+  document.getElementById('dsUnsplashPanel').style.display = 'none';
+}
+
 // ===== INIT =====
 dsSetTool('select');
 dsZoomFit();
+dsRenderSlideStrip();
 </script>
 </body>
 </html>
