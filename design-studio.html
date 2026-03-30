@@ -1122,15 +1122,9 @@ function dsRenderProps() {
 
   var html = '';
 
-  // Position & Size
-  html += '<div class="ds-panel-label">Position & Size</div>';
-  html += '<div class="ds-panel-row"><span style="font-size:10px;color:var(--ds-text-dim);width:14px;">X</span><input type="number" class="ds-panel-input-sm" value="' + el.x + '" onchange="dsPropSet(' + el.id + ',\'x\',parseInt(this.value))">';
-  html += '<span style="font-size:10px;color:var(--ds-text-dim);width:14px;">Y</span><input type="number" class="ds-panel-input-sm" value="' + el.y + '" onchange="dsPropSet(' + el.id + ',\'y\',parseInt(this.value))"></div>';
-  html += '<div class="ds-panel-row"><span style="font-size:10px;color:var(--ds-text-dim);width:14px;">W</span><input type="number" class="ds-panel-input-sm" value="' + el.w + '" onchange="dsPropSet(' + el.id + ',\'w\',parseInt(this.value))">';
-  html += '<span style="font-size:10px;color:var(--ds-text-dim);width:14px;">H</span><input type="number" class="ds-panel-input-sm" value="' + Math.round(el.h) + '" onchange="dsPropSet(' + el.id + ',\'h\',parseInt(this.value))"></div>';
-
   // Rotation
-  html += '<div class="ds-panel-row"><span style="font-size:10px;color:var(--ds-text-dim);width:14px;"><i class="fas fa-rotate"></i></span><input type="number" class="ds-panel-input-sm" value="' + (el.rotation || 0) + '" onchange="dsPropSet(' + el.id + ',\'rotation\',parseInt(this.value))"><span style="font-size:10px;color:var(--ds-text-dim);">deg</span></div>';
+  html += '<div class="ds-panel-label">Rotation</div>';
+  html += '<div class="ds-panel-row"><input type="number" class="ds-panel-input-sm" value="' + (el.rotation || 0) + '" onchange="dsPropSet(' + el.id + ',\'rotation\',parseInt(this.value))" style="width:60px;"><span style="font-size:10px;color:var(--ds-text-dim);">degrees</span></div>';
 
   // Opacity
   html += '<div class="ds-panel-label" style="margin-top:10px;">Opacity</div>';
@@ -1803,8 +1797,15 @@ function dsInsertSvg(idx) {
   });
   var s = filtered[idx];
   if (!s) return;
-  // Convert SVG to data URL (persists across re-renders unlike blob URLs)
-  var encoded = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(s.svg)));
+  // Add xmlns and explicit fill so SVG renders as an image src
+  var svgStr = s.svg.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+  // Add fill="#000000" to path/rect elements that don't have a fill
+  svgStr = svgStr.replace(/<(path|rect|polygon|circle|ellipse)([^>]*?)(\/>|>)/g, function(match, tag, attrs, close) {
+    if (attrs.indexOf('fill=') === -1 && attrs.indexOf('stroke=') !== -1) return match; // has stroke, leave it
+    if (attrs.indexOf('fill=') === -1) return '<' + tag + ' fill="#333333"' + attrs + close;
+    return match;
+  });
+  var encoded = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgStr)));
   dsCreateElement('image', { x: 50, y: 50, w: 80, h: 80, src: encoded });
   document.getElementById('dsSvgPanel').style.display = 'none';
 }
