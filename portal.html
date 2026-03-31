@@ -1482,9 +1482,9 @@ function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById(
 function mktsLoadChart(){
   var isT=mktsCurrentSymbol==='10Y';
   if(isT){
-    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range=6mo').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range=3mo').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   } else if(mktsCurrentSymbol==='UMBS_5.5') {
-    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=6mo&interval=1d';
+    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=3mo&interval=1d';
     var manualUrl='https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history';
     var yahooData=null,manualData=null,loaded=0;
     function mergeAndRender(){
@@ -1501,7 +1501,7 @@ function mktsLoadChart(){
     fetch(yahooUrl).then(function(r){return r.json();}).then(function(d){yahooData=d;mergeAndRender();}).catch(function(){yahooData={data:[]};mergeAndRender();});
     fetch(manualUrl).then(function(r){return r.json();}).then(function(d){manualData=d;mergeAndRender();}).catch(function(){manualData={data:[]};mergeAndRender();});
   } else {
-    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=6mo&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=3mo&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   }
 }
 
@@ -1555,26 +1555,24 @@ function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){for(var g=0;g<=7;g
 function mktsDrawDates(ctx,w,h,data,xP){
   ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  // Store x positions for crosshair
   mktsChartXPositions=[];
-  var lastMonday='';
+  var lastLabelX=-100; // Track pixel position of last label to prevent overlap
+  var minGap=52; // Minimum pixels between labels
+
   data.forEach(function(c,i){
     var dateStr=(c.date||'').split('T')[0];
     mktsChartXPositions.push({x:xP(i),date:dateStr});
     var dt=new Date(dateStr+'T12:00:00');
     var dow=dt.getDay();
-    // Label on Mondays (1) or Tuesday (2) if Monday is missing
-    var weekKey=dt.getFullYear()+'-W'+Math.ceil(((dt-new Date(dt.getFullYear(),0,1))/86400000+1)/7);
-    if((dow===1||(dow===2&&lastMonday!==weekKey))&&lastMonday!==weekKey){
-      ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);
-      lastMonday=weekKey;
+    var x=xP(i);
+
+    // Only label on Monday (or Tue if Mon missing) and only if enough space since last label
+    if((dow===1||dow===2)&&(x-lastLabelX)>=minGap){
+      var label=months[dt.getMonth()]+' '+dt.getDate();
+      ctx.fillText(label,x,h-6);
+      lastLabelX=x;
     }
   });
-  // Always label the last date
-  if(data.length>0){
-    var last=data[data.length-1];var ld=new Date(((last.date||'').split('T')[0])+'T12:00:00');
-    ctx.fillText(months[ld.getMonth()]+' '+ld.getDate(),xP(data.length-1),h-6);
-  }
 }
 function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP){if(!fib)return;ctx.setLineDash([5,4]);Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minV&&f.level<=maxV){var y=yP(f.level);ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle='#6e7f77';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,pad.left+10,y-4);}});ctx.setLineDash([]);}
 function mktsDrawSR(ctx,pad,w,pv,minV,maxV,yP,dec){if(!pv)return;ctx.setLineDash([8,4]);var d=dec||2;[{v:pv.r2,l:'R2 '+pv.r2.toFixed(d),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(d),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(d),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(d),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minV&&sr.v<=maxV){var y=yP(sr.v);ctx.strokeStyle=sr.c;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle=sr.c;ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='right';ctx.fillText(sr.l,w-pad.right-5,y-4);}});ctx.setLineDash([]);}
