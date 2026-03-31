@@ -1871,13 +1871,12 @@ mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');mktsDrawMAs(ctx,allData,displaySt
 var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,2),minP,maxP,yP);
 if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
 var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
-// Draw wick from real high to real low
-ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();
-// Draw body with minimum 6px height, centered on midpoint for small moves
-ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.max(Math.abs(yP(c.close)-yP(c.open)),6);
-if(Math.abs(yP(c.close)-yP(c.open))<6){var mid=(yP(c.open)+yP(c.close))/2;bodyTop=mid-3;}
+// Draw body first
+ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.abs(yP(c.close)-yP(c.open))||1;
 ctx.fillRect(Math.round(x-barW/2),Math.round(bodyTop),Math.round(barW),Math.round(bodyH));
-if(barW>=5){ctx.strokeStyle=color;ctx.lineWidth=0.5;ctx.strokeRect(Math.round(x-barW/2),Math.round(bodyTop),Math.round(barW),Math.round(bodyH));}
+// Draw wick AFTER body so it's always visible
+ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,Math.round(bodyTop));ctx.stroke();
+ctx.beginPath();ctx.moveTo(x,Math.round(bodyTop+bodyH));ctx.lineTo(x,yP(c.low));ctx.stroke();
 });
 mktsDrawDates(ctx,w,h,data,xP);}
 
