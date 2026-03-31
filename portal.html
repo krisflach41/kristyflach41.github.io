@@ -1538,9 +1538,10 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  // Show all available data — no slicing
-  var displayData=allData;
-  var vs=0;
+  // Show last ~65 trading days (roughly 3 months)
+  var maxCandles=65;
+  var displayData=allData.length>maxCandles?allData.slice(allData.length-maxCandles):allData;
+  var vs=allData.length-displayData.length;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
   else mktsDrawCandlesFull(ctx,w,h,allData,vs,displayData);
 }
