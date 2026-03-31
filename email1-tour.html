@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Edge — I Do Partnerships Differently</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#000}
+body{font-family:'DM Sans',system-ui,sans-serif}
+.viewport{width:100vw;height:100vh;position:relative;overflow:hidden;background:#000}
+.scene{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.9s cubic-bezier(0.16,1,0.3,1);pointer-events:none;z-index:1}
+.scene.active{opacity:1;pointer-events:auto;z-index:2}
+
+/* SCENE 1 */
+.s1-page{width:920px;height:550px;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7);border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.5);overflow:hidden;position:relative}
+.s1-nav{display:flex;align-items:center;padding:10px 20px;background:rgba(255,255,255,0.65);border-bottom:1px solid #ddd}
+.s1-nav-logo{height:40px;opacity:0;transform:translateY(6px)}
+.s1-nav-links{display:flex;gap:14px;margin-left:auto;font-size:11px;font-weight:700;color:#0b1f3a}
+.s1-nav-links span{opacity:0.6;transition:all 0.5s}
+.s1-realtor-link{opacity:1 !important;color:#002F6C;padding:4px 10px;border-radius:5px;transition:all 0.5s !important;position:relative}
+.s1-page.spotlight .s1-hero-text,.s1-page.spotlight .s1-headshot,.s1-page.spotlight .s1-ticker,.s1-page.spotlight .s1-nav-links span:not(.s1-realtor-link),.s1-page.spotlight .s1-nav-logo,.s1-page.spotlight .s1-phone{opacity:0.12 !important;transition:opacity 0.6s !important}
+.s1-realtor-link.highlight{background:#002F6C;color:#fff !important;box-shadow:0 0 0 3px rgba(0,47,108,0.3),0 0 30px rgba(0,47,108,0.4);transform:scale(1.18)}
+.pulse-ring{position:absolute;inset:-6px;border-radius:8px;border:2px solid rgba(0,47,108,0.6);opacity:0}
+.s1-realtor-link.highlight .pulse-ring{animation:pulseRing 1s ease-out 0s 3}
+@keyframes pulseRing{0%{opacity:0.8;transform:scale(1)}100%{opacity:0;transform:scale(1.6)}}
+.s1-phone{margin-left:14px;background:#6e7f77;color:#fff;padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;text-align:center;line-height:1.3;transition:opacity 0.5s}
+.s1-phone-sub{font-size:7px;opacity:0.8;letter-spacing:1px;text-transform:uppercase}
+.s1-hero{display:flex;align-items:center;padding:30px 50px;gap:30px;position:relative;height:calc(100% - 42px - 36px)}
+.s1-hero-text{flex:1;transition:opacity 0.5s}
+.s1-name{font-size:46px;font-weight:700;color:#002F6C;line-height:1;margin-bottom:4px;opacity:0;transform:translateY(12px)}
+.s1-title{font-size:14px;font-weight:700;color:#0b1f3a;opacity:0;transform:translateY(8px)}
+.s1-nmls{font-size:11px;font-weight:800;color:#0b1f3a;text-transform:lowercase;opacity:0;transform:translateY(8px)}
+.s1-tagline{font-size:22px;font-weight:700;color:#6e7f77;margin-top:12px;line-height:1.3;opacity:0;transform:translateY(8px)}
+.s1-btn{display:inline-block;margin-top:16px;background:#002F6C;color:#fff;padding:10px 20px;border-radius:8px;font-size:12px;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,0.15);opacity:0;transform:translateY(8px)}
+.s1-headshot{width:230px;height:290px;border-radius:16px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,0.15);flex-shrink:0;opacity:0;transform:scale(0.95);transition:opacity 0.5s}
+.s1-headshot img{width:100%;height:100%;object-fit:cover;object-position:top}
+.s1-ticker{position:absolute;bottom:0;left:0;width:100%;background:#6e7f77;padding:7px 0 3px;overflow:hidden;transition:opacity 0.5s}
+.s1-ticker-track{display:flex;width:200%;animation:ticker 16s linear infinite}
+.s1-ticker-line{display:flex;width:50%;justify-content:space-around}
+.s1-ticker-line span{white-space:nowrap;font-weight:500;font-size:11px;color:#fff;letter-spacing:0.3px}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SCENE 2 */
+.text-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px;background:linear-gradient(135deg,#020617 0%,#0f172a 50%,#020617 100%);width:100%;height:100%;position:relative}
+.text-scene::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(0,47,108,0.07) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none}
+.text-scene::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(156,181,160,0.04) 0%,transparent 70%);bottom:-80px;left:-80px;pointer-events:none}
+.ts-line{opacity:0;transform:translateY(16px)}
+.ts-main{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1.35;max-width:720px}
+.ts-sub{font-size:17px;color:rgba(255,255,255,0.5);margin-top:14px;max-width:600px;line-height:1.5}
+.ts-accent{color:#9CB5A0}
+.ts-divider{width:50px;height:2px;background:#9CB5A0;margin:20px auto;opacity:0;transform:scaleX(0)}
+.s2-punch{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#9CB5A0;margin-top:24px;letter-spacing:1px;opacity:0;transform:translateX(-80px) scale(0.9)}
+.s2-punch.in{opacity:1;transform:translateX(0) scale(1);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1)}
+.s2-punch-line{width:0;height:1.5px;background:linear-gradient(90deg,transparent,#9CB5A0,transparent);margin:10px auto 0;transition:width 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s}
+.s2-punch.in .s2-punch-line{width:300px}
+
+/* SCENES 3 & 4 */
+.context-text{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:rgba(255,255,255,0.7);line-height:1.4;max-width:700px;text-align:center;opacity:0}
+.fade-text{font-size:17px;color:rgba(255,255,255,0.45);margin-top:20px;max-width:550px;text-align:center;line-height:1.5;opacity:0;transform:translateY(10px)}
+.punch{margin-top:28px;opacity:0;transform:scale(1.3);text-align:center}
+.punch.reveal{opacity:1;transform:scale(1);transition:opacity 1.1s cubic-bezier(0.16,1,0.3,1),transform 1.4s cubic-bezier(0.16,1,0.3,1)}
+.punch-word{font-family:'Playfair Display',serif;font-size:54px;font-weight:800;color:#fff;letter-spacing:3px;display:block}
+.punch-rule{width:0;height:1.5px;margin:10px auto 0;background:linear-gradient(90deg,transparent,#9CB5A0 30%,#9CB5A0 70%,transparent);transition:width 1.1s cubic-bezier(0.16,1,0.3,1) 0.5s}
+.punch.reveal .punch-rule{width:220px}
+.punch-word-sm{font-family:'Playfair Display',serif;font-size:48px;font-weight:800;color:#fff;letter-spacing:3px;display:block}
+
+/* SCENE 5 */
+.s5-portal{width:920px;height:550px;background:#f8f6f2;border-radius:12px;box-shadow:0 30px 80px rgba(0,0,0,0.5);overflow:hidden;position:relative}
+.s5-head{text-align:center;padding:12px 20px;background:rgba(255,255,255,0.6);border-bottom:1px solid #e0dcd6}
+.s5-head-title{font-size:18px;font-weight:700;color:#0b1f3a}
+.s5-head-nav{display:flex;justify-content:center;gap:18px;margin-top:4px;font-size:11px;font-weight:700;color:#6e7f77}
+.s5-rate-bar{background:#0b1f3a;padding:7px 0;overflow:hidden}
+.s5-rate-track{display:flex;width:200%;animation:ticker 16s linear infinite}
+.s5-rate-line{display:flex;width:50%;justify-content:space-around}
+.s5-rate-line span{white-space:nowrap;font-weight:500;font-size:11px;color:#fff}
+.s5-body{padding:14px 28px}
+.s5-brief-title{text-align:center;font-size:20px;font-weight:700;color:#0b1f3a;margin-bottom:3px;opacity:0;transform:translateY(8px)}
+.s5-brief-sub{text-align:center;font-size:11px;color:#555;margin-bottom:12px;opacity:0;transform:translateY(6px)}
+.s5-snap-label{font-size:11px;font-weight:700;color:#0b1f3a;margin-bottom:8px;opacity:0}
+.s5-cards{display:flex;gap:10px;margin-bottom:10px}
+.s5-card{flex:1;background:linear-gradient(180deg,rgba(248,242,232,0.88),rgba(248,242,232,0.72));border:1px solid rgba(255,255,255,0.6);border-radius:12px;padding:10px 12px;box-shadow:0 8px 20px rgba(160,140,110,0.1);opacity:0;transform:translateY(10px)}
+.s5-card:first-child{border-left:3px solid #002F6C}
+.s5-card-lbl{font-size:8px;font-weight:700;color:#6e7f77;letter-spacing:0.5px;text-transform:uppercase}
+.s5-card-val{font-size:18px;font-weight:700;color:#0b1f3a;margin:3px 0 1px}
+.s5-card-chg{font-size:9px;font-weight:600;padding:1px 5px;border-radius:3px;display:inline-block}
+.s5-card-chg.up{background:rgba(22,163,74,0.12);color:#16a34a}
+.s5-card-chg.dn{background:rgba(220,38,38,0.12);color:#dc2626}
+.s5-card-rows{margin-top:5px}
+.s5-card-rows div{display:flex;justify-content:space-between;font-size:8px;color:#5a6578;padding:1.5px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.s5-card-rows div span:last-child{font-weight:600;color:#0b1f3a}
+.s5-chart-area{height:80px;background:#fff;border-radius:10px;border:1px solid #e2e5ed;padding:8px 10px;position:relative;overflow:hidden;opacity:0;transform:translateY(8px)}
+.s5-chart-lbl{font-size:8px;font-weight:600;color:#0b1f3a}
+
+/* CENTER OVERLAY */
+.center-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10;pointer-events:none;background:rgba(0,0,0,0);transition:background 0.6s}
+.center-overlay.show{background:rgba(0,15,40,0.6)}
+.center-overlay-text{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;text-align:center;line-height:1.4;max-width:600px;opacity:0;transform:translateY(14px) scale(0.97);transition:opacity 0.7s cubic-bezier(0.16,1,0.3,1),transform 0.7s cubic-bezier(0.16,1,0.3,1);text-shadow:0 2px 20px rgba(0,0,0,0.3)}
+.center-overlay.show .center-overlay-text{opacity:1;transform:translateY(0) scale(1)}
+
+/* COLLECTIONS */
+.coll-scene{width:100%;height:100%;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 40px;position:relative}
+.coll-title{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#002556;opacity:0;transform:translateY(10px)}
+.coll-sub{font-size:13px;color:#555;text-align:center;max-width:520px;margin-top:6px;margin-bottom:18px;opacity:0;transform:translateY(6px)}
+.coll-grid{display:grid;gap:14px;width:100%;max-width:800px}
+.coll-grid-3{grid-template-columns:repeat(3,1fr)}
+.coll-grid-2{grid-template-columns:repeat(2,1fr)}
+.coll-grid-4{grid-template-columns:repeat(4,1fr)}
+.coll-card{border-radius:14px;background:linear-gradient(180deg,rgba(248,242,232,0.88),rgba(248,242,232,0.72));border:1px solid rgba(255,255,255,0.6);box-shadow:0 10px 25px rgba(160,140,110,0.12);overflow:hidden;opacity:0;transform:translateY(12px)}
+.coll-card-img{width:100%;height:120px;object-fit:cover;object-position:top;display:block}
+.coll-card-body{padding:10px 12px}
+.coll-card-body h4{font-size:11px;font-weight:700;color:#0b1f3a;margin-bottom:2px}
+.coll-card-body p{font-size:9px;color:#555;line-height:1.3}
+
+/* GUS */
+.s10-wrap{width:100%;height:100%;position:relative;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7)}
+.s10-page{position:absolute;inset:50px;background:#fff;border-radius:12px;border:1px solid #e2e5ed;box-shadow:0 8px 24px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:14px;color:#ccc;font-weight:500}
+.s10-gus-btn{position:absolute;top:50%;right:60px;transform:translateY(-50%);width:80px;height:80px;border-radius:50%;background:#002556;border:3px solid #baa370;box-shadow:0 6px 24px rgba(0,37,86,0.35);overflow:hidden;opacity:0;z-index:10}
+.s10-gus-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.s10-gus-label{position:absolute;top:50%;right:55px;transform:translateY(-50%);margin-top:52px;background:#002556;color:#baa370;font-size:9px;font-weight:800;padding:3px 10px;border-radius:8px;border:2px solid #baa370;letter-spacing:0.5px;white-space:nowrap;opacity:0;z-index:10}
+.s10-panel{position:absolute;top:50%;right:160px;transform:translateY(-50%) translateX(20px);width:320px;background:#faf8f4;border-radius:16px;box-shadow:0 16px 50px rgba(0,37,86,0.2);border:1px solid rgba(186,163,112,0.3);overflow:hidden;opacity:0;z-index:10}
+.s10-panel-head{background:#002556;padding:10px 14px;display:flex;align-items:center;gap:8px}
+.s10-panel-dot{width:7px;height:7px;border-radius:50%;background:#baa370}
+.s10-panel-title{font-size:11px;font-weight:700;color:#baa370;letter-spacing:0.5px}
+.s10-panel-body{padding:12px 14px}
+.s10-msg{background:rgba(0,37,86,0.05);border-radius:10px;padding:10px;font-size:11px;color:#0b1f3a;line-height:1.5;margin-bottom:6px}
+.s10-input{background:#fff;border:1px solid #e2e5ed;border-radius:8px;padding:8px 10px;font-size:10px;color:#999;width:100%}
+
+/* CTA */
+.s11{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px;background:linear-gradient(135deg,#020617 0%,#0f172a 50%,#020617 100%);width:100%;height:100%;position:relative}
+.s11::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(0,47,108,0.06) 0%,transparent 70%);top:-120px;right:-120px;pointer-events:none}
+.s11-line{opacity:0;transform:translateY(12px)}
+.s11-main{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#fff;line-height:1.4;max-width:620px}
+.s11-divider{width:50px;height:1.5px;background:linear-gradient(90deg,transparent,#9CB5A0,transparent);margin:16px auto;opacity:0;transform:scaleX(0)}
+.s11-sub{font-size:14px;color:rgba(255,255,255,0.45);max-width:540px;line-height:1.6}
+.s11-name{font-size:18px;font-weight:700;color:#fff;margin-top:20px}
+.s11-detail{font-size:12px;color:rgba(255,255,255,0.45)}
+.s11-site{margin-top:14px;font-size:14px;font-weight:600;color:#9CB5A0;padding:8px 20px;border:1.5px solid rgba(156,181,160,0.4);border-radius:8px;display:inline-block}
+.s11-realtors{font-size:11px;color:rgba(255,255,255,0.3);margin-top:6px;font-style:italic}
+
+/* PROGRESS */
+.progress{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:100}
+.pdot{width:20px;height:3px;border-radius:2px;background:rgba(255,255,255,0.12);transition:all 0.4s}
+.pdot.active{background:rgba(255,255,255,0.6);width:32px}
+.pdot.done{background:rgba(255,255,255,0.25)}
+.replay{position:fixed;bottom:16px;right:20px;z-index:100;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);padding:5px 12px;border-radius:6px;font-size:10px;font-weight:600;cursor:pointer;font-family:inherit;opacity:0;transition:all 0.3s}
+.replay.show{opacity:1}
+.replay:hover{background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.7)}
+</style>
+</head>
+<body>
+<div class="viewport">
+
+<!-- S1: LANDING -->
+<div class="scene active" id="s1">
+  <div class="s1-page" id="s1page">
+    <div class="s1-nav">
+      <img class="s1-nav-logo" id="s1logo" src="CMA Logo.png" alt="CMA">
+      <div class="s1-nav-links">
+        <span>About</span><span>Mortgage Options</span><span>Reviews</span><span>Blog</span>
+        <span class="s1-realtor-link" id="s1rl">Realtors Only<span class="pulse-ring"></span></span>
+        <span>Contact</span>
+      </div>
+      <div class="s1-phone"><div class="s1-phone-sub">Call Me</div>(206) 313-5883</div>
+    </div>
+    <div class="s1-hero">
+      <div class="s1-hero-text">
+        <div class="s1-name" id="s1n">Kristy Flach</div>
+        <div class="s1-title" id="s1t">Certified Mortgage Advisor &amp; Loan Originator</div>
+        <div class="s1-nmls" id="s1nm">nmls #2632259</div>
+        <div class="s1-tagline" id="s1tg">Mortgage clarity, built on transparency.</div>
+        <div class="s1-btn" id="s1bt">Apply Here</div>
+      </div>
+      <div class="s1-headshot" id="s1hs"><img src="hero-headshot.png" alt="Kristy Flach"></div>
+    </div>
+    <div class="s1-ticker"><div class="s1-ticker-track"><div class="s1-ticker-line"><span>30-Year 6.875%</span><span>FHA 6.500%</span><span>VA 6.375%</span><span>Jumbo 7.125%</span><span>15-Year 6.250%</span></div><div class="s1-ticker-line"><span>30-Year 6.875%</span><span>FHA 6.500%</span><span>VA 6.375%</span><span>Jumbo 7.125%</span><span>15-Year 6.250%</span></div></div></div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="scene" id="s2">
+  <div class="text-scene">
+    <div class="ts-line ts-main" id="s2a">20+ years in underwriting,<br>lending, and real estate.</div>
+    <div class="ts-divider" id="s2d"></div>
+    <div class="ts-line ts-sub" id="s2b">I understand your side of the deal<br>because I've been on your side.</div>
+    <div class="s2-punch" id="s2punch">I do partnerships differently.<div class="s2-punch-line"></div></div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="scene" id="s3">
+  <div class="text-scene">
+    <div class="context-text" id="s3ctx">I built Agent Edge to take the research,<br>the marketing, and the busy work<br>off your plate.</div>
+    <div class="fade-text" id="s3fade">So you can get back to what you do best.</div>
+    <div class="punch" id="s3punch"><span class="punch-word">Selling homes.</span><div class="punch-rule"></div></div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="scene" id="s4">
+  <div class="text-scene">
+    <div class="context-text" id="s4ctx">My goal is simple:<br>Position you as the most trusted and<br>educated Realtor in your market.</div>
+    <div class="fade-text" id="s4fade">When we invest in each other's success,</div>
+    <div class="punch" id="s4punch"><span class="punch-word-sm">Everyone wins.</span><div class="punch-rule"></div></div>
+  </div>
+</div>
+
+<!-- S5: PORTAL -->
+<div class="scene" id="s5">
+  <div class="s5-portal">
+    <div class="s5-head"><div class="s5-head-title">Agent Edge Partner Portal</div><div class="s5-head-nav"><span>Marketing Collection</span><span>Advisory Collection</span><span>Education Collection</span><span>Messaging Collection</span></div></div>
+    <div class="s5-rate-bar"><div class="s5-rate-track"><div class="s5-rate-line"><span>30-Year 6.875%</span><span>FHA 6.500%</span><span>VA 6.375%</span><span>Jumbo 7.125%</span><span>15-Year 6.250%</span></div><div class="s5-rate-line"><span>30-Year 6.875%</span><span>FHA 6.500%</span><span>VA 6.375%</span><span>Jumbo 7.125%</span><span>15-Year 6.250%</span></div></div></div>
+    <div class="s5-body">
+      <div class="s5-brief-title" id="s5bt">Agent Edge Morning Briefing</div>
+      <div class="s5-brief-sub" id="s5bs">Daily market intelligence designed to help Realtor partners speak with clarity and confidence.</div>
+      <div class="s5-snap-label" id="s5sl">Today's Market Snapshot</div>
+      <div class="s5-cards">
+        <div class="s5-card" id="s5c1"><div class="s5-card-lbl">Mortgage Bond Pricing</div><div class="s5-card-val">101.14</div><div class="s5-card-chg up">+22 bps</div><div class="s5-card-rows"><div><span>Last Night's Close</span><span>100.92</span></div><div><span>Open (9 AM)</span><span>100.98</span></div><div><span>Mid-Day (12 PM)</span><span>101.08</span></div><div><span>Current</span><span>101.14</span></div></div></div>
+        <div class="s5-card" id="s5c2"><div class="s5-card-lbl">10-Year Treasury Yield</div><div class="s5-card-val">4.218%</div><div class="s5-card-chg dn">-3.4 bps</div><div class="s5-card-rows"><div><span>Previous Close</span><span>4.252%</span></div><div><span>Open (9 AM)</span><span>4.241%</span></div><div><span>Mid-Day</span><span>4.228%</span></div><div><span>Current</span><span>4.218%</span></div></div></div>
+        <div class="s5-card" id="s5c3"><div class="s5-card-lbl">S&amp;P 500</div><div class="s5-card-val">5,842</div><div class="s5-card-chg up">+18.6 pts</div><div class="s5-card-rows"><div><span>Previous Close</span><span>5,823</span></div><div><span>Today's Open</span><span>5,830</span></div><div><span>High</span><span>5,856</span></div><div><span>Low</span><span>5,819</span></div></div></div>
+      </div>
+      <div class="s5-chart-area" id="s5ch"><div class="s5-chart-lbl">UMBS 5.5% — 90 Day Trend</div><svg viewBox="0 0 400 50" preserveAspectRatio="none" style="position:absolute;bottom:6px;left:10px;right:10px;height:45px"><polyline fill="none" stroke="#16a34a" stroke-width="1.5" points="0,40 20,38 40,35 60,37 80,32 100,29 120,31 140,27 160,25 180,28 200,23 220,21 240,24 260,19 280,17 300,15 320,18 340,13 360,11 380,9 400,7" stroke-dasharray="800" stroke-dashoffset="800" id="s5path"/><polyline fill="none" stroke="#2563eb" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" points="0,30 400,26"/><polyline fill="none" stroke="#a855f7" stroke-width="1" opacity="0.4" stroke-dasharray="4,3" points="0,34 400,18"/></svg></div>
+    </div>
+    <div class="center-overlay" id="s5ov"><div class="center-overlay-text">Every morning, my partners get<br>real-time data on what's moving the markets.</div></div>
+  </div>
+</div>
+
+<!-- S6: ADVISORY -->
+<div class="scene" id="s6">
+  <div class="coll-scene">
+    <div class="coll-title" id="s6t">Advisory Collection</div>
+    <div class="coll-sub" id="s6s">Curated advisory resources to help you guide confident, informed client decisions.</div>
+    <div class="coll-grid coll-grid-3">
+      <div class="coll-card" id="s6c1"><img class="coll-card-img" src="advisory_market_intelligence.jpg" alt="Market Intelligence"><div class="coll-card-body"><h4>Market Intelligence</h4><p>Appreciation, Buy vs Rent, Real Estate Report Cards and more.</p></div></div>
+      <div class="coll-card" id="s6c2"><img class="coll-card-img" src="advisory_financing_strategies.jpg" alt="Financing Strategies"><div class="coll-card-body"><h4>Financing Strategies</h4><p>Loan comparison, calculators, and creative financing solutions.</p></div></div>
+      <div class="coll-card" id="s6c3"><img class="coll-card-img" src="advisory_decision_tools.jpg" alt="Decision Tools"><div class="coll-card-body"><h4>Decision Tools</h4><p>Market Pulse, Scenario Desk, Seller Strategies.</p></div></div>
+    </div>
+    <div class="center-overlay" id="s6ov"><div class="center-overlay-text">On-demand reports and market research,<br>done for you.</div></div>
+  </div>
+</div>
+
+<!-- S7: EDUCATION -->
+<div class="scene" id="s7">
+  <div class="coll-scene">
+    <div class="coll-title" id="s7t">Education Collection</div>
+    <div class="coll-sub" id="s7s">Professional education resources and interactive tools for informed client conversations.</div>
+    <div class="coll-grid coll-grid-2" style="max-width:640px">
+      <div class="coll-card" id="s7c1"><img class="coll-card-img" src="education_financial_calculators.jpg" alt="Calculators"><div class="coll-card-body"><h4>Financial Calculators</h4><p>W-2 and Self-Employed income tools.</p></div></div>
+      <div class="coll-card" id="s7c2"><img class="coll-card-img" src="education_video_library.jpg" alt="Videos"><div class="coll-card-body"><h4>Video Library</h4><p>Client education content.</p></div></div>
+      <div class="coll-card" id="s7c3"><img class="coll-card-img" src="education_loan_guides.jpg" alt="Loan Guides"><div class="coll-card-body"><h4>Loan Program Guides</h4><p>Conventional, FHA, VA, USDA and more.</p></div></div>
+      <div class="coll-card" id="s7c4"><img class="coll-card-img" src="education_credit_tools.jpg" alt="Credit Tools"><div class="coll-card-body"><h4>Credit &amp; Financial Tools</h4><p>Credit score simulator and analysis.</p></div></div>
+    </div>
+    <div class="center-overlay" id="s7ov"><div class="center-overlay-text">Client education tools, ready to share.</div></div>
+  </div>
+</div>
+
+<!-- S8: MARKETING -->
+<div class="scene" id="s8">
+  <div class="coll-scene">
+    <div class="coll-title" id="s8t">Marketing Collection</div>
+    <div class="coll-sub" id="s8s">Professional marketing materials designed to help you grow your business.</div>
+    <div class="coll-grid coll-grid-4" style="max-width:800px">
+      <div class="coll-card" id="s8c1"><img class="coll-card-img" src="flyer-previews/preview-open-house-2.png" alt="Open House"><div class="coll-card-body"><h4>Open House</h4><p>Sign-in sheets &amp; guides.</p></div></div>
+      <div class="coll-card" id="s8c2"><img class="coll-card-img" src="flyer-previews/preview-buyer-seller-paid.png" alt="Buyers"><div class="coll-card-body"><h4>Buyers</h4><p>First-time buyer tools.</p></div></div>
+      <div class="coll-card" id="s8c3"><img class="coll-card-img" src="flyer-previews/preview-seller-ready-to-sell.png" alt="Sellers"><div class="coll-card-body"><h4>Sellers</h4><p>Listing support materials.</p></div></div>
+      <div class="coll-card" id="s8c4"><img class="coll-card-img" src="flyer-previews/preview-financing-refi.png" alt="Financing"><div class="coll-card-body"><h4>Financing</h4><p>Loan program visuals.</p></div></div>
+      <div class="coll-card" id="s8c5"><img class="coll-card-img" src="flyer-previews/preview-construction-to-perm.png" alt="Construction"><div class="coll-card-body"><h4>Construction</h4><p>Build &amp; renovation.</p></div></div>
+      <div class="coll-card" id="s8c6"><img class="coll-card-img" src="flyer-previews/preview-ed-credit-score.png" alt="Education"><div class="coll-card-body"><h4>Education</h4><p>Client handouts.</p></div></div>
+      <div class="coll-card" id="s8c7"><img class="coll-card-img" src="flyer-previews/pw-contemporary.png" alt="Property Websites"><div class="coll-card-body"><h4>Property Websites</h4><p>Custom listing sites.</p></div></div>
+      <div class="coll-card" id="s8c8"><img class="coll-card-img" src="flyer-previews/preview-hometown-hero2.png" alt="Hometown Heroes"><div class="coll-card-body"><h4>Hometown Heroes</h4><p>Veteran programs.</p></div></div>
+    </div>
+    <div class="center-overlay" id="s8ov"><div class="center-overlay-text">Flyers ready to print, your brand.</div></div>
+  </div>
+</div>
+
+<!-- S9: MESSAGING -->
+<div class="scene" id="s9">
+  <div class="coll-scene">
+    <div class="coll-title" id="s9t">Messaging Collection</div>
+    <div class="coll-sub" id="s9s">Ready-to-use social media content, AI-powered custom posts, and image resources.</div>
+    <div class="coll-grid coll-grid-3" style="max-width:700px">
+      <div class="coll-card" id="s9c1"><img class="coll-card-img" src="messaging_ondemand_studio.jpg" alt="On-Demand"><div class="coll-card-body"><h4>On-Demand Content Studio</h4><p>AI-powered custom posts for any topic.</p></div></div>
+      <div class="coll-card" id="s9c2"><img class="coll-card-img" src="messaging_grabandgo_studio.jpg" alt="Grab and Go"><div class="coll-card-body"><h4>Grab &amp; Go Posts</h4><p>Pre-built social content, ready to share.</p></div></div>
+      <div class="coll-card" id="s9c3"><img class="coll-card-img" src="messaging_image_library.jpg" alt="Images"><div class="coll-card-body"><h4>Image Library</h4><p>Professional images for your posts.</p></div></div>
+    </div>
+    <div class="center-overlay" id="s9ov"><div class="center-overlay-text">Social content, handled.</div></div>
+  </div>
+</div>
+
+<!-- S10: GUS -->
+<div class="scene" id="s10">
+  <div class="s10-wrap">
+    <div class="s10-page">Any page on Agent Edge</div>
+    <div class="s10-gus-btn" id="s10fab"><img src="gus.JPG" alt="Gus"></div>
+    <div class="s10-gus-label" id="s10lbl">ASK GUS</div>
+    <div class="s10-panel" id="s10pan">
+      <div class="s10-panel-head"><div class="s10-panel-dot"></div><div class="s10-panel-title">Ask Gus</div></div>
+      <div class="s10-panel-body"><div class="s10-msg">Hi! I'm Gus — I can help you find anything on Agent Edge. Ask me about reports, flyers, calculators, loan programs, or anything else you need.</div><div class="s10-input">Type your question...</div></div>
+    </div>
+    <div class="center-overlay" id="s10ov"><div class="center-overlay-text">Questions? Ask Gus — on every page.</div></div>
+  </div>
+</div>
+
+<!-- S11: CTA -->
+<div class="scene" id="s11">
+  <div class="s11">
+    <div class="s11-line s11-main" id="s11a">This is just the overview.</div>
+    <div class="s11-line s11-sub" id="s11b" style="margin-top:8px">Over the next few emails, I'll take you inside the tools.</div>
+    <div class="s11-divider" id="s11d"></div>
+    <div class="s11-line s11-main" id="s11c" style="font-size:22px;margin-top:4px">Visit kristyflach.com — look for the<br><span class="ts-accent">Realtors Only</span> section.</div>
+    <div class="s11-line s11-sub" id="s11e" style="margin-top:12px">I am excited to show you what's possible<br>and what real partnership looks like.</div>
+    <div class="s11-divider" id="s11d2"></div>
+    <div class="s11-line" id="s11f"><div class="s11-name">Kristy Flach</div><div class="s11-detail">Certified Mortgage Advisor &amp; Loan Originator</div><div class="s11-detail">(206) 313-5883 · kristyflach.com</div></div>
+    <div class="s11-line" id="s11g"><div class="s11-site">kristyflach.com</div></div>
+    <div class="s11-line" id="s11h"><div class="s11-realtors">Look for "Realtors Only" in the navigation</div></div>
+  </div>
+</div>
+
+</div>
+
+<div class="progress" id="prog"></div>
+<button class="replay" id="replayBtn" onclick="startTour()"><i class="fas fa-redo" style="margin-right:4px"></i> Replay</button>
+
+<script>
+var SCENES=11,cur=0,timers=[];
+var T={1:5500, 2:8000, 3:8500, 4:8500, 5:7500, 6:7500, 7:7500, 8:7500, 9:7000, 10:7500, 11:0};
+
+(function(){var p=document.getElementById('prog');for(var i=1;i<=SCENES;i++){var d=document.createElement('div');d.className='pdot';d.dataset.s=i;p.appendChild(d)}})();
+
+function clr(){timers.forEach(clearTimeout);timers=[]}
+function dl(fn,ms){timers.push(setTimeout(fn,ms))}
+function fadeIn(id,ms){dl(function(){var el=document.getElementById(id);if(!el)return;el.style.transition='opacity 0.6s cubic-bezier(0.16,1,0.3,1),transform 0.6s cubic-bezier(0.16,1,0.3,1)';el.style.opacity='1';el.style.transform='translateY(0) scale(1)'},ms)}
+function divIn(id,ms){dl(function(){var el=document.getElementById(id);if(!el)return;el.style.transition='opacity 0.6s,transform 0.6s';el.style.opacity='1';el.style.transform='scaleX(1)'},ms)}
+function showOv(id,ms){dl(function(){var el=document.getElementById(id);if(el)el.classList.add('show')},ms)}
+
+function showScene(n){
+  for(var i=1;i<=SCENES;i++)document.getElementById('s'+i).classList.remove('active');
+  document.getElementById('s'+n).classList.add('active');cur=n;
+  document.querySelectorAll('.pdot').forEach(function(d){var sn=parseInt(d.dataset.s);d.classList.remove('active','done');if(sn<n)d.classList.add('done');if(sn===n)d.classList.add('active')});
+  ({1:animS1,2:animS2,3:animS3,4:animS4,5:animS5,6:animS6,7:animS7,8:animS8,9:animS9,10:animS10,11:animS11})[n]();
+  if(T[n]>0)dl(function(){showScene(n+1)},T[n]);
+  else dl(function(){document.getElementById('replayBtn').classList.add('show')},2500);
+}
+
+function animS1(){
+  fadeIn('s1logo',200);fadeIn('s1hs',400);fadeIn('s1n',500);fadeIn('s1t',700);fadeIn('s1nm',850);fadeIn('s1tg',1000);fadeIn('s1bt',1200);
+  dl(function(){document.getElementById('s1page').classList.add('spotlight')},3000);
+  dl(function(){document.getElementById('s1rl').classList.add('highlight')},3200);
+}
+function animS2(){
+  fadeIn('s2a',300);divIn('s2d',900);fadeIn('s2b',1300);
+  dl(function(){document.getElementById('s2punch').classList.add('in')},3200);
+}
+function animS3(){
+  dl(function(){var el=document.getElementById('s3ctx');el.style.transition='opacity 0.8s';el.style.opacity='1'},200);
+  fadeIn('s3fade',2000);
+  dl(function(){document.getElementById('s3punch').classList.add('reveal')},4000);
+}
+function animS4(){
+  dl(function(){var el=document.getElementById('s4ctx');el.style.transition='opacity 0.8s';el.style.opacity='1'},200);
+  fadeIn('s4fade',2000);
+  dl(function(){document.getElementById('s4punch').classList.add('reveal')},4000);
+}
+function animS5(){
+  fadeIn('s5bt',200);fadeIn('s5bs',400);fadeIn('s5sl',600);
+  fadeIn('s5c1',900);fadeIn('s5c2',1100);fadeIn('s5c3',1300);
+  fadeIn('s5ch',1600);
+  dl(function(){var p=document.getElementById('s5path');p.style.transition='stroke-dashoffset 1.5s ease';p.style.strokeDashoffset='0'},1800);
+  showOv('s5ov',4500);
+}
+function animColl(pre,cards,ovId,ovT){fadeIn(pre+'t',200);fadeIn(pre+'s',400);cards.forEach(function(id,i){fadeIn(id,700+i*130)});showOv(ovId,ovT)}
+function animS6(){animColl('s6',['s6c1','s6c2','s6c3'],'s6ov',4500)}
+function animS7(){animColl('s7',['s7c1','s7c2','s7c3','s7c4'],'s7ov',4500)}
+function animS8(){animColl('s8',['s8c1','s8c2','s8c3','s8c4','s8c5','s8c6','s8c7','s8c8'],'s8ov',5000)}
+function animS9(){animColl('s9',['s9c1','s9c2','s9c3'],'s9ov',4000)}
+function animS10(){
+  dl(function(){var f=document.getElementById('s10fab');f.style.transition='opacity 0.6s';f.style.opacity='1'},600);
+  dl(function(){var l=document.getElementById('s10lbl');l.style.transition='opacity 0.4s';l.style.opacity='1'},1000);
+  dl(function(){var p=document.getElementById('s10pan');p.style.transition='opacity 0.6s,transform 0.6s cubic-bezier(0.16,1,0.3,1)';p.style.opacity='1';p.style.transform='translateY(-50%) translateX(0)'},1800);
+  showOv('s10ov',4500);
+}
+function animS11(){
+  fadeIn('s11a',400);fadeIn('s11b',900);divIn('s11d',1500);
+  fadeIn('s11c',2000);fadeIn('s11e',2800);divIn('s11d2',3400);
+  fadeIn('s11f',4000);fadeIn('s11g',4600);fadeIn('s11h',5100);
+}
+
+function resetAll(){
+  clr();document.getElementById('replayBtn').classList.remove('show');
+  ['s1logo','s1n','s1t','s1nm','s1tg','s1bt'].forEach(function(id){var el=document.getElementById(id);el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'});
+  document.getElementById('s1hs').style.cssText='width:230px;height:290px;border-radius:16px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,0.15);flex-shrink:0;opacity:0;transform:scale(0.95);transition:none';
+  document.getElementById('s1page').classList.remove('spotlight');
+  document.getElementById('s1rl').classList.remove('highlight');
+  ['s2a','s2b'].forEach(function(id){var el=document.getElementById(id);el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(16px)'});
+  document.getElementById('s2d').style.cssText='opacity:0;transform:scaleX(0);transition:none';
+  var s2p=document.getElementById('s2punch');s2p.classList.remove('in');s2p.removeAttribute('style');
+  document.getElementById('s3ctx').style.cssText='opacity:0';
+  document.getElementById('s3fade').style.cssText='opacity:0;transform:translateY(10px);transition:none';
+  var s3p=document.getElementById('s3punch');s3p.classList.remove('reveal');s3p.removeAttribute('style');
+  document.getElementById('s4ctx').style.cssText='opacity:0';
+  document.getElementById('s4fade').style.cssText='opacity:0;transform:translateY(10px);transition:none';
+  var s4p=document.getElementById('s4punch');s4p.classList.remove('reveal');s4p.removeAttribute('style');
+  ['s5bt','s5bs','s5sl','s5c1','s5c2','s5c3','s5ch'].forEach(function(id){var el=document.getElementById(id);el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(10px)'});
+  document.getElementById('s5path').style.cssText='stroke-dashoffset:800;transition:none';
+  ['s6t','s6s','s6c1','s6c2','s6c3','s7t','s7s','s7c1','s7c2','s7c3','s7c4','s8t','s8s','s8c1','s8c2','s8c3','s8c4','s8c5','s8c6','s8c7','s8c8','s9t','s9s','s9c1','s9c2','s9c3'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'}});
+  ['s5ov','s6ov','s7ov','s8ov','s9ov','s10ov'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('show')});
+  document.getElementById('s10fab').style.cssText='opacity:0;transition:none';
+  document.getElementById('s10lbl').style.cssText='opacity:0;transition:none';
+  document.getElementById('s10pan').style.cssText='opacity:0;transform:translateY(-50%) translateX(20px);transition:none';
+  ['s11a','s11b','s11c','s11e','s11f','s11g','s11h'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'}});
+  ['s11d','s11d2'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='scaleX(0)'}});
+}
+
+function startTour(){resetAll();setTimeout(function(){showScene(1)},150)}
+startTour();
+</script>
+</body>
+</html>
