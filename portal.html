@@ -489,7 +489,7 @@ h1 {
 .mkts-dma-row { display:flex; align-items:center; gap:18px; padding:10px 0; border-top:1px solid rgba(110,127,119,0.15); margin-bottom:6px; flex-wrap:wrap; }
 .mkts-dma-row label { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#0b1f3a; cursor:pointer; }
 .mkts-dma-row input[type="checkbox"] { width:14px; height:14px; }
-.mkts-chart-wrap { border-radius:14px; background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,0.7); box-shadow:0 6px 20px rgba(160,140,110,0.08); overflow:hidden; }
+.mkts-chart-wrap { border-radius:14px; background:rgba(255,255,255,0.85); border:1px solid rgba(255,255,255,0.7); box-shadow:0 6px 20px rgba(160,140,110,0.08); overflow:visible; position:relative; }
 .mkts-chart-wrap canvas { width:100%; height:360px; display:block; }
 .mkts-ranges { display:flex; margin-top:12px; border-radius:10px; overflow:hidden; border:1px solid rgba(110,127,119,0.2); }
 .mkts-ranges button { flex:1; padding:9px; font-size:12px; font-weight:600; border:none; background:rgba(255,255,255,0.7); color:#5a5145; cursor:pointer; border-right:1px solid rgba(110,127,119,0.15); transition:all 0.15s; font-family:inherit; }
@@ -863,15 +863,10 @@ h1 {
     </div>
     <div class="mkts-chart-wrap">
       <canvas id="mktsMainChart"></canvas>
-    </div>
-    <div class="mkts-ranges" id="mktsChartRanges">
-      <button onclick="mktsChangeRange('5d')" data-range="5d">1 Week</button>
-      <button onclick="mktsChangeRange('1mo')" data-range="1mo">2 Weeks</button>
-      <button onclick="mktsChangeRange('3wk')" data-range="3wk">3 Weeks</button>
-      <button onclick="mktsChangeRange('1mo2')" data-range="1mo2" class="active">Monthly</button>
-      <button onclick="mktsChangeRange('3mo')" data-range="3mo">3 Months</button>
-      <button onclick="mktsChangeRange('6mo')" data-range="6mo">6 Months</button>
-      <button onclick="mktsChangeRange('1y')" data-range="1y">Yearly</button>
+      <div id="mktsCrosshair" style="display:none;position:absolute;pointer-events:none;z-index:10;">
+        <div style="position:absolute;top:0;bottom:0;width:1px;background:rgba(110,127,119,0.4);left:0;"></div>
+        <div id="mktsCrosshairLabel" style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);background:#6e7f77;color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;white-space:nowrap;font-family:system-ui,sans-serif;"></div>
+      </div>
     </div>
     <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · Bond &amp; equity data delayed · Snapshots at 9 AM, 12 PM, 2 PM, 5 PM ET</div>
 
@@ -1479,86 +1474,61 @@ function mktsSetVal(id,v){var e=document.getElementById(id);if(e)e.textContent=v
 function mktsSetSnap(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(2):'—';}
 function mktsSetSnapYield(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(3)+'%':'—';}
 
-function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var lbl=document.getElementById('mktsUmbsLabel');if(lbl)lbl.textContent='Mortgage Bond Pricing ('+c+'%)';var dl=document.getElementById('mktsDMALabel');if(dl)dl.textContent='UMBS 30YR '+c+'%';mktsResetZoom();loadMarketsData();}
-function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsResetZoom();mktsLoadChart();}
+function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var lbl=document.getElementById('mktsUmbsLabel');if(lbl)lbl.textContent='Mortgage Bond Pricing ('+c+'%)';var dl=document.getElementById('mktsDMALabel');if(dl)dl.textContent='UMBS 30YR '+c+'%';loadMarketsData();mktsLoadChart();}
+function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsLoadChart();}
 function mktsChangeRange(r){mktsCurrentRange=r;document.querySelectorAll('#mktsChartRanges button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-range')===r);});mktsResetZoom();mktsLoadChart();}
 function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById('mktsDMA'+p+'CB');if(cb)cb.checked=mktsDMA[p];mktsRenderChartFromData();}
 
 function mktsLoadChart(){
-  var isT=mktsCurrentSymbol==='10Y';var apiRange=mktsRangeToApi(mktsCurrentRange);
-
+  var isT=mktsCurrentSymbol==='10Y';
   if(isT){
-    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range='+apiRange).then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range=6mo').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   } else if(mktsCurrentSymbol==='UMBS_5.5') {
-    // Hybrid: Yahoo history as base, manual entries merged on top for matching dates
-    var bigRange=apiRange;
-    if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
-    else if(apiRange==='3mo')bigRange='1y';
-    else if(apiRange==='6mo')bigRange='2y';
-
-    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d';
+    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=6mo&interval=1d';
     var manualUrl='https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history';
-
-    // Fetch both in parallel
-    var yahooData=null,manualData=null;
-    var loaded=0;
+    var yahooData=null,manualData=null,loaded=0;
     function mergeAndRender(){
-      loaded++;
-      if(loaded<2)return;
-      // Start with Yahoo data as base
+      loaded++;if(loaded<2)return;
       var baseData=(yahooData&&yahooData.data)?yahooData.data.slice():[];
-      // Build a map of manual entries by date
       var manualMap={};
-      if(manualData&&manualData.data){
-        manualData.data.forEach(function(c){
-          var d=c.date?c.date.split('T')[0]:null;
-          if(d)manualMap[d]=c;
-        });
-      }
-      // Replace Yahoo candles with manual entries where dates match, append new dates
-      var merged=[];
-      var usedManualDates={};
-      baseData.forEach(function(c){
-        var dateStr=c.date?c.date.split('T')[0]:null;
-        if(dateStr&&manualMap[dateStr]){
-          merged.push(manualMap[dateStr]);
-          usedManualDates[dateStr]=true;
-        } else {
-          merged.push(c);
-        }
-      });
-      // Add any manual dates not in Yahoo (like today)
-      Object.keys(manualMap).forEach(function(d){
-        if(!usedManualDates[d])merged.push(manualMap[d]);
-      });
-      // Sort by date
+      if(manualData&&manualData.data){manualData.data.forEach(function(c){var d=c.date?c.date.split('T')[0]:null;if(d)manualMap[d]=c;});}
+      var merged=[],usedDates={};
+      baseData.forEach(function(c){var ds=c.date?c.date.split('T')[0]:null;if(ds&&manualMap[ds]){merged.push(manualMap[ds]);usedDates[ds]=true;}else{merged.push(c);}});
+      Object.keys(manualMap).forEach(function(d){if(!usedDates[d])merged.push(manualMap[d]);});
       merged.sort(function(a,b){var da=(a.date||'').split('T')[0];var db=(b.date||'').split('T')[0];return da<db?-1:da>db?1:0;});
-
-      if(yahooData){
-        yahooData.data=merged;
-        yahooData._displayRange=mktsCurrentRange;
-        mktsChartData=yahooData;
-      } else {
-        mktsChartData={type:'candle',data:merged,_displayRange:mktsCurrentRange};
-      }
-      mktsResetZoom();mktsRenderChartFromData();
+      mktsChartData=yahooData||{type:'candle'};mktsChartData.data=merged;mktsRenderChartFromData();
     }
-
     fetch(yahooUrl).then(function(r){return r.json();}).then(function(d){yahooData=d;mergeAndRender();}).catch(function(){yahooData={data:[]};mergeAndRender();});
     fetch(manualUrl).then(function(r){return r.json();}).then(function(d){manualData=d;mergeAndRender();}).catch(function(){manualData={data:[]};mergeAndRender();});
   } else {
-    // 5% and 6% coupons, SPY — still use Yahoo
-    var bigRange=apiRange;
-    if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
-    else if(apiRange==='3mo')bigRange='1y';
-    else if(apiRange==='6mo')bigRange='2y';
-    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsChartData._displayRange=mktsCurrentRange;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=6mo&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   }
 }
 
-/* ═══ CHART SCROLL (horizontal scrollbar via range buttons — no zoom/pan) ═══ */
-var mktsZoomStart=null,mktsZoomEnd=null;
-function mktsResetZoom(){mktsZoomStart=null;mktsZoomEnd=null;}
+/* ═══ CROSSHAIR ═══ */
+var mktsChartXPositions=[];
+(function(){
+  document.addEventListener('mousemove',function(ev){
+    var canvas=document.getElementById('mktsMainChart');if(!canvas)return;
+    var r=canvas.getBoundingClientRect();
+    var ch=document.getElementById('mktsCrosshair');if(!ch)return;
+    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom){ch.style.display='none';return;}
+    if(!mktsChartXPositions||mktsChartXPositions.length===0){ch.style.display='none';return;}
+    // Find closest candle
+    var mouseX=ev.clientX-r.left;
+    var closest=0,closestDist=Infinity;
+    mktsChartXPositions.forEach(function(xp,i){var d=Math.abs(xp.x-mouseX);if(d<closestDist){closestDist=d;closest=i;}});
+    var cp=mktsChartXPositions[closest];
+    if(!cp){ch.style.display='none';return;}
+    ch.style.display='block';
+    ch.style.left=cp.x+'px';ch.style.top='0';ch.style.height=r.height+'px';
+    var dt=new Date(cp.date+'T12:00:00');
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    document.getElementById('mktsCrosshairLabel').textContent=days[dt.getDay()]+', '+months[dt.getMonth()]+' '+dt.getDate()+', '+dt.getFullYear();
+  });
+  document.addEventListener('mouseleave',function(){var ch=document.getElementById('mktsCrosshair');if(ch)ch.style.display='none';});
+})();
 
 /* ═══ RENDER ═══ */
 function mktsRenderChartFromData(){
@@ -1568,14 +1538,9 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  var dd={'5d':7,'1mo':12,'3wk':17,'1mo2':24,'3mo':65,'6mo':130,'1y':252};
-  var dr=mktsChartData._displayRange||mktsCurrentRange;var ds=dd[dr]||allData.length;
-  // Always show from the end so today is the rightmost candle
-  var vs,ve;
-  ve=allData.length;
-  vs=Math.max(0,ve-ds);
-  if(mktsZoomStart!==null&&mktsZoomEnd!==null){vs=mktsZoomStart;ve=mktsZoomEnd;}
-  var displayData=allData.slice(vs,ve);if(displayData.length===0)return;
+  // Show all available data — no slicing
+  var displayData=allData;
+  var vs=0;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
   else mktsDrawCandlesFull(ctx,w,h,allData,vs,displayData);
 }
@@ -1587,7 +1552,30 @@ function mktsCalcPivotsFromValues(H,L,C,dec){if(!H||!L||!C)return null;var P=(H+
 
 /* ═══ DRAW HELPERS ═══ */
 function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){for(var g=0;g<=7;g++){var gy=pad.top+(h-pad.top-pad.bottom)/7*g;ctx.strokeStyle='#ede8df';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxV-(range/7)*g).toFixed(dec||2)+(suffix||''),w-pad.right+5,gy+3);}}
-function mktsDrawDates(ctx,w,h,data,xP){ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var li=data.length<=15?1:Math.max(1,Math.ceil(data.length/10));data.forEach(function(c,i){if(i%li===0||i===data.length-1){var dt=new Date((c.date||c)+'T12:00:00');ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);}});}
+function mktsDrawDates(ctx,w,h,data,xP){
+  ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  // Store x positions for crosshair
+  mktsChartXPositions=[];
+  var lastMonday='';
+  data.forEach(function(c,i){
+    var dateStr=(c.date||'').split('T')[0];
+    mktsChartXPositions.push({x:xP(i),date:dateStr});
+    var dt=new Date(dateStr+'T12:00:00');
+    var dow=dt.getDay();
+    // Label on Mondays (1) or Tuesday (2) if Monday is missing
+    var weekKey=dt.getFullYear()+'-W'+Math.ceil(((dt-new Date(dt.getFullYear(),0,1))/86400000+1)/7);
+    if((dow===1||(dow===2&&lastMonday!==weekKey))&&lastMonday!==weekKey){
+      ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);
+      lastMonday=weekKey;
+    }
+  });
+  // Always label the last date
+  if(data.length>0){
+    var last=data[data.length-1];var ld=new Date(((last.date||'').split('T')[0])+'T12:00:00');
+    ctx.fillText(months[ld.getMonth()]+' '+ld.getDate(),xP(data.length-1),h-6);
+  }
+}
 function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP){if(!fib)return;ctx.setLineDash([5,4]);Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minV&&f.level<=maxV){var y=yP(f.level);ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle='#6e7f77';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,pad.left+10,y-4);}});ctx.setLineDash([]);}
 function mktsDrawSR(ctx,pad,w,pv,minV,maxV,yP,dec){if(!pv)return;ctx.setLineDash([8,4]);var d=dec||2;[{v:pv.r2,l:'R2 '+pv.r2.toFixed(d),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(d),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(d),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(d),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minV&&sr.v<=maxV){var y=yP(sr.v);ctx.strokeStyle=sr.c;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle=sr.c;ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='right';ctx.fillText(sr.l,w-pad.right-5,y-4);}});ctx.setLineDash([]);}
 function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
