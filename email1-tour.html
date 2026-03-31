@@ -102,7 +102,8 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 .center-overlay.show .center-overlay-text{opacity:1;transform:translateY(0) scale(1)}
 
 /* COLLECTIONS */
-.coll-scene{width:100%;height:100%;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 40px;position:relative}
+.coll-scene{width:100%;height:100%;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7);display:flex;align-items:center;justify-content:center;padding:30px 40px;position:relative}
+.coll-frame{display:flex;flex-direction:column;align-items:center;padding:36px 44px;border-radius:20px;background:rgba(255,255,255,0.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.65);box-shadow:0 20px 55px rgba(0,0,0,0.10),0 6px 18px rgba(0,0,0,0.05);max-width:860px;width:100%}
 .coll-title{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#002556;opacity:0;transform:translateY(10px)}
 .coll-sub{font-size:13px;color:#555;text-align:center;max-width:520px;margin-top:6px;margin-bottom:18px;opacity:0;transform:translateY(6px)}
 .coll-grid{display:grid;gap:14px;width:100%;max-width:800px}
@@ -234,12 +235,14 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 <!-- S6: ADVISORY -->
 <div class="scene" id="s6">
   <div class="coll-scene">
+    <div class="coll-frame">
     <div class="coll-title" id="s6t">Advisory Collection</div>
     <div class="coll-sub" id="s6s">Curated advisory resources to help you guide confident, informed client decisions.</div>
     <div class="coll-grid coll-grid-3">
       <div class="coll-card" id="s6c1"><img class="coll-card-img" src="advisory_market_intelligence.jpg" alt="Market Intelligence"><div class="coll-card-body"><h4>Market Intelligence</h4><p>Appreciation, Buy vs Rent, Real Estate Report Cards and more.</p></div></div>
       <div class="coll-card" id="s6c2"><img class="coll-card-img" src="advisory_financing_strategies.jpg" alt="Financing Strategies"><div class="coll-card-body"><h4>Financing Strategies</h4><p>Loan comparison, calculators, and creative financing solutions.</p></div></div>
       <div class="coll-card" id="s6c3"><img class="coll-card-img" src="advisory_decision_tools.jpg" alt="Decision Tools"><div class="coll-card-body"><h4>Decision Tools</h4><p>Market Pulse, Scenario Desk, Seller Strategies.</p></div></div>
+    </div>
     </div>
     <div class="center-overlay" id="s6ov"><div class="center-overlay-text">On-demand reports and market research,<br>done for you.</div></div>
   </div>
@@ -248,6 +251,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 <!-- S7: EDUCATION -->
 <div class="scene" id="s7">
   <div class="coll-scene">
+    <div class="coll-frame">
     <div class="coll-title" id="s7t">Education Collection</div>
     <div class="coll-sub" id="s7s">Professional education resources and interactive tools for informed client conversations.</div>
     <div class="coll-grid coll-grid-2" style="max-width:640px">
@@ -256,6 +260,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
       <div class="coll-card" id="s7c3"><img class="coll-card-img" src="education_loan_guides.jpg" alt="Loan Guides"><div class="coll-card-body"><h4>Loan Program Guides</h4><p>Conventional, FHA, VA, USDA and more.</p></div></div>
       <div class="coll-card" id="s7c4"><img class="coll-card-img" src="education_credit_tools.jpg" alt="Credit Tools"><div class="coll-card-body"><h4>Credit &amp; Financial Tools</h4><p>Credit score simulator and analysis.</p></div></div>
     </div>
+    </div>
     <div class="center-overlay" id="s7ov"><div class="center-overlay-text">Client education tools, ready to share.</div></div>
   </div>
 </div>
@@ -263,6 +268,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 <!-- S8: MARKETING -->
 <div class="scene" id="s8">
   <div class="coll-scene">
+    <div class="coll-frame">
     <div class="coll-title" id="s8t">Marketing Collection</div>
     <div class="coll-sub" id="s8s">Professional marketing materials designed to help you grow your business.</div>
     <div class="coll-grid coll-grid-4" style="max-width:800px">
@@ -275,6 +281,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
       <div class="coll-card" id="s8c7"><img class="coll-card-img" src="flyer-previews/pw-contemporary.png" alt="Property Websites"><div class="coll-card-body"><h4>Property Websites</h4><p>Custom listing sites.</p></div></div>
       <div class="coll-card" id="s8c8"><img class="coll-card-img" src="flyer-previews/preview-hometown-hero2.png" alt="Hometown Heroes"><div class="coll-card-body"><h4>Hometown Heroes</h4><p>Veteran programs.</p></div></div>
     </div>
+    </div>
     <div class="center-overlay" id="s8ov"><div class="center-overlay-text">Flyers ready to print, your brand.</div></div>
   </div>
 </div>
@@ -282,12 +289,14 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 <!-- S9: MESSAGING -->
 <div class="scene" id="s9">
   <div class="coll-scene">
+    <div class="coll-frame">
     <div class="coll-title" id="s9t">Messaging Collection</div>
     <div class="coll-sub" id="s9s">Ready-to-use social media content, AI-powered custom posts, and image resources.</div>
     <div class="coll-grid coll-grid-3" style="max-width:700px">
       <div class="coll-card" id="s9c1"><img class="coll-card-img" src="messaging_ondemand_studio.jpg" alt="On-Demand"><div class="coll-card-body"><h4>On-Demand Content Studio</h4><p>AI-powered custom posts for any topic.</p></div></div>
       <div class="coll-card" id="s9c2"><img class="coll-card-img" src="messaging_grabandgo_studio.jpg" alt="Grab and Go"><div class="coll-card-body"><h4>Grab &amp; Go Posts</h4><p>Pre-built social content, ready to share.</p></div></div>
       <div class="coll-card" id="s9c3"><img class="coll-card-img" src="messaging_image_library.jpg" alt="Images"><div class="coll-card-body"><h4>Image Library</h4><p>Professional images for your posts.</p></div></div>
+    </div>
     </div>
     <div class="center-overlay" id="s9ov"><div class="center-overlay-text">Social content, handled.</div></div>
   </div>
