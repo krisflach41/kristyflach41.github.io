@@ -1417,8 +1417,6 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ═══ MARKETS DASHBOARD — WITH ZOOM & PAN ═══ */
 var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
 var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
-var mktsZoomStart=null,mktsZoomEnd=null;
-var mktsDragging=false,mktsDragStartX=0,mktsDragSZS=0,mktsDragSZE=0;
 
 (function(){try{loadMarketsData();setInterval(loadMarketsData,120000);}catch(e){console.error('Markets init error:',e);}})();
 
@@ -1481,7 +1479,6 @@ function mktsSetVal(id,v){var e=document.getElementById(id);if(e)e.textContent=v
 function mktsSetSnap(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(2):'—';}
 function mktsSetSnapYield(id,o,l){var e=document.getElementById(id);if(!e)return;e.textContent=(o[l]&&o[l].price)?o[l].price.toFixed(3)+'%':'—';}
 
-function mktsResetZoom(){mktsZoomStart=null;mktsZoomEnd=null;}
 function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var lbl=document.getElementById('mktsUmbsLabel');if(lbl)lbl.textContent='Mortgage Bond Pricing ('+c+'%)';var dl=document.getElementById('mktsDMALabel');if(dl)dl.textContent='UMBS 30YR '+c+'%';mktsResetZoom();loadMarketsData();}
 function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsResetZoom();mktsLoadChart();}
 function mktsChangeRange(r){mktsCurrentRange=r;document.querySelectorAll('#mktsChartRanges button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-range')===r);});mktsResetZoom();mktsLoadChart();}
@@ -1493,27 +1490,61 @@ function mktsLoadChart(){
   if(isT){
     fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range='+apiRange).then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   } else if(mktsCurrentSymbol==='UMBS_5.5') {
-    // Load from manual MBS history for 5.5% coupon
-    fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history').then(function(r){return r.json()}).then(function(d){
-      if(d.success&&d.data&&d.data.length>0){
-        mktsChartData={type:'candle',data:d.data,_displayRange:mktsCurrentRange};
-        mktsResetZoom();mktsRenderChartFromData();
-      } else {
-        // Fallback to Yahoo if no manual data yet
-        var bigRange=apiRange;
-        if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
-        else if(apiRange==='3mo')bigRange='1y';
-        else if(apiRange==='6mo')bigRange='2y';
-        fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsChartData._displayRange=mktsCurrentRange;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    // Hybrid: Yahoo history as base, manual entries merged on top for matching dates
+    var bigRange=apiRange;
+    if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
+    else if(apiRange==='3mo')bigRange='1y';
+    else if(apiRange==='6mo')bigRange='2y';
+
+    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d';
+    var manualUrl='https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history';
+
+    // Fetch both in parallel
+    var yahooData=null,manualData=null;
+    var loaded=0;
+    function mergeAndRender(){
+      loaded++;
+      if(loaded<2)return;
+      // Start with Yahoo data as base
+      var baseData=(yahooData&&yahooData.data)?yahooData.data.slice():[];
+      // Build a map of manual entries by date
+      var manualMap={};
+      if(manualData&&manualData.data){
+        manualData.data.forEach(function(c){manualMap[c.date]=c;});
       }
-    }).catch(function(){
-      // Fallback to Yahoo on error
-      var bigRange=apiRange;
-      if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
-      else if(apiRange==='3mo')bigRange='1y';
-      else if(apiRange==='6mo')bigRange='2y';
-      fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsChartData._displayRange=mktsCurrentRange;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
-    });
+      // Replace Yahoo candles with manual entries where dates match, append new dates
+      var merged=[];
+      var usedManualDates={};
+      baseData.forEach(function(c){
+        var dateStr=c.date?c.date.split('T')[0]:null;
+        if(dateStr&&manualMap[dateStr]){
+          merged.push(manualMap[dateStr]);
+          usedManualDates[dateStr]=true;
+        } else {
+          merged.push(c);
+        }
+      });
+      // Add any manual dates not in Yahoo (like today if market data hasn't posted yet)
+      if(manualData&&manualData.data){
+        manualData.data.forEach(function(c){
+          if(!usedManualDates[c.date])merged.push(c);
+        });
+      }
+      // Sort by date
+      merged.sort(function(a,b){var da=a.date||'';var db=b.date||'';return da<db?-1:da>db?1:0;});
+
+      if(yahooData){
+        yahooData.data=merged;
+        yahooData._displayRange=mktsCurrentRange;
+        mktsChartData=yahooData;
+      } else {
+        mktsChartData={type:'candle',data:merged,_displayRange:mktsCurrentRange};
+      }
+      mktsResetZoom();mktsRenderChartFromData();
+    }
+
+    fetch(yahooUrl).then(function(r){return r.json();}).then(function(d){yahooData=d;mergeAndRender();}).catch(function(){yahooData={data:[]};mergeAndRender();});
+    fetch(manualUrl).then(function(r){return r.json();}).then(function(d){manualData=d;mergeAndRender();}).catch(function(){manualData={data:[]};mergeAndRender();});
   } else {
     // 5% and 6% coupons, SPY — still use Yahoo
     var bigRange=apiRange;
@@ -1524,69 +1555,9 @@ function mktsLoadChart(){
   }
 }
 
-/* ═══ ZOOM (scroll wheel) & PAN (drag) ═══ */
-(function(){
-  var cv;function gc(){if(!cv)cv=document.getElementById('mktsMainChart');return cv;}
-  function getView(){
-    var allLen=mktsChartData.data.length;
-    var dd={'5d':5,'1mo':10,'3wk':15,'1mo2':22,'3mo':65,'6mo':130,'1y':252};
-    var dr=mktsChartData._displayRange||mktsCurrentRange;
-    var ds=dd[dr]||allLen;
-    var s=(mktsZoomStart!==null)?mktsZoomStart:Math.max(0,allLen-ds);
-    var e=(mktsZoomEnd!==null)?mktsZoomEnd:allLen;
-    return{s:s,e:e,len:e-s,allLen:allLen};
-  }
-  document.addEventListener('wheel',function(ev){
-    var c=gc();if(!c||!mktsChartData||!mktsChartData.data)return;
-    var r=c.getBoundingClientRect();
-    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)return;
-    ev.preventDefault();
-    var v=getView();if(v.allLen<3)return;
-    var frac=(ev.clientX-r.left)/r.width;
-    var zf=ev.deltaY>0?1.15:0.87;
-    var nl=Math.round(v.len*zf);nl=Math.max(5,Math.min(v.allLen,nl));
-    var anchor=v.s+Math.round(frac*v.len);
-    var ns=Math.round(anchor-frac*nl);var ne=ns+nl;
-    if(ns<0){ns=0;ne=nl;}if(ne>v.allLen){ne=v.allLen;ns=Math.max(0,v.allLen-nl);}
-    mktsZoomStart=ns;mktsZoomEnd=ne;mktsRenderChartFromData();
-  },{passive:false});
-
-  document.addEventListener('mousedown',function(ev){
-    var c=gc();if(!c||!mktsChartData||!mktsChartData.data)return;
-    var r=c.getBoundingClientRect();
-    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom)return;
-    mktsDragging=true;mktsDragStartX=ev.clientX;
-    var v=getView();mktsDragSZS=v.s;mktsDragSZE=v.e;c.style.cursor='grabbing';
-  });
-  document.addEventListener('mousemove',function(ev){
-    if(!mktsDragging||!mktsChartData||!mktsChartData.data)return;
-    var c=gc();if(!c)return;var r=c.getBoundingClientRect();
-    var vl=mktsDragSZE-mktsDragSZS;var ppc=r.width/vl;
-    var shift=Math.round(-(ev.clientX-mktsDragStartX)/ppc);
-    var ns=mktsDragSZS+shift;var ne=mktsDragSZE+shift;
-    if(ns<0){ns=0;ne=vl;}if(ne>mktsChartData.data.length){ne=mktsChartData.data.length;ns=Math.max(0,ne-vl);}
-    mktsZoomStart=ns;mktsZoomEnd=ne;mktsRenderChartFromData();
-  });
-  document.addEventListener('mouseup',function(){if(mktsDragging){mktsDragging=false;var c=gc();if(c)c.style.cursor='crosshair';}});
-
-  /* Touch pan */
-  var tX=0,tZS=0,tZE=0;
-  document.addEventListener('touchstart',function(ev){
-    var c=gc();if(!c||!mktsChartData||!mktsChartData.data||ev.touches.length!==1)return;
-    var r=c.getBoundingClientRect();var t=ev.touches[0];
-    if(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)return;
-    tX=t.clientX;var v=getView();tZS=v.s;tZE=v.e;
-  },{passive:true});
-  document.addEventListener('touchmove',function(ev){
-    var c=gc();if(!c||!mktsChartData||!mktsChartData.data||ev.touches.length!==1)return;
-    var r=c.getBoundingClientRect();var t=ev.touches[0];
-    var vl=tZE-tZS;var ppc=r.width/vl;
-    var shift=Math.round(-(t.clientX-tX)/ppc);
-    var ns=tZS+shift;var ne=tZE+shift;
-    if(ns<0){ns=0;ne=vl;}if(ne>mktsChartData.data.length){ne=mktsChartData.data.length;ns=Math.max(0,ne-vl);}
-    mktsZoomStart=ns;mktsZoomEnd=ne;mktsRenderChartFromData();
-  },{passive:true});
-})();
+/* ═══ CHART SCROLL (horizontal scrollbar via range buttons — no zoom/pan) ═══ */
+var mktsZoomStart=null,mktsZoomEnd=null;
+function mktsResetZoom(){mktsZoomStart=null;mktsZoomEnd=null;}
 
 /* ═══ RENDER ═══ */
 function mktsRenderChartFromData(){
