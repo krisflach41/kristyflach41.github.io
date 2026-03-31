@@ -1489,9 +1489,33 @@ function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById(
 
 function mktsLoadChart(){
   var isT=mktsCurrentSymbol==='10Y';var apiRange=mktsRangeToApi(mktsCurrentRange);
+
   if(isT){
     fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range='+apiRange).then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+  } else if(mktsCurrentSymbol==='UMBS_5.5') {
+    // Load from manual MBS history for 5.5% coupon
+    fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history').then(function(r){return r.json()}).then(function(d){
+      if(d.success&&d.data&&d.data.length>0){
+        mktsChartData={type:'candle',data:d.data,_displayRange:mktsCurrentRange};
+        mktsResetZoom();mktsRenderChartFromData();
+      } else {
+        // Fallback to Yahoo if no manual data yet
+        var bigRange=apiRange;
+        if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
+        else if(apiRange==='3mo')bigRange='1y';
+        else if(apiRange==='6mo')bigRange='2y';
+        fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsChartData._displayRange=mktsCurrentRange;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+      }
+    }).catch(function(){
+      // Fallback to Yahoo on error
+      var bigRange=apiRange;
+      if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
+      else if(apiRange==='3mo')bigRange='1y';
+      else if(apiRange==='6mo')bigRange='2y';
+      fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range='+bigRange+'&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsChartData._displayRange=mktsCurrentRange;mktsResetZoom();mktsRenderChartFromData();}).catch(function(e){console.error(e);});
+    });
   } else {
+    // 5% and 6% coupons, SPY — still use Yahoo
     var bigRange=apiRange;
     if(['5d','10d','1mo'].indexOf(apiRange)!==-1)bigRange='1y';
     else if(apiRange==='3mo')bigRange='1y';
@@ -1599,7 +1623,14 @@ function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,
 mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');mktsDrawMAs(ctx,allData,displayStart,data,mktsDMA,mktsDMAColors,xP,yP);
 var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,2),minP,maxP,yP);
 if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
-var barW=Math.max(2,Math.min(9,(cw/data.length)*0.65));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();ctx.fillStyle=color;var top=Math.min(yP(c.open),yP(c.close)),bh=Math.max(Math.abs(yP(c.close)-yP(c.open)),1);ctx.fillRect(x-barW/2,top,barW,bh);});
+var barW=Math.max(3,Math.min(14,(cw/data.length)*0.6));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
+// Draw wick (thin line from high to low)
+ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();
+// Draw body (fat rectangle from open to close)
+ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.max(Math.abs(yP(c.close)-yP(c.open)),1.5);ctx.fillRect(Math.round(x-barW/2),Math.round(bodyTop),Math.round(barW),Math.round(bodyH));
+// Add border to body for clarity
+if(barW>=5){ctx.strokeStyle=color;ctx.lineWidth=0.5;ctx.strokeRect(Math.round(x-barW/2),Math.round(bodyTop),Math.round(barW),Math.round(bodyH));}
+});
 mktsDrawDates(ctx,w,h,data,xP);}
 
 /* ═══ TREASURY LINE CHART ═══ */
