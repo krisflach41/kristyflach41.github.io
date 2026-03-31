@@ -1568,11 +1568,13 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  var dd={'5d':5,'1mo':10,'3wk':15,'1mo2':22,'3mo':65,'6mo':130,'1y':252};
+  var dd={'5d':7,'1mo':12,'3wk':17,'1mo2':24,'3mo':65,'6mo':130,'1y':252};
   var dr=mktsChartData._displayRange||mktsCurrentRange;var ds=dd[dr]||allData.length;
+  // Always show from the end so today is the rightmost candle
   var vs,ve;
+  ve=allData.length;
+  vs=Math.max(0,ve-ds);
   if(mktsZoomStart!==null&&mktsZoomEnd!==null){vs=mktsZoomStart;ve=mktsZoomEnd;}
-  else{vs=Math.max(0,allData.length-ds);ve=allData.length;}
   var displayData=allData.slice(vs,ve);if(displayData.length===0)return;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
   else mktsDrawCandlesFull(ctx,w,h,allData,vs,displayData);
@@ -1585,7 +1587,7 @@ function mktsCalcPivotsFromValues(H,L,C,dec){if(!H||!L||!C)return null;var P=(H+
 
 /* ═══ DRAW HELPERS ═══ */
 function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){for(var g=0;g<=7;g++){var gy=pad.top+(h-pad.top-pad.bottom)/7*g;ctx.strokeStyle='#ede8df';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxV-(range/7)*g).toFixed(dec||2)+(suffix||''),w-pad.right+5,gy+3);}}
-function mktsDrawDates(ctx,w,h,data,xP){ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var li=Math.max(1,Math.ceil(data.length/10));data.forEach(function(c,i){if(i%li===0){var dt=new Date(c.date||c);ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);}});}
+function mktsDrawDates(ctx,w,h,data,xP){ctx.textAlign='center';ctx.fillStyle='#8a7e6b';ctx.font='9px Segoe UI,system-ui,sans-serif';var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];var li=data.length<=15?1:Math.max(1,Math.ceil(data.length/10));data.forEach(function(c,i){if(i%li===0||i===data.length-1){var dt=new Date((c.date||c)+'T12:00:00');ctx.fillText(months[dt.getMonth()]+' '+dt.getDate(),xP(i),h-6);}});}
 function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP){if(!fib)return;ctx.setLineDash([5,4]);Object.keys(fib).forEach(function(k){var f=fib[k];if(f.level>=minV&&f.level<=maxV){var y=yP(f.level);ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle='#6e7f77';ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,pad.left+10,y-4);}});ctx.setLineDash([]);}
 function mktsDrawSR(ctx,pad,w,pv,minV,maxV,yP,dec){if(!pv)return;ctx.setLineDash([8,4]);var d=dec||2;[{v:pv.r2,l:'R2 '+pv.r2.toFixed(d),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(d),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(d),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(d),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minV&&sr.v<=maxV){var y=yP(sr.v);ctx.strokeStyle=sr.c;ctx.lineWidth=0.8;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();ctx.fillStyle=sr.c;ctx.font='9px Segoe UI,system-ui,sans-serif';ctx.textAlign='right';ctx.fillText(sr.l,w-pad.right-5,y-4);}});ctx.setLineDash([]);}
 function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
@@ -1595,7 +1597,7 @@ function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,
 mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');mktsDrawMAs(ctx,allData,displayStart,data,mktsDMA,mktsDMAColors,xP,yP);
 var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,2),minP,maxP,yP);
 if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
-var barW=Math.max(3,Math.min(14,(cw/data.length)*0.6));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
+var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
 // Draw wick (thin line from high to low)
 ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,yP(c.low));ctx.stroke();
 // Draw body (fat rectangle from open to close)
