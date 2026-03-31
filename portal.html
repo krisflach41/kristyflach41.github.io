@@ -497,8 +497,8 @@ h1 {
 .mkts-ranges button:hover { background:rgba(110,127,119,0.12); }
 .mkts-ranges button.active { background:#6e7f77; color:#fff; }
 .mkts-source { font-size:10px; color:#8a7e6b; text-align:center; margin-top:14px; }
-.mkts-guide-btn { font-size:11px; font-weight:600; color:#6e7f77; cursor:pointer; padding:5px 14px; border:1px solid rgba(110,127,119,0.25); border-radius:6px; transition:all 0.25s; font-family:inherit; letter-spacing:0.2px; }
-.mkts-guide-btn:hover { background:rgba(110,127,119,0.08); border-color:rgba(110,127,119,0.4); color:#0b1f3a; }
+.mkts-guide-btn { font-size:13px; font-weight:600; color:#6e7f77; cursor:pointer; padding:8px 24px; border:1px solid rgba(110,127,119,0.3); border-radius:8px; transition:all 0.25s; font-family:inherit; letter-spacing:0.2px; background:rgba(110,127,119,0.04); }
+.mkts-guide-btn:hover { background:rgba(110,127,119,0.1); border-color:rgba(110,127,119,0.5); color:#0b1f3a; }
 @media (max-width:768px) { .mkts-cards { grid-template-columns:1fr; } .mkts-dma-row { gap:10px; } }
 
 /* ===== CART STYLES ===== */
@@ -803,10 +803,10 @@ h1 {
   <div class="mkts-dash">
     <div class="mkts-dash-header">
       <div class="mkts-dash-title">Today's Market Snapshot</div>
-      <div style="display:flex;align-items:center;gap:12px;">
-        <span class="mkts-guide-btn" onclick="document.getElementById('mktsInfoModal').style.display='flex';mktsTutCurrent=0;mktsTutNav(0);">Learn how to read this</span>
-        <div class="mkts-updated" id="mktsTimestamp">Loading...</div>
-      </div>
+      <div class="mkts-updated" id="mktsTimestamp">Loading...</div>
+    </div>
+    <div style="text-align:center;margin:-8px 0 14px;">
+      <span class="mkts-guide-btn" onclick="document.getElementById('mktsInfoModal').style.display='flex';mktsTutCurrent=0;mktsTutNav(0);">New here? Learn how to read your morning briefings</span>
     </div>
     <div class="mkts-cards">
       <div class="mkts-card active" data-mkts-card="UMBS_5.5" onclick="mktsChangeSymbol('UMBS_'+mktsActiveCoupon)">
@@ -884,6 +884,9 @@ h1 {
           <!-- Slide 0: Welcome -->
           <div class="mkts-tut-slide" data-slide="0">
             <h3 class="tut-title" style="font-size:21px;text-align:center;">Getting to Know Your<br>Agent Edge Morning Briefings</h3>
+            <div style="margin:20px 0;border-radius:10px;overflow:hidden;border:1px solid #eae5dc;">
+              <canvas id="tutWelcomeChart" width="560" height="120" style="width:100%;height:120px;display:block;"></canvas>
+            </div>
             <div class="tut-body" style="text-align:center;">
               <p>This dashboard is updated four times each trading day with real mortgage bond pricing — at 9:00 AM, 12:00 PM, 2:00 PM, and 5:00 PM ET.</p>
               <p>Here's how to make the most of it.</p>
@@ -940,7 +943,7 @@ h1 {
             <h3 class="tut-title">Daily & Weekly Summaries</h3>
             <div class="tut-body">
               <p>Each trading day you receive:</p>
-              <div id="tutSummaryCards" style="margin:16px 0;display:flex;flex-direction:column;gap:10px;"></div>
+              <div id="tutSummaryCards" style="margin:16px 0;display:flex;flex-direction:column;gap:0;"></div>
               <p>On Fridays, the Week in Review recaps the full week's pricing action and looks ahead. These are designed to keep you informed on the patterns and what's driving them.</p>
             </div>
           </div>
@@ -1004,91 +1007,100 @@ h1 {
       document.getElementById('mktsTutDots').innerHTML=dots;
 
       // Trigger animations for specific slides
+      if(mktsTutCurrent===0)setTimeout(tutDrawWelcomeChart,100);
       if(mktsTutCurrent===2)setTimeout(tutAnimateChart,300);
       if(mktsTutCurrent===3)setTimeout(tutAnimateEcon,200);
       if(mktsTutCurrent===4)setTimeout(tutAnimateSummaries,200);
     }
     function mktsCloseTutorial(){document.getElementById('mktsInfoModal').style.display='none';mktsTutCurrent=0;clearTimeout(tutChartAnimTimer);clearTimeout(tutEconAnimTimer);clearTimeout(tutSummaryAnimTimer);}
 
-    // ===== ANIMATED CHART =====
-    function tutAnimateChart(){
-      var canvas=document.getElementById('tutChartCanvas');if(!canvas)return;
-      var ctx=canvas.getContext('2d');
-      var dpr=window.devicePixelRatio||1;
+    // ===== WELCOME MINI CHART =====
+    function tutDrawWelcomeChart(){
+      var canvas=document.getElementById('tutWelcomeChart');if(!canvas)return;
+      var ctx=canvas.getContext('2d');var dpr=window.devicePixelRatio||1;
       var w=canvas.offsetWidth,h=canvas.offsetHeight;
-      canvas.width=w*dpr;canvas.height=h*dpr;
-      ctx.scale(dpr,dpr);
+      canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
       ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
-
-      // Sample candle data
-      var candles=[
-        {o:100.2,c:100.5,h:100.6,l:100.1},
-        {o:100.5,c:100.3,h:100.7,l:100.2},
-        {o:100.3,c:100.8,h:100.9,l:100.2},
-        {o:100.8,c:100.6,h:101.0,l:100.5},
-        {o:100.6,c:101.0,h:101.1,l:100.4},
-        {o:101.0,c:100.7,h:101.2,l:100.6},
-        {o:100.7,c:100.9,h:101.0,l:100.5},
-        {o:100.9,c:101.2,h:101.3,l:100.8},
-        {o:101.2,c:100.8,h:101.3,l:100.7},
-        {o:100.8,c:101.1,h:101.2,l:100.7},
-        {o:101.1,c:101.3,h:101.5,l:101.0},
-        {o:101.3,c:101.0,h:101.4,l:100.9}
-      ];
-      var pad={top:12,right:12,bottom:12,left:12};
-      var cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
+      var candles=[{o:100.2,c:100.5,h:100.6,l:100.1},{o:100.5,c:100.3,h:100.7,l:100.15},{o:100.3,c:100.8,h:100.9,l:100.2},{o:100.8,c:100.6,h:101.0,l:100.5},{o:100.6,c:101.0,h:101.1,l:100.4},{o:101.0,c:100.7,h:101.2,l:100.6},{o:100.7,c:100.9,h:101.0,l:100.5},{o:100.9,c:101.2,h:101.3,l:100.8},{o:101.2,c:100.8,h:101.3,l:100.7},{o:100.8,c:101.1,h:101.2,l:100.6},{o:101.1,c:101.3,h:101.5,l:101.0},{o:101.3,c:101.0,h:101.4,l:100.9},{o:101.0,c:101.2,h:101.3,l:100.9},{o:101.2,c:100.9,h:101.3,l:100.8},{o:100.9,c:101.1,h:101.2,l:100.8}];
+      var pad={top:8,right:8,bottom:8,left:8},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
       var minP=100.0,maxP=101.6,range=maxP-minP;
       function yP(v){return pad.top+((maxP-v)/range)*ch;}
-      function xP(i){return pad.left+(cw/(candles.length+1))*i+(cw/(candles.length+1))/2;}
-      var barW=Math.min(16,(cw/(candles.length+1))*0.55);
+      var slots=candles.length+1;
+      function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
+      var barW=Math.min(12,(cw/slots)*0.5);
+      // Draw grid
+      ctx.strokeStyle='#f0ebe3';ctx.lineWidth=0.5;
+      for(var g=0;g<4;g++){var gy=pad.top+(ch/3)*g;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();}
+      // Draw MA
+      ctx.beginPath();ctx.strokeStyle='rgba(165,85,247,0.4)';ctx.lineWidth=1.5;
+      var ma=[100.3,100.35,100.45,100.5,100.55,100.6,100.65,100.7,100.75,100.8,100.85,100.9,100.95,100.95,101.0];
+      ma.forEach(function(v,i){if(i===0)ctx.moveTo(xP(i),yP(v));else ctx.lineTo(xP(i),yP(v));});ctx.stroke();
+      // Draw candles
+      candles.forEach(function(c,i){var x=xP(i),up=c.c>=c.o,color=up?'#16a34a':'#dc2626';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.h));ctx.lineTo(x,yP(c.l));ctx.stroke();ctx.fillStyle=color;var bt=Math.min(yP(c.o),yP(c.c)),bh=Math.max(Math.abs(yP(c.c)-yP(c.o)),2);ctx.fillRect(x-barW/2,bt,barW,bh);});
+    }
 
-      // Draw candles with animation
-      var drawn=0;
-      function drawNext(){
-        if(drawn>=candles.length){tutChartPhase2();return;}
-        var c=candles[drawn],i=drawn;
+    // ===== ANIMATED CHART =====
+    var tutChartPaused=false;
+    function tutAnimateChart(){
+      var canvas=document.getElementById('tutChartCanvas');if(!canvas)return;
+      // Hover to pause
+      canvas.parentElement.onmouseenter=function(){tutChartPaused=true;};
+      canvas.parentElement.onmouseleave=function(){tutChartPaused=false;};
+
+      var ctx=canvas.getContext('2d');var dpr=window.devicePixelRatio||1;
+      var w=canvas.offsetWidth,h=canvas.offsetHeight;
+      canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
+      ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
+
+      var candles=[{o:100.2,c:100.5,h:100.6,l:100.1},{o:100.5,c:100.3,h:100.7,l:100.15},{o:100.3,c:100.8,h:100.9,l:100.2},{o:100.8,c:100.6,h:101.0,l:100.5},{o:100.6,c:101.0,h:101.1,l:100.4},{o:101.0,c:100.7,h:101.2,l:100.6},{o:100.7,c:100.9,h:101.0,l:100.5},{o:100.9,c:101.2,h:101.3,l:100.8},{o:101.2,c:100.8,h:101.3,l:100.7},{o:100.8,c:101.1,h:101.2,l:100.6},{o:101.1,c:101.3,h:101.5,l:101.0},{o:101.3,c:101.0,h:101.4,l:100.9}];
+      var pad={top:12,right:12,bottom:12,left:12},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
+      var minP=100.0,maxP=101.6,range=maxP-minP;
+      function yP(v){return pad.top+((maxP-v)/range)*ch;}
+      var slots=candles.length+2;
+      function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
+      var barW=Math.min(16,(cw/slots)*0.5);
+
+      // Draw grid
+      ctx.strokeStyle='#f0ebe3';ctx.lineWidth=0.5;
+      for(var g=0;g<=4;g++){var gy=pad.top+(ch/4)*g;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();}
+
+      // Draw ALL candles immediately
+      candles.forEach(function(c,i){
         var x=xP(i),up=c.c>=c.o,color=up?'#16a34a':'#dc2626';
         ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.h));ctx.lineTo(x,yP(c.l));ctx.stroke();
         ctx.fillStyle=color;var bt=Math.min(yP(c.o),yP(c.c)),bh=Math.max(Math.abs(yP(c.c)-yP(c.o)),2);
-        ctx.fillRect(x-barW/2,bt,barW,bh);
-        drawn++;
-        tutChartAnimTimer=setTimeout(drawNext,80);
-      }
-      drawNext();
+        ctx.fillRect(Math.round(x-barW/2),Math.round(bt),Math.round(barW),Math.round(bh));
+      });
 
-      function tutChartPhase2(){
-        // Draw support line
-        var sy=yP(100.4);
-        ctx.setLineDash([6,4]);ctx.strokeStyle='rgba(220,38,38,0.5)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(pad.left,sy);ctx.lineTo(w-pad.right,sy);ctx.stroke();
-        // Draw resistance line
-        var ry=yP(101.3);
-        ctx.strokeStyle='rgba(37,99,235,0.5)';
-        ctx.beginPath();ctx.moveTo(pad.left,ry);ctx.lineTo(w-pad.right,ry);ctx.stroke();
-        ctx.setLineDash([]);
-        // Draw a moving average line
-        ctx.beginPath();ctx.strokeStyle='#a855f7';ctx.lineWidth=1.5;
-        var maVals=[100.3,100.35,100.45,100.5,100.55,100.6,100.65,100.7,100.75,100.8,100.85,100.9];
-        maVals.forEach(function(v,i){if(i===0)ctx.moveTo(xP(i),yP(v));else ctx.lineTo(xP(i),yP(v));});
-        ctx.stroke();
+      // Draw support line
+      ctx.setLineDash([6,4]);ctx.strokeStyle='rgba(220,38,38,0.5)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad.left,yP(100.4));ctx.lineTo(w-pad.right,yP(100.4));ctx.stroke();
+      // Draw resistance line
+      ctx.strokeStyle='rgba(37,99,235,0.5)';
+      ctx.beginPath();ctx.moveTo(pad.left,yP(101.3));ctx.lineTo(w-pad.right,yP(101.3));ctx.stroke();
+      ctx.setLineDash([]);
+      // Draw MA line
+      ctx.beginPath();ctx.strokeStyle='#a855f7';ctx.lineWidth=1.5;
+      var maVals=[100.3,100.35,100.45,100.5,100.55,100.6,100.65,100.7,100.75,100.8,100.85,100.9];
+      maVals.forEach(function(v,i){if(i===0)ctx.moveTo(xP(i),yP(v));else ctx.lineTo(xP(i),yP(v));});ctx.stroke();
 
-        // Show pointer and narration
-        tutChartAnimTimer=setTimeout(function(){tutChartNarrate(0);},400);
-      }
+      // Start narration after a brief pause
+      tutChartAnimTimer=setTimeout(function(){tutChartNarrate(0);},600);
     }
 
     var tutNarrations=[
-      {x:0.3,y:0.5,text:'Green candles mean pricing improved that day. Red candles mean pricing pulled back. The thick body shows where pricing opened and closed. The thin lines show the intraday high and low.'},
-      {x:0.15,y:0.88,text:'The red dashed lines are support levels — price floors where pricing tends to hold. The blue dashed lines are resistance levels — price ceilings where pricing tends to stall.'},
-      {x:0.7,y:0.35,text:'The colored lines smooth out daily movement to show the overall trend direction. When shorter averages cross above longer ones, the trend is improving. When they cross below, pricing is weakening.'}
+      {x:0.35,y:0.45,labelX:0.42,labelY:0.2,text:'Green candles mean pricing improved that day. Red candles mean pricing pulled back. The thick body shows where pricing opened and closed. The thin lines show the intraday high and low.'},
+      {x:0.1,y:0.82,labelX:0.18,labelY:0.65,text:'The red dashed lines are support levels — price floors where pricing tends to hold. The blue dashed lines are resistance levels — price ceilings where pricing tends to stall. The Fibonacci levels show where pricing may pause during a pullback.'},
+      {x:0.65,y:0.55,labelX:0.4,labelY:0.85,text:'The colored lines smooth out daily movement to show the overall trend direction. When shorter averages cross above longer ones, the trend is improving. When they cross below, pricing is weakening.'}
     ];
     function tutChartNarrate(step){
       if(step>=tutNarrations.length){
         document.getElementById('tutPointer').style.display='none';
         document.getElementById('tutPointerLabel').style.display='none';
-        document.getElementById('tutChartNarration').innerHTML='<p style="color:#6e7f77;font-size:12px;text-align:center;">The gray Fibonacci levels show where pricing may pause during a pullback. These levels help you recognize when the market is at a potential turning point.</p>';
+        document.getElementById('tutChartNarration').innerHTML='<p style="color:#6e7f77;font-size:13px;text-align:center;margin:0;">Hover over the chart to pause. These levels help you recognize when the market is at a potential turning point.</p>';
         return;
       }
+      if(tutChartPaused){tutChartAnimTimer=setTimeout(function(){tutChartNarrate(step);},500);return;}
       var n=tutNarrations[step];
       var canvas=document.getElementById('tutChartCanvas');
       var cw=canvas.offsetWidth,ch=canvas.offsetHeight;
@@ -1096,11 +1108,14 @@ h1 {
       var lbl=document.getElementById('tutPointerLabel');
       ptr.style.display='block';ptr.style.left=(n.x*cw-5)+'px';ptr.style.top=(n.y*ch-5)+'px';
       lbl.style.display='block';
-      lbl.style.left=n.x>0.5?(n.x*cw-270)+'px':(n.x*cw+20)+'px';
-      lbl.style.top=Math.max(0,n.y*ch-20)+'px';
+      lbl.style.left=(n.labelX*cw)+'px';
+      lbl.style.top=(n.labelY*ch)+'px';
+      lbl.style.fontSize='13px';
+      lbl.style.maxWidth='280px';
+      lbl.style.padding='10px 14px';
       lbl.textContent=n.text;
       document.getElementById('tutChartNarration').textContent='';
-      tutChartAnimTimer=setTimeout(function(){tutChartNarrate(step+1);},5000);
+      tutChartAnimTimer=setTimeout(function(){tutChartNarrate(step+1);},8000);
     }
 
     // ===== ANIMATED ECON CALENDAR =====
@@ -1128,22 +1143,24 @@ h1 {
     // ===== ANIMATED SUMMARY CARDS =====
     function tutAnimateSummaries(){
       var cards=[
-        {label:'Partner Summary',desc:'The technical breakdown of what moved and why',color:'#22c55e',bg:'rgba(34,197,94,0.04)'},
-        {label:'Client-Friendly Summary',desc:'Written for your buyers and sellers to understand',color:'#a855f7',bg:'rgba(168,85,247,0.04)'}
+        {label:'Partner Summary',desc:'The technical breakdown of what moved and why — written for you.'},
+        {label:'Client-Friendly Summary',desc:'A simplified version written for your buyers and sellers.'},
+        {label:'Week in Review',desc:'Friday recap of the full week\'s pricing action and what\'s ahead.'}
       ];
       var container=document.getElementById('tutSummaryCards');
       container.innerHTML='';
       cards.forEach(function(c){
         var div=document.createElement('div');
         div.className='tut-summary-card';
-        div.style.background=c.bg;
-        div.style.borderLeft='3px solid '+c.color;
-        div.innerHTML='<div style="font-weight:700;color:'+c.color+';font-size:13px;margin-bottom:3px;">'+c.label+'</div><div style="font-size:12px;color:#3a3530;">'+c.desc+'</div>';
+        div.style.background='rgba(110,127,119,0.03)';
+        div.style.borderBottom='1px solid #eae5dc';
+        div.style.padding='14px 18px';
+        div.innerHTML='<div style="font-weight:700;color:#0b1f3a;font-size:14px;margin-bottom:2px;">'+c.label+'</div><div style="font-size:13px;color:#5a5145;">'+c.desc+'</div>';
         container.appendChild(div);
       });
       var cardEls=container.querySelectorAll('.tut-summary-card');
       cardEls.forEach(function(el,i){
-        tutSummaryAnimTimer=setTimeout(function(){el.classList.add('visible');},i*300);
+        tutSummaryAnimTimer=setTimeout(function(){el.classList.add('visible');},i*500);
       });
     }
     </script>
