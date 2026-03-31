@@ -1418,7 +1418,7 @@ document.addEventListener('DOMContentLoaded', function() {
 var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
 var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
 
-(function(){try{loadMarketsData();setInterval(loadMarketsData,120000);}catch(e){console.error('Markets init error:',e);}})();
+(function(){try{loadMarketsData();mktsLoadChart();setInterval(loadMarketsData,120000);setInterval(mktsLoadChart,120000);}catch(e){console.error('Markets init error:',e);}})();
 
 function mktsRangeToApi(r){return{'5d':'5d','1mo':'10d','3wk':'1mo','1mo2':'1mo','3mo':'3mo','6mo':'6mo','1y':'1y'}[r]||'1mo';}
 
@@ -1510,7 +1510,10 @@ function mktsLoadChart(){
       // Build a map of manual entries by date
       var manualMap={};
       if(manualData&&manualData.data){
-        manualData.data.forEach(function(c){manualMap[c.date]=c;});
+        manualData.data.forEach(function(c){
+          var d=c.date?c.date.split('T')[0]:null;
+          if(d)manualMap[d]=c;
+        });
       }
       // Replace Yahoo candles with manual entries where dates match, append new dates
       var merged=[];
@@ -1524,14 +1527,12 @@ function mktsLoadChart(){
           merged.push(c);
         }
       });
-      // Add any manual dates not in Yahoo (like today if market data hasn't posted yet)
-      if(manualData&&manualData.data){
-        manualData.data.forEach(function(c){
-          if(!usedManualDates[c.date])merged.push(c);
-        });
-      }
+      // Add any manual dates not in Yahoo (like today)
+      Object.keys(manualMap).forEach(function(d){
+        if(!usedManualDates[d])merged.push(manualMap[d]);
+      });
       // Sort by date
-      merged.sort(function(a,b){var da=a.date||'';var db=b.date||'';return da<db?-1:da>db?1:0;});
+      merged.sort(function(a,b){var da=(a.date||'').split('T')[0];var db=(b.date||'').split('T')[0];return da<db?-1:da>db?1:0;});
 
       if(yahooData){
         yahooData.data=merged;
