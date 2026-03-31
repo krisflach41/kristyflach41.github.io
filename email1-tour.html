@@ -47,6 +47,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 .text-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px;background:linear-gradient(135deg,#020617 0%,#0f172a 50%,#020617 100%);width:100%;height:100%;position:relative}
 .text-scene::before{content:'';position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(0,47,108,0.07) 0%,transparent 70%);top:-100px;right:-100px;pointer-events:none}
 .text-scene::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(156,181,160,0.04) 0%,transparent 70%);bottom:-80px;left:-80px;pointer-events:none}
+.text-frame{position:relative;z-index:1;padding:50px 60px;border-radius:18px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);box-shadow:0 20px 60px rgba(0,0,0,0.2);max-width:760px;width:100%;display:flex;flex-direction:column;align-items:center}
 .ts-line{opacity:0;transform:translateY(16px)}
 .ts-main{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;color:#fff;line-height:1.35;max-width:720px}
 .ts-sub{font-size:17px;color:rgba(255,255,255,0.5);margin-top:14px;max-width:600px;line-height:1.5}
@@ -115,18 +116,15 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 .coll-card-body p{font-size:9px;color:#555;line-height:1.3}
 
 /* GUS */
-.s10-wrap{width:100%;height:100%;position:relative;background:linear-gradient(rgba(255,255,255,0.55),rgba(255,255,255,0.65)),linear-gradient(135deg,#e8e4de,#d4cfc7)}
-.s10-page{position:absolute;inset:50px;background:#fff;border-radius:12px;border:1px solid #e2e5ed;box-shadow:0 8px 24px rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center;font-size:14px;color:#ccc;font-weight:500}
-.s10-gus-btn{position:absolute;top:50%;right:60px;transform:translateY(-50%);width:80px;height:80px;border-radius:50%;background:#002556;border:3px solid #baa370;box-shadow:0 6px 24px rgba(0,37,86,0.35);overflow:hidden;opacity:0;z-index:10}
-.s10-gus-btn img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.s10-gus-label{position:absolute;top:50%;right:55px;transform:translateY(-50%);margin-top:52px;background:#002556;color:#baa370;font-size:9px;font-weight:800;padding:3px 10px;border-radius:8px;border:2px solid #baa370;letter-spacing:0.5px;white-space:nowrap;opacity:0;z-index:10}
-.s10-panel{position:absolute;top:50%;right:160px;transform:translateY(-50%) translateX(20px);width:320px;background:#faf8f4;border-radius:16px;box-shadow:0 16px 50px rgba(0,37,86,0.2);border:1px solid rgba(186,163,112,0.3);overflow:hidden;opacity:0;z-index:10}
-.s10-panel-head{background:#002556;padding:10px 14px;display:flex;align-items:center;gap:8px}
-.s10-panel-dot{width:7px;height:7px;border-radius:50%;background:#baa370}
-.s10-panel-title{font-size:11px;font-weight:700;color:#baa370;letter-spacing:0.5px}
-.s10-panel-body{padding:12px 14px}
-.s10-msg{background:rgba(0,37,86,0.05);border-radius:10px;padding:10px;font-size:11px;color:#0b1f3a;line-height:1.5;margin-bottom:6px}
-.s10-input{background:#fff;border:1px solid #e2e5ed;border-radius:8px;padding:8px 10px;font-size:10px;color:#999;width:100%}
+.s10-gus-scene{width:100%;height:100%;background:linear-gradient(135deg,#001a3d 0%,#002556 40%,#001a3d 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.s10-gus-scene::before{content:'';position:absolute;width:600px;height:600px;background:radial-gradient(circle,rgba(186,163,112,0.06) 0%,transparent 70%);top:-150px;right:-150px;pointer-events:none}
+.s10-gus-scene::after{content:'';position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(186,163,112,0.04) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none}
+.s10-content{display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2;gap:16px}
+.s10-photo{width:160px;height:160px;border-radius:50%;border:4px solid #baa370;box-shadow:0 12px 40px rgba(0,0,0,0.4);overflow:hidden;opacity:0;transform:scale(0.8)}
+.s10-photo img{width:100%;height:100%;object-fit:cover}
+.s10-badge{background:#baa370;color:#002556;font-size:11px;font-weight:800;padding:5px 16px;border-radius:20px;letter-spacing:1.5px;text-transform:uppercase;opacity:0;transform:translateY(8px)}
+.s10-headline{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:#fff;opacity:0;transform:translateY(12px)}
+.s10-desc{font-size:16px;color:rgba(255,255,255,0.55);max-width:480px;line-height:1.6;opacity:0;transform:translateY(10px)}
 
 /* CTA */
 .s11{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:50px;background:linear-gradient(135deg,#020617 0%,#0f172a 50%,#020617 100%);width:100%;height:100%;position:relative}
@@ -182,28 +180,34 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 <!-- S2 -->
 <div class="scene" id="s2">
   <div class="text-scene">
+    <div class="text-frame">
     <div class="ts-line ts-main" id="s2a">20+ years in underwriting,<br>lending, and real estate.</div>
     <div class="ts-divider" id="s2d"></div>
     <div class="ts-line ts-sub" id="s2b">I understand your side of the deal<br>because I've been on your side.</div>
     <div class="s2-punch" id="s2punch">I do partnerships differently.<div class="s2-punch-line"></div></div>
+    </div>
   </div>
 </div>
 
 <!-- S3 -->
 <div class="scene" id="s3">
   <div class="text-scene">
+    <div class="text-frame">
     <div class="context-text" id="s3ctx">I built Agent Edge to take the research,<br>the marketing, and the busy work<br>off your plate.</div>
     <div class="fade-text" id="s3fade">So you can get back to what you do best.</div>
     <div class="punch" id="s3punch"><span class="punch-word">Selling homes.</span><div class="punch-rule"></div></div>
+    </div>
   </div>
 </div>
 
 <!-- S4 -->
 <div class="scene" id="s4">
   <div class="text-scene">
+    <div class="text-frame">
     <div class="context-text" id="s4ctx">My goal is simple:<br>Position you as the most trusted and<br>educated Realtor in your market.</div>
     <div class="fade-text" id="s4fade">When we invest in each other's success,</div>
     <div class="punch" id="s4punch"><span class="punch-word-sm">Everyone wins.</span><div class="punch-rule"></div></div>
+    </div>
   </div>
 </div>
 
@@ -291,21 +295,20 @@ body{font-family:'DM Sans',system-ui,sans-serif}
 
 <!-- S10: GUS -->
 <div class="scene" id="s10">
-  <div class="s10-wrap">
-    <div class="s10-page">Any page on Agent Edge</div>
-    <div class="s10-gus-btn" id="s10fab"><img src="gus.JPG" alt="Gus"></div>
-    <div class="s10-gus-label" id="s10lbl">ASK GUS</div>
-    <div class="s10-panel" id="s10pan">
-      <div class="s10-panel-head"><div class="s10-panel-dot"></div><div class="s10-panel-title">Ask Gus</div></div>
-      <div class="s10-panel-body"><div class="s10-msg">Hi! I'm Gus — I can help you find anything on Agent Edge. Ask me about reports, flyers, calculators, loan programs, or anything else you need.</div><div class="s10-input">Type your question...</div></div>
+  <div class="s10-gus-scene">
+    <div class="s10-content">
+      <div class="s10-photo" id="s10photo"><img src="gus.JPG" alt="Gus"></div>
+      <div class="s10-badge" id="s10badge">ASK GUS</div>
+      <div class="s10-headline" id="s10head">Have a question?</div>
+      <div class="s10-desc" id="s10desc">Ask Gus — he's on every page,<br>waiting to dig up what you need.</div>
     </div>
-    <div class="center-overlay" id="s10ov"><div class="center-overlay-text">Questions? Ask Gus — on every page.</div></div>
   </div>
 </div>
 
 <!-- S11: CTA -->
 <div class="scene" id="s11">
   <div class="s11">
+    <div class="text-frame">
     <div class="s11-line s11-main" id="s11a">This is just the overview.</div>
     <div class="s11-line s11-sub" id="s11b" style="margin-top:8px">Over the next few emails, I'll take you inside the tools.</div>
     <div class="s11-divider" id="s11d"></div>
@@ -315,6 +318,7 @@ body{font-family:'DM Sans',system-ui,sans-serif}
     <div class="s11-line" id="s11f"><div class="s11-name">Kristy Flach</div><div class="s11-detail">Certified Mortgage Advisor &amp; Loan Originator</div><div class="s11-detail">(206) 313-5883 · kristyflach.com</div></div>
     <div class="s11-line" id="s11g"><div class="s11-site">kristyflach.com</div></div>
     <div class="s11-line" id="s11h"><div class="s11-realtors">Look for "Realtors Only" in the navigation</div></div>
+    </div>
   </div>
 </div>
 
@@ -376,10 +380,10 @@ function animS7(){animColl('s7',['s7c1','s7c2','s7c3','s7c4'],'s7ov',4500)}
 function animS8(){animColl('s8',['s8c1','s8c2','s8c3','s8c4','s8c5','s8c6','s8c7','s8c8'],'s8ov',5000)}
 function animS9(){animColl('s9',['s9c1','s9c2','s9c3'],'s9ov',4000)}
 function animS10(){
-  dl(function(){var f=document.getElementById('s10fab');f.style.transition='opacity 0.6s';f.style.opacity='1'},600);
-  dl(function(){var l=document.getElementById('s10lbl');l.style.transition='opacity 0.4s';l.style.opacity='1'},1000);
-  dl(function(){var p=document.getElementById('s10pan');p.style.transition='opacity 0.6s,transform 0.6s cubic-bezier(0.16,1,0.3,1)';p.style.opacity='1';p.style.transform='translateY(-50%) translateX(0)'},1800);
-  showOv('s10ov',4500);
+  fadeIn('s10photo',500);
+  fadeIn('s10badge',1000);
+  fadeIn('s10head',1600);
+  fadeIn('s10desc',2200);
 }
 function animS11(){
   fadeIn('s11a',400);fadeIn('s11b',900);divIn('s11d',1500);
@@ -405,10 +409,9 @@ function resetAll(){
   ['s5bt','s5bs','s5sl','s5c1','s5c2','s5c3','s5ch'].forEach(function(id){var el=document.getElementById(id);el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(10px)'});
   document.getElementById('s5path').style.cssText='stroke-dashoffset:800;transition:none';
   ['s6t','s6s','s6c1','s6c2','s6c3','s7t','s7s','s7c1','s7c2','s7c3','s7c4','s8t','s8s','s8c1','s8c2','s8c3','s8c4','s8c5','s8c6','s8c7','s8c8','s9t','s9s','s9c1','s9c2','s9c3'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'}});
-  ['s5ov','s6ov','s7ov','s8ov','s9ov','s10ov'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('show')});
-  document.getElementById('s10fab').style.cssText='opacity:0;transition:none';
-  document.getElementById('s10lbl').style.cssText='opacity:0;transition:none';
-  document.getElementById('s10pan').style.cssText='opacity:0;transform:translateY(-50%) translateX(20px);transition:none';
+  ['s5ov','s6ov','s7ov','s8ov','s9ov'].forEach(function(id){var el=document.getElementById(id);if(el)el.classList.remove('show')});
+  ['s10photo','s10badge','s10head','s10desc'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'}});
+  document.getElementById('s10photo').style.transform='scale(0.8)';
   ['s11a','s11b','s11c','s11e','s11f','s11g','s11h'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(12px)'}});
   ['s11d','s11d2'].forEach(function(id){var el=document.getElementById(id);if(el){el.style.transition='none';el.style.opacity='0';el.style.transform='scaleX(0)'}});
 }
