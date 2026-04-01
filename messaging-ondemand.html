@@ -266,12 +266,12 @@ select option {
 
 .return-main {
   position: fixed; bottom: 20px; right: 20px; padding: 10px 18px; border-radius: 25px;
-  background: rgba(255,255,255,0.06); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(110,127,119,0.2); text-decoration: none; color: rgba(200,204,212,0.6);
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.35); text-decoration: none; color: rgba(255,255,255,0.75);
   font-weight: 600; font-size: 14px; box-shadow: 0 8px 20px rgba(0,0,0,0.15);
   transition: all 0.25s ease; z-index: 999;
 }
-.return-main:hover { background: rgba(255,255,255,0.1); color: #e8dcc8; transform: translateY(-2px); }
+.return-main:hover { background: rgba(255,255,255,0.3); color: #fff; transform: translateY(-2px); }
 
 @media (max-width: 640px) {
   .content-section { padding: 30px 22px; }
@@ -475,7 +475,7 @@ document.getElementById('copyGeneratedBtn').addEventListener('click', function()
 });
 </script>
 
-<a href="portal.html" class="return-main">← Back to Portal</a>
+<a href="portal.html" class="return-main">← Return to Agent Edge Partner Portal</a>
 
 <script>
 // Auto-fill name and email from login session
