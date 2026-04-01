@@ -697,13 +697,6 @@ if (form) {
     formData.set('order_data', JSON.stringify(cartData, null, 2));
     
     try {
-      // Send to Formspree (email notification)
-      fetch('https://formspree.io/f/mgoyyney', {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' }
-      });
-      
       // ===== SUBMIT ORDER VIA VERCEL API =====
       // Backend will save to Supabase and track activity
       fetch('https://agent-edge-backend.vercel.app/api/submit-order', {
