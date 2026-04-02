@@ -1839,7 +1839,16 @@ function mktsCalcFibFromRange(hi,lo,dec){var r=hi-lo;if(r===0)return null;var d=
 function mktsCalcPivotsFromValues(H,L,C,dec){if(!H||!L||!C)return null;var P=(H+L+C)/3;return{r2:+(P+(H-L)).toFixed(6),r1:+(2*P-L).toFixed(6),s1:+(2*P-H).toFixed(6),s2:+(P-(H-L)).toFixed(6)};}
 
 /* ═══ DRAW HELPERS ═══ */
-function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){for(var g=0;g<=6;g++){var gy=pad.top+(h-pad.top-pad.bottom)/6*g;ctx.strokeStyle='rgba(220,215,205,0.5)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();ctx.fillStyle='#9a9285';ctx.font='11px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText((maxV-(range/6)*g).toFixed(dec||2)+(suffix||''),w-pad.right+5,gy+4);}}
+function mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,dec,suffix){
+var ch=h-pad.top-pad.bottom;
+var step=0.5;if(suffix==='%')step=0.1;
+if(range>5)step=1;if(range>10)step=2;if(suffix==='%'&&range>1)step=0.2;if(suffix==='%'&&range>2)step=0.5;
+var first=Math.ceil(minV/step)*step;
+for(var v=first;v<=maxV;v+=step){
+  var gy=pad.top+((maxV-v)/range)*ch;
+  ctx.strokeStyle='rgba(220,215,205,0.5)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();
+  ctx.fillStyle='#9a9285';ctx.font='11px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(v.toFixed(dec||2)+(suffix||''),w-pad.right+5,gy+4);
+}}
 function mktsDrawDates(ctx,w,h,data,xP){
   ctx.textAlign='center';ctx.fillStyle='#9a9285';ctx.font='11px -apple-system,system-ui,sans-serif';
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
