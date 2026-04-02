@@ -1609,6 +1609,10 @@
         <div style="width:1px;height:24px;background:var(--border);margin:0 6px;"></div>
         <span style="font-size:11px;font-weight:600;color:#dc2626;text-transform:uppercase;letter-spacing:0.5px;">Low:</span>
         <input type="text" id="mbsPrice_low" placeholder="—" style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-weight:600;width:100px;font-family:inherit;background:#fff;">
+        <div style="width:1px;height:24px;background:var(--border);margin:0 6px;"></div>
+        <span style="font-size:11px;font-weight:600;color:#2563eb;text-transform:uppercase;letter-spacing:0.5px;">Current:</span>
+        <input type="text" id="mbsPrice_current" placeholder="—" oninput="mbsCalcBps('current')" style="padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:14px;font-weight:600;width:100px;font-family:inherit;background:#fff;">
+        <span style="font-size:12px;font-weight:600;" id="mbsBps_current">—</span>
         <span style="font-size:11px;color:var(--text-muted);margin-left:auto;" id="mbsPrevCloseDate"></span>
       </div>
 
@@ -1771,7 +1775,7 @@ function mbsSetPrevClose() {
   document.getElementById('mbsPrevCloseSaveBtn').style.display = 'none';
   document.getElementById('mbsPrevCloseEditBtn').textContent = 'edit';
   // Recalculate all bps
-  ['premarket', 'open', 'midday', 'afternoon', 'close'].forEach(function(s) { mbsCalcBps(s); });
+  ['premarket', 'open', 'midday', 'afternoon', 'close', 'current'].forEach(function(s) { mbsCalcBps(s); });
 }
 
 function mbsCalcBps(slot) {
@@ -1792,8 +1796,8 @@ function mbsSaveSnapshots() {
 
   var today = new Date().toISOString().split('T')[0];
   var snapshots = {};
-  var slots = ['premarket', 'open', 'midday', 'afternoon', 'close'];
-  var labels = { premarket: 'Pre-Market', open: 'Open', midday: 'Mid-Day', afternoon: 'Afternoon', close: 'Close' };
+  var slots = ['premarket', 'open', 'midday', 'afternoon', 'close', 'current'];
+  var labels = { premarket: 'Pre-Market', open: 'Open', midday: 'Mid-Day', afternoon: 'Afternoon', close: 'Close', current: 'Current' };
   var latestPrice = 0;
   var latestBps = 0;
 
@@ -1802,8 +1806,8 @@ function mbsSaveSnapshots() {
     if (price > 0) {
       var bps = mbsPrevClosePrice ? Math.round((price - mbsPrevClosePrice) * 100) : 0;
       snapshots[s] = { price: price, bps: bps, label: labels[s] };
-      // Only use realtor-visible slots for headline price (not premarket)
-      if (s !== 'premarket') {
+      // Only use realtor-visible slots for headline price (not premarket or current)
+      if (s !== 'premarket' && s !== 'current') {
         latestPrice = price;
         latestBps = bps;
       }
@@ -1880,7 +1884,7 @@ function mbsLoadToday() {
 
       // If today's data exists, populate the fields
       if (o.date === today && o.snapshots) {
-        var slots = ['premarket', 'open', 'midday', 'afternoon', 'close'];
+        var slots = ['premarket', 'open', 'midday', 'afternoon', 'close', 'current'];
         var hasAny = false;
         slots.forEach(function(s) {
           if (o.snapshots[s] && o.snapshots[s].price) {
