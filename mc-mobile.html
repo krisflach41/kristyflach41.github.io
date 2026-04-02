@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Agent Edge">
+<link rel="apple-touch-icon" href="agent-edge-logo.png">
+<link rel="manifest" href="mc-mobile-manifest.json">
+<title>Agent Edge Mobile</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg-deep: #f5f6fa;
+  --bg-panel: #ffffff;
+  --bg-hover: #f0f2f7;
+  --border: #e2e5ed;
+  --text-primary: #1a2332;
+  --text-secondary: #5a6578;
+  --text-muted: #9ca3b4;
+  --accent-blue: #2563eb;
+  --accent-green: #16a34a;
+  --accent-red: #dc2626;
+  --accent-teal: #0d9488;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100dvh;
+  -webkit-tap-highlight-color: transparent;
+  padding-bottom: calc(64px + var(--safe-bottom));
+  overflow-x: hidden;
+}
+
+/* ===== TOP BAR ===== */
+.m-topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--text-primary);
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.m-topbar-logo {
+  width: 32px; height: 32px; border-radius: 8px;
+}
+.m-topbar-title {
+  font-size: 15px; font-weight: 700; color: #fff; letter-spacing: 0.3px;
+}
+.m-topbar-status {
+  margin-left: auto; font-size: 10px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 4px;
+}
+
+/* ===== VIEWS ===== */
+.m-view { display: none; padding: 12px; }
+.m-view.active { display: block; }
+
+/* ===== PANELS ===== */
+.m-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.m-panel-title {
+  font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.m-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.m-input {
+  width: 100%; padding: 10px 12px;
+  border: 1px solid var(--border); border-radius: 8px;
+  font-size: 15px; font-weight: 600;
+  font-family: inherit; background: #fff;
+  color: var(--text-primary);
+  -webkit-appearance: none;
+}
+.m-input:focus { outline: none; border-color: var(--accent-blue); }
+.m-input::placeholder { color: var(--text-muted); font-weight: 400; }
+.m-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; font-family: inherit;
+  border: none; cursor: pointer; transition: opacity 0.2s;
+  -webkit-appearance: none;
+}
+.m-btn:active { opacity: 0.7; }
+.m-btn-primary { background: var(--accent-blue); color: #fff; }
+.m-btn-secondary { background: var(--bg-hover); color: var(--text-secondary); border: 1px solid var(--border); }
+.m-btn-green { background: var(--accent-green); color: #fff; }
+
+/* ===== MBS PRICING ===== */
+.mbs-baseline {
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  padding: 10px 12px; background: var(--bg-hover); border-radius: 8px;
+  margin-bottom: 12px;
+}
+.mbs-baseline-item {
+  display: flex; align-items: center; gap: 6px;
+}
+.mbs-baseline-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+  text-transform: uppercase; white-space: nowrap;
+}
+.mbs-baseline-val {
+  font-size: 16px; font-weight: 700;
+}
+.mbs-input-sm {
+  padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px;
+  font-size: 14px; font-weight: 600; width: 90px; font-family: inherit;
+  background: #fff; -webkit-appearance: none;
+}
+.mbs-input-sm:focus { outline: none; border-color: var(--accent-blue); }
+.mbs-slots {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin-bottom: 12px;
+}
+.mbs-slot {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px; text-align: center;
+}
+.mbs-slot-label { font-size: 11px; font-weight: 700; color: var(--text-primary); }
+.mbs-slot-sub { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.mbs-slot-input {
+  width: 100%; padding: 8px; border: 1px solid var(--border);
+  border-radius: 6px; font-size: 16px; font-weight: 700;
+  text-align: center; font-family: inherit; background: var(--bg-hover);
+  -webkit-appearance: none;
+}
+.mbs-slot-input:focus { outline: none; border-color: var(--accent-blue); background: #fff; }
+.mbs-slot-bps { font-size: 12px; font-weight: 600; margin-top: 4px; color: var(--text-muted); }
+.mbs-fields-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;
+}
+.mbs-field-group { display: flex; flex-direction: column; gap: 2px; }
+
+/* ===== CRM ===== */
+.crm-contact-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px; border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.crm-contact-item:last-child { border-bottom: none; }
+.crm-contact-item:active { background: var(--bg-hover); }
+.crm-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.crm-contact-name { font-size: 14px; font-weight: 600; }
+.crm-contact-meta { font-size: 12px; color: var(--text-muted); }
+.crm-contact-actions { margin-left: auto; display: flex; gap: 12px; }
+.crm-contact-actions a {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-hover); color: var(--accent-blue);
+  text-decoration: none; font-size: 14px;
+}
+.crm-contact-actions a:active { opacity: 0.7; }
+.crm-type-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px; letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+/* ===== CRM ADD FORM ===== */
+.crm-add-overlay {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.4);
+}
+.crm-add-overlay.open { display: flex; align-items: flex-end; }
+.crm-add-sheet {
+  background: var(--bg-panel); border-radius: 16px 16px 0 0;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  width: 100%; max-height: 85dvh; overflow-y: auto;
+}
+.crm-add-sheet-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.crm-form-row { margin-bottom: 12px; }
+.crm-form-row label { display: block; margin-bottom: 4px; }
+.crm-type-picker {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px;
+}
+.crm-type-btn {
+  padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-panel);
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+}
+.crm-type-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
+
+/* ===== CALENDAR ===== */
+.cal-event {
+  padding: 12px; border-left: 3px solid var(--accent-blue);
+  margin-bottom: 8px; background: var(--bg-panel);
+  border: 1px solid var(--border); border-radius: 8px;
+  border-left: 3px solid var(--accent-blue);
+}
+.cal-event-title { font-size: 14px; font-weight: 600; }
+.cal-event-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.cal-event-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+.cal-date-header {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--text-muted);
+  padding: 8px 0 6px; margin-top: 8px;
+}
+.cal-date-header:first-child { margin-top: 0; }
+.cal-empty {
+  text-align: center; padding: 40px 20px; color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ===== TOOLS ===== */
+.tools-tabs {
+  display: flex; gap: 4px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; margin-bottom: 8px;
+  scrollbar-width: none;
+}
+.tools-tabs::-webkit-scrollbar { display: none; }
+.tools-tab {
+  padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: 600;
+  white-space: nowrap; border: 1px solid var(--border);
+  background: var(--bg-panel); color: var(--text-secondary);
+  cursor: pointer; font-family: inherit; flex-shrink: 0;
+}
+.tools-tab.active { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+.tools-panel { display: none; }
+.tools-panel.active { display: block; }
+.tools-report-btns {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px;
+}
+.tools-report-btn {
+  padding: 7px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  border: 1px solid var(--border); background: var(--bg-panel);
+  color: var(--text-secondary); cursor: pointer; font-family: inherit;
+}
+.tools-report-btn.active { background: rgba(110,127,119,0.15); color: #6e7f77; border-color: rgba(110,127,119,0.3); }
+.tools-iframe {
+  width: 100%; border: none; border-radius: 8px;
+  background: var(--bg-panel); min-height: 500px;
+}
+.gus-textarea {
+  width: 100%; padding: 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  min-height: 80px; resize: vertical; background: #fff;
+  -webkit-appearance: none;
+}
+.gus-textarea:focus { outline: none; border-color: var(--accent-blue); }
+.gus-result {
+  margin-top: 12px; padding: 14px; border-radius: 8px;
+  background: var(--bg-hover); font-size: 13px;
+  line-height: 1.7; color: var(--text-secondary);
+}
+
+/* ===== BOTTOM NAV ===== */
+.m-nav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: var(--bg-panel);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+}
+.m-nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 8px 0; gap: 2px;
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  cursor: pointer; text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.m-nav-item.active { color: var(--accent-blue); }
+.m-nav-item i { font-size: 18px; }
+
+/* ===== TOAST ===== */
+.m-toast {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  background: var(--text-primary); color: #fff;
+  padding: 10px 20px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; z-index: 300;
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.m-toast.show { opacity: 1; }
+
+/* ===== MISC ===== */
+.m-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.text-green { color: var(--accent-green); }
+.text-red { color: var(--accent-red); }
+.text-blue { color: var(--accent-blue); }
+.text-muted { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="m-topbar">
+  <img src="agent-edge-logo.png" alt="AE" class="m-topbar-logo">
+  <div class="m-topbar-title">Agent Edge</div>
+  <div class="m-topbar-status" id="topbarStatus" style="background:rgba(255,255,255,0.1);color:var(--text-muted);">Loading</div>
+</div>
+
+<!-- TOAST -->
+<div class="m-toast" id="mToast"></div>
+
+<!-- ===== MBS PRICING VIEW ===== -->
+<div class="m-view active" id="view-mbs">
+  <div class="m-panel">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--accent-blue);"></div>
+      <div class="m-panel-title" style="margin-bottom:0;">MBS Pricing</div>
+      <div id="mbsMobileStatus" style="margin-left:auto;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);">NOT SET</div>
+    </div>
+
+    <!-- Previous Close -->
+    <div class="mbs-baseline">
+      <div class="mbs-baseline-item">
+        <span class="mbs-baseline-label" style="color:var(--text-muted);">Prev Close:</span>
+        <span class="mbs-baseline-val" id="mMbsPrevClose">—</span>
+        <button onclick="mMbsEditPrevClose()" id="mMbsEditBtn" style="font-size:10px;color:var(--accent-blue);background:none;border:none;font-weight:600;font-family:inherit;cursor:pointer;">edit</button>
+      </div>
+      <div class="mbs-baseline-item" id="mMbsEditRow" style="display:none;">
+        <input type="text" inputmode="decimal" id="mMbsPrevCloseInput" class="mbs-input-sm" placeholder="e.g. 99.90">
+        <button onclick="mMbsSetPrevClose()" class="m-btn m-btn-primary" style="padding:6px 12px;font-size:11px;">Set</button>
+      </div>
+    </div>
+
+    <!-- High / Low / Current -->
+    <div class="mbs-fields-row">
+      <div class="mbs-field-group">
+        <div class="m-label" style="color:var(--accent-green);">High</div>
+        <input type="text" inputmode="decimal" id="mMbsHigh" class="m-input" placeholder="—">
+      </div>
+      <div class="mbs-field-group">
+        <div class="m-label" style="color:var(--accent-red);">Low</div>
+        <input type="text" inputmode="decimal" id="mMbsLow" class="m-input" placeholder="—">
+      </div>
+    </div>
+    <div class="mbs-fields-row">
+      <div class="mbs-field-group">
+        <div class="m-label" style="color:var(--accent-blue);">Current</div>
+        <input type="text" inputmode="decimal" id="mMbsCurrent" class="m-input" placeholder="—" oninput="mMbsCalcBps('current')">
+      </div>
+      <div class="mbs-field-group">
+        <div class="m-label">Pre-Market</div>
+        <input type="text" inputmode="decimal" id="mMbsPremarket" class="m-input" placeholder="—" oninput="mMbsCalcBps('premarket')">
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;">
+      <span class="mbs-slot-bps" id="mMbsBpsCurrent" style="font-size:13px;">—</span>
+      <span style="font-size:10px;color:var(--text-muted);">from prev close</span>
+    </div>
+
+    <!-- Time Slots -->
+    <div class="mbs-slots">
+      <div class="mbs-slot">
+        <div class="mbs-slot-label">9:00 AM ET</div>
+        <div class="mbs-slot-sub">Open</div>
+        <input type="text" inputmode="decimal" id="mMbsOpen" class="mbs-slot-input" placeholder="—" oninput="mMbsCalcBps('open')">
+        <div class="mbs-slot-bps" id="mMbsBpsOpen">—</div>
+      </div>
+      <div class="mbs-slot">
+        <div class="mbs-slot-label">12:00 PM ET</div>
+        <div class="mbs-slot-sub">Mid-Day</div>
+        <input type="text" inputmode="decimal" id="mMbsMidday" class="mbs-slot-input" placeholder="—" oninput="mMbsCalcBps('midday')">
+        <div class="mbs-slot-bps" id="mMbsBpsMidday">—</div>
+      </div>
+      <div class="mbs-slot">
+        <div class="mbs-slot-label">2:00 PM ET</div>
+        <div class="mbs-slot-sub">Afternoon</div>
+        <input type="text" inputmode="decimal" id="mMbsAfternoon" class="mbs-slot-input" placeholder="—" oninput="mMbsCalcBps('afternoon')">
+        <div class="mbs-slot-bps" id="mMbsBpsAfternoon">—</div>
+      </div>
+      <div class="mbs-slot">
+        <div class="mbs-slot-label">5:00 PM ET</div>
+        <div class="mbs-slot-sub">Close</div>
+        <input type="text" inputmode="decimal" id="mMbsClose" class="mbs-slot-input" placeholder="—" oninput="mMbsCalcBps('close')">
+        <div class="mbs-slot-bps" id="mMbsBpsClose">—</div>
+      </div>
+    </div>
+
+    <button onclick="mMbsSave()" id="mMbsSaveBtn" class="m-btn m-btn-green" style="width:100%;">
+      <i class="fas fa-arrow-up-from-bracket"></i> Save to Portal
+    </button>
+  </div>
+</div>
+
+<!-- ===== CRM VIEW ===== -->
+<div class="m-view" id="view-crm">
+  <div class="m-panel" style="padding:10px 12px;">
+    <div style="display:flex;gap:8px;">
+      <input type="text" id="mCrmSearch" class="m-input" placeholder="Search name, phone, email..." oninput="mCrmFilter()" style="flex:1;">
+      <button onclick="mCrmOpenAdd()" class="m-btn m-btn-primary" style="flex-shrink:0;"><i class="fas fa-plus"></i></button>
+    </div>
+  </div>
+  <div class="m-panel" style="padding:0;" id="mCrmList">
+    <div class="cal-empty"><i class="fas fa-spinner fa-spin"></i> Loading contacts...</div>
+  </div>
+</div>
+
+<!-- CRM ADD SHEET -->
+<div class="crm-add-overlay" id="mCrmAddOverlay" onclick="if(event.target===this)mCrmCloseAdd()">
+  <div class="crm-add-sheet">
+    <div class="crm-add-sheet-title">
+      <span>New Contact</span>
+      <button onclick="mCrmCloseAdd()" style="background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="crm-type-picker" id="mCrmTypePicker">
+      <button class="crm-type-btn active" data-type="client" onclick="mCrmPickType(this)">Client</button>
+      <button class="crm-type-btn" data-type="realtor" onclick="mCrmPickType(this)">Realtor</button>
+      <button class="crm-type-btn" data-type="title" onclick="mCrmPickType(this)">Title</button>
+      <button class="crm-type-btn" data-type="appraiser" onclick="mCrmPickType(this)">Appraiser</button>
+      <button class="crm-type-btn" data-type="vendor" onclick="mCrmPickType(this)">Vendor</button>
+      <button class="crm-type-btn" data-type="other" onclick="mCrmPickType(this)">Other</button>
+    </div>
+    <div class="crm-form-row">
+      <label class="m-label">First Name</label>
+      <input type="text" id="mCrmFirst" class="m-input" autocomplete="given-name">
+    </div>
+    <div class="crm-form-row">
+      <label class="m-label">Last Name</label>
+      <input type="text" id="mCrmLast" class="m-input" autocomplete="family-name">
+    </div>
+    <div class="crm-form-row">
+      <label class="m-label">Phone</label>
+      <input type="tel" id="mCrmPhone" class="m-input" autocomplete="tel">
+    </div>
+    <div class="crm-form-row">
+      <label class="m-label">Email</label>
+      <input type="email" id="mCrmEmail" class="m-input" autocomplete="email">
+    </div>
+    <div class="crm-form-row">
+      <label class="m-label">Company</label>
+      <input type="text" id="mCrmCompany" class="m-input" autocomplete="organization">
+    </div>
+    <button onclick="mCrmSaveNew()" id="mCrmSaveBtn" class="m-btn m-btn-primary" style="width:100%;margin-top:8px;">
+      <i class="fas fa-check"></i> Save Contact
+    </button>
+  </div>
+</div>
+
+<!-- ===== CALENDAR VIEW ===== -->
+<div class="m-view" id="view-calendar">
+  <div class="m-panel" id="mCalList">
+    <div class="cal-empty"><i class="fas fa-spinner fa-spin"></i> Loading calendar...</div>
+  </div>
+</div>
+
+<!-- ===== TOOLS VIEW ===== -->
+<div class="m-view" id="view-tools">
+  <div class="tools-tabs">
+    <div class="tools-tab active" onclick="mToolsSwitch('reports',this)"><i class="fas fa-file-lines"></i> Reports</div>
+    <div class="tools-tab" onclick="mToolsSwitch('calc',this)"><i class="fas fa-calculator"></i> Calculators</div>
+    <div class="tools-tab" onclick="mToolsSwitch('credit',this)"><i class="fas fa-credit-card"></i> Credit</div>
+    <div class="tools-tab" onclick="mToolsSwitch('compare',this)"><i class="fas fa-scale-balanced"></i> Loan Compare</div>
+    <div class="tools-tab" onclick="mToolsSwitch('blended',this)"><i class="fas fa-percent"></i> Blended Rate</div>
+    <div class="tools-tab" onclick="mToolsSwitch('gus',this)"><i class="fas fa-paw"></i> Ask Gus</div>
+  </div>
+
+  <!-- Reports -->
+  <div class="tools-panel active" id="tools-reports">
+    <div class="tools-report-btns">
+      <button class="tools-report-btn" onclick="mToolsLoadReport('neighborhood-blueprint.html',this)">Neighborhood Blueprint</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('buy-vs-rent.html',this)">Rent to Wealth</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('worth-the-premium.html',this)">Worth the Premium</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('wealth-in-motion.html',this)">Wealth in Motion</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('amortization-report.html',this)">Payoff Accelerator</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('wealth-starts-now.html',this)">Wealth Starts Now</button>
+      <button class="tools-report-btn" onclick="mToolsLoadReport('owner-to-investor.html',this)">Owner to Investor</button>
+    </div>
+    <iframe id="mToolsReportFrame" class="tools-iframe" src=""></iframe>
+  </div>
+
+  <!-- Calculators -->
+  <div class="tools-panel" id="tools-calc">
+    <div class="tools-report-btns">
+      <button class="tools-report-btn" onclick="mToolsLoadCalc('mc-income-calculator.html',this)">W-2 Income</button>
+      <button class="tools-report-btn" onclick="mToolsLoadCalc('mc-self-employed-calculator.html',this)">Self-Employed</button>
+    </div>
+    <iframe id="mToolsCalcFrame" class="tools-iframe" src=""></iframe>
+  </div>
+
+  <!-- Credit Analysis -->
+  <div class="tools-panel" id="tools-credit">
+    <iframe id="mToolsCreditFrame" class="tools-iframe" src=""></iframe>
+  </div>
+
+  <!-- Loan Compare -->
+  <div class="tools-panel" id="tools-compare">
+    <iframe id="mToolsCompareFrame" class="tools-iframe" src=""></iframe>
+  </div>
+
+  <!-- Blended Rate -->
+  <div class="tools-panel" id="tools-blended">
+    <div class="m-panel" style="text-align:center;padding:40px 20px;">
+      <div style="font-size:36px;margin-bottom:10px;"><i class="fas fa-scale-balanced" style="color:var(--accent-blue);"></i></div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Blended Rate Calculator</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Show clients the true cost of carrying multiple debts and how consolidating saves money.</div>
+      <a href="mission-control.html" class="m-btn m-btn-primary" style="text-decoration:none;" onclick="localStorage.setItem('mc_goto','blendedRate');">
+        <i class="fas fa-arrow-right"></i> Open in Mission Control
+      </a>
+    </div>
+  </div>
+
+  <!-- Ask Gus -->
+  <div class="tools-panel" id="tools-gus">
+    <div class="m-panel">
+      <div style="text-align:center;margin-bottom:12px;">
+        <div style="font-size:28px;">&#128062;</div>
+        <div style="font-size:14px;font-weight:700;">Ask Gus Gus</div>
+        <div style="font-size:11px;color:var(--text-muted);">Search lending guidelines — Fannie, Freddie, FHA, VA, USDA</div>
+      </div>
+      <textarea class="gus-textarea" id="mGusQuestion" placeholder="e.g. Can a borrower with a 620 score do FHA with 3.5% down after a bankruptcy discharged 3 years ago?"></textarea>
+      <button onclick="mGusAsk()" id="mGusBtn" class="m-btn m-btn-primary" style="width:100%;margin-top:10px;">
+        <i class="fas fa-search"></i> Search Guidelines
+      </button>
+      <div id="mGusResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BOTTOM NAV ===== -->
+<nav class="m-nav">
+  <div class="m-nav-item active" onclick="mSwitch('mbs',this)">
+    <i class="fas fa-chart-line"></i>
+    <span>MBS</span>
+  </div>
+  <div class="m-nav-item" onclick="mSwitch('crm',this)">
+    <i class="fas fa-address-book"></i>
+    <span>CRM</span>
+  </div>
+  <div class="m-nav-item" onclick="mSwitch('calendar',this)">
+    <i class="fas fa-calendar-alt"></i>
+    <span>Calendar</span>
+  </div>
+  <div class="m-nav-item" onclick="mSwitch('tools',this)">
+    <i class="fas fa-toolbox"></i>
+    <span>Tools</span>
+  </div>
+</nav>
+
+<script>
+// ===== GLOBALS =====
+var API = 'https://agent-edge-backend.vercel.app/api';
+var mMbsPrevClosePrice = 0;
+var mCrmContacts = [];
+var mCrmAddType = 'client';
+
+// ===== NAV =====
+function mSwitch(view, el) {
+  document.querySelectorAll('.m-view').forEach(function(v) { v.classList.remove('active'); });
+  document.querySelectorAll('.m-nav-item').forEach(function(n) { n.classList.remove('active'); });
+  document.getElementById('view-' + view).classList.add('active');
+  el.classList.add('active');
+
+  // Lazy load on first switch
+  if (view === 'crm' && mCrmContacts.length === 0) mCrmLoad();
+  if (view === 'calendar' && !window._calLoaded) mCalLoad();
+  if (view === 'tools' && !window._toolsCreditLoaded) {
+    document.getElementById('mToolsCreditFrame').src = 'mc-credit-analysis.html';
+    document.getElementById('mToolsCompareFrame').src = 'loan-comparison.html';
+    window._toolsCreditLoaded = true;
+  }
+}
+
+function mToast(msg) {
+  var t = document.getElementById('mToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+
+// ===== MBS PRICING =====
+function mMbsEditPrevClose() {
+  var row = document.getElementById('mMbsEditRow');
+  var btn = document.getElementById('mMbsEditBtn');
+  if (row.style.display === 'none') {
+    row.style.display = 'flex';
+    btn.textContent = 'cancel';
+    if (mMbsPrevClosePrice > 0) document.getElementById('mMbsPrevCloseInput').value = mMbsPrevClosePrice;
+    document.getElementById('mMbsPrevCloseInput').focus();
+  } else {
+    row.style.display = 'none';
+    btn.textContent = 'edit';
+  }
+}
+
+function mMbsSetPrevClose() {
+  var val = parseFloat(document.getElementById('mMbsPrevCloseInput').value) || 0;
+  if (val <= 0) { mToast('Enter a valid price'); return; }
+  mMbsPrevClosePrice = val;
+  document.getElementById('mMbsPrevClose').textContent = val.toFixed(2);
+  document.getElementById('mMbsEditRow').style.display = 'none';
+  document.getElementById('mMbsEditBtn').textContent = 'edit';
+  ['current', 'premarket', 'open', 'midday', 'afternoon', 'close'].forEach(function(s) { mMbsCalcBps(s); });
+}
+
+function mMbsCalcBps(slot) {
+  var inputMap = { current: 'mMbsCurrent', premarket: 'mMbsPremarket', open: 'mMbsOpen', midday: 'mMbsMidday', afternoon: 'mMbsAfternoon', close: 'mMbsClose' };
+  var bpsMap = { current: 'mMbsBpsCurrent', premarket: null, open: 'mMbsBpsOpen', midday: 'mMbsBpsMidday', afternoon: 'mMbsBpsAfternoon', close: 'mMbsBpsClose' };
+  var price = parseFloat(document.getElementById(inputMap[slot]).value) || 0;
+  var bpsEl = bpsMap[slot] ? document.getElementById(bpsMap[slot]) : null;
+  if (!bpsEl) return;
+  if (!price || !mMbsPrevClosePrice) { bpsEl.textContent = '—'; bpsEl.style.color = 'var(--text-muted)'; return; }
+  var bps = Math.round((price - mMbsPrevClosePrice) * 100);
+  var color = bps > 0 ? '#16a34a' : bps < 0 ? '#dc2626' : 'var(--text-primary)';
+  var arrow = bps > 0 ? ' ▲' : bps < 0 ? ' ▼' : '';
+  bpsEl.textContent = (bps >= 0 ? '+' : '') + bps + 'bp' + arrow;
+  bpsEl.style.color = color;
+}
+
+function mMbsSave() {
+  var btn = document.getElementById('mMbsSaveBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+
+  var today = new Date().toISOString().split('T')[0];
+  var snapshots = {};
+  var slotMap = [
+    { key: 'premarket', id: 'mMbsPremarket', label: 'Pre-Market' },
+    { key: 'open', id: 'mMbsOpen', label: 'Open' },
+    { key: 'midday', id: 'mMbsMidday', label: 'Mid-Day' },
+    { key: 'afternoon', id: 'mMbsAfternoon', label: 'Afternoon' },
+    { key: 'close', id: 'mMbsClose', label: 'Close' },
+    { key: 'current', id: 'mMbsCurrent', label: 'Current' }
+  ];
+  var latestPrice = 0, latestBps = 0;
+
+  slotMap.forEach(function(s) {
+    var price = parseFloat(document.getElementById(s.id).value) || 0;
+    if (price > 0) {
+      var bps = mMbsPrevClosePrice ? Math.round((price - mMbsPrevClosePrice) * 100) : 0;
+      snapshots[s.key] = { price: price, bps: bps, label: s.label };
+      if (s.key !== 'premarket' && s.key !== 'current') { latestPrice = price; latestBps = bps; }
+      if (s.key === 'current') { latestPrice = price; latestBps = bps; }
+    }
+  });
+
+  if (Object.keys(snapshots).length === 0) {
+    mToast('Enter at least one price');
+    btn.innerHTML = '<i class="fas fa-arrow-up-from-bracket"></i> Save to Portal';
+    btn.disabled = false;
+    return;
+  }
+
+  var manualHigh = parseFloat(document.getElementById('mMbsHigh').value) || 0;
+  var manualLow = parseFloat(document.getElementById('mMbsLow').value) || 0;
+
+  var payload = {
+    date: today,
+    snapshots: snapshots,
+    previous_close: mMbsPrevClosePrice,
+    manual_high: manualHigh || null,
+    manual_low: manualLow || null,
+    latest_price: latestPrice,
+    latest_bps: latestBps,
+    updated_at: new Date().toISOString()
+  };
+
+  fetch(API + '/rates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save_mbs_override', data: payload })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.innerHTML = '<i class="fas fa-arrow-up-from-bracket"></i> Save to Portal';
+    btn.disabled = false;
+    if (data.success) {
+      mToast('Saved — portal updated');
+      document.getElementById('mbsMobileStatus').textContent = 'LIVE';
+      document.getElementById('mbsMobileStatus').style.color = '#22c55e';
+      document.getElementById('topbarStatus').textContent = 'LIVE';
+      document.getElementById('topbarStatus').style.background = 'rgba(34,197,94,0.2)';
+      document.getElementById('topbarStatus').style.color = '#22c55e';
+    } else {
+      mToast('Error: ' + (data.message || 'Failed'));
+    }
+  })
+  .catch(function(err) {
+    btn.innerHTML = '<i class="fas fa-arrow-up-from-bracket"></i> Save to Portal';
+    btn.disabled = false;
+    mToast('Network error');
+  });
+}
+
+function mMbsLoadToday() {
+  fetch(API + '/rates?action=get_mbs_override')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.success || !data.override) {
+        document.getElementById('topbarStatus').textContent = 'NO DATA';
+        document.getElementById('topbarStatus').style.background = 'rgba(255,255,255,0.1)';
+        document.getElementById('topbarStatus').style.color = 'var(--text-muted)';
+        return;
+      }
+      var o = data.override;
+      var today = new Date().toISOString().split('T')[0];
+
+      if (o.date === today && o.previous_close) {
+        mMbsPrevClosePrice = o.previous_close;
+      } else if (o.date !== today && o.snapshots && o.snapshots.close) {
+        mMbsPrevClosePrice = o.snapshots.close.price;
+      } else if (o.latest_price) {
+        mMbsPrevClosePrice = o.latest_price;
+      }
+
+      document.getElementById('mMbsPrevClose').textContent = mMbsPrevClosePrice > 0 ? mMbsPrevClosePrice.toFixed(2) : '—';
+
+      if (o.date === today && o.snapshots) {
+        var fieldMap = { premarket: 'mMbsPremarket', open: 'mMbsOpen', midday: 'mMbsMidday', afternoon: 'mMbsAfternoon', close: 'mMbsClose', current: 'mMbsCurrent' };
+        var hasAny = false;
+        Object.keys(fieldMap).forEach(function(s) {
+          if (o.snapshots[s] && o.snapshots[s].price) {
+            document.getElementById(fieldMap[s]).value = o.snapshots[s].price;
+            mMbsCalcBps(s);
+            hasAny = true;
+          }
+        });
+        if (o.manual_high) document.getElementById('mMbsHigh').value = o.manual_high;
+        if (o.manual_low) document.getElementById('mMbsLow').value = o.manual_low;
+        if (hasAny) {
+          document.getElementById('mbsMobileStatus').textContent = 'LIVE';
+          document.getElementById('mbsMobileStatus').style.color = '#22c55e';
+          document.getElementById('topbarStatus').textContent = 'LIVE';
+          document.getElementById('topbarStatus').style.background = 'rgba(34,197,94,0.2)';
+          document.getElementById('topbarStatus').style.color = '#22c55e';
+        }
+      } else {
+        document.getElementById('topbarStatus').textContent = 'NOT SET';
+        document.getElementById('topbarStatus').style.background = 'rgba(245,158,11,0.15)';
+        document.getElementById('topbarStatus').style.color = '#ea580c';
+      }
+    })
+    .catch(function() {
+      document.getElementById('topbarStatus').textContent = 'OFFLINE';
+      document.getElementById('topbarStatus').style.background = 'rgba(239,68,68,0.15)';
+      document.getElementById('topbarStatus').style.color = '#dc2626';
+    });
+}
+
+// ===== CRM =====
+var badgeColors = {
+  client: 'rgba(59,130,246,0.12);color:#3b82f6',
+  realtor: 'rgba(34,197,94,0.12);color:#22c55e',
+  title: 'rgba(245,158,11,0.12);color:#f59e0b',
+  appraiser: 'rgba(168,85,247,0.12);color:#a855f7',
+  contractor: 'rgba(239,68,68,0.12);color:#ef4444',
+  vendor: 'rgba(20,184,166,0.12);color:#14b8a6',
+  other: 'rgba(0,0,0,0.04);color:#9ca3b4'
+};
+var badgeLabels = { client:'Client', realtor:'Realtor', title:'Title', appraiser:'Appraiser', contractor:'Contractor', vendor:'Vendor', other:'Other' };
+
+function mCrmLoad() {
+  fetch(API + '/crm-api?action=list')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.success && data.contacts) {
+        mCrmContacts = data.contacts;
+        mCrmRender(mCrmContacts);
+      }
+    })
+    .catch(function() {
+      document.getElementById('mCrmList').innerHTML = '<div class="cal-empty">Failed to load contacts</div>';
+    });
+}
+
+function mCrmFilter() {
+  var q = document.getElementById('mCrmSearch').value.toLowerCase();
+  if (!q) { mCrmRender(mCrmContacts); return; }
+  var filtered = mCrmContacts.filter(function(c) {
+    return (c.name || '').toLowerCase().includes(q) ||
+      (c.email || '').toLowerCase().includes(q) ||
+      (c.phone || '').includes(q) ||
+      (c.company || '').toLowerCase().includes(q);
+  });
+  mCrmRender(filtered);
+}
+
+function mCrmRender(contacts) {
+  var el = document.getElementById('mCrmList');
+  if (contacts.length === 0) {
+    el.innerHTML = '<div class="cal-empty">No contacts found</div>';
+    return;
+  }
+  // Show first 50 for performance
+  var show = contacts.slice(0, 50);
+  var html = '';
+  show.forEach(function(c) {
+    var type = c.root_type || c.type || 'other';
+    var bc = badgeColors[type] || badgeColors.other;
+    var bl = badgeLabels[type] || 'Other';
+    var initials = ((c.name || '?')[0] || '?').toUpperCase();
+    var avatarBg = type === 'client' ? '#3b82f6' : type === 'realtor' ? '#22c55e' : type === 'title' ? '#f59e0b' : '#9ca3b4';
+    var phone = c.phone || '';
+    var phoneHref = phone ? 'tel:' + phone.replace(/[^+\d]/g, '') : '#';
+
+    html += '<div class="crm-contact-item">';
+    html += '<div class="crm-avatar" style="background:' + avatarBg + ';">' + initials + '</div>';
+    html += '<div style="flex:1;min-width:0;">';
+    html += '<div class="crm-contact-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (c.name || 'No Name') + '</div>';
+    html += '<div class="crm-contact-meta">' + (c.company || phone || c.email || '') + '</div>';
+    html += '</div>';
+    html += '<div class="crm-contact-actions">';
+    if (phone) html += '<a href="' + phoneHref + '"><i class="fas fa-phone"></i></a>';
+    if (c.email) html += '<a href="mailto:' + c.email + '"><i class="fas fa-envelope"></i></a>';
+    html += '</div>';
+    html += '</div>';
+  });
+  if (contacts.length > 50) {
+    html += '<div style="text-align:center;padding:12px;font-size:12px;color:var(--text-muted);">Showing 50 of ' + contacts.length + ' — refine your search</div>';
+  }
+  el.innerHTML = html;
+}
+
+function mCrmOpenAdd() { document.getElementById('mCrmAddOverlay').classList.add('open'); }
+function mCrmCloseAdd() {
+  document.getElementById('mCrmAddOverlay').classList.remove('open');
+  ['mCrmFirst','mCrmLast','mCrmPhone','mCrmEmail','mCrmCompany'].forEach(function(id) { document.getElementById(id).value = ''; });
+}
+
+function mCrmPickType(btn) {
+  document.querySelectorAll('.crm-type-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  mCrmAddType = btn.dataset.type;
+}
+
+function mCrmSaveNew() {
+  var first = document.getElementById('mCrmFirst').value.trim();
+  var last = document.getElementById('mCrmLast').value.trim();
+  if (!first && !last) { mToast('Enter a name'); return; }
+
+  var btn = document.getElementById('mCrmSaveBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+
+  var contact = {
+    first_name: first,
+    last_name: last,
+    name: (first + ' ' + last).trim(),
+    phone: document.getElementById('mCrmPhone').value.trim(),
+    email: document.getElementById('mCrmEmail').value.trim(),
+    company: document.getElementById('mCrmCompany').value.trim(),
+    type: mCrmAddType,
+    root_type: mCrmAddType,
+    designations: []
+  };
+
+  fetch(API + '/crm-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', crm: contact })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    btn.innerHTML = '<i class="fas fa-check"></i> Save Contact';
+    btn.disabled = false;
+    mToast('Contact saved');
+    mCrmCloseAdd();
+    mCrmLoad(); // Reload list
+  })
+  .catch(function(err) {
+    btn.innerHTML = '<i class="fas fa-check"></i> Save Contact';
+    btn.disabled = false;
+    mToast('Error saving contact');
+  });
+}
+
+// ===== CALENDAR =====
+var CAL_COLORS = {
+  loan_pipeline: '#ef4444', booking: '#6e7f77', webinar: '#0d9488',
+  personal: '#a855f7', out_of_office: '#64748b', realtor: '#2563eb',
+  prospecting: '#ea580c', training: '#6366f1', deadline: '#e11d48',
+  blocked_time: '#4b5563'
+};
+var CAL_LABELS = {
+  loan_pipeline: 'Pipeline', booking: 'Booking', webinar: 'Webinar',
+  personal: 'Personal', out_of_office: 'Out of Office', realtor: 'Realtor',
+  prospecting: 'Prospecting', training: 'Training', deadline: 'Deadline',
+  blocked_time: 'Blocked'
+};
+
+function mCalLoad() {
+  window._calLoaded = true;
+  var loaded = 0;
+  var allEvents = [];
+
+  function done() {
+    loaded++;
+    if (loaded < 3) return;
+    // Sort by date
+    allEvents.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
+    // Filter to next 14 days
+    var now = new Date();
+    now.setHours(0, 0, 0, 0);
+    var end = new Date(now);
+    end.setDate(end.getDate() + 14);
+    var upcoming = allEvents.filter(function(e) {
+      var d = new Date(e.date);
+      return d >= now && d <= end;
+    });
+    mCalRender(upcoming);
+  }
+
+  // Calendar events
+  fetch(API + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_calendar_events', start_date: '2020-01-01', end_date: '2030-12-31' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    (d.events || []).forEach(function(e) {
+      allEvents.push({ title: e.title, date: e.date || e.start_date, time: e.time || e.start_time || '', category: e.category || 'personal', allDay: e.all_day || false });
+    });
+    done();
+  }).catch(function() { done(); });
+
+  // Bookings
+  fetch(API + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list_bookings_full', start_date: '2020-01-01', end_date: '2030-12-31' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    (d.bookings || []).forEach(function(b) {
+      allEvents.push({ title: (b.name || 'Booking') + (b.webinar_title ? ' — ' + b.webinar_title : ''), date: b.booking_date || b.date, time: b.booking_time || '', category: 'booking' });
+    });
+    done();
+  }).catch(function() { done(); });
+
+  // Webinars
+  fetch(API + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'list' })
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    (d.webinars || []).forEach(function(w) {
+      if (w.date) {
+        allEvents.push({ title: w.title || 'Webinar', date: w.date, time: w.time || '', category: 'webinar' });
+      }
+    });
+    done();
+  }).catch(function() { done(); });
+}
+
+function mCalRender(events) {
+  var el = document.getElementById('mCalList');
+  if (events.length === 0) {
+    el.innerHTML = '<div class="cal-empty"><i class="fas fa-calendar-check" style="font-size:24px;margin-bottom:8px;display:block;"></i>No upcoming events in the next 14 days</div>';
+    return;
+  }
+
+  var html = '';
+  var lastDate = '';
+  var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var today = new Date().toISOString().split('T')[0];
+  var tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+  events.forEach(function(e) {
+    var dateStr = (e.date || '').split('T')[0];
+    if (dateStr !== lastDate) {
+      var d = new Date(dateStr + 'T12:00:00');
+      var label = dateStr === today ? 'Today' : dateStr === tomorrow ? 'Tomorrow' : dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate();
+      html += '<div class="cal-date-header">' + label + '</div>';
+      lastDate = dateStr;
+    }
+    var color = CAL_COLORS[e.category] || '#6e7f77';
+    html += '<div class="cal-event" style="border-left-color:' + color + ';">';
+    html += '<div class="cal-event-title">' + (e.title || 'Untitled') + '</div>';
+    if (e.time) html += '<div class="cal-event-time"><i class="fas fa-clock"></i> ' + e.time + '</div>';
+    html += '<div class="cal-event-cat" style="color:' + color + ';">' + (CAL_LABELS[e.category] || e.category || '') + '</div>';
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+
+// ===== TOOLS =====
+function mToolsSwitch(tab, el) {
+  document.querySelectorAll('.tools-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.tools-panel').forEach(function(p) { p.classList.remove('active'); });
+  el.classList.add('active');
+  document.getElementById('tools-' + tab).classList.add('active');
+}
+
+function mToolsLoadReport(page, btn) {
+  document.querySelectorAll('#tools-reports .tools-report-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.getElementById('mToolsReportFrame').src = page;
+}
+
+function mToolsLoadCalc(page, btn) {
+  document.querySelectorAll('#tools-calc .tools-report-btn').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  document.getElementById('mToolsCalcFrame').src = page;
+}
+
+// ===== ASK GUS =====
+async function mGusAsk() {
+  var question = document.getElementById('mGusQuestion').value.trim();
+  if (!question) return;
+
+  var btn = document.getElementById('mGusBtn');
+  var result = document.getElementById('mGusResult');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Searching...';
+  result.innerHTML = '<div class="gus-result" style="text-align:center;color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Searching guidelines...</div>';
+
+  try {
+    var resp = await fetch(API + '/scenario-desk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'ask_gus',
+        question: question,
+        realtor_name: 'Kristy Flach (LO)',
+        realtor_email: 'kflach@prmg.net'
+      })
+    });
+    var data = await resp.json();
+    if (data.response) {
+      var html = data.response
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+      result.innerHTML = '<div class="gus-result"><p>' + html + '</p></div>';
+    } else {
+      result.innerHTML = '<div class="gus-result" style="color:var(--accent-red);">No response received. Try again.</div>';
+    }
+  } catch (e) {
+    result.innerHTML = '<div class="gus-result" style="color:var(--accent-red);">Error: ' + e.message + '</div>';
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-search"></i> Search Guidelines';
+}
+
+// ===== INIT =====
+mMbsLoadToday();
+
+// Register service worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('mc-mobile-sw.js').catch(function() {});
+}
+</script>
+</body>
+</html>

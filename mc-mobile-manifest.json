@@ -1,0 +1,18 @@
+{
+  "name": "Agent Edge Mobile",
+  "short_name": "Agent Edge",
+  "description": "Mission Control Lite — MBS Pricing, CRM, Calendar, Tools",
+  "start_url": "/mc-mobile.html",
+  "display": "standalone",
+  "background_color": "#f5f6fa",
+  "theme_color": "#1a2332",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "agent-edge-logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
