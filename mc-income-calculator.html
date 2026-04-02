@@ -6,6 +6,8 @@
 <title>Income Calculator - Agent Edge</title>
 <style>
 /* ===== MATCHES PORTAL STYLING ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin: 0;
@@ -114,6 +116,7 @@ label {
 input[type="number"],
 input[type="text"],
 select {
+  width: 100%;
   padding: 10px 14px;
   border: 1px solid rgba(11,78,162,0.2);
   border-radius: 8px;
@@ -272,15 +275,45 @@ select:focus {
 @media (max-width: 640px) {
   .form-row {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
   
   .calculator-container {
-    padding: 30px 20px;
+    padding: 20px 14px;
+    border-radius: 12px;
+  }
+
+  body {
+    padding: 16px 10px 60px 10px;
+  }
+
+  h1 { font-size: 22px; }
+  .subtitle { font-size: 13px; }
+
+  .income-section {
+    padding: 16px 12px;
+    margin-bottom: 16px;
+  }
+
+  .income-section h2 {
+    font-size: 17px;
   }
   
   .total-income .amount {
-    font-size: 36px;
+    font-size: 32px;
   }
+
+  .radio-group {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .disclaimer {
+    padding: 14px;
+  }
+
+  .disclaimer h3 { font-size: 15px; }
+  .disclaimer p { font-size: 12px; }
 }
 
   .back-btn {

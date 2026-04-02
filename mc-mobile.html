@@ -205,7 +205,7 @@ body {
 /* ===== CALENDAR ===== */
 .cal-header {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; margin-bottom: 8px;
+  padding: 10px 0; margin-bottom: 4px;
 }
 .cal-header-title { font-size: 15px; font-weight: 700; }
 .cal-header-nav {
@@ -217,22 +217,32 @@ body {
   cursor: pointer; font-size: 13px; color: var(--text-secondary);
 }
 .cal-header-btn:active { background: var(--bg-hover); }
-.cal-week-strip {
-  display: flex; gap: 4px; margin-bottom: 12px;
+.cal-month-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 1px; margin-bottom: 8px;
 }
-.cal-day-col {
-  flex: 1; text-align: center; padding: 6px 2px; border-radius: 10px;
-  cursor: pointer; transition: background 0.15s;
+.cal-month-dayname {
+  text-align: center; font-size: 10px; font-weight: 600;
+  color: var(--text-muted); letter-spacing: 0.5px;
+  text-transform: uppercase; padding: 4px 0;
 }
-.cal-day-col:active { background: var(--bg-hover); }
-.cal-day-col.today { background: rgba(37,99,235,0.08); }
-.cal-day-col.selected { background: var(--accent-blue); }
-.cal-day-col.selected .cal-day-name,
-.cal-day-col.selected .cal-day-num { color: #fff; }
-.cal-day-name { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
-.cal-day-num { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
-.cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-blue); margin: 3px auto 0; }
-.cal-day-col.selected .cal-day-dot { background: #fff; }
+.cal-month-cell {
+  text-align: center; padding: 6px 2px; border-radius: 8px;
+  cursor: pointer; min-height: 36px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.cal-month-cell:active { background: var(--bg-hover); }
+.cal-month-cell.other-month .cal-day-num { color: var(--text-muted); opacity: 0.4; }
+.cal-month-cell.today { background: rgba(37,99,235,0.08); }
+.cal-month-cell.selected { background: var(--accent-blue); }
+.cal-month-cell.selected .cal-day-num { color: #fff; }
+.cal-day-num { font-size: 14px; font-weight: 600; color: var(--text-primary); line-height: 1; }
+.cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-blue); margin: 2px auto 0; }
+.cal-month-cell.selected .cal-day-dot { background: #fff; }
+.cal-selected-label {
+  font-size: 12px; font-weight: 600; color: var(--text-secondary);
+  padding: 8px 0 4px; text-transform: uppercase; letter-spacing: 0.5px;
+}
 .cal-event {
   display: flex; gap: 10px; align-items: flex-start;
   padding: 12px; margin-bottom: 8px; background: var(--bg-panel);
@@ -514,19 +524,20 @@ body {
 
 <!-- ===== CALENDAR VIEW ===== -->
 <div class="m-view" id="view-calendar">
-  <div class="m-panel" style="padding:12px 14px;">
+  <div class="m-panel" style="padding:12px 10px;">
     <div class="cal-header">
       <div class="cal-header-title" id="mCalMonthLabel"></div>
       <div class="cal-header-nav">
-        <button class="cal-header-btn" onclick="mCalPrevWeek()"><i class="fas fa-chevron-left"></i></button>
+        <button class="cal-header-btn" onclick="mCalPrevMonth()"><i class="fas fa-chevron-left"></i></button>
         <button class="cal-header-btn" onclick="mCalToday()" style="font-size:11px;font-weight:700;width:auto;padding:0 10px;">Today</button>
-        <button class="cal-header-btn" onclick="mCalNextWeek()"><i class="fas fa-chevron-right"></i></button>
+        <button class="cal-header-btn" onclick="mCalNextMonth()"><i class="fas fa-chevron-right"></i></button>
         <button class="cal-header-btn" onclick="mCalOpenAdd()" style="background:var(--accent-blue);color:#fff;border-color:var(--accent-blue);"><i class="fas fa-plus"></i></button>
       </div>
     </div>
-    <div class="cal-week-strip" id="mCalWeekStrip"></div>
+    <div class="cal-month-grid" id="mCalGrid"></div>
   </div>
-  <div id="mCalDayEvents" style="padding:0 0 12px;">
+  <div id="mCalSelectedLabel" class="cal-selected-label" style="padding:8px 4px 4px;"></div>
+  <div id="mCalDayEvents">
     <div class="cal-empty"><i class="fas fa-spinner fa-spin"></i> Loading calendar...</div>
   </div>
 </div>
@@ -1021,16 +1032,9 @@ var CAL_LABELS = {
 };
 
 var mCalAllEvents = [];
-var mCalWeekStart = null;
-var mCalSelectedDate = null;
-
-function mCalGetWeekStart(d) {
-  var date = new Date(d);
-  var day = date.getDay();
-  date.setDate(date.getDate() - day);
-  date.setHours(0,0,0,0);
-  return date;
-}
+var mCalViewYear = new Date().getFullYear();
+var mCalViewMonth = new Date().getMonth();
+var mCalSelectedDate = new Date().toISOString().split('T')[0];
 
 function mCalLoad() {
   window._calLoaded = true;
@@ -1044,16 +1048,10 @@ function mCalLoad() {
       if (a.date !== b.date) return a.date < b.date ? -1 : 1;
       return (a.time || '').localeCompare(b.time || '');
     });
-    // Initialize to current week
-    var today = new Date();
-    today.setHours(0,0,0,0);
-    mCalWeekStart = mCalGetWeekStart(today);
-    mCalSelectedDate = today.toISOString().split('T')[0];
-    mCalRenderWeek();
+    mCalRenderMonth();
     mCalRenderDayEvents();
   }
 
-  // Calendar events
   fetch(API + '/webinar-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'list_calendar_events', start_date: '2020-01-01', end_date: '2030-12-31' })
@@ -1073,7 +1071,6 @@ function mCalLoad() {
     done();
   }).catch(function() { done(); });
 
-  // Bookings
   fetch(API + '/webinar-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'list_bookings_full', start_date: '2020-01-01', end_date: '2030-12-31' })
@@ -1092,7 +1089,6 @@ function mCalLoad() {
     done();
   }).catch(function() { done(); });
 
-  // Webinars
   fetch(API + '/webinar-api', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action: 'list' })
@@ -1114,47 +1110,92 @@ function mCalLoad() {
   }).catch(function() { done(); });
 }
 
-function mCalRenderWeek() {
-  var strip = document.getElementById('mCalWeekStrip');
+function mCalRenderMonth() {
+  var grid = document.getElementById('mCalGrid');
   var monthLabel = document.getElementById('mCalMonthLabel');
-  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   var todayStr = new Date().toISOString().split('T')[0];
-  var html = '';
 
-  // Build date->event count map
+  monthLabel.textContent = monthNames[mCalViewMonth] + ' ' + mCalViewYear;
+
   var eventDates = {};
   mCalAllEvents.forEach(function(e) { eventDates[e.date] = true; });
 
-  var firstDay = new Date(mCalWeekStart);
-  var lastDay = new Date(mCalWeekStart);
-  lastDay.setDate(lastDay.getDate() + 6);
+  var html = '';
+  // Day name headers
+  dayNames.forEach(function(d) {
+    html += '<div class="cal-month-dayname">' + d + '</div>';
+  });
 
-  // Month label
-  if (firstDay.getMonth() === lastDay.getMonth()) {
-    monthLabel.textContent = monthNames[firstDay.getMonth()] + ' ' + firstDay.getFullYear();
-  } else {
-    monthLabel.textContent = monthNames[firstDay.getMonth()].slice(0,3) + ' – ' + monthNames[lastDay.getMonth()].slice(0,3) + ' ' + lastDay.getFullYear();
-  }
+  // First day of month and total days
+  var firstOfMonth = new Date(mCalViewYear, mCalViewMonth, 1);
+  var startDay = firstOfMonth.getDay(); // 0=Sun
+  var daysInMonth = new Date(mCalViewYear, mCalViewMonth + 1, 0).getDate();
+  var prevMonthDays = new Date(mCalViewYear, mCalViewMonth, 0).getDate();
 
-  for (var i = 0; i < 7; i++) {
-    var d = new Date(mCalWeekStart);
-    d.setDate(d.getDate() + i);
-    var dateStr = d.toISOString().split('T')[0];
-    var isToday = dateStr === todayStr;
-    var isSelected = dateStr === mCalSelectedDate;
-    var hasEvents = eventDates[dateStr];
-    var cls = 'cal-day-col';
-    if (isToday) cls += ' today';
-    if (isSelected) cls += ' selected';
-
-    html += '<div class="' + cls + '" onclick="mCalSelectDay(\'' + dateStr + '\')">';
-    html += '<div class="cal-day-name">' + dayNames[d.getDay()] + '</div>';
-    html += '<div class="cal-day-num">' + d.getDate() + '</div>';
-    if (hasEvents) html += '<div class="cal-day-dot"></div>';
+  // Previous month trailing days
+  for (var p = startDay - 1; p >= 0; p--) {
+    var pDay = prevMonthDays - p;
+    var pMonth = mCalViewMonth - 1;
+    var pYear = mCalViewYear;
+    if (pMonth < 0) { pMonth = 11; pYear--; }
+    var pDateStr = pYear + '-' + String(pMonth + 1).padStart(2, '0') + '-' + String(pDay).padStart(2, '0');
+    var pCls = 'cal-month-cell other-month';
+    if (pDateStr === mCalSelectedDate) pCls += ' selected';
+    html += '<div class="' + pCls + '" onclick="mCalSelectDay(\'' + pDateStr + '\')">';
+    html += '<div class="cal-day-num">' + pDay + '</div>';
+    if (eventDates[pDateStr]) html += '<div class="cal-day-dot"></div>';
     html += '</div>';
   }
-  strip.innerHTML = html;
+
+  // Current month days
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dateStr = mCalViewYear + '-' + String(mCalViewMonth + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    var cls = 'cal-month-cell';
+    if (dateStr === todayStr) cls += ' today';
+    if (dateStr === mCalSelectedDate) cls += ' selected';
+    html += '<div class="' + cls + '" onclick="mCalSelectDay(\'' + dateStr + '\')">';
+    html += '<div class="cal-day-num">' + d + '</div>';
+    if (eventDates[dateStr]) html += '<div class="cal-day-dot"></div>';
+    html += '</div>';
+  }
+
+  // Next month leading days to fill grid
+  var totalCells = startDay + daysInMonth;
+  var remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (var n = 1; n <= remaining; n++) {
+    var nMonth = mCalViewMonth + 1;
+    var nYear = mCalViewYear;
+    if (nMonth > 11) { nMonth = 0; nYear++; }
+    var nDateStr = nYear + '-' + String(nMonth + 1).padStart(2, '0') + '-' + String(n).padStart(2, '0');
+    var nCls = 'cal-month-cell other-month';
+    if (nDateStr === mCalSelectedDate) nCls += ' selected';
+    html += '<div class="' + nCls + '" onclick="mCalSelectDay(\'' + nDateStr + '\')">';
+    html += '<div class="cal-day-num">' + n + '</div>';
+    if (eventDates[nDateStr]) html += '<div class="cal-day-dot"></div>';
+    html += '</div>';
+  }
+
+  grid.innerHTML = html;
+
+  // Update selected date label
+  mCalUpdateSelectedLabel();
+}
+
+function mCalUpdateSelectedLabel() {
+  var el = document.getElementById('mCalSelectedLabel');
+  var dayNames = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var todayStr = new Date().toISOString().split('T')[0];
+  var d = new Date(mCalSelectedDate + 'T12:00:00');
+  var label = '';
+  if (mCalSelectedDate === todayStr) {
+    label = 'Today — ' + dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate();
+  } else {
+    label = dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate();
+  }
+  el.textContent = label;
 }
 
 function mCalRenderDayEvents() {
@@ -1166,7 +1207,6 @@ function mCalRenderDayEvents() {
     return;
   }
 
-  // Sort: all-day first, then by time
   events.sort(function(a, b) {
     if (a.allDay && !b.allDay) return -1;
     if (!a.allDay && b.allDay) return 1;
@@ -1207,35 +1247,37 @@ function mCalFormatTime(t) {
 
 function mCalSelectDay(dateStr) {
   mCalSelectedDate = dateStr;
-  mCalRenderWeek();
+  // If tapped day is in a different month, switch to that month
+  var d = new Date(dateStr + 'T12:00:00');
+  if (d.getMonth() !== mCalViewMonth || d.getFullYear() !== mCalViewYear) {
+    mCalViewMonth = d.getMonth();
+    mCalViewYear = d.getFullYear();
+  }
+  mCalRenderMonth();
   mCalRenderDayEvents();
 }
 
-function mCalPrevWeek() {
-  mCalWeekStart.setDate(mCalWeekStart.getDate() - 7);
-  // Select first day of new week
-  mCalSelectedDate = mCalWeekStart.toISOString().split('T')[0];
-  mCalRenderWeek();
-  mCalRenderDayEvents();
+function mCalPrevMonth() {
+  mCalViewMonth--;
+  if (mCalViewMonth < 0) { mCalViewMonth = 11; mCalViewYear--; }
+  mCalRenderMonth();
 }
 
-function mCalNextWeek() {
-  mCalWeekStart.setDate(mCalWeekStart.getDate() + 7);
-  mCalSelectedDate = mCalWeekStart.toISOString().split('T')[0];
-  mCalRenderWeek();
-  mCalRenderDayEvents();
+function mCalNextMonth() {
+  mCalViewMonth++;
+  if (mCalViewMonth > 11) { mCalViewMonth = 0; mCalViewYear++; }
+  mCalRenderMonth();
 }
 
 function mCalToday() {
   var today = new Date();
-  today.setHours(0,0,0,0);
-  mCalWeekStart = mCalGetWeekStart(today);
+  mCalViewYear = today.getFullYear();
+  mCalViewMonth = today.getMonth();
   mCalSelectedDate = today.toISOString().split('T')[0];
-  mCalRenderWeek();
+  mCalRenderMonth();
   mCalRenderDayEvents();
 }
 
-// Add Event
 function mCalOpenAdd() {
   document.getElementById('mCalModal').classList.add('open');
   document.getElementById('mCalModalTitle').textContent = 'New Event';
@@ -1294,7 +1336,6 @@ function mCalSaveEvent() {
     if (d.success) {
       mToast('Event created');
       mCalCloseModal();
-      // Reload calendar data
       window._calLoaded = false;
       mCalLoad();
     } else {
