@@ -1909,7 +1909,15 @@ gaps.sort(function(a,b){return b.w-a.w;});
 // Place label in the center of the widest gap
 return gaps[0].x+Math.max(0,(gaps[0].w-labelW)/2);
 }
-function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP,data,xP){if(!fib)return;var cw=w-pad.left-pad.right;var levels=[];var order=['pct0','pct236','pct382','pct50','pct618','pct100'];order.forEach(function(k){if(fib[k]&&fib[k].level>=minV&&fib[k].level<=maxV)levels.push(fib[k]);});
+function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP,data,xP){if(!fib)return;var cw=w-pad.left-pad.right;
+// Find actual price range from candle data to filter relevant levels
+var dataHi=-Infinity,dataLo=Infinity;
+if(data){data.forEach(function(c){if(c.high>dataHi)dataHi=c.high;if(c.low<dataLo)dataLo=c.low;});}
+var dataRange=dataHi-dataLo||1;
+var levels=[];var order=['pct0','pct236','pct382','pct50','pct618','pct100'];order.forEach(function(k){if(fib[k]&&fib[k].level>=minV&&fib[k].level<=maxV){
+  // Only show levels within the candle data range plus a small buffer
+  if(!data||( fib[k].level>=(dataLo-dataRange*0.15)&&fib[k].level<=(dataHi+dataRange*0.15)))levels.push(fib[k]);
+}});
 var range=maxV-minV;var margin=range*0.02;
 var placed=[];var minGap=16;
 levels.forEach(function(f){
