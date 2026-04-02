@@ -643,14 +643,7 @@ body {
 
   <!-- Blended Rate -->
   <div class="tools-panel" id="tools-blended">
-    <div class="m-panel" style="text-align:center;padding:40px 20px;">
-      <div style="font-size:36px;margin-bottom:10px;"><i class="fas fa-scale-balanced" style="color:var(--accent-blue);"></i></div>
-      <div style="font-size:16px;font-weight:700;margin-bottom:6px;">Blended Rate Calculator</div>
-      <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">Show clients the true cost of carrying multiple debts and how consolidating saves money.</div>
-      <a href="mission-control.html" class="m-btn m-btn-primary" style="text-decoration:none;" onclick="localStorage.setItem('mc_goto','blendedRate');">
-        <i class="fas fa-arrow-right"></i> Open in Mission Control
-      </a>
-    </div>
+    <iframe id="mToolsBlendedFrame" class="tools-iframe" src=""></iframe>
   </div>
 
   <!-- Ask Gus -->
@@ -1354,6 +1347,12 @@ function mToolsSwitch(tab, el) {
   document.querySelectorAll('.tools-panel').forEach(function(p) { p.classList.remove('active'); });
   el.classList.add('active');
   document.getElementById('tools-' + tab).classList.add('active');
+
+  // Lazy load blended rate
+  if (tab === 'blended' && !window._blendedLoaded) {
+    document.getElementById('mToolsBlendedFrame').src = 'mc-blended-rate-standalone.html';
+    window._blendedLoaded = true;
+  }
 }
 
 function mToolsLoadReport(page, btn) {
