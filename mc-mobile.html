@@ -203,25 +203,86 @@ body {
 .crm-type-btn.active { background: var(--accent-blue); color: #fff; border-color: var(--accent-blue); }
 
 /* ===== CALENDAR ===== */
+.cal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0; margin-bottom: 8px;
+}
+.cal-header-title { font-size: 15px; font-weight: 700; }
+.cal-header-nav {
+  display: flex; gap: 4px;
+}
+.cal-header-btn {
+  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg-panel); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 13px; color: var(--text-secondary);
+}
+.cal-header-btn:active { background: var(--bg-hover); }
+.cal-week-strip {
+  display: flex; gap: 4px; margin-bottom: 12px;
+}
+.cal-day-col {
+  flex: 1; text-align: center; padding: 6px 2px; border-radius: 10px;
+  cursor: pointer; transition: background 0.15s;
+}
+.cal-day-col:active { background: var(--bg-hover); }
+.cal-day-col.today { background: rgba(37,99,235,0.08); }
+.cal-day-col.selected { background: var(--accent-blue); }
+.cal-day-col.selected .cal-day-name,
+.cal-day-col.selected .cal-day-num { color: #fff; }
+.cal-day-name { font-size: 10px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+.cal-day-num { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-top: 2px; }
+.cal-day-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent-blue); margin: 3px auto 0; }
+.cal-day-col.selected .cal-day-dot { background: #fff; }
 .cal-event {
-  padding: 12px; border-left: 3px solid var(--accent-blue);
-  margin-bottom: 8px; background: var(--bg-panel);
-  border: 1px solid var(--border); border-radius: 8px;
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 12px; margin-bottom: 8px; background: var(--bg-panel);
+  border: 1px solid var(--border); border-radius: 10px;
   border-left: 3px solid var(--accent-blue);
 }
-.cal-event-title { font-size: 14px; font-weight: 600; }
-.cal-event-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.cal-event-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
-.cal-date-header {
-  font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--text-muted);
-  padding: 8px 0 6px; margin-top: 8px;
+.cal-event-time-col {
+  min-width: 48px; text-align: right; flex-shrink: 0;
 }
-.cal-date-header:first-child { margin-top: 0; }
+.cal-event-time-start { font-size: 13px; font-weight: 700; color: var(--text-primary); }
+.cal-event-time-end { font-size: 11px; color: var(--text-muted); }
+.cal-event-title { font-size: 14px; font-weight: 600; }
+.cal-event-cat { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
+.cal-event-allday {
+  font-size: 10px; font-weight: 600; color: var(--accent-blue);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
 .cal-empty {
   text-align: center; padding: 40px 20px; color: var(--text-muted);
   font-size: 13px;
 }
+/* Add Event Modal */
+.cal-modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.4);
+}
+.cal-modal-bg.open { display: flex; align-items: flex-end; }
+.cal-modal-sheet {
+  background: var(--bg-panel); border-radius: 16px 16px 0 0;
+  padding: 20px 16px calc(20px + var(--safe-bottom));
+  width: 100%; max-height: 85dvh; overflow-y: auto;
+}
+.cal-modal-title {
+  font-size: 16px; font-weight: 700; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cal-form-row { margin-bottom: 12px; }
+.cal-form-row label { display: block; margin-bottom: 4px; }
+.cal-form-row select {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: inherit;
+  background: #fff; color: var(--text-primary); -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%239ca3b4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.cal-form-check {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--text-secondary); cursor: pointer;
+}
+.cal-form-check input { width: 18px; height: 18px; }
 
 /* ===== TOOLS ===== */
 .tools-tabs {
@@ -453,8 +514,75 @@ body {
 
 <!-- ===== CALENDAR VIEW ===== -->
 <div class="m-view" id="view-calendar">
-  <div class="m-panel" id="mCalList">
+  <div class="m-panel" style="padding:12px 14px;">
+    <div class="cal-header">
+      <div class="cal-header-title" id="mCalMonthLabel"></div>
+      <div class="cal-header-nav">
+        <button class="cal-header-btn" onclick="mCalPrevWeek()"><i class="fas fa-chevron-left"></i></button>
+        <button class="cal-header-btn" onclick="mCalToday()" style="font-size:11px;font-weight:700;width:auto;padding:0 10px;">Today</button>
+        <button class="cal-header-btn" onclick="mCalNextWeek()"><i class="fas fa-chevron-right"></i></button>
+        <button class="cal-header-btn" onclick="mCalOpenAdd()" style="background:var(--accent-blue);color:#fff;border-color:var(--accent-blue);"><i class="fas fa-plus"></i></button>
+      </div>
+    </div>
+    <div class="cal-week-strip" id="mCalWeekStrip"></div>
+  </div>
+  <div id="mCalDayEvents" style="padding:0 0 12px;">
     <div class="cal-empty"><i class="fas fa-spinner fa-spin"></i> Loading calendar...</div>
+  </div>
+</div>
+
+<!-- Calendar Add Event Modal -->
+<div class="cal-modal-bg" id="mCalModal" onclick="if(event.target===this)mCalCloseModal()">
+  <div class="cal-modal-sheet">
+    <div class="cal-modal-title">
+      <span id="mCalModalTitle">New Event</span>
+      <button onclick="mCalCloseModal()" style="background:none;border:none;font-size:18px;color:var(--text-muted);cursor:pointer;"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="cal-form-row">
+      <label class="m-label">Title</label>
+      <input type="text" id="mCalEvTitle" class="m-input" placeholder="Event title">
+    </div>
+    <div class="cal-form-row">
+      <label class="m-label">Date</label>
+      <input type="date" id="mCalEvDate" class="m-input">
+    </div>
+    <div class="cal-form-row">
+      <label class="cal-form-check"><input type="checkbox" id="mCalEvAllDay" onchange="mCalToggleAllDay()"> All day event</label>
+    </div>
+    <div id="mCalTimeFields">
+      <div style="display:flex;gap:10px;">
+        <div class="cal-form-row" style="flex:1;">
+          <label class="m-label">Start</label>
+          <input type="time" id="mCalEvStart" class="m-input">
+        </div>
+        <div class="cal-form-row" style="flex:1;">
+          <label class="m-label">End</label>
+          <input type="time" id="mCalEvEnd" class="m-input">
+        </div>
+      </div>
+    </div>
+    <div class="cal-form-row">
+      <label class="m-label">Category</label>
+      <select id="mCalEvCategory">
+        <option value="personal">Personal</option>
+        <option value="realtor">Realtor</option>
+        <option value="prospecting">Prospecting</option>
+        <option value="training">Training</option>
+        <option value="deadline">Deadline</option>
+        <option value="out_of_office">Out of Office</option>
+        <option value="blocked_time">Blocked Time</option>
+      </select>
+    </div>
+    <div class="cal-form-row">
+      <label class="m-label">Notes</label>
+      <textarea id="mCalEvNotes" class="m-input" rows="2" placeholder="Optional notes" style="resize:vertical;"></textarea>
+    </div>
+    <div class="cal-form-row">
+      <label class="cal-form-check"><input type="checkbox" id="mCalEvReminder"> SMS reminder (15 min before)</label>
+    </div>
+    <button onclick="mCalSaveEvent()" id="mCalSaveBtn" class="m-btn m-btn-primary" style="width:100%;margin-top:4px;">
+      <i class="fas fa-check"></i> Create Event
+    </button>
   </div>
 </div>
 
@@ -892,26 +1020,37 @@ var CAL_LABELS = {
   blocked_time: 'Blocked'
 };
 
+var mCalAllEvents = [];
+var mCalWeekStart = null;
+var mCalSelectedDate = null;
+
+function mCalGetWeekStart(d) {
+  var date = new Date(d);
+  var day = date.getDay();
+  date.setDate(date.getDate() - day);
+  date.setHours(0,0,0,0);
+  return date;
+}
+
 function mCalLoad() {
   window._calLoaded = true;
+  mCalAllEvents = [];
   var loaded = 0;
-  var allEvents = [];
 
   function done() {
     loaded++;
     if (loaded < 3) return;
-    // Sort by date
-    allEvents.sort(function(a, b) { return new Date(a.date) - new Date(b.date); });
-    // Filter to next 14 days
-    var now = new Date();
-    now.setHours(0, 0, 0, 0);
-    var end = new Date(now);
-    end.setDate(end.getDate() + 14);
-    var upcoming = allEvents.filter(function(e) {
-      var d = new Date(e.date);
-      return d >= now && d <= end;
+    mCalAllEvents.sort(function(a, b) {
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return (a.time || '').localeCompare(b.time || '');
     });
-    mCalRender(upcoming);
+    // Initialize to current week
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    mCalWeekStart = mCalGetWeekStart(today);
+    mCalSelectedDate = today.toISOString().split('T')[0];
+    mCalRenderWeek();
+    mCalRenderDayEvents();
   }
 
   // Calendar events
@@ -920,7 +1059,16 @@ function mCalLoad() {
     body: JSON.stringify({ action: 'list_calendar_events', start_date: '2020-01-01', end_date: '2030-12-31' })
   }).then(function(r) { return r.json(); }).then(function(d) {
     (d.events || []).forEach(function(e) {
-      allEvents.push({ title: e.title, date: e.date || e.start_date, time: e.time || e.start_time || '', category: e.category || 'personal', allDay: e.all_day || false });
+      mCalAllEvents.push({
+        id: e.id, title: e.title,
+        date: (e.event_date || e.date || e.start_date || '').split('T')[0],
+        time: e.start_time || e.time || '',
+        endTime: e.end_time || '',
+        category: e.category || 'personal',
+        allDay: e.all_day || false,
+        notes: e.notes || '',
+        type: 'event'
+      });
     });
     done();
   }).catch(function() { done(); });
@@ -931,7 +1079,15 @@ function mCalLoad() {
     body: JSON.stringify({ action: 'list_bookings_full', start_date: '2020-01-01', end_date: '2030-12-31' })
   }).then(function(r) { return r.json(); }).then(function(d) {
     (d.bookings || []).forEach(function(b) {
-      allEvents.push({ title: (b.name || 'Booking') + (b.webinar_title ? ' — ' + b.webinar_title : ''), date: b.booking_date || b.date, time: b.booking_time || '', category: 'booking' });
+      mCalAllEvents.push({
+        id: b.id, title: (b.name || 'Booking') + (b.webinar_title ? ' — ' + b.webinar_title : ''),
+        date: (b.booking_date || b.date || '').split('T')[0],
+        time: b.booking_time || '',
+        endTime: '',
+        category: 'booking',
+        allDay: false,
+        type: 'booking'
+      });
     });
     done();
   }).catch(function() { done(); });
@@ -943,43 +1099,212 @@ function mCalLoad() {
   }).then(function(r) { return r.json(); }).then(function(d) {
     (d.webinars || []).forEach(function(w) {
       if (w.date) {
-        allEvents.push({ title: w.title || 'Webinar', date: w.date, time: w.time || '', category: 'webinar' });
+        mCalAllEvents.push({
+          id: w.id, title: w.title || 'Webinar',
+          date: (w.date || '').split('T')[0],
+          time: w.time || '',
+          endTime: '',
+          category: 'webinar',
+          allDay: false,
+          type: 'webinar'
+        });
       }
     });
     done();
   }).catch(function() { done(); });
 }
 
-function mCalRender(events) {
-  var el = document.getElementById('mCalList');
+function mCalRenderWeek() {
+  var strip = document.getElementById('mCalWeekStrip');
+  var monthLabel = document.getElementById('mCalMonthLabel');
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var todayStr = new Date().toISOString().split('T')[0];
+  var html = '';
+
+  // Build date->event count map
+  var eventDates = {};
+  mCalAllEvents.forEach(function(e) { eventDates[e.date] = true; });
+
+  var firstDay = new Date(mCalWeekStart);
+  var lastDay = new Date(mCalWeekStart);
+  lastDay.setDate(lastDay.getDate() + 6);
+
+  // Month label
+  if (firstDay.getMonth() === lastDay.getMonth()) {
+    monthLabel.textContent = monthNames[firstDay.getMonth()] + ' ' + firstDay.getFullYear();
+  } else {
+    monthLabel.textContent = monthNames[firstDay.getMonth()].slice(0,3) + ' – ' + monthNames[lastDay.getMonth()].slice(0,3) + ' ' + lastDay.getFullYear();
+  }
+
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(mCalWeekStart);
+    d.setDate(d.getDate() + i);
+    var dateStr = d.toISOString().split('T')[0];
+    var isToday = dateStr === todayStr;
+    var isSelected = dateStr === mCalSelectedDate;
+    var hasEvents = eventDates[dateStr];
+    var cls = 'cal-day-col';
+    if (isToday) cls += ' today';
+    if (isSelected) cls += ' selected';
+
+    html += '<div class="' + cls + '" onclick="mCalSelectDay(\'' + dateStr + '\')">';
+    html += '<div class="cal-day-name">' + dayNames[d.getDay()] + '</div>';
+    html += '<div class="cal-day-num">' + d.getDate() + '</div>';
+    if (hasEvents) html += '<div class="cal-day-dot"></div>';
+    html += '</div>';
+  }
+  strip.innerHTML = html;
+}
+
+function mCalRenderDayEvents() {
+  var el = document.getElementById('mCalDayEvents');
+  var events = mCalAllEvents.filter(function(e) { return e.date === mCalSelectedDate; });
+
   if (events.length === 0) {
-    el.innerHTML = '<div class="cal-empty"><i class="fas fa-calendar-check" style="font-size:24px;margin-bottom:8px;display:block;"></i>No upcoming events in the next 14 days</div>';
+    el.innerHTML = '<div class="cal-empty"><i class="fas fa-calendar-check" style="font-size:20px;display:block;margin-bottom:6px;"></i>No events on this day</div>';
     return;
   }
 
-  var html = '';
-  var lastDate = '';
-  var dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  var today = new Date().toISOString().split('T')[0];
-  var tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  // Sort: all-day first, then by time
+  events.sort(function(a, b) {
+    if (a.allDay && !b.allDay) return -1;
+    if (!a.allDay && b.allDay) return 1;
+    return (a.time || '').localeCompare(b.time || '');
+  });
 
+  var html = '';
   events.forEach(function(e) {
-    var dateStr = (e.date || '').split('T')[0];
-    if (dateStr !== lastDate) {
-      var d = new Date(dateStr + 'T12:00:00');
-      var label = dateStr === today ? 'Today' : dateStr === tomorrow ? 'Tomorrow' : dayNames[d.getDay()] + ', ' + monthNames[d.getMonth()] + ' ' + d.getDate();
-      html += '<div class="cal-date-header">' + label + '</div>';
-      lastDate = dateStr;
-    }
     var color = CAL_COLORS[e.category] || '#6e7f77';
+    var catLabel = CAL_LABELS[e.category] || e.category || '';
     html += '<div class="cal-event" style="border-left-color:' + color + ';">';
+    html += '<div class="cal-event-time-col">';
+    if (e.allDay) {
+      html += '<div class="cal-event-allday">All Day</div>';
+    } else if (e.time) {
+      html += '<div class="cal-event-time-start">' + mCalFormatTime(e.time) + '</div>';
+      if (e.endTime) html += '<div class="cal-event-time-end">' + mCalFormatTime(e.endTime) + '</div>';
+    }
+    html += '</div>';
+    html += '<div style="flex:1;min-width:0;">';
     html += '<div class="cal-event-title">' + (e.title || 'Untitled') + '</div>';
-    if (e.time) html += '<div class="cal-event-time"><i class="fas fa-clock"></i> ' + e.time + '</div>';
-    html += '<div class="cal-event-cat" style="color:' + color + ';">' + (CAL_LABELS[e.category] || e.category || '') + '</div>';
+    html += '<div class="cal-event-cat" style="color:' + color + ';">' + catLabel + '</div>';
+    html += '</div>';
     html += '</div>';
   });
   el.innerHTML = html;
+}
+
+function mCalFormatTime(t) {
+  if (!t) return '';
+  var parts = t.split(':');
+  var h = parseInt(parts[0]); var m = parts[1] || '00';
+  var ampm = h >= 12 ? 'PM' : 'AM';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return h + ':' + m + ' ' + ampm;
+}
+
+function mCalSelectDay(dateStr) {
+  mCalSelectedDate = dateStr;
+  mCalRenderWeek();
+  mCalRenderDayEvents();
+}
+
+function mCalPrevWeek() {
+  mCalWeekStart.setDate(mCalWeekStart.getDate() - 7);
+  // Select first day of new week
+  mCalSelectedDate = mCalWeekStart.toISOString().split('T')[0];
+  mCalRenderWeek();
+  mCalRenderDayEvents();
+}
+
+function mCalNextWeek() {
+  mCalWeekStart.setDate(mCalWeekStart.getDate() + 7);
+  mCalSelectedDate = mCalWeekStart.toISOString().split('T')[0];
+  mCalRenderWeek();
+  mCalRenderDayEvents();
+}
+
+function mCalToday() {
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  mCalWeekStart = mCalGetWeekStart(today);
+  mCalSelectedDate = today.toISOString().split('T')[0];
+  mCalRenderWeek();
+  mCalRenderDayEvents();
+}
+
+// Add Event
+function mCalOpenAdd() {
+  document.getElementById('mCalModal').classList.add('open');
+  document.getElementById('mCalModalTitle').textContent = 'New Event';
+  document.getElementById('mCalEvDate').value = mCalSelectedDate || new Date().toISOString().split('T')[0];
+  document.getElementById('mCalEvTitle').value = '';
+  document.getElementById('mCalEvStart').value = '';
+  document.getElementById('mCalEvEnd').value = '';
+  document.getElementById('mCalEvAllDay').checked = false;
+  document.getElementById('mCalEvCategory').value = 'personal';
+  document.getElementById('mCalEvNotes').value = '';
+  document.getElementById('mCalEvReminder').checked = false;
+  document.getElementById('mCalTimeFields').style.display = '';
+  document.getElementById('mCalSaveBtn').innerHTML = '<i class="fas fa-check"></i> Create Event';
+  setTimeout(function() { document.getElementById('mCalEvTitle').focus(); }, 100);
+}
+
+function mCalCloseModal() {
+  document.getElementById('mCalModal').classList.remove('open');
+}
+
+function mCalToggleAllDay() {
+  var allDay = document.getElementById('mCalEvAllDay').checked;
+  document.getElementById('mCalTimeFields').style.display = allDay ? 'none' : '';
+}
+
+function mCalSaveEvent() {
+  var title = document.getElementById('mCalEvTitle').value.trim();
+  if (!title) { mToast('Enter a title'); return; }
+
+  var btn = document.getElementById('mCalSaveBtn');
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+  btn.disabled = true;
+
+  var allDay = document.getElementById('mCalEvAllDay').checked;
+
+  var payload = {
+    action: 'create_calendar_event',
+    title: title,
+    event_date: document.getElementById('mCalEvDate').value,
+    all_day: allDay,
+    start_time: allDay ? null : (document.getElementById('mCalEvStart').value || null),
+    end_time: allDay ? null : (document.getElementById('mCalEvEnd').value || null),
+    category: document.getElementById('mCalEvCategory').value,
+    notes: document.getElementById('mCalEvNotes').value.trim(),
+    reminder: document.getElementById('mCalEvReminder').checked,
+    repeat_type: 'none',
+    repeat_end: null
+  };
+
+  fetch(API + '/webinar-api', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(function(r) { return r.json(); }).then(function(d) {
+    btn.innerHTML = '<i class="fas fa-check"></i> Create Event';
+    btn.disabled = false;
+    if (d.success) {
+      mToast('Event created');
+      mCalCloseModal();
+      // Reload calendar data
+      window._calLoaded = false;
+      mCalLoad();
+    } else {
+      mToast('Error: ' + (d.message || 'Failed'));
+    }
+  }).catch(function() {
+    btn.innerHTML = '<i class="fas fa-check"></i> Create Event';
+    btn.disabled = false;
+    mToast('Network error');
+  });
 }
 
 // ===== TOOLS =====
