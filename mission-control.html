@@ -1806,8 +1806,13 @@ function mbsSaveSnapshots() {
     if (price > 0) {
       var bps = mbsPrevClosePrice ? Math.round((price - mbsPrevClosePrice) * 100) : 0;
       snapshots[s] = { price: price, bps: bps, label: labels[s] };
-      // Only use realtor-visible slots for headline price (not premarket or current)
+      // Use 9/12/2/5 anchors for headline price, skip premarket
       if (s !== 'premarket' && s !== 'current') {
+        latestPrice = price;
+        latestBps = bps;
+      }
+      // Current overrides headline when entered
+      if (s === 'current') {
         latestPrice = price;
         latestBps = bps;
       }

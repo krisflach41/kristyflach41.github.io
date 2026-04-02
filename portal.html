@@ -1718,10 +1718,11 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
     // Apply override to UMBS if available
     if(overrideData&&mktsActiveCoupon==='5.5'){
       var snaps=overrideData.snapshots||{};
-      // Find the latest snapshot for headline price
+      // Find the headline price: Current overrides, then walk 5PM->2PM->12PM->9AM
       var latestPrice=0,latestBps=0;
-      var order=['close','afternoon','midday','open'];
-      for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}
+      if(overrideData.latest_price){latestPrice=overrideData.latest_price;latestBps=overrideData.latest_bps||0;}
+      else{var order=['close','afternoon','midday','open'];
+      for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}}
 
       d.umbs=d.umbs||{};
       if(latestPrice)d.umbs.price=latestPrice;
