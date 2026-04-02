@@ -824,6 +824,7 @@ h1 {
         </div>
         <div class="mkts-card-rows">
           <div><span>Last Night's Close</span><span id="mktsUmbsClose">—</span></div>
+          <div><span>Pre-Market</span><span id="mktsUmbsPremarket">—</span></div>
           <div><span>Open (9:00 AM ET)</span><span id="mktsUmbsOpen">—</span></div>
           <div><span>Mid-Day (12:00 PM ET)</span><span id="mktsUmbsMidDay">—</span></div>
           <div><span>Afternoon (2:00 PM ET)</span><span id="mktsUmbsAfternoon">—</span></div>
@@ -1719,7 +1720,7 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
       var snaps=overrideData.snapshots||{};
       // Find the latest snapshot for headline price
       var latestPrice=0,latestBps=0;
-      var order=['close','afternoon','midday','open'];
+      var order=['close','afternoon','midday','open','premarket'];
       for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}
 
       d.umbs=d.umbs||{};
@@ -1732,6 +1733,7 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
       var uk='UMBS_'+mktsActiveCoupon;
       d.snapshots=d.snapshots||{};
       d.snapshots[uk]={};
+      if(snaps.premarket&&snaps.premarket.price)d.snapshots[uk]['Pre-Market']={price:snaps.premarket.price};
       if(snaps.open&&snaps.open.price)d.snapshots[uk]['Open']={price:snaps.open.price};
       if(snaps.midday&&snaps.midday.price)d.snapshots[uk]['Mid-Day']={price:snaps.midday.price};
       if(snaps.afternoon&&snaps.afternoon.price)d.snapshots[uk]['Afternoon']={price:snaps.afternoon.price};
@@ -1749,7 +1751,7 @@ function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a
 function mktsRenderCards(d){
   var u=d.umbs;if(u&&u.price){document.getElementById('mktsUmbsPrice').textContent=u.price.toFixed(2);document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(Math.round((u.change||0)*100),false);}
   var snap=d.snapshots||{},uk='UMBS_'+mktsActiveCoupon,us=snap[uk]||{};
-  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');mktsSetSnap('mktsUmbsCloseToday',us,'CloseToday');
+  mktsSetSnap('mktsUmbsClose',us,'Close');mktsSetSnap('mktsUmbsPremarket',us,'Pre-Market');mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');mktsSetSnap('mktsUmbsCloseToday',us,'CloseToday');
   if(u&&u.previousClose){var el=document.getElementById('mktsUmbsClose');if(el&&(el.textContent==='—'||el.textContent))el.textContent=u.previousClose.toFixed(2);}
   if(u&&u.open){var el2=document.getElementById('mktsUmbsOpen');if(el2&&el2.textContent==='—')el2.textContent=u.open.toFixed(2);}
   var t10=d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}

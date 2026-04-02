@@ -1602,8 +1602,14 @@
         <span style="font-size:11px;color:var(--text-muted);margin-left:auto;" id="mbsPrevCloseDate"></span>
       </div>
 
-      <!-- 4 time slots -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px;">
+      <!-- 5 time slots -->
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:12px;">
+        <div class="mbs-slot" id="mbsSlotPremarket">
+          <div class="mbs-slot-label">Pre-Market</div>
+          <div class="mbs-slot-sublabel">Overnight</div>
+          <input type="text" id="mbsPrice_premarket" class="mbs-slot-input" placeholder="—" oninput="mbsCalcBps('premarket')">
+          <div class="mbs-slot-bps" id="mbsBps_premarket">—</div>
+        </div>
         <div class="mbs-slot" id="mbsSlotOpen">
           <div class="mbs-slot-label">9:00 AM ET</div>
           <div class="mbs-slot-sublabel">Open</div>
@@ -1761,7 +1767,7 @@ function mbsSetPrevClose() {
   document.getElementById('mbsPrevCloseSaveBtn').style.display = 'none';
   document.getElementById('mbsPrevCloseEditBtn').textContent = 'edit';
   // Recalculate all bps
-  ['open', 'midday', 'afternoon', 'close'].forEach(function(s) { mbsCalcBps(s); });
+  ['premarket', 'open', 'midday', 'afternoon', 'close'].forEach(function(s) { mbsCalcBps(s); });
 }
 
 function mbsCalcBps(slot) {
@@ -1782,8 +1788,8 @@ function mbsSaveSnapshots() {
 
   var today = new Date().toISOString().split('T')[0];
   var snapshots = {};
-  var slots = ['open', 'midday', 'afternoon', 'close'];
-  var labels = { open: 'Open', midday: 'Mid-Day', afternoon: 'Afternoon', close: 'Close' };
+  var slots = ['premarket', 'open', 'midday', 'afternoon', 'close'];
+  var labels = { premarket: 'Pre-Market', open: 'Open', midday: 'Mid-Day', afternoon: 'Afternoon', close: 'Close' };
   var latestPrice = 0;
   var latestBps = 0;
 
@@ -1862,7 +1868,7 @@ function mbsLoadToday() {
 
       // If today's data exists, populate the fields
       if (o.date === today && o.snapshots) {
-        var slots = ['open', 'midday', 'afternoon', 'close'];
+        var slots = ['premarket', 'open', 'midday', 'afternoon', 'close'];
         var hasAny = false;
         slots.forEach(function(s) {
           if (o.snapshots[s] && o.snapshots[s].price) {
