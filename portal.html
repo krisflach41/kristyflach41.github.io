@@ -861,6 +861,8 @@ h1 {
       <label><input type="checkbox" id="mktsDMA100CB" checked onchange="mktsToggleDMA(100)" style="accent-color:#a855f7;"> <span style="color:#a855f7;">100 DMA</span></label>
       <label><input type="checkbox" id="mktsDMA50CB" checked onchange="mktsToggleDMA(50)" style="accent-color:#0b1f3a;"> <span style="color:#0b1f3a;">50 DMA</span></label>
       <label><input type="checkbox" id="mktsDMA25CB" checked onchange="mktsToggleDMA(25)" style="accent-color:#ea580c;"> <span style="color:#ea580c;">25 DMA</span></label>
+      <label><input type="checkbox" id="mktsFibCB" checked onchange="mktsToggleFib()" style="accent-color:#6b6560;"> <span style="color:#6b6560;">Fibonacci</span></label>
+      <label><input type="checkbox" id="mktsSRCB" checked onchange="mktsToggleSR()" style="accent-color:#dc2626;"> <span style="color:#8b5cf6;">S/R Levels</span></label>
       <label><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span> <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5%</span></label>
     </div>
     <div class="mkts-chart-wrap">
@@ -1698,6 +1700,7 @@ document.addEventListener('DOMContentLoaded', function() {
 var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
 var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
 var mktsManualOverride=null;
+var mktsShowFib=true,mktsShowSR=true;
 
 (function(){try{loadMarketsData();mktsLoadChart();setInterval(loadMarketsData,120000);setInterval(mktsLoadChart,120000);}catch(e){console.error('Markets init error:',e);}})();
 
@@ -1765,6 +1768,8 @@ function mktsChangeCoupon(c){mktsActiveCoupon=c;mktsCurrentSymbol='UMBS_'+c;var 
 function mktsChangeSymbol(sym){mktsCurrentSymbol=sym;document.querySelectorAll('[data-mkts-card]').forEach(function(c){c.classList.toggle('active',c.getAttribute('data-mkts-card')===sym);});var dl=document.getElementById('mktsDMALabel');if(dl){var m={'UMBS_5.5':'UMBS 30YR 5.5%','UMBS_5':'UMBS 30YR 5%','UMBS_6':'UMBS 30YR 6%','10Y':'10 Year Treasury','SPY':'S&P 500'};dl.textContent=m[sym]||sym;}mktsLoadChart();}
 function mktsChangeRange(r){mktsCurrentRange=r;document.querySelectorAll('#mktsChartRanges button').forEach(function(b){b.classList.toggle('active',b.getAttribute('data-range')===r);});mktsResetZoom();mktsLoadChart();}
 function mktsToggleDMA(p){mktsDMA[p]=!mktsDMA[p];var cb=document.getElementById('mktsDMA'+p+'CB');if(cb)cb.checked=mktsDMA[p];mktsRenderChartFromData();}
+function mktsToggleFib(){mktsShowFib=!mktsShowFib;var cb=document.getElementById('mktsFibCB');if(cb)cb.checked=mktsShowFib;mktsRenderChartFromData();}
+function mktsToggleSR(){mktsShowSR=!mktsShowSR;var cb=document.getElementById('mktsSRCB');if(cb)cb.checked=mktsShowSR;mktsRenderChartFromData();}
 
 function mktsLoadChart(){
   var isT=mktsCurrentSymbol==='10Y';
@@ -1913,7 +1918,7 @@ levels.forEach(function(f){
   var labelX=data&&xP?mktsFindOpenGap(f.level,data,xP,pad,w,85,margin):pad.left+6;
   var labelY=y-6;
   // Nudge if colliding with already placed labels
-  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<placed.length;p++){if(Math.abs(placed[p].y-labelY)<minGap&&Math.abs(placed[p].x-labelX)<90){hit=true;break;}}if(!hit)break;labelY-=minGap;}
+  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<placed.length;p++){if(Math.abs(placed[p].y-labelY)<minGap&&Math.abs(placed[p].x-labelX)<90){hit=true;break;}}if(!hit)break;if(a%2===0)labelY=y+12+Math.floor(a/2)*minGap;else labelY=y-6-Math.ceil(a/2)*minGap;}
   ctx.fillStyle='#6b6560';ctx.font='500 11px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,labelX,labelY);
   placed.push({x:labelX,y:labelY,lineY:y});
 });return placed;}
@@ -1926,7 +1931,7 @@ var minGap=16;
   ctx.strokeStyle=sr.c+'55';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();
   var labelX=data&&xP?mktsFindOpenGap(sr.v,data,xP,pad,w,80,margin):pad.left+cw*0.52;
   var labelY=y-6;
-  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<allPlaced.length;p++){if(Math.abs(allPlaced[p].y-labelY)<minGap&&Math.abs(allPlaced[p].x-labelX)<90){hit=true;break;}}if(!hit)break;labelY-=minGap;}
+  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<allPlaced.length;p++){if(Math.abs(allPlaced[p].y-labelY)<minGap&&Math.abs(allPlaced[p].x-labelX)<90){hit=true;break;}}if(!hit)break;if(a%2===0)labelY=y+12+Math.floor(a/2)*minGap;else labelY=y-6-Math.ceil(a/2)*minGap;}
   ctx.fillStyle=sr.c;ctx.font='600 12px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(sr.l,labelX,labelY);
   allPlaced.push({x:labelX,y:labelY,lineY:y});
 }});}function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
@@ -1947,9 +1952,11 @@ if(mktsManualOverride){
   if(mo.latest_price){srC=mo.latest_price;}
   else{var snp=mo.snapshots||{},co=['close','afternoon','midday','open'];for(var si=0;si<co.length;si++){if(snp[co[si]]&&snp[co[si]].price){srC=snp[co[si]].price;break;}}}
 }
-var fibYPos=mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(fibHi,fibLo,2),minP,maxP,yP,data,xP)||[];
+var fibYPos=mktsShowFib?mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(fibHi,fibLo,2),minP,maxP,yP,data,xP)||[]:[];
+if(mktsShowSR){
 if(srH&&srL&&srC){mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(srH,srL,srC,2),minP,maxP,yP,2,fibYPos,data,xP);}
 else if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2,fibYPos,data,xP);}
+}
 var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
 // Draw body first
 ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.abs(yP(c.close)-yP(c.open))||1;
@@ -1964,8 +1971,8 @@ mktsDrawDates(ctx,w,h,data,xP);}
 function mktsDrawTreasuryFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var vals=data.map(function(d){return d.value;});var minV=Math.min.apply(null,vals),maxV=Math.max.apply(null,vals);var range=maxV-minV||0.1;minV-=range*0.06;maxV+=range*0.06;range=maxV-minV;function yP(v){return pad.top+((maxV-v)/range)*ch;}function xP(i){return pad.left+(cw/Math.max(data.length-1,1))*i;}
 mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,3,'%');
 var allMapped=allData.map(function(d){return{close:d.value,value:d.value,date:d.date};});mktsDrawMAs(ctx,allMapped,displayStart,data.map(function(d){return{close:d.value,value:d.value};}),mktsDMA,mktsDMAColors,xP,yP);
-var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);var tFibY=mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,3),minV,maxV,yP)||[];
-if(data.length>=5){var recent=data.slice(-5);var rH=Math.max.apply(null,recent.map(function(d){return d.value;}));var rL=Math.min.apply(null,recent.map(function(d){return d.value;}));var rC=recent[recent.length-1].value;mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(rH,rL,rC,3),minV,maxV,yP,3,tFibY);}
+var hi=Math.max.apply(null,vals),lo=Math.min.apply(null,vals);var tFibY=mktsShowFib?mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,3),minV,maxV,yP)||[]:[];
+if(mktsShowSR&&data.length>=5){var recent=data.slice(-5);var rH=Math.max.apply(null,recent.map(function(d){return d.value;}));var rL=Math.min.apply(null,recent.map(function(d){return d.value;}));var rC=recent[recent.length-1].value;mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(rH,rL,rC,3),minV,maxV,yP,3,tFibY);}
 ctx.beginPath();ctx.strokeStyle='#6e7f77';ctx.lineWidth=2;data.forEach(function(d,i){if(i===0)ctx.moveTo(xP(i),yP(d.value));else ctx.lineTo(xP(i),yP(d.value));});ctx.stroke();
 ctx.lineTo(xP(data.length-1),pad.top+ch);ctx.lineTo(xP(0),pad.top+ch);ctx.closePath();ctx.fillStyle='rgba(110,127,119,0.06)';ctx.fill();
 mktsDrawDates(ctx,w,h,data,xP);}
