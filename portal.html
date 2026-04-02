@@ -1830,8 +1830,8 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  // Show last ~60 trading days (roughly 3 months) with room on right for today
-  var maxCandles=60;
+  // Show last ~60 trading days on desktop, ~22 on mobile (roughly 1 month)
+  var maxCandles=window.innerWidth<=768?22:60;
   var displayData=allData.length>maxCandles?allData.slice(allData.length-maxCandles):allData;
   var vs=allData.length-displayData.length;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
