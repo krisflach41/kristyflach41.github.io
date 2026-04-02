@@ -1871,54 +1871,62 @@ function mktsDrawDates(ctx,w,h,data,xP){
     }
   });
 }
-function mktsFindOpenX(level,data,xP,yP,pad,w,labelW){
-// Scan candle positions to find where this price level has the most open space
-var cw=w-pad.left-pad.right;var bestX=pad.left+6;var bestScore=-1;
-// Check regions across the chart width
-var regions=12;
-for(var r=0;r<regions;r++){
-  var testX=pad.left+cw*(r/regions)+10;
-  var score=0;
-  // Check how far each candle body/wick is from this x position at this price level
-  for(var i=0;i<data.length;i++){
-    var cx=xP(i);
-    var dx=Math.abs(cx-testX-labelW/2);
-    if(dx<30){
-      // Check if the price level is within this candle's range
-      var cHi=data[i].high,cLo=data[i].low;
-      if(level>=cLo&&level<=cHi)score-=5;
-      else score+=1;
-    } else {
-      score+=2;
-    }
+function mktsFindOpenGap(level,data,xP,pad,w,labelW,margin){
+// Find the longest continuous horizontal gap at this price level where no candle exists
+// margin = vertical tolerance in price units to check above/below the level
+var slots=[];
+for(var i=0;i<data.length;i++){
+  var c=data[i];
+  if(c.low-margin<=level&&c.high+margin>=level){
+    slots.push(xP(i));
   }
-  if(score>bestScore){bestScore=score;bestX=testX;}
 }
-return bestX;}
+// Build gaps between occupied slots
+var gaps=[];
+var chartLeft=pad.left;var chartRight=w-pad.right;
+// Sort occupied positions
+slots.sort(function(a,b){return a-b;});
+// Gap before first candle
+if(slots.length===0){
+  gaps.push({x:chartLeft+10,w:chartRight-chartLeft-20});
+} else {
+  if(slots[0]-chartLeft>labelW+10) gaps.push({x:chartLeft+10,w:slots[0]-chartLeft-20});
+  for(var g=0;g<slots.length-1;g++){
+    var gapW=slots[g+1]-slots[g];
+    if(gapW>labelW+10) gaps.push({x:slots[g]+10,w:gapW-20});
+  }
+  // Gap after last candle
+  if(chartRight-slots[slots.length-1]>labelW+10) gaps.push({x:slots[slots.length-1]+10,w:chartRight-slots[slots.length-1]-20});
+}
+// Pick the widest gap
+if(gaps.length===0) return chartRight-labelW-5;
+gaps.sort(function(a,b){return b.w-a.w;});
+// Place label in the center of the widest gap
+return gaps[0].x+Math.max(0,(gaps[0].w-labelW)/2);
+}
 function mktsDrawFib(ctx,pad,w,fib,minV,maxV,yP,data,xP){if(!fib)return;var cw=w-pad.left-pad.right;var levels=[];var order=['pct0','pct236','pct382','pct50','pct618','pct100'];order.forEach(function(k){if(fib[k]&&fib[k].level>=minV&&fib[k].level<=maxV)levels.push(fib[k]);});
+var range=maxV-minV;var margin=range*0.02;
 var placed=[];var minGap=16;
 levels.forEach(function(f){
   var y=yP(f.level);
   ctx.strokeStyle='rgba(140,135,125,0.3)';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();
-  var labelX=data&&xP?mktsFindOpenX(f.level,data,xP,yP,pad,w,90):pad.left+6;
+  var labelX=data&&xP?mktsFindOpenGap(f.level,data,xP,pad,w,85,margin):pad.left+6;
   var labelY=y-6;
-  var attempts=0;
-  while(attempts<6){var collision=false;for(var p=0;p<placed.length;p++){if(Math.abs(placed[p].y-labelY)<minGap&&Math.abs(placed[p].x-labelX)<100){collision=true;break;}}if(!collision)break;
-    labelY=labelY-minGap;attempts++;}
+  // Nudge if colliding with already placed labels
+  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<placed.length;p++){if(Math.abs(placed[p].y-labelY)<minGap&&Math.abs(placed[p].x-labelX)<90){hit=true;break;}}if(!hit)break;labelY-=minGap;}
   ctx.fillStyle='#6b6560';ctx.font='500 11px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(f.label,labelX,labelY);
   placed.push({x:labelX,y:labelY,lineY:y});
 });return placed;}
 function mktsDrawSR(ctx,pad,w,pv,minV,maxV,yP,dec,fibPlaced,data,xP){if(!pv)return;var d=dec||2;var cw=w-pad.left-pad.right;
+var range=maxV-minV;var margin=range*0.02;
 var allPlaced=[];if(fibPlaced)fibPlaced.forEach(function(p){allPlaced.push(p);});
 var minGap=16;
 [{v:pv.r2,l:'R2 '+pv.r2.toFixed(d),c:'#2563eb'},{v:pv.r1,l:'R1 '+pv.r1.toFixed(d),c:'#2563eb'},{v:pv.s1,l:'S1 '+pv.s1.toFixed(d),c:'#dc2626'},{v:pv.s2,l:'S2 '+pv.s2.toFixed(d),c:'#dc2626'}].forEach(function(sr){if(sr.v>=minV&&sr.v<=maxV){
   var y=yP(sr.v);
   ctx.strokeStyle=sr.c+'55';ctx.lineWidth=0.7;ctx.beginPath();ctx.moveTo(pad.left,y);ctx.lineTo(w-pad.right,y);ctx.stroke();
-  var labelX=data&&xP?mktsFindOpenX(sr.v,data,xP,yP,pad,w,80):pad.left+cw*0.52;
+  var labelX=data&&xP?mktsFindOpenGap(sr.v,data,xP,pad,w,80,margin):pad.left+cw*0.52;
   var labelY=y-6;
-  var attempts=0;
-  while(attempts<6){var collision=false;for(var p=0;p<allPlaced.length;p++){if(Math.abs(allPlaced[p].y-labelY)<minGap&&Math.abs(allPlaced[p].x-labelX)<100){collision=true;break;}}if(!collision)break;
-    labelY=labelY-minGap;attempts++;}
+  for(var a=0;a<8;a++){var hit=false;for(var p=0;p<allPlaced.length;p++){if(Math.abs(allPlaced[p].y-labelY)<minGap&&Math.abs(allPlaced[p].x-labelX)<90){hit=true;break;}}if(!hit)break;labelY-=minGap;}
   ctx.fillStyle=sr.c;ctx.font='600 12px -apple-system,system-ui,sans-serif';ctx.textAlign='left';ctx.fillText(sr.l,labelX,labelY);
   allPlaced.push({x:labelX,y:labelY,lineY:y});
 }});}function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
