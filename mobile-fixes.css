@@ -22,11 +22,15 @@
   .profile-icon { left: 12px !important; right: auto !important; width: 40px !important; height: 40px !important; top: 12px !important; }
   .profile-icon svg { width: 18px; height: 18px; }
   .profile-icon .profile-tooltip { display: none !important; }
-  .logout-btn { right: 60px !important; top: 14px !important; padding: 7px 12px !important; font-size: 12px !important; }
+  .logout-btn { right: 58px !important; top: 16px !important; padding: 6px 10px !important; font-size: 11px !important; }
   .cart-icon { top: 12px !important; right: 12px !important; width: 40px !important; height: 40px !important; }
   .cart-icon svg { width: 20px; height: 20px; }
 
+  /* Push page title below fixed header buttons */
+  h1 { margin-top: 50px !important; font-size: 20px !important; }
+
   /* Tutorial modal — full screen on mobile */
+  #mktsInfoModal { align-items: flex-start !important; padding: 0 !important; }
   #mktsInfoModal > div {
     max-width: 100% !important;
     width: 100% !important;
