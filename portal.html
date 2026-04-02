@@ -1697,6 +1697,7 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ═══ MARKETS DASHBOARD — WITH ZOOM & PAN ═══ */
 var mktsData=null,mktsCurrentSymbol='UMBS_5.5',mktsCurrentRange='1mo2',mktsChartData=null,mktsActiveCoupon='5.5';
 var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100:'#a855f7',50:'#0b1f3a',25:'#ea580c'};
+var mktsManualOverride=null;
 
 (function(){try{loadMarketsData();mktsLoadChart();setInterval(loadMarketsData,120000);setInterval(mktsLoadChart,120000);}catch(e){console.error('Markets init error:',e);}})();
 
@@ -1710,6 +1711,7 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
     var today=new Date().toISOString().split('T')[0];
     if(ov.override.date===today&&ov.override.snapshots&&Object.keys(ov.override.snapshots).length>0)overrideData=ov.override;
   }
+  mktsManualOverride=overrideData;
   // Now fetch markets as usual
   fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){
     if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}
@@ -1866,8 +1868,22 @@ function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,
 /* ═══ CANDLESTICK CHART ═══ */
 function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var minP=Infinity,maxP=-Infinity;data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});var range=maxP-minP||1;minP-=range*0.18;maxP+=range*0.18;range=maxP-minP;function yP(v){return pad.top+((maxP-v)/range)*ch;}var slots=data.length+2;function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
 mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');mktsDrawMAs(ctx,allData,displayStart,data,mktsDMA,mktsDMAColors,xP,yP);
-var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(hi,lo,2),minP,maxP,yP);
-if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
+var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});
+// Use manual override values for Fib and S/R when available
+var fibHi=hi,fibLo=lo,srH=null,srL=null,srC=null;
+if(mktsManualOverride){
+  var mo=mktsManualOverride;
+  if(mo.manual_high)fibHi=mo.manual_high;
+  if(mo.manual_low)fibLo=mo.manual_low;
+  srH=mo.manual_high||null;
+  srL=mo.manual_low||null;
+  // Current price: latest_price first, then walk 5PM->2PM->12PM->9AM
+  if(mo.latest_price){srC=mo.latest_price;}
+  else{var snp=mo.snapshots||{},co=['close','afternoon','midday','open'];for(var si=0;si<co.length;si++){if(snp[co[si]]&&snp[co[si]].price){srC=snp[co[si]].price;break;}}}
+}
+mktsDrawFib(ctx,pad,w,mktsCalcFibFromRange(fibHi,fibLo,2),minP,maxP,yP);
+if(srH&&srL&&srC){mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(srH,srL,srC,2),minP,maxP,yP,2);}
+else if(data.length>=2){var prev=data[data.length-2];mktsDrawSR(ctx,pad,w,mktsCalcPivotsFromValues(prev.high,prev.low,prev.close,2),minP,maxP,yP,2);}
 var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
 // Draw body first
 ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.abs(yP(c.close)-yP(c.open))||1;
