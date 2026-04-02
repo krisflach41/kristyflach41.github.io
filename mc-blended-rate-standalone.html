@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Blended Rate Calculator - Agent Edge</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --bg-deep: #f5f6fa;
+  --bg-panel: #ffffff;
+  --bg-card: #ffffff;
+  --bg-hover: #f0f2f7;
+  --border: #e2e5ed;
+  --border-light: #eef0f5;
+  --text-primary: #1a2332;
+  --text-secondary: #5a6578;
+  --text-muted: #9ca3b4;
+  --accent-blue: #2563eb;
+  --accent-green: #16a34a;
+  --accent-red: #dc2626;
+  --accent-orange: #ea580c;
+  --accent-teal: #0d9488;
+}
+
+body {
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Toast */
+.br-toast {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+  background: var(--text-primary); color: #fff;
+  padding: 8px 18px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; z-index: 300;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+}
+.br-toast.show { opacity: 1; }
+
+/* Toolbar */
+.br-toolbar {
+  display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px;
+}
+
+/* Reuse all MC blended rate styles inline */
+.br-client-section { margin-bottom: 16px; }
+.br-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 4px; }
+.br-input { width: 100%; padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-size: 13px; font-family: inherit; }
+.br-input:focus { outline: none; border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
+.br-input::placeholder { color: var(--text-muted); }
+.br-select { width: 100%; padding: 8px 10px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-size: 13px; font-family: inherit; cursor: pointer; -webkit-appearance: none; }
+.br-select:focus { outline: none; border-color: var(--accent-blue); }
+.br-client-input { max-width: 100%; }
+.br-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); z-index: 20; max-height: 280px; overflow-y: auto; }
+.br-dropdown-item { padding: 10px 14px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.1s; border-bottom: 1px solid var(--border-light); }
+.br-dropdown-item:last-child { border-bottom: none; }
+.br-dropdown-item:hover, .br-dropdown-item:active { background: var(--bg-hover); }
+.br-dropdown-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+.br-dropdown-sub { font-size: 11px; color: var(--text-muted); }
+.br-dropdown-add { color: var(--accent-blue); font-size: 12px; font-weight: 600; }
+.br-new-client-form { margin-top: 10px; padding: 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-hover); }
+.br-new-client-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.br-field { display: flex; flex-direction: column; gap: 3px; }
+.br-field label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.br-btn { padding: 8px 16px; border-radius: 7px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: 0.15s; -webkit-appearance: none; }
+.br-btn:active { opacity: 0.7; }
+.br-btn-primary { background: var(--accent-blue); border-color: var(--accent-blue); color: #fff; }
+.br-summary-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 16px; overflow: hidden; }
+.br-summary-item { padding: 12px 10px; text-align: center; border-right: 1px solid var(--border); }
+.br-summary-item:last-child { border-right: none; }
+.br-summary-label { display: block; font-size: 9px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+.br-summary-value { display: block; font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.br-debt-rows { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.br-debt-row { padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg-card); }
+.br-debt-fields { display: flex; flex-direction: column; gap: 8px; }
+.br-debt-field { display: flex; flex-direction: column; gap: 3px; }
+.br-debt-field label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.br-debt-field input, .br-debt-field select { width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg-deep); color: var(--text-primary); font-size: 14px; font-family: inherit; -webkit-appearance: none; }
+.br-debt-field input:focus, .br-debt-field select:focus { outline: none; border-color: var(--accent-blue); }
+.br-debt-row-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.br-debt-row-title { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.br-debt-row-actions { display: flex; gap: 4px; }
+.br-debt-icon-btn { background: none; border: 1px solid transparent; color: var(--text-muted); cursor: pointer; padding: 6px; font-size: 12px; border-radius: 6px; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; }
+.br-debt-icon-btn:active { opacity: 0.6; }
+.br-debt-delete-btn { color: var(--accent-red); }
+.br-debt-excluded { opacity: 0.45; border-style: dashed; }
+.br-input-prefix, .br-input-suffix { display: flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-deep); overflow: hidden; }
+.br-input-prefix span, .br-input-suffix span { padding: 7px 8px; font-size: 12px; color: var(--text-muted); background: var(--bg-hover); border-right: 1px solid var(--border); flex-shrink: 0; }
+.br-input-suffix span { border-right: none; border-left: 1px solid var(--border); }
+.br-input-prefix input, .br-input-suffix input { border: none; background: transparent; flex: 1; padding: 7px 9px; font-size: 14px; color: var(--text-primary); font-family: inherit; min-width: 0; }
+.br-input-prefix input:focus, .br-input-suffix input:focus { outline: none; }
+.br-debt-actions { display: flex; gap: 8px; margin-bottom: 16px; }
+.br-debt-total-row { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 10px 0; margin-bottom: 8px; border-top: 2px solid var(--border); }
+.br-debt-total-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+.br-debt-total-value { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.br-toggle-btn { display: inline-flex; align-items: center; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; width: 100%; justify-content: center; -webkit-appearance: none; }
+.br-toggle-btn:active { background: var(--bg-hover); }
+.br-panel { margin-top: 12px; padding: 14px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-card); }
+.br-panel-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.br-panel-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
+.br-comp-inputs { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.br-comp-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px 0; }
+.br-comp-col { text-align: center; padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+.br-comp-col-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+.br-comp-stat { display: flex; justify-content: space-between; padding: 4px 0; }
+.br-comp-stat-label { font-size: 11px; color: var(--text-muted); }
+.br-comp-stat-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.br-comp-vs { display: none; }
+.br-comp-savings { text-align: center; padding: 16px; border-radius: 10px; margin-top: 8px; }
+.br-comp-positive { background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.15); }
+.br-comp-negative { background: rgba(220,38,38,0.06); border: 1px solid rgba(220,38,38,0.15); }
+.br-comp-savings-amount { font-size: 24px; font-weight: 700; }
+.br-comp-positive .br-comp-savings-amount { color: var(--accent-green); }
+.br-comp-negative .br-comp-savings-amount { color: var(--accent-red); }
+.br-comp-savings-label { font-size: 12px; font-weight: 600; margin-top: 2px; }
+.br-comp-positive .br-comp-savings-label { color: var(--accent-green); }
+.br-comp-negative .br-comp-savings-label { color: var(--accent-red); }
+.br-comp-savings-annual { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+.br-debt-summary-cards { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.br-summary-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--bg-card); }
+.br-summary-card-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.br-summary-card-name { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.br-summary-card-detail { font-size: 11px; color: var(--text-muted); }
+.br-summary-card-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+.br-summary-stat { display: flex; flex-direction: column; gap: 1px; }
+.br-summary-stat-label { font-size: 10px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+.br-summary-stat-value { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.br-stat-red { color: var(--accent-red) !important; }
+.br-summary-bar-wrap { margin-top: 10px; }
+.br-summary-bar-track { height: 6px; background: var(--bg-deep); border-radius: 3px; overflow: hidden; }
+.br-summary-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.br-summary-bar-label { font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block; }
+.br-summary-total-card { padding: 14px; border-radius: 10px; background: rgba(220,38,38,0.04); border: 1px solid rgba(220,38,38,0.15); }
+.br-summary-total-row { display: flex; justify-content: space-between; align-items: baseline; }
+.br-summary-total-row span:first-child { font-size: 13px; font-weight: 600; color: var(--accent-red); }
+.br-summary-total-amount { font-size: 18px; font-weight: 700; color: var(--accent-red); }
+.br-summary-total-desc { font-size: 12px; color: var(--accent-red); margin-top: 4px; opacity: 0.8; }
+.br-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.br-save-crm-btn { display: inline-flex; align-items: center; margin-top: 8px; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border); background: rgba(37,99,235,0.06); color: var(--accent-blue); font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; }
+
+/* Equity */
+.br-equity-section { margin-top: 0; }
+.br-equity-top { margin-bottom: 14px; }
+.br-equity-debt-total { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.br-equity-debt-label { font-size: 12px; color: var(--text-secondary); }
+.br-equity-debt-value { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.br-equity-rates-row { display: flex; flex-direction: column; gap: 6px; }
+.br-equity-rate-card { padding: 10px; border-radius: 8px; border: 1px solid var(--border); text-align: center; cursor: pointer; }
+.br-equity-rate-card.active { border-color: var(--accent-blue); background: rgba(37,99,235,0.06); }
+.br-equity-rate-label { display: block; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 2px; }
+.br-equity-rate-value { display: block; font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.br-equity-rate-card.active .br-equity-rate-value { color: var(--accent-blue); }
+.br-equity-rates-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.br-equity-rates-header span:first-child { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.br-equity-source { font-size: 10px; color: var(--text-muted); }
+.br-equity-rates { margin-bottom: 16px; }
+.br-equity-timeline { text-align: center; padding: 20px; border-radius: 10px; background: rgba(37,99,235,0.04); border: 1px solid rgba(37,99,235,0.12); }
+.br-equity-timeline-big { font-size: 24px; font-weight: 700; color: var(--accent-blue); }
+.br-equity-timeline-label { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.br-equity-timeline-detail { font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+.br-equity-timeline-breakdown { font-size: 12px; color: var(--text-secondary); margin-top: 2px; font-weight: 500; }
+
+/* Accel */
+.br-accel-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 12px 0; }
+.br-accel-col { text-align: center; padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+.br-accel-col-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; display: block; }
+.br-accel-stat { display: flex; justify-content: space-between; padding: 4px 0; }
+.br-accel-stat-label { font-size: 11px; color: var(--text-muted); }
+.br-accel-stat-value { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.br-accel-vs { display: none; }
+.br-accel-savings { text-align: center; padding: 16px; border-radius: 10px; background: rgba(22,163,74,0.06); border: 1px solid rgba(22,163,74,0.15); margin-top: 8px; }
+.br-accel-savings-big { font-size: 24px; font-weight: 700; color: var(--accent-green); }
+.br-accel-savings-label { font-size: 12px; font-weight: 600; color: var(--accent-green); margin-top: 2px; }
+.br-accel-savings-desc { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+.br-accel-savings-net { font-size: 12px; color: var(--text-secondary); margin-top: 8px; font-weight: 600; }
+
+.br-excluded-active { color: var(--accent-orange) !important; }
+</style>
+</head>
+<body>
+
+<div class="br-toast" id="brToastEl"></div>
+
+<!-- TOOLBAR -->
+<div class="br-toolbar">
+  <button class="br-btn" onclick="brReset()"><i class="fas fa-rotate-left"></i> Reset</button>
+  <button class="br-btn" onclick="brGenerateSummaryCards()"><i class="fas fa-calculator"></i> Analyze</button>
+  <button class="br-btn br-btn-primary" onclick="brGenerateReport()"><i class="fas fa-file-pdf"></i> Report</button>
+</div>
+
+<!-- CLIENT SEARCH -->
+<div class="br-client-section">
+  <label class="br-label">Client <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+  <div style="position:relative;">
+    <input type="text" id="brClientSearch" class="br-input br-client-input" placeholder="Search clients or type a name..." oninput="brSearchClients()" autocomplete="off">
+    <div id="brClientDropdown" class="br-dropdown" style="display:none;"></div>
+  </div>
+  <button id="brSaveToCrmBtn" class="br-save-crm-btn" style="display:none;" onclick="brSaveToCrm()"><i class="fas fa-user-plus" style="margin-right:5px;"></i> Save to CRM</button>
+  <div id="brNewClientForm" class="br-new-client-form" style="display:none;">
+    <div class="br-new-client-grid">
+      <div class="br-field"><label>Name *</label><input type="text" id="brNewClientName" class="br-input" placeholder="Full name"></div>
+      <div class="br-field"><label>FICO *</label><input type="text" id="brNewClientFico" class="br-input" placeholder="720"></div>
+      <div class="br-field"><label>Email</label><input type="text" id="brNewClientEmail" class="br-input" placeholder="email"></div>
+      <div class="br-field"><label>Phone</label><input type="text" id="brNewClientPhone" class="br-input" placeholder="phone"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="br-btn br-btn-primary" onclick="brAddNewClient()">Add Client</button>
+      <button class="br-btn" onclick="document.getElementById('brNewClientForm').style.display='none';">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SUMMARY BAR -->
+<div class="br-summary-bar">
+  <div class="br-summary-item">
+    <span class="br-summary-label">Total</span>
+    <span class="br-summary-value" id="brSummaryTotal">$0</span>
+  </div>
+  <div class="br-summary-item">
+    <span class="br-summary-label">Blended</span>
+    <span class="br-summary-value" id="brSummaryRate">0%</span>
+  </div>
+  <div class="br-summary-item">
+    <span class="br-summary-label">Payment</span>
+    <span class="br-summary-value" id="brSummaryPayment">$0</span>
+  </div>
+</div>
+
+<!-- DEBT ROWS -->
+<div id="brDebtRows" class="br-debt-rows"></div>
+<div class="br-debt-total-row">
+  <span class="br-debt-total-label">Total:</span>
+  <span class="br-debt-total-value" id="brDebtTotalBalance">$0</span>
+</div>
+<div class="br-debt-actions">
+  <button class="br-btn br-btn-primary" onclick="brAddDebt()"><i class="fas fa-plus" style="margin-right:5px;"></i> Add debt</button>
+</div>
+
+<!-- SUMMARY CARDS -->
+<div id="brDebtSummaryCards" class="br-debt-summary-cards"></div>
+
+<!-- COMPARISON -->
+<div style="margin-top:16px;">
+  <button id="brComparisonToggle" class="br-toggle-btn" onclick="brToggleComparison()"><i class="fas fa-exchange-alt" style="margin-right:6px;"></i> Compare to new mortgage</button>
+</div>
+<div id="brComparisonPanel" class="br-panel" style="display:none;">
+  <div class="br-panel-title">New Mortgage Details</div>
+  <div class="br-comp-inputs">
+    <div class="br-field">
+      <label>Loan amount</label>
+      <div class="br-input-prefix"><span>$</span><input type="text" id="brNewLoanAmt" class="br-input" placeholder="0" oninput="brFormatCompInput(this)" onblur="brFormatCompInput(this)"></div>
+    </div>
+    <div class="br-field-row">
+      <div class="br-field">
+        <label>Interest rate</label>
+        <div class="br-input-suffix"><input type="text" id="brNewRate" class="br-input" placeholder="0" oninput="brUpdateComparison()"><span>%</span></div>
+      </div>
+      <div class="br-field">
+        <label>Term</label>
+        <select id="brNewTerm" class="br-select" onchange="brUpdateComparison()">
+          <option value="30">30 years</option><option value="25">25 years</option><option value="20">20 years</option><option value="15">15 years</option><option value="10">10 years</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div id="brComparisonResult"></div>
+</div>
+
+<!-- ACCELERATOR -->
+<div style="margin-top:12px;">
+  <button id="brAcceleratorToggle" class="br-toggle-btn" onclick="brToggleAccelerator()"><i class="fas fa-bolt" style="margin-right:6px;"></i> Payoff accelerator</button>
+</div>
+<div id="brAcceleratorPanel" class="br-panel" style="display:none;">
+  <div class="br-panel-title">Extra Monthly Payment</div>
+  <p class="br-panel-desc">Apply a portion of your monthly savings as extra principal on the new mortgage.</p>
+  <div class="br-comp-inputs" style="max-width:240px;">
+    <div class="br-field">
+      <label>Extra payment/mo</label>
+      <div class="br-input-prefix"><span>$</span><input type="text" id="brExtraPayment" class="br-input" placeholder="0" oninput="brFormatExtraInput(this)" onblur="brFormatExtraInput(this)"></div>
+    </div>
+  </div>
+  <div id="brAcceleratorResult"></div>
+  <div class="br-equity-section">
+    <div class="br-panel-title" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">Equity Recovery Timeline</div>
+    <p class="br-panel-desc">How quickly will home appreciation recoup the equity used to pay off debts?</p>
+    <div class="br-equity-top">
+      <div class="br-equity-debt-total">
+        <span class="br-equity-debt-label">Non-mortgage debt consolidated:</span>
+        <span class="br-equity-debt-value" id="brEquityDebtTotal">$0</span>
+        <input type="hidden" id="brEquityDebtTotalVal" value="0">
+      </div>
+    </div>
+    <div class="br-comp-inputs">
+      <div class="br-field-row">
+        <div class="br-field">
+          <label>Home value</label>
+          <div class="br-input-prefix"><span>$</span><input type="text" id="brEquityHomeValue" class="br-input" placeholder="0" oninput="brFormatEquityInput(this)" onblur="brFormatEquityInput(this)"></div>
+        </div>
+        <div class="br-field">
+          <label>Closing costs</label>
+          <div class="br-input-prefix"><span>$</span><input type="text" id="brEquityClosingCosts" class="br-input" placeholder="0" oninput="brFormatEquityInput(this)" onblur="brFormatEquityInput(this)"></div>
+        </div>
+      </div>
+      <div class="br-field-row">
+        <div class="br-field">
+          <label>Zip code</label>
+          <input type="text" id="brEquityZip" class="br-input" placeholder="43001" maxlength="5">
+        </div>
+        <div class="br-field" style="justify-content:flex-end;">
+          <button id="brEquityFetchBtn" class="br-btn br-btn-primary" onclick="brFetchAppreciation()">Get Rates</button>
+        </div>
+      </div>
+    </div>
+    <div id="brEquityResult"></div>
+  </div>
+</div>
+
+<script>
+// Provide shims for external dependencies
+var crmContacts = [];
+function showToast(msg) {
+  var t = document.getElementById('brToastEl');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2500);
+}
+function loadCrm() { /* no-op in standalone */ }
+
+// Load CRM contacts for client search
+(function() {
+  fetch('https://agent-edge-backend.vercel.app/api/crm-api?action=list')
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.success && d.contacts) crmContacts = d.contacts; })
+    .catch(function() {});
+})();
+</script>
+<script src="mc-blended-rate.js"></script>
+<script>
+// Auto-init
+brInit();
+</script>
+</body>
+</html>
