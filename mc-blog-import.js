@@ -24,27 +24,42 @@ function renderBlogList() {
   var active = blogPosts.filter(function(p) { return p.status !== 'archived'; });
   var archived = blogPosts.filter(function(p) { return p.status === 'archived'; });
 
-  function makeRow(p, isArchived) {
+  function makeCard(p, isArchived) {
     var dateStr = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' }) : 'Draft';
-    var badge = p.status === 'published' ? '<span class="blog-badge published">Published</span>'
-              : p.status === 'archived' ? '<span class="blog-badge" style="background:rgba(100,100,100,0.15);color:#888;">Archived</span>'
-              : '<span class="blog-badge draft">Draft</span>';
+    var badge = p.status === 'published' ? '<span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:rgba(34,197,94,0.12);color:#16a34a;">Published</span>'
+              : p.status === 'archived' ? '<span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:rgba(100,100,100,0.1);color:#888;">Archived</span>'
+              : '<span style="display:inline-block;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;background:rgba(234,179,8,0.12);color:#b45309;">Draft</span>';
+    var img = p.image_url
+      ? '<div style="width:100%;aspect-ratio:16/9;border-radius:8px 8px 0 0;overflow:hidden;background:#f0f2f5;"><img src="' + p.image_url + '" style="width:100%;height:100%;object-fit:cover;display:block;" onerror="this.parentElement.style.display=\'none\'"></div>'
+      : '<div style="width:100%;aspect-ratio:16/9;border-radius:8px 8px 0 0;background:linear-gradient(135deg,#e2e5ed,#f0f2f5);display:flex;align-items:center;justify-content:center;"><i class="fas fa-pen-nib" style="font-size:24px;color:#ccc;"></i></div>';
+    var category = p.category ? '<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6e7f77;margin-bottom:4px;">' + escBlogHtml(p.category) + '</div>' : '';
+    var summary = p.summary ? '<div style="font-size:12px;color:var(--text-muted);line-height:1.5;margin-top:6px;">' + escBlogHtml(p.summary) + '</div>' : '';
     var archiveBtn = !isArchived
-      ? '<button class="topbar-btn" title="Archive" onclick="event.stopPropagation();archiveBlogPost(\'' + p.id + '\')" style="padding:4px 8px;font-size:11px;color:#888;border-color:rgba(150,150,150,0.3);margin-right:4px;"><i class="fas fa-box-archive"></i></button>'
-      : '<button class="topbar-btn" title="Restore" onclick="event.stopPropagation();restoreBlogPost(\'' + p.id + '\')" style="padding:4px 8px;font-size:11px;color:#6e7f77;border-color:rgba(110,127,119,0.3);margin-right:4px;"><i class="fas fa-rotate-left"></i></button>';
-    return '<div class="blog-row" onclick="editBlogPost(\'' + p.id + '\')">' +
-      '<div style="flex:1;"><div class="blog-row-title">' + escBlogHtml(p.title) + '</div>' +
-      '<div class="blog-row-meta">' + escBlogHtml(p.category) + ' &middot; ' + dateStr + '</div></div>' +
-      badge + archiveBtn +
-      '<button class="topbar-btn" onclick="event.stopPropagation();deleteBlogPost(\'' + p.id + '\',\'' + escBlogHtml(p.title).replace(/'/g, "\\'") + '\')" style="padding:4px 8px;font-size:11px;color:var(--accent-red);border-color:rgba(220,38,38,0.3);"><i class="fas fa-trash"></i></button>' +
-      '</div>';
+      ? '<button title="Archive" onclick="event.stopPropagation();archiveBlogPost(\'' + p.id + '\')" style="background:none;border:none;cursor:pointer;color:#888;font-size:12px;padding:4px;"><i class="fas fa-box-archive"></i></button>'
+      : '<button title="Restore" onclick="event.stopPropagation();restoreBlogPost(\'' + p.id + '\')" style="background:none;border:none;cursor:pointer;color:#6e7f77;font-size:12px;padding:4px;"><i class="fas fa-rotate-left"></i></button>';
+    var deleteBtn = '<button title="Delete" onclick="event.stopPropagation();deleteBlogPost(\'' + p.id + '\',\'' + escBlogHtml(p.title).replace(/'/g, "\\'") + '\')" style="background:none;border:none;cursor:pointer;color:#dc2626;font-size:12px;padding:4px;"><i class="fas fa-trash"></i></button>';
+
+    return '<div onclick="editBlogPost(\'' + p.id + '\')" style="background:white;border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:box-shadow 0.2s,transform 0.2s;" onmouseover="this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.08)\';this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.boxShadow=\'none\';this.style.transform=\'none\'">' +
+      img +
+      '<div style="padding:14px;">' +
+        category +
+        '<div style="font-size:14px;font-weight:700;color:var(--text-primary);line-height:1.3;">' + escBlogHtml(p.title) + '</div>' +
+        summary +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">' +
+          '<div style="display:flex;align-items:center;gap:6px;">' + badge + '<span style="font-size:11px;color:var(--text-muted);">' + dateStr + '</span></div>' +
+          '<div style="display:flex;gap:4px;">' + archiveBtn + deleteBtn + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
   }
 
   var html = '';
   if (active.length === 0) {
     html += '<div style="font-size:12px;color:var(--text-muted);padding:8px 0;">No active posts. Click &quot;New Post&quot; to get started.</div>';
   } else {
-    active.forEach(function(p) { html += makeRow(p, false); });
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">';
+    active.forEach(function(p) { html += makeCard(p, false); });
+    html += '</div>';
   }
 
   if (archived.length > 0) {
@@ -52,8 +67,8 @@ function renderBlogList() {
       '<button onclick="toggleBlogArchive()" style="background:none;border:none;color:var(--text-muted);font-size:12px;cursor:pointer;padding:4px 0;display:flex;align-items:center;gap:6px;font-family:inherit;">' +
       '<i class="fas fa-chevron-right" id="blogArchiveChevron" style="font-size:10px;transition:transform 0.2s;"></i>' +
       'Archived (' + archived.length + ')</button>' +
-      '<div id="blogArchiveList" style="display:none;margin-top:6px;">';
-    archived.forEach(function(p) { html += makeRow(p, true); });
+      '<div id="blogArchiveList" style="display:none;margin-top:6px;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;">';
+    archived.forEach(function(p) { html += makeCard(p, true); });
     html += '</div></div>';
   }
 
