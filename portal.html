@@ -1943,12 +1943,12 @@ var minGap=16;
 function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var minP=Infinity,maxP=-Infinity;data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});var range=maxP-minP||1;minP-=range*0.18;maxP+=range*0.18;range=maxP-minP;function yP(v){return pad.top+((maxP-v)/range)*ch;}var slots=data.length+2;function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
 mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');mktsDrawMAs(ctx,allData,displayStart,data,mktsDMA,mktsDMAColors,xP,yP);
 var hi=-Infinity,lo=Infinity;data.forEach(function(c){if(c.high>hi)hi=c.high;if(c.low<lo)lo=c.low;});
-// Use manual override values for Fib and S/R when available
-var fibHi=hi,fibLo=lo,srH=null,srL=null,srC=null;
+// Fibs use full dataset range (3mo) to match industry standard (MBS Highway)
+var fibHi=-Infinity,fibLo=Infinity;allData.forEach(function(c){if(c.high>fibHi)fibHi=c.high;if(c.low<fibLo)fibLo=c.low;});
+// S/R uses manual override when available
+var srH=null,srL=null,srC=null;
 if(mktsManualOverride){
   var mo=mktsManualOverride;
-  if(mo.manual_high)fibHi=mo.manual_high;
-  if(mo.manual_low)fibLo=mo.manual_low;
   srH=mo.manual_high||null;
   srL=mo.manual_low||null;
   // Current price: latest_price first, then walk 5PM->2PM->12PM->9AM
