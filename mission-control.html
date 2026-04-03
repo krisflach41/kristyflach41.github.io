@@ -1648,6 +1648,15 @@
         <button onclick="mbsSaveSnapshots()" class="bc-btn" id="mbsSaveBtn">Save to Portal</button>
         <div id="mbsSaveResult" style="font-size:12px;display:none;"></div>
       </div>
+
+      <!-- Candlestick Pattern Alerts -->
+      <div style="margin-top:14px;padding:12px 14px;background:var(--bg-hover);border-radius:8px;border:1px solid var(--border-light);">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <span style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">Candle Pattern Alerts</span>
+          <span style="font-size:10px;color:var(--text-muted);">UMBS 5.5%</span>
+        </div>
+        <div id="candlePatternResult"><span style="color:var(--text-muted);font-size:11px;">Waiting for data...</span></div>
+      </div>
     </div>
 
     <!-- ECONOMIC CALENDAR -->
@@ -3157,6 +3166,7 @@ setTimeout(mbsLoadToday, 1000);
 <script src="mc-tools-drawer.js"></script>
 <script src="mc-init.js"></script>
 <script src="mc-briefings.js"></script>
+<script src="mc-candle-patterns.js"></script>
 <script src="mc-webinar.js"></script>
 <script src="mc-blog-import.js"></script>
 <script src="mc-blended-rate.js"></script>
