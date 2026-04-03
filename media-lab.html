@@ -414,6 +414,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   <button class="tab-btn" onclick="switchTab('landingpages',this)"><i class="fas fa-rocket"></i> Landing Pages</button>
   <button class="tab-btn" onclick="switchTab('adbuilder',this)"><i class="fas fa-bullhorn"></i> Ad Builder</button>
   <button class="tab-btn" onclick="switchTab('contentcal',this)"><i class="fas fa-calendar-days"></i> Content Calendar</button>
+  <button class="tab-btn" onclick="switchTab('blog',this)"><i class="fas fa-pen-nib"></i> Blog</button>
 
 </div>
 
@@ -1275,6 +1276,116 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
   </div>
 </div>
 
+<!-- ===== BLOG TAB ===== -->
+<div class="tab-content" id="tab-blog">
+  <div class="ml-card">
+    <div class="ml-card-header">
+      <div class="ml-card-title"><i class="fas fa-pen-nib" style="color:#7c3aed;"></i> Blog Management</div>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">Write, edit, and publish blog posts to your main website. AI can draft posts from a topic or polish your writing.</p>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button class="topbar-btn primary" onclick="openBlogEditor()"><i class="fas fa-plus"></i> New Post</button>
+    </div>
+    <div id="blogPostList" style="display:flex;flex-direction:column;gap:8px;">
+      <div style="font-size:12px;color:var(--text-muted);padding:12px 0;">Loading posts...</div>
+    </div>
+  </div>
+
+  <div id="blogEditor" style="display:none;margin-top:16px;background:#f8f9fb;border:1px solid var(--border);border-radius:10px;padding:20px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;" id="blogEditorTitle">New Blog Post</div>
+      <button class="topbar-btn" onclick="closeBlogEditor()" style="padding:4px 10px;font-size:12px;">Close</button>
+    </div>
+    <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:8px;padding:14px;margin-bottom:16px;">
+      <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-wand-magic-sparkles"></i> AI Writing Assistant</div>
+      <div style="display:flex;gap:8px;align-items:flex-end;">
+        <div style="flex:1;">
+          <input id="blogAiTopic" placeholder="Enter a topic, e.g. 'Why buyers should lock rates early'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+        </div>
+        <button class="topbar-btn primary" onclick="blogAiDraft()" id="blogAiDraftBtn" style="white-space:nowrap;"><i class="fas fa-wand-magic-sparkles"></i> Draft from Topic</button>
+        <button class="topbar-btn" onclick="blogAiPolish()" id="blogAiPolishBtn" style="white-space:nowrap;"><i class="fas fa-sparkles"></i> Polish My Writing</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div>
+        <div class="fc-lbl">Title</div>
+        <input id="blogTitle" placeholder="Post title" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+      </div>
+      <div>
+        <div class="fc-lbl">Category</div>
+        <select id="blogCategory" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+          <option value="Home Buying">Home Buying</option>
+          <option value="Refinance">Refinance</option>
+          <option value="Mortgage Strategy">Mortgage Strategy</option>
+          <option value="Market Update">Market Update</option>
+          <option value="Credit & Finance">Credit & Finance</option>
+          <option value="First-Time Buyers">First-Time Buyers</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <div class="fc-lbl">Summary (shown on homepage card)</div>
+      <input id="blogSummary" placeholder="1-2 sentence summary for the blog card" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:14px;font-family:inherit;">
+    </div>
+    <div style="margin-bottom:12px;">
+      <div class="fc-lbl">Blog Image</div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button class="topbar-btn" onclick="openBlogImagePicker()" style="display:inline-flex;align-items:center;gap:8px;"><i class="fas fa-image"></i> Choose Image</button>
+        <div id="blogImgPreview" style="display:none;align-items:center;gap:10px;">
+          <img id="blogImgThumb" src="" style="width:60px;height:60px;object-fit:cover;border-radius:6px;border:1px solid var(--border);">
+          <div>
+            <div id="blogImgCredit" style="font-size:11px;color:var(--text-secondary);"></div>
+            <button onclick="clearBlogImage()" style="background:none;border:none;color:var(--accent-red);font-size:11px;cursor:pointer;padding:0;margin-top:2px;">Remove</button>
+          </div>
+        </div>
+      </div>
+      <input type="hidden" id="blogImageUrl" value="">
+    </div>
+    <div style="margin-bottom:16px;">
+      <div class="fc-lbl">Body (HTML)</div>
+      <textarea id="blogBody" rows="14" placeholder="Write your post here... HTML tags like <h3>, <p>, <ul> are supported." style="width:100%;padding:12px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;line-height:1.6;resize:vertical;"></textarea>
+    </div>
+    <input type="hidden" id="blogEditId" value="">
+    <div id="blogPreviewPanel" style="display:none;margin-bottom:16px;background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);background:#f8f9fb;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;">Preview</div>
+        <button class="topbar-btn" onclick="document.getElementById('blogPreviewPanel').style.display='none'" style="padding:3px 8px;font-size:11px;">Close Preview</button>
+      </div>
+      <div id="blogPreviewContent" style="padding:24px;max-height:400px;overflow-y:auto;color:var(--text-primary);font-size:14px;line-height:1.8;"></div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="topbar-btn primary" onclick="saveBlogPost('published')"><i class="fas fa-globe"></i> Publish</button>
+      <button class="topbar-btn" onclick="saveBlogPost('draft')"><i class="fas fa-save"></i> Save Draft</button>
+      <button class="topbar-btn" onclick="previewBlogPost()" style="border-color:rgba(124,58,237,0.3);color:#7c3aed;"><i class="fas fa-eye"></i> Preview</button>
+      <button class="topbar-btn" onclick="blogAiRewrite()" id="blogAiRewriteBtn" style="border-color:rgba(234,88,12,0.3);color:#ea580c;"><i class="fas fa-rotate"></i> AI Rewrite</button>
+      <span id="blogSaveStatus" style="font-size:12px;color:var(--text-muted);margin-left:auto;"></span>
+    </div>
+    <div style="margin-top:10px;">
+      <input id="blogRewriteInstructions" placeholder="Rewrite instructions, e.g. 'don't mention specific prices' or 'make it less about me'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+    </div>
+  </div>
+
+  <!-- Blog Image Picker Modal -->
+  <div id="blogImgModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;" onclick="closeBlogImagePicker()"></div>
+  <div id="blogImgModal" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;border-radius:12px;padding:24px;z-index:999;width:600px;max-width:90vw;max-height:80vh;overflow-y:auto;flex-direction:column;gap:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:14px;font-weight:700;">Search Images</div>
+      <button onclick="closeBlogImagePicker()" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--text-muted);">&times;</button>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <input id="blogImgSearchInput" placeholder="Search for images..." style="flex:1;padding:10px 14px;border-radius:8px;background:#f8f9fb;border:1px solid var(--border);font-size:13px;font-family:inherit;">
+      <button id="blogImgSearchBtn" class="topbar-btn primary">Search</button>
+    </div>
+    <div id="blogImgResults" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px;">
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3b4;font-size:14px;">Search for images above to get started</div>
+    </div>
+    <div id="blogImgModalCredit" style="font-size:11px;color:var(--text-muted);text-align:center;"></div>
+    <div style="text-align:right;margin-top:8px;">
+      <button id="blogImgConfirmBtn" class="topbar-btn primary" onclick="confirmBlogImage()" disabled style="opacity:0.5;">Use This Image</button>
+    </div>
+  </div>
+</div>
+
 <script>
 var API_BASE = 'https://agent-edge-backend.vercel.app/api';
 var ANTHROPIC_API = 'https://api.anthropic.com/v1/messages';
@@ -1290,6 +1401,7 @@ function switchTab(name, btn) {
   if (name === 'landingpages') lpLoadPages();
   if (name === 'adbuilder') adInit();
   if (name === 'contentcal') ccInit();
+  if (name === 'blog') loadBlogPosts();
 }
 
 // ===== MEDIA LIBRARY (localStorage for now) =====
@@ -4250,5 +4362,6 @@ function ccLoadSaved() {
   ccSelectedDate = null;
 }
 </script>
+<script src="mc-blog-import.js"></script>
 </body>
 </html>
