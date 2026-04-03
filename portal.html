@@ -865,6 +865,10 @@ h1 {
         <div style="position:absolute;top:0;bottom:0;width:1px;background:rgba(110,127,119,0.4);left:0;"></div>
         <div id="mktsCrosshairLabel" style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);background:#6e7f77;color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;white-space:nowrap;font-family:system-ui,sans-serif;"></div>
       </div>
+      <div id="mktsCrosshairH" style="display:none;position:absolute;pointer-events:none;z-index:9;left:0;right:0;">
+        <div style="position:absolute;left:0;right:58px;height:1px;background:rgba(110,127,119,0.4);top:0;border-top:1px dashed rgba(110,127,119,0.5);"></div>
+        <div id="mktsCrosshairPrice" style="position:absolute;right:0;top:-9px;background:#6e7f77;color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;white-space:nowrap;font-family:system-ui,sans-serif;"></div>
+      </div>
     </div>
     <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · Bond &amp; equity data delayed · Snapshots at 9 AM, 12 PM, 2 PM, 5 PM ET</div>
 
@@ -1781,27 +1785,40 @@ function mktsLoadChart(){
 
 /* ═══ CROSSHAIR ═══ */
 var mktsChartXPositions=[];
+var mktsChartPriceRange=null;
 (function(){
   document.addEventListener('mousemove',function(ev){
     var canvas=document.getElementById('mktsMainChart');if(!canvas)return;
     var r=canvas.getBoundingClientRect();
     var ch=document.getElementById('mktsCrosshair');if(!ch)return;
-    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom){ch.style.display='none';return;}
-    if(!mktsChartXPositions||mktsChartXPositions.length===0){ch.style.display='none';return;}
+    var chH=document.getElementById('mktsCrosshairH');
+    if(ev.clientX<r.left||ev.clientX>r.right||ev.clientY<r.top||ev.clientY>r.bottom){ch.style.display='none';if(chH)chH.style.display='none';return;}
+    if(!mktsChartXPositions||mktsChartXPositions.length===0){ch.style.display='none';if(chH)chH.style.display='none';return;}
     // Find closest candle
     var mouseX=ev.clientX-r.left;
+    var mouseY=ev.clientY-r.top;
     var closest=0,closestDist=Infinity;
     mktsChartXPositions.forEach(function(xp,i){var d=Math.abs(xp.x-mouseX);if(d<closestDist){closestDist=d;closest=i;}});
     var cp=mktsChartXPositions[closest];
-    if(!cp){ch.style.display='none';return;}
+    if(!cp){ch.style.display='none';if(chH)chH.style.display='none';return;}
     ch.style.display='block';
     ch.style.left=cp.x+'px';ch.style.top='0';ch.style.height=r.height+'px';
     var dt=new Date(cp.date+'T12:00:00');
     var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     document.getElementById('mktsCrosshairLabel').textContent=days[dt.getDay()]+', '+months[dt.getMonth()]+' '+dt.getDate()+', '+dt.getFullYear();
+    // Horizontal price crosshair
+    if(chH&&mktsChartPriceRange){
+      chH.style.display='block';
+      chH.style.top=mouseY+'px';
+      var pr=mktsChartPriceRange;
+      var price=pr.maxP-((mouseY-pr.padTop)/(pr.ch))*(pr.maxP-pr.minP);
+      var dec=pr.isTreasury?3:2;
+      var priceLabel=document.getElementById('mktsCrosshairPrice');
+      if(priceLabel)priceLabel.textContent=price.toFixed(dec);
+    }
   });
-  document.addEventListener('mouseleave',function(){var ch=document.getElementById('mktsCrosshair');if(ch)ch.style.display='none';});
+  document.addEventListener('mouseleave',function(){var ch=document.getElementById('mktsCrosshair');if(ch)ch.style.display='none';var chH=document.getElementById('mktsCrosshairH');if(chH)chH.style.display='none';});
 })();
 
 /* ═══ RENDER ═══ */
@@ -1924,6 +1941,7 @@ var minGap=16;
 /* ═══ CANDLESTICK CHART ═══ */
 function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var minP=Infinity,maxP=-Infinity;data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});var range=maxP-minP||1;minP-=range*0.18;maxP+=range*0.18;range=maxP-minP;function yP(v){return pad.top+((maxP-v)/range)*ch;}var slots=data.length+2;function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
 mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');
+mktsChartPriceRange={minP:minP,maxP:maxP,padTop:pad.top,ch:ch,isTreasury:false};
 var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
 // Draw body first
 ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.abs(yP(c.close)-yP(c.open))||1;
@@ -1939,6 +1957,7 @@ mktsDrawDates(ctx,w,h,data,xP);}
 /* ═══ TREASURY LINE CHART ═══ */
 function mktsDrawTreasuryFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var vals=data.map(function(d){return d.value;});var minV=Math.min.apply(null,vals),maxV=Math.max.apply(null,vals);var range=maxV-minV||0.1;minV-=range*0.06;maxV+=range*0.06;range=maxV-minV;function yP(v){return pad.top+((maxV-v)/range)*ch;}function xP(i){return pad.left+(cw/Math.max(data.length-1,1))*i;}
 mktsDrawGrid(ctx,w,h,pad,minV,maxV,range,3,'%');
+mktsChartPriceRange={minP:minV,maxP:maxV,padTop:pad.top,ch:ch,isTreasury:true};
 ctx.beginPath();ctx.strokeStyle='#6e7f77';ctx.lineWidth=2;data.forEach(function(d,i){if(i===0)ctx.moveTo(xP(i),yP(d.value));else ctx.lineTo(xP(i),yP(d.value));});ctx.stroke();
 ctx.lineTo(xP(data.length-1),pad.top+ch);ctx.lineTo(xP(0),pad.top+ch);ctx.closePath();ctx.fillStyle='rgba(110,127,119,0.06)';ctx.fill();
 mktsDrawDates(ctx,w,h,data,xP);}
