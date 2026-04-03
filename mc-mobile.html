@@ -1563,7 +1563,7 @@ function mTpUpdateFontSize() {
 
 function mTpToggleMirror() {
   var mirror = document.getElementById('mTpMirror').checked;
-  document.getElementById('mTpText').style.transform = mirror ? 'scale(-1, -1)' : 'none';
+document.getElementById('mTpText').style.transform = mirror ? 'scaleY(-1)' : 'none';
 }
 
 function mTpFullscreen() {
