@@ -113,6 +113,8 @@ function openBlogEditor() {
   document.getElementById('blogImageUrl').value = '';
   document.getElementById('blogBody').value = '';
   document.getElementById('blogAiTopic').value = '';
+  if (document.getElementById('blogAiBrief')) document.getElementById('blogAiBrief').value = '';
+  if (document.getElementById('blogAiTakeaway')) document.getElementById('blogAiTakeaway').value = '';
   document.getElementById('blogSaveStatus').textContent = '';
   document.getElementById('blogImgSearchInput').value = '';
   document.getElementById('blogImgResults').innerHTML = '';
@@ -190,11 +192,16 @@ function deleteBlogPost(id, title) {
 }
 
 function blogAiDraft() {
-  var topic = document.getElementById('blogAiTopic').value.trim();
-  if (!topic) { alert('Enter a topic first'); return; }
+  var brief = (document.getElementById('blogAiBrief') || {}).value || '';
+  var audience = (document.getElementById('blogAiAudience') || {}).value || 'general';
+  var tone = (document.getElementById('blogAiTone') || {}).value || 'educational';
+  var takeaway = (document.getElementById('blogAiTakeaway') || {}).value || '';
+  var topic = (document.getElementById('blogAiTopic') || {}).value || '';
+  var fullBrief = brief || topic;
+  if (!fullBrief.trim()) { alert('Describe what you want the post to be about'); return; }
   var btn = document.getElementById('blogAiDraftBtn');
   btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Drafting...';
-  fetch(BLOG_API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'ai-draft', topic:topic }) })
+  fetch(BLOG_API, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ action:'ai-draft', topic:fullBrief, audience:audience, tone:tone, takeaway:takeaway }) })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       btn.disabled = false; btn.innerHTML = '<i class="fas fa-wand-magic-sparkles"></i> Draft from Topic';

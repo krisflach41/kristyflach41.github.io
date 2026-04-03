@@ -1298,13 +1298,41 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
     </div>
     <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.15);border-radius:8px;padding:14px;margin-bottom:16px;">
       <div style="font-size:11px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;"><i class="fas fa-wand-magic-sparkles"></i> AI Writing Assistant</div>
-      <div style="display:flex;gap:8px;align-items:flex-end;">
-        <div style="flex:1;">
-          <input id="blogAiTopic" placeholder="Enter a topic, e.g. 'Why buyers should lock rates early'" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+      <div style="margin-bottom:10px;">
+        <div class="fc-lbl">What's the concept? What do you want to teach?</div>
+        <textarea id="blogAiBrief" rows="3" placeholder="e.g. Most people think rates are set once a day. The truth is every rate is available every day — it's the pricing that changes with the market. I want to bust that myth and explain what that means for someone deciding whether to buy or wait." style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;line-height:1.5;resize:vertical;"></textarea>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div>
+          <div class="fc-lbl">Who is this for?</div>
+          <select id="blogAiAudience" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+            <option value="buyers">Home Buyers</option>
+            <option value="sellers">Sellers</option>
+            <option value="first-time">First-Time Buyers</option>
+            <option value="realtors">Realtors</option>
+            <option value="general">General / Everyone</option>
+          </select>
         </div>
-        <button class="topbar-btn primary" onclick="blogAiDraft()" id="blogAiDraftBtn" style="white-space:nowrap;"><i class="fas fa-wand-magic-sparkles"></i> Draft from Topic</button>
+        <div>
+          <div class="fc-lbl">Tone</div>
+          <select id="blogAiTone" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+            <option value="educational">Educational</option>
+            <option value="myth-busting">Myth-Busting</option>
+            <option value="straight-talk">Straight Talk</option>
+            <option value="encouraging">Encouraging</option>
+            <option value="funny">Funny / Light</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:10px;">
+        <div class="fc-lbl">Key takeaway (what should the reader walk away knowing?)</div>
+        <input id="blogAiTakeaway" placeholder="e.g. Waiting for the 'perfect' rate costs you more than you think" style="width:100%;padding:10px 14px;border-radius:8px;background:white;border:1px solid var(--border);color:var(--text-primary);font-size:13px;font-family:inherit;">
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="topbar-btn primary" onclick="blogAiDraft()" id="blogAiDraftBtn" style="white-space:nowrap;"><i class="fas fa-wand-magic-sparkles"></i> Generate Draft</button>
         <button class="topbar-btn" onclick="blogAiPolish()" id="blogAiPolishBtn" style="white-space:nowrap;"><i class="fas fa-sparkles"></i> Polish My Writing</button>
       </div>
+      <input type="hidden" id="blogAiTopic" value="">
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
       <div>
