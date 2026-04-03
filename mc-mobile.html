@@ -663,6 +663,55 @@ body {
   </div>
 </div>
 
+<!-- ===== TELEPROMPTER VIEW ===== -->
+<div class="m-view" id="view-prompter">
+  <div class="m-panel">
+    <div class="m-panel-title">Saved Scripts</div>
+    <div id="mTpScriptList" style="margin-bottom:12px;">
+      <div style="font-size:12px;color:var(--text-muted);text-align:center;padding:20px;">Loading scripts...</div>
+    </div>
+    <div style="margin-top:8px;">
+      <div class="m-label">Or paste a script</div>
+      <textarea id="mTpManualText" class="m-input" rows="4" placeholder="Paste your script here..." style="resize:vertical;font-size:14px;line-height:1.6;"></textarea>
+      <button onclick="mTpLoadManual()" class="m-btn m-btn-secondary" style="width:100%;margin-top:8px;"><i class="fas fa-arrow-right"></i> Load to Prompter</button>
+    </div>
+  </div>
+
+  <div id="mTpControls" style="display:none;">
+    <div class="m-panel">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="m-panel-title" style="margin-bottom:0;" id="mTpNowPlaying">Script Loaded</div>
+        <button onclick="mTpBack()" class="m-btn m-btn-secondary" style="padding:6px 12px;font-size:11px;"><i class="fas fa-arrow-left"></i> Back</button>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <label class="m-label" style="min-width:50px;margin-bottom:0;">Speed</label>
+        <input type="range" id="mTpSpeed" min="1" max="20" value="5" step="1" oninput="document.getElementById('mTpSpeedVal').textContent=this.value" style="flex:1;">
+        <span style="font-size:12px;color:var(--text-muted);min-width:16px;text-align:right;" id="mTpSpeedVal">5</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <label class="m-label" style="min-width:50px;margin-bottom:0;">Size</label>
+        <input type="range" id="mTpFontSize" min="18" max="60" value="32" step="2" oninput="mTpUpdateFontSize()" style="flex:1;">
+        <span style="font-size:12px;color:var(--text-muted);min-width:24px;text-align:right;" id="mTpFontVal">32px</span>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-secondary);cursor:pointer;">
+          <input type="checkbox" id="mTpMirror" onchange="mTpToggleMirror()" style="width:18px;height:18px;"> Mirror mode
+        </label>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button onclick="mTpPlay()" id="mTpPlayBtn" class="m-btn m-btn-primary" style="flex:1;"><i class="fas fa-play"></i> Play</button>
+        <button onclick="mTpPause()" id="mTpPauseBtn" class="m-btn m-btn-secondary" style="flex:1;display:none;"><i class="fas fa-pause"></i> Pause</button>
+        <button onclick="mTpReset()" class="m-btn m-btn-secondary" style="padding:10px 14px;"><i class="fas fa-rotate-left"></i></button>
+        <button onclick="mTpFullscreen()" class="m-btn m-btn-secondary" style="padding:10px 14px;"><i class="fas fa-expand"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mTpDisplay" style="display:none;background:#000;border-radius:10px;padding:24px 20px;margin:0 0 12px;min-height:300px;overflow:hidden;position:relative;">
+    <div id="mTpText" style="color:#fff;font-size:32px;line-height:1.6;font-weight:500;white-space:pre-wrap;word-wrap:break-word;position:relative;top:0;transition:none;"></div>
+  </div>
+</div>
+
 <!-- ===== BOTTOM NAV ===== -->
 <nav class="m-nav">
   <div class="m-nav-item active" onclick="mSwitch('mbs',this)">
@@ -680,6 +729,10 @@ body {
   <div class="m-nav-item" onclick="mSwitch('tools',this)">
     <i class="fas fa-toolbox"></i>
     <span>Tools</span>
+  </div>
+  <div class="m-nav-item" onclick="mSwitch('prompter',this)">
+    <i class="fas fa-scroll"></i>
+    <span>Prompter</span>
   </div>
 </nav>
 
@@ -700,6 +753,7 @@ function mSwitch(view, el) {
   // Lazy load on first switch
   if (view === 'crm' && mCrmContacts.length === 0) mCrmLoad();
   if (view === 'calendar' && !window._calLoaded) mCalLoad();
+  if (view === 'prompter' && !window._prompterLoaded) { window._prompterLoaded = true; mTpLoadScripts(); }
   if (view === 'tools' && !window._toolsCreditLoaded) {
     document.getElementById('mToolsCreditFrame').src = 'mc-credit-analysis.html';
     document.getElementById('mToolsCompareFrame').src = 'loan-comparison.html';
@@ -1405,6 +1459,129 @@ async function mGusAsk() {
 
   btn.disabled = false;
   btn.innerHTML = '<i class="fas fa-search"></i> Search Guidelines';
+}
+
+// ===== TELEPROMPTER =====
+var mTpScrollInterval = null;
+var mTpCurrentText = '';
+
+function mTpLoadScripts() {
+  fetch(API + '/teleprompter')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var el = document.getElementById('mTpScriptList');
+      if (!data.success || !data.scripts || data.scripts.length === 0) {
+        el.innerHTML = '<div style="font-size:12px;color:var(--text-muted);text-align:center;padding:16px;">No saved scripts yet. Send one from Media Lab or paste below.</div>';
+        return;
+      }
+      var html = '';
+      data.scripts.forEach(function(s) {
+        var dateStr = new Date(s.updated_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+        var sourceLabel = s.source === 'content_calendar' ? 'Calendar' : s.source === 'recording_studio' ? 'Studio' : 'Manual';
+        html += '<div onclick="mTpSelectScript(\'' + s.id + '\')" style="display:flex;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border);border-radius:8px;margin-bottom:6px;cursor:pointer;background:var(--bg-panel);" ontouchstart="this.style.background=\'var(--bg-hover)\'" ontouchend="this.style.background=\'var(--bg-panel)\'">';
+        html += '<div style="flex:1;min-width:0;"><div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (s.title || 'Untitled') + '</div>';
+        html += '<div style="font-size:11px;color:var(--text-muted);">' + sourceLabel + ' &middot; ' + dateStr + '</div></div>';
+        html += '<button onclick="event.stopPropagation();mTpDeleteScript(\'' + s.id + '\')" style="background:none;border:none;color:var(--accent-red);font-size:14px;padding:8px;cursor:pointer;"><i class="fas fa-trash"></i></button>';
+        html += '</div>';
+      });
+      el.innerHTML = html;
+    })
+    .catch(function() {
+      document.getElementById('mTpScriptList').innerHTML = '<div style="font-size:12px;color:var(--accent-red);text-align:center;padding:16px;">Failed to load scripts</div>';
+    });
+}
+
+function mTpSelectScript(id) {
+  fetch(API + '/teleprompter', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'get', id: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success && data.script) {
+      mTpCurrentText = data.script.body;
+      document.getElementById('mTpNowPlaying').textContent = data.script.title || 'Script Loaded';
+      mTpShowPrompter();
+    }
+  });
+}
+
+function mTpLoadManual() {
+  var text = document.getElementById('mTpManualText').value.trim();
+  if (!text) { mToast('Paste a script first'); return; }
+  mTpCurrentText = text;
+  document.getElementById('mTpNowPlaying').textContent = 'Pasted Script';
+  mTpShowPrompter();
+}
+
+function mTpShowPrompter() {
+  document.getElementById('mTpControls').style.display = 'block';
+  document.getElementById('mTpDisplay').style.display = 'block';
+  var textEl = document.getElementById('mTpText');
+  textEl.textContent = mTpCurrentText;
+  textEl.style.top = '0px';
+  mTpUpdateFontSize();
+  mTpToggleMirror();
+}
+
+function mTpBack() {
+  mTpPause();
+  document.getElementById('mTpControls').style.display = 'none';
+  document.getElementById('mTpDisplay').style.display = 'none';
+  mTpCurrentText = '';
+}
+
+function mTpPlay() {
+  document.getElementById('mTpPlayBtn').style.display = 'none';
+  document.getElementById('mTpPauseBtn').style.display = '';
+  var textEl = document.getElementById('mTpText');
+  var speed = parseInt(document.getElementById('mTpSpeed').value) || 5;
+  var pxPerFrame = speed * 0.5;
+  if (mTpScrollInterval) clearInterval(mTpScrollInterval);
+  mTpScrollInterval = setInterval(function() {
+    var current = parseFloat(textEl.style.top) || 0;
+    textEl.style.top = (current - pxPerFrame) + 'px';
+  }, 30);
+}
+
+function mTpPause() {
+  if (mTpScrollInterval) { clearInterval(mTpScrollInterval); mTpScrollInterval = null; }
+  document.getElementById('mTpPlayBtn').style.display = '';
+  document.getElementById('mTpPauseBtn').style.display = 'none';
+}
+
+function mTpReset() {
+  mTpPause();
+  document.getElementById('mTpText').style.top = '0px';
+}
+
+function mTpUpdateFontSize() {
+  var size = document.getElementById('mTpFontSize').value;
+  document.getElementById('mTpText').style.fontSize = size + 'px';
+  document.getElementById('mTpFontVal').textContent = size + 'px';
+}
+
+function mTpToggleMirror() {
+  var mirror = document.getElementById('mTpMirror').checked;
+  document.getElementById('mTpText').style.transform = mirror ? 'scale(-1, -1)' : 'none';
+}
+
+function mTpFullscreen() {
+  var el = document.getElementById('mTpDisplay');
+  if (el.requestFullscreen) el.requestFullscreen();
+  else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+
+function mTpDeleteScript(id) {
+  if (!confirm('Delete this script?')) return;
+  fetch(API + '/teleprompter', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'delete', id: id })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) { mToast('Script deleted'); mTpLoadScripts(); }
+  });
 }
 
 // ===== INIT =====

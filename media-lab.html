@@ -513,6 +513,7 @@ body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg-deep);color:
           <div style="display:flex;gap:6px;">
             <button class="btn" style="padding:4px 10px;font-size:11px;" onclick="clearScript()">Clear</button>
             <button class="btn sage" style="padding:4px 10px;font-size:11px;" onclick="loadToTeleprompter()">Load to Teleprompter</button>
+            <button class="btn" style="padding:4px 10px;font-size:11px;border-color:rgba(37,99,235,0.3);color:#2563eb;" onclick="sendScriptToPrompter('recording_studio')"><i class="fas fa-tablet-screen-button"></i> Send to iPad</button>
           </div>
         </div>
         <textarea class="form-textarea" id="scriptText" style="min-height:180px;font-size:13px;" placeholder="Write or generate your script here. Then click 'Load to Teleprompter' to display it on screen while recording."></textarea>
@@ -1707,6 +1708,22 @@ function loadToTeleprompter() {
   var spacing = document.getElementById('tpLineSpacing') ? document.getElementById('tpLineSpacing').value : '1.7';
   display.style.lineHeight = spacing;
   document.getElementById('tpOverlay').style.display = 'block';
+}
+
+function sendScriptToPrompter(source) {
+  var text = document.getElementById('scriptText').value.trim();
+  if (!text) { alert('No script to send. Write or generate a script first.'); return; }
+  var title = document.getElementById('scriptTopic').value.trim() || 'Script ' + new Date().toLocaleDateString();
+  fetch(API_BASE + '/teleprompter', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'save', title: title, body: text, source: source || 'manual' })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.success) { alert('Script sent to teleprompter. Open Agent Edge on your iPad to use it.'); }
+    else { alert('Error saving script: ' + (data.error || 'Unknown')); }
+  })
+  .catch(function(err) { alert('Network error: ' + err.message); });
 }
 
 function updateLineSpacing() {
