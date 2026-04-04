@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refinance & Debt Consolidation</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#fff;color:#333;}
+.rc{display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:860px;margin:0 auto;font-size:12px;}
+.rc-left{padding:18px 20px;border-right:1px solid #eee;}
+.rc-right{padding:18px 20px;background:#fafbfc;}
+
+.rc-group{margin-bottom:10px;}
+.rc-group-title{font-size:10px;font-weight:700;color:#0b1f3a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.rc-row{display:flex;gap:8px;margin-bottom:5px;}
+.rc-field{flex:1;display:flex;flex-direction:column;}
+.rc-field label{font-size:9px;font-weight:600;color:#6e7f77;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:2px;}
+
+.rc-money{position:relative;}
+.rc-money::before{content:'$';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#999;pointer-events:none;}
+.rc-money input{padding-left:22px;}
+
+.rc-field input{padding:6px 8px;border:1px solid #dfe3ea;border-radius:2px;font-size:12px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;}
+.rc-field input:focus{outline:none;border-color:#6e7f77;}
+.rc-field input::placeholder{color:#ccc;font-weight:400;}
+.rc-field select{padding:6px 8px;border:1px solid #dfe3ea;border-radius:2px;font-size:12px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+.rc-field select:focus{outline:none;border-color:#6e7f77;}
+
+.rc-add{background:none;border:none;color:#6e7f77;font-size:10px;font-weight:600;cursor:pointer;padding:2px 0;font-family:inherit;}
+.rc-add:hover{text-decoration:underline;}
+.rc-remove{background:none;border:none;color:#bbb;font-size:11px;cursor:pointer;padding:0 2px;line-height:1;}
+.rc-remove:hover{color:#0b1f3a;}
+
+.rc-debt{display:flex;gap:8px;align-items:end;margin-bottom:4px;}
+.rc-debt .rc-field{flex:1;}
+
+.rc-note{font-size:9px;color:#aaa;margin-top:1px;}
+
+.rc-result-header{text-align:center;margin-bottom:12px;}
+.rc-payment-big{font-size:28px;font-weight:700;color:#0b1f3a;line-height:1.2;}
+.rc-payment-label{font-size:9px;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.rc-savings-line{font-size:11px;font-weight:600;color:#6e7f77;margin-top:4px;}
+
+.rc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
+.rc-stat{text-align:center;padding:8px;background:#fff;border:1px solid #eee;border-radius:3px;}
+.rc-stat-val{font-size:14px;font-weight:700;color:#0b1f3a;}
+.rc-stat-label{font-size:8px;color:#999;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
+
+.rc-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px;}
+.rc-table th{text-align:left;font-size:8px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;padding:4px 6px;border-bottom:1px solid #eee;}
+.rc-table th:not(:first-child){text-align:right;}
+.rc-table td{padding:4px 6px;border-bottom:1px solid #f5f5f5;}
+.rc-table td:not(:first-child){text-align:right;font-weight:600;color:#0b1f3a;}
+.rc-table td:first-child{color:#666;}
+.rc-table tr.rc-total td{border-top:1px solid #0b1f3a;font-weight:700;font-size:12px;}
+
+.rc-chart-wrap{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;}
+.rc-donut{position:relative;width:90px;height:90px;}
+.rc-donut svg{transform:rotate(-90deg);}
+.rc-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.rc-donut-center-val{font-size:13px;font-weight:700;color:#0b1f3a;}
+.rc-donut-center-label{font-size:7px;color:#999;text-transform:uppercase;letter-spacing:0.3px;}
+.rc-legend{font-size:9px;color:#555;}
+.rc-legend-item{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.rc-legend-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0;}
+
+.rc-pmi{font-size:10px;color:#b45309;background:#fefce8;border:1px solid #fde68a;border-radius:2px;padding:6px 8px;margin-bottom:8px;display:none;line-height:1.4;}
+
+.rc-cta{text-align:center;padding:10px;background:#0b1f3a;border-radius:3px;margin-top:8px;}
+.rc-cta a{color:#fff;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:0.3px;}
+.rc-cta-sub{font-size:8px;color:rgba(255,255,255,0.5);margin-top:3px;}
+
+.rc-disclaimer{font-size:7px;color:#ccc;text-align:center;padding:6px 20px;line-height:1.5;}
+
+@media(max-width:600px){
+  .rc{grid-template-columns:1fr;max-width:420px;}
+  .rc-left{border-right:none;border-bottom:1px solid #eee;}
+  .rc-stats{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<div class="rc">
+  <div class="rc-left">
+
+    <div class="rc-group">
+      <div class="rc-group-title">Current Mortgage</div>
+      <div class="rc-row">
+        <div class="rc-field"><label>Home Value</label><div class="rc-money"><input type="text" id="homeValue" placeholder="350,000" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>1st Balance</label><div class="rc-money"><input type="text" id="mort1Bal" placeholder="250,000" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" id="mort1Pmt" placeholder="1,580" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+      </div>
+      <div class="rc-row" id="mort2Row" style="display:none;">
+        <div class="rc-field"><label>2nd Balance</label><div class="rc-money"><input type="text" id="mort2Bal" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>2nd Payment</label><div class="rc-money"><input type="text" id="mort2Pmt" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div style="display:flex;align-items:flex-end;"><button class="rc-remove" onclick="document.getElementById('mort2Row').style.display='none';document.getElementById('add2').style.display='';clearField('mort2Bal');clearField('mort2Pmt');recalc();" title="Remove">&times;</button></div>
+      </div>
+      <button class="rc-add" id="add2" onclick="document.getElementById('mort2Row').style.display='flex';this.style.display='none';">+ 2nd mortgage</button>
+    </div>
+
+    <div class="rc-group">
+      <div class="rc-group-title">Debts to Consolidate</div>
+      <div id="debtList"></div>
+      <button class="rc-add" onclick="addDebt()">+ Add debt</button>
+    </div>
+
+    <div class="rc-group">
+      <div class="rc-group-title">Cash Out</div>
+      <div class="rc-row">
+        <div class="rc-field"><label>Amount</label><div class="rc-money"><input type="text" id="cashOut" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+      </div>
+    </div>
+
+    <div class="rc-group">
+      <div class="rc-group-title">New Loan</div>
+      <div class="rc-row">
+        <div class="rc-field">
+          <label>Rate</label>
+          <select id="newRate" onchange="recalc()">
+            <option value="" disabled selected>Select rate</option>
+          </select>
+        </div>
+        <div class="rc-field">
+          <label>Term</label>
+          <select id="newTerm" onchange="recalc()">
+            <option value="" disabled selected>Select term</option>
+            <option value="10">10 years</option>
+            <option value="15">15 years</option>
+            <option value="20">20 years</option>
+            <option value="25">25 years</option>
+            <option value="30">30 years</option>
+            <option value="35">35 years</option>
+            <option value="40">40 years</option>
+            <option value="45">45 years</option>
+          </select>
+        </div>
+      </div>
+      <div class="rc-note">Estimate a rate — I'll get you the real one.</div>
+    </div>
+
+  </div>
+
+  <div class="rc-right">
+    <div class="rc-result-header">
+      <div class="rc-payment-big" id="rNewPmt">—</div>
+      <div class="rc-payment-label">Estimated New Payment</div>
+      <div class="rc-savings-line" id="rSavings"></div>
+    </div>
+
+    <div id="rPmi" class="rc-pmi">PMI would apply. There are strategies to reduce or eliminate it — let's talk.</div>
+
+    <div class="rc-stats">
+      <div class="rc-stat"><div class="rc-stat-val" id="rCurrentTotal">—</div><div class="rc-stat-label">Current Payments</div></div>
+      <div class="rc-stat"><div class="rc-stat-val" id="rNewLoanAmt">—</div><div class="rc-stat-label">New Loan Amount</div></div>
+      <div class="rc-stat"><div class="rc-stat-val" id="rLtv">—</div><div class="rc-stat-label">Loan-to-Value</div></div>
+    </div>
+
+    <div class="rc-chart-wrap">
+      <div class="rc-donut">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <circle cx="45" cy="45" r="36" fill="none" stroke="#eee" stroke-width="10"/>
+          <circle id="donutCurrent" cx="45" cy="45" r="36" fill="none" stroke="#0b1f3a" stroke-width="10" stroke-dasharray="0 226" stroke-linecap="butt"/>
+          <circle id="donutNew" cx="45" cy="45" r="36" fill="none" stroke="#6e7f77" stroke-width="10" stroke-dasharray="0 226" stroke-linecap="butt"/>
+        </svg>
+        <div class="rc-donut-center">
+          <div class="rc-donut-center-val" id="donutLabel">—</div>
+          <div class="rc-donut-center-label">Savings</div>
+        </div>
+      </div>
+      <div class="rc-legend">
+        <div class="rc-legend-item"><div class="rc-legend-dot" style="background:#0b1f3a;"></div> Current</div>
+        <div class="rc-legend-item"><div class="rc-legend-dot" style="background:#6e7f77;"></div> New</div>
+        <div class="rc-legend-item"><div class="rc-legend-dot" style="background:#eee;"></div> Savings</div>
+      </div>
+    </div>
+
+    <table class="rc-table">
+      <thead><tr><th></th><th>Now</th><th>New</th></tr></thead>
+      <tbody id="rTable"></tbody>
+    </table>
+
+    <div class="rc-cta">
+      <a href="tel:2063135883">Call Kristy — (206) 313-5883</a>
+      <div class="rc-cta-sub">Your real numbers could be even better.</div>
+    </div>
+  </div>
+</div>
+<div class="rc-disclaimer">Estimates only. Not a commitment to lend. PMI estimated at 0.55% annually. Actual rates and payments vary. Kristy Flach NMLS #2632259, PRMG. Equal Housing Lender.</div>
+
+<script>
+(function(){
+  var sel=document.getElementById('newRate');
+  for(var r=4;r<=9;r+=0.125){
+    var opt=document.createElement('option');
+    opt.value=r.toFixed(3);
+    opt.textContent=r.toFixed(3)+'%';
+    sel.appendChild(opt);
+  }
+  // Add one default debt row
+  addDebt();
+})();
+
+function getNum(id){
+  var v=document.getElementById(id).value.replace(/[^0-9.]/g,'');
+  return parseFloat(v)||0;
+}
+function clearField(id){document.getElementById(id).value='';}
+
+function formatMoney(el){
+  var pos=el.selectionStart;
+  var raw=el.value.replace(/[^0-9]/g,'');
+  if(!raw){el.value='';return;}
+  var num=parseInt(raw,10);
+  var formatted=num.toLocaleString();
+  el.value=formatted;
+  var diff=formatted.length-raw.length;
+  var newPos=pos+diff;
+  if(newPos<0)newPos=0;
+  try{el.setSelectionRange(newPos,newPos);}catch(e){}
+}
+
+function tabNext(e){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    var inputs=Array.from(document.querySelectorAll('.rc-left input,.rc-left select'));
+    var idx=inputs.indexOf(e.target);
+    if(idx>=0&&idx<inputs.length-1)inputs[idx+1].focus();
+  }
+}
+
+function addDebt(){
+  var list=document.getElementById('debtList');
+  var div=document.createElement('div');
+  div.className='rc-debt';
+  div.innerHTML='<div class="rc-field"><label>Balance</label><div class="rc-money"><input type="text" class="d-bal" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
+    '<div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" class="d-pmt" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
+    '<button class="rc-remove" onclick="this.parentElement.remove();recalc();" title="Remove">&times;</button>';
+  list.appendChild(div);
+}
+
+function pmtCalc(p,r,n){if(p<=0)return 0;if(r<=0)return p/n;var mr=r/100/12;return p*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1);}
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+
+function recalc(){
+  var hv=getNum('homeValue');
+  var m1b=getNum('mort1Bal');
+  var m1p=getNum('mort1Pmt');
+  var m2b=getNum('mort2Bal');
+  var m2p=getNum('mort2Pmt');
+  var co=getNum('cashOut');
+  var nr=parseFloat(document.getElementById('newRate').value)||0;
+  var nt=parseFloat(document.getElementById('newTerm').value)||0;
+
+  var debtBal=0,debtPmt=0;
+  document.querySelectorAll('#debtList .rc-debt').forEach(function(d){
+    debtBal+=parseFloat((d.querySelector('.d-bal').value||'').replace(/[^0-9.]/g,''))||0;
+    debtPmt+=parseFloat((d.querySelector('.d-pmt').value||'').replace(/[^0-9.]/g,''))||0;
+  });
+
+  var curTotal=m1p+m2p+debtPmt;
+  var newBal=m1b+m2b+debtBal+co;
+  var ltv=hv>0?(newBal/hv)*100:0;
+  var needsPmi=ltv>80;
+  var mPmi=needsPmi?(newBal*0.0055)/12:0;
+  var newBase=(nr>0&&nt>0)?pmtCalc(newBal,nr,nt*12):0;
+  var newTotal=newBase+mPmi;
+  var save=curTotal-newTotal;
+
+  if(m1b<=0||nr<=0||nt<=0){
+    document.getElementById('rNewPmt').textContent='—';
+    document.getElementById('rSavings').textContent='';
+    document.getElementById('rCurrentTotal').textContent=curTotal>0?fmt(curTotal):'—';
+    document.getElementById('rNewLoanAmt').textContent=newBal>0?fmt(newBal):'—';
+    document.getElementById('rLtv').textContent=ltv>0?ltv.toFixed(1)+'%':'—';
+    document.getElementById('rTable').innerHTML='';
+    document.getElementById('rPmi').style.display='none';
+    document.getElementById('donutLabel').textContent='—';
+    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 226');
+    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 226');
+    return;
+  }
+
+  document.getElementById('rNewPmt').textContent=fmt(newTotal);
+  document.getElementById('rSavings').textContent=save>=0?'Saving '+fmt(save)+'/mo':'Increase of '+fmt(Math.abs(save))+'/mo';
+  document.getElementById('rSavings').style.color=save>=0?'#6e7f77':'#b45309';
+  document.getElementById('rCurrentTotal').textContent=fmt(curTotal);
+  document.getElementById('rNewLoanAmt').textContent=fmt(newBal);
+  document.getElementById('rLtv').textContent=ltv.toFixed(1)+'%';
+  document.getElementById('rPmi').style.display=needsPmi?'block':'none';
+
+  var rows='';
+  rows+='<tr><td>Mortgage</td><td>'+fmt(m1p+m2p)+'</td><td>'+fmt(newBase)+'</td></tr>';
+  if(debtPmt>0)rows+='<tr><td>Other Debts</td><td>'+fmt(debtPmt)+'</td><td style="font-size:10px;color:#6e7f77;">Consolidated</td></tr>';
+  if(co>0)rows+='<tr><td>Cash Out</td><td>\u2014</td><td>'+fmt(co)+'</td></tr>';
+  if(needsPmi)rows+='<tr><td>PMI</td><td>\u2014</td><td>'+fmt(mPmi)+'</td></tr>';
+  rows+='<tr class="rc-total"><td>Total</td><td>'+fmt(curTotal)+'</td><td>'+fmt(newTotal)+'</td></tr>';
+  document.getElementById('rTable').innerHTML=rows;
+
+  var circ=2*Math.PI*36;
+  if(curTotal>0&&newTotal>0){
+    var newPct=Math.min(newTotal/curTotal,1);
+    document.getElementById('donutCurrent').setAttribute('stroke-dasharray',circ+' '+circ);
+    document.getElementById('donutNew').setAttribute('stroke-dasharray',(newPct*circ)+' '+circ);
+    document.getElementById('donutLabel').textContent=save>0?Math.round((save/curTotal)*100)+'%':'0%';
+  }else{
+    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 226');
+    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 226');
+    document.getElementById('donutLabel').textContent='—';
+  }
+}
+</script>
+</body>
+</html>
