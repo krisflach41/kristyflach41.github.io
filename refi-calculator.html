@@ -7,27 +7,27 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:Arial,sans-serif;background:#fff;color:#333;}
-.rc{display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:860px;margin:0 auto;font-size:12px;}
+.rc{display:grid;grid-template-columns:1fr 1fr;gap:0;max-width:860px;margin:0 auto;font-size:14px;}
 .rc-left{padding:18px 20px;border-right:1px solid #eee;}
 .rc-right{padding:18px 20px;background:#fafbfc;}
 
 .rc-group{margin-bottom:10px;}
-.rc-group-title{font-size:10px;font-weight:700;color:#0b1f3a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
+.rc-group-title{font-size:12px;font-weight:700;color:#0b1f3a;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;}
 .rc-row{display:flex;gap:8px;margin-bottom:5px;}
 .rc-field{flex:1;display:flex;flex-direction:column;}
-.rc-field label{font-size:9px;font-weight:600;color:#6e7f77;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:2px;}
+.rc-field label{font-size:10px;font-weight:600;color:#6e7f77;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:2px;}
 
 .rc-money{position:relative;}
-.rc-money::before{content:'$';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:#999;pointer-events:none;}
-.rc-money input{padding-left:22px;}
+.rc-money::before{content:'$';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:#999;pointer-events:none;}
+.rc-money input{padding-left:30px;}
 
-.rc-field input{padding:6px 8px;border:1px solid #dfe3ea;border-radius:2px;font-size:12px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;}
+.rc-field input{padding:8px 10px;border:1px solid #dfe3ea;border-radius:2px;font-size:14px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;}
 .rc-field input:focus{outline:none;border-color:#6e7f77;}
 .rc-field input::placeholder{color:#ccc;font-weight:400;}
-.rc-field select{padding:6px 8px;border:1px solid #dfe3ea;border-radius:2px;font-size:12px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+.rc-field select{padding:8px 10px;border:1px solid #dfe3ea;border-radius:2px;font-size:14px;font-weight:600;color:#0b1f3a;font-family:inherit;width:100%;background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
 .rc-field select:focus{outline:none;border-color:#6e7f77;}
 
-.rc-add{background:none;border:none;color:#6e7f77;font-size:10px;font-weight:600;cursor:pointer;padding:2px 0;font-family:inherit;}
+.rc-add{background:none;border:none;color:#6e7f77;font-size:12px;font-weight:600;cursor:pointer;padding:2px 0;font-family:inherit;}
 .rc-add:hover{text-decoration:underline;}
 .rc-remove{background:none;border:none;color:#bbb;font-size:11px;cursor:pointer;padding:0 2px;line-height:1;}
 .rc-remove:hover{color:#0b1f3a;}
@@ -35,25 +35,25 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
 .rc-debt{display:flex;gap:8px;align-items:end;margin-bottom:4px;}
 .rc-debt .rc-field{flex:1;}
 
-.rc-note{font-size:9px;color:#aaa;margin-top:1px;}
+.rc-note{font-size:11px;color:#aaa;margin-top:1px;}
 
 .rc-result-header{text-align:center;margin-bottom:12px;}
-.rc-payment-big{font-size:28px;font-weight:700;color:#0b1f3a;line-height:1.2;}
-.rc-payment-label{font-size:9px;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
-.rc-savings-line{font-size:11px;font-weight:600;color:#6e7f77;margin-top:4px;}
+.rc-payment-big{font-size:32px;font-weight:700;color:#0b1f3a;line-height:1.2;}
+.rc-payment-label{font-size:11px;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;margin-top:2px;}
+.rc-savings-line{font-size:13px;font-weight:600;color:#6e7f77;margin-top:4px;}
 
 .rc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
 .rc-stat{text-align:center;padding:8px;background:#fff;border:1px solid #eee;border-radius:3px;}
-.rc-stat-val{font-size:14px;font-weight:700;color:#0b1f3a;}
-.rc-stat-label{font-size:8px;color:#999;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
+.rc-stat-val{font-size:16px;font-weight:700;color:#0b1f3a;}
+.rc-stat-label{font-size:10px;color:#999;text-transform:uppercase;letter-spacing:0.3px;margin-top:2px;}
 
-.rc-table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:12px;}
-.rc-table th{text-align:left;font-size:8px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;padding:4px 6px;border-bottom:1px solid #eee;}
+.rc-table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px;}
+.rc-table th{text-align:left;font-size:10px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;padding:4px 6px;border-bottom:1px solid #eee;}
 .rc-table th:not(:first-child){text-align:right;}
 .rc-table td{padding:4px 6px;border-bottom:1px solid #f5f5f5;}
 .rc-table td:not(:first-child){text-align:right;font-weight:600;color:#0b1f3a;}
 .rc-table td:first-child{color:#666;}
-.rc-table tr.rc-total td{border-top:1px solid #0b1f3a;font-weight:700;font-size:12px;}
+.rc-table tr.rc-total td{border-top:1px solid #0b1f3a;font-weight:700;font-size:14px;}
 
 .rc-chart-wrap{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;}
 .rc-donut{position:relative;width:90px;height:90px;}
@@ -61,17 +61,17 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
 .rc-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
 .rc-donut-center-val{font-size:13px;font-weight:700;color:#0b1f3a;}
 .rc-donut-center-label{font-size:7px;color:#999;text-transform:uppercase;letter-spacing:0.3px;}
-.rc-legend{font-size:9px;color:#555;}
+.rc-legend{font-size:11px;color:#555;}
 .rc-legend-item{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
 .rc-legend-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0;}
 
-.rc-pmi{font-size:10px;color:#b45309;background:#fefce8;border:1px solid #fde68a;border-radius:2px;padding:6px 8px;margin-bottom:8px;display:none;line-height:1.4;}
+.rc-pmi{font-size:12px;color:#b45309;background:#fefce8;border:1px solid #fde68a;border-radius:2px;padding:6px 8px;margin-bottom:8px;display:none;line-height:1.4;}
 
 .rc-cta{text-align:center;padding:10px;background:#0b1f3a;border-radius:3px;margin-top:8px;}
-.rc-cta a{color:#fff;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:0.3px;}
-.rc-cta-sub{font-size:8px;color:rgba(255,255,255,0.5);margin-top:3px;}
+.rc-cta a{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.3px;}
+.rc-cta-sub{font-size:10px;color:rgba(255,255,255,0.5);margin-top:3px;}
 
-.rc-disclaimer{font-size:7px;color:#ccc;text-align:center;padding:6px 20px;line-height:1.5;}
+.rc-disclaimer{font-size:9px;color:#ccc;text-align:center;padding:6px 20px;line-height:1.5;}
 
 @media(max-width:600px){
   .rc{grid-template-columns:1fr;max-width:420px;}
@@ -87,13 +87,13 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
     <div class="rc-group">
       <div class="rc-group-title">Current Mortgage</div>
       <div class="rc-row">
-        <div class="rc-field"><label>Home Value</label><div class="rc-money"><input type="text" id="homeValue" placeholder="350,000" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
-        <div class="rc-field"><label>1st Balance</label><div class="rc-money"><input type="text" id="mort1Bal" placeholder="250,000" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
-        <div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" id="mort1Pmt" placeholder="1,580" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>Home Value</label><div class="rc-money"><input type="text" id="homeValue" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>1st Balance</label><div class="rc-money"><input type="text" id="mort1Bal" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" id="mort1Pmt" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
       </div>
       <div class="rc-row" id="mort2Row" style="display:none;">
-        <div class="rc-field"><label>2nd Balance</label><div class="rc-money"><input type="text" id="mort2Bal" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
-        <div class="rc-field"><label>2nd Payment</label><div class="rc-money"><input type="text" id="mort2Pmt" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>2nd Balance</label><div class="rc-money"><input type="text" id="mort2Bal" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>2nd Payment</label><div class="rc-money"><input type="text" id="mort2Pmt" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
         <div style="display:flex;align-items:flex-end;"><button class="rc-remove" onclick="document.getElementById('mort2Row').style.display='none';document.getElementById('add2').style.display='';clearField('mort2Bal');clearField('mort2Pmt');recalc();" title="Remove">&times;</button></div>
       </div>
       <button class="rc-add" id="add2" onclick="document.getElementById('mort2Row').style.display='flex';this.style.display='none';">+ 2nd mortgage</button>
@@ -108,7 +108,7 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
     <div class="rc-group">
       <div class="rc-group-title">Cash Out</div>
       <div class="rc-row">
-        <div class="rc-field"><label>Amount</label><div class="rc-money"><input type="text" id="cashOut" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
+        <div class="rc-field"><label>Amount</label><div class="rc-money"><input type="text" id="cashOut" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>
       </div>
     </div>
 
@@ -233,8 +233,8 @@ function addDebt(){
   var list=document.getElementById('debtList');
   var div=document.createElement('div');
   div.className='rc-debt';
-  div.innerHTML='<div class="rc-field"><label>Balance</label><div class="rc-money"><input type="text" class="d-bal" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
-    '<div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" class="d-pmt" placeholder="0" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
+  div.innerHTML='<div class="rc-field"><label>Balance</label><div class="rc-money"><input type="text" class="d-bal" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
+    '<div class="rc-field"><label>Payment</label><div class="rc-money"><input type="text" class="d-pmt" oninput="formatMoney(this);recalc()" onkeydown="tabNext(event)"></div></div>'+
     '<button class="rc-remove" onclick="this.parentElement.remove();recalc();" title="Remove">&times;</button>';
   list.appendChild(div);
 }
