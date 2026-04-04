@@ -56,11 +56,11 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
 .rc-table tr.rc-total td{border-top:1px solid #0b1f3a;font-weight:700;font-size:14px;}
 
 .rc-chart-wrap{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:10px;}
-.rc-donut{position:relative;width:90px;height:90px;}
+.rc-donut{position:relative;width:120px;height:120px;}
 .rc-donut svg{transform:rotate(-90deg);}
 .rc-donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
-.rc-donut-center-val{font-size:13px;font-weight:700;color:#0b1f3a;}
-.rc-donut-center-label{font-size:7px;color:#999;text-transform:uppercase;letter-spacing:0.3px;}
+.rc-donut-center-val{font-size:18px;font-weight:700;color:#0b1f3a;}
+.rc-donut-center-label{font-size:9px;color:#999;text-transform:uppercase;letter-spacing:0.3px;}
 .rc-legend{font-size:11px;color:#555;}
 .rc-legend-item{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
 .rc-legend-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0;}
@@ -70,8 +70,10 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
 .rc-cta{text-align:center;padding:10px;background:#0b1f3a;border-radius:3px;margin-top:8px;}
 .rc-cta a{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:0.3px;}
 .rc-cta-sub{font-size:10px;color:rgba(255,255,255,0.5);margin-top:3px;}
-
-.rc-disclaimer{font-size:9px;color:#ccc;text-align:center;padding:6px 20px;line-height:1.5;}
+.rc-cta-bottom{text-align:center;padding:14px;background:#0b1f3a;border-radius:0 0 3px 3px;max-width:860px;margin:0 auto;}
+.rc-cta-bottom a{color:#fff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:0.3px;}
+.rc-message{font-size:12px;color:#333;line-height:1.6;padding:10px 4px;text-align:center;}
+.rc-disclaimer{font-size:9px;color:#ccc;text-align:center;padding:6px 4px;line-height:1.5;margin-top:8px;}
 
 @media(max-width:600px){
   .rc{grid-template-columns:1fr;max-width:420px;}
@@ -158,10 +160,10 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
 
     <div class="rc-chart-wrap">
       <div class="rc-donut">
-        <svg width="90" height="90" viewBox="0 0 90 90">
-          <circle cx="45" cy="45" r="36" fill="none" stroke="#eee" stroke-width="10"/>
-          <circle id="donutCurrent" cx="45" cy="45" r="36" fill="none" stroke="#0b1f3a" stroke-width="10" stroke-dasharray="0 226" stroke-linecap="butt"/>
-          <circle id="donutNew" cx="45" cy="45" r="36" fill="none" stroke="#6e7f77" stroke-width="10" stroke-dasharray="0 226" stroke-linecap="butt"/>
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="48" fill="none" stroke="#eee" stroke-width="12"/>
+          <circle id="donutCurrent" cx="60" cy="60" r="48" fill="none" stroke="#0b1f3a" stroke-width="12" stroke-dasharray="0 302" stroke-linecap="butt"/>
+          <circle id="donutNew" cx="60" cy="60" r="48" fill="none" stroke="#6e7f77" stroke-width="12" stroke-dasharray="0 302" stroke-linecap="butt"/>
         </svg>
         <div class="rc-donut-center">
           <div class="rc-donut-center-val" id="donutLabel">—</div>
@@ -180,13 +182,14 @@ body{font-family:Arial,sans-serif;background:#fff;color:#333;}
       <tbody id="rTable"></tbody>
     </table>
 
-    <div class="rc-cta">
-      <a href="tel:2063135883">Call Kristy — (206) 313-5883</a>
-      <div class="rc-cta-sub">Your real numbers could be even better.</div>
-    </div>
+    <div class="rc-message">What you're seeing is just a rough sketch. I'm a Certified Mortgage Advisor — I build blended rate strategies that pay off your debt, lower your payments, and pay your house off years early. Whether these numbers look great or terrible, they're not the whole story. This is where financial independence starts. Call me — I'll show you what's really possible.</div>
+
+    <div class="rc-disclaimer">Estimates only. Not a commitment to lend. PMI estimated at 0.55% annually. Actual rates and payments vary. Kristy Flach NMLS #2632259, PRMG. Equal Housing Lender.</div>
   </div>
 </div>
-<div class="rc-disclaimer">Estimates only. Not a commitment to lend. PMI estimated at 0.55% annually. Actual rates and payments vary. Kristy Flach NMLS #2632259, PRMG. Equal Housing Lender.</div>
+<div class="rc-cta-bottom">
+  <a href="tel:2063135883">Call Kristy — (206) 313-5883</a>
+</div>
 
 <script>
 (function(){
@@ -276,8 +279,8 @@ function recalc(){
     document.getElementById('rTable').innerHTML='';
     document.getElementById('rPmi').style.display=needsPmi?'block':'none';
     document.getElementById('donutLabel').textContent='—';
-    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 226');
-    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 226');
+    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 302');
+    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 302');
     return;
   }
 
@@ -297,15 +300,15 @@ function recalc(){
   rows+='<tr class="rc-total"><td>Total</td><td>'+fmt(curTotal)+'</td><td>'+fmt(newTotal)+'</td></tr>';
   document.getElementById('rTable').innerHTML=rows;
 
-  var circ=2*Math.PI*36;
+  var circ=2*Math.PI*48;
   if(curTotal>0&&newTotal>0){
     var newPct=Math.min(newTotal/curTotal,1);
     document.getElementById('donutCurrent').setAttribute('stroke-dasharray',circ+' '+circ);
     document.getElementById('donutNew').setAttribute('stroke-dasharray',(newPct*circ)+' '+circ);
     document.getElementById('donutLabel').textContent=save>0?Math.round((save/curTotal)*100)+'%':'0%';
   }else{
-    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 226');
-    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 226');
+    document.getElementById('donutCurrent').setAttribute('stroke-dasharray','0 302');
+    document.getElementById('donutNew').setAttribute('stroke-dasharray','0 302');
     document.getElementById('donutLabel').textContent='—';
   }
 }
