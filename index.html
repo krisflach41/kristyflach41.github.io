@@ -1938,7 +1938,7 @@
         }
       }
     });
-  }, { threshold: 0.3 });
+  }, { threshold: 0.05 });
 
   observer.observe(purchaseEl);
   observer.observe(refiEl);
@@ -1954,19 +1954,5 @@
   };
 })();
 </script>
-  var dropdown = document.querySelector('.nav-dropdown');
-  var menu = document.querySelector('.nav-dropdown-menu');
-  if (!dropdown || !menu) return;
-  var hideTimer = null;
-
-  function showMenu() {
-    clearTimeout(hideTimer);
-    menu.classList.add('open');
-  }
-  function hideMenu() {
-    hideTimer = setTimeout(function() {
-      menu.classList.remove('open');
-    }, 300);
-  }
-
-  d
+</body>
+</html>
