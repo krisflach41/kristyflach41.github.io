@@ -1925,9 +1925,60 @@
     })();
   </script>
 
+<!-- Calculator Exit Popups -->
+<div id="calcPopupOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9998;" onclick="closeCalcPopup()"></div>
+<div id="calcPopup" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:16px;padding:32px;z-index:9999;width:480px;max-width:90vw;box-shadow:0 20px 60px rgba(0,0,0,0.25);text-align:center;font-family:Arial,sans-serif;">
+  <button onclick="closeCalcPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:22px;color:#999;cursor:pointer;">&times;</button>
+  <div id="calcPopupBody" style="font-size:15px;line-height:1.6;color:#333;margin-bottom:20px;"></div>
+  <a id="calcPopupCTA" href="tel:2063135883" style="display:inline-block;padding:12px 28px;background:#002F6C;color:#fff;text-decoration:none;font-weight:700;font-size:14px;border-radius:8px;">Call Kristy — (206) 313-5883</a>
+</div>
 
 <script>
 (function() {
+  var purchaseMsg = "Thanks for running the numbers — that's a great first step. But a calculator can only get you so far. Your actual rate, taxes, and insurance can change this number quite a bit. Want to see what your real payment looks like? I'm happy to run it with you — no pressure, just real numbers.";
+  var refiMsg = "Thanks for taking a look — refinancing is about more than just the rate. What most people don't realize is that with a blended rate strategy, you could pay off debt, take cash out, lower your overall monthly payments, and still pay your house off sooner — saving thousands. This is where real financial independence starts. Want to see how the numbers work for you? Call me for a free Blended Rate Debt Consolidation consultation.";
+
+  var purchaseShown = false, refiShown = false;
+  var purchaseVisible = false, refiVisible = false;
+  var purchaseTime = 0, refiTime = 0;
+  var minTime = 3000;
+
+  var purchaseEl = document.getElementById('purchase-calculator');
+  var refiEl = document.getElementById('refi-calculator');
+
+  if (!purchaseEl || !refiEl) return;
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.target.id === 'purchase-calculator') {
+        if (entry.isIntersecting) { purchaseVisible = true; purchaseTime = Date.now(); }
+        else if (purchaseVisible && !purchaseShown && (Date.now() - purchaseTime) > minTime) {
+          purchaseShown = true; showCalcPopup(purchaseMsg);
+        }
+      }
+      if (entry.target.id === 'refi-calculator') {
+        if (entry.isIntersecting) { refiVisible = true; refiTime = Date.now(); }
+        else if (refiVisible && !refiShown && (Date.now() - refiTime) > minTime) {
+          refiShown = true; showCalcPopup(refiMsg);
+        }
+      }
+    });
+  }, { threshold: 0.3 });
+
+  observer.observe(purchaseEl);
+  observer.observe(refiEl);
+
+  window.showCalcPopup = function(msg) {
+    document.getElementById('calcPopupBody').textContent = msg;
+    document.getElementById('calcPopupOverlay').style.display = 'block';
+    document.getElementById('calcPopup').style.display = 'block';
+  };
+  window.closeCalcPopup = function() {
+    document.getElementById('calcPopupOverlay').style.display = 'none';
+    document.getElementById('calcPopup').style.display = 'none';
+  };
+})();
+</script>
   var dropdown = document.querySelector('.nav-dropdown');
   var menu = document.querySelector('.nav-dropdown-menu');
   if (!dropdown || !menu) return;
