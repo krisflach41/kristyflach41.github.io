@@ -186,4 +186,15 @@ function escapeHtml(str) {
   return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// Knowledge base loads are triggered by switchView in mc-app.js
+// Knowledge base loads are triggered by the modal open button in User Management
+
+// ===== MODAL OPEN/CLOSE =====
+function kbOpenModal() {
+  document.getElementById('kbModal').style.display = 'flex';
+  kbLoadEntries();
+}
+
+function kbCloseModal() {
+  document.getElementById('kbModal').style.display = 'none';
+  kbCancelForm();
+}
