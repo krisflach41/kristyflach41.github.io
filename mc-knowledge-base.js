@@ -190,11 +190,11 @@ function escapeHtml(str) {
 
 // ===== MODAL OPEN/CLOSE =====
 function kbOpenModal() {
-  document.getElementById('kbModal').style.display = 'flex';
+  document.getElementById('kbModal').classList.add('show');
   kbLoadEntries();
 }
 
 function kbCloseModal() {
-  document.getElementById('kbModal').style.display = 'none';
+  document.getElementById('kbModal').classList.remove('show');
   kbCancelForm();
 }
