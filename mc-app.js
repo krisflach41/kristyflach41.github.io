@@ -97,6 +97,7 @@ function switchView(viewId, navEl) {
   if (viewId === 'webinars') wpInit();
   if (viewId === 'webinarLauncher') wbLoadWebinars();
   if (viewId === 'blendedRate') brInit();
+  if (viewId === 'knowledgeBase') kbLoadEntries();
 }
 
 function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }

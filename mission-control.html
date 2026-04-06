@@ -94,6 +94,9 @@
     <div class="nav-item" onclick="switchView('users', this)">
       <span class="nav-icon"><i class="fas fa-users"></i></span> User Management
     </div>
+    <div class="nav-item" onclick="switchView('knowledgeBase', this)">
+      <span class="nav-icon"><i class="fas fa-brain"></i></span> Knowledge Base
+    </div>
     <div class="nav-item" onclick="switchView('settings', this)">
       <span class="nav-icon"><i class="fas fa-cog"></i></span> Settings
     </div>
@@ -2697,6 +2700,91 @@ setTimeout(mbsLoadToday, 1000);
   </div>
 </div>
 
+<!-- ===== KNOWLEDGE BASE EDITOR ===== -->
+<div class="view-panel" id="view-knowledgeBase">
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+      <div><div class="topbar-title">Knowledge Base</div><div class="topbar-subtitle">CMA expertise that powers all AI content</div></div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn primary" onclick="kbShowAddForm()"><i class="fas fa-plus"></i> Add Entry</button>
+    </div>
+  </div>
+  <div class="content-area" style="padding:24px;">
+
+    <!-- EXPLANATION -->
+    <div style="max-width:800px;margin-bottom:24px;padding:16px 20px;background:#f0f7ff;border:1px solid #d0e3ff;border-radius:10px;">
+      <div style="font-size:14px;color:#1a3a5c;line-height:1.6;">
+        <strong>How this works:</strong> The CMA course material is already built in — that never changes. This panel is for adding your own notes, explanations, and insights. When the AI writes content (blogs, video scripts, social posts, emails), it pulls from both the built-in CMA material AND your custom entries below. The more you add, the smarter the AI gets about your specific expertise.
+      </div>
+    </div>
+
+    <!-- ADD/EDIT FORM (hidden by default) -->
+    <div id="kbFormContainer" style="display:none;max-width:800px;margin-bottom:24px;padding:24px;background:#fafbfc;border:1px solid var(--border);border-radius:12px;">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:16px;" id="kbFormTitle">Add Knowledge Base Entry</div>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Title</label>
+        <input type="text" id="kbEntryTitle" placeholder="e.g., Why I recommend bi-weekly payments" style="width:100%;padding:12px 14px;border-radius:8px;background:#fff;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;">
+      </div>
+
+      <div style="margin-bottom:14px;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Keywords <span style="font-weight:400;text-transform:none;letter-spacing:0;">(comma-separated — helps the AI find this when writing about these topics)</span></label>
+        <input type="text" id="kbEntryKeywords" placeholder="e.g., bi-weekly, biweekly, extra payments, payoff faster" style="width:100%;padding:12px 14px;border-radius:8px;background:#fff;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;">
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label style="font-size:12px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Content <span style="font-weight:400;text-transform:none;letter-spacing:0;">(your explanation, insight, or talking points)</span></label>
+        <textarea id="kbEntryContent" rows="10" placeholder="Write your explanation here. This is what the AI will draw from when writing about this topic. Write it the way you'd explain it to someone — the AI will adapt it to whatever format it's creating (blog, video script, social post, etc.)." style="width:100%;padding:12px 14px;border-radius:8px;background:#fff;border:1px solid var(--border);color:var(--text-primary);font-size:15px;font-family:inherit;box-sizing:border-box;line-height:1.6;resize:vertical;"></textarea>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button class="topbar-btn primary" onclick="kbSaveEntry()" id="kbSaveBtn"><i class="fas fa-save"></i> Save Entry</button>
+        <button class="topbar-btn" onclick="kbCancelForm()">Cancel</button>
+      </div>
+      <input type="hidden" id="kbEditId" value="">
+    </div>
+
+    <!-- ENTRIES LIST -->
+    <div id="kbEntriesList" style="max-width:800px;">
+      <div style="text-align:center;padding:40px;color:var(--text-muted);">
+        <i class="fas fa-spinner fa-spin" style="font-size:24px;margin-bottom:12px;display:block;"></i>
+        Loading entries...
+      </div>
+    </div>
+
+    <!-- BUILT-IN SECTIONS REFERENCE -->
+    <div style="max-width:800px;margin-top:32px;">
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:12px;color:var(--text-secondary);">Built-In CMA Course Sections</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">These are always available to the AI. You don't need to add these — they're from the CMA course material.</div>
+      <div id="kbBuiltInList" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>How the Mortgage Market Works</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>The Rule of 72</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Power of Amortization</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Refinance — The Right Way</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Payment Does Not Equal Cost</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Debt Consolidation</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>APR — Why It's Flawed</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Bonds and Bond Concepts</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Mortgage Backed Securities</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>What Drives Rates</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Stocks vs Bonds</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Economic Reports (CPI, PCE, Jobs, Housing)</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>The Federal Reserve</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Money Printing and Inflation</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Recession Indicators</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Choosing the Best Loan</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Technical Analysis (Western + Eastern)</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>Rate Lock Decisions</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>CMA Brochure — Marketing & Positioning</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>MBS Highway Advisory Tools (all 13)</div>
+        <div style="padding:10px 14px;background:#f8f9fb;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text-secondary);"><i class="fas fa-check" style="color:#22c55e;margin-right:8px;"></i>MBS Pricing Framework (full, uncompressed)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /main-content -->
 </div><!-- /app-layout -->
 
@@ -3079,6 +3167,7 @@ setTimeout(mbsLoadToday, 1000);
 <script src="mc-webinar.js"></script>
 
 <script src="mc-blended-rate.js"></script>
+<script src="mc-knowledge-base.js"></script>
 
 </body>
 </html>
