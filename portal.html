@@ -1714,8 +1714,8 @@ fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override')
       for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}}
 
       d.umbs=d.umbs||{};
-      if(latestPrice)d.umbs.price=latestPrice;
-      if(latestBps)d.umbs.change=latestBps/100;
+      if(latestPrice!==undefined&&latestPrice!==null)d.umbs.price=latestPrice;
+      if(latestBps!==undefined&&latestBps!==null)d.umbs.change=latestBps/100;
       if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
       if(snaps.open&&snaps.open.price)d.umbs.open=snaps.open.price;
 
