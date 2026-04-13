@@ -23,9 +23,7 @@ function loadAnalytics() {
   }).catch(function() { renderAnalyticsDashboard(); });
 
   // Also need CRM data for birthdays
-  fetch(API_BASE + '/crm-api', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ action: 'list' })
-  }).then(function(r) { return r.json(); }).then(function(data) {
+  fetch(API_BASE + '/crm-api?action=list').then(function(r) { return r.json(); }).then(function(data) {
     if (data.success) anaCrmAll = data.contacts || [];
     renderUpcomingDates();
     renderSourcePerformance();
