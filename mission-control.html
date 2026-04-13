@@ -1940,17 +1940,8 @@ setTimeout(mbsLoadToday, 1000);
 
   document.addEventListener('paste', function(e) {
     var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
-    // Check the actually-focused element, not e.target (which can be a wrapper)
-    var ae=document.activeElement;
-    if(ae){
-      var tag=(ae.tagName||'').toLowerCase();
-      if(tag==='textarea'||tag==='input'||ae.isContentEditable) return;
-    }
+    var tag=e.target.tagName.toLowerCase(); if(tag==='textarea'||tag==='input') return;
     var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
-    // Only intercept if clipboard actually contains an image — never touch text pastes
-    var hasImage=false;
-    for(var j=0;j<items.length;j++){ if(items[j].kind==='file'&&items[j].type.startsWith('image/')){ hasImage=true; break; } }
-    if(!hasImage) return;
     for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { e.preventDefault(); handleCalImg(items[i].getAsFile()); break; } }
   });
 
