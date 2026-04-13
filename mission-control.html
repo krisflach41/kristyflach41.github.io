@@ -1940,8 +1940,12 @@ setTimeout(mbsLoadToday, 1000);
 
   document.addEventListener('paste', function(e) {
     var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
-    var tag=e.target.tagName.toLowerCase(); if(tag==='textarea'||tag==='input') return;
+    var ae=document.activeElement;
+    if(ae){var t=(ae.tagName||'').toLowerCase();if(t==='textarea'||t==='input'||ae.isContentEditable) return;}
     var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
+    var hasImage=false;
+    for(var j=0;j<items.length;j++){if(items[j].kind==='file'&&items[j].type.startsWith('image/')){hasImage=true;break;}}
+    if(!hasImage) return;
     for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { e.preventDefault(); handleCalImg(items[i].getAsFile()); break; } }
   });
 
