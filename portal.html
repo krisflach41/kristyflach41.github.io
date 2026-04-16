@@ -485,6 +485,13 @@ h1 {
 .mkts-card-rows { margin-top:10px; font-size:11px; color:#5a5145; }
 .mkts-card-rows > div { display:flex; justify-content:space-between; padding:2px 0; }
 .mkts-card-rows span:last-child { font-weight:600; color:#0b1f3a; }
+.mkts-card-date { font-size:11px; font-weight:600; color:#8a7e6b; letter-spacing:0.3px; text-transform:none; }
+.mkts-card-tiles { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+.mkts-tile { background:rgba(255,255,255,0.55); border-radius:10px; padding:10px 12px; text-align:left; }
+.mkts-tile-label { font-size:10px; font-weight:600; color:#8a7e6b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:3px; }
+.mkts-tile-value { font-size:17px; font-weight:700; color:#0b1f3a; }
+.mkts-bars-legend { display:flex; justify-content:center; gap:24px; margin-top:14px; padding-top:12px; border-top:1px solid rgba(110,127,119,0.12); font-size:11px; color:#5a5145; flex-wrap:wrap; }
+.mkts-bars-legend span.sw { display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:middle; }
 .mkts-coupon-select { font-size:10px; padding:2px 6px; border:1px solid rgba(110,127,119,0.3); border-radius:4px; background:rgba(255,255,255,0.7); color:#0b1f3a; cursor:pointer; font-weight:600; }
 .mkts-dma-row { display:flex; align-items:center; gap:18px; padding:10px 0; border-top:1px solid rgba(110,127,119,0.15); margin-bottom:6px; flex-wrap:wrap; }
 .mkts-dma-row label { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#0b1f3a; cursor:pointer; }
@@ -812,21 +819,21 @@ h1 {
       <div class="mkts-card active" data-mkts-card="UMBS_5.5" onclick="mktsChangeSymbol('UMBS_'+mktsActiveCoupon)">
         <div class="mkts-card-label">
           <span id="mktsUmbsLabel">Mortgage Bond Pricing</span>
-          <select class="mkts-coupon-select" id="mktsCouponSelect" onchange="mktsChangeCoupon(this.value)" title="Change coupon">
-            <option value="5">5.0%</option>
-            <option value="5.5" selected>5.5%</option>
-            <option value="6">6.0%</option>
-          </select>
+          <span class="mkts-card-date" id="mktsUmbsDate">—</span>
         </div>
         <div class="mkts-card-price-row">
           <div class="mkts-card-price" id="mktsUmbsPrice">—</div>
           <div class="mkts-card-change" id="mktsUmbsBps">—</div>
         </div>
-        <div class="mkts-card-rows">
-          <div><span>Open (9:00 AM ET)</span><span id="mktsUmbsOpen">—</span></div>
-          <div><span>Mid-Day (12:00 PM ET)</span><span id="mktsUmbsMidDay">—</span></div>
-          <div><span>Afternoon (2:00 PM ET)</span><span id="mktsUmbsAfternoon">—</span></div>
-          <div><span>Close (5:00 PM ET)</span><span id="mktsUmbsCloseToday">—</span></div>
+        <div class="mkts-card-tiles">
+          <div class="mkts-tile">
+            <div class="mkts-tile-label">Previous Close</div>
+            <div class="mkts-tile-value" id="mktsUmbsPrevClose">—</div>
+          </div>
+          <div class="mkts-tile">
+            <div class="mkts-tile-label">Today's Open</div>
+            <div class="mkts-tile-value" id="mktsUmbsOpen">—</div>
+          </div>
         </div>
       </div>
       <div class="mkts-card" data-mkts-card="10Y" onclick="mktsChangeSymbol('10Y')">
@@ -857,7 +864,7 @@ h1 {
       </div>
     </div>
     <div class="mkts-dma-row">
-      <label><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span> <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5%</span></label>
+      <label id="mktsDMALabelWrap"><span style="display:inline-block;width:10px;height:10px;background:#16a34a;border-radius:2px;"></span> <span id="mktsDMALabel" style="color:#16a34a;">UMBS 30YR 5.5% &mdash; daily affordability trend</span></label>
     </div>
     <div class="mkts-chart-wrap">
       <canvas id="mktsMainChart"></canvas>
@@ -870,7 +877,11 @@ h1 {
         <div id="mktsCrosshairPrice" style="position:absolute;right:0;top:-9px;background:#6e7f77;color:#fff;font-size:10px;font-weight:600;padding:2px 6px;border-radius:3px;white-space:nowrap;font-family:system-ui,sans-serif;"></div>
       </div>
     </div>
-    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · Bond &amp; equity data delayed · Snapshots at 9 AM, 12 PM, 2 PM, 5 PM ET</div>
+    <div class="mkts-bars-legend" id="mktsBarsLegend">
+      <span><span class="sw" style="background:#16a34a;opacity:0.85;"></span>Bond pricing improved vs. prior day</span>
+      <span><span class="sw" style="background:#dc2626;opacity:0.85;"></span>Bond pricing declined vs. prior day</span>
+    </div>
+    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · UMBS 5.5% via Yahoo Finance · Bond &amp; equity data delayed · Card updated at market open and close
 
     <!-- Tutorial Modal -->
     <div id="mktsInfoModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(11,31,58,0.6);align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)mktsCloseTutorial()">
@@ -1688,62 +1699,67 @@ var mktsDMA={200:true,100:true,50:true,25:true},mktsDMAColors={200:'#2563eb',100
 var mktsManualOverride=null;
 var mktsShowFib=true,mktsShowSR=true;
 
-(function(){try{loadMarketsData();mktsLoadChart();setInterval(loadMarketsData,120000);setInterval(mktsLoadChart,120000);}catch(e){console.error('Markets init error:',e);}})();
+(function(){try{loadMarketsData();mktsLoadChart();setInterval(loadMarketsData,300000);setInterval(mktsLoadChart,300000);}catch(e){console.error('Markets init error:',e);}})();
 
 function mktsRangeToApi(r){return{'5d':'5d','1mo':'10d','3wk':'1mo','1mo2':'1mo','3mo':'3mo','6mo':'6mo','1y':'1y'}[r]||'1mo';}
 
-function loadMarketsData(){var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';
-// Check for manual MBS override first
-fetch('https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_override').then(function(r){return r.json()}).then(function(ov){
-  var overrideData=null;
-  if(ov.success&&ov.override){
-    var today=new Date().toISOString().split('T')[0];
-    if(ov.override.date===today&&ov.override.snapshots&&Object.keys(ov.override.snapshots).length>0)overrideData=ov.override;
-  }
-  mktsManualOverride=overrideData;
-  // Now fetch markets as usual
+function loadMarketsData(){
+  var ts=document.getElementById('mktsTimestamp');if(ts)ts.textContent='Refreshing...';
   fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){
     if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}
-    // Apply override to UMBS if available
-    if(overrideData&&mktsActiveCoupon==='5.5'){
-      var snaps=overrideData.snapshots||{};
-      // Find the headline price: Current overrides, then walk 5PM->2PM->12PM->9AM
-      var latestPrice=0,latestBps=0;
-      if(overrideData.latest_price){latestPrice=overrideData.latest_price;latestBps=overrideData.latest_bps||0;}
-      else{var order=['close','afternoon','midday','open'];
-      for(var si=0;si<order.length;si++){if(snaps[order[si]]&&snaps[order[si]].price){latestPrice=snaps[order[si]].price;latestBps=snaps[order[si]].bps||0;break;}}}
-
-      d.umbs=d.umbs||{};
-      if(latestPrice!==undefined&&latestPrice!==null)d.umbs.price=latestPrice;
-      if(latestBps!==undefined&&latestBps!==null)d.umbs.change=latestBps/100;
-      if(overrideData.previous_close)d.umbs.previousClose=overrideData.previous_close;
-      if(snaps.open&&snaps.open.price)d.umbs.open=snaps.open.price;
-
-      // Completely replace the UMBS snapshots with manual data
-      var uk='UMBS_'+mktsActiveCoupon;
-      d.snapshots=d.snapshots||{};
-      d.snapshots[uk]={};
-      if(snaps.open&&snaps.open.price)d.snapshots[uk]['Open']={price:snaps.open.price};
-      if(snaps.midday&&snaps.midday.price)d.snapshots[uk]['Mid-Day']={price:snaps.midday.price};
-      if(snaps.afternoon&&snaps.afternoon.price)d.snapshots[uk]['Afternoon']={price:snaps.afternoon.price};
-      if(snaps.close&&snaps.close.price)d.snapshots[uk]['CloseToday']={price:snaps.close.price};
-    }
-    mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET'+(overrideData?' (manual)':'');mktsRenderCards(d);mktsLoadChart();
+    mktsData=d;
+    var t=new Date(d.fetchedAt);
+    if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';
+    mktsRenderCards(d);
+    mktsLoadChart();
   }).catch(function(e){if(ts)ts.textContent='Error loading data';});
-}).catch(function(){
-  fetch('https://agent-edge-backend.vercel.app/api/markets?coupon='+mktsActiveCoupon).then(function(r){return r.json()}).then(function(d){if(d.error){if(ts)ts.textContent='Error: '+d.error;return;}mktsData=d;var t=new Date(d.fetchedAt);if(ts)ts.textContent='Last updated '+t.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:'America/New_York'})+' ET';mktsRenderCards(d);mktsLoadChart();}).catch(function(e){if(ts)ts.textContent='Error loading data';});
-});}
+}
 
 function mktsBpHtml(b,inv){if(b===null||b===undefined)return'<span style="color:#8a7e6b">—</span>';var up=b>0,c=inv?(up?'#dc2626':'#16a34a'):(up?'#16a34a':'#dc2626');if(b===0)c='#0b1f3a';return'<span style="color:'+c+';font-weight:700">'+Math.abs(b)+'bp '+(up?'▲':(b<0?'▼':''))+'</span>';}
 function mktsPtsHtml(v){if(v===null||v===undefined)return'<span style="color:#8a7e6b">—</span>';var c=v>=0?'#16a34a':'#dc2626';return'<span style="color:'+c+';font-weight:700">'+Math.abs(v).toFixed(2)+' '+(v>=0?'▲':'▼')+'</span>';}
 
 function mktsRenderCards(d){
-  var u=d.umbs;if(u&&u.price){document.getElementById('mktsUmbsPrice').textContent=u.price.toFixed(2);document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(Math.round((u.change||0)*100),false);}
-  var snap=d.snapshots||{},uk='UMBS_'+mktsActiveCoupon,us=snap[uk]||{};
-  mktsSetSnap('mktsUmbsOpen',us,'Open');mktsSetSnap('mktsUmbsMidDay',us,'Mid-Day');mktsSetSnap('mktsUmbsAfternoon',us,'Afternoon');mktsSetSnap('mktsUmbsCloseToday',us,'CloseToday');
-  if(u&&u.open){var el2=document.getElementById('mktsUmbsOpen');if(el2&&el2.textContent==='—')el2.textContent=u.open.toFixed(2);}
-  var t10=d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}
-  var t10s=snap['10Y']||{};mktsSetSnapYield('mkts10YOpen',t10s,'Open');mktsSetSnapYield('mkts10YMidDay',t10s,'Mid-Day');
+  // UMBS card: previous close + today's open + bps change
+  var u=d.umbs||{};
+  var uk='UMBS_'+mktsActiveCoupon;
+  var snap=(d.snapshots||{})[uk]||{};
+
+  // Figure out today's open: prefer the stored "Open" snapshot, fall back to Yahoo's .open field
+  var todayOpen=null;
+  if(snap.Open&&snap.Open.price)todayOpen=snap.Open.price;
+  else if(u.open)todayOpen=u.open;
+
+  // Figure out previous close: from Yahoo's previousClose, which refers to the most recent completed trading day
+  var prevClose=u.previousClose||null;
+
+  // bps change = (todayOpen - prevClose) * 100, rounded
+  var bps=null;
+  if(todayOpen!==null&&prevClose!==null)bps=Math.round((todayOpen-prevClose)*100);
+
+  // Headline price shown big: today's open if we have it, otherwise previous close, otherwise last Yahoo price
+  var headline=todayOpen||prevClose||u.price||null;
+  document.getElementById('mktsUmbsPrice').textContent=headline!==null?headline.toFixed(2):'—';
+  document.getElementById('mktsUmbsBps').innerHTML=mktsBpHtml(bps,false);
+  mktsSetVal('mktsUmbsPrevClose',prevClose!==null?prevClose.toFixed(2):'—');
+  mktsSetVal('mktsUmbsOpen',todayOpen!==null?todayOpen.toFixed(2):'—');
+
+  // Date badge: short date of the most recent trading day the card reflects
+  var dateStr='—';
+  try{
+    var now=new Date();
+    // Walk back from today to find the most recent weekday (Mon-Fri)
+    var dow=now.getDay();
+    if(dow===0)now.setDate(now.getDate()-2); // Sun -> Fri
+    else if(dow===6)now.setDate(now.getDate()-1); // Sat -> Fri
+    var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    dateStr=days[now.getDay()]+', '+months[now.getMonth()]+' '+now.getDate();
+  }catch(e){}
+  mktsSetVal('mktsUmbsDate',dateStr);
+
+  // 10Y Treasury and S&P — unchanged
+  var t10=d.treasuries&&d.treasuries['10Y'];if(t10&&t10.yield){document.getElementById('mkts10YPrice').textContent=t10.yield.toFixed(3)+'%';document.getElementById('mkts10YBps').innerHTML=mktsBpHtml(t10.changeBps||0,true);mktsSetVal('mkts10YPrevClose',t10.previousYield?t10.previousYield.toFixed(3)+'%':'—');mktsSetVal('mkts10YLast',t10.yield.toFixed(3)+'%');}
+  var t10s=(d.snapshots||{})['10Y']||{};mktsSetSnapYield('mkts10YOpen',t10s,'Open');mktsSetSnapYield('mkts10YMidDay',t10s,'Mid-Day');
   var spy=d.spy;if(spy&&spy.price){document.getElementById('mktsSpyPrice').textContent=spy.price.toFixed(2);document.getElementById('mktsSpyPts').innerHTML=mktsPtsHtml(spy.change||0);mktsSetVal('mktsSpyPrevClose',spy.previousClose?spy.previousClose.toFixed(2):'—');mktsSetVal('mktsSpyOpen2',spy.open?spy.open.toFixed(2):'—');mktsSetVal('mktsSpyHigh',spy.high?spy.high.toFixed(2):'—');mktsSetVal('mktsSpyLow',spy.low?spy.low.toFixed(2):'—');}
 }
 function mktsSetVal(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
@@ -1761,23 +1777,6 @@ function mktsLoadChart(){
   var isT=mktsCurrentSymbol==='10Y';
   if(isT){
     fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol=10Y&range=3mo').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
-  } else if(mktsCurrentSymbol==='UMBS_5.5') {
-    var yahooUrl='https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=3mo&interval=1d';
-    var manualUrl='https://agent-edge-backend.vercel.app/api/rates?action=get_mbs_history';
-    var yahooData=null,manualData=null,loaded=0;
-    function mergeAndRender(){
-      loaded++;if(loaded<2)return;
-      var baseData=(yahooData&&yahooData.data)?yahooData.data.slice():[];
-      var manualMap={};
-      if(manualData&&manualData.data){manualData.data.forEach(function(c){var d=c.date?c.date.split('T')[0]:null;if(d)manualMap[d]=c;});}
-      var merged=[],usedDates={};
-      baseData.forEach(function(c){var ds=c.date?c.date.split('T')[0]:null;if(ds&&manualMap[ds]){merged.push(manualMap[ds]);usedDates[ds]=true;}else{merged.push(c);}});
-      Object.keys(manualMap).forEach(function(d){if(!usedDates[d])merged.push(manualMap[d]);});
-      merged.sort(function(a,b){var da=(a.date||'').split('T')[0];var db=(b.date||'').split('T')[0];return da<db?-1:da>db?1:0;});
-      mktsChartData=yahooData||{type:'candle'};mktsChartData.data=merged;mktsRenderChartFromData();
-    }
-    fetch(yahooUrl).then(function(r){return r.json();}).then(function(d){yahooData=d;mergeAndRender();}).catch(function(){yahooData={data:[]};mergeAndRender();});
-    fetch(manualUrl).then(function(r){return r.json();}).then(function(d){manualData=d;mergeAndRender();}).catch(function(){manualData={data:[]};mergeAndRender();});
   } else {
     fetch('https://agent-edge-backend.vercel.app/api/markets?mode=history&symbol='+mktsCurrentSymbol+'&range=3mo&interval=1d').then(function(r){return r.json()}).then(function(d){mktsChartData=d;mktsRenderChartFromData();}).catch(function(e){console.error(e);});
   }
@@ -1813,9 +1812,11 @@ var mktsChartPriceRange=null;
       chH.style.top=mouseY+'px';
       var pr=mktsChartPriceRange;
       var price=pr.maxP-((mouseY-pr.padTop)/(pr.ch))*(pr.maxP-pr.minP);
-      var dec=pr.isTreasury?3:2;
       var priceLabel=document.getElementById('mktsCrosshairPrice');
-      if(priceLabel)priceLabel.textContent=price.toFixed(dec);
+      if(priceLabel){
+        if(pr.isTreasury){priceLabel.textContent=price.toFixed(3)+'%';}
+        else{var v=Math.round(price);priceLabel.textContent=(v>0?'+':'')+v+'bp';}
+      }
     }
   });
   document.addEventListener('mouseleave',function(){var ch=document.getElementById('mktsCrosshair');if(ch)ch.style.display='none';var chH=document.getElementById('mktsCrosshairH');if(chH)chH.style.display='none';});
@@ -1829,12 +1830,16 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  // Show last ~60 trading days on desktop, ~22 on mobile (roughly 1 month)
-  var maxCandles=window.innerWidth<=768?22:60;
-  var displayData=allData.length>maxCandles?allData.slice(allData.length-maxCandles):allData;
+  // Show last ~15 trading days on desktop (~3 weeks), ~10 on mobile
+  var maxBars=window.innerWidth<=768?10:15;
+  var displayData=allData.length>maxBars?allData.slice(allData.length-maxBars):allData;
   var vs=allData.length-displayData.length;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
-  else mktsDrawCandlesFull(ctx,w,h,allData,vs,displayData);
+  else mktsDrawBarsFull(ctx,w,h,allData,vs,displayData);
+
+  // Show/hide the bars legend based on chart type
+  var legend=document.getElementById('mktsBarsLegend');
+  if(legend)legend.style.display=isT?'none':'flex';
 }
 
 /* ═══ CALCULATIONS ═══ */
@@ -1938,21 +1943,155 @@ var minGap=16;
   allPlaced.push({x:labelX,y:labelY,lineY:y});
 }});}function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
 
-/* ═══ CANDLESTICK CHART ═══ */
-function mktsDrawCandlesFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var minP=Infinity,maxP=-Infinity;data.forEach(function(c){if(c.low<minP)minP=c.low;if(c.high>maxP)maxP=c.high;});var range=maxP-minP||1;minP-=range*0.18;maxP+=range*0.18;range=maxP-minP;function yP(v){return pad.top+((maxP-v)/range)*ch;}var slots=data.length+2;function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
-mktsDrawGrid(ctx,w,h,pad,minP,maxP,range,2,'');
-mktsChartPriceRange={minP:minP,maxP:maxP,padTop:pad.top,ch:ch,isTreasury:false};
-var barW=Math.max(5,Math.min(20,(cw/data.length)*0.55));data.forEach(function(c,i){var x=xP(i),up=c.close>=c.open,color=up?'#16a34a':'#dc2626';
-// Draw body first
-ctx.fillStyle=color;var bodyTop=Math.min(yP(c.open),yP(c.close)),bodyH=Math.abs(yP(c.close)-yP(c.open))||1;
-ctx.fillRect(Math.round(x-barW/2),Math.round(bodyTop),Math.round(barW),Math.round(bodyH));
-// Draw wicks only where high/low extends beyond the body
-var bodyHigh=Math.max(c.open,c.close),bodyLow=Math.min(c.open,c.close);
-ctx.strokeStyle=color;ctx.lineWidth=1;
-if(c.high>bodyHigh+0.001){ctx.beginPath();ctx.moveTo(x,yP(c.high));ctx.lineTo(x,Math.round(bodyTop));ctx.stroke();}
-if(c.low<bodyLow-0.001){ctx.beginPath();ctx.moveTo(x,Math.round(bodyTop+bodyH));ctx.lineTo(x,yP(c.low));ctx.stroke();}
-});
-mktsDrawDates(ctx,w,h,data,xP);}
+/* ═══ BAR CHART — daily bps change (open vs. prior day close) ═══ */
+function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle='#fffcf7';
+  ctx.fillRect(0,0,w,h);
+
+  var pad={top:22,right:58,bottom:32,left:15};
+  var cw=w-pad.left-pad.right;
+  var ch=h-pad.top-pad.bottom;
+
+  // Build the array of {date, bps} — each day's open vs. the prior trading day's close.
+  // We need at least 2 data points to compute a bar. Walk through `allData` so the first
+  // visible bar has a prior-day close available, even if it was before the display window.
+  var bars=[];
+  for(var i=0;i<data.length;i++){
+    var dayIdx=displayStart+i;
+    if(dayIdx===0)continue; // no prior day to compare to
+    var today=data[i];
+    var prior=allData[dayIdx-1];
+    if(!today||!prior)continue;
+    var openP=(today.open!==undefined&&today.open!==null)?today.open:today.close;
+    var priorClose=prior.close;
+    if(openP===null||openP===undefined||priorClose===null||priorClose===undefined)continue;
+    var delta=Math.round((openP-priorClose)*100);
+    bars.push({date:today.date,bps:delta,open:openP,priorClose:priorClose});
+  }
+
+  if(bars.length===0){
+    ctx.fillStyle='#8a7e6b';
+    ctx.font='12px -apple-system,system-ui,sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('Not enough data yet — check back after a full trading day.',w/2,h/2);
+    mktsChartXPositions=[];
+    return;
+  }
+
+  // Symmetric scale around zero based on the biggest absolute move in the window,
+  // with a minimum of 10 bps so calm weeks still look proportional.
+  var maxAbs=10;
+  bars.forEach(function(b){if(Math.abs(b.bps)>maxAbs)maxAbs=Math.abs(b.bps);});
+  maxAbs=Math.ceil(maxAbs*1.15); // headroom
+
+  function yP(v){
+    // v is bps; center of chart is zero.
+    var half=ch/2;
+    var centerY=pad.top+half;
+    return centerY-(v/maxAbs)*half;
+  }
+
+  // Horizontal gridlines (bps axis): zero + two positive + two negative
+  var step=Math.ceil(maxAbs/2/5)*5; // round to nearest 5 bps
+  if(step<5)step=5;
+  ctx.strokeStyle='rgba(200,195,185,0.5)';
+  ctx.lineWidth=0.7;
+  ctx.fillStyle='#9a9285';
+  ctx.font='11px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='left';
+  for(var g=-maxAbs;g<=maxAbs;g+=step){
+    var gy=yP(g);
+    if(gy<pad.top-1||gy>pad.top+ch+1)continue;
+    ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();
+    var lbl=(g>0?'+':'')+g+'bp';
+    ctx.fillText(lbl,w-pad.right+5,gy+4);
+  }
+  // Emphasise the zero line
+  var zeroY=yP(0);
+  ctx.strokeStyle='rgba(110,127,119,0.6)';
+  ctx.lineWidth=1.2;
+  ctx.beginPath();ctx.moveTo(pad.left,zeroY);ctx.lineTo(w-pad.right,zeroY);ctx.stroke();
+
+  mktsChartPriceRange={minP:-maxAbs,maxP:maxAbs,padTop:pad.top,ch:ch,isTreasury:false};
+
+  // Draw bars
+  var slots=bars.length+1;
+  function xP(i){return pad.left+(cw/slots)*i+(cw/slots);}
+  var barW=Math.max(10,Math.min(42,(cw/bars.length)*0.62));
+
+  // Detect today's bar: last bar whose date matches today (America/New_York)
+  var todayDateStr=null;
+  try{
+    var nowEt=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
+    todayDateStr=nowEt.getFullYear()+'-'+String(nowEt.getMonth()+1).padStart(2,'0')+'-'+String(nowEt.getDate()).padStart(2,'0');
+  }catch(e){}
+
+  bars.forEach(function(b,i){
+    var x=xP(i);
+    var up=b.bps>=0;
+    var color=up?'#16a34a':'#dc2626';
+    ctx.fillStyle=color;
+    ctx.globalAlpha=up?0.82:0.78;
+    var y1=yP(0);
+    var y2=yP(b.bps);
+    var barTop=Math.min(y1,y2);
+    var barH=Math.max(Math.abs(y2-y1),2);
+    // Rounded top (or bottom for negative bars)
+    var rad=Math.min(4,barW/2);
+    ctx.beginPath();
+    if(up){
+      ctx.moveTo(x-barW/2,barTop+rad);
+      ctx.quadraticCurveTo(x-barW/2,barTop,x-barW/2+rad,barTop);
+      ctx.lineTo(x+barW/2-rad,barTop);
+      ctx.quadraticCurveTo(x+barW/2,barTop,x+barW/2,barTop+rad);
+      ctx.lineTo(x+barW/2,barTop+barH);
+      ctx.lineTo(x-barW/2,barTop+barH);
+    }else{
+      var bot=barTop+barH;
+      ctx.moveTo(x-barW/2,barTop);
+      ctx.lineTo(x+barW/2,barTop);
+      ctx.lineTo(x+barW/2,bot-rad);
+      ctx.quadraticCurveTo(x+barW/2,bot,x+barW/2-rad,bot);
+      ctx.lineTo(x-barW/2+rad,bot);
+      ctx.quadraticCurveTo(x-barW/2,bot,x-barW/2,bot-rad);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha=1;
+
+    // Highlight today's bar with an outline
+    var barDate=(b.date||'').split('T')[0];
+    if(todayDateStr&&barDate===todayDateStr){
+      ctx.strokeStyle='#0b1f3a';
+      ctx.lineWidth=1.5;
+      ctx.strokeRect(x-barW/2-2,Math.min(y1,y2)-2,barW+4,Math.max(Math.abs(y2-y1),2)+4);
+      // "Today" pill above the bar
+      ctx.fillStyle='#0b1f3a';
+      ctx.font='600 10px -apple-system,system-ui,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('Today',x,Math.min(y1,y2)-8);
+    }
+  });
+
+  // Date labels along the bottom
+  ctx.fillStyle='#9a9285';
+  ctx.font='11px -apple-system,system-ui,sans-serif';
+  ctx.textAlign='center';
+  var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  mktsChartXPositions=[];
+  var lastLabelX=-100;
+  bars.forEach(function(b,i){
+    var x=xP(i);
+    mktsChartXPositions.push({x:x,date:b.date});
+    if(x-lastLabelX<46)return; // prevent label collision
+    var dt=new Date((b.date||'').split('T')[0]+'T12:00:00');
+    if(isNaN(dt.getTime()))return;
+    var txt=months[dt.getMonth()]+' '+dt.getDate();
+    ctx.fillText(txt,x,pad.top+ch+18);
+    lastLabelX=x;
+  });
+}
 
 /* ═══ TREASURY LINE CHART ═══ */
 function mktsDrawTreasuryFull(ctx,w,h,allData,displayStart,data){ctx.clearRect(0,0,w,h);ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);var pad={top:15,right:58,bottom:28,left:15},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;var vals=data.map(function(d){return d.value;});var minV=Math.min.apply(null,vals),maxV=Math.max.apply(null,vals);var range=maxV-minV||0.1;minV-=range*0.06;maxV+=range*0.06;range=maxV-minV;function yP(v){return pad.top+((maxV-v)/range)*ch;}function xP(i){return pad.left+(cw/Math.max(data.length-1,1))*i;}
