@@ -898,7 +898,7 @@ h1 {
               <canvas id="tutWelcomeChart" width="560" height="120" style="width:100%;height:120px;display:block;"></canvas>
             </div>
             <div class="tut-body" style="text-align:center;">
-              <p>This dashboard is updated four times each trading day with real mortgage bond pricing — at 9:00 AM, 12:00 PM, 2:00 PM, and 5:00 PM ET.</p>
+              <p>This dashboard shows you where mortgage bond pricing stands each morning, and how it's been trending over the last few weeks.</p>
               <p>Here's how to make the most of it.</p>
             </div>
           </div>
@@ -907,7 +907,7 @@ h1 {
           <div class="mkts-tut-slide" data-slide="1" style="display:none;">
             <h3 class="tut-title">Pricing, Not Rates</h3>
             <div class="tut-body">
-              <p>Every rate is available every day. What changes is the <strong>cost to get that rate</strong> — and that cost is driven by mortgage bond pricing.</p>
+              <p>Every rate is available every day <em>(almost)</em>. What changes is the <strong>cost to get that rate</strong> &mdash; and that cost is driven by mortgage bond pricing and the 10-year treasury yield.</p>
               <div style="display:flex;gap:14px;margin:20px 0;">
                 <div style="flex:1;padding:16px;border-radius:10px;border-left:3px solid #16a34a;background:rgba(22,163,74,0.04);">
                   <div style="font-weight:700;color:#16a34a;font-size:13px;margin-bottom:4px;">Bond Prices Up</div>
@@ -918,19 +918,56 @@ h1 {
                   <div style="font-size:13px;color:#3a3530;">Cost to get the rate goes up. More expensive for your buyers.</div>
                 </div>
               </div>
-              <p>Understanding this is what separates a knowledgeable agent from the rest of the market.</p>
+              <p>When a client asks &ldquo;what are rates today?&rdquo; &mdash; the real answer isn&rsquo;t a number. It&rsquo;s whether pricing is trending better or worse. Understanding this is what separates a knowledgeable agent from the rest of the market.</p>
             </div>
           </div>
 
-          <!-- Slide 2: Reading the Chart -->
+          <!-- Slide 2: Reading the Card & Chart -->
           <div class="mkts-tut-slide" data-slide="2" style="display:none;">
-            <h3 class="tut-title">Reading the Chart</h3>
-            <div style="position:relative;margin:16px 0;">
-              <canvas id="tutChartCanvas" width="560" height="200" style="width:100%;height:200px;border-radius:10px;border:1px solid #eae5dc;"></canvas>
-              <div id="tutPointer" style="display:none;position:absolute;width:10px;height:10px;border-radius:50%;background:#6e7f77;box-shadow:0 0 0 4px rgba(110,127,119,0.25);transition:all 0.6s ease;z-index:3;"></div>
-              <div id="tutPointerLabel" style="display:none;position:absolute;background:#0b1f3a;color:#fff;font-size:11px;padding:6px 12px;border-radius:6px;max-width:260px;line-height:1.5;z-index:3;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:all 0.5s ease;"></div>
+            <h3 class="tut-title">Reading the Card & Chart</h3>
+            <div class="tut-body" style="margin-bottom:10px;">
+              <p style="margin:0 0 8px;font-weight:600;color:#0b1f3a;">1. The card</p>
             </div>
-            <div id="tutChartNarration" class="tut-body" style="min-height:80px;"></div>
+            <div style="position:relative;margin:0 0 18px;border:1px solid #eae5dc;border-radius:10px;padding:14px 16px;background:#faf6ef;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div style="font-size:10px;font-weight:700;color:#6e7f77;text-transform:uppercase;letter-spacing:0.5px;">Mortgage Bond Pricing</div>
+                <div style="font-size:10px;font-weight:600;color:#8a7e6b;">Thu, Apr 16</div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+                <div style="font-size:22px;font-weight:700;color:#0b1f3a;">101.01</div>
+                <div style="font-size:12px;font-weight:700;color:#dc2626;">1bp &#9660;</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 10px;">
+                  <div style="font-size:9px;font-weight:600;color:#8a7e6b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Previous Close</div>
+                  <div style="font-size:14px;font-weight:700;color:#0b1f3a;">101.02</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.7);border-radius:8px;padding:8px 10px;">
+                  <div style="font-size:9px;font-weight:600;color:#8a7e6b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;">Today's Open</div>
+                  <div style="font-size:14px;font-weight:700;color:#0b1f3a;">101.01</div>
+                </div>
+              </div>
+            </div>
+            <div class="tut-body" style="margin-bottom:14px;">
+              <ul style="margin:0 0 10px;padding-left:18px;font-size:13px;line-height:1.7;">
+                <li><strong>Previous Close</strong> — where bond pricing ended yesterday.</li>
+                <li><strong>Today's Open</strong> — where pricing opened this morning.</li>
+                <li><strong>Green number up</strong> = pricing improved from yesterday (cheaper for your buyers). <strong>Red number down</strong> = pricing pulled back (more expensive).</li>
+              </ul>
+            </div>
+            <div class="tut-body" style="margin-bottom:10px;">
+              <p style="margin:0 0 8px;font-weight:600;color:#0b1f3a;">2. The chart</p>
+            </div>
+            <div style="position:relative;margin:0 0 14px;border:1px solid #eae5dc;border-radius:10px;overflow:hidden;">
+              <canvas id="tutChartCanvas" width="560" height="180" style="width:100%;height:180px;display:block;"></canvas>
+            </div>
+            <div class="tut-body">
+              <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.7;">
+                <li>Each dot is one trading day. <strong>Green dots</strong> are days pricing improved. <strong>Red dots</strong> are days pricing declined.</li>
+                <li>The middle line is zero — no change from the day before. <strong>Above the line is good. Below the line is not.</strong></li>
+                <li>Today is the <strong>rightmost point</strong>, circled. The line shows the rolling 30-day trend.</li>
+              </ul>
+            </div>
           </div>
 
           <!-- Slide 3: Economic Calendar -->
@@ -961,8 +998,8 @@ h1 {
             <div style="text-align:center;padding:20px 0;">
               <h3 class="tut-title">Your Edge</h3>
               <div class="tut-body" style="max-width:440px;margin:0 auto;">
-                <p>Behind this chart, your lender is a <strong>Certified Mortgage Advisor</strong> who tracks technical indicators like support &amp; resistance levels, Fibonacci retracements, and moving averages to identify when pricing trends are about to shift.</p>
-                <p>This dashboard gives you the pricing trends. Your CMA gives you the insight behind them — when to lock, when to float, and why.</p>
+                <p>Behind this dashboard, your lender is a <strong>Certified Mortgage Advisor</strong> who tracks bond market movement every day and knows how to read where pricing is heading.</p>
+                <p>This dashboard gives you the pricing trends at a glance. Your CMA gives you the insight behind them — when to lock, when to float, and why.</p>
                 <p style="font-size:15px;font-weight:600;color:#0b1f3a;margin-top:20px;">This isn't a replacement for your lender.<br>It's an extension of their expertise.</p>
               </div>
             </div>
@@ -995,24 +1032,12 @@ h1 {
     <script>
     var mktsTutCurrent=0,mktsTutTotal=6;
     var tutChartAnimTimer=null,tutEconAnimTimer=null,tutSummaryAnimTimer=null;
-    var tutChartStep=-1; // -1 means not on chart slide, 0-2 are narration steps, 3 means done
 
     function mktsTutNav(dir){
-      // If on chart slide and clicking Next, cycle through narrations first
-      if(dir===1 && mktsTutCurrent===2 && tutChartStep>=0 && tutChartStep<3){
-        tutChartStep++;
-        if(tutChartStep<3){
-          tutChartNarrate(tutChartStep);
-          return;
-        }
-        // tutChartStep===3 means done, fall through to advance slide
-      }
-
       mktsTutCurrent+=dir;
       if(mktsTutCurrent<0)mktsTutCurrent=0;
       if(mktsTutCurrent>=mktsTutTotal)mktsTutCurrent=mktsTutTotal-1;
       clearTimeout(tutChartAnimTimer);clearTimeout(tutEconAnimTimer);clearTimeout(tutSummaryAnimTimer);
-      tutChartStep=-1;
 
       document.querySelectorAll('.mkts-tut-slide').forEach(function(s){
         var idx=parseInt(s.dataset.slide);
@@ -1029,11 +1054,11 @@ h1 {
 
       // Trigger animations for specific slides
       if(mktsTutCurrent===0)setTimeout(tutDrawWelcomeChart,100);
-      if(mktsTutCurrent===2){tutChartStep=0;setTimeout(function(){tutAnimateChart();tutChartNarrate(0);},300);}
+      if(mktsTutCurrent===2)setTimeout(tutAnimateChart,200);
       if(mktsTutCurrent===3)setTimeout(tutAnimateEcon,200);
       if(mktsTutCurrent===4)setTimeout(tutAnimateSummaries,200);
     }
-    function mktsCloseTutorial(){document.getElementById('mktsInfoModal').style.display='none';mktsTutCurrent=0;tutChartStep=-1;clearTimeout(tutChartAnimTimer);clearTimeout(tutEconAnimTimer);clearTimeout(tutSummaryAnimTimer);}
+    function mktsCloseTutorial(){document.getElementById('mktsInfoModal').style.display='none';mktsTutCurrent=0;clearTimeout(tutChartAnimTimer);clearTimeout(tutEconAnimTimer);clearTimeout(tutSummaryAnimTimer);}
 
     // ===== WELCOME MINI CHART =====
     function tutDrawWelcomeChart(){
@@ -1042,25 +1067,39 @@ h1 {
       var w=canvas.offsetWidth,h=canvas.offsetHeight;
       canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
       ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
-      var candles=[{o:100.2,c:100.5,h:100.6,l:100.1},{o:100.5,c:100.3,h:100.7,l:100.15},{o:100.3,c:100.8,h:100.9,l:100.2},{o:100.8,c:100.6,h:101.0,l:100.5},{o:100.6,c:101.0,h:101.1,l:100.4},{o:101.0,c:100.7,h:101.2,l:100.6},{o:100.7,c:100.9,h:101.0,l:100.5},{o:100.9,c:101.2,h:101.3,l:100.8},{o:101.2,c:100.8,h:101.3,l:100.7},{o:100.8,c:101.1,h:101.2,l:100.6},{o:101.1,c:101.3,h:101.5,l:101.0},{o:101.3,c:101.0,h:101.4,l:100.9},{o:101.0,c:101.2,h:101.3,l:100.9},{o:101.2,c:100.9,h:101.3,l:100.8},{o:100.9,c:101.1,h:101.2,l:100.8}];
-      var pad={top:8,right:8,bottom:8,left:8},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
-      var minP=100.0,maxP=101.6,range=maxP-minP;
-      function yP(v){return pad.top+((maxP-v)/range)*ch;}
-      var slots=candles.length+1;
-      function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
-      var barW=Math.min(12,(cw/slots)*0.5);
-      // Draw grid
-      ctx.strokeStyle='#f0ebe3';ctx.lineWidth=0.5;
-      for(var g=0;g<4;g++){var gy=pad.top+(ch/3)*g;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();}
-      // Draw MA
-      ctx.beginPath();ctx.strokeStyle='rgba(165,85,247,0.4)';ctx.lineWidth=1.5;
-      var ma=[100.3,100.35,100.45,100.5,100.55,100.6,100.65,100.7,100.75,100.8,100.85,100.9,100.95,100.95,101.0];
-      ma.forEach(function(v,i){if(i===0)ctx.moveTo(xP(i),yP(v));else ctx.lineTo(xP(i),yP(v));});ctx.stroke();
-      // Draw candles
-      candles.forEach(function(c,i){var x=xP(i),up=c.c>=c.o,color=up?'#16a34a':'#dc2626';ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.h));ctx.lineTo(x,yP(c.l));ctx.stroke();ctx.fillStyle=color;var bt=Math.min(yP(c.o),yP(c.c)),bh=Math.max(Math.abs(yP(c.c)-yP(c.o)),2);ctx.fillRect(x-barW/2,bt,barW,bh);});
+      // Synthetic daily bps changes (same shape as the real chart)
+      var bps=[-8,5,12,-6,3,14,-10,-4,8,18,7,-2,11,-15,-8,5,13,9,-5,10,16,4,-7,12,20,8,-3,11,17,14];
+      var pad={top:10,right:10,bottom:10,left:10};
+      var cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
+      var maxAbs=22;
+      function yP(v){var half=ch/2;return pad.top+half-(v/maxAbs)*half;}
+      function xP(i){return pad.left+(cw/Math.max(bps.length-1,1))*i;}
+      // Zero line
+      var zeroY=yP(0);
+      ctx.strokeStyle='rgba(110,127,119,0.4)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(pad.left,zeroY);ctx.lineTo(w-pad.right,zeroY);ctx.stroke();
+      // Shaded area
+      ctx.beginPath();
+      bps.forEach(function(v,i){var x=xP(i),y=yP(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.lineTo(xP(bps.length-1),zeroY);
+      ctx.lineTo(xP(0),zeroY);
+      ctx.closePath();
+      ctx.fillStyle='rgba(110,127,119,0.1)';
+      ctx.fill();
+      // Line
+      ctx.beginPath();
+      ctx.strokeStyle='#6e7f77';ctx.lineWidth=1.8;ctx.lineJoin='round';ctx.lineCap='round';
+      bps.forEach(function(v,i){var x=xP(i),y=yP(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.stroke();
+      // Dots
+      bps.forEach(function(v,i){
+        var x=xP(i),y=yP(v);
+        ctx.fillStyle=v>0?'#16a34a':(v<0?'#dc2626':'#6e7f77');
+        ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+      });
     }
 
-    // ===== ANIMATED CHART =====
+    // ===== SLIDE 2 CHART (static line, matches main portal chart) =====
     function tutAnimateChart(){
       var canvas=document.getElementById('tutChartCanvas');if(!canvas)return;
 
@@ -1069,57 +1108,58 @@ h1 {
       canvas.width=w*dpr;canvas.height=h*dpr;ctx.scale(dpr,dpr);
       ctx.fillStyle='#fffcf7';ctx.fillRect(0,0,w,h);
 
-      var candles=[{o:100.2,c:100.5,h:100.6,l:100.1},{o:100.5,c:100.3,h:100.7,l:100.15},{o:100.3,c:100.8,h:100.9,l:100.2},{o:100.8,c:100.6,h:101.0,l:100.5},{o:100.6,c:101.0,h:101.1,l:100.4},{o:101.0,c:100.7,h:101.2,l:100.6},{o:100.7,c:100.9,h:101.0,l:100.5},{o:100.9,c:101.2,h:101.3,l:100.8},{o:101.2,c:100.8,h:101.3,l:100.7},{o:100.8,c:101.1,h:101.2,l:100.6},{o:101.1,c:101.3,h:101.5,l:101.0},{o:101.3,c:101.0,h:101.4,l:100.9}];
-      var pad={top:12,right:12,bottom:12,left:12},cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
-      var minP=100.0,maxP=101.6,range=maxP-minP;
-      function yP(v){return pad.top+((maxP-v)/range)*ch;}
-      var slots=candles.length+2;
-      function xP(i){return pad.left+(cw/slots)*i+(cw/slots)/2;}
-      var barW=Math.min(16,(cw/slots)*0.5);
+      // Sample 15 days of close-to-close bps moves
+      var bps=[-8,5,12,-6,3,14,-10,8,18,7,-2,-15,11,16,9];
+      var pad={top:30,right:70,bottom:20,left:20};
+      var cw=w-pad.left-pad.right,ch=h-pad.top-pad.bottom;
+      var maxAbs=22;
+      function yP(v){var half=ch/2;return pad.top+half-(v/maxAbs)*half;}
+      function xP(i){return pad.left+(cw/Math.max(bps.length-1,1))*i;}
+      var zeroY=yP(0);
 
-      // Draw grid
-      ctx.strokeStyle='#f0ebe3';ctx.lineWidth=0.5;
-      for(var g=0;g<=4;g++){var gy=pad.top+(ch/4)*g;ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();}
+      // Gridlines
+      ctx.strokeStyle='rgba(200,195,185,0.5)';ctx.lineWidth=0.7;
+      ctx.fillStyle='#9a9285';ctx.font='10px -apple-system,system-ui,sans-serif';ctx.textAlign='left';
+      [20,10,-10,-20].forEach(function(v){
+        var gy=yP(v);
+        ctx.beginPath();ctx.moveTo(pad.left,gy);ctx.lineTo(w-pad.right,gy);ctx.stroke();
+        ctx.fillText((v>0?'+':'')+v+'bp',w-pad.right+6,gy+3);
+      });
+      // Zero line (emphasized)
+      ctx.strokeStyle='rgba(110,127,119,0.6)';ctx.lineWidth=1.2;
+      ctx.beginPath();ctx.moveTo(pad.left,zeroY);ctx.lineTo(w-pad.right,zeroY);ctx.stroke();
+      ctx.fillStyle='#9a9285';
+      ctx.fillText('0bp',w-pad.right+6,zeroY+3);
 
-      // Draw ALL candles immediately
-      candles.forEach(function(c,i){
-        var x=xP(i),up=c.c>=c.o,color=up?'#16a34a':'#dc2626';
-        ctx.strokeStyle=color;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x,yP(c.h));ctx.lineTo(x,yP(c.l));ctx.stroke();
-        ctx.fillStyle=color;var bt=Math.min(yP(c.o),yP(c.c)),bh=Math.max(Math.abs(yP(c.c)-yP(c.o)),2);
-        ctx.fillRect(Math.round(x-barW/2),Math.round(bt),Math.round(barW),Math.round(bh));
+      // Shaded area to zero
+      ctx.beginPath();
+      bps.forEach(function(v,i){var x=xP(i),y=yP(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.lineTo(xP(bps.length-1),zeroY);
+      ctx.lineTo(xP(0),zeroY);
+      ctx.closePath();
+      ctx.fillStyle='rgba(110,127,119,0.1)';
+      ctx.fill();
+
+      // Line
+      ctx.beginPath();
+      ctx.strokeStyle='#6e7f77';ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+      bps.forEach(function(v,i){var x=xP(i),y=yP(v);if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);});
+      ctx.stroke();
+
+      // Dots — green above zero, red below
+      bps.forEach(function(v,i){
+        var x=xP(i),y=yP(v);
+        ctx.fillStyle=v>0?'#16a34a':(v<0?'#dc2626':'#6e7f77');
+        ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
       });
 
-      // Chart drawn — narration controlled by Next button
-    }
-
-    var tutNarrations=[
-      {x:0.35,y:0.45,labelX:0.42,labelY:0.08,text:'Green candles mean pricing improved that day. Red candles mean pricing pulled back. The thick body shows where pricing opened and closed. The thin lines (wicks) show the intraday high and low.'},
-      {x:0.65,y:0.3,labelX:0.4,labelY:0.65,text:'Look at the overall direction of the candles over days and weeks. Are they generally climbing? Falling? Moving sideways? That trend tells you where the cost of getting a rate is heading.'},
-      {x:0.85,y:0.5,labelX:0.45,labelY:0.85,text:'Your lender uses advanced technical analysis — support & resistance levels, Fibonacci retracements, and more — to identify when these trends are likely to shift. This chart gives you the big picture. Your CMA gives you the insight.'}
-    ];
-    function tutChartNarrate(step){
-      if(step>=tutNarrations.length){
-        document.getElementById('tutPointer').style.display='none';
-        document.getElementById('tutPointerLabel').style.display='none';
-        document.getElementById('tutChartNarration').innerHTML='<p style="color:#6e7f77;font-size:13px;text-align:center;margin:0;">Use this chart to follow the trend. Your CMA handles the technical analysis behind the scenes.</p>';
-        return;
-      }
-      var n=tutNarrations[step];
-      var canvas=document.getElementById('tutChartCanvas');
-      var cw=canvas.offsetWidth,ch=canvas.offsetHeight;
-      var ptr=document.getElementById('tutPointer');
-      var lbl=document.getElementById('tutPointerLabel');
-      ptr.style.display='block';
-      ptr.style.left=(n.x*cw-5)+'px';ptr.style.top=(n.y*ch-5)+'px';
-      lbl.style.display='block';
-      lbl.style.left=(n.labelX*cw)+'px';
-      lbl.style.top=(n.labelY*ch)+'px';
-      lbl.style.fontSize='13px';
-      lbl.style.maxWidth='280px';
-      lbl.style.padding='10px 14px';
-      lbl.textContent=n.text;
-      lbl.style.animation='mktsTutFadeIn 0.3s ease';
-      document.getElementById('tutChartNarration').textContent='';
+      // Highlight the last point as "Today"
+      var lastIdx=bps.length-1;
+      var tx=xP(lastIdx),ty=yP(bps[lastIdx]);
+      ctx.strokeStyle='#0b1f3a';ctx.lineWidth=1.8;
+      ctx.beginPath();ctx.arc(tx,ty,6,0,Math.PI*2);ctx.stroke();
+      ctx.fillStyle='#0b1f3a';ctx.font='600 10px -apple-system,system-ui,sans-serif';ctx.textAlign='center';
+      ctx.fillText('Today',tx,ty-12);
     }
 
     // ===== ANIMATED ECON CALENDAR =====
