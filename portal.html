@@ -881,7 +881,7 @@ h1 {
       <span><span class="sw" style="background:#16a34a;opacity:0.85;"></span>Bond pricing improved vs. prior day</span>
       <span><span class="sw" style="background:#dc2626;opacity:0.85;"></span>Bond pricing declined vs. prior day</span>
     </div>
-    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · UMBS 5.5% via Yahoo Finance · Bond &amp; equity data delayed · Card updated at market open and close
+    <div class="mkts-source">Treasury yields via FRED (Federal Reserve Bank of St. Louis) · UMBS 5.5% via Yahoo Finance · Bond &amp; equity data delayed · Card updated at market open and close</div>
 
     <!-- Tutorial Modal -->
     <div id="mktsInfoModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(11,31,58,0.6);align-items:center;justify-content:center;backdrop-filter:blur(4px);" onclick="if(event.target===this)mktsCloseTutorial()">
@@ -1830,12 +1830,12 @@ function mktsRenderChartFromData(){
   var dpr=window.devicePixelRatio||1,w=canvas.offsetWidth,h=canvas.offsetHeight;
   canvas.width=w*dpr;canvas.height=h*dpr;
   var ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);canvas.style.cursor='crosshair';
-  // Show last ~15 trading days on desktop (~3 weeks), ~10 on mobile
-  var maxBars=window.innerWidth<=768?10:15;
+  // Show last ~30 trading days on desktop (~6 weeks), ~15 on mobile
+  var maxBars=window.innerWidth<=768?15:30;
   var displayData=allData.length>maxBars?allData.slice(allData.length-maxBars):allData;
   var vs=allData.length-displayData.length;
   if(isT)mktsDrawTreasuryFull(ctx,w,h,allData,vs,displayData);
-  else mktsDrawBarsFull(ctx,w,h,allData,vs,displayData);
+  else mktsDrawLineFull(ctx,w,h,allData,vs,displayData);
 
   // Show/hide the bars legend based on chart type
   var legend=document.getElementById('mktsBarsLegend');
@@ -1943,8 +1943,8 @@ var minGap=16;
   allPlaced.push({x:labelX,y:labelY,lineY:y});
 }});}function mktsDrawMAs(ctx,allData,displayStart,displayData,mktsDMA,mktsDMAColors,xP,yP){var smaAll={};[200,100,50,25].forEach(function(p){if(!mktsDMA[p]||allData.length<p)return;smaAll[p]=mktsCalcSMA(allData,p);});Object.keys(smaAll).forEach(function(pk){var p=parseInt(pk),sma=smaAll[p];ctx.beginPath();ctx.strokeStyle=mktsDMAColors[p];ctx.lineWidth=1.2;var started=false;for(var i=0;i<displayData.length;i++){var gi=displayStart+i;if(gi>=sma.length||sma[gi]===null)continue;if(!started){ctx.moveTo(xP(i),yP(sma[gi]));started=true;}else ctx.lineTo(xP(i),yP(sma[gi]));}ctx.stroke();});}
 
-/* ═══ BAR CHART — daily bps change (open vs. prior day close) ═══ */
-function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
+/* ═══ LINE CHART — daily bps change (close vs. prior day close) ═══ */
+function mktsDrawLineFull(ctx,w,h,allData,displayStart,data){
   ctx.clearRect(0,0,w,h);
   ctx.fillStyle='#fffcf7';
   ctx.fillRect(0,0,w,h);
@@ -1953,48 +1953,77 @@ function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
   var cw=w-pad.left-pad.right;
   var ch=h-pad.top-pad.bottom;
 
-  // Build the array of {date, bps} — each day's open vs. the prior trading day's close.
-  // We need at least 2 data points to compute a bar. Walk through `allData` so the first
-  // visible bar has a prior-day close available, even if it was before the display window.
-  var bars=[];
-  for(var i=0;i<data.length;i++){
-    var dayIdx=displayStart+i;
-    if(dayIdx===0)continue; // no prior day to compare to
-    var today=data[i];
-    var prior=allData[dayIdx-1];
-    if(!today||!prior)continue;
-    var openP=(today.open!==undefined&&today.open!==null)?today.open:today.close;
-    var priorClose=prior.close;
-    if(openP===null||openP===undefined||priorClose===null||priorClose===undefined)continue;
-    var delta=Math.round((openP-priorClose)*100);
-    bars.push({date:today.date,bps:delta,open:openP,priorClose:priorClose});
+  // Build a trailing window of ~30 trading days ending at today (America/New_York).
+  // We walk backward day-by-day from today, skipping weekends, and look up the close
+  // for each date. If the date has data, it's a real point on the line. If not, it's
+  // a gap — we draw a break in the line at that date instead of squishing data together.
+  var WINDOW=30;
+
+  var nowEt;
+  try{nowEt=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));}
+  catch(e){nowEt=new Date();}
+  var endDate=new Date(nowEt.getFullYear(),nowEt.getMonth(),nowEt.getDate());
+  // If today is weekend, roll back to Friday
+  if(endDate.getDay()===6)endDate.setDate(endDate.getDate()-1);
+  else if(endDate.getDay()===0)endDate.setDate(endDate.getDate()-2);
+
+  function dateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+  // Index allData by date for fast lookup
+  var byDate={};
+  allData.forEach(function(row){
+    var k=(row.date||'').split('T')[0];
+    if(k)byDate[k]=row;
+  });
+
+  // Walk backward WINDOW trading days from endDate, build array of date slots
+  var slots=[];
+  var cursor=new Date(endDate);
+  while(slots.length<WINDOW){
+    var dow=cursor.getDay();
+    if(dow!==0&&dow!==6){
+      var key=dateKey(cursor);
+      slots.unshift({date:key,row:byDate[key]||null});
+    }
+    cursor.setDate(cursor.getDate()-1);
+    // safety break in case of unexpected date math
+    if(slots.length>WINDOW*2)break;
   }
 
-  if(bars.length===0){
-    ctx.fillStyle='#8a7e6b';
-    ctx.font='12px -apple-system,system-ui,sans-serif';
-    ctx.textAlign='center';
-    ctx.fillText('Not enough data yet — check back after a full trading day.',w/2,h/2);
-    mktsChartXPositions=[];
-    return;
+  // Compute bps = close - priorClose for each slot. prior is the previous slot that had data.
+  var points=[];
+  var priorClose=null;
+  // Seed priorClose from the closest data point BEFORE the window, if any
+  var seed=null;
+  var firstKey=slots[0]&&slots[0].date;
+  if(firstKey){
+    var sortedDates=Object.keys(byDate).sort();
+    for(var i=sortedDates.length-1;i>=0;i--){
+      if(sortedDates[i]<firstKey){seed=byDate[sortedDates[i]].close;break;}
+    }
   }
+  if(seed!==null&&seed!==undefined)priorClose=seed;
 
-  // Symmetric scale around zero based on the biggest absolute move in the window,
-  // with a minimum of 10 bps so calm weeks still look proportional.
-  var maxAbs=10;
-  bars.forEach(function(b){if(Math.abs(b.bps)>maxAbs)maxAbs=Math.abs(b.bps);});
-  maxAbs=Math.ceil(maxAbs*1.15); // headroom
+  slots.forEach(function(s){
+    if(s.row&&s.row.close!==null&&s.row.close!==undefined){
+      var bps=(priorClose!==null)?Math.round((s.row.close-priorClose)*100):null;
+      points.push({date:s.date,bps:bps,close:s.row.close,hasData:true});
+      priorClose=s.row.close;
+    }else{
+      points.push({date:s.date,bps:null,close:null,hasData:false});
+    }
+  });
 
-  function yP(v){
-    // v is bps; center of chart is zero.
-    var half=ch/2;
-    var centerY=pad.top+half;
-    return centerY-(v/maxAbs)*half;
-  }
+  // Symmetric bps scale. Minimum ±15 bps so small moves still register visually.
+  var maxAbs=15;
+  points.forEach(function(p){if(p.bps!==null&&Math.abs(p.bps)>maxAbs)maxAbs=Math.abs(p.bps);});
+  maxAbs=Math.ceil(maxAbs*1.15);
 
-  // Horizontal gridlines (bps axis): zero + two positive + two negative
-  var step=Math.ceil(maxAbs/2/5)*5; // round to nearest 5 bps
-  if(step<5)step=5;
+  function yP(v){var half=ch/2;return pad.top+half-(v/maxAbs)*half;}
+  function xP(i){return pad.left+(cw/Math.max(points.length-1,1))*i;}
+
+  // Gridlines
+  var step=Math.ceil(maxAbs/2/5)*5;if(step<5)step=5;
   ctx.strokeStyle='rgba(200,195,185,0.5)';
   ctx.lineWidth=0.7;
   ctx.fillStyle='#9a9285';
@@ -2007,7 +2036,7 @@ function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
     var lbl=(g>0?'+':'')+g+'bp';
     ctx.fillText(lbl,w-pad.right+5,gy+4);
   }
-  // Emphasise the zero line
+  // Emphasised zero line
   var zeroY=yP(0);
   ctx.strokeStyle='rgba(110,127,119,0.6)';
   ctx.lineWidth=1.2;
@@ -2015,64 +2044,78 @@ function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
 
   mktsChartPriceRange={minP:-maxAbs,maxP:maxAbs,padTop:pad.top,ch:ch,isTreasury:false};
 
-  // Draw bars
-  var slots=bars.length+1;
-  function xP(i){return pad.left+(cw/slots)*i+(cw/slots);}
-  var barW=Math.max(10,Math.min(42,(cw/bars.length)*0.62));
-
-  // Detect today's bar: last bar whose date matches today (America/New_York)
-  var todayDateStr=null;
-  try{
-    var nowEt=new Date(new Date().toLocaleString('en-US',{timeZone:'America/New_York'}));
-    todayDateStr=nowEt.getFullYear()+'-'+String(nowEt.getMonth()+1).padStart(2,'0')+'-'+String(nowEt.getDate()).padStart(2,'0');
-  }catch(e){}
-
-  bars.forEach(function(b,i){
-    var x=xP(i);
-    var up=b.bps>=0;
-    var color=up?'#16a34a':'#dc2626';
-    ctx.fillStyle=color;
-    ctx.globalAlpha=up?0.82:0.78;
-    var y1=yP(0);
-    var y2=yP(b.bps);
-    var barTop=Math.min(y1,y2);
-    var barH=Math.max(Math.abs(y2-y1),2);
-    // Rounded top (or bottom for negative bars)
-    var rad=Math.min(4,barW/2);
-    ctx.beginPath();
-    if(up){
-      ctx.moveTo(x-barW/2,barTop+rad);
-      ctx.quadraticCurveTo(x-barW/2,barTop,x-barW/2+rad,barTop);
-      ctx.lineTo(x+barW/2-rad,barTop);
-      ctx.quadraticCurveTo(x+barW/2,barTop,x+barW/2,barTop+rad);
-      ctx.lineTo(x+barW/2,barTop+barH);
-      ctx.lineTo(x-barW/2,barTop+barH);
-    }else{
-      var bot=barTop+barH;
-      ctx.moveTo(x-barW/2,barTop);
-      ctx.lineTo(x+barW/2,barTop);
-      ctx.lineTo(x+barW/2,bot-rad);
-      ctx.quadraticCurveTo(x+barW/2,bot,x+barW/2-rad,bot);
-      ctx.lineTo(x-barW/2+rad,bot);
-      ctx.quadraticCurveTo(x-barW/2,bot,x-barW/2,bot-rad);
-    }
-    ctx.closePath();
-    ctx.fill();
-    ctx.globalAlpha=1;
-
-    // Highlight today's bar with an outline
-    var barDate=(b.date||'').split('T')[0];
-    if(todayDateStr&&barDate===todayDateStr){
-      ctx.strokeStyle='#0b1f3a';
-      ctx.lineWidth=1.5;
-      ctx.strokeRect(x-barW/2-2,Math.min(y1,y2)-2,barW+4,Math.max(Math.abs(y2-y1),2)+4);
-      // "Today" pill above the bar
-      ctx.fillStyle='#0b1f3a';
-      ctx.font='600 10px -apple-system,system-ui,sans-serif';
-      ctx.textAlign='center';
-      ctx.fillText('Today',x,Math.min(y1,y2)-8);
-    }
+  // Draw the line — break on gaps (null bps) so missing days don't connect artificially
+  ctx.strokeStyle='#6e7f77';
+  ctx.lineWidth=2;
+  ctx.lineJoin='round';
+  ctx.lineCap='round';
+  ctx.beginPath();
+  var pathStarted=false;
+  points.forEach(function(p,i){
+    if(p.bps===null){pathStarted=false;return;}
+    var x=xP(i),y=yP(p.bps);
+    if(!pathStarted){ctx.moveTo(x,y);pathStarted=true;}
+    else{ctx.lineTo(x,y);}
   });
+  ctx.stroke();
+
+  // Soft shaded area beneath the line (above zero = green tint, below zero = red tint)
+  // Build continuous segments between gaps and fill each to the zero line.
+  var segStart=-1;
+  for(var i=0;i<points.length;i++){
+    if(points[i].bps!==null){
+      if(segStart===-1)segStart=i;
+      if(i===points.length-1||points[i+1].bps===null){
+        // flush this segment
+        if(i>segStart){
+          ctx.beginPath();
+          for(var j=segStart;j<=i;j++){
+            var x=xP(j),y=yP(points[j].bps);
+            if(j===segStart)ctx.moveTo(x,y);
+            else ctx.lineTo(x,y);
+          }
+          // close along zero line back to start
+          ctx.lineTo(xP(i),zeroY);
+          ctx.lineTo(xP(segStart),zeroY);
+          ctx.closePath();
+          ctx.fillStyle='rgba(110,127,119,0.1)';
+          ctx.fill();
+        }
+        segStart=-1;
+      }
+    }
+  }
+
+  // Dots at each data point, colored by direction
+  points.forEach(function(p,i){
+    if(p.bps===null)return;
+    var x=xP(i),y=yP(p.bps);
+    var color=p.bps>0?'#16a34a':(p.bps<0?'#dc2626':'#6e7f77');
+    ctx.fillStyle=color;
+    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+  });
+
+  // Highlight today's point (rightmost slot)
+  var todayIdx=points.length-1;
+  var todayP=points[todayIdx];
+  if(todayP){
+    var tx=xP(todayIdx);
+    var ty=todayP.bps!==null?yP(todayP.bps):zeroY;
+    // Larger ring
+    ctx.strokeStyle='#0b1f3a';
+    ctx.lineWidth=1.8;
+    ctx.beginPath();ctx.arc(tx,ty,6,0,Math.PI*2);ctx.stroke();
+    if(todayP.bps!==null){
+      ctx.fillStyle=todayP.bps>0?'#16a34a':(todayP.bps<0?'#dc2626':'#6e7f77');
+      ctx.beginPath();ctx.arc(tx,ty,3,0,Math.PI*2);ctx.fill();
+    }
+    // "Today" label above
+    ctx.fillStyle='#0b1f3a';
+    ctx.font='600 10px -apple-system,system-ui,sans-serif';
+    ctx.textAlign='center';
+    var labelY=Math.max(pad.top+10,ty-12);
+    ctx.fillText('Today',tx,labelY);
+  }
 
   // Date labels along the bottom
   ctx.fillStyle='#9a9285';
@@ -2081,11 +2124,11 @@ function mktsDrawBarsFull(ctx,w,h,allData,displayStart,data){
   var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   mktsChartXPositions=[];
   var lastLabelX=-100;
-  bars.forEach(function(b,i){
+  points.forEach(function(p,i){
     var x=xP(i);
-    mktsChartXPositions.push({x:x,date:b.date});
-    if(x-lastLabelX<46)return; // prevent label collision
-    var dt=new Date((b.date||'').split('T')[0]+'T12:00:00');
+    mktsChartXPositions.push({x:x,date:p.date});
+    if(x-lastLabelX<50)return;
+    var dt=new Date((p.date||'')+'T12:00:00');
     if(isNaN(dt.getTime()))return;
     var txt=months[dt.getMonth()]+' '+dt.getDate();
     ctx.fillText(txt,x,pad.top+ch+18);
