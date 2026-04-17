@@ -555,6 +555,12 @@ body {
       <input type="text" id="brokerage" class="form-input" placeholder="Your brokerage name" required>
     </div>
 
+    <div class="form-group">
+      <label class="form-label" for="licenseNumber">Real Estate License Number *</label>
+      <input type="text" id="licenseNumber" class="form-input" placeholder="Your state license number" required>
+      <div class="form-helper">Required for co-branded flyers and marketing materials.</div>
+    </div>
+
     <div class="form-row">
       <div class="form-group">
         <label class="form-label" for="agentTitle">Title</label>
@@ -703,6 +709,7 @@ signupForm.addEventListener('submit', async function(e) {
   var fullName = document.getElementById('fullName').value.trim();
   var email = document.getElementById('email').value.trim().toLowerCase();
   var brokerage = document.getElementById('brokerage').value.trim();
+  var licenseNumber = document.getElementById('licenseNumber').value.trim();
   var agentTitle = document.getElementById('agentTitle').value.trim();
   var phone = document.getElementById('phone').value.trim();
   var website = document.getElementById('website').value.trim();
@@ -761,21 +768,22 @@ signupForm.addEventListener('submit', async function(e) {
     if (data.aeId) sessionStorage.setItem('agentEdgeAeId', data.aeId);
     if (data.trialStart) sessionStorage.setItem('agentEdgeTrialStart', data.trialStart);
 
-    // If partner and has headshot, upload it via profile endpoint
-    if (isPartnerPath && headshotData) {
-      try {
-        await fetch('https://agent-edge-backend.vercel.app/api/profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: email,
-            headshot: headshotData
-          })
-        });
-        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
-      } catch (hsErr) {
-        console.error('Headshot upload failed:', hsErr);
+    // Save license number to profile for everyone; add headshot if provided (partners only)
+    try {
+      var profileBody = { email: email, licenseNumber: licenseNumber };
+      if (isPartnerPath && headshotData) {
+        profileBody.headshot = headshotData;
       }
+      await fetch('https://agent-edge-backend.vercel.app/api/profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profileBody)
+      });
+      if (isPartnerPath && headshotData) {
+        sessionStorage.setItem('agentEdgeHasHeadshot', 'true');
+      }
+    } catch (profileErr) {
+      console.error('Profile save failed:', profileErr);
     }
 
     // Show success and redirect
