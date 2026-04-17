@@ -1178,7 +1178,8 @@
     </div>
 
     <!-- RATE TICKER - inside hero glass, near bottom -->
-    <div style="position:absolute;bottom:24px;left:0;width:100%;overflow:hidden;background:#6e7f77;color:white;padding:10px 0 6px 0;z-index:3;">
+    <div style="position:absolute;bottom:24px;left:0;width:100%;overflow:hidden;background:#6e7f77;color:white;padding:8px 0 6px 0;z-index:3;">
+      <div style="text-align:center;font-size:11px;font-weight:600;letter-spacing:1.2px;color:rgba(255,255,255,0.85);text-transform:uppercase;margin-bottom:4px;">National Average Rates <span id="rateTickerAsOf" style="font-weight:400;text-transform:none;letter-spacing:0.3px;color:rgba(255,255,255,0.65);"></span></div>
       <div style="display:flex;width:200%;animation:rateTicker 18s linear infinite;">
         <div class="rate-ticker-line" style="display:flex;width:50%;justify-content:space-around;">
           <span style="white-space:nowrap;font-weight:500;font-size:14px;letter-spacing:0.3px;">Loading rates...</span>
@@ -1209,6 +1210,18 @@
         if (r['30yearJumbo']) html += '<span style="' + spanStyle + '">Jumbo ' + r['30yearJumbo'].toFixed(3) + '%</span>';
         if (r['15year'])      html += '<span style="' + spanStyle + '">15-Year ' + r['15year'].toFixed(3) + '%</span>';
         document.querySelectorAll('.rate-ticker-line').forEach(function(el) { el.innerHTML = html; });
+
+        // Populate the "as of" date
+        if (data.asOf) {
+          var parts = data.asOf.split('-');
+          if (parts.length === 3) {
+            var dt = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            var asOfText = 'as of ' + months[dt.getMonth()] + ' ' + dt.getDate();
+            var asOfEl = document.getElementById('rateTickerAsOf');
+            if (asOfEl) asOfEl.textContent = asOfText;
+          }
+        }
       })
       .catch(function(err) { console.error('Rate fetch error:', err); });
   })();
