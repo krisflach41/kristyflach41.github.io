@@ -1692,7 +1692,7 @@
       </div>
       <p style="color:var(--text-muted);font-size:12px;margin-bottom:14px;">Paste the raw market update. Claude rewrites it into Realtor Partner and Client-Friendly formats.</p>
 
-      <textarea id="rawMarketInput" class="bc-textarea" placeholder="Paste the raw market update here..." onclick="this.focus()"></textarea>
+      <textarea id="rawMarketInput" class="bc-textarea" placeholder="Paste the raw market update here..."></textarea>
 
       <div style="margin-top:12px;">
         <button id="rewriteBtn" onclick="rewriteSummaries()" class="bc-btn">Rewrite Summaries</button>
@@ -1940,14 +1940,9 @@ setTimeout(mbsLoadToday, 1000);
 
   document.addEventListener('paste', function(e) {
     var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
-    // Only intercept if clipboard contains an image — never steal text pastes meant for textarea/input
+    var tag=e.target.tagName.toLowerCase(); if(tag==='textarea'||tag==='input') return;
     var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
-    var hasImage=false;
-    for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { hasImage=true; break; } }
-    if(!hasImage) return; // text paste — let browser route it normally to whatever is focused
-    var tag=e.target.tagName.toLowerCase(); if(tag==='textarea'||tag==='input') return; // image paste but inside a text field — still leave it alone
-    e.preventDefault();
-    for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { handleCalImg(items[i].getAsFile()); break; } }
+    for(var i=0;i<items.length;i++) { if(items[i].type.startsWith('image/')) { e.preventDefault(); handleCalImg(items[i].getAsFile()); break; } }
   });
 
   window.handleCalImg = function(file) {
