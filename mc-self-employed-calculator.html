@@ -19,13 +19,11 @@ body {
 }
 
 .calculator-container {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 50px 40px;
   border-radius: 22px;
-  background: rgba(255,255,255,0.58);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: rgba(255,255,255,0.97);
   border: 1px solid rgba(255,255,255,0.65);
   box-shadow: 0 20px 55px rgba(0,0,0,0.10);
 }
@@ -44,61 +42,119 @@ h1 {
   font-size: 15px;
 }
 
-/* ===== DISCLAIMER ===== */
-.disclaimer {
-  background: linear-gradient(135deg, #fff3cd 0%, #ffe5a3 100%);
-  border: 2px solid #ff9800;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 35px;
-  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.15);
-}
-
-.disclaimer h3 {
-  margin: 0 0 12px 0;
-  color: #e65100;
-  font-size: 18px;
+/* ===== TABS ===== */
+.tab-bar {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 6px;
+  border-bottom: 2px solid rgba(11,78,162,0.15);
+  margin-bottom: 25px;
+  flex-wrap: wrap;
 }
 
-.disclaimer p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #5d4037;
+.tab-btn {
+  padding: 12px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: 600;
+  font-size: 15px;
+  color: #666;
+  cursor: pointer;
+  margin-bottom: -2px;
+  transition: 0.2s ease;
 }
 
-.disclaimer ul {
-  margin: 10px 0 0 20px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #5d4037;
+.tab-btn.active {
+  color: #0b4ea2;
+  border-bottom-color: #0b4ea2;
 }
 
-/* ===== INCOME SECTIONS ===== */
-.income-section {
+.tab-btn:hover {
+  color: #0b4ea2;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ===== BUSINESS CARDS ===== */
+.business-card {
   background: rgba(11,78,162,0.04);
-  border: 1px solid rgba(11,78,162,0.15);
+  border: 1px solid rgba(11,78,162,0.20);
   border-radius: 12px;
-  padding: 25px;
+  padding: 22px;
   margin-bottom: 25px;
 }
 
-.income-section h2 {
-  margin: 0 0 20px 0;
-  font-size: 22px;
-  color: #0b4ea2;
+.business-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
   border-bottom: 2px solid #0b4ea2;
-  padding-bottom: 10px;
 }
 
+.business-card-header h2 {
+  margin: 0;
+  font-size: 20px;
+  color: #0b4ea2;
+}
+
+.business-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-icon {
+  background: white;
+  border: 1px solid rgba(11,78,162,0.3);
+  color: #0b4ea2;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s ease;
+}
+
+.btn-icon:hover { background: rgba(11,78,162,0.08); }
+.btn-icon.danger { color: #c0392b; border-color: rgba(192,57,43,0.3); }
+.btn-icon.danger:hover { background: rgba(192,57,43,0.08); }
+
+/* ===== YEAR CARDS ===== */
+.year-card {
+  background: rgba(255,255,255,0.65);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.year-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.year-card-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #0b1f3a;
+}
+
+/* ===== FORM ===== */
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-bottom: 18px;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+
+.form-row.three-col {
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .form-group {
@@ -108,104 +164,223 @@ h1 {
 
 label {
   font-weight: 600;
-  margin-bottom: 6px;
-  font-size: 14px;
+  margin-bottom: 5px;
+  font-size: 13px;
   color: #0b1f3a;
 }
 
 .label-helper {
-  font-size: 12px;
+  font-size: 11px;
   color: #666;
   font-weight: 400;
-  margin-left: 4px;
+  margin-left: 3px;
 }
 
 input[type="number"],
 input[type="text"],
+input[type="date"],
 select {
   width: 100%;
-  padding: 10px 14px;
+  padding: 9px 12px;
   border: 1px solid rgba(11,78,162,0.2);
-  border-radius: 8px;
-  font-size: 15px;
-  background: rgba(255,255,255,0.7);
-  transition: all 0.25s ease;
+  border-radius: 7px;
+  font-size: 14px;
+  background: rgba(255,255,255,0.8);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  color: #0b1f3a;
 }
 
-input[type="number"]:focus,
-input[type="text"]:focus,
-select:focus {
+input:focus, select:focus {
   outline: none;
   border-color: #0b4ea2;
-  background: rgba(255,255,255,0.95);
+  background: white;
   box-shadow: 0 0 0 3px rgba(11,78,162,0.1);
 }
 
-/* ===== INFO BOX ===== */
-.info-box {
-  background: rgba(11,78,162,0.08);
-  border-left: 4px solid #0b4ea2;
-  padding: 15px;
-  margin: 15px 0;
-  border-radius: 6px;
-}
-
-.info-box p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #0b1f3a;
-}
-
-/* ===== YEAR COMPARISON ===== */
-.year-comparison {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 25px;
-}
-
-.year-box {
-  background: rgba(255,255,255,0.6);
-  border: 2px solid rgba(11,78,162,0.2);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.year-box.recommended {
-  border-color: #27ae60;
-  background: rgba(46,204,113,0.08);
-}
-
-.year-box h3 {
-  margin: 0 0 15px 0;
-  font-size: 18px;
-  color: #0b1f3a;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.year-box .badge {
+.field-hint {
   font-size: 11px;
-  font-weight: 700;
-  padding: 4px 10px;
-  border-radius: 12px;
-  background: #27ae60;
-  color: white;
+  color: #666;
+  margin-top: 3px;
+  font-style: italic;
 }
 
-.year-box .amount {
-  font-size: 28px;
+.section-subtitle {
+  font-size: 14px;
   font-weight: 700;
+  margin: 18px 0 10px 0;
   color: #0b4ea2;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 10px 0;
 }
 
-.year-box .label {
+.checkbox-row input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkbox-row label {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ===== INFO BOXES ===== */
+.info-box {
+  background: rgba(11,78,162,0.08);
+  border-left: 4px solid #0b4ea2;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 6px;
   font-size: 13px;
-  color: #666;
-  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.warn-box {
+  background: rgba(255,193,7,0.12);
+  border-left: 4px solid #ff9800;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #5d4037;
+}
+
+.error-box {
+  background: rgba(192,57,43,0.10);
+  border-left: 4px solid #c0392b;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #7d2620;
+}
+
+.success-box {
+  background: rgba(46,204,113,0.10);
+  border-left: 4px solid #27ae60;
+  padding: 12px 15px;
+  margin: 12px 0;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #145a32;
+}
+
+/* ===== BREAKDOWN ===== */
+.breakdown-table {
+  background: rgba(255,255,255,0.7);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 18px;
+  border: 1px solid rgba(11,78,162,0.12);
+}
+
+.breakdown-table h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #0b1f3a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.breakdown-row:last-child {
+  border-bottom: none;
+  font-weight: 700;
+  font-size: 15px;
+  padding-top: 10px;
+  margin-top: 6px;
+  border-top: 2px solid #0b4ea2;
+}
+
+.breakdown-label { color: #0b1f3a; }
+.breakdown-value { color: #0b4ea2; font-weight: 600; }
+
+/* ===== SUMMARY ===== */
+.summary-section {
+  background: rgba(11,78,162,0.04);
+  border: 1px solid rgba(11,78,162,0.15);
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+}
+
+.summary-section h2 {
+  margin: 0 0 15px 0;
+  font-size: 22px;
+  color: #0b4ea2;
+  border-bottom: 2px solid #0b4ea2;
+  padding-bottom: 10px;
+}
+
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.summary-table th, .summary-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.summary-table th {
+  background: rgba(11,78,162,0.10);
+  color: #0b1f3a;
+  font-weight: 700;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.summary-table td.amt { text-align: right; font-variant-numeric: tabular-nums; }
+.summary-table tr.excluded td { opacity: 0.45; text-decoration: line-through; }
+.summary-table tr.subtotal td {
+  background: rgba(11,78,162,0.05);
+  font-weight: 700;
+  border-top: 2px solid rgba(11,78,162,0.2);
+}
+
+.summary-table input[type="checkbox"] {
+  width: 16px; height: 16px; margin: 0; cursor: pointer;
+}
+
+.summary-table .biz-name { font-weight: 600; color: #0b1f3a; }
+.summary-table .method-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(11,78,162,0.12);
+  color: #0b4ea2;
+  font-weight: 600;
+}
+
+.summary-table .method-tag.warn {
+  background: rgba(255,152,0,0.15);
+  color: #b85a00;
 }
 
 /* ===== TOTAL INCOME BOX ===== */
@@ -214,93 +389,82 @@ select:focus {
   color: white;
   border-radius: 16px;
   padding: 30px;
-  margin-top: 40px;
+  margin-top: 30px;
   text-align: center;
   box-shadow: 0 15px 40px rgba(11,78,162,0.25);
 }
 
 .total-income h2 {
-  margin: 0 0 15px 0;
-  font-size: 24px;
+  margin: 0 0 12px 0;
+  font-size: 22px;
   color: white;
   border: none;
   padding: 0;
 }
 
 .total-income .amount {
-  font-size: 48px;
+  font-size: 44px;
   font-weight: 700;
-  margin: 10px 0;
+  margin: 8px 0;
 }
 
 .total-income .helper {
   font-size: 14px;
   opacity: 0.9;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
-/* ===== BREAKDOWN TABLE ===== */
-.breakdown-table {
-  background: rgba(255,255,255,0.6);
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 25px;
+.total-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
 }
 
-.breakdown-table h3 {
-  margin: 0 0 15px 0;
-  font-size: 18px;
-  color: #0b1f3a;
+.total-card {
+  background: rgba(255,255,255,0.12);
+  padding: 18px;
+  border-radius: 10px;
 }
 
-.breakdown-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+.total-card .label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
 }
 
-.breakdown-row:last-child {
-  border-bottom: none;
+.total-card .val {
+  font-size: 22px;
   font-weight: 700;
-  font-size: 16px;
-  padding-top: 15px;
-  margin-top: 10px;
-  border-top: 2px solid #0b4ea2;
-}
-
-.breakdown-label {
-  color: #0b1f3a;
-}
-
-.breakdown-value {
-  color: #0b4ea2;
-  font-weight: 600;
+  margin-top: 6px;
 }
 
 /* ===== BUTTONS ===== */
 .button-group {
   display: flex;
-  gap: 15px;
-  margin-top: 30px;
+  gap: 12px;
+  margin-top: 25px;
+  flex-wrap: wrap;
 }
 
 .btn {
   flex: 1;
-  padding: 14px 24px;
+  min-width: 140px;
+  padding: 13px 22px;
   border: none;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
-  transition: 0.25s ease;
+  transition: 0.2s ease;
+  font-family: inherit;
 }
 
 .btn-primary {
   background: #0b4ea2;
   color: white;
 }
-
 .btn-primary:hover {
   background: #0a3d7f;
   transform: translateY(-1px);
@@ -312,100 +476,61 @@ select:focus {
   color: #0b4ea2;
   border: 2px solid #0b4ea2;
 }
+.btn-secondary:hover { background: rgba(11,78,162,0.05); }
 
-.btn-secondary:hover {
-  background: rgba(11,78,162,0.05);
+.btn-add {
+  background: #27ae60;
+  color: white;
+}
+.btn-add:hover {
+  background: #1e8449;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(39,174,96,0.3);
 }
 
-/* ===== BACK LINK ===== */
-.back-link {
-  text-align: center;
-  margin-top: 30px;
+/* ===== LIQUIDITY ===== */
+.liquidity-result {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-left: 8px;
 }
 
-.back-link a {
-  color: #0b4ea2;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.25s ease;
-}
-
-.back-link a:hover {
-  color: #0a3d7f;
-  text-decoration: underline;
-}
+.liq-pass { background: rgba(39,174,96,0.18); color: #1e8449; }
+.liq-fail { background: rgba(192,57,43,0.18); color: #a93226; }
+.liq-na { background: rgba(102,102,102,0.18); color: #555; }
 
 /* ===== RESPONSIVE ===== */
-@media (max-width: 640px) {
-  .form-row {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .year-comparison {
-    grid-template-columns: 1fr;
-  }
-  
-  .calculator-container {
-    padding: 20px 14px;
-    border-radius: 12px;
-  }
-
-  body {
-    padding: 16px 10px 60px 10px;
-  }
-
+@media (max-width: 720px) {
+  .form-row, .form-row.three-col { grid-template-columns: 1fr; gap: 10px; }
+  .total-grid { grid-template-columns: 1fr; }
+  .calculator-container { padding: 24px 14px; border-radius: 12px; }
+  body { padding: 16px 8px 60px 8px; }
   h1 { font-size: 22px; }
-  .subtitle { font-size: 13px; }
-
-  .income-section {
-    padding: 16px 12px;
-    margin-bottom: 16px;
-  }
-
-  .income-section h2 {
-    font-size: 17px;
-  }
-  
-  .total-income .amount {
-    font-size: 32px;
-  }
+  .business-card { padding: 14px; }
+  .summary-table { font-size: 12px; }
+  .summary-table th, .summary-table td { padding: 7px 6px; }
 }
 
-  .back-btn {
-  display: inline-block;
-  margin-top: 40px;
-  padding: 12px 24px;
-  border-radius: 25px;
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255,255,255,0.6);
-  text-decoration: none;
-  color: #0b1f3a;
-  font-weight: 600;
-  transition: all 0.25s ease;
-}
-
-.back-btn:hover {
-  background: rgba(255,255,255,0.55);
-  transform: translateY(-2px);
-}
-
-/* Fix for iframe embedding - solid background */
-.calculator-container {
-  background: rgba(255,255,255,0.97) !important;
-  backdrop-filter: none !important;
+@media print {
+  body { background: white; padding: 0; }
+  .calculator-container { box-shadow: none; max-width: 100%; padding: 20px; }
+  .button-group, .business-actions, .btn-icon { display: none !important; }
+  .tab-bar { display: none; }
+  .tab-panel { display: block !important; page-break-after: always; }
+  .tab-panel:last-child { page-break-after: auto; }
 }
 </style>
-<script src="tracking.js"></script>
-<script src="feature-gate.js"></script>
 </head>
 
 <body>
 
 <div class="calculator-container">
   <h1>Self-Employed Income Calculator</h1>
-  <p class="subtitle">Calculate qualifying income from business tax returns</p>
+  <p class="subtitle">Calculate qualifying income from business tax returns — multi-business, multi-year</p>
+
   <div class="form-row" style="max-width:300px;margin-bottom:20px;">
     <div class="form-group">
       <label>Date Completed</label>
@@ -413,461 +538,979 @@ select:focus {
     </div>
   </div>
 
-  <!-- DISCLAIMER -->
+  <!-- TABS -->
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" data-tab="businesses">Businesses</button>
+    <button class="tab-btn" data-tab="summary">Summary Sheet</button>
+  </div>
 
-  <!-- BUSINESS INFORMATION -->
-  <div class="income-section">
-    <h2>Business Information</h2>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Business Type</label>
-        <select id="businessType">
-          <option value="sole-prop">Sole Proprietor (Schedule C)</option>
-          <option value="scorp">S-Corporation (1120S)</option>
-          <option value="partnership">Partnership (1065)</option>
-          <option value="llc">LLC (taxed as S-Corp or Partnership)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Ownership Percentage <span class="label-helper">(%)</span></label>
-        <input type="number" id="ownershipPct" min="0" max="100" step="1" value="100" placeholder="100">
-      </div>
-    </div>
+  <!-- BUSINESSES TAB -->
+  <div class="tab-panel active" id="tab-businesses">
 
     <div class="info-box">
-      <p>💡 <strong>Note:</strong> If ownership is less than 100%, only your percentage of the business income will be used for qualification purposes.</p>
+      💡 <strong>How to use:</strong> Add a business below. For each business, add as many tax years as you have (typically 2). The calculator applies the <strong>Universal Trend Rule</strong>: if current year income is lower than prior year, only the current year is used. If income is equal or higher, a 24-month average is used.
+    </div>
+
+    <div id="businessesContainer"></div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn btn-add" onclick="addBusiness()">+ Add Another Business</button>
     </div>
   </div>
 
-  <!-- MOST RECENT YEAR -->
-  <div class="income-section">
-    <h2>Most Recent Tax Year (Year 1)</h2>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Tax Year</label>
-        <input type="number" id="year1" min="2020" max="2030" step="1" value="2024" placeholder="2024">
+  <!-- SUMMARY TAB -->
+  <div class="tab-panel" id="tab-summary">
+    <div class="summary-section">
+      <h2>Income Summary — All Businesses &amp; Years</h2>
+      <div class="info-box">
+        💡 Use the checkboxes to <strong>include or exclude</strong> any business or any individual year. Excluded items are not counted in the total.
       </div>
-      <div class="form-group">
-        <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
-        <input type="text" inputmode="decimal" id="year1NetProfit" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
-      </div>
+      <div id="summaryContent"></div>
     </div>
 
-    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">Add-Backs (Non-Cash Expenses)</h3>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Depreciation <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year1Depreciation" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
-      </div>
-      <div class="form-group">
-        <label>Amortization <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year1Amortization" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
+    <!-- TOTAL INCOME -->
+    <div class="total-income">
+      <h2>Qualifying Monthly Income</h2>
+      <div class="amount" id="grandTotalMonthly">$0.00</div>
+      <div class="helper" id="grandTotalHelper">Sum of all included businesses</div>
+
+      <div class="total-grid">
+        <div class="total-card">
+          <div class="label">Total Annual</div>
+          <div class="val" id="grandTotalAnnual">$0.00</div>
+        </div>
+        <div class="total-card">
+          <div class="label">Businesses Included</div>
+          <div class="val" id="businessesIncludedCount">0</div>
+        </div>
       </div>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Depletion <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year1Depletion" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
-      </div>
-      <div class="form-group">
-        <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year1OtherAddBack" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
-      </div>
-    </div>
-
-    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">One-Time Adjustments</h3>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
-        <input type="text" inputmode="decimal" id="year1OneTimeLoss" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
-      </div>
-      <div class="form-group">
-        <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
-        <input type="text" inputmode="decimal" id="year1OneTimeGain" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
-      </div>
-    </div>
-
-    <!-- YEAR 1 BREAKDOWN -->
-    <div class="breakdown-table">
-      <h3>Year 1 Calculation Breakdown</h3>
-      <div class="breakdown-row">
-        <span class="breakdown-label">Net Profit/Loss</span>
-        <span class="breakdown-value" id="year1NetDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">+ Depreciation/Amortization/Depletion</span>
-        <span class="breakdown-value" id="year1AddBacksDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">+ One-Time Losses</span>
-        <span class="breakdown-value" id="year1LossDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">- One-Time Gains</span>
-        <span class="breakdown-value" id="year1GainDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">= Adjusted Annual Income</span>
-        <span class="breakdown-value" id="year1AdjustedDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">× Ownership Percentage</span>
-        <span class="breakdown-value" id="year1OwnershipDisplay">100%</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label"><strong>Total Year 1 Annual Income</strong></span>
-        <span class="breakdown-value" id="year1TotalDisplay">$0.00</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRIOR YEAR -->
-  <div class="income-section">
-    <h2>Prior Tax Year (Year 2)</h2>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Tax Year</label>
-        <input type="number" id="year2" min="2020" max="2030" step="1" value="2023" placeholder="2023">
-      </div>
-      <div class="form-group">
-        <label>Net Profit/Loss <span class="label-helper">(from tax return, $)</span></label>
-        <input type="text" inputmode="decimal" id="year2NetProfit" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 31 | 1120S Line 21 | 1065 Schedule K Line 1</div>
-      </div>
-    </div>
-
-    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">Add-Backs (Non-Cash Expenses)</h3>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>Depreciation <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year2Depreciation" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 13 | 1120S Line 14 | 1065 Line 16c</div>
-      </div>
-      <div class="form-group">
-        <label>Amortization <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year2Amortization" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Form 4562 Line 42 or 44</div>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Depletion <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year2Depletion" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Schedule C Line 12 | 1120S Line 13</div>
-      </div>
-      <div class="form-group">
-        <label>Other Non-Cash Expenses <span class="label-helper">($)</span></label>
-        <input type="text" inputmode="decimal" id="year2OtherAddBack" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Meal/entertainment disallowances, home office (if applicable)</div>
-      </div>
-    </div>
-
-    <h3 style="font-size: 16px; margin: 25px 0 15px 0; color: #0b1f3a;">One-Time Adjustments</h3>
-    
-    <div class="form-row">
-      <div class="form-group">
-        <label>One-Time Losses <span class="label-helper">(add back, $)</span></label>
-        <input type="text" inputmode="decimal" id="year2OneTimeLoss" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary losses (requires underwriter approval)</div>
-      </div>
-      <div class="form-group">
-        <label>One-Time Gains <span class="label-helper">(subtract, $)</span></label>
-        <input type="text" inputmode="decimal" id="year2OneTimeGain" placeholder="0.00">
-        <div style="font-size: 12px; color: #666; margin-top: 4px;">📋 Extraordinary gains (PPP forgiveness, asset sales, etc.)</div>
-      </div>
-    </div>
-
-    <!-- YEAR 2 BREAKDOWN -->
-    <div class="breakdown-table">
-      <h3>Year 2 Calculation Breakdown</h3>
-      <div class="breakdown-row">
-        <span class="breakdown-label">Net Profit/Loss</span>
-        <span class="breakdown-value" id="year2NetDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">+ Depreciation/Amortization/Depletion</span>
-        <span class="breakdown-value" id="year2AddBacksDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">+ One-Time Losses</span>
-        <span class="breakdown-value" id="year2LossDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">- One-Time Gains</span>
-        <span class="breakdown-value" id="year2GainDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">= Adjusted Annual Income</span>
-        <span class="breakdown-value" id="year2AdjustedDisplay">$0.00</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label">× Ownership Percentage</span>
-        <span class="breakdown-value" id="year2OwnershipDisplay">100%</span>
-      </div>
-      <div class="breakdown-row">
-        <span class="breakdown-label"><strong>Total Year 2 Annual Income</strong></span>
-        <span class="breakdown-value" id="year2TotalDisplay">$0.00</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- YEAR COMPARISON -->
-  <div class="year-comparison">
-    <div class="year-box" id="mostRecentBox">
-      <h3>
-        Most Recent Year Only
-        <span class="badge" id="mostRecentBadge" style="display: none;">RECOMMENDED</span>
-      </h3>
-      <div class="amount" id="mostRecentAmount">$0.00</div>
-      <div class="label">per month</div>
-    </div>
-
-    <div class="year-box" id="averageBox">
-      <h3>
-        2-Year Average
-        <span class="badge" id="averageBadge" style="display: none;">RECOMMENDED</span>
-      </h3>
-      <div class="amount" id="averageAmount">$0.00</div>
-      <div class="label">per month</div>
-    </div>
-  </div>
-
-  <div class="info-box" style="margin-top: 20px;">
-    <p id="recommendationText">💡 Enter income data to see which calculation method is more conservative and typically used for underwriting.</p>
-  </div>
-
-  <!-- TOTAL INCOME -->
-  <div class="total-income">
-    <h2>Qualifying Monthly Income</h2>
-    <div class="amount" id="totalIncome">$0.00</div>
-    <div class="helper" id="totalHelper">Conservative calculation will be used for qualification</div>
   </div>
 
   <!-- BUTTONS -->
   <div class="button-group">
     <button class="btn btn-secondary" onclick="resetCalculator()">Clear All</button>
-    <button class="btn btn-primary" onclick="printCalculator()">Print / Save PDF</button>
+    <button class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
   </div>
 
+  <div class="warn-box" style="margin-top: 25px;">
+    <strong>⚠️ Disclaimer:</strong> This calculator is an estimating tool based on agency-approved methodology (MGIC SAM, LoanBeam, Fannie Mae SEI 1084). Actual underwriting may apply additional adjustments. Always verify with your lender. Sources: MGIC SAM Worksheet (2025) | LoanBeam User Guide | Fannie Mae Selling Guide.
+  </div>
+</div>
 
 <script>
-/* ===========================
-   SELF-EMPLOYED CALCULATOR
-=========================== */
+/* ============================================================
+   SELF-EMPLOYED INCOME CALCULATOR
+   Multi-business, multi-year, agency-approved methodology
+   ============================================================ */
 
-// Format currency
-function formatCurrency(amount) {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(amount);
-}
+// ---------- STATE ----------
+let businesses = [];        // array of business objects
+let businessIdCounter = 0;
+let yearIdCounter = 0;
 
-// Calculate Year 1 income
-
-// Auto-format money fields
-function formatMoneyInput(el) {
-  var raw = el.value.replace(/[^0-9.\-]/g, '');
-  var num = parseFloat(raw);
-  if (isNaN(num) || raw === '') { el.dataset.rawValue = ''; el.value = ''; return; }
-  el.dataset.rawValue = raw;
-  el.value = '$' + num.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-}
-function getMoneyValue(id) {
-  var el = document.getElementById(id);
-  if (!el) return 0;
-  var raw = el.dataset.rawValue !== undefined ? el.dataset.rawValue : el.value;
-  return parseFloat(String(raw).replace(/[^0-9.-]/g, '')) || 0;
-}
-
-function calculateYear1() {
-  const netProfit = getMoneyValue('year1NetProfit');
-  const depreciation = getMoneyValue('year1Depreciation');
-  const amortization = getMoneyValue('year1Amortization');
-  const depletion = getMoneyValue('year1Depletion');
-  const otherAddBack = parseFloat(document.getElementById('year1OtherAddBack').value) || 0;
-  const oneTimeLoss = parseFloat(document.getElementById('year1OneTimeLoss').value) || 0;
-  const oneTimeGain = parseFloat(document.getElementById('year1OneTimeGain').value) || 0;
-  const ownershipPct = parseFloat(document.getElementById('ownershipPct').value) || 100;
-  
-  const totalAddBacks = depreciation + amortization + depletion + otherAddBack;
-  const adjustedIncome = netProfit + totalAddBacks + oneTimeLoss - oneTimeGain;
-  const totalIncome = adjustedIncome * (ownershipPct / 100);
-  
-  // Update breakdown display
-  document.getElementById('year1NetDisplay').textContent = formatCurrency(netProfit);
-  document.getElementById('year1AddBacksDisplay').textContent = formatCurrency(totalAddBacks);
-  document.getElementById('year1LossDisplay').textContent = formatCurrency(oneTimeLoss);
-  document.getElementById('year1GainDisplay').textContent = formatCurrency(oneTimeGain);
-  document.getElementById('year1AdjustedDisplay').textContent = formatCurrency(adjustedIncome);
-  document.getElementById('year1OwnershipDisplay').textContent = ownershipPct + '%';
-  document.getElementById('year1TotalDisplay').textContent = formatCurrency(totalIncome);
-  
-  return totalIncome;
-}
-
-// Calculate Year 2 income
-function calculateYear2() {
-  const netProfit = getMoneyValue('year2NetProfit');
-  const depreciation = getMoneyValue('year2Depreciation');
-  const amortization = getMoneyValue('year2Amortization');
-  const depletion = getMoneyValue('year2Depletion');
-  const otherAddBack = parseFloat(document.getElementById('year2OtherAddBack').value) || 0;
-  const oneTimeLoss = parseFloat(document.getElementById('year2OneTimeLoss').value) || 0;
-  const oneTimeGain = parseFloat(document.getElementById('year2OneTimeGain').value) || 0;
-  const ownershipPct = parseFloat(document.getElementById('ownershipPct').value) || 100;
-  
-  const totalAddBacks = depreciation + amortization + depletion + otherAddBack;
-  const adjustedIncome = netProfit + totalAddBacks + oneTimeLoss - oneTimeGain;
-  const totalIncome = adjustedIncome * (ownershipPct / 100);
-  
-  // Update breakdown display
-  document.getElementById('year2NetDisplay').textContent = formatCurrency(netProfit);
-  document.getElementById('year2AddBacksDisplay').textContent = formatCurrency(totalAddBacks);
-  document.getElementById('year2LossDisplay').textContent = formatCurrency(oneTimeLoss);
-  document.getElementById('year2GainDisplay').textContent = formatCurrency(oneTimeGain);
-  document.getElementById('year2AdjustedDisplay').textContent = formatCurrency(adjustedIncome);
-  document.getElementById('year2OwnershipDisplay').textContent = ownershipPct + '%';
-  document.getElementById('year2TotalDisplay').textContent = formatCurrency(totalIncome);
-  
-  return totalIncome;
-}
-
-// Calculate totals and determine recommendation
-function calculateTotal() {
-  const year1Annual = calculateYear1();
-  const year2Annual = calculateYear2();
-  
-  const year1Monthly = year1Annual / 12;
-  const averageMonthly = (year1Annual + year2Annual) / 24;
-  
-  // Display both options
-  document.getElementById('mostRecentAmount').textContent = formatCurrency(year1Monthly);
-  document.getElementById('averageAmount').textContent = formatCurrency(averageMonthly);
-  
-  // Determine which is more conservative (lower)
-  let qualifyingIncome = 0;
-  let method = '';
-  
-  if (year1Annual > 0 && year2Annual > 0) {
-    // Both years have data
-    if (year1Monthly <= averageMonthly) {
-      // Most recent year is lower (declining income)
-      qualifyingIncome = year1Monthly;
-      method = 'most recent year';
-      document.getElementById('mostRecentBox').classList.add('recommended');
-      document.getElementById('averageBox').classList.remove('recommended');
-      document.getElementById('mostRecentBadge').style.display = 'inline-block';
-      document.getElementById('averageBadge').style.display = 'none';
-      document.getElementById('recommendationText').innerHTML = 
-        '⚠️ <strong>Income is declining.</strong> Underwriters typically use the most recent year only when income is trending downward. Additional documentation or explanation may be required.';
-    } else {
-      // Average is lower (stable or growing income)
-      qualifyingIncome = averageMonthly;
-      method = '2-year average';
-      document.getElementById('averageBox').classList.add('recommended');
-      document.getElementById('mostRecentBox').classList.remove('recommended');
-      document.getElementById('averageBadge').style.display = 'inline-block';
-      document.getElementById('mostRecentBadge').style.display = 'none';
-      document.getElementById('recommendationText').innerHTML = 
-        '✅ <strong>Income is stable or increasing.</strong> Using 2-year average is standard practice and shows income consistency.';
+// ---------- BUSINESS TYPE DEFINITIONS ----------
+// Each type defines its own input fields and calculation logic
+const BUSINESS_TYPES = {
+  'sole-prop': {
+    label: 'Sole Proprietorship (Schedule C)',
+    needsOwnership: false,        // 100% by default
+    needsLiquidity: false,
+    needsK1: false,
+    fields: {
+      netProfit:     { label: 'Net Profit/Loss', hint: 'Schedule C, Line 31', sign: 1 },
+      depreciation:  { label: 'Depreciation', hint: 'Schedule C, Line 13', sign: 1 },
+      depletion:     { label: 'Depletion', hint: 'Schedule C, Line 12', sign: 1 },
+      homeOffice:    { label: 'Business Use of Home', hint: 'Schedule C, Line 30', sign: 1 },
+      amortCasualty: { label: 'Amortization / Casualty (one-time)', hint: 'Schedule C, Part V (only if documented one-time)', sign: 1 },
+      mealsAddBack:  { label: 'Non-deductible Meals (50%)', hint: 'Schedule C, Line 24b — add back 50% non-deductible portion', sign: 1 },
+      mileage:       { label: 'Business Miles', hint: 'Schedule C, Part IV Line 44a OR Form 4562 Line 30', sign: 0, isMileage: true },
+      nonrecurring:  { label: 'Nonrecurring Income', hint: 'Schedule C, Line 6 — one-time / windfall', sign: -1 }
     }
-  } else if (year1Annual > 0) {
-    // Only Year 1 has data
-    qualifyingIncome = year1Monthly;
-    method = 'most recent year (Year 2 data missing)';
-    document.getElementById('mostRecentBox').classList.add('recommended');
-    document.getElementById('averageBox').classList.remove('recommended');
-    document.getElementById('mostRecentBadge').style.display = 'inline-block';
-    document.getElementById('averageBadge').style.display = 'none';
-    document.getElementById('recommendationText').innerHTML = 
-      '💡 Enter Year 2 data to calculate 2-year average. Most lenders require 2 years of tax returns for self-employed borrowers.';
-  } else {
-    // No data
-    qualifyingIncome = 0;
-    method = '';
-    document.getElementById('mostRecentBox').classList.remove('recommended');
-    document.getElementById('averageBox').classList.remove('recommended');
-    document.getElementById('mostRecentBadge').style.display = 'none';
-    document.getElementById('averageBadge').style.display = 'none';
-    document.getElementById('recommendationText').innerHTML = 
-      '💡 Enter income data to see which calculation method is more conservative and typically used for underwriting.';
+  },
+  'partnership': {
+    label: 'Partnership (Form 1065 + K-1)',
+    needsOwnership: true,
+    needsLiquidity: true,
+    needsK1: true,
+    fields: {
+      // K-1 portion
+      k1Ordinary:    { label: 'K-1 Ordinary Income/Loss', hint: 'Schedule K-1 (1065), Line 1', sign: 1, group: 'k1' },
+      k1Rental1:     { label: 'K-1 Net Rental RE Income', hint: 'Schedule K-1 (1065), Line 2 (only if recurring)', sign: 1, group: 'k1' },
+      k1Rental2:     { label: 'K-1 Other Net Rental Income', hint: 'Schedule K-1 (1065), Line 3 (only if recurring)', sign: 1, group: 'k1' },
+      k1Guaranteed:  { label: 'Guaranteed Payments', hint: 'Schedule K-1 (1065), Line 4', sign: 1, group: 'k1' },
+      // Business return add-backs (already in K-1 ordinary, but proportional add-backs apply)
+      depreciation:  { label: 'Depreciation', hint: 'Form 1065 Line 16c OR Form 4562', sign: 1, group: 'addback' },
+      depletion:     { label: 'Depletion', hint: 'Form 1065, Line 17', sign: 1, group: 'addback' },
+      amortization:  { label: 'Amortization', hint: 'Form 1065, Line 20 or attached schedule', sign: 1, group: 'addback' },
+      mealsAddBack:  { label: 'Non-deductible Meals (50%)', hint: 'Form 1065, Line 16b — add back non-deductible portion', sign: 1, group: 'addback' },
+      nonrecurring:  { label: 'Nonrecurring Income', hint: 'Analyze individually — DEDUCT if one-time', sign: -1, group: 'addback' },
+      distributions: { label: 'Distributions Received', hint: 'Required if liquidity ratio < 1.0', sign: 0, group: 'liquidity' }
+    }
+  },
+  'scorp': {
+    label: 'S-Corporation (Form 1120-S + K-1)',
+    needsOwnership: true,
+    needsLiquidity: true,
+    needsK1: true,
+    fields: {
+      k1Ordinary:    { label: 'K-1 Ordinary Income/Loss', hint: 'Schedule K-1 (1120-S), Line 1', sign: 1, group: 'k1' },
+      k1Rental1:     { label: 'K-1 Net Rental RE Income', hint: 'Schedule K-1 (1120-S), Line 2 (only if recurring)', sign: 1, group: 'k1' },
+      k1Rental2:     { label: 'K-1 Other Net Rental Income', hint: 'Schedule K-1 (1120-S), Line 3 (only if recurring)', sign: 1, group: 'k1' },
+      depreciation:  { label: 'Depreciation', hint: 'Form 1120-S, Line 14 OR Form 4562', sign: 1, group: 'addback' },
+      depletion:     { label: 'Depletion', hint: 'Form 1120-S, Line 15', sign: 1, group: 'addback' },
+      amortization:  { label: 'Amortization', hint: 'Form 1120-S, Line 26 or attached schedule', sign: 1, group: 'addback' },
+      mealsAddBack:  { label: 'Non-deductible Meals (50%)', hint: 'Form 1120-S, Line 18b — add back non-deductible portion', sign: 1, group: 'addback' },
+      nonrecurring:  { label: 'Nonrecurring Income', hint: 'Analyze individually — DEDUCT if one-time', sign: -1, group: 'addback' },
+      distributions: { label: 'Distributions Received', hint: 'Required if liquidity ratio < 1.0', sign: 0, group: 'liquidity' }
+    }
+  },
+  'ccorp': {
+    label: 'C-Corporation (Form 1120)',
+    needsOwnership: true,        // CRITICAL — must be entered manually
+    needsLiquidity: false,
+    needsK1: false,
+    isCCorp: true,
+    fields: {
+      taxableIncome: { label: 'Taxable Income/Loss', hint: 'Form 1120, Line 30 — applied AFTER ownership %', sign: 1 },
+      depreciation:  { label: 'Depreciation', hint: 'Form 1120, Line 20 OR Form 4562', sign: 1 },
+      depletion:     { label: 'Depletion', hint: 'Form 1120, Line 21', sign: 1 },
+      amortization:  { label: 'Amortization', hint: 'Form 1120, Line 26 or attached schedule', sign: 1 },
+      mealsAddBack:  { label: 'Non-deductible Meals (50%)', hint: 'Form 1120, Line 26 — add back non-deductible portion', sign: 1 },
+      nonrecurringGain: { label: 'Nonrecurring Income (Gain)', hint: 'Analyze individually — DEDUCT if one-time gain', sign: -1 }
+      // NOTE: Nonrecurring losses default to IGNORE for C-Corp (per LoanBeam rules)
+    }
+  },
+  'rental': {
+    label: 'Rental Property (Schedule E)',
+    needsOwnership: false,
+    needsLiquidity: false,
+    needsK1: false,
+    isRental: true,
+    fields: {
+      rentsReceived: { label: 'Rents Received', hint: 'Schedule E, Line 3 (gross rents)', sign: 0 },
+      netIncome:     { label: 'Net Income/Loss', hint: 'Schedule E, Line 21 (after all expenses)', sign: 1 },
+      depreciation:  { label: 'Depreciation', hint: 'Schedule E, Line 18', sign: 1 },
+      // Lease method alternative
+      leaseRent:     { label: 'Lease Agreement Monthly Rent (optional)', hint: 'Use ONLY if current market rent > Schedule E rent', sign: 0 }
+    }
+  },
+  'farm': {
+    label: 'Farm (Schedule F)',
+    needsOwnership: false,
+    needsLiquidity: false,
+    needsK1: false,
+    fields: {
+      netProfit:     { label: 'Net Profit/Loss', hint: 'Schedule F, Line 34', sign: 1 },
+      depreciation:  { label: 'Depreciation', hint: 'Schedule F, Line 14 OR Form 4562', sign: 1 },
+      depletion:     { label: 'Depletion', hint: 'Schedule F, Line 12', sign: 1 },
+      noncashCoop:   { label: 'Non-cash Co-op / CCC Payments', hint: 'Schedule F, Lines 3a−3b through 6a−6b', sign: 1 }
+    }
   }
-  
-  // Update total
-  document.getElementById('totalIncome').textContent = formatCurrency(qualifyingIncome);
-  if (window.parent !== window) { window.parent.postMessage({ type: 'calcTotal', amount: qualifyingIncome }, '*'); }
-  
-  if (method) {
-    document.getElementById('totalHelper').textContent = `Using ${method} (more conservative calculation)`;
+};
+
+// Mileage depreciation rates per tax year
+const MILEAGE_RATES = {
+  2025: 0.33,
+  2024: 0.30,
+  2023: 0.28,
+  2022: 0.26,
+  2021: 0.26,
+  2020: 0.27
+};
+
+// ---------- HELPERS ----------
+function fmt(amount) {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency', currency: 'USD',
+    minimumFractionDigits: 2, maximumFractionDigits: 2
+  }).format(amount || 0);
+}
+
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function uid(prefix) { return prefix + '_' + Math.random().toString(36).slice(2, 9); }
+
+// ---------- BUSINESS / YEAR FACTORIES ----------
+function newYear(taxYear) {
+  return {
+    id: uid('y'),
+    taxYear: taxYear || new Date().getFullYear() - 1,
+    isFinalK1: false,
+    included: true,
+    fields: {}    // keyed by field name → numeric value
+  };
+}
+
+function newBusiness(type) {
+  type = type || 'sole-prop';
+  businessIdCounter++;
+  return {
+    id: uid('b'),
+    name: 'Business ' + businessIdCounter,
+    type: type,
+    ownershipPct: 100,
+    // Liquidity (for partnership / scorp)
+    liquidityMethod: 'current',   // 'current' or 'quick'
+    liqCash: 0, liqReceivables: 0, liqInventory: 0,
+    liqAccountsPayable: 0, liqMortgages: 0, liqOtherLiab: 0,
+    liqHasScheduleL: true,
+    included: true,
+    years: [ newYear(new Date().getFullYear() - 1) ]
+  };
+}
+
+// ---------- RENDERING ----------
+function render() {
+  const container = document.getElementById('businessesContainer');
+  if (!container) return;
+
+  if (businesses.length === 0) {
+    container.innerHTML = '<div class="info-box">No businesses added yet. Click "Add Another Business" below to start.</div>';
   } else {
-    document.getElementById('totalHelper').textContent = 'Conservative calculation will be used for qualification';
+    container.innerHTML = businesses.map((biz, idx) => renderBusiness(biz, idx)).join('');
+  }
+
+  attachInputListeners();
+  recalcAll();
+}
+
+function renderBusiness(biz, idx) {
+  const def = BUSINESS_TYPES[biz.type];
+  const typeOptions = Object.entries(BUSINESS_TYPES)
+    .map(([k, v]) => `<option value="${k}" ${k === biz.type ? 'selected' : ''}>${v.label}</option>`)
+    .join('');
+
+  return `
+    <div class="business-card" data-biz="${biz.id}">
+      <div class="business-card-header">
+        <h2>📊 ${escapeHtml(biz.name)}</h2>
+        <div class="business-actions">
+          <button class="btn-icon" onclick="addYear('${biz.id}')">+ Add Year</button>
+          <button class="btn-icon danger" onclick="removeBusiness('${biz.id}')">🗑 Remove Business</button>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Business Name / Label</label>
+          <input type="text" data-biz-field="name" data-biz="${biz.id}" value="${escapeHtml(biz.name)}">
+        </div>
+        <div class="form-group">
+          <label>Business Type</label>
+          <select data-biz-field="type" data-biz="${biz.id}">${typeOptions}</select>
+        </div>
+      </div>
+
+      ${def.needsOwnership ? `
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ownership Percentage <span class="label-helper">(%)</span></label>
+            <input type="number" data-biz-field="ownershipPct" data-biz="${biz.id}" min="0" max="100" step="0.01" value="${biz.ownershipPct}">
+            ${def.isCCorp ? `<div class="field-hint">⚠️ CRITICAL for C-Corp: Not on tax return — must be entered manually. Without it, borrower gets ZERO credit.</div>` : ''}
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            ${def.isCCorp && biz.ownershipPct === 0 ?
+              `<div class="error-box" style="margin:0;">No ownership % entered — borrower receives no credit.</div>` :
+              `<div class="info-box" style="margin:0;">Income will be multiplied by ${biz.ownershipPct}%.</div>`}
+          </div>
+        </div>
+      ` : ''}
+
+      ${def.needsLiquidity ? renderLiquidity(biz) : ''}
+
+      <div id="years-${biz.id}">
+        ${biz.years.map((y, yi) => renderYear(biz, y, yi)).join('')}
+      </div>
+
+      <div id="biz-summary-${biz.id}" class="breakdown-table" style="background: rgba(11,78,162,0.06);">
+        <h4>Business Trend Analysis</h4>
+        <div id="biz-trend-${biz.id}">Add at least one year to see analysis.</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderLiquidity(biz) {
+  const ratio = computeLiquidityRatio(biz);
+  let pillClass = 'liq-na';
+  let pillText = 'No data';
+  if (!biz.liqHasScheduleL) {
+    pillClass = 'liq-fail';
+    pillText = 'No Sched L → not liquid';
+  } else if (ratio !== null) {
+    pillClass = ratio >= 1.0 ? 'liq-pass' : 'liq-fail';
+    pillText = ratio.toFixed(2) + ' — ' + (ratio >= 1.0 ? 'ADEQUATE' : 'CAP AT DISTRIBUTIONS');
+  }
+
+  return `
+    <div class="breakdown-table" style="background: rgba(11,78,162,0.06);">
+      <h4>Liquidity Analysis (Schedule L) <span class="liquidity-result ${pillClass}">${pillText}</span></h4>
+
+      <div class="checkbox-row">
+        <input type="checkbox" data-biz-field="liqHasScheduleL" data-biz="${biz.id}" ${biz.liqHasScheduleL ? 'checked' : ''}>
+        <label>Schedule L is present in the tax return</label>
+      </div>
+
+      ${biz.liqHasScheduleL ? `
+        <div class="form-row">
+          <div class="form-group">
+            <label>Ratio Method</label>
+            <select data-biz-field="liquidityMethod" data-biz="${biz.id}">
+              <option value="current" ${biz.liquidityMethod === 'current' ? 'selected' : ''}>Current Ratio (no heavy inventory)</option>
+              <option value="quick" ${biz.liquidityMethod === 'quick' ? 'selected' : ''}>Quick Ratio (inventory-heavy: retail, hardware)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <div class="field-hint" style="margin-top:10px;">${biz.liquidityMethod === 'current' ? 'Formula: (Cash + Receivables + Inventory) ÷ Current Liabilities' : 'Formula: (Cash + Receivables) ÷ Current Liabilities'}</div>
+          </div>
+        </div>
+
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>Cash <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqCash" data-biz="${biz.id}" value="${biz.liqCash || ''}">
+            <div class="field-hint">Schedule L, Line 1, Col d</div>
+          </div>
+          <div class="form-group">
+            <label>Receivables (net) <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqReceivables" data-biz="${biz.id}" value="${biz.liqReceivables || ''}">
+            <div class="field-hint">Schedule L, Line 2b, Col d</div>
+          </div>
+          <div class="form-group">
+            <label>Inventory <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqInventory" data-biz="${biz.id}" value="${biz.liqInventory || ''}" ${biz.liquidityMethod === 'quick' ? 'disabled' : ''}>
+            <div class="field-hint">Schedule L, Line 3, Col d ${biz.liquidityMethod === 'quick' ? '(excluded in Quick Ratio)' : ''}</div>
+          </div>
+        </div>
+
+        <div class="form-row three-col">
+          <div class="form-group">
+            <label>Accounts Payable <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqAccountsPayable" data-biz="${biz.id}" value="${biz.liqAccountsPayable || ''}">
+            <div class="field-hint">Sched L, Line 15/16, Col d</div>
+          </div>
+          <div class="form-group">
+            <label>Mortgages/Notes &lt; 1 yr <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqMortgages" data-biz="${biz.id}" value="${biz.liqMortgages || ''}">
+            <div class="field-hint">Sched L, Line 16/17, Col d</div>
+          </div>
+          <div class="form-group">
+            <label>Other Current Liab. <span class="label-helper">($)</span></label>
+            <input type="text" inputmode="decimal" data-biz-field="liqOtherLiab" data-biz="${biz.id}" value="${biz.liqOtherLiab || ''}">
+            <div class="field-hint">Sched L, Line 17/18, Col d</div>
+          </div>
+        </div>
+
+        ${ratio !== null && ratio < 1.0 ? `
+          <div class="warn-box" style="margin-top: 10px;">
+            ⚠️ <strong>Liquidity ratio is below 1.0.</strong> Per LoanBeam/Fannie Mae rules, K-1 income is capped at distributions actually received. Enter "Distributions Received" in each year below.
+          </div>
+        ` : ''}
+      ` : `
+        <div class="error-box">
+          ⚠️ <strong>No Schedule L:</strong> Liquidity ratios are zero. Entity treated as not liquid. Income is capped at distributions actually received.
+        </div>
+      `}
+    </div>
+  `;
+}
+
+function renderYear(biz, year, idx) {
+  const def = BUSINESS_TYPES[biz.type];
+  const fieldGroups = {};
+  Object.entries(def.fields).forEach(([key, fdef]) => {
+    const grp = fdef.group || 'main';
+    if (!fieldGroups[grp]) fieldGroups[grp] = [];
+    fieldGroups[grp].push([key, fdef]);
+  });
+
+  const groupOrder = ['k1', 'main', 'addback', 'liquidity'];
+  const groupTitles = {
+    k1: 'K-1 Income (Personal Return)',
+    main: 'Income & Add-Backs',
+    addback: 'Business Return Add-Backs (Form 1065 / 1120-S)',
+    liquidity: 'Distributions (if liquidity ratio < 1.0)'
+  };
+
+  const renderField = (key, fdef) => {
+    const val = year.fields[key];
+    if (fdef.isMileage) {
+      const rate = MILEAGE_RATES[year.taxYear] || MILEAGE_RATES[2024];
+      const miles = val || 0;
+      const computed = miles * rate;
+      return `
+        <div class="form-group">
+          <label>${fdef.label} <span class="label-helper">(miles)</span></label>
+          <input type="text" inputmode="decimal" data-year-field="${key}" data-biz="${biz.id}" data-year="${year.id}" value="${val || ''}">
+          <div class="field-hint">${fdef.hint} — Year ${year.taxYear} rate: $${rate.toFixed(2)}/mi → adds back ${fmt(computed)}</div>
+        </div>
+      `;
+    }
+    return `
+      <div class="form-group">
+        <label>${fdef.label} <span class="label-helper">($)</span></label>
+        <input type="text" inputmode="decimal" data-year-field="${key}" data-biz="${biz.id}" data-year="${year.id}" value="${val || ''}">
+        <div class="field-hint">${fdef.hint}</div>
+      </div>
+    `;
+  };
+
+  // Pair up fields into rows of two
+  const renderGroup = (groupKey) => {
+    const fields = fieldGroups[groupKey];
+    if (!fields || !fields.length) return '';
+    let html = `<div class="section-subtitle">${groupTitles[groupKey] || ''}</div>`;
+    for (let i = 0; i < fields.length; i += 2) {
+      html += '<div class="form-row">';
+      html += renderField(...fields[i]);
+      if (fields[i + 1]) html += renderField(...fields[i + 1]);
+      else html += '<div></div>';
+      html += '</div>';
+    }
+    return html;
+  };
+
+  const calc = computeYear(biz, year);
+
+  return `
+    <div class="year-card" data-year="${year.id}">
+      <div class="year-card-header">
+        <h3>📅 Tax Year ${year.taxYear}</h3>
+        <div class="business-actions">
+          <div class="checkbox-row" style="margin:0;">
+            <input type="checkbox" data-year-field="included" data-biz="${biz.id}" data-year="${year.id}" ${year.included ? 'checked' : ''}>
+            <label>Include this year</label>
+          </div>
+          ${biz.years.length > 1 ? `<button class="btn-icon danger" onclick="removeYear('${biz.id}','${year.id}')">Remove Year</button>` : ''}
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tax Year</label>
+          <input type="number" data-year-field="taxYear" data-biz="${biz.id}" data-year="${year.id}" min="2015" max="2030" step="1" value="${year.taxYear}">
+        </div>
+        ${def.needsK1 ? `
+          <div class="form-group">
+            <label>&nbsp;</label>
+            <div class="checkbox-row">
+              <input type="checkbox" data-year-field="isFinalK1" data-biz="${biz.id}" data-year="${year.id}" ${year.isFinalK1 ? 'checked' : ''}>
+              <label>This is a Final K-1 (business is ending — EXCLUDE entirely)</label>
+            </div>
+          </div>
+        ` : '<div class="form-group"></div>'}
+      </div>
+
+      ${year.isFinalK1 ? `
+        <div class="error-box">
+          ⚠️ <strong>Final K-1 marked.</strong> Per LoanBeam/Fannie Mae rules, this income is automatically excluded — the business is ending and income cannot be expected to continue.
+        </div>
+      ` : `
+        ${groupOrder.map(g => renderGroup(g)).join('')}
+        ${renderYearBreakdown(biz, year, calc)}
+      `}
+    </div>
+  `;
+}
+
+function renderYearBreakdown(biz, year, calc) {
+  const def = BUSINESS_TYPES[biz.type];
+  const lines = calc.lines.map(l =>
+    `<div class="breakdown-row">
+       <span class="breakdown-label">${l.label}</span>
+       <span class="breakdown-value">${l.value}</span>
+     </div>`
+  ).join('');
+
+  return `
+    <div class="breakdown-table">
+      <h4>Year ${year.taxYear} Calculation</h4>
+      ${lines}
+      <div class="breakdown-row">
+        <span class="breakdown-label"><strong>Annual Qualifying Income (this year)</strong></span>
+        <span class="breakdown-value">${fmt(calc.annual)}</span>
+      </div>
+    </div>
+    ${calc.warnings.map(w => `<div class="warn-box" style="margin-top:8px;">⚠️ ${w}</div>`).join('')}
+  `;
+}
+
+// ---------- COMPUTATIONS ----------
+function computeLiquidityRatio(biz) {
+  if (!biz.liqHasScheduleL) return 0;
+  const liabilities = (+biz.liqAccountsPayable || 0) + (+biz.liqMortgages || 0) + (+biz.liqOtherLiab || 0);
+  if (liabilities === 0) return null;
+  let assets = (+biz.liqCash || 0) + (+biz.liqReceivables || 0);
+  if (biz.liquidityMethod === 'current') assets += (+biz.liqInventory || 0);
+  return assets / liabilities;
+}
+
+function computeYear(biz, year) {
+  const def = BUSINESS_TYPES[biz.type];
+  const lines = [];
+  const warnings = [];
+
+  if (year.isFinalK1) {
+    return { annual: 0, lines: [{label: 'Final K-1 — excluded', value: fmt(0)}], warnings: ['Final K-1: business is ending, income excluded.'] };
+  }
+
+  // ---------- RENTAL (Schedule E) ----------
+  if (def.isRental) {
+    const rents = +year.fields.rentsReceived || 0;
+    const netInc = +year.fields.netIncome || 0;
+    const dep = +year.fields.depreciation || 0;
+    const leaseRent = +year.fields.leaseRent || 0;
+
+    let annual;
+    if (leaseRent > 0) {
+      // Method B: Lease agreement (use 75% of monthly lease × 12)
+      const grossAnnualLease = leaseRent * 12;
+      const usable = grossAnnualLease * 0.75;
+      annual = usable;
+      lines.push({label: 'Method B: Lease Agreement', value: ''});
+      lines.push({label: 'Monthly Lease Rent × 12 = Annual Gross', value: fmt(grossAnnualLease)});
+      lines.push({label: '× 75% (vacancy factor)', value: fmt(usable)});
+      warnings.push('Using lease agreement (Method B) — 25% vacancy factor applied.');
+    } else {
+      // Method A: Tax return — Net Income + Depreciation; alternatively gross × 75% if net is poor
+      const taxReturnIncome = netInc + dep;
+      annual = taxReturnIncome;
+      lines.push({label: 'Net Income/Loss (Schedule E, Line 21)', value: fmt(netInc)});
+      lines.push({label: '+ Depreciation (Line 18 — add back)', value: fmt(dep)});
+      lines.push({label: '= Adjusted Annual Rental Income', value: fmt(taxReturnIncome)});
+      if (rents > 0) {
+        const grossMethod = rents * 0.75;
+        lines.push({label: 'Reference: 75% of Gross Rents', value: fmt(grossMethod)});
+        if (grossMethod < taxReturnIncome) {
+          warnings.push('75% of gross rents is lower than tax-return method — verify which your underwriter requires.');
+        }
+      }
+    }
+    return { annual, lines, warnings };
+  }
+
+  // ---------- C-CORP ----------
+  if (def.isCCorp) {
+    const taxable = +year.fields.taxableIncome || 0;
+    const dep = +year.fields.depreciation || 0;
+    const depl = +year.fields.depletion || 0;
+    const amort = +year.fields.amortization || 0;
+    const meals = +year.fields.mealsAddBack || 0;
+    const nrGain = +year.fields.nonrecurringGain || 0;
+    const ownPct = (biz.ownershipPct || 0) / 100;
+
+    if (biz.ownershipPct === 0 || biz.ownershipPct == null) {
+      warnings.push('CRITICAL: C-Corp ownership % is 0 — borrower receives no credit. Enter ownership % above.');
+    }
+
+    const baseAfterOwn = taxable * ownPct;
+    const addBacks = (dep + depl + amort + meals) * ownPct;
+    const annual = baseAfterOwn + addBacks - nrGain;
+
+    lines.push({label: 'Taxable Income (Form 1120, Line 30)', value: fmt(taxable)});
+    lines.push({label: `× Ownership % (${biz.ownershipPct}%)`, value: fmt(baseAfterOwn)});
+    lines.push({label: '+ Depreciation × Ownership %', value: fmt(dep * ownPct)});
+    lines.push({label: '+ Depletion × Ownership %', value: fmt(depl * ownPct)});
+    lines.push({label: '+ Amortization × Ownership %', value: fmt(amort * ownPct)});
+    lines.push({label: '+ Non-deductible Meals × Ownership %', value: fmt(meals * ownPct)});
+    lines.push({label: '− Nonrecurring Gain (one-time)', value: fmt(nrGain)});
+    return { annual, lines, warnings };
+  }
+
+  // ---------- PARTNERSHIP / S-CORP ----------
+  if (def.needsK1) {
+    const k1Ord = +year.fields.k1Ordinary || 0;
+    const k1R1 = +year.fields.k1Rental1 || 0;
+    const k1R2 = +year.fields.k1Rental2 || 0;
+    const k1Gp = +year.fields.k1Guaranteed || 0;     // Partnership only
+    const dep = +year.fields.depreciation || 0;
+    const depl = +year.fields.depletion || 0;
+    const amort = +year.fields.amortization || 0;
+    const meals = +year.fields.mealsAddBack || 0;
+    const nonrec = +year.fields.nonrecurring || 0;
+    const distributions = +year.fields.distributions || 0;
+    const ownPct = (biz.ownershipPct || 0) / 100;
+
+    const k1Total = k1Ord + k1R1 + k1R2 + k1Gp;
+    // Business return add-backs are applied at the borrower's ownership share
+    const addBacksProp = (dep + depl + amort + meals - nonrec) * ownPct;
+
+    // Liquidity gate
+    const ratio = computeLiquidityRatio(biz);
+    const liqAdequate = biz.liqHasScheduleL && ratio !== null && ratio >= 1.0;
+
+    let annual;
+    if (liqAdequate) {
+      annual = k1Total + addBacksProp;
+      lines.push({label: 'Liquidity ratio ' + ratio.toFixed(2) + ' ≥ 1.0 → use full K-1 income', value: ''});
+      lines.push({label: 'K-1 Ordinary (Line 1)', value: fmt(k1Ord)});
+      if (k1R1) lines.push({label: 'K-1 Net Rental RE (Line 2)', value: fmt(k1R1)});
+      if (k1R2) lines.push({label: 'K-1 Other Net Rental (Line 3)', value: fmt(k1R2)});
+      if (k1Gp) lines.push({label: 'K-1 Guaranteed Payments (Line 4)', value: fmt(k1Gp)});
+      lines.push({label: '= Total K-1 Income', value: fmt(k1Total)});
+      lines.push({label: `+ Business Add-Backs × Ownership % (${biz.ownershipPct}%)`, value: fmt(addBacksProp)});
+    } else {
+      // Cap at distributions actually received
+      const baseCap = Math.min(k1Total, distributions);
+      annual = baseCap + addBacksProp;
+      const reasonText = !biz.liqHasScheduleL
+        ? 'No Schedule L → treated as not liquid'
+        : (ratio === null ? 'Liquidity data incomplete' : 'Liquidity ratio ' + ratio.toFixed(2) + ' < 1.0');
+      lines.push({label: reasonText + ' → cap at distributions', value: ''});
+      lines.push({label: 'K-1 Income (Lines 1+2+3+4)', value: fmt(k1Total)});
+      lines.push({label: 'Distributions Received', value: fmt(distributions)});
+      lines.push({label: '= Lesser of K-1 vs Distributions', value: fmt(baseCap)});
+      lines.push({label: `+ Business Add-Backs × Ownership % (${biz.ownershipPct}%)`, value: fmt(addBacksProp)});
+      if (distributions === 0 && k1Total > 0) {
+        warnings.push('Liquidity ratio < 1.0 and no distributions entered — qualifying income is $0 from K-1.');
+      }
+    }
+    return { annual, lines, warnings };
+  }
+
+  // ---------- SOLE PROP / FARM ----------
+  // Sum every field by sign. Special handling for mileage.
+  let sum = 0;
+  Object.entries(def.fields).forEach(([key, fdef]) => {
+    const v = +year.fields[key] || 0;
+    if (fdef.isMileage) {
+      const rate = MILEAGE_RATES[year.taxYear] || MILEAGE_RATES[2024];
+      const addBack = v * rate;
+      sum += addBack;
+      lines.push({label: `+ Mileage Add-Back (${v.toLocaleString()} mi × $${rate.toFixed(2)})`, value: fmt(addBack)});
+    } else if (fdef.sign !== 0) {
+      sum += v * fdef.sign;
+      const symbol = fdef.sign > 0 ? '+' : '−';
+      const labelPrefix = key === 'netProfit' ? '' : symbol + ' ';
+      lines.push({label: labelPrefix + fdef.label, value: fmt(v * fdef.sign)});
+    }
+  });
+
+  const ownPct = (biz.ownershipPct || 100) / 100;
+  const annual = sum * ownPct;
+  if (def.needsOwnership && ownPct !== 1) {
+    lines.push({label: `× Ownership % (${biz.ownershipPct}%)`, value: fmt(annual)});
+  }
+
+  return { annual, lines, warnings };
+}
+
+// Apply Universal Trend Rule to compute the qualifying annual income for a business
+function computeBusinessQualifying(biz) {
+  const includedYears = biz.years.filter(y => y.included && !y.isFinalK1);
+  if (includedYears.length === 0) {
+    return { annual: 0, monthly: 0, method: 'no-data', perYear: [], note: 'No years included.' };
+  }
+
+  // Compute each year's annual income
+  const perYear = includedYears.map(y => ({
+    year: y,
+    annual: computeYear(biz, y).annual
+  })).sort((a, b) => b.year.taxYear - a.year.taxYear);   // most recent first
+
+  if (perYear.length === 1) {
+    const annual = perYear[0].annual;
+    return {
+      annual, monthly: annual / 12,
+      method: 'single-year',
+      perYear,
+      note: 'Single year — using ' + perYear[0].year.taxYear + ' only.'
+    };
+  }
+
+  // Universal Trend Rule: compare CY (most recent) to PY (next most recent)
+  const cy = perYear[0];     // most recent
+  const py = perYear[1];     // prior
+
+  if (cy.annual < py.annual) {
+    // Declining — use CY only
+    return {
+      annual: cy.annual,
+      monthly: cy.annual / 12,
+      method: 'cy-only',
+      perYear,
+      note: 'Income DECLINED from ' + py.year.taxYear + ' to ' + cy.year.taxYear + '. Per the Universal Trend Rule, using only the most recent year (' + cy.year.taxYear + ').'
+    };
+  } else {
+    // Stable or growing — use 24-month average (or full average if more years)
+    const monthsCount = perYear.length * 12;
+    const totalAnnualSum = perYear.reduce((s, p) => s + p.annual, 0);
+    const monthly = totalAnnualSum / monthsCount;
+    const annual = monthly * 12;
+    return {
+      annual, monthly,
+      method: 'average',
+      perYear,
+      note: 'Income is stable or increasing. Using ' + monthsCount + '-month average across ' + perYear.length + ' year(s).'
+    };
   }
 }
 
-// Reset calculator
-function resetCalculator() {
-  if (confirm('Clear all inputs and start over?')) {
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-      if (input.id === 'ownershipPct') {
-        input.value = '100';
-      } else if (input.id === 'year1') {
-        input.value = '2024';
-      } else if (input.id === 'year2') {
-        input.value = '2023';
-      } else {
-        input.value = '';
+// ---------- RECALC + SUMMARY ----------
+function recalcAll() {
+  // Update the per-business trend block
+  businesses.forEach(biz => {
+    const el = document.getElementById('biz-trend-' + biz.id);
+    if (!el) return;
+    const result = computeBusinessQualifying(biz);
+    el.innerHTML = `
+      <div class="breakdown-row">
+        <span class="breakdown-label">Years included</span>
+        <span class="breakdown-value">${result.perYear.length}</span>
+      </div>
+      ${result.perYear.map(p => `
+        <div class="breakdown-row">
+          <span class="breakdown-label">  ${p.year.taxYear} annual</span>
+          <span class="breakdown-value">${fmt(p.annual)}</span>
+        </div>
+      `).join('')}
+      <div class="breakdown-row">
+        <span class="breakdown-label">Method</span>
+        <span class="breakdown-value">${methodLabel(result.method)}</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label">Qualifying Annual</span>
+        <span class="breakdown-value">${fmt(result.annual)}</span>
+      </div>
+      <div class="breakdown-row">
+        <span class="breakdown-label"><strong>Qualifying Monthly</strong></span>
+        <span class="breakdown-value">${fmt(result.monthly)}</span>
+      </div>
+      <div style="margin-top:8px; font-size:13px; color:#555; font-style:italic;">${result.note}</div>
+    `;
+  });
+
+  renderSummary();
+}
+
+function methodLabel(m) {
+  return ({
+    'single-year': 'Single year',
+    'cy-only': 'Current Year only (declining)',
+    'average': '24-month average',
+    'no-data': 'No data'
+  })[m] || m;
+}
+
+function renderSummary() {
+  const el = document.getElementById('summaryContent');
+  if (!el) return;
+
+  if (businesses.length === 0) {
+    el.innerHTML = '<div class="info-box">No businesses to summarize. Add a business on the Businesses tab.</div>';
+    document.getElementById('grandTotalMonthly').textContent = fmt(0);
+    document.getElementById('grandTotalAnnual').textContent = fmt(0);
+    document.getElementById('businessesIncludedCount').textContent = '0';
+    return;
+  }
+
+  let grandAnnual = 0;
+  let includedCount = 0;
+  let html = '';
+
+  businesses.forEach(biz => {
+    const def = BUSINESS_TYPES[biz.type];
+    const result = computeBusinessQualifying(biz);
+    const bizContributes = biz.included && result.annual !== 0;
+    if (bizContributes) {
+      grandAnnual += result.annual;
+      includedCount++;
+    }
+
+    html += `
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th style="width:40px;">Inc.</th>
+            <th>Business / Year</th>
+            <th>Type</th>
+            <th>Method</th>
+            <th class="amt">Annual</th>
+            <th class="amt">Monthly</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="${biz.included ? '' : 'excluded'}">
+            <td><input type="checkbox" data-summary-biz="${biz.id}" ${biz.included ? 'checked' : ''}></td>
+            <td class="biz-name">📊 ${escapeHtml(biz.name)}</td>
+            <td>${def.label.split('(')[0].trim()}</td>
+            <td><span class="method-tag ${result.method === 'cy-only' ? 'warn' : ''}">${methodLabel(result.method)}</span></td>
+            <td class="amt"><strong>${fmt(result.annual)}</strong></td>
+            <td class="amt"><strong>${fmt(result.monthly)}</strong></td>
+          </tr>
+          ${biz.years.map(y => {
+            const yc = computeYear(biz, y);
+            return `
+              <tr class="${(biz.included && y.included && !y.isFinalK1) ? '' : 'excluded'}" style="background: rgba(0,0,0,0.02);">
+                <td><input type="checkbox" data-summary-year="${y.id}" data-summary-biz="${biz.id}" ${y.included ? 'checked' : ''} ${y.isFinalK1 ? 'disabled' : ''}></td>
+                <td style="padding-left:30px;">↳ Tax Year ${y.taxYear}${y.isFinalK1 ? ' <em>(Final K-1)</em>' : ''}</td>
+                <td colspan="2" style="font-size:12px; color:#666;">${y.isFinalK1 ? 'Excluded — Final K-1' : ''}</td>
+                <td class="amt">${fmt(yc.annual)}</td>
+                <td class="amt">${fmt(yc.annual / 12)}</td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    `;
+  });
+
+  // Grand total row
+  html += `
+    <table class="summary-table" style="margin-top:20px;">
+      <tbody>
+        <tr class="subtotal">
+          <td colspan="4"><strong>GRAND TOTAL — Qualifying Income (sum of included businesses)</strong></td>
+          <td class="amt"><strong>${fmt(grandAnnual)}</strong></td>
+          <td class="amt"><strong>${fmt(grandAnnual / 12)}</strong></td>
+        </tr>
+      </tbody>
+    </table>
+  `;
+
+  el.innerHTML = html;
+
+  document.getElementById('grandTotalMonthly').textContent = fmt(grandAnnual / 12);
+  document.getElementById('grandTotalAnnual').textContent = fmt(grandAnnual);
+  document.getElementById('businessesIncludedCount').textContent = includedCount;
+
+  // Wire up summary checkboxes
+  document.querySelectorAll('[data-summary-biz]').forEach(cb => {
+    if (cb.dataset.summaryYear) return;   // handled below
+    cb.addEventListener('change', e => {
+      const biz = businesses.find(b => b.id === e.target.dataset.summaryBiz);
+      if (biz) { biz.included = e.target.checked; recalcAll(); }
+    });
+  });
+  document.querySelectorAll('[data-summary-year]').forEach(cb => {
+    cb.addEventListener('change', e => {
+      const biz = businesses.find(b => b.id === e.target.dataset.summaryBiz);
+      const yr = biz && biz.years.find(y => y.id === e.target.dataset.summaryYear);
+      if (yr) {
+        yr.included = e.target.checked;
+        // Re-sync the year-card checkbox too
+        const main = document.querySelector(`input[data-year-field="included"][data-year="${yr.id}"]`);
+        if (main) main.checked = e.target.checked;
+        recalcAll();
       }
     });
-    document.getElementById('businessType').value = 'sole-prop';
-    calculateTotal();
+  });
+
+  // Postmessage for iframe parent (preserved from original)
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: 'calcTotal', amount: grandAnnual / 12 }, '*');
   }
 }
 
-// Print calculator
-function printCalculator() {
-  window.print();
-}
+// ---------- INPUT WIRING ----------
+function attachInputListeners() {
+  // Business-level fields
+  document.querySelectorAll('[data-biz-field]').forEach(input => {
+    input.addEventListener('input', e => {
+      const biz = businesses.find(b => b.id === e.target.dataset.biz);
+      if (!biz) return;
+      const field = e.target.dataset.bizField;
+      let val;
+      if (e.target.type === 'checkbox') val = e.target.checked;
+      else if (field === 'name' || field === 'type' || field === 'liquidityMethod') val = e.target.value;
+      else val = parseFloat(String(e.target.value).replace(/[^0-9.\-]/g, '')) || 0;
+      biz[field] = val;
 
-// Add event listeners
-document.addEventListener('DOMContentLoaded', function() {
-  document.querySelectorAll('input[type="number"], input[type="text"], select').forEach(input => {
-    input.addEventListener('input', calculateTotal);
-    input.addEventListener('change', calculateTotal);
-  });
-  
-  // Initial calculation
-
-  // Money field formatting
-  // Money field formatting on blur and Enter key
-  document.querySelectorAll('input[inputmode="decimal"]').forEach(function(el) {
-    el.addEventListener('blur', function() { formatMoneyInput(el); });
-    el.addEventListener('focus', function() { if (el.dataset.rawValue !== undefined) el.value = el.dataset.rawValue; });
-    el.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { el.blur(); }
+      if (field === 'type' || field === 'liquidityMethod' || field === 'liqHasScheduleL') {
+        // Re-render this whole business so the field set updates
+        render();
+      } else if (field === 'ownershipPct' || field === 'name') {
+        // Lighter update — re-render this business card
+        render();
+      } else {
+        recalcAll();
+      }
     });
   });
-  // Set today's date
-  var dc = document.getElementById('dateCompleted');
+
+  // Year-level fields
+  document.querySelectorAll('[data-year-field]').forEach(input => {
+    input.addEventListener('input', e => {
+      const biz = businesses.find(b => b.id === e.target.dataset.biz);
+      if (!biz) return;
+      const yr = biz.years.find(y => y.id === e.target.dataset.year);
+      if (!yr) return;
+      const field = e.target.dataset.yearField;
+      if (e.target.type === 'checkbox') {
+        if (field === 'included') yr.included = e.target.checked;
+        else if (field === 'isFinalK1') { yr.isFinalK1 = e.target.checked; render(); return; }
+      } else if (field === 'taxYear') {
+        yr.taxYear = parseInt(e.target.value, 10) || yr.taxYear;
+        render(); return;
+      } else {
+        const val = parseFloat(String(e.target.value).replace(/[^0-9.\-]/g, '')) || 0;
+        yr.fields[field] = val;
+      }
+      recalcAll();
+    });
+  });
+}
+
+// ---------- ACTIONS ----------
+function addBusiness() {
+  businesses.push(newBusiness('sole-prop'));
+  render();
+}
+
+function removeBusiness(id) {
+  if (!confirm('Remove this business and all its years?')) return;
+  businesses = businesses.filter(b => b.id !== id);
+  render();
+}
+
+function addYear(bizId) {
+  const biz = businesses.find(b => b.id === bizId);
+  if (!biz) return;
+  // Default new year to one before the earliest existing year
+  const earliest = Math.min(...biz.years.map(y => y.taxYear));
+  biz.years.push(newYear(earliest - 1));
+  render();
+}
+
+function removeYear(bizId, yearId) {
+  const biz = businesses.find(b => b.id === bizId);
+  if (!biz || biz.years.length <= 1) return;
+  if (!confirm('Remove this year?')) return;
+  biz.years = biz.years.filter(y => y.id !== yearId);
+  render();
+}
+
+function resetCalculator() {
+  if (!confirm('Clear all businesses and start over?')) return;
+  businesses = [];
+  businessIdCounter = 0;
+  addBusiness();
+}
+
+// ---------- TABS ----------
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'summary') renderSummary();
+    });
+  });
+
+  const dc = document.getElementById('dateCompleted');
   if (dc) dc.value = new Date().toISOString().split('T')[0];
-  calculateTotal();
+
+  // Start with one business
+  addBusiness();
 });
 </script>
 
