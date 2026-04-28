@@ -92,7 +92,7 @@
     briefStatus('Rewriting summaries...','loading');
     try {
       var resp=await fetch(API+'/parse-briefing',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'rewrite_summaries',rawContent:raw})});
-      var data=await resp.json(); if(!data.success) throw new Error(data.error||'Failed');
+      var data=await resp.json(); if(!data.success) throw new Error(data.error || (data.raw ? 'Response format error — the AI may need more tokens. Try a shorter update.' : 'Rewrite failed — check your API connection.'));
       rewrittenMkt=data.marketSummary; rewrittenClient=data.clientFriendly;
       document.getElementById('mktPreviewContent').innerHTML=fmtText(rewrittenMkt);
       document.getElementById('clientPreviewContent').innerHTML=fmtText(rewrittenClient);
