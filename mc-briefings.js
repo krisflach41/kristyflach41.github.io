@@ -14,6 +14,29 @@
   dz.addEventListener('dragleave', function() { dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; });
   dz.addEventListener('drop', function(e) { e.preventDefault(); dz.style.borderColor='rgba(59,130,246,0.3)'; dz.style.background='rgba(59,130,246,0.03)'; var f=e.dataTransfer.files[0]; if(f&&f.type.startsWith('image/')) handleCalImg(f); });
 
+  // Market Summaries — file drop zone
+  var mktRawText = null;
+  var mktDz = document.getElementById('mktDropZone');
+  if(mktDz) {
+    mktDz.addEventListener('dragover', function(e) { e.preventDefault(); mktDz.style.borderColor='rgba(34,197,94,0.6)'; mktDz.style.background='rgba(34,197,94,0.08)'; });
+    mktDz.addEventListener('dragleave', function() { mktDz.style.borderColor='rgba(34,197,94,0.3)'; mktDz.style.background='rgba(34,197,94,0.03)'; });
+    mktDz.addEventListener('drop', function(e) { e.preventDefault(); mktDz.style.borderColor='rgba(34,197,94,0.3)'; mktDz.style.background='rgba(34,197,94,0.03)'; var f=e.dataTransfer.files[0]; if(f) handleMktFile(f); });
+  }
+
+  window.handleMktFile = function(file) {
+    if(!file) return;
+    var r = new FileReader();
+    r.onload = function(ev) {
+      mktRawText = ev.target.result.trim();
+      if(mktDz) {
+        mktDz.style.borderColor='rgba(34,197,94,0.4)'; mktDz.style.borderStyle='solid';
+        mktDz.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 0;"><span style="font-size:20px;">📄</span><span style="color:#22c55e;font-size:13px;font-weight:600;">'+file.name+'</span><span style="font-size:11px;color:var(--text-muted);">— ready to rewrite</span></div><input type="file" id="mktFileInput" accept=".txt,.md,.text,text/plain" style="display:none;" onchange="handleMktFile(this.files[0])">';
+      }
+      var btn=document.getElementById('rewriteBtn'); if(btn){btn.disabled=false; btn.style.opacity='1';}
+    };
+    r.readAsText(file);
+  };
+
   document.addEventListener('paste', function(e) {
     var p=document.getElementById('view-briefings'); if(!p||p.style.display==='none') return;
     var items=e.clipboardData?e.clipboardData.items:null; if(!items) return;
@@ -63,8 +86,8 @@
   }
 
   window.rewriteSummaries = async function() {
-    var raw=document.getElementById('rawMarketInput').value.trim();
-    if(!raw){briefStatus('Paste market content first.','error');return;}
+    var raw = mktRawText;
+    if(!raw){briefStatus('Please select a .txt file with your raw market update first.','error');return;}
     var btn=document.getElementById('rewriteBtn'); btn.disabled=true; btn.innerHTML='<span class="bc-spin"></span>Writing...';
     briefStatus('Rewriting summaries...','loading');
     try {
